@@ -87,7 +87,7 @@ class BackEndCall {
 
     static DELETE_track(musicIdToDelete) {
 
-        fetch(`${BackEndCall.endpoint}/musicLibrary/${musicIdToDelete}`, {
+        fetch(`${BackEndCall.endpoint}/musicLibrary/id/${musicIdToDelete}`, {
 
             method: 'DELETE',
         })
@@ -116,7 +116,7 @@ class BackEndCall {
 
     };
 
-    static POST_uploadFile(formData) {
+    static POST_uploadMusicFile(formData) {
 
         return fetch(`${BackEndCall.endpoint}/musicLibrary/uploadMusic`, {
 

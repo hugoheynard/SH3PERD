@@ -19,9 +19,9 @@ form_createTrackContainer.addFieldToSection('addTrack_section',
 
     new FormField_textInput(
         'trackName',
+        'form_textField',
         true,
-        'Track Name',
-        'form_textField'
+        'Track Name'
         ).render()
     );
 

@@ -115,7 +115,7 @@ app.put('/musicLibrary/id/:id/addVersion/', async (req, res) => {
 });
 
 
-app.delete('/musicLibrary/:id', async (req, res) => {
+app.delete('/musicLibrary/id/:id', async (req, res) => {
     try {
         const result = await new DatabaseAction().deleteEntry(req.params.id);
         if (result) {

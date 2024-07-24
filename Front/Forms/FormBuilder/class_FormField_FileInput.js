@@ -1,25 +1,25 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
+import {FormField} from "./class_FormField.js";
 
-class FormField_FileInput {
+class FormField_FileInput extends FormField{
 
-    constructor(id = "", require = false, multiple = false, css = 'form_textField'){
+    constructor(id, css, require, multiple = false){
+        super(id, css, require);
 
-        this.id = id;
-        this.css = css;
-        this.require = require;
-        this.multiple = multiple;
+        this._multiple = multiple;
 
-        this.inputField = new HTMLelem('input', this.id, css);
+        this.field = this.buildField();
 
-        this.inputField.setAttributes({
+        this.field.setAttributes({
 
             'type': 'file',
             'name': 'file', // for multer identification
-            ...(this.require ? { 'required': '' } : {}),
-            ...(this.multiple ? { 'multiple': '' } : {})
 
         });
 
+        if(this._multiple) {
+            this.field.setAttributes({'multiple':''});
+        }
 
         this.hiddenContainer = new HTMLelem('div', id + '_field').render();
         this.hiddenContainer.style.display = "none";
@@ -28,23 +28,30 @@ class FormField_FileInput {
 
     };
 
+    get multiple() {
+        return this._multiple;
+    };
+
+    set multiple(value) {
+        this._multiple = value;
+    };
 
     customContainer_addTitle(content) {
 
         const customTitle = new HTMLelem('span', '', 'uploadBoxText');
         customTitle.setText(content);
 
-        this.inputField.render().addEventListener('change', () => {
+        this.field.render().addEventListener('change', () => {
 
             customTitle.render().innerHTML = '';
 
-            if (this.inputField.render().files.length === 1) {
+            if (this.field.render().files.length === 1) {
 
-                customTitle.render().textContent = `${this.inputField.render().files.length} file selected`;
+                customTitle.render().textContent = `${this.field.render().files.length} file selected`;
 
-            } else if (this.inputField.render().files.length > 1) {
+            } else if (this.field.render().files.length > 1) {
 
-                customTitle.render().textContent = `${this.inputField.render().files.length} files selected`;
+                customTitle.render().textContent = `${this.field.render().files.length} files selected`;
 
             } else {
 
@@ -58,18 +65,17 @@ class FormField_FileInput {
 
     };
 
-
     customContainer_addIcon(addIcon) {
-
+        //TODO: trop de paramètre style en direct
         const icon = new HTMLelem('span', undefined, 'material-symbols-sharp');
         icon.setAttributes({'class': 'material-symbols-sharp'});
         icon.render().style.cursor = "pointer";
         icon.render().style.fontSize = "40px";
-        icon.render().textContent = 'upload_file';
+        icon.render().textContent = addIcon;
 
         icon.render().addEventListener('click', () => {
 
-            this.inputField.render().click();
+            this.field.render().click();
 
         });
 
@@ -79,7 +85,7 @@ class FormField_FileInput {
 
     render() {
 
-        this.hiddenContainer.appendChild(this.inputField.render());
+        this.hiddenContainer.appendChild(this.field.render());
         this.customContainer.appendChild(this.hiddenContainer);
 
         return this.customContainer;

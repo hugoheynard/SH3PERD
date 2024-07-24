@@ -1,14 +1,13 @@
-import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
+import {FormField} from "./class_FormField.js";
 
-class FormField_textInput {
+class FormField_textInput extends FormField{
 
-    constructor(id = "", require = false, placeholderContent = id, css = 'form_textField'){
 
-        this.id = id;
-        this.require = require;
-        this.placeholderContent = placeholderContent;
+    constructor(id, css, require, placeholderContent = id){
 
-        this.field = new HTMLelem('input', this.id, css);
+        super(id, css, require)
+
+        this._placeholderContent = placeholderContent;
 
         this.field.setAttributes({
             'type': 'text',
@@ -16,16 +15,10 @@ class FormField_textInput {
             'placeholder': this.placeholderContent
         });
 
-        if(this.require) {
-            this.field.setAttributes({'require': ''})
-        }
-
     };
 
-    render() {
-
-        return this.field.render();
-
+    get placeholderContent() {
+        return this._placeholderContent;
     };
 
 }
