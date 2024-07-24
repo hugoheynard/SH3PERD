@@ -1,39 +1,35 @@
-import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
+import {FormField} from "./class_FormField.js";
 
-class FormField_NumInput {
+class FormField_NumInput extends FormField{
 
-    constructor(id = "", css = "", require = false, min = -100, max = 100, step = 1){
+    constructor(id, css, require, min = -100, max = 100, step = 1){
+        super(id, css, require)
 
-        this.id = id;
-        this.require = require;
-        this.min = min;
-        this.max = max;
-        this.step = step;
+        this._min = min;
+        this._max = max;
+        this._step = step;
 
-        this.createNumField();
-
-    };
-
-    createNumField() {
-        this.numField = new HTMLelem('input', this.id, 'form_textField');
-
-        this.numField.setAttributes({
+        this.field.setAttributes({
             'type': 'number',
             'name': this.id,
             'placeholder': this.id,
-            'min': this.min,
-            'max': this.max,
-            'step': this.step
+            'min': this._min,
+            'max': this._max,
+            'step': this._step
         });
-
-        if(this.require) {
-            this.numField.setAttributes({'required': ''});
-        }
 
     };
 
-    render() {
-        return this.numField.render();
+    get min() {
+        return this._min;
+    };
+
+    get max() {
+        return this._max;
+    };
+
+    get step() {
+        return this._step;
     };
 
 }

@@ -4,7 +4,7 @@ import {FormField_FileInput} from "../../FormBuilder/class_FormField_FileInput.j
 
 const form_uploadFile = new Form(
     'step_addFile_popMenu',
-    BackEndCall.POST_uploadFile,
+    BackEndCall.POST_uploadMusicFile,
     undefined,
     true,
     'sectionContainer'

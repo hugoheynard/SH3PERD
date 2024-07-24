@@ -1,30 +1,33 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
+import {FormField} from "./class_FormField.js";
 
-class FieldBuilder_selectField {
+class FormField_selectField extends FormField{
 
-    constructor(id = "", css = "'form_textField'", required = false, name, descText, optionsArray = []) {
+    constructor(id, css, required, name, descText = optionsArray[0], optionsArray = ['emptySelection']) {
+        super(id, css, required);
 
-        this.id = id;
-        this.css = css;
-        this.name = name;
-        this.required = required;
-        this.descText = descText;
-        this.optionsArray = optionsArray;
+        this._type = 'select';
+        this._field = this.buildField();
 
-        this.createSelect();
+        this._name = name;
+        this._descText = descText;
+        this._optionsArray = optionsArray;
+
+        this.field.setAttributes({'name': this.name});
         this.addDescOption()
         this.addOptions();
     };
 
-    createSelect() {
+    get name() {
+        return this._name;
+    };
 
-        this.select = new HTMLelem("select", this.id, this.css);
-        this.select.setAttributes({'name': this.name});
+    get descText() {
+        return this._descText;
+    };
 
-        if(this.required) {
-            this.select.setAttributes({'required': ''});
-        }
-
+    get optionsArray() {
+        return this._optionsArray;
     };
 
     addOptions() {
@@ -35,7 +38,7 @@ class FieldBuilder_selectField {
             option.setAttributes({'value': content});
             option.setText(content);
 
-            option.isChildOf(this.select);
+            option.isChildOf(this.field);
 
         }
 
@@ -53,16 +56,10 @@ class FieldBuilder_selectField {
 
         option.setText(this.descText);
 
-        option.isChildOf(this.select);
-
-    };
-
-    render () {
-
-        return this.select.render();
+        option.isChildOf(this.field);
 
     };
 
 }
 
-export {FieldBuilder_selectField};
+export {FormField_selectField};

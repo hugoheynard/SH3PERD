@@ -90,7 +90,6 @@ class NestForm {
         //update display
         this.changeActiveLayout();
 
-
     };
 
     stepIsTheLast() {

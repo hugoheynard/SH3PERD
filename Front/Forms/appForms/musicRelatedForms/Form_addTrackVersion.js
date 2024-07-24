@@ -1,6 +1,6 @@
 import {Form} from "../../FormBuilder/class_Form.js";
 import {BackEndCall} from "../../../Classes/class_BackEndCalls.js";
-import {FieldBuilder_selectField} from "../../FormBuilder/class_FormField_Select.js";
+import {FormField_selectField} from "../../FormBuilder/class_FormField_Select.js";
 import {FormField_textInput} from "../../FormBuilder/class_FormField_TextInput.js";
 import {FormField_NumInput} from "../../FormBuilder/class_FormField_NumInput.js";
 
@@ -20,7 +20,7 @@ form_addTrackVersion.addSection(
 
 form_addTrackVersion.addFieldToSection('addVersion_section',
 
-        new FieldBuilder_selectField(
+        new FormField_selectField(
             "typeList",
             "form_textField select",
             true,
@@ -32,13 +32,15 @@ form_addTrackVersion.addFieldToSection('addVersion_section',
 form_addTrackVersion.addFieldToSection('addVersion_section',
 
         new FormField_textInput(
-            'Artist Name',
-            true
+            'artistName',
+            'form_textField',
+            true,
+            'Artist Name'
         ).render());
 
 form_addTrackVersion.addFieldToSection('addVersion_section',
 
-    new FieldBuilder_selectField(
+    new FormField_selectField(
         "genreList",
         "form_textField select",
         true,

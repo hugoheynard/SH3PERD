@@ -1,7 +1,7 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
 
 class Form {
-    constructor(id, submitAction, nest = null, multipartFormData = false, css = 'sectionContainer') {
+    constructor(id, submitAction, nest = null, multipartFormData = false, css = 'sectionContainer', refreshAction = null) {
 
         this.id = id;
         this.css = css;
@@ -105,10 +105,7 @@ class Form {
 
                 const updatedData = {...await this.nest.stepDataReturned, ...this.formDataJSON}
 
-                //console.log('nestOrigin', this.formDataJSON)
-                console.log('nestmerge', updatedData)
                 this.returnedData = await this.submitAction(updatedData);
-                console.log(this.returnedData)
 
                 if(this.multipartFormData) {
 
@@ -123,6 +120,7 @@ class Form {
                 }
 
                 this.nest.moveToNextStep();
+                location.reload()
                 return;
 
             }
