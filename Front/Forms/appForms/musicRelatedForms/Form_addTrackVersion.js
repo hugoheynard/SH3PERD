@@ -49,20 +49,22 @@ form_addTrackVersion.addFieldToSection('addVersion_section',
 
     new FormField_NumInput(
         'intensity',
+        'form_textField',
         true,
         1,
         4,
-        0
+        1
         ).render());
 
 form_addTrackVersion.addFieldToSection('addVersion_section',
 
     new FormField_NumInput(
         'pitch',
+        'form_textField',
         true,
         -12,
         12,
-        0
+        1
         ).render());
 
 form_addTrackVersion.add_submitButton('Next');
