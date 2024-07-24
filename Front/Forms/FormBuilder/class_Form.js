@@ -101,41 +101,36 @@ class Form {
             const formData = new FormData(this.form.render());
             this.formDataJSON = Object.fromEntries(formData.entries());
 
-
             if (this.nest) {
 
                 const updatedData = {...await this.nest.stepDataReturned, ...this.formDataJSON}
 
-                console.log('nestOrigin', this.formDataJSON)
+                //console.log('nestOrigin', this.formDataJSON)
                 console.log('nestmerge', updatedData)
                 this.returnedData = await this.submitAction(updatedData);
+                console.log(this.returnedData)
 
                 if(this.multipartFormData) {
 
-                    console.log('yo')
-
-                    const file = this.formElement.files[0];
-                    console.log(file)
-                    if (file) {
-                        console.log('youhou')
-                    }
-
-                    formData.append('file', file);
                     await this.submitAction(formData);
 
                 }
 
-                console.log('Moving to the next step');
+                if(this.nest.stepIsTheLast()) {
+
+                    //location.reload()
+                    return;
+                }
+
                 this.nest.moveToNextStep();
+                return;
 
-
-            } else {
-
-                this.returnedData = await this.submitAction(this.formDataJSON);
-
-                location.reload();
             }
 
+            this.returnedData = await this.submitAction(this.formDataJSON);
+
+            location.reload();
+            return;
 
         } catch (error) {
 

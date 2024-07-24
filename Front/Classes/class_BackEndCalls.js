@@ -53,12 +53,7 @@ class BackEndCall {
                 return {'containerID': data.id};
 
             })
-
-            .catch(error => {
-
-                console.error('Error:', error);
-
-            });
+            .catch(error => console.error('Error:', error));
 
 
 
@@ -66,15 +61,13 @@ class BackEndCall {
     };
 
     static PUT_newVersion(formDataJSON) {
-        console.log(formDataJSON);
 
-        return fetch(`${BackEndCall.endpoint}/musicLibrary/${formDataJSON.containerID}/addVersion/`, {
+        return fetch(`${BackEndCall.endpoint}/musicLibrary/id/${formDataJSON.containerID}/addVersion/`, {
 
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-
             body: JSON.stringify(formDataJSON)
         })
             .then(response => {
@@ -88,17 +81,8 @@ class BackEndCall {
                 return response.json();
 
             })
-            .then(data => {
-
-                return data.type;
-
-            })
-
-            .catch(error => {
-
-                console.error('Error:', error);
-
-            });
+            .then(data => data.type)
+            .catch(error => console.error('Error:', error));
     };
 
     static DELETE_track(musicIdToDelete) {
@@ -141,15 +125,10 @@ class BackEndCall {
 
         })
             .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+            .then(data => console.log('Success:', data))
+            .catch((error) => console.error('Error:', error));
 
-
-    }
+    };
 }
 
 export {BackEndCall};

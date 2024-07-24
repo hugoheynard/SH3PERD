@@ -137,14 +137,19 @@ app.post('/musicLibrary/uploadMusic', async (req, res) => {
         if (err) {
             res.status(400).json({ success: false, message: err });
         } else {
+
             if (req.file === undefined) {
-                res.status(400).json({ success: false, message: 'Aucun fichier sélectionné !' });
+
+                return res.status(400).json({ success: false, message: 'Aucun fichier sélectionné !' });
+
             } else {
-                res.status(200).json({
+
+                return res.status(200).json({
                     success: true,
                     message: 'Fichier téléchargé avec succès !',
                     file: `uploads/${req.file.filename}`
                 });
+
             }
         }
     });

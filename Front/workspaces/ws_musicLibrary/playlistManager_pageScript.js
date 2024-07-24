@@ -4,7 +4,7 @@ import {MenuAction} from "../../Classes/menuClasses/class_MenuAction.js";
 import {WorkSpaceContext} from "../class_workspaceContext.js";
 import {WS_MusicLibrary} from "./class_ws_MusicLibrary.js";
 
-import {addTrackProcess} from "../../Forms/FormBuilder/addTrackProcess.js";
+import {addTrackProcess} from "../../Forms/appForms/musicRelatedForms/addTrackProcess.js";
 
 const body = document.querySelectorAll('body')[0];
 
