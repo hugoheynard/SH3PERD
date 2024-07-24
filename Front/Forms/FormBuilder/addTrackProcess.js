@@ -1,11 +1,11 @@
-import {NestedForm} from "./class_NestedForm.js";
+import {NestForm} from "./class_NestForm.js";
 import {form_uploadFile} from "../appForms/musicRelatedForms/Form_uploadFile.js";
 import {form_createTrackContainer} from "../appForms/musicRelatedForms/Form_createTrackContainer.js";
 import {form_addTrackVersion} from "../appForms/musicRelatedForms/Form_addTrackVersion.js";
 
 const addTrackProcess = async () => {
 
-    const nest = new NestedForm(
+    const nest = new NestForm(
 
         'activeForm',
         'inactiveForm'

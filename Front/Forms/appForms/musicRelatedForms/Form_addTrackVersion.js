@@ -6,7 +6,10 @@ import {FormField_NumInput} from "../../FormBuilder/class_FormField_NumInput.js"
 
 const form_addTrackVersion = new Form(
     'step_addVersion_popMenu',
-    BackEndCall.PUT_newVersion
+    BackEndCall.PUT_newVersion,
+    undefined,
+    undefined,
+    'sectionContainer'
 );
 
 form_addTrackVersion.addSection(

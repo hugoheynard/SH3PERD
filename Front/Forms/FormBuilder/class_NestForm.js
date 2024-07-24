@@ -1,6 +1,6 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
 
-class NestedForm {
+class NestForm {
     constructor(activeStyleCss, inactiveStyleCss) {
 
         this.activeStyleCss = activeStyleCss;
@@ -104,4 +104,4 @@ class NestedForm {
     };
 }
 
-export {NestedForm};
+export {NestForm};

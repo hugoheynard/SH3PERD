@@ -71,7 +71,7 @@ app.post('/musicLibrary/createTrack', async (req, res) => {
 
     try {
 
-        const id = await new DatabaseAction().createEntry(req.body['Track Name']);
+        const id = await new DatabaseAction().createEntry(req.body['trackName']);
 
         return res.status(201).json({
             message: 'new track created',

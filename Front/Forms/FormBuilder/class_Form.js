@@ -1,11 +1,12 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
 
 class Form {
-    constructor(id, submitAction, nest = null, multipartFormData = false) {
+    constructor(id, submitAction, nest = null, multipartFormData = false, css = 'sectionContainer') {
 
         this.id = id;
+        this.css = css;
 
-        this.form = new HTMLelem('form', id, 'sectionContainer');
+        this.form = new HTMLelem('form', id, css);
 
         this.multipartFormData = multipartFormData;
 

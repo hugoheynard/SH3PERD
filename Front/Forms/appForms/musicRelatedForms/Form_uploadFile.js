@@ -6,7 +6,8 @@ const form_uploadFile = new Form(
     'step_addFile_popMenu',
     BackEndCall.POST_uploadFile,
     undefined,
-    true
+    true,
+    'sectionContainer'
     );
 
 form_uploadFile.addSection('uploadFile_section', 'Upload File', 'formSection');
