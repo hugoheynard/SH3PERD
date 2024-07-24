@@ -1,0 +1,83 @@
+body{
+    background-color: #f2f5f5;
+}
+
+/*PLANNING TABLES GENERAL*/
+.pt_boxShadow {
+    box-shadow: 1px 1px 20px #4e5152;
+}
+
+
+
+
+/* WEEKLY PRESENCE COLOR CODE*/
+.colorBlank {
+    background-color: #f5f7f8;
+}
+
+.color_OffDay {
+    background-color: #383a3a;
+}
+
+.color_sickDay {
+    background-color: #f60227;
+}
+
+.color_private {
+    background-color: #eab95d;
+}
+
+.color_rehearsal {
+    background-color: rgba(132, 236, 87, 0.7)
+}
+
+.meeting {
+    background-color: #a6f3de;
+}
+
+.color_travel {
+    background-color: #02c9f6
+}
+
+
+/* DAILY PLANNING COLOR CODE*/
+
+
+.others {
+    background: linear-gradient(0.25turn, rgba(115, 98, 11, 1), rgba(115, 98, 11, 0.20));
+}
+
+.others_1 {
+    background-color: rgba(115, 98, 11, 1);
+}
+
+.others_2 {
+    background-color: rgba(115, 98, 11, 0.4);
+}
+
+/* */
+
+.dp_endRow {
+    background-color: #383a3a;
+}
+
+.meal {
+    background-color: rgba(222, 234, 227, 0.65);
+}
+
+
+
+.private {
+    background-color: rgba(246, 207, 122, 1);
+}
+
+.dp_void {
+    background-color: rgba(229, 245, 245, 0.1);
+}
+
+.cellShadow {
+    border-radius: 0.25rem;
+    box-shadow: 1px 1px 4px #4e5152;
+    padding: 0.15rem;
+}
+

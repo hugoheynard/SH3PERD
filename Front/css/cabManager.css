@@ -1,0 +1,69 @@
+#cabListContainer {
+    display: inline-flex;
+    justify-content: space-around;
+    width: 100%; /* S'assure que le conteneur prend toute la largeur disponible */
+    box-sizing: border-box; /* Inclut la bordure dans la largeur */
+    font-size: 0.8rem;
+    font-weight: normal;
+}
+
+.showElement {
+    border-radius: 0.2rem;
+    padding: 0.2rem 1rem;
+    width: 3rem;
+    transition: transform 0.3s ease-in-out;
+    background-color: #76abae;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: bold;
+    font-size: small;
+    color: #f5f7f8;
+}
+
+.showElement:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+.pageTitle {
+    font-size: 5rem;
+    color:#222831;
+}
+
+/*CM TABLE */
+
+.cm_tableBody {
+    display: grid;
+    grid-template-columns: 1fr 7fr 4fr;
+    grid-gap: 5px;
+    border-radius: 0.3rem;
+    margin: 3em auto 0 auto;
+    padding: 1.5em 1em;
+    background-color: #e9eff3;
+    color:#76abae
+
+}
+
+#weekDays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-transform: capitalize;
+    font-weight: normal;
+    justify-items: center;
+}
+
+#showLeft {
+    align-items: center;
+}
+
+#cabGrid {
+    padding: 0.2rem;
+    height: 12rem;
+    border-radius: 0.2rem;
+    border: 1px solid #76abae;
+}
+
+.cm_bodyRow {
+    height: 5rem;
+    border: 1px solid black;
+}

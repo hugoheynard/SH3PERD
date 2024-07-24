@@ -1,0 +1,300 @@
+:root {
+    --tableTopBackgroundColor: rgb(29, 29, 30);
+    --tableHeaderBackgroundColor: #f5f7f8;
+    --tableBackgroundColor: rgb(61, 66, 70);
+    --fontColorNightMode: #e2e5e8;
+    --colorDarkMenus: #191c1e;
+    --colorMidDarkGrey:#2d2e31;
+    --colorMidGrey:#414344;
+    --colorFadedGrey: #8a8d8d;
+    --colorLightGrey: #f5f7f8;
+    --colorActiveForm: #7d8080;
+}
+
+#musicLib {
+
+}
+
+
+.material-symbols-sharp {
+    font-variation-settings:
+            'FILL' 1,
+            'wght' 200,
+            'GRAD' 50,
+            'opsz' 0
+}
+.material-symbols-outlined {
+    font-variation-settings:
+            'FILL' 0,
+            'wght' 300,
+            'GRAD' 20,
+            'opsz' 24
+}
+
+
+
+.sectionContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+
+}
+
+.formSection {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.activeForm {
+    background-color: var(--colorActiveForm);
+}
+
+.inactiveForm {
+    background-color: #414344;
+    color:grey;
+    border-bottom: 1px solid #8a8d8d;
+    filter: blinds(20%);
+}
+
+
+.form_sectionTitle {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: center;
+    font-weight: bolder;
+    text-transform: uppercase;
+    color: #ccc;
+    font-size: 1rem;
+}
+
+.stepBox {
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.1rem;
+    font-weight: lighter;
+    font-size: 0.8rem;
+    background-color: var(--colorMidGrey);
+}
+
+.form_textField {
+    padding: 0 15px;
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 0.1rem;
+    width: 18rem;
+    height: 1.8rem;
+    color: #ccc;
+    font-size: 0.8rem;
+    font-weight: lighter;
+    text-transform: capitalize;
+}
+
+.form_textField:focus {
+    border-color: #555;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Custom focus outline */
+    outline: 2px solid #ccc;
+}
+
+::placeholder{
+    color: #ccc;
+    text-transform: capitalize;
+}
+
+.select {
+    cursor: pointer;
+    outline: none;
+}
+
+.inactive select{
+    color: grey;
+}
+
+/*TODO: Il faudra faire en sorte que le dernier champ prenne tout l'espace disponible*/
+.button_submitForm_inPopMenu {
+    padding: 0.3rem 0.5rem;
+    text-align: center;
+    justify-content: center;
+    width: 5rem;
+    margin-bottom: 1rem;
+    align-self: center;
+    border-radius: 0.1rem;
+    border: 1px solid #555;
+    background-color: var(--colorMidGrey);
+    color: #ccc;
+    text-transform: capitalize;
+    font-size: 1rem;
+}
+
+.button_submitForm_inPopMenu:hover {
+    cursor: pointer;
+    outline: 1px solid #ccc;
+}
+
+
+.uploadDndContainer {
+    display: flex;
+    flex-direction: column;
+    border: 1px dashed ;
+    border-radius: 0.3rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 70%;
+    color: var(--colorLightGrey);
+    padding: 30px 0;
+    margin-top: 10px;
+}
+
+
+.customButton-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    color: black;
+    border-radius: 4px;
+    border: 1px solid #007bff;
+}
+.custom-file-upload:hover {
+    background-color: #0056b3;
+}
+
+.subText {
+    font-weight: 400;
+    font-size: 14px;
+    color:rgb(87, 100, 126);
+}
+
+.boldText {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+/*TRACK CARD*/
+#musicGrid {
+    margin: 20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+
+}
+
+.allCards {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 200px;
+    border-radius: 0.2rem;
+
+    box-shadow: rgba(0, 0, 0, 0.16) 0 3px 6px , rgba(0, 0, 0, 0.23) 0 3px 6px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.allCards:hover {
+    transform: scale(1.05);
+    box-shadow: rgba(0, 0, 0, 0.16) 0 6px 12px , rgba(0, 0, 0, 0.23) 0 6px 12px;
+}
+
+.trackCardMenu {
+    width: 30px;
+    align-items: center;
+    margin-right: 1rem;
+    margin-left: -3px;
+    padding: 0.3rem;
+    background-color: var(--colorMidDarkGrey);
+    color:var(--colorFadedGrey);
+}
+
+.trackCard_main {
+    width: 200px;
+    box-sizing: border-box;
+    text-transform: uppercase;
+    background-color: #e9ebec;
+}
+
+
+.trackCard_main_header {
+    height: 50%;
+    font-size: 1rem;
+    padding: 0.3rem;
+    justify-content: center;
+    border-radius: 0.2rem  0.2rem 0 0;
+    background-color: var(--colorMidGrey);
+    color: var(--colorLightGrey);
+    text-align: center;
+    text-justify: auto;
+}
+
+.trackCard_main_footer {
+    height: 20%;
+    font-size: 0.7rem;
+    text-align: center;
+    background-color: var(--colorMidGrey);
+    color: var(--colorFadedGrey);
+    border-radius: 0 0 0.2rem 0.2rem;
+}
+
+/*VERSION CARD*/
+.versionCard {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    background-color: var(--colorMidGrey);
+    color: var(--colorLightGrey);
+    width: 300px;
+    height: 200px;
+}
+
+.versionCard_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    padding: 0.5rem;
+    font-weight: bold;
+    color: var(--colorActiveForm);
+    height: 15%;
+    border-radius: 0.2rem  0.2rem 0 0;
+    background-color: #393a3b;
+}
+
+.versionCard_body {
+    align-content: space-between;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.4rem;
+}
+
+.specContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.specTitle {
+    font-weight: bold;
+    font-size: 0.7rem;
+    width: 40%;
+}
+
+.specContent {
+    font-weight: lighter;
+}
+
+.versionCard_footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 20%;
+    background-color: #393a3b;
+    color: var(--colorFadedGrey);
+    border-radius: 0 0 0.3rem 0.3rem;
+}
