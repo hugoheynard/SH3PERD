@@ -1,9 +1,11 @@
 class BackEndCall {
 
+    static endpoint = 'http://localhost:3000'
+
     static async getMusicLib () {
 
         try {
-            const response = await fetch('http://localhost:3000/musiclibrary');
+            const response = await fetch(`${BackEndCall.endpoint}/musiclibrary`);
 
             if (!response.ok) {
 
@@ -25,7 +27,7 @@ class BackEndCall {
 
     static POST_newTrack(formDataJSON) {
 
-        return fetch('http://localhost:3000/musicLibrary/createTrack', {
+        return fetch(`${BackEndCall.endpoint}/musicLibrary/createTrack`, {
 
             method: 'POST',
             headers: {
@@ -66,7 +68,7 @@ class BackEndCall {
     static PUT_newVersion(formDataJSON) {
         console.log(formDataJSON);
 
-        return fetch(`http://localhost:3000/musicLibrary/${formDataJSON.containerID}/addVersion/`, {
+        return fetch(`${BackEndCall.endpoint}/musicLibrary/${formDataJSON.containerID}/addVersion/`, {
 
             method: 'PUT',
             headers: {
@@ -101,7 +103,7 @@ class BackEndCall {
 
     static DELETE_track(musicIdToDelete) {
 
-        fetch(`http://localhost:3000/musicLibrary/${musicIdToDelete}`, {
+        fetch(`${BackEndCall.endpoint}/musicLibrary/${musicIdToDelete}`, {
 
             method: 'DELETE',
         })
@@ -132,7 +134,7 @@ class BackEndCall {
 
     static POST_uploadFile(formData) {
 
-        return fetch(`http://localhost:3000/musicLibrary/uploadMusic`, {
+        return fetch(`${BackEndCall.endpoint}/musicLibrary/uploadMusic`, {
 
             method: 'POST',
             body: formData

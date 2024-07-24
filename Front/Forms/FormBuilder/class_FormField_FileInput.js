@@ -2,13 +2,14 @@ import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
 
 class FormField_FileInput {
 
-    constructor(id, require, multiple){
+    constructor(id = "", require = false, multiple = false, css = 'form_textField'){
 
         this.id = id;
+        this.css = css;
         this.require = require;
         this.multiple = multiple;
 
-        this.inputField = new HTMLelem('input', this.id, 'form_textField');
+        this.inputField = new HTMLelem('input', this.id, css);
 
         this.inputField.setAttributes({
 
@@ -20,7 +21,9 @@ class FormField_FileInput {
         });
 
 
-        this.container = new HTMLelem('div', id + '_field').render();
+        this.hiddenContainer = new HTMLelem('div', id + '_field').render();
+        this.hiddenContainer.style.display = "none";
+
         this.customContainer = new HTMLelem('div', "", 'uploadDndContainer').render();
 
     };
@@ -76,7 +79,8 @@ class FormField_FileInput {
 
     render() {
 
-        this.customContainer.appendChild(this.inputField.render());
+        this.hiddenContainer.appendChild(this.inputField.render());
+        this.customContainer.appendChild(this.hiddenContainer);
 
         return this.customContainer;
 
