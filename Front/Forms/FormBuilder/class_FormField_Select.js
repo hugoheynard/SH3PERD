@@ -2,7 +2,7 @@ import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
 
 class FieldBuilder_selectField {
 
-    constructor(id, css, required, name, descText, optionsArray) {
+    constructor(id = "", css = "'form_textField'", required = false, name, descText, optionsArray = []) {
 
         this.id = id;
         this.css = css;
@@ -12,13 +12,6 @@ class FieldBuilder_selectField {
         this.optionsArray = optionsArray;
 
         this.createSelect();
-
-        if(this.required) {
-
-            this.select.setAttributes({'required': ''});
-
-        }
-
         this.addDescOption()
         this.addOptions();
     };
@@ -27,6 +20,10 @@ class FieldBuilder_selectField {
 
         this.select = new HTMLelem("select", this.id, this.css);
         this.select.setAttributes({'name': this.name});
+
+        if(this.required) {
+            this.select.setAttributes({'required': ''});
+        }
 
     };
 
@@ -44,7 +41,7 @@ class FieldBuilder_selectField {
 
     };
 
-    addDescOption(desc) {
+    addDescOption() {
 
         const option = new HTMLelem("option");
 

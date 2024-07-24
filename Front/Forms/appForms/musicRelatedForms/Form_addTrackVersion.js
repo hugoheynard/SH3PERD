@@ -42,7 +42,8 @@ form_addTrackVersion.addFieldToSection('addVersion_section',
         "genre",
         "Select Genre",
         ["pop", "rock", "disco", "jazz", "soul", "dance"]
-        ).render());
+        )
+        .render());
 
 form_addTrackVersion.addFieldToSection('addVersion_section',
 
