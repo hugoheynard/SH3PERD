@@ -18,6 +18,7 @@ class Form {
 
         this.submitAction = submitAction;
         this.sectionList = [];
+        this.formTree = {};
 
         this.nest = nest;
         this.formDataJSON = null;
@@ -39,16 +40,35 @@ class Form {
             title.isChildOf(section);
         }
 
-        this.sectionList.push(section.render());
-        this.formElement.appendChild(section.render());
+        //this.sectionList.push(section.render());
+
+        this.formTree = {
+            ...this.formTree,
+            ...{
+                [id]:{
+                    'sectionRender':section.render(),
+                    'fields':{}
+                }
+            }
+        };
+
+        this.formElement.appendChild(this.formTree[id].sectionRender);
     };
 
     addFieldToSection(sectionID, field) {
 
-        this.sectionList
-            .filter(section => section.id === sectionID)
-            .map(section => section.appendChild(field));
+        const fieldID = field.getAttribute('id');
 
+        //completes the formTree
+        this.formTree[sectionID].fields = {
+            ...this.formTree[sectionID].fields,
+            ...{
+                [fieldID]: field
+            }
+        };
+
+        //appends the field to section
+        this.formTree[sectionID].sectionRender.appendChild(this.formTree[sectionID].fields[fieldID]);
     };
 
     addHiddenField(name, value) {
