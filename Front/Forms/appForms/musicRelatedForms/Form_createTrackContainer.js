@@ -15,6 +15,7 @@ form_createTrackContainer.addSection(
     'formSection'
     );
 
+
 form_createTrackContainer.addFieldToSection('addTrack_section',
 
     new FormField_textInput(
@@ -22,8 +23,22 @@ form_createTrackContainer.addFieldToSection('addTrack_section',
         'form_textField',
         true,
         'Track Name'
+        )
+        .render()
+    );
+
+/*
+form_createTrackContainer.addDynamicField(
+    'trackName',
+    (event) => event === 'Hello',
+    new FormField_textInput(
+        'insert',
+        'form_textField',
+        true
         ).render()
     );
+*/
+
 
 form_createTrackContainer.add_submitButton('Next');
 

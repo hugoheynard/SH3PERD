@@ -36,8 +36,9 @@ class NestForm {
             const stepBox = new HTMLelem('span', undefined, css);
             stepBox.setText(boxContent);
 
-            const sectionTitle = form.sectionList[0].firstElementChild;
-            sectionTitle.appendChild(stepBox.render());
+            const firstSectionTitle = Object.values(form.formTree)[0].sectionRender.firstElementChild;
+
+            firstSectionTitle.appendChild(stepBox.render());
 
         }
 
