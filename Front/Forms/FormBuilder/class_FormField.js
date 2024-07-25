@@ -48,22 +48,6 @@ class FormField {
         return new HTMLelem(this.type, this.id, this.css)
     };
 
-    addDynamicField(condition, FormFieldInstance) {
-
-        const sourceNode = this.field.render();
-
-        sourceNode.addEventListener('input', (event) => {
-
-            if (condition) {
-
-                sourceNode.parentNode.insertBefore(FormFieldInstance, sourceNode.nextSibling);
-
-            }
-
-        });
-
-    };
-
     render() {
 
         return this.field.render();

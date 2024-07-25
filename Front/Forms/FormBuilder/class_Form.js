@@ -17,7 +17,6 @@ class Form {
         }
 
         this.submitAction = submitAction;
-        this.sectionList = [];
         this.formTree = {};
 
         this.nest = nest;
@@ -29,9 +28,9 @@ class Form {
 
     };
 
-
     addSection(id, titleContent = "", css = "") {
 
+        //creates section elements
         const section = new HTMLelem('div', id, css);
 
         if(titleContent) {
@@ -40,8 +39,7 @@ class Form {
             title.isChildOf(section);
         }
 
-        //this.sectionList.push(section.render());
-
+        //updates tree
         this.formTree = {
             ...this.formTree,
             ...{
@@ -58,6 +56,7 @@ class Form {
     addFieldToSection(sectionID, field) {
 
         const fieldID = field.getAttribute('id');
+        const destinationSection = this.formTree[sectionID].sectionRender;
 
         //completes the formTree
         this.formTree[sectionID].fields = {
@@ -67,8 +66,10 @@ class Form {
             }
         };
 
+        const newField = this.formTree[sectionID].fields[fieldID];
+
         //appends the field to section
-        this.formTree[sectionID].sectionRender.appendChild(this.formTree[sectionID].fields[fieldID]);
+        destinationSection.appendChild(newField);
     };
 
     addHiddenField(name, value) {
@@ -93,6 +94,85 @@ class Form {
 
         this.submitButton = button.render();
     };
+
+    //FORM TREE MANIPULATIONS METHODS
+
+    getField(field) {
+
+        for (const section in this.formTree) {
+
+            if(this.formTree[section].fields.hasOwnProperty(field)) {
+                return this.formTree[section].fields[field];
+            }
+
+        }
+
+        return null;
+    };
+
+    getSectionOfField(field) {
+
+        for (const section in this.formTree) {
+
+            if(this.formTree[section].fields.hasOwnProperty(field)) {
+                return this.formTree[section].sectionRender;
+            }
+
+        }
+
+        return null;
+
+    };
+
+    removeFieldFromCurrentPlace(fieldID) {
+
+        const nodeToRemove = this.getField(fieldID);
+        const nodeCurrentSection = this.getSectionOfField(fieldID);
+
+        nodeCurrentSection.removeChild(nodeToRemove);
+
+        for (const section in this.formTree) {
+
+            if(this.formTree[section].fields.hasOwnProperty(fieldID)) {
+                delete this.formTree[section].fields[fieldID];
+            }
+
+        }
+
+        return nodeToRemove;
+
+    };
+
+    addDynamicField(triggerField, condition, FormFieldInstance) {
+
+        const sourceNode = this.getField(triggerField);
+        const parentNode = this.getSectionOfField(triggerField);
+
+        sourceNode.addEventListener('input', (event) => {
+
+            if(parentNode.contains(FormFieldInstance)) {
+
+                if (!condition(event)) {
+
+                    this.removeFieldFromCurrentPlace(FormFieldInstance.getAttribute('id'));
+                    return;
+                }
+
+            }
+
+            if (condition(event)) {
+
+                this.addFieldToSection(parentNode.getAttribute('id'), FormFieldInstance);
+
+            }
+
+        });
+
+    };
+
+
+
+    //DISPLAY DESIGN METHODS
 
     hide_submitButton() {
 
