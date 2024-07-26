@@ -31,19 +31,22 @@ artistBaseInfo.addSection('artistBaseInfos',
 
 artistBaseInfo.addFieldToSection('artistBaseInfos', new FormField_textInput(
         'lastName', css,
-        false
+        false,
+        'last name'
     ).render()
 );
 
 artistBaseInfo.addFieldToSection('artistBaseInfos', new FormField_textInput(
         'firstName', css,
-        false
+        false,
+    'first name'
     ).render()
 );
 
 artistBaseInfo.addFieldToSection('artistBaseInfos', new FormField_textInput(
         'artistName', css,
-        false
+        false,
+    'artist name'
     ).render()
 );
 
