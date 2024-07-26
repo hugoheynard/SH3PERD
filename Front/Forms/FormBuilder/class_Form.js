@@ -11,9 +11,7 @@ class Form {
         this.multipartFormData = multipartFormData;
 
         if (this.multipartFormData) {
-
             this.form.setAttributes({'enctype': 'multipart/form-data'});
-
         }
 
         this.submitAction = submitAction;
@@ -73,15 +71,17 @@ class Form {
 
     };
 
-    addSection(id, titleContent = '', css = '') {
+    addSection(id, titleContent = '', cssSection = '', cssSecHeader = '', cssSecTitle = '', cssSecFieldContainer = '') {
 
         //creates section elements
-        const section = new HTMLelem('div', id, css);
+        const section = new HTMLelem('div', id, cssSection);
+        const sectionHeader = new HTMLelem('div', id, cssSecHeader);
+        const sectionFields = new HTMLelem('div', id, cssSecFieldContainer);
 
         if(titleContent) {
-            const title = new HTMLelem('span', undefined, 'form_sectionTitle');
+            const title = new HTMLelem('span', undefined, cssSecTitle);
             title.setText(titleContent);
-            title.isChildOf(this.form);
+            title.isChildOf(sectionHeader);
         }
 
         //updates tree
@@ -89,13 +89,14 @@ class Form {
             ...this.formTree,
             ...{
                 [id]:{
-                    'sectionRender':section.render(),
+                    'sectionRender':sectionFields.render(),
                     'fields':{}
                 }
             }
         };
-
-        this.formElement.appendChild(this.formTree[id].sectionRender);
+        section.render().appendChild(sectionHeader.render())
+        section.render().appendChild(sectionFields.render())
+        this.formElement.appendChild(section.render());
     };
 
     addFieldToSection(sectionID, field) {
@@ -245,13 +246,13 @@ class Form {
 
     hide_submitButton() {
 
-        this.submitButton.style.display = "none";
+        this.formElement.removeChild(this.submitButton);
 
     };
 
     show_submitButton() {
 
-        this.submitButton.style.display = "flex";
+        this.formElement.appendChild(this.submitButton);
 
     };
 
@@ -260,8 +261,6 @@ class Form {
         return this.formElement;
 
     };
-
-
 
 }
 

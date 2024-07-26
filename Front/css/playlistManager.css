@@ -55,13 +55,7 @@
     font-size: 1rem;
 }
 
-.stepBox {
-    padding: 0.2rem 0.5rem;
-    border-radius: 0.1rem;
-    font-weight: lighter;
-    font-size: 0.8rem;
-    background-color: var(--colorMidGrey);
-}
+
 
 .form_textField {
     padding: 0 15px;

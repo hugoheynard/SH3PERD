@@ -2,6 +2,7 @@ import {NestForm} from "../../FormBuilder/class_NestForm.js";
 import {Form} from "../../FormBuilder/class_Form.js";
 import {FormField_textInput} from "../../FormBuilder/class_FormField_TextInput.js";
 import {FormField_selectField} from "../../FormBuilder/class_FormField_Select.js";
+import {FormField_Checkbox} from "../../FormBuilder/FormField_Checkbox.js";
 
 const artistBaseInfo = new Form(
     'artistBaseInfos',
@@ -10,47 +11,53 @@ const artistBaseInfo = new Form(
     false,
     'form col',
     ''
+);
 
-)
+const cssSection = 'col gapMid';
+const cssHeader = 'row spaceBetween';
+const cssTitle = 'form_sectionTitle';
+const cssSecFieldContainer = 'row gapMid wrap';
 
-artistBaseInfo.addSection('artistBaseInfos', 'Artist Infos', 'section row')
+const css = 'field textField widthMid avg borderRoundLight capital'
 
-const css = 'field textField mid avg borderRoundLight capital'
+/*PERSONAL DETAILS*/
+artistBaseInfo.addSection('artistBaseInfos',
+    'personal details',
+    cssSection,
+    cssHeader,
+    cssTitle,
+    cssSecFieldContainer
+);
 
-
-artistBaseInfo.addFieldToSection(
-    'artistBaseInfos',
-
-    new FormField_textInput(
+artistBaseInfo.addFieldToSection('artistBaseInfos', new FormField_textInput(
         'lastName', css,
         false
     ).render()
 );
 
-artistBaseInfo.addFieldToSection(
-    'artistBaseInfos',
-
-    new FormField_textInput(
+artistBaseInfo.addFieldToSection('artistBaseInfos', new FormField_textInput(
         'firstName', css,
         false
     ).render()
 );
 
-artistBaseInfo.addFieldToSection(
-    'artistBaseInfos',
-
-    new FormField_textInput(
+artistBaseInfo.addFieldToSection('artistBaseInfos', new FormField_textInput(
         'artistName', css,
         false
     ).render()
-)
+);
 
-artistBaseInfo.addSection('artistJobInfos', 'Functions', 'section row');
+/*JOB INFORMATION*/
+artistBaseInfo.addSection('artistJobInfos',
+    'Functions',
+    cssSection,
+    cssHeader,
+    cssTitle,
+    cssSecFieldContainer
 
-artistBaseInfo.addFieldToSection(
-    'artistJobInfos',
+);
 
-    new FormField_selectField(
+artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_selectField(
         'jobCategory',
         css,
         false,
@@ -58,12 +65,20 @@ artistBaseInfo.addFieldToSection(
         'artistic discipline',
         ['dj', 'musician', 'dancer', 'other'],
     ).render()
-)
+);
 
-artistBaseInfo.addFieldToSection(
-    'artistJobInfos',
 
-    new FormField_selectField(
+artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_Checkbox(
+    'techRole',
+    '',
+    false,
+    'tech Role',
+    css
+    ).render()
+);
+
+/*
+artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_selectField(
         'jobCategory',
         css,
         false,
@@ -71,26 +86,31 @@ artistBaseInfo.addFieldToSection(
         'corporate Role',
         ['dj', 'musician', 'dancer', 'other'],
     ).render()
-)
+);
+*/
 
-artistBaseInfo.addSection('artistContactInfos', 'Contact Informations', 'section row')
-artistBaseInfo.addFieldToSection(
-    'artistContactInfos',
 
-    new FormField_textInput(
+/*CONTACT*/
+artistBaseInfo.addSection('artistContactInfos',
+    'Contact Informations',
+    cssSection,
+    cssHeader,
+    cssTitle,
+    cssSecFieldContainer
+);
+
+
+artistBaseInfo.addFieldToSection('artistContactInfos', new FormField_textInput(
         'mail', css,
-        true
+        false
     ).render()
-)
+);
 
-artistBaseInfo.addFieldToSection(
-    'artistContactInfos',
-
-    new FormField_textInput(
+artistBaseInfo.addFieldToSection('artistContactInfos', new FormField_textInput(
         'telephone', css,
         false
     ).render()
-)
+);
 
 artistBaseInfo.add_submitButton('CREATE', 'button_submitForm_inPopMenu')
 
@@ -103,19 +123,14 @@ const createArtistProfile = () => {
 
     nest.addForm(artistBaseInfo)
 
-
-
-
     //nest.startProcess();
-
-
 
     for (const nestedFormElement of nest.formList) {
 
         document.getElementById('appElements').appendChild(nestedFormElement.render())
     }
 
-    //nest.addStepBoxInSections('stepBox')
+    nest.addStepBoxInSections('stepBox')
 
 }
 
