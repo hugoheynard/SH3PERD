@@ -5,6 +5,7 @@ import {WorkSpaceContext} from "../class_workspaceContext.js";
 import {WS_MusicLibrary} from "./class_ws_MusicLibrary.js";
 
 import {addTrackProcess} from "../../Forms/appForms/musicRelatedForms/addTrackProcess.js";
+import {createArtistProfile} from "../../Forms/appForms/artistProfileForms/createArtistProfile.js";
 
 const body = document.querySelectorAll('body')[0];
 
@@ -41,5 +42,5 @@ const appWorkspace = new WorkSpaceContext(new WS_MusicLibrary().render())
 
 addTrackProcess()
 
-
+createArtistProfile();
 

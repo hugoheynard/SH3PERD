@@ -1,0 +1,120 @@
+.sectionContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.formSection {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+/*STRUCTURE CLASSES*/
+.form{
+    display: flex;
+    height: 100%;
+    padding: 2rem;
+    justify-content: space-between;
+    gap: 2rem;
+
+}
+
+.section{
+    display: inherit;
+    gap: 1rem;
+}
+
+.row {
+    flex-direction: row;
+}
+
+.col {
+    flex-direction: column;
+}
+
+.large {
+    width: 100%;
+}
+
+.mid {
+    width: 30%;
+}
+
+.narrow {
+    width: 15%
+}
+
+.tall {
+    height: 3rem;
+}
+
+.avg {
+    height: 2rem;
+}
+
+.small {
+    height: 1.5rem
+}
+
+.borderRoundLight {
+    border-radius: 0.1rem;
+}
+
+.borderRoundMid {
+    border-radius: 0.4rem;
+}
+
+.borderRoundHeavy {
+    border-radius: 1rem;
+}
+
+/*SECTION TITLE*/
+.form_sectionTitle {
+    display: inherit;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: center;
+    font-weight: bolder;
+    text-transform: uppercase;
+    color: #ccc;
+    font-size: 1rem;
+}
+
+/* FIELDS */
+.field {
+    color: #ccc;
+}
+
+.field:focus {
+    border-color: #a2a2a2;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Custom focus outline */
+    outline: 1px solid #ccc;
+}
+
+.textField {
+    padding: 0 1.5%;
+    background: none;
+    border: 1px solid #ccc;
+    color: #ccc;
+    font-size: 90%;
+    font-weight: lighter;
+
+}
+
+
+.select{
+    cursor: pointer;
+    outline: none;
+}
+
+
+
+
+.capital{
+    text-transform: capitalize;
+}

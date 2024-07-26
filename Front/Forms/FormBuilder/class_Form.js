@@ -1,7 +1,7 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
 
 class Form {
-    constructor(id, submitAction, nest = null, multipartFormData = false, css = 'sectionContainer', refreshAction = null) {
+    constructor(id, submitAction, nest = null, multipartFormData = false, css = 'form col', refreshAction = null) {
 
         this.id = id;
         this.css = css;
@@ -27,8 +27,53 @@ class Form {
         this.formElement.addEventListener('submit', (event) => this.handleSubmit(event));
 
     };
+    async handleSubmit(event) {
 
-    addSection(id, titleContent = "", css = "") {
+        event.preventDefault();
+
+        try {
+
+            const formData = new FormData(this.form.render());
+            this.formDataJSON = Object.fromEntries(formData.entries());
+
+            if (this.nest) {
+
+                const updatedData = {...await this.nest.stepDataReturned, ...this.formDataJSON}
+
+                this.returnedData = await this.submitAction(updatedData);
+
+                if(this.multipartFormData) {
+
+                    await this.submitAction(formData);
+
+                }
+
+                if(this.nest.stepIsTheLast()) {
+
+                    //location.reload()
+                    return;
+                }
+
+                this.nest.moveToNextStep();
+                //location.reload()
+                return;
+
+            }
+
+            this.returnedData = await this.submitAction(this.formDataJSON);
+
+            location.reload();
+            return;
+
+        } catch (error) {
+
+            console.error('Form submission error:', error);
+
+        }
+
+    };
+
+    addSection(id, titleContent = '', css = '') {
 
         //creates section elements
         const section = new HTMLelem('div', id, css);
@@ -36,7 +81,7 @@ class Form {
         if(titleContent) {
             const title = new HTMLelem('span', undefined, 'form_sectionTitle');
             title.setText(titleContent);
-            title.isChildOf(section);
+            title.isChildOf(this.form);
         }
 
         //updates tree
@@ -86,9 +131,9 @@ class Form {
         this.form.render().appendChild(hiddenField.render());
     };
 
-    add_submitButton(text) {
+    add_submitButton(text, css = '') {
 
-        const button = new HTMLelem('button', undefined, 'button_submitForm_inPopMenu');
+        const button = new HTMLelem('button', undefined, css);
         button.setAttributes({'type': 'submit'});
         button.setText(text);
         button.isChildOf(this.form);
@@ -216,51 +261,7 @@ class Form {
 
     };
 
-    async handleSubmit(event) {
 
-        event.preventDefault();
-
-        try {
-
-            const formData = new FormData(this.form.render());
-            this.formDataJSON = Object.fromEntries(formData.entries());
-
-            if (this.nest) {
-
-                const updatedData = {...await this.nest.stepDataReturned, ...this.formDataJSON}
-
-                this.returnedData = await this.submitAction(updatedData);
-
-                if(this.multipartFormData) {
-
-                    await this.submitAction(formData);
-
-                }
-
-                if(this.nest.stepIsTheLast()) {
-
-                    //location.reload()
-                    return;
-                }
-
-                this.nest.moveToNextStep();
-                location.reload()
-                return;
-
-            }
-
-            this.returnedData = await this.submitAction(this.formDataJSON);
-
-            location.reload();
-            return;
-
-        } catch (error) {
-
-            console.error('Form submission error:', error);
-
-        }
-
-    };
 
 }
 

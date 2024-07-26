@@ -84,6 +84,7 @@ html, body {
     flex-direction: row;
     justify-content: space-between;
     height: 100%;
+
 }
 
 #appMenus {
@@ -103,6 +104,10 @@ html, body {
     font-size: 1rem;
     background-color: var(--colorDarkMenus);
     color: var(--colorFadedGrey);
+}
+
+#appElements {
+    width: 100%
 }
 
 #popMenu {

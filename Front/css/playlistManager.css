@@ -32,24 +32,6 @@
 }
 
 
-
-.sectionContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-
-}
-
-.formSection {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    height: 100%;
-    padding: 1rem;
-    gap: 1rem;
-}
-
 .activeForm {
     background-color: var(--colorActiveForm);
 }
