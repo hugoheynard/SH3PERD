@@ -16,9 +16,10 @@ form_addTrackVersion.addSection(
     'addVersion_section',
     'Add Version',
     'formSection'
-    );
+);
 
-form_addTrackVersion.addFieldToSection('addVersion_section',
+form_addTrackVersion.addFieldToSection(
+    'addVersion_section',
 
         new FormField_selectField(
             "typeList",
@@ -27,18 +28,36 @@ form_addTrackVersion.addFieldToSection('addVersion_section',
             "type",
             "Select Type",
             ["original", "cover", "remix", "altVersion"]
-        ).render());
+        ).render()
+);
 
-form_addTrackVersion.addFieldToSection('addVersion_section',
+form_addTrackVersion.addDynamicField(
+    'typeList',
+
+    (event) => event.target.value === 'original',
+
+    new FormField_textInput(
+        'insert',
+        'form_textField',
+        true
+    ).render(),
+
+    'typeList',
+);
+
+form_addTrackVersion.addFieldToSection(
+    'addVersion_section',
 
         new FormField_textInput(
             'artistName',
             'form_textField',
             true,
             'Artist Name'
-        ).render());
+        ).render()
+);
 
-form_addTrackVersion.addFieldToSection('addVersion_section',
+form_addTrackVersion.addFieldToSection(
+    'addVersion_section',
 
     new FormField_selectField(
         "genreList",
@@ -48,9 +67,11 @@ form_addTrackVersion.addFieldToSection('addVersion_section',
         "Select Genre",
         ["pop", "rock", "disco", "jazz", "soul", "dance"]
         )
-        .render());
+        .render()
+);
 
-form_addTrackVersion.addFieldToSection('addVersion_section',
+form_addTrackVersion.addFieldToSection(
+    'addVersion_section',
 
     new FormField_NumInput(
         'intensity',
@@ -59,9 +80,11 @@ form_addTrackVersion.addFieldToSection('addVersion_section',
         1,
         4,
         1
-        ).render());
+        ).render()
+);
 
-form_addTrackVersion.addFieldToSection('addVersion_section',
+form_addTrackVersion.addFieldToSection(
+    'addVersion_section',
 
     new FormField_NumInput(
         'pitch',
@@ -70,7 +93,8 @@ form_addTrackVersion.addFieldToSection('addVersion_section',
         -12,
         12,
         1
-        ).render());
+        ).render()
+);
 
 form_addTrackVersion.add_submitButton('Next');
 
