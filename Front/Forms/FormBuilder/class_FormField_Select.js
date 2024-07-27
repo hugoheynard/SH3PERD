@@ -3,18 +3,18 @@ import {FormField} from "./class_FormField.js";
 
 class FormField_selectField extends FormField{
 
-    constructor(id, css, required, name, descText = optionsArray[0], optionsArray = ['emptySelection']) {
-        super(id, css, required);
+    constructor(input) {
+        super(input);
 
         this._type = 'select';
         this._field = this.buildField();
 
-        this._name = name;
-        this._descText = descText;
-        this._optionsArray = optionsArray;
+        this._name = input.name;
+        this._optionsArray = input.optionsArray ?? ['emptySelection'];
+        this._descText = input.descText ?? input.id;
 
         this.field.setAttributes({'name': this.name});
-        this.addDescOption()
+        this.addDescOption();
         this.addOptions();
     };
 

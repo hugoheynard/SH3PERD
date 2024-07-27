@@ -11,7 +11,7 @@ const form_addTrackVersion = new Form(
     undefined,
     'sectionContainer'
 );
-/*
+
 form_addTrackVersion.addSection(
     'addVersion_section',
     'Add Version',
@@ -22,16 +22,18 @@ form_addTrackVersion.addFieldToSection(
     'addVersion_section',
 
         new FormField_selectField(
-            "typeList",
-            "form_textField select",
-            true,
-            "type",
-            "Select Type",
-            ["original", "cover", "remix", "altVersion"]
+            {
+                id: "typeList",
+                css:"form_textField select",
+                required:false,
+                name:"type",
+                descText: 'Select Genre',
+                optionsArray:["original", "cover", "remix", "altVersion"]
+            }
         ).render()
 );
 
-form_addTrackVersion.addDynamicField(
+/*form_addTrackVersion.addDynamicField(
     'typeList',
 
     (event) => event.target.value === 'original',
@@ -44,15 +46,17 @@ form_addTrackVersion.addDynamicField(
 
     'typeList',
 );
-
+*/
 form_addTrackVersion.addFieldToSection(
     'addVersion_section',
 
         new FormField_textInput(
-            'artistName',
-            'form_textField',
-            true,
-            'Artist Name'
+            {
+                id:'artistName',
+                css:'form_textField',
+                require:true,
+                placeholderContent:'Artist Name'
+            }
         ).render()
 );
 
@@ -60,14 +64,15 @@ form_addTrackVersion.addFieldToSection(
     'addVersion_section',
 
     new FormField_selectField(
-        "genreList",
-        "form_textField select",
-        true,
-        "genre",
-        "Select Genre",
-        ["pop", "rock", "disco", "jazz", "soul", "dance"]
-        )
-        .render()
+        {
+            id: "genreList",
+            css:"form_textField select",
+            required:true,
+            name:"genre",
+            descText: 'Select Genre',
+            optionsArray:["pop", "rock", "disco", "jazz", "soul", "dance"]
+        }
+        ).render()
 );
 
 form_addTrackVersion.addFieldToSection(
@@ -97,5 +102,5 @@ form_addTrackVersion.addFieldToSection(
 );
 
 form_addTrackVersion.add_submitButton('Next');
-*/
+
 export {form_addTrackVersion};

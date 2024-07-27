@@ -38,8 +38,8 @@ class NestForm {
             stepBox.setText(boxContent);
 
             const firstSectionTitle = Object.values(form.formTree)[0].sectionRender.firstElementChild;
-
-            firstSectionTitle.appendChild(stepBox.render());
+            //TODO: remettre la stepbox
+            //firstSectionTitle.appendChild(stepBox.render());
 
         }
 

@@ -122,7 +122,6 @@ class Form {
         const button = new HTMLelem('button', id, css);
         button.setAttributes({'type': 'submit'});
         button.setText(text);
-        button.isChildOf(this.form);
 
         this.submitButton = button.render();
     };
@@ -132,7 +131,11 @@ class Form {
     //DISPLAY DESIGN METHODS
 
     render() {
-        return new FormDisplayAction(this).renderForm();
+
+        this.formElement =  new FormDisplayAction(this).renderForm();
+        this.formElement.appendChild(this.submitButton)
+
+        return this.formElement;
     };
 
 }

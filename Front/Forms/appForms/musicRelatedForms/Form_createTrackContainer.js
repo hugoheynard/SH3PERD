@@ -9,7 +9,7 @@ const form_createTrackContainer = new Form(
     undefined
     );
 
-/*form_createTrackContainer.addSection(
+form_createTrackContainer.addSection(
     'addTrack_section',
     'Add Track',
     'formSection'
@@ -19,14 +19,15 @@ const form_createTrackContainer = new Form(
 form_createTrackContainer.addFieldToSection('addTrack_section',
 
     new FormField_textInput(
-        'trackName',
-        'form_textField',
-        true,
-        'Track Name'
-        )
-        .render()
+        {
+            id:'trackName',
+            css:'form_textField',
+            require:true,
+            placeholderContent:'Track Name'
+        }
+        ).render()
     );
 
 form_createTrackContainer.add_submitButton('Next');
-*/
+
 export {form_createTrackContainer};
