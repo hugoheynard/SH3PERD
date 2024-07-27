@@ -13,9 +13,9 @@ class FormField_NumInput extends FormField{
             'type': 'number',
             'name': this.id,
             'placeholder': this.id,
-            'min': this._min,
-            'max': this._max,
-            'step': this._step
+            'min': this.min,
+            'max': this.max,
+            'step': this.step
         });
 
     };
