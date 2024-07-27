@@ -1,24 +1,25 @@
 import {FormField} from "./class_FormField.js";
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
 
+
 class FormField_Checkbox extends FormField{
 
-    constructor(id, cssContainer, require, label = id, cssLabel, customizeCheckbox = false, cssCheckbox){
+    constructor(input){
 
-        super(id, cssContainer, require)
+        super(input)
 
-        this._label = label;
-        this.cssLabel = cssLabel;
-        this.customizeCheckbox = customizeCheckbox
-        this.cssCheckbox = cssCheckbox;
+        this._label = input.label ?? false
+        this.cssLabel = input.cssLabel;
+        this.customizeCheckbox = input.customizeCheckbox
+        this.cssCheckbox = input.cssCheckbox;
 
         this.field.setAttributes({
             'type': 'checkbox',
             'name': this.id,
-            'class': cssCheckbox
+            'class': this.cssCheckbox
         });
 
-        this.container = new HTMLelem('div', "", cssContainer).render();
+        this.container = new HTMLelem('div', "", this.cssContainer).render();
         this.addLabel();
 
         if(this.customizeCheckbox) {

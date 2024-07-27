@@ -11,7 +11,7 @@ const form_addTrackVersion = new Form(
     undefined,
     'sectionContainer'
 );
-
+/*
 form_addTrackVersion.addSection(
     'addVersion_section',
     'Add Version',
@@ -97,5 +97,5 @@ form_addTrackVersion.addFieldToSection(
 );
 
 form_addTrackVersion.add_submitButton('Next');
-
+*/
 export {form_addTrackVersion};

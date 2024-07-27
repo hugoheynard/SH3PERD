@@ -2,11 +2,11 @@ import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
 
 class FormField {
 
-    constructor (id= "", css= "", require = false) {
+    constructor (input) {
 
-        this._id = id;
-        this._css = css;
-        this._require = require;
+        this._id = input.id;
+        this._css = input.css;
+        this._require = input.require ?? false;
         this._type = 'input';
 
         this._field = this.buildField();

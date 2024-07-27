@@ -1,4 +1,5 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
+import {FormTreeManipulation} from "./class_FormTreeManipulation.js";
 
 class Form {
     constructor(id, submitAction, nest = null, multipartFormData = false, css = 'form col', refreshAction = null) {
@@ -8,6 +9,7 @@ class Form {
 
         this.form = new HTMLelem('form', id, css);
 
+
         this.multipartFormData = multipartFormData;
 
         if (this.multipartFormData) {
@@ -15,6 +17,7 @@ class Form {
         }
 
         this.submitAction = submitAction;
+
         this.formTree = {};
 
         this.nest = nest;
@@ -23,6 +26,8 @@ class Form {
 
         this.formElement = this.form.render();
         this.formElement.addEventListener('submit', (event) => this.handleSubmit(event));
+
+
 
     };
     async handleSubmit(event) {
@@ -75,16 +80,17 @@ class Form {
 
         //creates section elements
         const section = new HTMLelem('div', id, cssSection);
-        const sectionHeader = new HTMLelem('div', id, cssSecHeader);
-        const sectionFields = new HTMLelem('div', id, cssSecFieldContainer);
+        const sectionHeader = new HTMLelem('div', id+'_header', cssSecHeader);
+        const sectionFields = new HTMLelem('div', id+'_container', cssSecFieldContainer);
 
         if(titleContent) {
-            const title = new HTMLelem('span', undefined, cssSecTitle);
+            const title = new HTMLelem('span', id+'_title', cssSecTitle);
             title.setText(titleContent);
             title.isChildOf(sectionHeader);
         }
 
         //updates tree
+        /*
         this.formTree = {
             ...this.formTree,
             ...{
@@ -94,6 +100,11 @@ class Form {
                 }
             }
         };
+
+*/
+
+        this.formTree = new FormTreeManipulation(this.formTree).addSectionToTree(id, sectionFields);
+
         section.render().appendChild(sectionHeader.render())
         section.render().appendChild(sectionFields.render())
         this.formElement.appendChild(section.render());
@@ -102,16 +113,10 @@ class Form {
     addFieldToSection(sectionID, field) {
 
         const fieldID = field.getAttribute('id');
+
+        new FormTreeManipulation(this.formTree).addFieldToTreeSection(sectionID, field);
+
         const destinationSection = this.formTree[sectionID].sectionRender;
-
-        //completes the formTree
-        this.formTree[sectionID].fields = {
-            ...this.formTree[sectionID].fields,
-            ...{
-                [fieldID]: field
-            }
-        };
-
         const newField = this.formTree[sectionID].fields[fieldID];
 
         //appends the field to section
@@ -213,7 +218,7 @@ class Form {
 
     addDynamicField(triggerField, condition, FormFieldInstance, previousElement = triggerField) {
 
-        const sourceNode = this.getField(triggerField);
+        const sourceNode = this.treeTool.getField(triggerField);
         const parentNode = this.getSectionOfField(triggerField);
         const currentNodeID = FormFieldInstance.getAttribute('id');
 
@@ -243,18 +248,6 @@ class Form {
     };
 
     //DISPLAY DESIGN METHODS
-
-    hide_submitButton() {
-
-        this.formElement.removeChild(this.submitButton);
-
-    };
-
-    show_submitButton() {
-
-        this.formElement.appendChild(this.submitButton);
-
-    };
 
     render() {
 

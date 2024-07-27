@@ -9,7 +9,7 @@ const form_createTrackContainer = new Form(
     undefined
     );
 
-form_createTrackContainer.addSection(
+/*form_createTrackContainer.addSection(
     'addTrack_section',
     'Add Track',
     'formSection'
@@ -28,5 +28,5 @@ form_createTrackContainer.addFieldToSection('addTrack_section',
     );
 
 form_createTrackContainer.add_submitButton('Next');
-
+*/
 export {form_createTrackContainer};

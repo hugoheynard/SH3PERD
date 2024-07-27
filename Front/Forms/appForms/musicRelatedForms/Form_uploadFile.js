@@ -7,22 +7,24 @@ const form_uploadFile = new Form(
     BackEndCall.POST_uploadMusicFile,
     undefined,
     true,
-    'sectionContainer'
+    'sectionContainer',
+    '',
     );
 
-form_uploadFile.addSection('uploadFile_section', 'Upload File', 'formSection');
+//form_uploadFile.addSection('uploadFile_section', 'Upload File', 'formSection');
 
 const fileInput = new FormField_FileInput(
     'inputFile',
+    '',
     false,
-    false
+    false,
     );
 
 fileInput.customContainer_addIcon('upload_file');
 fileInput.customContainer_addTitle('Select File or drop');
 
-form_uploadFile.addFieldToSection('uploadFile_section', fileInput.render())
+//form_uploadFile.addFieldToSection('uploadFile_section', fileInput.render())
 
-form_uploadFile.add_submitButton('Next');
+//form_uploadFile.add_submitButton('Next');
 
 export {form_uploadFile};

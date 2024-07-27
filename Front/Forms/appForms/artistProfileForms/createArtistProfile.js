@@ -30,23 +30,32 @@ artistBaseInfo.addSection('artistBaseInfos',
 );
 
 artistBaseInfo.addFieldToSection('artistBaseInfos', new FormField_textInput(
-        'lastName', css,
-        false,
-        'last name'
+    {
+        id:'lastName',
+        css:css,
+        require: false,
+        placeholderContent:'last name'
+    }
     ).render()
 );
 
 artistBaseInfo.addFieldToSection('artistBaseInfos', new FormField_textInput(
-        'firstName', css,
-        false,
-    'first name'
+    {
+        id:'firstName',
+        css:css,
+        require: false,
+        placeholderContent:'first name'
+    }
     ).render()
 );
 
 artistBaseInfo.addFieldToSection('artistBaseInfos', new FormField_textInput(
-        'artistName', css,
-        false,
-    'artist name'
+    {
+        id:'artistName',
+        css:css,
+        require: false,
+        placeholderContent:'artist name'
+    }
     ).render()
 );
 
@@ -82,14 +91,15 @@ artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_Checkbox(
     ).render()
 );
 
-artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_Checkbox(
-        'managementRole',
-        css + ' row spaceBetween ',
-        false,
-        'management Role',
-        undefined,
-        false,
-        'checkbox'
+artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_Checkbox({
+        id:'managementRole',
+        cssContainer: css + ' row spaceBetween ',
+        require: false,
+        label:'management Role',
+        cssLabel: undefined,
+        customizeCheckbox: false,
+        cssCheckbox: 'checkbox'}
+
     ).render()
 );
 
@@ -117,16 +127,25 @@ artistBaseInfo.addSection('artistContactInfos',
 
 
 artistBaseInfo.addFieldToSection('artistContactInfos', new FormField_textInput(
-        'mail', css,
-        false
+    {
+        id:'mail',
+        css:css,
+        require:false
+    }
     ).render()
 );
 
 artistBaseInfo.addFieldToSection('artistContactInfos', new FormField_textInput(
-        'telephone', css,
-        false
+    {
+        id:'telephone',
+        css:css,
+        require:false
+    }
     ).render()
 );
+
+
+
 
 artistBaseInfo.add_submitButton('CREATE', 'button_submitForm_inPopMenu')
 

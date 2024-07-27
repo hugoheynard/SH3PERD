@@ -80,7 +80,7 @@ class WS_MusicLibrary {
 
     render() {
 
-        this.addPopMenu();
+        //this.addPopMenu();
         this.addWsMenu();
         this.app.appendChild(this.appElements);
         this.app.appendChild(this.appMenus);

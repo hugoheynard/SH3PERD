@@ -1,13 +1,13 @@
 import {FormField} from "./class_FormField.js";
 
+
 class FormField_textInput extends FormField{
 
+    constructor(input){
 
-    constructor(id, css, require, placeholderContent = id){
+        super(input);
 
-        super(id, css, require)
-
-        this._placeholderContent = placeholderContent;
+        this._placeholderContent = input.placeholderContent ?? input.id;
 
         this.field.setAttributes({
             'type': 'text',
