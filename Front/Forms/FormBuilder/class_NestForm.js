@@ -1,4 +1,5 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
+import {FormDisplayAction} from "./class_FormDisplayAction.js";
 
 class NestForm {
     constructor(activeStyleCss, inactiveStyleCss) {
@@ -49,7 +50,7 @@ class NestForm {
         //changes the style of the active section
         this.currentForm.render().classList.remove(this.inactiveStyleCss);
         this.currentForm.render().classList.add(this.activeStyleCss);
-        this.currentForm.show_submitButton();
+        new FormDisplayAction(this.currentForm).show_submitButton();
 
         //put the rest in inactive
         this.formList
@@ -58,7 +59,7 @@ class NestForm {
             .map(form => {
                 form.render().classList.add(this.inactiveStyleCss);
                 form.render().classList.remove(this.activeStyleCss);
-                form.hide_submitButton();
+                new FormDisplayAction(form).hide_submitButton();
             });
 
     };

@@ -73,10 +73,23 @@ artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_selectField(
 
 artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_Checkbox(
     'techRole',
-    '',
+    css + ' row spaceBetween ',
     false,
     'tech Role',
-    css
+    undefined,
+    false,
+    'checkbox'
+    ).render()
+);
+
+artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_Checkbox(
+        'managementRole',
+        css + ' row spaceBetween ',
+        false,
+        'management Role',
+        undefined,
+        false,
+        'checkbox'
     ).render()
 );
 
@@ -137,4 +150,4 @@ const createArtistProfile = () => {
 
 }
 
-export {createArtistProfile};
+export {createArtistProfile, artistBaseInfo, css};

@@ -132,9 +132,9 @@ class Form {
         this.form.render().appendChild(hiddenField.render());
     };
 
-    add_submitButton(text, css = '') {
+    add_submitButton(text, id= '', css = '') {
 
-        const button = new HTMLelem('button', undefined, css);
+        const button = new HTMLelem('button', id, css);
         button.setAttributes({'type': 'submit'});
         button.setText(text);
         button.isChildOf(this.form);

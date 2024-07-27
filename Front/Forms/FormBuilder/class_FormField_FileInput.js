@@ -8,7 +8,7 @@ class FormField_FileInput extends FormField{
 
         this._multiple = multiple;
 
-        this.field = this.buildField();
+        //this.field = this.buildField();
 
         this.field.setAttributes({
 

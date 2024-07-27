@@ -109,6 +109,8 @@
 
 /* FIELDS */
 .field {
+    display: inherit;
+    align-items: center;
     min-width: 220px;
     color: #ccc;
 }
@@ -147,4 +149,20 @@
     font-weight: lighter;
     font-size: 0.8rem;
     background-color: var(--colorMidGrey);
+}
+
+
+.checkbox{
+    height: 1.2rem;
+    width: 1.2rem;
+    cursor: pointer;
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 0.2rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.checkbox:hover {
+    background-color: #e0e0e0;
+    border-color: #999;
 }
