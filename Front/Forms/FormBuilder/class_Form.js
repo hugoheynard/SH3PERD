@@ -1,5 +1,5 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
-import {FormTreeManipulation} from "./class_FormTreeManipulation.js";
+import {FormAction} from "./class_FormTreeManipulation.js";
 import {FormDisplayAction} from "./class_FormDisplayAction.js";
 
 class Form {
@@ -80,7 +80,7 @@ class Form {
     addSection(id, titleContent = '', cssSection = '', cssSecHeader = '', cssSecTitle = '', cssSecFieldContainer = '') {
 
         //creates section elements
-        const section = new HTMLelem('div', id, cssSection)
+        const section = new HTMLelem('div', id, cssSection);
         const sectionHeader = new HTMLelem('div', `${id}_header`, cssSecHeader);
         const sectionFields = new HTMLelem('div', `${id}_container`, cssSecFieldContainer);
 
@@ -91,17 +91,20 @@ class Form {
             title.isChildOf(sectionHeader);
         }
 
-        this.formTree = new FormTreeManipulation(this.formTree).addSectionToTree(id, section, sectionHeader, sectionFields);
-
-
-
+        this.formTree = new FormAction(this.formTree).addSectionToTree(
+            {
+                sectionId:id,
+                section:section,
+                sectionHeader:sectionHeader,
+                sectionFieldsContainer:sectionFields
+            }
+        );
     };
 
     addFieldToSection(sectionID, field) {
 
-        this.formTree[sectionID].fields = new FormTreeManipulation(this.formTree)
+        this.formTree[sectionID].fields = new FormAction(this.formTree)
             .addFieldToTreeSection(sectionID, field);
-
     };
 
     addHiddenField(name, value) {
@@ -126,10 +129,7 @@ class Form {
         this.submitButton = button.render();
     };
 
-
-
     //DISPLAY DESIGN METHODS
-
     render() {
 
         this.formElement =  new FormDisplayAction(this).renderForm();

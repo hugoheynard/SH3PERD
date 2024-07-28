@@ -3,6 +3,7 @@ import {BackEndCall} from "../../../Classes/class_BackEndCalls.js";
 import {FormField_selectField} from "../../FormBuilder/class_FormField_Select.js";
 import {FormField_textInput} from "../../FormBuilder/class_FormField_TextInput.js";
 import {FormField_NumInput} from "../../FormBuilder/class_FormField_NumInput.js";
+import {FormAction} from "../../FormBuilder/class_FormTreeManipulation.js";
 
 const form_addTrackVersion = new Form(
     'step_addVersion_popMenu',
@@ -27,26 +28,12 @@ form_addTrackVersion.addFieldToSection(
                 css:"form_textField select",
                 required:false,
                 name:"type",
-                descText: 'Select Genre',
+                descText: 'Select Type',
                 optionsArray:["original", "cover", "remix", "altVersion"]
             }
         ).render()
 );
 
-/*form_addTrackVersion.addDynamicField(
-    'typeList',
-
-    (event) => event.target.value === 'original',
-
-    new FormField_textInput(
-        'insert',
-        'form_textField',
-        true
-    ).render(),
-
-    'typeList',
-);
-*/
 form_addTrackVersion.addFieldToSection(
     'addVersion_section',
 
@@ -99,6 +86,26 @@ form_addTrackVersion.addFieldToSection(
         12,
         1
         ).render()
+);
+
+/*DYNAMIC FIELDS*/
+//TODO ON EN EST LA
+new FormAction(form_addTrackVersion.formTree).addDynamicField(
+    {
+        triggers:[
+            {'typeList': (event) => event.target.value === 'original'},
+            //{'genreList': (event) => event.target.value === 'disco'}
+        ],
+        FormFieldInstance: new FormField_textInput(
+            {
+                id: 'insert',
+                css: 'form_textField',
+                require: true,
+                placeholderContent: 'insert'
+            }
+        ).render(),
+        previousElement: 'typeList' //?? // this.triggerFieldID ou dernier liste
+    }
 );
 
 form_addTrackVersion.add_submitButton('Next');

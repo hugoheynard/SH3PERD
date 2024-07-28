@@ -13,7 +13,7 @@ class FormDisplayAction {
 
     hide_submitButton() {
 
-        if(!this.form.submitButton){
+        if (!this.form.submitButton) {
             throw new Error('This form doesnt have a submit button');
         }
 

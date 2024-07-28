@@ -1,4 +1,4 @@
-class FormTreeManipulation {
+class FormAction {
     constructor(formTree) {
 
         this.formTree = formTree;
@@ -6,16 +6,14 @@ class FormTreeManipulation {
     };
 
     //FORM TREE MANIPULATIONS METHODS
-    getField(field) {
-
+    getField(fieldID) {
         for (const section in this.formTree) {
 
-            if(this.formTree[section].fields.hasOwnProperty(field)) {
-                return this.formTree[section].fields[field];
+            if(this.formTree[section].fields.hasOwnProperty(fieldID)) {
+                return this.formTree[section].fields[fieldID];
             }
 
         }
-
         return null;
     };
 
@@ -26,29 +24,38 @@ class FormTreeManipulation {
             if(this.formTree[section].fields.hasOwnProperty(field)) {
                 return this.formTree[section].sectionRender;
             }
-
         }
 
         return null;
 
     };
 
+    getSectionIDFromFieldID(fieldID) {
 
-    addSectionToTree(id, section, sectionHeader, sectionFieldsContainer) {
+        for (const section in this.formTree) {
 
+            if(this.formTree[section].fields.hasOwnProperty(fieldID)) {
+                return this.formTree[section].sectionRender.id;
+            }
+        }
+
+        return null;
+
+    };
+
+    addSectionToTree(input) {
         return {
             ...this.formTree,
             ...{
-                [id]:{
-                    'sectionRender':section,
-                    'sectionHeader':sectionHeader,
-                    'sectionFieldsContainer':sectionFieldsContainer,
+                [input.sectionId]:{
+                    'sectionRender':input.section,
+                    'sectionHeader':input.sectionHeader,
+                    'sectionFieldsContainer':input.sectionFieldsContainer,
                     'fields':{}
                 }
             }
         };
-
-    }
+    };
 
     addFieldToTreeSection(sectionID, field) {
 
@@ -101,35 +108,48 @@ class FormTreeManipulation {
         parentSection.insertBefore(currentField, previousField.nextSibling);
     };
 
-    addDynamicField(triggerField, condition, FormFieldInstance, previousElement = triggerField) {
+    addDynamicField(input) {
 
-        const sourceNode = this.getField(triggerField);
-        const parentNode = this.getSectionOfField(triggerField);
-        const currentNodeID = FormFieldInstance.getAttribute('id');
+        const dynamicField = input.FormFieldInstance
+        const triggerList = input.triggers;
 
-        sourceNode.addEventListener('input', (event) => {
+        const stepValidationList = [];
+        const allStepValid = () => stepValidationList.every(trigger => trigger);
 
-            if(parentNode.contains(FormFieldInstance)) {
+        for (const triggerField of triggerList) {
 
-                if (!condition(event)) {
+            const triggerID = Object.keys(triggerField)[0];
+            const condition = Object.values(triggerField)[0];
 
-                    this.removeFieldFromCurrentPlace(currentNodeID);
-                    return;
+            this.getField(triggerID).addEventListener('input', (event) => {
+
+                if(condition(event)) {
+                    stepValidationList.push(true);
                 }
 
-            }
+                //listen to the number of true condition, //TODO: could be writen obj{trigName: boolean}
+                if(stepValidationList.length === triggerList.length){
 
-            if (condition(event)) {
+                    if(allStepValid()) { //TODO: truthy mais clair en lecture?
+                        //perform action
+                        this.formTree = this.addFieldToTreeSection(this.getSectionIDFromFieldID(triggerID), dynamicField);
+                        //this.insertElementAfter(input.previousElement, currentNodeID);
+                        return;
+                    }
+                    //TODO: dans l'idée c'est pas mal pour la scalabilité des triggers
+                    // mais il va falloir voir pour le timing
+                    // ça update le tree local mais pas celui d'origine? va falloir rabattre la donnée
+                }
 
-                this.addFieldToSection(parentNode.getAttribute('id'), FormFieldInstance);
-                this.insertElementAfter(previousElement, currentNodeID);
+                if(document.getElementById(this.getSectionIDFromFieldID(triggerID)).contains(input.FormFieldInstance)) {
 
-            }
-
-
-
-        });
+                    if (!allStepValid()) {
+                        //this.removeFieldFromCurrentPlace(currentNodeID);
+                    }
+                }
+            });
+        }
     };
 }
 
-export {FormTreeManipulation};
+export {FormAction};

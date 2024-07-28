@@ -1,5 +1,6 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
 
+
 class FormField {
 
     constructor (input) {
@@ -9,7 +10,7 @@ class FormField {
         this._require = input.require ?? false;
         this._type = 'input';
 
-        this._field = this.buildField();
+        this.field = this.buildField();
 
         if(this.require) {
             this.field.setAttributes({'required': ''});

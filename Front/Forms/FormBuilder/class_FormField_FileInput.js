@@ -1,6 +1,7 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
 import {FormField} from "./class_FormField.js";
 
+
 class FormField_FileInput extends FormField{
 
     constructor(id, css, require, multiple = false){
@@ -17,7 +18,7 @@ class FormField_FileInput extends FormField{
 
         });
 
-        if(this._multiple) {
+        if(this.multiple) {
             this.field.setAttributes({'multiple':''});
         }
 

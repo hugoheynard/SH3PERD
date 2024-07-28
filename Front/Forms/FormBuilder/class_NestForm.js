@@ -11,7 +11,7 @@ class NestForm {
         this.currentStep = 0;
 
         this.currentForm = null;
-        this.previousForm = null;
+        //this.previousForm = null;
 
         this.stepDataCollected = {};
         this.stepDataReturned = {};
