@@ -1,6 +1,7 @@
 import {Form} from "../../FormBuilder/class_Form.js";
 import {BackEndCall} from "../../../Classes/class_BackEndCalls.js";
 import {FormField_textInput} from "../../FormBuilder/class_FormField_TextInput.js";
+import {FormSection} from "../../FormBuilder/class_FormSection.js";
 
 const form_createTrackContainer = new Form(
     'step_addTrack_popMenu',
@@ -9,24 +10,30 @@ const form_createTrackContainer = new Form(
     undefined
     );
 
-form_createTrackContainer.addSection(
-    'addTrack_section',
-    'Add Track',
-    'formSection'
-    );
-
-
-form_createTrackContainer.addFieldToSection('addTrack_section',
-
-    new FormField_textInput(
+form_createTrackContainer.addSection({
+    id:'addTrack_section',
+    positionInForm: 1,
+    element: new FormSection(
         {
-            id:'trackName',
-            css:'form_textField',
-            require:true,
-            placeholderContent:'Track Name'
+            id:'addTrack_section',
+            title: 'Add Track',
+            cssSection: 'formSection'
         }
-        ).render()
-    );
+    )
+})
+
+
+form_createTrackContainer.addField({
+    section:'addTrack_section',
+    element:new FormField_textInput(
+        {
+            id: 'trackName',
+            css: 'form_textField',
+            require: true,
+            placeholderContent: 'Track Name'
+        }
+    )
+});
 
 form_createTrackContainer.add_submitButton('Next');
 

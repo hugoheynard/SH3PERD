@@ -1,6 +1,5 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
-import {FormAction} from "./class_FormTreeManipulation.js";
-import {FormDisplayAction} from "./class_FormDisplayAction.js";
+
 
 class Form {
     constructor(id, submitAction, nest = null, multipartFormData = false, css = 'form col', refreshAction = null) {
@@ -8,8 +7,7 @@ class Form {
         this.id = id;
         this.css = css;
 
-        this.form = new HTMLelem('form', id, css);
-
+        this.form = new HTMLelem('form', this.id, this.css);
 
         this.multipartFormData = multipartFormData;
 
@@ -75,35 +73,84 @@ class Form {
 
     };
 
-    addSection(id, titleContent = '', cssSection = '', cssSecHeader = '', cssSecTitle = '', cssSecFieldContainer = '') {
+    elemExistsInTree(elem) {
+        return this.formTree.hasOwnProperty(elem);
+    };
 
-        //creates section elements
-        const section = new HTMLelem('div', id, cssSection);
-        const sectionHeader = new HTMLelem('div', `${id}_header`, cssSecHeader);
-        const sectionFields = new HTMLelem('div', `${id}_container`, cssSecFieldContainer);
+    addSection(input) {
 
-
-        if(titleContent) {
-            const title = new HTMLelem('span', id+'_title', cssSecTitle);
-            title.setText(titleContent);
-            title.isChildOf(sectionHeader);
+        if (this.elemExistsInTree(input.id)) {
+            throw new Error(`Section "${input.id}" already exists in form`);
         }
 
-        this.formTree = new FormAction(this.formTree).addSectionToTree(
-            {
-                sectionId:id,
-                section:section,
-                sectionHeader:sectionHeader,
-                sectionFieldsContainer:sectionFields
-            }
-        );
+        this.formTree[input.id] = {
+            type:'section',
+            positionInForm:input.positionInForm, //TODO: voir pour ajouter un default
+            element: input.element
+        }
     };
 
-    addFieldToSection(sectionID, field) {
+    addField(input) {
 
-        this.formTree[sectionID].fields = new FormAction(this.formTree)
-            .addFieldToTreeSection(sectionID, field);
+        if (this.elemExistsInTree(input.element.id)) {
+            throw new Error(`Field "${input.element.id}" already exists in form`);
+        }
+
+        this.formTree[input.element.id] = {
+            type:"field",
+            section: input.section,
+            element: input.element
+        };
     };
+
+    addDynamicField(input) {
+        for (const triggerField of input.triggerList.triggerList) {
+            this.getElement(triggerField.id).element.render()
+                .addEventListener('input', (event) => {
+
+                    if (triggerField.condition(event)) {
+                        triggerField.validationState = true;
+                    }
+
+                    if (input.triggerList.isValid()) {
+
+                        const defaultPreviousElement = input.triggerList.triggerList.at(-1).id;
+                        const defaultSection = this.getElement(input.triggerList.triggerList.at(-1).id).section;
+
+                        this.addField(
+                            {
+                                section: input.destinationSection ?? defaultSection,
+                                element: input.dynamicField
+                            });
+
+
+                        this.dynamicFieldRender(
+                            input.dynamicField,
+                            input.previousElement ?? defaultPreviousElement
+                        );
+                        return;
+                    }
+
+                    if (!input.triggerList.isValid()) {
+                        this.removeDynamicField(input.dynamicField);
+                    }
+
+                });
+        }
+    };
+
+    getElement(elem_id) {
+
+        if (!this.formTree.hasOwnProperty(elem_id)) {
+            throw new Error(`element "${elem_id}" doesn't exist in form`);
+        }
+
+        return this.formTree[elem_id];
+    };
+
+    getFieldContainer(section_id) {
+        return this.getElement(section_id).element.fieldsContainer;
+    }
 
     addHiddenField(name, value) {
 
@@ -118,10 +165,6 @@ class Form {
         this.form.render().appendChild(hiddenField.render());
     };
 
-
-
-
-
     add_submitButton(text, id= '', css = '') {
 
         const button = new HTMLelem('button', id, css);
@@ -132,9 +175,36 @@ class Form {
     };
 
     //DISPLAY DESIGN METHODS
-    render() {
+    dynamicFieldRender(field, previousElement) {
+        document.getElementById(previousElement).insertAdjacentElement('afterend', field.render());
+    };
 
-        this.formElement =  new FormDisplayAction(this).renderForm();
+    removeDynamicField(field) {
+
+        const fieldToRemove = document.getElementById(field.id)
+        if (fieldToRemove) {
+            fieldToRemove.remove()
+        }
+    };
+
+    appendSections() {
+        Object.values(this.formTree)
+            .filter(elem => elem.type === 'section')
+            .sort((a, b) => a.positionInForm - b.positionInForm)
+            .map(section => this.formElement.appendChild(section.element.render()));
+    };
+
+    appendFields() {
+        Object.values(this.formTree)
+            .filter(elem => elem.type === 'field')
+            .sort((a, b) => a.positionInSection - b.positionInSection)
+            .map(field => this.getFieldContainer(field.section).appendChild(field.element.render()));
+    };
+
+    render() {
+        this.appendSections();
+        this.appendFields();
+
         this.formElement.appendChild(this.submitButton)
 
         return this.formElement;

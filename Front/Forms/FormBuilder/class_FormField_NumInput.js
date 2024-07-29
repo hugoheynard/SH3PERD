@@ -2,12 +2,12 @@ import {FormField} from "./class_FormField.js";
 
 class FormField_NumInput extends FormField{
 
-    constructor(id, css, require, min = -100, max = 100, step = 1){
-        super(id, css, require)
+    constructor(input){
+        super(input)
 
-        this._min = min;
-        this._max = max;
-        this._step = step;
+        this._min = input.min;
+        this._max = input.max;
+        this._step = input.step;
 
         this.field.setAttributes({
             'type': 'number',

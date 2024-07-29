@@ -15,7 +15,7 @@ const addTrackProcess = async () => {
     nest.addForm(form_addTrackVersion);
     //nest.addForm(form_uploadFile);
 
-    nest.addStepBoxInSections('stepBox');
+    //nest.addStepBoxInSections('stepBox');
 
     nest.startProcess();
 

@@ -3,6 +3,8 @@ import {Form} from "../../FormBuilder/class_Form.js";
 import {FormField_textInput} from "../../FormBuilder/class_FormField_TextInput.js";
 import {FormField_selectField} from "../../FormBuilder/class_FormField_Select.js";
 import {FormField_Checkbox} from "../../FormBuilder/FormField_Checkbox.js";
+import {FormSection} from "../../FormBuilder/class_FormSection.js";
+
 
 const artistBaseInfo = new Form(
     'artistBaseInfos',
@@ -21,90 +23,141 @@ const cssSecFieldContainer = 'row gapMid wrap';
 const css = 'field textField widthMid avg borderRoundLight capital'
 
 /*PERSONAL DETAILS*/
-artistBaseInfo.addSection('artistBaseInfos',
-    'personal details',
-    cssSection,
-    cssHeader,
-    cssTitle,
-    cssSecFieldContainer
+artistBaseInfo.addSection(
+    {
+        id:'artistBaseInfos',
+        positionInForm: 1,
+        element: new FormSection(
+            {
+                id:'artistBaseInfos',
+                title:'personal details',
+                cssSection:cssSection,
+                cssSectionHeader:cssHeader,
+                cssSectionTitle:cssTitle,
+                cssSectionFieldsContainer:cssSecFieldContainer
+            }
+            )
+    }
 );
 
-artistBaseInfo.addFieldToSection('artistBaseInfos', new FormField_textInput(
+artistBaseInfo.addField(
     {
-        id:'lastName',
-        css:css,
-        require: false,
-        placeholderContent:'last name'
+        section:'artistBaseInfos',
+        positionInSection: 1,
+        element:new FormField_textInput(
+            {
+                id: 'lastName',
+                css: css,
+                require: false,
+                placeholderContent: 'last name'
+            }
+        )
     }
-    ).render()
 );
 
-artistBaseInfo.addFieldToSection('artistBaseInfos', new FormField_textInput(
+artistBaseInfo.addField(
     {
-        id:'firstName',
-        css:css,
-        require: false,
-        placeholderContent:'first name'
+        section:'artistBaseInfos',
+        positionInSection: 2,
+        element:new FormField_textInput(
+            {
+                id: 'firstName',
+                css: css,
+                require: false,
+                placeholderContent: 'first name'
+            }
+        )
     }
-    ).render()
 );
 
-artistBaseInfo.addFieldToSection('artistBaseInfos', new FormField_textInput(
+artistBaseInfo.addField(
     {
-        id:'artistName',
-        css:css,
-        require: false,
-        placeholderContent:'artist name'
+        section:'artistBaseInfos',
+        positionInSection: 3,
+        element: new FormField_textInput(
+            {
+                id: 'artistName',
+                css: css,
+                require: false,
+                placeholderContent: 'artist name'
+            }
+        )
     }
-    ).render()
 );
 
 /*JOB INFORMATION*/
-artistBaseInfo.addSection('artistJobInfos',
-    'Functions',
-    cssSection,
-    cssHeader,
-    cssTitle,
-    cssSecFieldContainer
-
+artistBaseInfo.addSection(
+    {
+        id:'artistJobInfos',
+        positionInForm: 2,
+        element: new FormSection(
+            {
+                id:'artistJobInfos',
+                title:'functions',
+                cssSection:cssSection,
+                cssSectionHeader:cssHeader,
+                cssSectionTitle:cssTitle,
+                cssSectionFieldsContainer:cssSecFieldContainer
+            })
+    }
 );
 
-artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_selectField(
-        'jobCategory',
-        css,
-        false,
-        'category',
-        'artistic discipline',
-        ['dj', 'musician', 'dancer', 'other'],
-    ).render()
+artistBaseInfo.addField(
+    {
+        section:'artistJobInfos',
+        positionInSection: 1,
+        element: new FormField_selectField(
+            {
+                id:'jobCategory',
+                css:css,
+                required:false,
+                name:'category',
+                descType:'artistic discipline',
+                optionsArray:['dj', 'musician', 'dancer', 'other']
+            },
+        )
+    }
 );
 
 
-artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_Checkbox(
-    'techRole',
-    css + ' row spaceBetween ',
-    false,
-    'tech Role',
-    undefined,
-    false,
-    'checkbox'
-    ).render()
+artistBaseInfo.addField(
+    {
+        section: 'artistJobInfos',
+        positionInSection: 2,
+        element: new FormField_Checkbox(
+            {
+                id:'techRole',
+                cssContainer: css +' row spaceBetween ',
+                require: false,
+                label: 'tech Role',
+                cssLabel: undefined,
+                customizeCheckbox:false,
+                cssCheckbox:'checkbox'
+            }
+        )
+    }
 );
 
-artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_Checkbox({
-        id:'managementRole',
-        cssContainer: css + ' row spaceBetween ',
-        require: false,
-        label:'management Role',
-        cssLabel: undefined,
-        customizeCheckbox: false,
-        cssCheckbox: 'checkbox'}
-
-    ).render()
+artistBaseInfo.addField(
+    {
+        section:'artistJobInfos',
+        positionInSection: 3,
+        element:new FormField_Checkbox(
+            {
+                id: 'managementRole',
+                cssContainer: css + ' row spaceBetween ',
+                require: false,
+                label: 'management Role',
+                cssLabel: undefined,
+                customizeCheckbox: false,
+                cssCheckbox: 'checkbox'
+            }
+        )
+    }
 );
 
 /*
-artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_selectField(
+artistBaseInfo.addField('artistJobInfos', new FormField_selectField(
         'jobCategory',
         css,
         false,
@@ -117,31 +170,49 @@ artistBaseInfo.addFieldToSection('artistJobInfos', new FormField_selectField(
 
 
 /*CONTACT*/
-artistBaseInfo.addSection('artistContactInfos',
-    'Contact Informations',
-    cssSection,
-    cssHeader,
-    cssTitle,
-    cssSecFieldContainer
+artistBaseInfo.addSection(
+    {
+        id:'artistContactInfos',
+        positionInForm: 3,
+        element: new FormSection(
+            {
+                id:'artistContactInfos',
+                title:'Contact Informations',
+                cssSection:cssSection,
+                cssSectionHeader:cssHeader,
+                cssSectionTitle:cssTitle,
+                cssSectionFieldsContainer:cssSecFieldContainer
+            }
+        )
+    }
 );
 
 
-artistBaseInfo.addFieldToSection('artistContactInfos', new FormField_textInput(
+artistBaseInfo.addField(
     {
-        id:'mail',
-        css:css,
-        require:false
+        section: 'artistContactInfos',
+        positionInSection: 1,
+        element: new FormField_textInput(
+            {
+                id: 'mail',
+                css: css,
+                require: false
+            }
+        )
     }
-    ).render()
 );
 
-artistBaseInfo.addFieldToSection('artistContactInfos', new FormField_textInput(
-    {
-        id:'telephone',
-        css:css,
-        require:false
+artistBaseInfo.addField({
+        section:'artistContactInfos',
+        positionInSection: 2,
+        element: new FormField_textInput(
+            {
+                id: 'telephone',
+                css: css,
+                require: false
+            }
+        )
     }
-    ).render()
 );
 
 
@@ -165,7 +236,7 @@ const createArtistProfile = () => {
         document.getElementById('appElements').appendChild(nestedFormElement.render())
     }
 
-    nest.addStepBoxInSections('stepBox')
+    //nest.addStepBoxInSections('stepBox')
 
 }
 

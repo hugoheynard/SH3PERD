@@ -68,7 +68,7 @@ class NestForm {
     startProcess() {
 
         this.currentForm = this.formList[this.currentStep];
-        this.changeActiveLayout()
+        //this.changeActiveLayout()
 
     };
 
