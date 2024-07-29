@@ -9,7 +9,7 @@ class FormAction {
     getField(fieldID) {
         for (const section in this.formTree) {
 
-            if(this.formTree[section].fields.hasOwnProperty(fieldID)) {
+            if (this.formTree[section].fields.hasOwnProperty(fieldID)) {
                 return this.formTree[section].fields[fieldID];
             }
 
@@ -17,11 +17,11 @@ class FormAction {
         return null;
     };
 
-    getSectionOfField(field) {
+    getSectionOfField(fieldID) {
 
         for (const section in this.formTree) {
 
-            if(this.formTree[section].fields.hasOwnProperty(field)) {
+            if (this.formTree[section].fields.hasOwnProperty(fieldID)) {
                 return this.formTree[section].sectionRender;
             }
         }
@@ -34,7 +34,7 @@ class FormAction {
 
         for (const section in this.formTree) {
 
-            if(this.formTree[section].fields.hasOwnProperty(fieldID)) {
+            if (this.formTree[section].fields.hasOwnProperty(fieldID)) {
                 return this.formTree[section].sectionRender.id;
             }
         }
@@ -109,41 +109,25 @@ class FormAction {
     };
 
     addDynamicField(input) {
+        for (const triggerField of input.triggerList.triggerList) {
+            this.getField(triggerField.id).addEventListener('input', (event) => {
 
-        const dynamicField = input.FormFieldInstance
-        const triggerList = input.triggers;
-
-        const stepValidationList = [];
-        const allStepValid = () => stepValidationList.every(trigger => trigger);
-
-        for (const triggerField of triggerList) {
-
-            const triggerID = Object.keys(triggerField)[0];
-            const condition = Object.values(triggerField)[0];
-
-            this.getField(triggerID).addEventListener('input', (event) => {
-
-                if(condition(event)) {
-                    stepValidationList.push(true);
+                if (triggerField.condition(event)) {
+                    triggerField.validationState = true;
                 }
 
-                //listen to the number of true condition, //TODO: could be writen obj{trigName: boolean}
-                if(stepValidationList.length === triggerList.length){
-
-                    if(allStepValid()) { //TODO: truthy mais clair en lecture?
-                        //perform action
-                        this.formTree = this.addFieldToTreeSection(this.getSectionIDFromFieldID(triggerID), dynamicField);
-                        //this.insertElementAfter(input.previousElement, currentNodeID);
-                        return;
-                    }
-                    //TODO: dans l'idée c'est pas mal pour la scalabilité des triggers
-                    // mais il va falloir voir pour le timing
+                if (input.triggerList.isValid()) {
+                    //perform action
+                    console.log('yeah')
+                    //this.formTree = this.addFieldToTreeSection(this.getSectionIDFromFieldID(triggerID), input.dynamicField);
+                    //this.insertElementAfter(input.previousElement, currentNodeID);
+                    return;
+                }
                     // ça update le tree local mais pas celui d'origine? va falloir rabattre la donnée
-                }
 
-                if(document.getElementById(this.getSectionIDFromFieldID(triggerID)).contains(input.FormFieldInstance)) {
+                if (document.getElementById(this.getSectionIDFromFieldID(triggerField.id)).contains(input.dynamicField)) {
 
-                    if (!allStepValid()) {
+                    if (!input.triggerList.isValid()) {
                         //this.removeFieldFromCurrentPlace(currentNodeID);
                     }
                 }

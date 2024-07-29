@@ -28,8 +28,6 @@ class Form {
         this.formElement = this.form.render();
         this.formElement.addEventListener('submit', (event) => this.handleSubmit(event));
 
-
-
     };
     async handleSubmit(event) {
 
@@ -119,6 +117,10 @@ class Form {
 
         this.form.render().appendChild(hiddenField.render());
     };
+
+
+
+
 
     add_submitButton(text, id= '', css = '') {
 

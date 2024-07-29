@@ -4,6 +4,8 @@ import {FormField_selectField} from "../../FormBuilder/class_FormField_Select.js
 import {FormField_textInput} from "../../FormBuilder/class_FormField_TextInput.js";
 import {FormField_NumInput} from "../../FormBuilder/class_FormField_NumInput.js";
 import {FormAction} from "../../FormBuilder/class_FormTreeManipulation.js";
+import {TriggerField} from "../../FormBuilder/class_TriggerField.js";
+import {TriggerList} from "../../FormBuilder/class_TriggerList.js";
 
 const form_addTrackVersion = new Form(
     'step_addVersion_popMenu',
@@ -90,20 +92,28 @@ form_addTrackVersion.addFieldToSection(
 
 /*DYNAMIC FIELDS*/
 //TODO ON EN EST LA
-new FormAction(form_addTrackVersion.formTree).addDynamicField(
-    {
-        triggers:[
-            {'typeList': (event) => event.target.value === 'original'},
-            //{'genreList': (event) => event.target.value === 'disco'}
-        ],
-        FormFieldInstance: new FormField_textInput(
-            {
-                id: 'insert',
-                css: 'form_textField',
-                require: true,
-                placeholderContent: 'insert'
-            }
-        ).render(),
+new FormAction(form_addTrackVersion.formTree).addDynamicField({
+    triggerList:
+        new TriggerList({
+            triggerList: [
+                new TriggerField({
+                    id: 'typeList',
+                    condition: (event) => event.target.value === 'original'
+                }),
+                new TriggerField({
+                    id: 'genreList',
+                    condition: (event) => event.target.value === 'disco'
+                })
+            ],
+            condition:'',
+        }),
+    dynamicField: new FormField_textInput({
+            id: 'insert',
+            css: 'form_textField',
+            require: true,
+            placeholderContent: 'insert'
+    }
+    ).render(),
         previousElement: 'typeList' //?? // this.triggerFieldID ou dernier liste
     }
 );
