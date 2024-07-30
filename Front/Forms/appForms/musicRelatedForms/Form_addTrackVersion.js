@@ -1,12 +1,11 @@
 import {Form} from "../../FormBuilder/class_Form.js";
 import {BackEndCall} from "../../../Classes/class_BackEndCalls.js";
 import {FormSection} from "../../FormBuilder/class_FormSection.js";
-import {FormField_selectField} from "../../FormBuilder/class_FormField_Select.js";
-import {FormField_textInput} from "../../FormBuilder/class_FormField_TextInput.js";
-import {FormField_NumInput} from "../../FormBuilder/class_FormField_NumInput.js";
-import {FormAction} from "../../FormBuilder/class_FormTreeManipulation.js";
-import {TriggerField} from "../../FormBuilder/class_TriggerField.js";
-import {TriggerList} from "../../FormBuilder/class_TriggerList.js";
+import {FormField_selectField} from "../../FormBuilder/Fields/class_FormField_Select.js";
+import {FormField_textInput} from "../../FormBuilder/Fields/class_FormField_TextInput.js";
+import {FormField_NumInput} from "../../FormBuilder/Fields/class_FormField_NumInput.js";
+import {TriggerField} from "../../FormBuilder/TriggerSystem/class_TriggerField.js";
+import {TriggerList} from "../../FormBuilder/TriggerSystem/class_TriggerList.js";
 
 
 const form_addTrackVersion = new Form(
@@ -42,7 +41,7 @@ form_addTrackVersion.addField(
             {
                 id: 'typeList',
                 css:"form_textField select",
-                required:false,
+                require:false,
                 name:"type",
                 descText: 'Select Type',
                 optionsArray:["original", "cover", "remix", "altVersion"]
@@ -73,7 +72,7 @@ form_addTrackVersion.addField(
             {
                 id: 'genreList',
                 css: "form_textField select",
-                required: true,
+                require: true,
                 name: "genre",
                 descText: 'Select Genre',
                 optionsArray: ["pop", "rock", "disco", "jazz", "soul", "dance"]
@@ -114,8 +113,6 @@ form_addTrackVersion.addField(
     }
 );
 
-
-
 /*DYNAMIC FIELDS*/
 
 form_addTrackVersion.addDynamicField({
@@ -148,9 +145,12 @@ form_addTrackVersion.addDynamicField({
     }
 );
 
-
-
-
 form_addTrackVersion.add_submitButton('Next');
+
+new TriggerField(
+    {
+        id: '',
+        condition: (event) => event.target.value === 'original'
+    })
 
 export {form_addTrackVersion};

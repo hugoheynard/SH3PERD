@@ -6,7 +6,6 @@ class Form {
 
         this.id = id;
         this.css = css;
-
         this.form = new HTMLelem('form', this.id, this.css);
 
         this.multipartFormData = multipartFormData;
@@ -148,10 +147,6 @@ class Form {
         return this.formTree[elem_id];
     };
 
-    getFieldContainer(section_id) {
-        return this.getElement(section_id).element.fieldsContainer;
-    }
-
     addHiddenField(name, value) {
 
         const hiddenField = new HTMLelem('input');
@@ -185,29 +180,6 @@ class Form {
         if (fieldToRemove) {
             fieldToRemove.remove()
         }
-    };
-
-    appendSections() {
-        Object.values(this.formTree)
-            .filter(elem => elem.type === 'section')
-            .sort((a, b) => a.positionInForm - b.positionInForm)
-            .map(section => this.formElement.appendChild(section.element.render()));
-    };
-
-    appendFields() {
-        Object.values(this.formTree)
-            .filter(elem => elem.type === 'field')
-            .sort((a, b) => a.positionInSection - b.positionInSection)
-            .map(field => this.getFieldContainer(field.section).appendChild(field.element.render()));
-    };
-
-    render() {
-        this.appendSections();
-        this.appendFields();
-
-        this.formElement.appendChild(this.submitButton)
-
-        return this.formElement;
     };
 
 }

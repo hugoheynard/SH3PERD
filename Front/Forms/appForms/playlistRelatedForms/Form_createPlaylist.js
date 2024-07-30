@@ -1,7 +1,7 @@
 import {Form} from "../../FormBuilder/class_Form.js";
-import {FormField_textInput} from "../../FormBuilder/class_FormField_TextInput.js";
-import {FormField_selectField} from "../../FormBuilder/class_FormField_Select.js";
-import {FormField_NumInput} from "../../FormBuilder/class_FormField_NumInput.js";
+import {FormField_textInput} from "../../FormBuilder/Fields/class_FormField_TextInput.js";
+import {FormField_selectField} from "../../FormBuilder/Fields/class_FormField_Select.js";
+import {FormField_NumInput} from "../../FormBuilder/Fields/class_FormField_NumInput.js";
 
 const form_createPlaylist = new Form(
     'createPlaylist',

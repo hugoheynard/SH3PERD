@@ -1,9 +1,10 @@
-import {NestForm} from "../../FormBuilder/class_NestForm.js";
+import {NestForm} from "../../FormBuilder/Nest/class_NestForm.js";
 import {Form} from "../../FormBuilder/class_Form.js";
-import {FormField_textInput} from "../../FormBuilder/class_FormField_TextInput.js";
-import {FormField_selectField} from "../../FormBuilder/class_FormField_Select.js";
-import {FormField_Checkbox} from "../../FormBuilder/FormField_Checkbox.js";
+import {FormField_textInput} from "../../FormBuilder/Fields/class_FormField_TextInput.js";
+import {FormField_selectField} from "../../FormBuilder/Fields/class_FormField_Select.js";
+import {FormField_Checkbox} from "../../FormBuilder/Fields/FormField_Checkbox.js";
 import {FormSection} from "../../FormBuilder/class_FormSection.js";
+import {FormDisplayAction} from "../../FormBuilder/class_FormDisplayAction.js";
 
 
 const artistBaseInfo = new Form(
@@ -233,7 +234,8 @@ const createArtistProfile = () => {
 
     for (const nestedFormElement of nest.formList) {
 
-        document.getElementById('appElements').appendChild(nestedFormElement.render())
+        document.getElementById('appElements')
+            .appendChild(new FormDisplayAction(nestedFormElement).render())
     }
 
     //nest.addStepBoxInSections('stepBox')

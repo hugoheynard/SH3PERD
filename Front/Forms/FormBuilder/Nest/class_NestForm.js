@@ -1,5 +1,5 @@
-import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
-import {FormDisplayAction} from "./class_FormDisplayAction.js";
+import {HTMLelem} from "../../../Classes/HTMLClasses/class_HTMLelem.js";
+import {FormDisplayAction} from "../class_FormDisplayAction.js";
 
 class NestForm {
     constructor(activeStyleCss, inactiveStyleCss) {

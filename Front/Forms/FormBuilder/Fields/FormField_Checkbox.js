@@ -1,5 +1,5 @@
 import {FormField} from "./class_FormField.js";
-import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
+import {HTMLelem} from "../../../Classes/HTMLClasses/class_HTMLelem.js";
 
 
 class FormField_Checkbox extends FormField{

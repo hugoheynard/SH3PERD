@@ -8,10 +8,6 @@ class TriggerList{
         return this._triggerList;
     };
 
-    set triggerList(value) {
-        this._triggerList = value;
-    };
-
     addTrigger(trigger) {
         this.triggerList.push(trigger);
     };

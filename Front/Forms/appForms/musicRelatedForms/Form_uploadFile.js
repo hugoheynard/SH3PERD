@@ -1,6 +1,6 @@
 import {Form} from "../../FormBuilder/class_Form.js";
 import {BackEndCall} from "../../../Classes/class_BackEndCalls.js";
-import {FormField_FileInput} from "../../FormBuilder/class_FormField_FileInput.js";
+import {FormField_FileInput} from "../../FormBuilder/Fields/class_FormField_FileInput.js";
 
 const form_uploadFile = new Form(
     'step_addFile_popMenu',

@@ -1,7 +1,8 @@
-import {NestForm} from "../../FormBuilder/class_NestForm.js";
+import {NestForm} from "../../FormBuilder/Nest/class_NestForm.js";
 import {form_uploadFile} from "./Form_uploadFile.js";
 import {form_createTrackContainer} from "./Form_createTrackContainer.js";
 import {form_addTrackVersion} from "./Form_addTrackVersion.js";
+import {FormDisplayAction} from "../../FormBuilder/class_FormDisplayAction.js";
 
 const addTrackProcess = async () => {
 
@@ -22,7 +23,7 @@ const addTrackProcess = async () => {
 
     for (const nestedFormElement of nest.formList) {
 
-        popMenu.appendChild(nestedFormElement.render())
+        popMenu.appendChild(new FormDisplayAction(nestedFormElement).render())
     }
 
 
