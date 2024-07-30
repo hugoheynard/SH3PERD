@@ -132,7 +132,7 @@ form_addTrackVersion.addDynamicField({
                         condition: (event) => event.target.value === 'disco'
                         })
                 ],
-                condition:'',
+                condition:'every',
             }),
     dynamicField: new FormField_textInput(
         {

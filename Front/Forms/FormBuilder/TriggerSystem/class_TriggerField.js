@@ -1,7 +1,5 @@
 class TriggerField {
-
     constructor(input) {
-
         this._id = input.id;
         this._condition = input.condition;
         this._validationState = false;
@@ -24,4 +22,4 @@ class TriggerField {
     };
 }
 
-export {TriggerField}
+export {TriggerField};
