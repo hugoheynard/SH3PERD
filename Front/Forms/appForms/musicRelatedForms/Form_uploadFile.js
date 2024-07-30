@@ -1,6 +1,9 @@
 import {Form} from "../../FormBuilder/class_Form.js";
 import {BackEndCall} from "../../../Classes/class_BackEndCalls.js";
 import {FormField_FileInput} from "../../FormBuilder/Fields/class_FormField_FileInput.js";
+import {FormSection} from "../../FormBuilder/class_FormSection.js";
+import {cssObj_AddTrackProcess} from "../cssFormsInJs/cssObj_AddTrackProcess.js";
+
 
 const form_uploadFile = new Form(
     'step_addFile_popMenu',
@@ -11,7 +14,20 @@ const form_uploadFile = new Form(
     '',
     );
 
-//form_uploadFile.addSection('uploadFile_section', 'Upload File', 'formSection');
+form_uploadFile.addSection(
+    {
+        id: 'uploadFile_section',
+        positionInForm: 1,
+        element: new FormSection(
+            {
+                id: 'uploadFile_section',
+                title: 'Upload File',
+                cssSection: 'formSection',
+                cssSectionTitle: cssObj_AddTrackProcess.sectionTitles,
+            }
+        )
+    }
+);
 
 const fileInput = new FormField_FileInput(
     'inputFile',
@@ -23,8 +39,13 @@ const fileInput = new FormField_FileInput(
 fileInput.customContainer_addIcon('upload_file');
 fileInput.customContainer_addTitle('Select File or drop');
 
-//form_uploadFile.addFieldToSection('uploadFile_section', fileInput.render())
+form_uploadFile.addField(
+    {
+        section: 'uploadFile_section',
+        positionInSection: 1,
+        element: fileInput
+    });
 
-//form_uploadFile.add_submitButton('Next');
+form_uploadFile.add_submitButton('Next', '', cssObj_AddTrackProcess.submitButtons);
 
 export {form_uploadFile};

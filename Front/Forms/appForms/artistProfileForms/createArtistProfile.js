@@ -4,7 +4,6 @@ import {FormField_textInput} from "../../FormBuilder/Fields/class_FormField_Text
 import {FormField_selectField} from "../../FormBuilder/Fields/class_FormField_Select.js";
 import {FormField_Checkbox} from "../../FormBuilder/Fields/FormField_Checkbox.js";
 import {FormSection} from "../../FormBuilder/class_FormSection.js";
-import {FormDisplayAction} from "../../FormBuilder/class_FormDisplayAction.js";
 
 
 const artistBaseInfo = new Form(
@@ -216,26 +215,28 @@ artistBaseInfo.addField({
     }
 );
 
-
-
-
 artistBaseInfo.add_submitButton('CREATE', 'button_submitForm_inPopMenu')
-
 
 const createArtistProfile = () => {
 
     document.getElementById('appElements').innerHTML = '';
 
-    const nest = new NestForm('', '');
-
-    nest.addForm(artistBaseInfo)
+    const nest = new NestForm(
+        {
+            formList: [artistBaseInfo],
+            destination: document.getElementById('appElements'),
+            activeStyleCss: '',
+            inactiveStyleCss: '',
+            displayStepBox: false,
+            steboxCss: 'stepBox'
+        });
 
     //nest.startProcess();
 
     for (const nestedFormElement of nest.formList) {
 
         document.getElementById('appElements')
-            .appendChild(new FormDisplayAction(nestedFormElement).render())
+            .appendChild(nestedFormElement.render())
     }
 
     //nest.addStepBoxInSections('stepBox')

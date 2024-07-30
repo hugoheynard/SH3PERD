@@ -147,6 +147,10 @@ class Form {
         return this.formTree[elem_id];
     };
 
+    getFieldContainer(section_id) {
+        return this.getElement(section_id).element.fieldsContainer;
+    };
+
     addHiddenField(name, value) {
 
         const hiddenField = new HTMLelem('input');
@@ -174,12 +178,56 @@ class Form {
         document.getElementById(previousElement).insertAdjacentElement('afterend', field.render());
     };
 
+    hide_submitButton() {
+
+        if (!this.submitButton) {
+            throw new Error('This form doesnt have a submit button');
+        }
+
+        this.formElement.removeChild(this.submitButton);
+        return;
+    };
+
+    show_submitButton() {
+
+        if(!this.submitButton){
+            throw new Error('This form doesnt have a submit button');
+        }
+
+        this.formElement.appendChild(this.submitButton);
+        return;
+    };
+
     removeDynamicField(field) {
 
         const fieldToRemove = document.getElementById(field.id)
         if (fieldToRemove) {
             fieldToRemove.remove()
         }
+    };
+
+    //RENDER METHODS
+    appendSections() {
+        Object.values(this.formTree)
+            .filter(elem => elem.type === 'section')
+            .sort((a, b) => a.positionInForm - b.positionInForm)
+            .map(section => this.formElement.appendChild(section.element.render()));
+    };
+
+    appendFields() {
+        Object.values(this.formTree)
+            .filter(elem => elem.type === 'field')
+            .sort((a, b) => a.positionInSection - b.positionInSection)
+            .map(field => this.getFieldContainer(field.section).appendChild(field.element.render()));
+    };
+
+    render() {
+        this.appendSections();
+        this.appendFields();
+
+        this.formElement.appendChild(this.submitButton)
+
+        return this.formElement;
     };
 
 }

@@ -1,14 +1,22 @@
 import {HTMLelem} from "../../../Classes/HTMLClasses/class_HTMLelem.js";
-import {FormDisplayAction} from "../class_FormDisplayAction.js";
+import {css} from "../../appForms/artistProfileForms/createArtistProfile.js";
+
 
 class NestForm {
-    constructor(activeStyleCss, inactiveStyleCss) {
 
-        this.activeStyleCss = activeStyleCss;
-        this.inactiveStyleCss = inactiveStyleCss;
+    constructor(input) {
+
+        this.activeStyleCss = input.activeStyleCss;
+        this.inactiveStyleCss = input.inactiveStyleCss;
+        this.destination = input.destination;
 
         this.formList = [];
-        this.currentStep = 0;
+
+        for (const form of input.formList) {
+            this.addForm(form);
+        }
+
+        this._currentStep = 0;
 
         this.currentForm = null;
         //this.previousForm = null;
@@ -16,11 +24,19 @@ class NestForm {
         this.stepDataCollected = {};
         this.stepDataReturned = {};
 
+        this.displayNest();
+
+    };
+    get currentStep() {
+        return this._currentStep;
     };
 
-    //IMPORT METHODS
-    addForm(form) {
+    set currentStep(value) {
+        this._currentStep = value;
+    };
 
+    //IMPORT FORM METHODS
+    addForm(form) {
         form.nest = this;
         this.formList.push(form);
     };
@@ -45,59 +61,55 @@ class NestForm {
 
     };
 
-    changeActiveLayout() {
 
+    changeActiveLayout() {
         //changes the style of the active section
         this.currentForm.render().classList.remove(this.inactiveStyleCss);
         this.currentForm.render().classList.add(this.activeStyleCss);
-        new FormDisplayAction(this.currentForm).show_submitButton();
+        this.currentForm.show_submitButton();
 
         //put the rest in inactive
         this.formList
             .filter(form => form !== this.currentForm)
-
             .map(form => {
                 form.render().classList.add(this.inactiveStyleCss);
                 form.render().classList.remove(this.activeStyleCss);
-                new FormDisplayAction(form).hide_submitButton();
+                form.hide_submitButton()
             });
-
     };
 
     //PROCESS METHODS
     startProcess() {
-
-        this.currentForm = this.formList[this.currentStep];
-        //this.changeActiveLayout()
-
+        this.currentForm = this.formList[this._currentStep];
+        this.changeActiveLayout();
     };
 
     harvestFormData() {
-
-        this.stepDataCollected[this.currentStep] = this.currentForm.formDataJSON;
+        this.stepDataCollected[this._currentStep] = this.currentForm.formDataJSON;
         this.stepDataReturned = {...this.stepDataReturned, ...this.currentForm.returnedData ?? null};
-
     };
 
     moveToNextStep() {
-
         //process the current form
         this.harvestFormData();
 
         //move to next step in array
-        this.currentStep ++;
+        this._currentStep ++;
         this.previousForm = this.currentForm;
-        this.currentForm = this.formList[this.currentStep];
+        this.currentForm = this.formList[this._currentStep];
 
         //update display
         this.changeActiveLayout();
-
     };
 
     stepIsTheLast() {
+        return this._currentStep === this.formList.length - 1;
+    };
 
-        return this.currentStep === this.formList.length - 1;
-
+    displayNest() {
+        for (const form of this.formList) {
+            this.destination.appendChild(form.render());
+        }
     };
 }
 

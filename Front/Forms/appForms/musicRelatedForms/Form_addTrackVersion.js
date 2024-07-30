@@ -6,6 +6,7 @@ import {FormField_textInput} from "../../FormBuilder/Fields/class_FormField_Text
 import {FormField_NumInput} from "../../FormBuilder/Fields/class_FormField_NumInput.js";
 import {TriggerField} from "../../FormBuilder/TriggerSystem/class_TriggerField.js";
 import {TriggerList} from "../../FormBuilder/TriggerSystem/class_TriggerList.js";
+import {cssObj_AddTrackProcess} from "../cssFormsInJs/cssObj_AddTrackProcess.js";
 
 
 const form_addTrackVersion = new Form(
@@ -26,8 +27,8 @@ form_addTrackVersion.addSection(
                 title: 'Add Version',
                 cssSection: 'formSection',
                 cssSectionHeader: '',
-                cssSectionTitle: '',
-                cssSectionFieldsContainer:''
+                cssSectionTitle: cssObj_AddTrackProcess.sectionTitles,
+                cssSectionFieldsContainer:'col gapMid'
             }
         )
     }
@@ -40,7 +41,7 @@ form_addTrackVersion.addField(
         element: new FormField_selectField(
             {
                 id: 'typeList',
-                css:"form_textField select",
+                css: cssObj_AddTrackProcess.fields,
                 require:false,
                 name:"type",
                 descText: 'Select Type',
@@ -57,7 +58,7 @@ form_addTrackVersion.addField(
         element:new FormField_textInput(
             {
                 id:'artistName',
-                css:'form_textField',
+                css: cssObj_AddTrackProcess.fields,
                 require:true,
                 placeholderContent:'Artist Name'
             }
@@ -71,7 +72,7 @@ form_addTrackVersion.addField(
         element:new FormField_selectField(
             {
                 id: 'genreList',
-                css: "form_textField select",
+                css: cssObj_AddTrackProcess.fields,
                 require: true,
                 name: "genre",
                 descText: 'Select Genre',
@@ -87,7 +88,7 @@ form_addTrackVersion.addField(
         element:new FormField_NumInput(
             {
                 id:'intensity',
-                css: 'form_textField',
+                css: cssObj_AddTrackProcess.fields,
                 require: true,
                 min: 1,
                 max: 4,
@@ -103,7 +104,7 @@ form_addTrackVersion.addField(
         element:new FormField_NumInput(
             {
                 id: 'pitch',
-                css: 'form_textField',
+                css: cssObj_AddTrackProcess.fields,
                 require: true,
                 min: - 12,
                 max: 12,
@@ -136,7 +137,7 @@ form_addTrackVersion.addDynamicField({
     dynamicField: new FormField_textInput(
         {
             id: 'insert',
-            css: 'form_textField',
+            css: cssObj_AddTrackProcess.fields,
             require: true,
             placeholderContent: 'insert'
         }),
@@ -145,12 +146,8 @@ form_addTrackVersion.addDynamicField({
     }
 );
 
-form_addTrackVersion.add_submitButton('Next');
+form_addTrackVersion.add_submitButton('Next', '', cssObj_AddTrackProcess.submitButtons);
 
-new TriggerField(
-    {
-        id: '',
-        condition: (event) => event.target.value === 'original'
-    })
+
 
 export {form_addTrackVersion};
