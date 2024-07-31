@@ -1,5 +1,6 @@
 import {HTMLelem} from "./HTMLClasses/class_HTMLelem.js";
 import {MenuAction} from "./menuClasses/class_MenuAction.js";
+import {Icon} from "./icones/class_Icon.js";
 
 class Menu{
 
@@ -11,12 +12,20 @@ class Menu{
 
     };
 
-    addButton(id = "", content = "", callBack = () => MenuAction.goHome()) {
+    addButton(id = "", content, callBack = () => MenuAction.goHome()) {
 
         //TODO gérer les types de content text img
 
         const button = new HTMLelem('button', id, this.cssButtons);
-        button.setText(content);
+
+        if (typeof content === 'string'){
+            button.setText(content);
+        }
+
+        if (content instanceof Icon) {
+            content.render().isChildOf(button);
+        }
+
 
         this.addClickAction(button, callBack);
 

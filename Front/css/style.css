@@ -47,6 +47,13 @@ html, body {
     color: var(--colorLightGrey);
 }
 
+.menuIcons{
+    color: var(--colorFadedGrey);
+    cursor: pointer;
+    width: 25px;
+    stroke-width:20;
+}
+
 /*GENERAL LAYOUT*/
 #mainContainer {
     display:flex;

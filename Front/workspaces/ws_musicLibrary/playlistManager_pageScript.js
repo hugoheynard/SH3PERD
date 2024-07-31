@@ -6,18 +6,13 @@ import {WS_MusicLibrary} from "./class_ws_MusicLibrary.js";
 
 import {addTrackProcess} from "../../Forms/appForms/musicRelatedForms/addTrackProcess.js";
 import {createArtistProfile} from "../../Forms/appForms/artistProfileForms/createArtistProfile.js";
+import {Icon} from "../../Classes/icones/class_Icon.js";
+import {menu_appGeneral} from "../../menu_appGeneral.js";
 
 const body = document.querySelectorAll('body')[0];
 
 //insert the App left menu
-const Menu_appGeneral = new Menu('leftPermanentMenu', undefined, 'button_lpm material-symbols-outlined')
-Menu_appGeneral.addButton('button_home', 'home_app_logo', () => MenuAction.goHome());
-Menu_appGeneral.addButton('button_calendar', 'calendar_month', () => MenuAction.goCalendar());
-Menu_appGeneral.addButton('button_musicLib', 'music_note', () => MenuAction.goMusicLibrary());
-Menu_appGeneral.addButton('button_playlistManager', 'featured_play_list', () => MenuAction.goPlaylistManager());
-Menu_appGeneral.addButton('button_cabaretManager', 'theater_comedy', () => MenuAction.goCabaretManager());
-Menu_appGeneral.addButton('button_logOut', 'logout', () => MenuAction.logOut());
-body.appendChild(Menu_appGeneral.render());
+body.appendChild(menu_appGeneral.render());
 
 const mainContainer = new HTMLelem('div', 'mainContainer').render();
 body.appendChild(mainContainer);
@@ -26,7 +21,7 @@ body.appendChild(mainContainer);
 
 //topMenu
 const topMenu = new HTMLelem('div', 'topMenu').render();
-topMenu.appendChild(new HTMLelem('div').render());
+topMenu.appendChild(new HTMLelem('div').render()); // pour les autres trucs
 const meIcon = new HTMLelem('span', 'iconMe').render();
 meIcon.textContent = 'H';
 topMenu.appendChild(meIcon);
@@ -37,7 +32,7 @@ const appPage = new HTMLelem('div', 'appPage').render();
 mainContainer.appendChild(appPage)
 
 
-// ALL BELOW IS THE MUSIC LIB PAGE //TODO: base workspace
+// ALL BELOW IS THE MUSIC LIB PAGE
 const appWorkspace = new WorkSpaceContext(new WS_MusicLibrary().render())
 
 addTrackProcess()
