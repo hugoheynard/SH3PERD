@@ -99,13 +99,13 @@ html, body {
     height: 100%;
 }
 
-#workspaceMenu {
+.workspaceMenu {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
     width: 2.5rem;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-around;
     padding-top: 0.5rem;
     gap: 2rem;
     font-size: 1rem;

@@ -10,11 +10,9 @@ import {TrackCardMenu} from "./musicLibrary/class_TrackCardMenu.js";
 class WS_MusicLibrary {
 
     constructor() {
-
         this.app = document.getElementById('appPage');
         this.appElements = new HTMLelem('div', 'appElements').render();
         this.appMenus = new HTMLelem('div', 'appMenus').render();
-
     }
 
     addWsMenu() {

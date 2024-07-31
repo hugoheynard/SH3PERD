@@ -8,6 +8,7 @@ import {addTrackProcess} from "../../Forms/appForms/musicRelatedForms/addTrackPr
 import {createArtistProfile} from "../../Forms/appForms/artistProfileForms/createArtistProfile.js";
 import {Icon} from "../../Classes/icones/class_Icon.js";
 import {menu_appGeneral} from "../../menu_appGeneral.js";
+import {WS_StaffMember} from "../ws_staffMember/class_ws_StaffMember.js";
 
 const body = document.querySelectorAll('body')[0];
 
@@ -34,8 +35,9 @@ mainContainer.appendChild(appPage)
 
 // ALL BELOW IS THE MUSIC LIB PAGE
 const appWorkspace = new WorkSpaceContext(new WS_MusicLibrary().render())
+appWorkspace.setWorkspace(new WS_StaffMember())
 
-addTrackProcess()
+//addTrackProcess()
 
-createArtistProfile();
+
 

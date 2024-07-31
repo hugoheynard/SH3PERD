@@ -1,16 +1,20 @@
+import {HTMLelem} from "../Classes/HTMLClasses/class_HTMLelem.js";
+
+
 class WorkSpaceContext{
 
-    constructor(/*workSpaceStrategy*/) {
+    constructor(workSpaceStrategy) {
 
-        //this.workSpaceStrategy = workSpaceStrategy;
+        this.app = document.getElementById('appPage');
+        this.workSpaceStrategy = workSpaceStrategy;
 
     }
 
     eraseCurrentWorkspace() {
 
-        const appPage = document.getElementById('appPage');
+        //const appPage = document.getElementById('appPage');
 
-        appPage.innerHTML = "";
+        this.app.innerHTML = "";
 
     };
 
