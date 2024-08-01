@@ -1,3 +1,5 @@
+import {wsMenu_staffMember} from "../ws_staffMember/wsMenu_staffMember.js";
+import {menu_appGeneral} from "../../menu_appGeneral.js";
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
 import {Menu} from "../../Classes/class_Menu.js";
 import {MenuAction} from "../../Classes/menuClasses/class_MenuAction.js";
@@ -6,9 +8,10 @@ import {WS_MusicLibrary} from "./class_ws_MusicLibrary.js";
 
 import {addTrackProcess} from "../../Forms/appForms/musicRelatedForms/addTrackProcess.js";
 import {createArtistProfile} from "../../Forms/appForms/artistProfileForms/createArtistProfile.js";
-import {Icon} from "../../Classes/icones/class_Icon.js";
-import {menu_appGeneral} from "../../menu_appGeneral.js";
+
+
 import {WS_StaffMember} from "../ws_staffMember/class_ws_StaffMember.js";
+
 
 const body = document.querySelectorAll('body')[0];
 
@@ -34,8 +37,13 @@ mainContainer.appendChild(appPage)
 
 
 // ALL BELOW IS THE MUSIC LIB PAGE
-const appWorkspace = new WorkSpaceContext(new WS_MusicLibrary().render())
-appWorkspace.setWorkspace(new WS_StaffMember())
+const appWorkspace = new WorkSpaceContext()
+const ws_staffMember = new WS_StaffMember()
+const ws_musicLibrary = new WS_MusicLibrary().render()
+
+appWorkspace.setWorkspace(ws_staffMember)
+
+export{appWorkspace}
 
 //addTrackProcess()
 

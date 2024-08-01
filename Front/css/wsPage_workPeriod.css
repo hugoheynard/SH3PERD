@@ -1,0 +1,55 @@
+
+
+.workPeriod {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 5rem;
+    border-bottom: 1px solid #dbdde1;
+    margin-bottom: 1rem;
+}
+
+.completionBox {
+    display: flex;
+    width: 8rem;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    font-weight: bold;
+    color: #8a8d8d;
+
+}
+
+.yearBox {
+    display: flex;
+    padding-right: 1rem;
+    border-right: 5px solid #dbdde1;
+    width: 9rem;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #8a8d8d;
+}
+
+.dataBox {
+    display: flex;
+    flex-direction: row;
+
+
+}
+
+.dataLine {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 1rem 0.5rem;
+
+}
+
+.elemTitle {
+
+}

@@ -3,18 +3,16 @@ import {MenuAction} from "../../Classes/menuClasses/class_MenuAction.js";
 import {BackEndCall} from "../../Classes/class_BackEndCalls.js";
 import {wsMenu_staffMember} from "./wsMenu_staffMember.js";
 import {createArtistProfile} from "../../Forms/appForms/artistProfileForms/createArtistProfile.js";
+import {wsPage_workPeriods} from "./wsPage_workPeriods.js";
 
 
 class WS_StaffMember {
 
     constructor() {
-        this.app = document.getElementById('appPage');
-        this.appElements = new HTMLelem('div', 'appElements').render();
-        this.appMenus = new HTMLelem('div', 'appMenus').render();
         this.wsMenu = wsMenu_staffMember;
 
         //this.addPopMenu();
-        this.addWsMenu(this.wsMenu);
+
     }
 
     addWsMenu(menu) {
@@ -28,18 +26,18 @@ class WS_StaffMember {
 
     async staffMemberHome () {
 
-        const musicGrid = new HTMLelem('div', 'musicGrid').render();
-        this.appElements.appendChild(musicGrid);
+
+        this.appElements.appendChild(wsPage_workPeriods());
 
         //createArtistProfile();
-        workPeriods()
+
 
         //const musicLibData = await BackEndCall.getMusicLib();
 
     }
 
     render() {
-
+        this.addWsMenu(this.wsMenu);
         this.app.appendChild(this.appElements);
         this.app.appendChild(this.appMenus);
         this.staffMemberHome();

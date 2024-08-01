@@ -2,6 +2,8 @@ import {WorkSpaceContext} from "../../workspaces/class_workspaceContext.js";
 import {WS_Calendar} from "../../workspaces/ws_calendar/class_ws_Calendar.js";
 import {WS_MusicLibrary} from "../../workspaces/ws_musicLibrary/class_ws_MusicLibrary.js";
 import {BackEndCall} from "../class_BackEndCalls.js";
+import {WS_StaffMember} from "../../workspaces/ws_staffMember/class_ws_StaffMember.js";
+import {appWorkspace} from "../../workspaces/ws_musicLibrary/playlistManager_pageScript.js";
 
 class MenuAction {
 
@@ -26,6 +28,10 @@ class MenuAction {
 
     static goCabaretManager() {
         console.log("goCabaretManager");
+    }
+
+    static goStaffMember() {
+       appWorkspace.setWorkspace(new WS_StaffMember());
     }
 
     static logOut() {

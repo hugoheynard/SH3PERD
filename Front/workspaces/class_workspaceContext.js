@@ -3,10 +3,10 @@ import {HTMLelem} from "../Classes/HTMLClasses/class_HTMLelem.js";
 
 class WorkSpaceContext{
 
-    constructor(workSpaceStrategy) {
+    constructor() {
 
         this.app = document.getElementById('appPage');
-        this.workSpaceStrategy = workSpaceStrategy;
+        //this.workSpaceStrategy = workSpaceStrategy;
 
     }
 
@@ -21,6 +21,9 @@ class WorkSpaceContext{
     setWorkspace(newWorkSpace) {
 
         this.eraseCurrentWorkspace();
+        newWorkSpace.app = this.app
+        newWorkSpace.appElements = new HTMLelem('div', 'appElements').render();
+        newWorkSpace.appMenus = new HTMLelem('div', 'appMenus').render();
         this.workSpaceStrategy = newWorkSpace.render();
 
     };
