@@ -1,14 +1,11 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
-
 import {WorkSpaceContext} from "../class_workspaceContext.js";
-import {WS_MusicLibrary} from "./class_ws_MusicLibrary.js";
 import {menu_appGeneral} from "../../menu_appGeneral.js";
 import {wsMenu_staffMember} from "../ws_staffMember/wsMenu_staffMember.js";
-
-
-import {WS_StaffMember} from "../ws_staffMember/class_ws_StaffMember.js";
 import {WS_Calendar} from "../ws_calendar/class_ws_Calendar.js";
 import {wsPage_workPeriods} from "../ws_staffMember/staffMemberPages/wsPage_workPeriods.js";
+import {wsPage_musicLibrary} from "./wsPage_musicLibrary.js";
+import {Workspace} from "../class_WorspaceBase.js";
 
 
 
@@ -35,14 +32,20 @@ mainContainer.appendChild(topMenu);
 // ALL BELOW IS THE INITIALISATION
 
 const ws_Calendar = new WS_Calendar();
-const ws_musicLibrary = new WS_MusicLibrary();
-const ws_staffMember = new WS_StaffMember(
+const ws_musicLibrary = new Workspace(
+    {
+        defaultPage: wsPage_musicLibrary()
+    });
+const ws_staffMember = new Workspace(
     {
         wsMenu: wsMenu_staffMember,
         defaultPage: wsPage_workPeriods()
     });
 
-const appWorkspace = new WorkSpaceContext({defaultWorkspace: ws_staffMember})
+const appWorkspace = new WorkSpaceContext(
+    {
+        defaultWorkspace: ws_staffMember
+    });
 mainContainer.appendChild(appWorkspace.render())
 
 

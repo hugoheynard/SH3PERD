@@ -6,7 +6,6 @@ class PageContext {
         this.defaultPage = input.defaultPage;
         this.page = new HTMLelem('div', 'appElements').render();
         this.currentPage = this.defaultPage;
-        this.page.appendChild(this.currentPage);
     };
 
     undisplayPreviousPage() {
@@ -19,7 +18,8 @@ class PageContext {
         this.page.appendChild(this.currentPage);
     };
 
-    render() {
+    async render() {
+        this.page.appendChild(await this.currentPage);
         return this.page;
     };
 
