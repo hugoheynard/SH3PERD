@@ -1,4 +1,4 @@
-import {dragLeave, dragOver, drop} from "../Utilities/DragNDropFunctions/dragAndDrop.js";
+import {dragLeave, dragOver, drop} from "../../Utilities/DragNDropFunctions/dragAndDrop.js";
 
 class Grid {
 

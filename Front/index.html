@@ -2,62 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/colors.css">
-
+    <link rel="stylesheet" href="css/playlistManager.css">
+    <link rel="stylesheet" href="css/FormBase.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="css/wsPage_workPeriod.css">
     <title>SH3PHERD</title>
+
 
 </head>
 <body>
 
-    <div id="mainContainer">
+    <!--MANAGE PLAYLIST
 
-        <div id="dpMenu">
+    playlistType - pboSet
+    playListMainSinger - firstName
+    playlistIntensity [1 to 4]
+    playlistMainGenre - [various, pop, rock, jazz, dance, disco]
+    playlistContainsMultiVocPerf y/n
+    playlistContainsAerial y/n
+    playlistContent {
 
-            <div id="monthlyCal"><!--add calendar here--></div>
+        trackID {
+            trackName,
+            originalArtist,
+            length,
+            version [edit],
+            pitch Variation,
+            addVocalist
+        }
+    }
+    -->
 
-            <!--add filters here-->
-            <div id="filters">
-                <span class="filterHeader">Filters</span>
-            </div>
-
-        </div>
-        <!--
-        <div id = mainPart>
-
-            <div></div>
-            <div id="calHeaderMatrix"></div>
-            <div id="calendars"></div>
-
-
-        </div>
-        -->
-        <div id="rightPermanentMenu">
-            <div id="controls">
-
-                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-                <button id="prev" class="calModeControls"><span class="material-symbols-sharp">arrow_back_ios</span></button>
-                <button id="next" class="calModeControls"><span class="material-symbols-sharp">arrow_forward_ios</span></button>
-                <button id="zoomDown" class="calModeControls"><span class="material-symbols-sharp">zoom_out</span></button>
-                <button id="zoomUp" class="calModeControls"><span class="material-symbols-sharp">zoom_in</span></button>
-
-                <button id="viewIndiv_launch" class="calModeControls"><span class="material-symbols-sharp">calendar_view_day</span></button>
-                <button id="viewPerCat_launch" class="calModeControls"><span class="material-symbols-sharp">calendar_view_week</span></button>
-                <button id="viewAll_launch" class="calModeControls"><span class="material-symbols-sharp">calendar_view_month</span></button>
-                <button id="viewPrint_launch" class="calModeControls"><span class="material-symbols-sharp">print</span></button>
-
-            </div>
-        </div>
-
-    </div>
-
-
-    <script src="../script.js" type="module" defer></script>
-
+    <script src="script.js" type="module" defer></script>
 </body>
 </html>

@@ -1,6 +1,4 @@
-import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
-import {Menu} from "../../Classes/class_Menu.js";
-
+import {HTMLelem} from "../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {ViewContext} from "./planningClasses/class_ViewContext.js";
 import {testDay} from "../../../BackEnd/Classes/class_Day.js";
 import {artistMockupDB} from "../../../db/fakeDB.js";

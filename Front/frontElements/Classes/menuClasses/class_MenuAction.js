@@ -3,9 +3,9 @@ import {
     ws_Calendar,
     ws_musicLibrary,
     ws_staffMember
-} from "../../workspaces/ws_musicLibrary/playlistManager_pageScript.js";
+} from "../../../script.js";
 
-import {wsPage_workPeriods} from "../../workspaces/ws_staffMember/staffMemberPages/wsPage_workPeriods.js";
+import {wsPage_workPeriods} from "../../../workspaces/ws_staffMember/staffMemberPages/wsPage_workPeriods.js";
 import {createArtistProfile} from "../../Forms/appForms/artistProfileForms/createArtistProfile.js";
 
 class MenuAction {

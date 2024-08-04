@@ -1,5 +1,5 @@
 import {GridBlock} from "./class_GridBlock/class_GridBlock.js";
-import {HTMLelem} from "../../../Classes/HTMLClasses/class_HTMLelem.js";
+import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 
 class IndividualPlanning {
     constructor (id, parent_id, blockList, artist, negativeOffset) {

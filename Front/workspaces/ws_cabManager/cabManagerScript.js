@@ -1,8 +1,8 @@
-import {CabTable} from "../../Classes/class_CabTable.js";
+import {CabTable} from "../../frontElements/Classes/class_CabTable.js";
 import {cabList, cabWeekOrder_userDefined} from "../../../db/fakeDB_Cabaret.js";
-import {Grid} from "../../Classes/class_Grid.js";
+import {Grid} from "../../frontElements/Classes/class_Grid.js";
 import {dragEnd, dragStart} from "../../Utilities/DragNDropFunctions/dragAndDrop.js";
-import {MiniCalendar} from "../../Classes/class_MiniCalendar.js";
+import {MiniCalendar} from "../../frontElements/Classes/class_MiniCalendar.js";
 
 
 const cabListContainer = document.getElementById('cabListContainer');

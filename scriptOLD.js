@@ -1,5 +1,5 @@
 import {testDay} from "./BackEnd/Classes/class_Day.js";
-import {MiniCalendar} from "./Front/Classes/class_MiniCalendar.js";
+import {MiniCalendar} from "./Front/frontElements/Classes/class_MiniCalendar.js";
 import {artistMockupDB} from "./db/fakeDB.js";
 import {IndividualPlanning} from "./Front/workspaces/ws_calendar/planningClasses/class_IndividualPlanning.js";
 import {getColorScheme} from "./db/fakeDB-design.js";

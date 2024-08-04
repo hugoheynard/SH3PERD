@@ -1,4 +1,4 @@
-import {dragLeave, dragOver, drop} from "../Utilities/DragNDropFunctions/dragAndDrop.js";
+import {dragLeave, dragOver, drop} from "../../Utilities/DragNDropFunctions/dragAndDrop.js";
 import {Grid} from "./class_Grid.js";
 
 class CabTable {

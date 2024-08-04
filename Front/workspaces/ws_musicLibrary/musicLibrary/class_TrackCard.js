@@ -1,5 +1,5 @@
-import {HTMLelem} from "../../../Classes/HTMLClasses/class_HTMLelem.js";
-import {Menu} from "../../../Classes/class_Menu.js";
+import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
+import {Menu} from "../../../frontElements/Classes/class_Menu.js";
 
 class TrackCard {
 

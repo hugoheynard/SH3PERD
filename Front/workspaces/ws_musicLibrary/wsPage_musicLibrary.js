@@ -1,5 +1,5 @@
-import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
-import {BackEndCall} from "../../Classes/class_BackEndCalls.js";
+import {HTMLelem} from "../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
+import {BackEndCall} from "../../frontElements/Classes/class_BackEndCalls.js";
 import {TrackCard} from "./musicLibrary/class_TrackCard.js";
 import {TrackCardMenu} from "./musicLibrary/class_TrackCardMenu.js";
 import {VersionCard} from "./musicLibrary/class_VersionCard.js";

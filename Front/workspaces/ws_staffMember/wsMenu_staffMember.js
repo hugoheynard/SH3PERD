@@ -1,6 +1,6 @@
-import {Icon} from "../../Classes/icones/class_Icon.js";
-import {MenuAction} from "../../Classes/menuClasses/class_MenuAction.js";
-import {Menu} from "../../Classes/class_Menu.js";
+import {Icon} from "../../frontElements/Classes/icones/class_Icon.js";
+import {MenuAction} from "../../frontElements/Classes/menuClasses/class_MenuAction.js";
+import {Menu} from "../../frontElements/Classes/class_Menu.js";
 
 
 const wsMenu_staffMember = new Menu('staffMemberMenu', 'workspaceMenu', 'button_lpm');
