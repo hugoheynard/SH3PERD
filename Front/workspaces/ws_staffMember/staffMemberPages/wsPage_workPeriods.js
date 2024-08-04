@@ -1,25 +1,24 @@
-import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
+import {HTMLelem} from "../../../Classes/HTMLClasses/class_HTMLelem.js";
 
+
+const mockupData = [
+    {
+        id: 1,
+        contractType: 'resident', //temp event guest
+        location: 'La Folie Douce Les Arcs',
+        startDate: new Date(Date.now()),
+        endDate: new Date(Date.now())
+    },
+    {
+        id: 2,
+        contractType: 'residency', //temp event guest
+        location: 'La Folie Douce Les Arcs',
+        startDate: new Date(Date.now()),
+        endDate: new Date(Date.now())
+    },
+]
 
 const wsPage_workPeriods = () => {
-
-    const mockupData = [
-        {
-            id: 1,
-            contractType: 'resident', //temp event guest
-            location: 'La Folie Douce Les Arcs',
-            startDate: new Date(Date.now()),
-            endDate: new Date(Date.now())
-        },
-        {
-            id: 2,
-            contractType: 'residency', //temp event guest
-            location: 'La Folie Douce Les Arcs',
-            startDate: new Date(Date.now()),
-            endDate: new Date(Date.now())
-        },
-    ]
-
     const workPeriodsPage = new HTMLelem('div', 'workPeriodPage', '').render();
 
     for (const contract of mockupData) {
@@ -50,10 +49,6 @@ const wsPage_workPeriods = () => {
         :
         ${contract.startDate.getFullYear()}-${contract.startDate.getMonth()}-${contract.startDate.getDay()}`)
         date.isChildOf(dataLine)
-
-
-
-
 
 
         const completionBox = new HTMLelem('div', '', 'completionBox')

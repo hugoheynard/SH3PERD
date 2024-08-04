@@ -1,4 +1,5 @@
 import {Icon} from "../../Classes/icones/class_Icon.js";
+import {MenuAction} from "../../Classes/menuClasses/class_MenuAction.js";
 import {Menu} from "../../Classes/class_Menu.js";
 
 
@@ -25,7 +26,7 @@ wsMenu_staffMember.addButton(
             alt:'staffInfos'
         }
     ),
-    () => console.log('staffInfos')
+    MenuAction.goStaffMemberInfosPage
 )
 
 wsMenu_staffMember.addButton(
@@ -37,7 +38,7 @@ wsMenu_staffMember.addButton(
             alt:'staffContracts'
         }
     ),
-    () => console.log('staffContracts')
+    MenuAction.goWorkPeriodsPage
 )
 
 wsMenu_staffMember.addButton(

@@ -13,7 +13,7 @@ menu_appGeneral.addButton(
             publicURL: '../Front/Public/Icones/appMenus/generalMenu/home.svg',
             alt: "home"
         }),
-    () => MenuAction.goHome()
+    MenuAction.goHome
 );
 menu_appGeneral.addButton(
      'button_calendar',
@@ -23,7 +23,7 @@ menu_appGeneral.addButton(
              publicURL: '../Front/Public/Icones/appMenus/generalMenu/calendar.svg',
              alt: "calendar"
          }),
-     () => MenuAction.goCalendar()
+     MenuAction.goCalendar
 );
 
 menu_appGeneral.addButton(
@@ -34,7 +34,7 @@ menu_appGeneral.addButton(
              publicURL: '../Front/Public/Icones/appMenus/generalMenu/musicLibrary.svg',
              alt: "music"
          }),
-     () => MenuAction.goMusicLibrary()
+     MenuAction.goMusicLibrary
 );
 
 menu_appGeneral.addButton(
@@ -45,7 +45,7 @@ menu_appGeneral.addButton(
              publicURL: '../Front/Public/Icones/appMenus/generalMenu/playlists.svg',
              alt: "playlists"
          }),
-     () => MenuAction.goPlaylistManager()
+     MenuAction.goPlaylistManager
 );
 
 menu_appGeneral.addButton(
@@ -56,18 +56,18 @@ menu_appGeneral.addButton(
              publicURL: '../Front/Public/Icones/appMenus/generalMenu/cabaret.svg',
              alt: "cab"
          }),
-     () => MenuAction.goCabaretManager()
+     MenuAction.goCabaretManager
 );
 
 menu_appGeneral.addButton(
-     'button_cabaretManager',
+     'button_staffMember',
      new Icon(
          {
              css: "menuIcons",
              publicURL: '../Front/Public/Icones/appMenus/generalMenu/staffmember.svg',
              alt: "staff"
          }),
-     () => MenuAction.goCabaretManager()
+     MenuAction.goStaffMember
 );
 
 menu_appGeneral.addButton(
@@ -78,7 +78,7 @@ menu_appGeneral.addButton(
              publicURL: '../Front/Public/Icones/appMenus/generalMenu/logout.svg',
              alt: "cabaret page button"
          }),
-     () => MenuAction.logOut()
+     MenuAction.logOut
 );
 
 

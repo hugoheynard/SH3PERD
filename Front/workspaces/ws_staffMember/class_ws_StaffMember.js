@@ -3,17 +3,20 @@ import {MenuAction} from "../../Classes/menuClasses/class_MenuAction.js";
 import {BackEndCall} from "../../Classes/class_BackEndCalls.js";
 import {wsMenu_staffMember} from "./wsMenu_staffMember.js";
 import {createArtistProfile} from "../../Forms/appForms/artistProfileForms/createArtistProfile.js";
-import {wsPage_workPeriods} from "./wsPage_workPeriods.js";
+import {wsPage_workPeriods} from "./staffMemberPages/wsPage_workPeriods.js";
+import {PageContext} from "../class_pageContext.js";
+import {WorspaceBase} from "../class_WorspaceBase.js";
 
 
-class WS_StaffMember {
+class WS_StaffMember extends WorspaceBase{
+    constructor(input) {
+        super();
 
-    constructor() {
-        this.wsMenu = wsMenu_staffMember;
-
+        this.wsMenu = input.wsMenu;
+        this.defaultPage = input.defaultPage;
+        this.pageContext = new PageContext({defaultPage: this.defaultPage});
         //this.addPopMenu();
-
-    }
+    };
 
     addWsMenu(menu) {
         this.appMenus.appendChild(menu.render());
@@ -25,22 +28,15 @@ class WS_StaffMember {
     }
 
     async staffMemberHome () {
-
-
-        this.appElements.appendChild(wsPage_workPeriods());
-
         //createArtistProfile();
-
-
         //const musicLibData = await BackEndCall.getMusicLib();
-
     }
 
     render() {
         this.addWsMenu(this.wsMenu);
-        this.app.appendChild(this.appElements);
+        this.app.appendChild(this.pageContext.render());
         this.app.appendChild(this.appMenus);
-        this.staffMemberHome();
+        //this.staffMemberHome();
 
         return this.app;
 

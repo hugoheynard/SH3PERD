@@ -5,15 +5,15 @@ import {BackEndCall} from "../../Classes/class_BackEndCalls.js";
 import {TrackCard} from "./musicLibrary/class_TrackCard.js";
 import {VersionCard} from "./musicLibrary/class_VersionCard.js";
 import {TrackCardMenu} from "./musicLibrary/class_TrackCardMenu.js";
+import {WorspaceBase} from "../class_WorspaceBase.js";
 
 
-class WS_MusicLibrary {
+class WS_MusicLibrary extends WorspaceBase{
 
     constructor() {
-        this.app = document.getElementById('appPage');
-        this.appElements = new HTMLelem('div', 'appElements').render();
-        this.appMenus = new HTMLelem('div', 'appMenus').render();
-    }
+        super();
+        //this.app = document.getElementById('appPage');
+    };
 
     addWsMenu() {
 

@@ -1,51 +1,33 @@
-import {WorkSpaceContext} from "../../workspaces/class_workspaceContext.js";
-import {WS_Calendar} from "../../workspaces/ws_calendar/class_ws_Calendar.js";
-import {WS_MusicLibrary} from "../../workspaces/ws_musicLibrary/class_ws_MusicLibrary.js";
-import {BackEndCall} from "../class_BackEndCalls.js";
-import {WS_StaffMember} from "../../workspaces/ws_staffMember/class_ws_StaffMember.js";
-import {appWorkspace} from "../../workspaces/ws_musicLibrary/playlistManager_pageScript.js";
+import {
+    appWorkspace, ws_Calendar,
+    ws_musicLibrary,
+    ws_staffMember
+} from "../../workspaces/ws_musicLibrary/playlistManager_pageScript.js";
+
+import {wsPage_workPeriods} from "../../workspaces/ws_staffMember/staffMemberPages/wsPage_workPeriods.js";
+import {createArtistProfile} from "../../Forms/appForms/artistProfileForms/createArtistProfile.js";
 
 class MenuAction {
 
     //For appGeneral menu
-    static goHome() {
-        console.log("goHome");
-    }
+    static goHome = () => console.log("goHome");
+    static goCalendar = ()=> appWorkspace.setWorkspace(ws_Calendar)
+    static goMusicLibrary = () => appWorkspace.setWorkspace(ws_musicLibrary);
+    static goPlaylistManager = () => console.log("goPlaylistManager");
+    static goCabaretManager = () => console.log("goCabaretManager");
 
-    static goCalendar() {
-        console.log("goCalendar");
-        new WorkSpaceContext().setWorkspace(new WS_Calendar())
-    }
+    //STAFFMEMBER NAVIGATION
+    static goStaffMember = () => appWorkspace.setWorkspace(ws_staffMember);
+    static goWorkPeriodsPage = () => appWorkspace.workSpaceStrategy.pageContext.setPage(wsPage_workPeriods());
+    static goStaffMemberInfosPage = () => appWorkspace.workSpaceStrategy.pageContext.setPage(createArtistProfile());
 
-    static goMusicLibrary() {
-        console.log("goMusicLibrary");
-        new WorkSpaceContext().setWorkspace(new WS_MusicLibrary());
-    }
+    static logOut = () => console.log("logOut");
 
-    static goPlaylistManager() {
-        console.log("goPlaylistManager");
-    }
-
-    static goCabaretManager() {
-        console.log("goCabaretManager");
-    }
-
-    static goStaffMember() {
-       appWorkspace.setWorkspace(new WS_StaffMember());
-    }
-
-    static logOut() {
-        console.log("logOut");
-    }
 
     //For workspace - musicLib
     static addTrack() {
 
     };
-
-
-
-
 
 }
 

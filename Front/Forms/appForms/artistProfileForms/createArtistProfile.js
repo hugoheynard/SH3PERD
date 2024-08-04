@@ -4,6 +4,7 @@ import {FormField_textInput} from "../../FormBuilder/Fields/class_FormField_Text
 import {FormField_selectField} from "../../FormBuilder/Fields/class_FormField_Select.js";
 import {FormField_Checkbox} from "../../FormBuilder/Fields/FormField_Checkbox.js";
 import {FormSection} from "../../FormBuilder/class_FormSection.js";
+import {HTMLelem} from "../../../Classes/HTMLClasses/class_HTMLelem.js";
 
 
 const artistBaseInfo = new Form(
@@ -219,12 +220,12 @@ artistBaseInfo.add_submitButton('CREATE', 'button_submitForm_inPopMenu')
 
 const createArtistProfile = () => {
 
-    document.getElementById('appElements').innerHTML = '';
+    const container = new HTMLelem('div', 'artistInfos').render();
 
     const nest = new NestForm(
         {
             formList: [artistBaseInfo],
-            destination: document.getElementById('appElements'),
+            destination: container,
             activeStyleCss: '',
             inactiveStyleCss: '',
             displayStepBox: false,
@@ -235,12 +236,13 @@ const createArtistProfile = () => {
 
     for (const nestedFormElement of nest.formList) {
 
-        document.getElementById('appElements')
-            .appendChild(nestedFormElement.render())
+        container.appendChild(nestedFormElement.render())
     }
 
     //nest.addStepBoxInSections('stepBox')
 
+    console.log(container)
+    return container
 }
 
 export {createArtistProfile, artistBaseInfo, css};
