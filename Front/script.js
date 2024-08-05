@@ -9,6 +9,7 @@ import {wsPage_Calendar} from "./workspaces/ws_calendar/wsPage_Calendar.js";
 import {wsPage_Home} from "./workspaces/ws_Home/wsPage_Home.js";
 import {wsPage_playlistManager} from "./workspaces/ws_PlaylistManager/wsPage_playlistManager.js";
 import {wsPage_planningCabaret} from "./workspaces/ws_cabManager/wsPage_planningCabaret.js";
+import {wsMenu_Calendar} from "./workspaces/ws_calendar/wsMenu_Calendar.js";
 
 
 const body = document.querySelectorAll('body')[0];
@@ -37,6 +38,7 @@ const ws_Home = new Workspace(
     });
 const ws_Calendar = new Workspace(
     {
+        wsMenu: wsMenu_Calendar,
         defaultPage: wsPage_Calendar()
     });
 
@@ -63,7 +65,8 @@ const ws_staffMember = new Workspace(
 
 const appWorkspace = new WorkSpaceContext(
     {
-        defaultWorkspace: ws_Calendar
+        defaultWorkspace: ws_Calendar,
+        defaultPopWindow: null
     });
 
 mainContainer.appendChild(appWorkspace.render());

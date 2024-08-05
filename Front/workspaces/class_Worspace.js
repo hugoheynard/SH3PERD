@@ -1,5 +1,6 @@
 import {HTMLelem} from "../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {PageContext} from "./class_pageContext.js";
+import {PopMenuContext} from "./class_PopContext.js";
 
 
 class Workspace {
@@ -10,6 +11,10 @@ class Workspace {
         this.wsMenu = input.wsMenu;
         this.defaultPage = input.defaultPage;
         this.pageContext = new PageContext({defaultPage: this.defaultPage});
+
+        this.defaultPopWindow = input.defaultPopWindow;
+        this.popContext = new PopMenuContext({defaultPopWindow: this.defaultPopWindow});
+
     };
 
     get appElements() {
