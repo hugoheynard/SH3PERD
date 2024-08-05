@@ -114,10 +114,8 @@ html, body {
 }
 
 #appElements {
-    border: 1px solid red;
     display: flex;
     flex-direction: column;
-    padding: 1rem;
     gap: 0.5rem;
     width: 100%;
     height: 100%;
@@ -336,72 +334,6 @@ html, body {
 }
 
 
-
-
-/*MINI CAL*/
-#monthlyCal {
-    min-width: 200px;
-    height: 12rem;
-    font-size: 0.6rem;
-    color: #8a8d8d;
-    width:90%;
-    margin: 0.4rem;
-    border-bottom: 1px solid rgba(138, 141, 141, 0.2);
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px;
-}
-
-.miniCal_button {
-    background: none;
-    outline: none;
-    border: none;
-    font-weight: bold;
-    color: #8a8d8d;
-    cursor: pointer;
-}
-
-.miniCal_button:hover {
-    color: #f5f7f8;
-
-}
-.days-of-week, .days-grid {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.day-of-week, .day {
-    width: calc(100% / 7);
-    text-align: center;
-    padding: 5px;
-    box-sizing: border-box;
-}
-
-.underlineCurrentDay {
-    border-bottom: 2px solid rgba(138, 141, 141, 0.5);
-}
-
-.day:hover {
-    border-radius: 0.1rem;
-    background-color: #3b3838;
-    color: #f5f7f8;
-    cursor: pointer;
-}
-
-.miniCal_focus {
-    background-color: #8a8d8d;
-    border-radius: 0.1rem;
-    color: #191c1e;
-    font-weight: bold;
-}
-
-.day.empty {
-    color: #f9f9f9;
-}
 
 
 

@@ -1,15 +1,22 @@
 import {HTMLelem} from "../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
-import {ViewContext} from "./planningClasses/class_ViewContext.js";
-import {testDay} from "../../../BackEnd/Classes/class_Day.js";
 import {artistMockupDB} from "../../../db/fakeDB.js";
+import {testDay} from "../../../BackEnd/Classes/class_Day.js";
+import {ViewContext} from "./planningClasses/class_ViewContext.js";
+import {MiniCalendar} from "../../frontElements/Classes/class_MiniCalendar.js";
+
 
 const wsPage_Calendar = async () => {
 
-    const page = new HTMLelem('div', 'appElements').render()
+    const page = new HTMLelem('div', 'wsPage_Calendars').render()
+    const leftSideElements = new HTMLelem('div', 'leftSideElements', 'popMenu').render()
+    leftSideElements.appendChild(new MiniCalendar('miniCal').render())
 
-    page.appendChild(new HTMLelem('div', "calHeaderMatrix").render())
-    page.appendChild(new HTMLelem('div', "calendars").render())
-    const viewContext = new ViewContext(testDay[0].timeTable, artistMockupDB);
+    const viewContext = await new ViewContext(testDay[0].timeTable, artistMockupDB).render();
+
+    page.appendChild(leftSideElements)
+    page.appendChild(viewContext)
+
+    console.log(page)
 
     return page;
 }

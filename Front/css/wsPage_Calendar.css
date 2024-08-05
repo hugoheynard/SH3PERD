@@ -1,0 +1,81 @@
+#wsPage_Calendars {
+    display: flex;
+    flex-direction: row;
+}
+
+#leftSideElements {
+    display: inherit;
+    flex-direction: column;
+    width: 20%;
+    min-width: 200px;
+    height: 100rem;
+    background-color: #414344;
+    border-right: 1px solid #8a8d8d;
+}
+
+/*MINI CAL*/
+.monthlyCal {
+    width:90%;
+    min-width: 20%;
+    height: 12rem;
+    font-size: 0.7rem;
+    color: #8a8d8d;
+    margin: 0.4rem;
+    border-bottom: 1px solid rgba(138, 141, 141, 0.2);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+}
+
+.miniCal_button {
+    background: none;
+    outline: none;
+    border: none;
+    font-weight: bold;
+    color: #8a8d8d;
+    cursor: pointer;
+}
+
+.miniCal_button:hover {
+    color: #f5f7f8;
+
+}
+.days-of-week, .days-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.day-of-week, .day {
+    width: calc(100% / 7);
+    text-align: center;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.underlineCurrentDay {
+    border-bottom: 2px solid rgba(138, 141, 141, 0.5);
+}
+
+.day:hover {
+    border-radius: 0.1rem;
+    background-color: #3b3838;
+    color: #f5f7f8;
+    cursor: pointer;
+}
+
+.miniCal_focus {
+    background-color: #8a8d8d;
+    border-radius: 0.1rem;
+    color: #191c1e;
+    font-weight: bold;
+}
+
+.day.empty {
+    color: #f9f9f9;
+}
+
+

@@ -3,6 +3,7 @@ import {sortBlockArrayPerTime} from "../../../../BackEnd/Utilities/sortBlockArra
 import {generateCssColors} from "../../../Utilities/DesignJS/ColorGenerator/createPlanningStylesheet.js";
 import {getColorScheme} from "../../../../db/fakeDB-design.js";
 import {findOccurrencesInArray} from "../../../Utilities/findOccurencesInArray.js";
+import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 
 class Calendar {
     constructor(timeTable, staffList, baseIndex = 0) {
@@ -18,6 +19,9 @@ class Calendar {
         this.offset = this.getOffset();
         this.rowZoom = 18;
         this.fontZoom = 12;
+
+        this.header = new HTMLelem('div', "calHeaderMatrix").render();
+        this.parent = new HTMLelem('div', "calendars").render();
 
     };
     render(){
@@ -39,8 +43,8 @@ class Calendar {
                     this.currentArtist = artist;
 
                     //Instance planning
-                    const planning = new IndividualPlanning("planningIndiv", "calendars", this.timeTable, artist, this.offset);
-
+                    const planning = new IndividualPlanning("planningIndiv", "calendars", this.timeTable, artist, this.offset).renderPlanning();
+                    this.parent.appendChild(planning)
                     this.planningList.push(planning);
 
                 }
@@ -49,8 +53,10 @@ class Calendar {
 
         }
 
-        this.generateFilters();
 
+
+        //this.generateFilters();
+        return this.parent
     };
 
     listGranularity(staffList) {
@@ -63,8 +69,9 @@ class Calendar {
         const subcatArray = subList.map(element => element.subCategory);
         const nameArray = subList.map(element => element.firstName);
 
-        const header = document.getElementById('calHeaderMatrix');
-        header.innerHTML = "";
+        //const header = document.getElementById('calHeaderMatrix');
+        const header = this.header;
+        header.innerHTML = '';
         header.style.gridTemplateColumns = `repeat(${subList.length}, 1fr)`;
         header.style.gridTemplateRows = `repeat(3, 22px)`;
 
@@ -101,7 +108,7 @@ class Calendar {
 
                     if(key === "null") {
 
-                        return document.createTextNode("");
+                        return document.createTextNode('');
 
                     }
 
@@ -177,13 +184,8 @@ class Calendar {
     };
 
     resetInstanceAndContainer() {
-        //define header and parent container
-        const header =  document.getElementById('calHeaderMatrix');
-        const parent = document.getElementById("calendars");
-
-        //Erase all code
-        header.innerHTML = '';
-        parent.innerHTML = '';
+        this.header.innerHTML = '';
+        this.parent.innerHTML = '';
     };
 
     generateFilters() {

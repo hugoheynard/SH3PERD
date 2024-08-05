@@ -18,13 +18,13 @@ class CalendarIndiv extends Calendar{
         return matrixList;
     };
 
-    render(){
+    //render(){
 
-        super.render();
+        //super.render();
 
         //this.buildPartnerCrossPlanning(this.timeTable, this.currentArtist);
 
-    };
+    //};
 
 
 

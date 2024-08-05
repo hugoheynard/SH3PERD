@@ -4,7 +4,7 @@ import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLele
 class IndividualPlanning {
     constructor (id, parent_id, blockList, artist, negativeOffset) {
 
-        this.parent = document.getElementById(parent_id);
+        //this.parent = document.getElementById(parent_id);
 
         this.planning = new HTMLelem('div', id, 'dpCalendar').render();
 
@@ -17,7 +17,7 @@ class IndividualPlanning {
 
         this.gridBlockArray = [];
 
-        this.renderPlanning();
+        //this.renderPlanning();
 
     };
 
@@ -40,13 +40,14 @@ class IndividualPlanning {
 
     renderPlanning() {
 
-        this.planning.innerHTML = "";
+        this.planning.innerHTML = '';
 
         this.buildGrid(this.artistBlockList);
 
         //adds Planning;
-        this.parent.appendChild(this.planning);
+        return this.planning;
     };
+
 
 }
 

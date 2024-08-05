@@ -1,7 +1,10 @@
 import {
     appWorkspace,
-    ws_Calendar, ws_Home,
+    ws_Home,
+    ws_Calendar,
     ws_musicLibrary,
+    ws_Playlists,
+    ws_Cabaret,
     ws_staffMember
 } from "../../../script.js";
 

@@ -1,6 +1,7 @@
 import {CalendarIndiv} from "./class_CalendarIndiv.js";
 import {CalendarPerCat} from "./class_CalendarPerCat.js";
 
+
 class ViewContext {
     constructor(timetable, artistList) {
 
@@ -10,19 +11,14 @@ class ViewContext {
         this.perCatView = new CalendarPerCat(this.timeTable, this.artistList);
         //this.allView = new AllView(this.timeTable, this.artistList);
 
+
         this.viewIndiv();
         //this.viewControls();
     }
 
-    viewIndiv() {
-        this.indivView.render();
-        this.currentView = this.indivView;
-    };
+    viewIndiv = () => this.currentView = this.indivView;
+    viewPerCat = () => this.currentView = this.perCatView;
 
-    viewPerCat() {
-        this.perCatView.render();
-        this.currentView = this.perCatView;
-    };
 
     viewAll() {
         //this.allView.renderMatrix();
@@ -98,6 +94,9 @@ class ViewContext {
 
     };
 
+    render() {
+        return this.currentView.render()
+    }
 }
 
 export {ViewContext};
