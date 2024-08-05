@@ -12,11 +12,10 @@ class WorkSpaceContext{
     };
 
     eraseCurrentWorkspace() {
-        this.app.innerHTML = "";
+        this.app.innerHTML = '';
     };
 
     setWorkspace(newWorkSpace) {
-
         this.eraseCurrentWorkspace();
         newWorkSpace.app = this.app
         this.workSpaceStrategy = newWorkSpace;

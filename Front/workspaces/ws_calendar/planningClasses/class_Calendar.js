@@ -182,8 +182,8 @@ class Calendar {
         const parent = document.getElementById("calendars");
 
         //Erase all code
-        header.innerHTML = "";
-        parent.innerHTML = "";
+        header.innerHTML = '';
+        parent.innerHTML = '';
     };
 
     generateFilters() {

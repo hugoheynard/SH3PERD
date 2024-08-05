@@ -6,9 +6,8 @@ class IndividualPlanning {
 
         this.parent = document.getElementById(parent_id);
 
-        this.planning = document.createElement('div');
-        this.planning.setAttribute('class', 'dpCalendar');
-        this.planning.setAttribute('id', id);
+        this.planning = new HTMLelem('div', id, 'dpCalendar').render();
+
 
         this.blockList = blockList;
         this.artist = artist;

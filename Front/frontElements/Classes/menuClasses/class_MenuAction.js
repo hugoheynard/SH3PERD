@@ -1,6 +1,6 @@
 import {
     appWorkspace,
-    ws_Calendar,
+    ws_Calendar, ws_Home,
     ws_musicLibrary,
     ws_staffMember
 } from "../../../script.js";
@@ -11,11 +11,11 @@ import {createArtistProfile} from "../../Forms/appForms/artistProfileForms/creat
 class MenuAction {
 
     //For appGeneral menu
-    static goHome = () => console.log("goHome");
-    static goCalendar = ()=> appWorkspace.setWorkspace(ws_Calendar)
+    static goHome = () => appWorkspace.setWorkspace(ws_Home);
+    static goCalendar = ()=> appWorkspace.setWorkspace(ws_Calendar);
     static goMusicLibrary = () => appWorkspace.setWorkspace(ws_musicLibrary);
-    static goPlaylistManager = () => console.log("goPlaylistManager");
-    static goCabaretManager = () => console.log("goCabaretManager");
+    static goPlaylistManager = () => appWorkspace.setWorkspace(ws_Playlists);
+    static goCabaretManager = () => appWorkspace.setWorkspace(ws_Cabaret);
 
     //STAFFMEMBER NAVIGATION
     static goStaffMember = () => appWorkspace.setWorkspace(ws_staffMember);

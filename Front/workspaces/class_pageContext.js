@@ -4,23 +4,23 @@ import {HTMLelem} from "../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 class PageContext {
     constructor(input) {
         this.defaultPage = input.defaultPage;
-        this.page = new HTMLelem('div', 'appElements').render();
         this.currentPage = this.defaultPage;
+        this.appElements = new HTMLelem('div', 'appElements').render();
     };
 
     undisplayPreviousPage() {
-        this.page.innerHTML = '';
+        this.appElements.innerHTML = '';
     };
 
-    setPage(newFunctionalityPage) {
+    async setPage(newFunctionalityPage) {
         this.undisplayPreviousPage();
-        this.currentPage = newFunctionalityPage;
-        this.page.appendChild(this.currentPage);
+        this.currentPage = await newFunctionalityPage;
+        this.appElements.appendChild(this.currentPage);
     };
 
     async render() {
-        this.page.appendChild(await this.currentPage);
-        return this.page;
+        this.appElements.appendChild(await this.currentPage);
+        return this.appElements;
     };
 
 }

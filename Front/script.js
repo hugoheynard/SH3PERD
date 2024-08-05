@@ -2,10 +2,13 @@ import {HTMLelem} from "./frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {WorkSpaceContext} from "./workspaces/class_workspaceContext.js";
 import {menu_appGeneral} from "./menu_appGeneral.js";
 import {wsMenu_staffMember} from "./workspaces/ws_staffMember/wsMenu_staffMember.js";
-import {WS_Calendar} from "./workspaces/ws_calendar/class_ws_Calendar.js";
 import {wsPage_workPeriods} from "./workspaces/ws_staffMember/staffMemberPages/wsPage_workPeriods.js";
 import {wsPage_musicLibrary} from "./workspaces/ws_musicLibrary/wsPage_musicLibrary.js";
-import {Workspace} from "./workspaces/class_WorspaceBase.js";
+import {Workspace} from "./workspaces/class_Worspace.js";
+import {wsPage_Calendar} from "./workspaces/ws_calendar/wsPage_Calendar.js";
+import {wsPage_Home} from "./workspaces/ws_Home/wsPage_Home.js";
+import {wsPage_playlistManager} from "./workspaces/ws_PlaylistManager/wsPage_playlistManager.js";
+import {wsPage_planningCabaret} from "./workspaces/ws_cabManager/wsPage_planningCabaret.js";
 
 
 const body = document.querySelectorAll('body')[0];
@@ -16,11 +19,10 @@ body.appendChild(menu_appGeneral.render());
 const mainContainer = new HTMLelem('div', 'mainContainer').render();
 body.appendChild(mainContainer);
 
-//TODO : le retour du login donne la strategy pour le unlock des workspace du menu
 
 //topMenu
 const topMenu = new HTMLelem('div', 'topMenu').render();
-topMenu.appendChild(new HTMLelem('div').render()); // pour les autres trucs
+topMenu.appendChild(new HTMLelem('div').render());
 const meIcon = new HTMLelem('span', 'iconMe').render();
 meIcon.textContent = 'H';
 topMenu.appendChild(meIcon);
@@ -29,12 +31,30 @@ mainContainer.appendChild(topMenu);
 
 
 // WORKSPACES INITIALISATION
+const ws_Home = new Workspace(
+    {
+        defaultPage: wsPage_Home()
+    });
+const ws_Calendar = new Workspace(
+    {
+        defaultPage: wsPage_Calendar()
+    });
 
-const ws_Calendar = new WS_Calendar();
 const ws_musicLibrary = new Workspace(
     {
         defaultPage: wsPage_musicLibrary()
     });
+
+const ws_Playlists = new Workspace(
+    {
+        defaultPage: wsPage_playlistManager()
+    });
+
+const ws_Cabaret = new Workspace(
+    {
+        defaultPage: wsPage_planningCabaret()
+    });
+
 const ws_staffMember = new Workspace(
     {
         wsMenu: wsMenu_staffMember,
@@ -43,19 +63,18 @@ const ws_staffMember = new Workspace(
 
 const appWorkspace = new WorkSpaceContext(
     {
-        defaultWorkspace: ws_staffMember
+        defaultWorkspace: ws_Calendar
     });
-mainContainer.appendChild(appWorkspace.render())
+
+mainContainer.appendChild(appWorkspace.render());
 
 
 export {
     appWorkspace,
+    ws_Home,
     ws_Calendar,
     ws_musicLibrary,
+    ws_Playlists,
+    ws_Cabaret,
     ws_staffMember
-}
-
-
-
-
-
+};

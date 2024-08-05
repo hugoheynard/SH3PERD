@@ -4,22 +4,15 @@ import {addMinutes} from "../../../../BackEnd/Utilities/Date_functions.js";
 
 
 class CalendarIndiv extends Calendar{
-
     constructor(timeTable, staffList, baseIndex) {
-
         super(timeTable, staffList, baseIndex = 0);
-
     };
 
-
     listGranularity(staffList) {
-
         const matrixList = [];
 
         for (const staff of staffList) {
-
             matrixList.push( [staff] );
-
         }
 
         return matrixList;
@@ -111,12 +104,9 @@ class CalendarIndiv extends Calendar{
                 document.getElementById('calendars').appendChild(pcpContainer)
 
                 new IndividualPlanning("pcp", "pcpContainer", crossBlockList, member, this.offset);
-
             }
 
         }
-
-
 
     };
 

@@ -13,12 +13,6 @@ class WS_Calendar {
 
     }
 
-
-    addPopMenu() {
-        this.popMenu = new HTMLelem('div', 'popMenu');
-        this.appMenus.appendChild(this.popMenu.render());
-    }
-
     //async getCalendar() {
 
     addCalendars() {
@@ -30,7 +24,7 @@ class WS_Calendar {
 
     render() {
 
-        this.addPopMenu();
+        //this.addPopMenu();
         //this.addWsMenu();
         this.app.appendChild(this.appElements);
         this.app.appendChild(this.appMenus);
