@@ -1,6 +1,6 @@
 import {CalendarIndiv} from "./class_CalendarIndiv.js";
 import {CalendarPerCat} from "./class_CalendarPerCat.js";
-
+import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 
 class ViewContext {
     constructor(timetable, artistList) {
@@ -13,7 +13,14 @@ class ViewContext {
 
 
         this.viewIndiv();
+
+        this.calContainer = new HTMLelem('div', 'wsPage_Calendars').render()
+        this.leftSideContainer = new HTMLelem('div', 'leftSideElements', 'popMenu').render()
         //this.viewControls();
+    }
+
+    undisplayCalendar() {
+        this.calContainer.innerHTML = '';
     }
 
     viewIndiv = () => this.currentView = this.indivView;

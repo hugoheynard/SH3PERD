@@ -47,6 +47,10 @@ class Workspace {
             this.addWsMenu(this.wsMenu);
         }
 
+        if (this.defaultPopWindow) {
+            this.appMenus.insertBefore(await this.popContext.render(), this.wsMenu.render());
+        }
+
         this.app.appendChild(await this.pageContext.render());
         this.app.appendChild(this.appMenus);
 

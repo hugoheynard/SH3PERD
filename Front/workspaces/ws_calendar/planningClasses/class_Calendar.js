@@ -13,7 +13,7 @@ class Calendar {
         this.baseIndex = baseIndex;
         this.matrixList = this.listGranularity(this.staffList);
         this.planningList = [];
-        this.currentArtist;
+        //this.currentArtist;
 
         this.colorScheme = generateCssColors(getColorScheme(), this.staffList);
         this.offset = this.getOffset();
@@ -190,7 +190,7 @@ class Calendar {
 
     generateFilters() {
         const parent = document.getElementById('filters');
-        parent.innerHTML = "";
+        parent.innerHTML = '';
         //identify the needed filters
         const filterArray = [];
 
@@ -198,47 +198,40 @@ class Calendar {
 
             for (const type of planning.artistBlockList.map(block => block.type)) {
 
-                if(!filterArray.includes(type)) {
-
+                if (!filterArray.includes(type)) {
                     filterArray.push(type);
-
                 }
-
             }
-
         }
 
         //generates the filters
-
         for (const blockType of filterArray) {
 
             const filter = document.createElement('div');
             filter.setAttribute('class', 'filterDiv');
 
-            const checkbox = document.createElement('input');
-            checkbox.setAttribute('class', 'filterCheckbox');
-            checkbox.type = 'checkbox';
-            checkbox.id = blockType;
-            checkbox.name = blockType;
-            checkbox.checked = true;
+            const checkbox = new HTMLelem('input', blockType, 'filterCheckbox');
+            checkbox.setAttributes({
+                'type': 'checkbox',
+                'name': blockType,
+                'checked': true
+            });
+
+            const label = new HTMLelem('div', undefined, 'filterLabel');
+            label.setAttributes({'htmlFor': blockType});
+            label.setText(blockType);
 
 
-            const label = document.createElement('label');
-            label.setAttribute('class', 'filterLabel');
-            label.appendChild(document.createTextNode(blockType));
-            label.htmlFor = blockType;
 
-
-            filter.appendChild(checkbox);
-            filter.appendChild(label);
+            filter.appendChild(checkbox.render());
+            filter.appendChild(label.render());
 
             //add Event listener
-
-            checkbox.addEventListener('change', () => {
+            checkbox.render().addEventListener('change', () => {
 
                 const documentsBlock = document.querySelectorAll(`[data-type=${blockType}]`);
 
-                if (checkbox.checked) {
+                if (checkbox.render().checked) {
 
                     for (const block of documentsBlock) {
 

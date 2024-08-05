@@ -4,6 +4,7 @@ import {testDay} from "../../../BackEnd/Classes/class_Day.js";
 import {ViewContext} from "./planningClasses/class_ViewContext.js";
 import {MiniCalendar} from "../../frontElements/Classes/class_MiniCalendar.js";
 
+const calendarViewContext = await new ViewContext(testDay[0].timeTable, artistMockupDB)
 
 const wsPage_Calendar = async () => {
 
@@ -11,14 +12,13 @@ const wsPage_Calendar = async () => {
     const leftSideElements = new HTMLelem('div', 'leftSideElements', 'popMenu').render()
     leftSideElements.appendChild(new MiniCalendar('miniCal').render())
 
-    const viewContext = await new ViewContext(testDay[0].timeTable, artistMockupDB).render();
+
 
     page.appendChild(leftSideElements)
-    page.appendChild(viewContext)
+    page.appendChild(calendarViewContext.render())
 
-    console.log(page)
 
     return page;
 }
 
-export {wsPage_Calendar};
+export {wsPage_Calendar, calendarViewContext};

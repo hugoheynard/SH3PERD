@@ -131,6 +131,7 @@ html, body {
     width: 20rem;
     background-color: var(--colorMidGrey);
     color: var(--colorLightGrey);
+    border-left: 1px solid #8a8d8d;
 }
 
 
