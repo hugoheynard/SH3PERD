@@ -2,8 +2,8 @@ import {IndividualPlanning} from "./class_IndividualPlanning.js";
 import {sortBlockArrayPerTime} from "../../../../BackEnd/Utilities/sortBlockArray.js";
 import {generateCssColors} from "../../../Utilities/DesignJS/ColorGenerator/createPlanningStylesheet.js";
 import {getColorScheme} from "../../../../db/fakeDB-design.js";
-import {findOccurrencesInArray} from "../../../Utilities/findOccurencesInArray.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
+import {CalendarHeader} from "./class_CalendarHeader.js";
 
 class Calendar {
     constructor(timeTable, staffList, baseIndex = 0) {
@@ -20,12 +20,13 @@ class Calendar {
         this.rowZoom = 18;
         this.fontZoom = 12;
 
-        this.header = new HTMLelem('div', "calHeaderMatrix").render();
         this.parent = new HTMLelem('div', "calendars").render();
 
     };
-    render(){
 
+    listGranularity(staffList) {
+    };
+    buildCalendar(){
         this.resetInstanceAndContainer();
         this.getOffset();
         this.applyZoom();
@@ -33,9 +34,14 @@ class Calendar {
         //Iteration
         for (const subList of this.matrixList) {
 
-            if(this.matrixList.indexOf(subList) === this.baseIndex) {
+            if (this.matrixList.indexOf(subList) === this.baseIndex) {
 
-                this.buildHeader(subList);
+                //this.buildHeader(subList);
+                this.header = new CalendarHeader(
+                    {
+                        subList: subList,
+                        colorScheme: this.colorScheme
+                    }).render()
 
                 //build planning for each artist
                 for (const artist of subList) {
@@ -43,107 +49,21 @@ class Calendar {
                     this.currentArtist = artist;
 
                     //Instance planning
-                    const planning = new IndividualPlanning("planningIndiv", "calendars", this.timeTable, artist, this.offset).renderPlanning();
-                    this.parent.appendChild(planning)
+                    const planning = new IndividualPlanning("planningIndiv", "calendars", this.timeTable, artist, this.offset);
                     this.planningList.push(planning);
-
+                    this.parent.appendChild(planning.renderPlanning())
                 }
-
             }
-
         }
 
 
+    };
 
-        //this.generateFilters();
+    render() {
         return this.parent
     };
 
-    listGranularity(staffList) {
 
-    };
-
-    buildHeader(subList) {
-
-        const catArray = subList.map(element => element.category);
-        const subcatArray = subList.map(element => element.subCategory);
-        const nameArray = subList.map(element => element.firstName);
-
-        //const header = document.getElementById('calHeaderMatrix');
-        const header = this.header;
-        header.innerHTML = '';
-        header.style.gridTemplateColumns = `repeat(${subList.length}, 1fr)`;
-        header.style.gridTemplateRows = `repeat(3, 22px)`;
-
-        //POPULATE HEADER
-
-        //Fill With Cats
-        const catOccurObject = findOccurrencesInArray(catArray);
-
-        for (const key in catOccurObject) {
-
-            const catColor = this.colorScheme[key].colorCategory;
-
-            const cat = document.createElement('span');
-            cat.appendChild(document.createTextNode(key));
-            cat.style.gridColumn = `span ${catOccurObject[key]}`;
-            cat.style.gridRow = '1';
-            cat.style.backgroundImage = catColor;
-
-            header.appendChild(cat);
-        }
-
-        //fill with subCats
-        const subCatOccurObject = findOccurrencesInArray(subcatArray);
-
-        for (const cat in catOccurObject) {
-
-            for (const key in subCatOccurObject) {
-
-                const subCatColor = this.colorScheme[cat].colorSubCategories//Object.keys(subCatOccurObject).indexOf(key)
-
-                const subCat = document.createElement('span');
-
-                subCat.appendChild((()=> {
-
-                    if(key === "null") {
-
-                        return document.createTextNode('');
-
-                    }
-
-                    return document.createTextNode(key);
-
-                })());
-
-                subCat.style.gridColumn = `span ${subCatOccurObject[key]}`;
-                subCat.style.gridRow = '2';
-                subCat.style.backgroundColor = subCatColor;
-
-                header.appendChild(subCat);
-
-            }
-        }
-
-
-        //Fill with names
-        for (const cat in catOccurObject) {
-
-            for (const name of nameArray) {
-
-                const nameContainerColor = this.colorScheme[cat].columnColor[`${cat}_${nameArray.indexOf(name) + 1}`];
-
-                const artistName = document.createElement('span');
-                artistName.appendChild(document.createTextNode(name));
-                artistName.style.gridArea = `${3} / ${nameArray.indexOf(name) + 1} `;
-                artistName.style.backgroundColor = nameContainerColor;
-
-                header.appendChild(artistName);
-
-            }
-        }
-
-    };
 
     getOffset() {
 
@@ -184,74 +104,7 @@ class Calendar {
     };
 
     resetInstanceAndContainer() {
-        this.header.innerHTML = '';
         this.parent.innerHTML = '';
-    };
-
-    generateFilters() {
-        const parent = document.getElementById('filters');
-        parent.innerHTML = '';
-        //identify the needed filters
-        const filterArray = [];
-
-        for (const planning of this.planningList) {
-
-            for (const type of planning.artistBlockList.map(block => block.type)) {
-
-                if (!filterArray.includes(type)) {
-                    filterArray.push(type);
-                }
-            }
-        }
-
-        //generates the filters
-        for (const blockType of filterArray) {
-
-            const filter = document.createElement('div');
-            filter.setAttribute('class', 'filterDiv');
-
-            const checkbox = new HTMLelem('input', blockType, 'filterCheckbox');
-            checkbox.setAttributes({
-                'type': 'checkbox',
-                'name': blockType,
-                'checked': true
-            });
-
-            const label = new HTMLelem('div', undefined, 'filterLabel');
-            label.setAttributes({'htmlFor': blockType});
-            label.setText(blockType);
-
-
-
-            filter.appendChild(checkbox.render());
-            filter.appendChild(label.render());
-
-            //add Event listener
-            checkbox.render().addEventListener('change', () => {
-
-                const documentsBlock = document.querySelectorAll(`[data-type=${blockType}]`);
-
-                if (checkbox.render().checked) {
-
-                    for (const block of documentsBlock) {
-
-                        block.style.display = "block";
-                    }
-
-                } else {
-
-                    for (const block of documentsBlock) {
-
-                        block.style.display = "none";
-                    }
-
-                }
-            });
-
-            parent.appendChild(filter);
-
-        }
-
     };
 
     //EVENT LISTENERS METHODS
@@ -278,8 +131,6 @@ class Calendar {
             this.baseIndex += 1;
 
         }
-
-        this.render();
 
     };
 

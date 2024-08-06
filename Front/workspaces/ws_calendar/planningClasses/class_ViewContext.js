@@ -1,6 +1,9 @@
 import {CalendarIndiv} from "./class_CalendarIndiv.js";
 import {CalendarPerCat} from "./class_CalendarPerCat.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
+import {MiniCalendar} from "../../../frontElements/Classes/class_MiniCalendar.js";
+import {PlanningFilters} from "./class_PlanningFilters.js";
+import {CalendarAll} from "./class_CalendarAll.js";
 
 class ViewContext {
     constructor(timetable, artistList) {
@@ -9,35 +12,22 @@ class ViewContext {
         this.artistList = artistList;
         this.indivView = new CalendarIndiv(this.timeTable, this.artistList);
         this.perCatView = new CalendarPerCat(this.timeTable, this.artistList);
-        //this.allView = new AllView(this.timeTable, this.artistList);
+        //this.allView = new CalendarAll(this.timeTable, this.artistList);
 
 
         this.viewIndiv();
+        this.wsPageContainer = new HTMLelem('div', 'wsPage_Calendars').render();
+        this.calContainer = new HTMLelem('div', 'calContainer').render();
 
-        this.calContainer = new HTMLelem('div', 'wsPage_Calendars').render()
-        this.leftSideContainer = new HTMLelem('div', 'leftSideElements', 'popMenu').render()
-        //this.viewControls();
-    }
 
-    undisplayCalendar() {
-        this.calContainer.innerHTML = '';
-    }
+        this.leftSideContainer = new HTMLelem('div', 'leftSideElements', 'popMenu').render();
+
+    };
 
     viewIndiv = () => this.currentView = this.indivView;
     viewPerCat = () => this.currentView = this.perCatView;
-
-
-    viewAll() {
-        //this.allView.renderMatrix();
-        //this.currentView = this.allView;
-    };
-
+    viewAll = () => this.currentView = this.allView;
     viewControls() {
-        //View Controls
-        document.getElementById("viewIndiv_launch").addEventListener('click', () => this.viewIndiv());
-        document.getElementById("viewPerCat_launch").addEventListener('click', () => this.viewPerCat());
-        document.getElementById("viewAll_launch").addEventListener('click', () => this.viewAll());
-
         document.addEventListener('keydown', (event)=>{
 
             switch(event.key){
@@ -59,8 +49,8 @@ class ViewContext {
         });
 
         //Navigation Controls
-        document.getElementById("next").addEventListener('click', () => this.currentView.navigateUpList());
-        document.getElementById("prev").addEventListener('click', () => this.currentView.navigateDownList());
+        //document.getElementById("next").addEventListener('click', () => this.currentView.navigateUpList());
+        //document.getElementById("prev").addEventListener('click', () => this.currentView.navigateDownList());
 
         document.addEventListener('keydown', (event)=>{
 
@@ -80,8 +70,8 @@ class ViewContext {
 
 
         //Zoom Controls
-        document.getElementById("zoomUp").addEventListener('click', () => this.currentView.zoomUp());
-        document.getElementById("zoomDown").addEventListener('click', () => this.currentView.zoomDown());
+        //document.getElementById("zoomUp").addEventListener('click', () => this.currentView.zoomUp());
+        //document.getElementById("zoomDown").addEventListener('click', () => this.currentView.zoomDown());
 
         document.addEventListener('keydown', (event)=>{
 
@@ -100,10 +90,33 @@ class ViewContext {
         });
 
     };
-
+    addMiniCalendar() {
+        this.leftSideContainer.appendChild(new MiniCalendar('miniCal').render());
+    };
+    addFilters() {
+        this.leftSideContainer.appendChild(new PlanningFilters(this.currentView).render());
+    };
+    undisplayCalendar() {
+        this.leftSideContainer.innerHTML = '';
+        this.calContainer.innerHTML = '';
+    };
     render() {
-        return this.currentView.render()
-    }
+        this.undisplayCalendar();
+        this.currentView.buildCalendar();
+
+
+        this.wsPageContainer.appendChild(this.leftSideContainer);
+
+        this.calContainer.appendChild(this.currentView.header);
+        this.calContainer.appendChild(this.currentView.render());
+
+        this.wsPageContainer.appendChild(this.calContainer);
+        this.addMiniCalendar();
+        this.addFilters();
+        this.viewControls();
+
+        return this.wsPageContainer;
+    };
 }
 
 export {ViewContext};
