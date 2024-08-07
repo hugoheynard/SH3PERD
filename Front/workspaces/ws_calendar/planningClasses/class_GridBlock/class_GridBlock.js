@@ -9,26 +9,20 @@ class GridBlock {
         this.negativeOffset = negativeOffset;
 
         this.block = (() => {
-
             const block = document.createElement('div');
             block.setAttribute('class', 'block color');
             return block;
-
         })();
 
         this.blockResume = (()=> {
-
             const blockResume = document.createElement('div');
             blockResume.setAttribute('class', 'block_resume');
             return blockResume;
-
         })();
 
         //creates a dataset
         for (const key in blockObject) {
-
             this.block.dataset[key] = blockObject[key];
-
         }
 
         this.rowStart = getPositionFromDataset_Date(this.block.dataset.date);
@@ -37,12 +31,10 @@ class GridBlock {
     }
 
     addBlockResume() {
-
         this.blockResume.appendChild(addTime(this.blockObject));
         this.blockResume.appendChild(addBlockTitle(this.blockObject));
 
         this.block.appendChild(this.blockResume);
-
     };
 
     squaredMiniBlock(width) {
@@ -77,7 +69,7 @@ class GridBlock {
 
     renderBlock() {
         //resetBlock
-        this.block.innerHTML = "";
+        this.block.innerHTML = '';
 
         //define position
         this.block.style.gridRowStart = (this.rowStart - this.negativeOffset).toString();

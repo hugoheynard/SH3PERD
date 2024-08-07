@@ -15,9 +15,11 @@ class ViewContext {
         //this.allView = new CalendarAll(this.timeTable, this.artistList);
 
 
-        this.viewIndiv();
+        this.viewPerCat();
         this.wsPageContainer = new HTMLelem('div', 'wsPage_Calendars').render();
         this.calContainer = new HTMLelem('div', 'calContainer').render();
+
+
 
 
         this.leftSideContainer = new HTMLelem('div', 'leftSideElements', 'popMenu').render();
@@ -100,6 +102,9 @@ class ViewContext {
         this.leftSideContainer.innerHTML = '';
         this.calContainer.innerHTML = '';
     };
+
+
+
     render() {
         this.undisplayCalendar();
         this.currentView.buildCalendar();
@@ -109,6 +114,8 @@ class ViewContext {
 
         this.calContainer.appendChild(this.currentView.header);
         this.calContainer.appendChild(this.currentView.render());
+
+
 
         this.wsPageContainer.appendChild(this.calContainer);
         this.addMiniCalendar();

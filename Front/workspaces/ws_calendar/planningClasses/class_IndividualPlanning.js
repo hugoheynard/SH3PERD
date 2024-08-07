@@ -4,7 +4,6 @@ import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLele
 
 class IndividualPlanning {
     constructor (id, parent_id, blockList, artist, negativeOffset) {
-        this.planning = new HTMLelem('div', id, 'dpCalendar').render();
 
         this.blockList = blockList;
         this.artist = artist;
@@ -13,6 +12,9 @@ class IndividualPlanning {
         this.artistBlockList = this.blockList.filter(blocks => blocks.staff.includes(this.artist));
 
         this.gridBlockArray = [];
+
+        this.planning = new HTMLelem('div', id, 'dpCalendar').render();
+
     };
 
     buildGrid(blockList, negativeOffset = 0) {

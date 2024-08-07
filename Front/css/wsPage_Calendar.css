@@ -9,15 +9,69 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
-    background-color: #2f3031;
+    background-color: #262728;
 }
 
 #calendars {
+    position: relative;
     display: flex;
     flex-direction: row;
     width: 100%;
     height: 100%;
     overflow-y: scroll;
+    z-index: 1;
+}
+
+
+/*GRID AND FULL HOUR*/
+#calHoursLine {
+    position: absolute;
+    display:grid;
+    grid-template-rows: repeat(600, 1rem);
+    height: 100%;
+    width: 100%;
+    padding-left: 2.7rem;
+    z-index: 3;
+}
+
+
+#nowLine{
+    border-bottom: 2px solid red;
+    z-index: 3;
+}
+
+.hoursGridElement {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    border-bottom: 1px solid rgba(138, 141, 141, 0.2);
+}
+
+#testHour {
+    position: relative;
+    display:grid;
+    grid-template-rows: repeat(600, 1rem);
+    width: 2.5rem;
+    height: 100%;
+    z-index: 3;
+}
+
+.hourText {
+    position: absolute;
+    top: 0.45rem;
+    margin-left: 3px;
+    font-size: 0.75rem;
+    font-weight: normal;
+    color: #8a8d8d;
+}
+
+#nowText {
+    position: absolute;
+    top: 0.45rem;
+    margin-left: 3px;
+    font-size: 0.75rem;
+    font-weight: normal;
+    color: red;
 }
 
 #leftSideElements {
@@ -144,8 +198,9 @@
 /*The calendar grid*/
 .dpCalendar {
     display: grid;
-    /*grid-template-rows: repeat(600, 18px);*/
+    grid-template-rows: repeat(600, 1rem);
     flex:1;
+    z-index: 1;
 }
 
 
@@ -168,48 +223,48 @@
 
 .color[data-type="getIn"] {
     background-color: rgba(255, 32, 78, 0.2);
-    border-left: 5px solid rgba(255, 32, 78, 0.9);
+    border-left: 0.3rem solid rgba(255, 32, 78, 1);
     color: rgba(255, 32, 78, 0.9);
 }
 
 
 .color[data-type="techSetUp"] {
     background-color: rgba(242, 97, 63, 0.2);
-    border-left: 5px solid rgba(242, 97, 63, 0.9);
+    border-left: 0.3rem solid rgba(242, 97, 63, 1);
     color: rgba(242, 97, 63, 0.9);
 }
 
 .color[data-type="private"] {
     background-color: rgba(234, 185, 93, 0.2);
-    border-left: 5px solid rgba(236, 198, 35, 0.9);
+    border-left: 0.3rem solid rgba(236, 198, 35, 1);
     color: rgb(236, 198, 35, 1)
 }
 
 .color[data-type="rehearsal"] {
     background-color: rgba(76, 205, 153, 0.2);
-    border-left: 5px solid rgba(76, 205, 153, 1);
+    border-left: 0.3rem solid rgba(76, 205, 153, 1);
     color: rgba(76, 205, 153, 1);
 }
 
 .color[data-type="meeting"]{
     background-color: rgba(166, 243, 222, 0.2);
-    border-left: 5px solid rgba(166, 243, 222, 0.9);
+    border-left: 0.3rem solid rgba(166, 243, 222, 1);
     color: rgba(166, 243, 222, 0.9);
 }
 
 .color[data-type="show"]{
     background-color: rgba(166, 197, 243, 0.2);
-    border-left: 5px solid rgba(169, 237, 243, 0.9);
+    border-left: 0.3rem solid rgba(169, 237, 243, 0.9);
     color:rgba(166, 237, 243, 0.9);
 }
 
 .block_resume {
-    display: inline-flex;
+    display: flex;
     flex-direction: row;
-    padding: 0.2rem 0.8rem 0.2rem 0.2rem;
-    gap: 0.5rem;
-    font-weight: 500;
-    font-size: 1rem;
+    padding: 0.1rem 0.1rem 0.1rem 0.1rem;
+    gap: 0.4rem;
+    font-weight: 800;
+    font-size: 0.8rem;
     text-transform: uppercase;
 }
 

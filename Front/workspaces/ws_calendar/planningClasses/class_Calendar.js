@@ -4,6 +4,8 @@ import {generateCssColors} from "../../../Utilities/DesignJS/ColorGenerator/crea
 import {getColorScheme} from "../../../../db/fakeDB-design.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {CalendarHeader} from "./class_CalendarHeader.js";
+import {GridBlock} from "./class_GridBlock/class_GridBlock.js";
+import {CalHoursGrid} from "./class_calHoursGrid.js";
 
 class Calendar {
     constructor(timeTable, staffList, baseIndex = 0) {
@@ -21,21 +23,33 @@ class Calendar {
         this.fontZoom = 12;
 
         this.parent = new HTMLelem('div', "calendars").render();
-
     };
 
     listGranularity(staffList) {
     };
+
+    buildGridOverlay() {
+        //TODO Grid overlay - adapt background size n°2 to zoom level
+        this.gridContainer = new HTMLelem('div', 'gridOverlay', 'grid-overlay').render();
+
+
+        const hourGrid = new CalHoursGrid(this.timeTable, this.offset)
+        this.parent.appendChild(hourGrid.calHoursLines)
+        this.parent.appendChild(hourGrid.calHoursText)
+
+    }
+
     buildCalendar(){
         this.resetInstanceAndContainer();
         this.getOffset();
         this.applyZoom();
+        this.buildGridOverlay();
 
         //Iteration
         for (const subList of this.matrixList) {
 
             if (this.matrixList.indexOf(subList) === this.baseIndex) {
-
+                //TODO extract?
                 //this.buildHeader(subList);
                 this.header = new CalendarHeader(
                     {
