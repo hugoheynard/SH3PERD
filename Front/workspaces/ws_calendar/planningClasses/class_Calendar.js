@@ -15,7 +15,6 @@ class Calendar {
         this.baseIndex = baseIndex;
         this.matrixList = this.listGranularity(this.staffList);
         this.planningList = [];
-        //this.currentArtist;
 
         this.colorScheme = generateCssColors(getColorScheme(), this.staffList);
         this.offset = this.getOffset();
@@ -28,29 +27,27 @@ class Calendar {
     listGranularity(staffList) {
     };
 
+    resetInstanceAndContainer() {
+        this.parent.innerHTML = '';
+    };
+
     buildGridOverlay() {
-        //TODO Grid overlay - adapt background size n°2 to zoom level
+        //TODO Grid overlay - si on tombe sur une heure pleine, faire en sorte que la barre de l'overlay remplace et le chiffre se mettent en rouge et faire disparaitre l'overlay now
         this.gridContainer = new HTMLelem('div', 'gridOverlay', 'grid-overlay').render();
 
 
         const hourGrid = new CalHoursGrid(this.timeTable, this.offset)
         this.parent.appendChild(hourGrid.calHoursLines)
         this.parent.appendChild(hourGrid.calHoursText)
+    };
 
-    }
 
-    buildCalendar(){
-        this.resetInstanceAndContainer();
-        this.getOffset();
-        this.applyZoom();
-        this.buildGridOverlay();
 
-        //Iteration
+    addIndividualPlannings() {
         for (const subList of this.matrixList) {
 
             if (this.matrixList.indexOf(subList) === this.baseIndex) {
-                //TODO extract?
-                //this.buildHeader(subList);
+
                 this.header = new CalendarHeader(
                     {
                         subList: subList,
@@ -59,22 +56,37 @@ class Calendar {
 
                 //build planning for each artist
                 for (const artist of subList) {
-
-                    this.currentArtist = artist;
-
-                    //Instance planning
-                    const planning = new IndividualPlanning("planningIndiv", "calendars", this.timeTable, artist, this.offset);
-                    this.planningList.push(planning);
-                    this.parent.appendChild(planning.renderPlanning())
+                    this.planningList.push(new IndividualPlanning(
+                        {
+                            id: `planning_${artist.staffMember_id}`,
+                            blockList: this.timeTable,
+                            artist: artist,
+                            negativeOffset: this.offset
+                        })
+                    );
                 }
             }
         }
 
+    };
 
+    updateContainer(){
+        for (const planning of this.planningList) {
+            this.parent.appendChild(planning.renderPlanning())
+        }
+    };
+
+    buildCalendar(){
+        this.resetInstanceAndContainer();
+        this.getOffset();
+        this.applyZoom();
+        this.buildGridOverlay();
+        this.addIndividualPlannings();
+        this.updateContainer();
     };
 
     render() {
-        return this.parent
+        return this.parent;
     };
 
 
@@ -117,9 +129,7 @@ class Calendar {
 
     };
 
-    resetInstanceAndContainer() {
-        this.parent.innerHTML = '';
-    };
+
 
     //EVENT LISTENERS METHODS
     zoomUp() {

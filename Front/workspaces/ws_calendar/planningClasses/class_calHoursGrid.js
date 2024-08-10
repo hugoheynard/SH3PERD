@@ -1,10 +1,7 @@
 import {addMinutes, standardizeTime} from "../../../../BackEnd/Utilities/Date_functions.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
-import {GridBlock} from "./class_GridBlock/class_GridBlock.js";
-import {
-    getPositionFromDataset_Date,
-    getRowEndFromDatasetDuration
-} from "../../../Utilities/dataset_functions/datasetFunctions.js";
+import {getPositionFromDataset_Date} from "../../../Utilities/dataset_functions/datasetFunctions.js";
+
 
 class CalHoursGrid {
     constructor(timetable, offset) {
@@ -16,7 +13,9 @@ class CalHoursGrid {
         this.calHoursLines = new HTMLelem('div', 'calHoursLine').render();
         this.nowLine = new HTMLelem('div', 'nowLine').render();
         this.nowText = new HTMLelem('div', 'nowText').render();
+
         this.buildGrid();
+        this.getNowLine();
     };
 
     get timetable() {
@@ -56,15 +55,13 @@ class CalHoursGrid {
             //hourBlock.style.span = getRowEndFromDatasetDuration(fullHour.duration);
 
             const hourText = new HTMLelem('span', '', 'hourText');
-            hourText.setText(`${fullHour.date.getHours()}:${standardizeTime(fullHour.date.getMinutes())}`)
-            hourText.render().style.gridRowStart = `${rowStart}`
+            hourText.setText(`${fullHour.date.getHours()}:${standardizeTime(fullHour.date.getMinutes())}`);
+            hourText.render().style.gridRowStart = `${rowStart}`;
 
             this.calHoursText.appendChild(hourText.render());
             this.calHoursLines.appendChild(hourBlock);
-
         }
-        this.getNowLine();
-    }
+    };
 
     getNowLine() {
         const rowStart = Math.floor(getPositionFromDataset_Date(Date.now()) - this.offset - 1);
@@ -77,12 +74,6 @@ class CalHoursGrid {
 
         this.calHoursText.appendChild(this.nowText);
     };
-
-    render() {
-        return this.calHoursLines;
-    };
-
-
 }
 
 export {CalHoursGrid};

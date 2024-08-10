@@ -1,38 +1,30 @@
-import {getPositionFromDataset_Date, getRowEndFromDatasetDuration} from "../../../../Utilities/dataset_functions/datasetFunctions.js";
 import {addBlockTitle, addTime} from "./addBlockContent.js";
+import {HTMLelem} from "../../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
+import {dragOver, dragStart} from "../../../../Utilities/DragNDropFunctions/dragAndDrop.js";
 
 class GridBlock {
 
-    constructor(blockObject, negativeOffset = 0) {
+    constructor(input) {
+        this._blockData = input.blockData;
 
-        this.blockObject = blockObject;
-        this.negativeOffset = negativeOffset;
+        this.block = new HTMLelem('div', undefined, 'block color').render();
+        this.block.setAttribute('draggable', true);
+        this.blockResume = new HTMLelem('div', undefined, 'block_resume').render();
 
-        this.block = (() => {
-            const block = document.createElement('div');
-            block.setAttribute('class', 'block color');
-            return block;
-        })();
+        this.addBlockTypeInDataset();
+    };
 
-        this.blockResume = (()=> {
-            const blockResume = document.createElement('div');
-            blockResume.setAttribute('class', 'block_resume');
-            return blockResume;
-        })();
+    get blockData(){
+        return this._blockData;
+    };
 
-        //creates a dataset
-        for (const key in blockObject) {
-            this.block.dataset[key] = blockObject[key];
-        }
-
-        this.rowStart = getPositionFromDataset_Date(this.block.dataset.date);
-        this.span = getRowEndFromDatasetDuration(this.block.dataset.duration);
-
-    }
+    addBlockTypeInDataset() {
+        this.block.dataset.type = this.blockData.type;
+    };
 
     addBlockResume() {
-        this.blockResume.appendChild(addTime(this.blockObject));
-        this.blockResume.appendChild(addBlockTitle(this.blockObject));
+        this.blockResume.appendChild(addTime(this.blockData));
+        this.blockResume.appendChild(addBlockTitle(this.blockData));
 
         this.block.appendChild(this.blockResume);
     };
@@ -68,12 +60,10 @@ class GridBlock {
     }
 
     renderBlock() {
-        //resetBlock
         this.block.innerHTML = '';
 
-        //define position
-        this.block.style.gridRowStart = (this.rowStart - this.negativeOffset).toString();
-        this.block.style.gridRowEnd = (this.rowStart - this.negativeOffset + this.span).toString();
+        //this.block.addEventListener('dragover', dragOver)
+        //this.block.addEventListener('dragover', dragStart)
 
         //addContent
         this.addBlockResume();

@@ -9,6 +9,7 @@ class CalendarHeader{
         this.colorScheme = input.colorScheme;
         this.subList = input.subList;
         this.header = new HTMLelem('div', "calHeaderMatrix").render();
+        this.matrixContainer = new HTMLelem('div', "matrixContainer").render();
 
         this.buildHeader(this.subList)
     };
@@ -22,7 +23,7 @@ class CalendarHeader{
     initializeHeader() {
         this.header.innerHTML = '';
         this.header.style.gridTemplateColumns = `repeat(${this.subList.length}, 1fr)`;
-        this.header.style.gridTemplateRows = `repeat(3, 22px)`;
+        //this.header.style.gridTemplateRows = `repeat(3, 1rem)`;
     };
 
     getOccurencesObjects() {

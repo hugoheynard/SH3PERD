@@ -1,11 +1,11 @@
 function dragStart(e) {
-    console.log(e.target)
+    //console.log(e.target)
     e.dataTransfer.setData('text/plain', e.target.id);
     setTimeout(() => {
         e.target.classList.add('hide');
     }, 0);
     e.target.style.cursor = 'grabbing';
-    console.log(e.target.id) // sert de base à la recup
+    //console.log(e.target.id) // sert de base à la recup
 }
 
 function dragEnd(e) {
@@ -15,7 +15,7 @@ function dragEnd(e) {
 
 function dragOver(e) {
     e.preventDefault();
-    e.currentTarget.classList.add('dragover');
+    //e.currentTarget.classList.add('dragover');
 }
 
 function dragLeave(e) {
@@ -28,7 +28,10 @@ function drop(e) {
     const draggable = document.getElementById(id);
     e.currentTarget.appendChild(draggable);
     e.currentTarget.classList.remove('dragover');
+
     console.log(e.currentTarget.id) // obtiens la position X/Y d'arrivée
+    const gridRow = window.getComputedStyle(item).gridRowStart;
+    console.log(`Dropped at grid-row: ${gridRow}`);
 }
 
 

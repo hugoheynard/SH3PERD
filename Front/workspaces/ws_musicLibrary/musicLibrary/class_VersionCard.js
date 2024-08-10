@@ -34,7 +34,7 @@ class VersionCard {
     }
 
     addBody() {
-        console.log(this.version)
+        //console.log(this.version)
         const body = document.createElement('div');
         body.setAttribute('class', 'versionCard_body');
 

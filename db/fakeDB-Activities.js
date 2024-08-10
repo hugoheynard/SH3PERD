@@ -7,7 +7,9 @@ import {Show} from "../BackEnd/Classes/Activity_classes/class_Show.js";
 
 const table_meetings = [];
 
-table_meetings.push(new Meeting(new Date(2024, 11, 19, 10, 30), 20, [10,30], [art1]))
+table_meetings.push(new Meeting(new Date(2024, 11, 19, 10, 0), 20, [10,30], [art1]))
+table_meetings.push(new Meeting(new Date(2024, 11, 19, 10, 0), 20, [10,30], [art1]))
+table_meetings.push(new Meeting(new Date(2024, 11, 19, 11, 0), 20, [10,30], [art1]))
 table_meetings.push(new Meeting(new Date(2024, 11, 19, 10, 0), 30, [10,0], [art3]))
 table_meetings.push(new Meeting(new Date(2024, 11, 19, 10, 0), 30, [10,0], [art7]))
 

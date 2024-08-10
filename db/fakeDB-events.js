@@ -14,7 +14,7 @@ const table_WeeklyEvents = [WTF,circus, laFrench];
 
 //Mockup private events
 
-const unlimited = new PrivateEvent(new Date(2024, 11, 19, 20, 30), 60, [20,30], [art1], {title: "John Cage"}, "unlimited", "LPC");
+const unlimited = new PrivateEvent(new Date(2024, 11, 19, 20, 30), 500, [20,30], [art1], {title: "John Cage"}, "unlimited", "LPC");
 const moonlight = new PrivateEvent(new Date(2024, 11, 18, 20, 0), 150,[20,0], [art1], undefined,"moonlight", "FR");
 const group = new PrivateEvent(new Date(2024, 11, 18, 20, 0), 300, [20,0], [art1], {title: "Moonlight"}, "group", "LPC");
 const table_privateEvents = [unlimited, moonlight, group];

@@ -15,7 +15,7 @@ class ViewContext {
         //this.allView = new CalendarAll(this.timeTable, this.artistList);
 
 
-        this.viewPerCat();
+        this.viewIndiv();
         this.wsPageContainer = new HTMLelem('div', 'wsPage_Calendars').render();
         this.calContainer = new HTMLelem('div', 'calContainer').render();
 
