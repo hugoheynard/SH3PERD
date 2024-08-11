@@ -15,17 +15,23 @@ class ViewContext {
         //this.allView = new CalendarAll(this.timeTable, this.artistList);
 
 
-        this.viewIndiv();
+        this.viewPerCat();
         this.wsPageContainer = new HTMLelem('div', 'wsPage_Calendars').render();
         this.calContainer = new HTMLelem('div', 'calContainer').render();
-
-
-
-
         this.leftSideContainer = new HTMLelem('div', 'leftSideElements', 'popMenu').render();
 
     };
 
+    buildView() {
+        this.undisplayCalendar();
+        this.wsPageContainer.appendChild(this.leftSideContainer);
+        this.calContainer.appendChild(this.currentView.header);
+        this.calContainer.appendChild(this.currentView.htmlElement);
+        this.wsPageContainer.appendChild(this.calContainer);
+        this.addMiniCalendar();
+        this.addFilters();
+        this.viewControls();
+    };
     viewIndiv = () => this.currentView = this.indivView;
     viewPerCat = () => this.currentView = this.perCatView;
     viewAll = () => this.currentView = this.allView;
@@ -102,26 +108,8 @@ class ViewContext {
         this.leftSideContainer.innerHTML = '';
         this.calContainer.innerHTML = '';
     };
-
-
-
     render() {
-        this.undisplayCalendar();
-        this.currentView.buildCalendar();
-
-
-        this.wsPageContainer.appendChild(this.leftSideContainer);
-
-        this.calContainer.appendChild(this.currentView.header);
-        this.calContainer.appendChild(this.currentView.render());
-
-
-
-        this.wsPageContainer.appendChild(this.calContainer);
-        this.addMiniCalendar();
-        this.addFilters();
-        this.viewControls();
-
+        this.buildView();
         return this.wsPageContainer;
     };
 }

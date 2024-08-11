@@ -1,0 +1,4 @@
+const STEP_DURATION = 5;
+const ONE_MINUTE_IN_MS = 60000;
+
+export {STEP_DURATION, ONE_MINUTE_IN_MS};

@@ -6,6 +6,7 @@ import {
     getPositionFromDataset_Date,
     getRowEndFromDatasetDuration
 } from "../../../Utilities/dataset_functions/datasetFunctions.js";
+import {addTime} from "./class_GridBlock/addBlockContent.js";
 
 
 class IndividualPlanning {
@@ -17,13 +18,15 @@ class IndividualPlanning {
         this.negativeOffset = input.negativeOffset;
 
         this.artistBlockList = this.blockList.filter(blocks => blocks.staff.includes(this.artist));
+        this.gridBlockArray = [];
+
+        this.planning = new HTMLelem('div', this.id, 'dailyPlanningCalendar').render();
+
+        //sets the
         this.collisionList = [];
         this.findCollisions();
         this.maxElemInRow = this.getMaxElemInRow() ?? 1;
-        this.gridBlockArray = [];
         this.numberOfCol = this.defineColumnTemplate();
-
-        this.planning = new HTMLelem('div', this.id, 'dailyPlanningCalendar').render();
         this.planning.style.gridTemplateColumns = `repeat(${this.numberOfCol}, 1fr)`;
 
         //TODO drop event listener
@@ -83,33 +86,37 @@ class IndividualPlanning {
         }
         return this.maxElemInRow;
     };
+
+    //GRID BLOCKS METHODS
     addRowCoordinates(block) {
         const rowStart = getPositionFromDataset_Date(block.blockData.date) - this.negativeOffset;
         const span = getRowEndFromDatasetDuration(block.blockData.duration);
-        block.block.style.gridRowStart = `${rowStart}`;
-        block.block.style.gridRowEnd = `${rowStart + span}`;
+        block.htmlElement.style.gridRowStart = `${rowStart}`;
+        block.htmlElement.style.gridRowEnd = `${rowStart + span}`;
     };
     addColCoordinates(block, index) {
         if (!this.collisionList[index].includes(block.blockData)) {
-            block.block.style.gridColumn = '1 / -1';
+            block.htmlElement.style.gridColumn = '1 / -1';
 
         } else {
             const span = this.numberOfCol / this.collisionList[index].length;
-            block.block.style.gridColumn = `span ${span}`;
+            block.htmlElement.style.gridColumn = `span ${span}`;
         }
     };
-    buildGrid(blockList, negativeOffset = 0) {
-        //generate Blocks
-        blockList.forEach((block, index) => {
+    buildGrid() {
+        //generate Blocks from artist block list
+        this.artistBlockList.forEach((block, index) => {
 
             const newBlock  = new GridBlock({blockData: block});
             this.addRowCoordinates(newBlock);
             this.addColCoordinates(newBlock, index);
 
             this.gridBlockArray.push(newBlock);
-            this.planning.appendChild(newBlock.renderBlock());
-        })
+            this.planning.appendChild(newBlock.htmlElement);
+        });
     };
+
+    //
     //TODO: Display as a line -> rowheight = 0?
     buildDropDivOverlay() {
 
@@ -121,7 +128,7 @@ class IndividualPlanning {
     renderPlanning() {
         this.planning.innerHTML = '';
 
-        this.buildGrid(this.artistBlockList);
+        this.buildGrid();
         this.dragSystem();
 
         //adds Planning;

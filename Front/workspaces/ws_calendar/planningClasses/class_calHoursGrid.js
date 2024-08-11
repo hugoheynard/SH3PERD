@@ -41,21 +41,26 @@ class CalHoursGrid {
                 stepArray.push({date: step, duration: 60});
             }
         }
-
         return stepArray;
     };
 
     buildGrid() {
+        const FULLDAYSTEPS = 288;
 
         for (const fullHour of this.hoursBlockList) {
-            const rowStart = getPositionFromDataset_Date(fullHour.date) - this.offset - 1 //TODO WHY -1?
+
+            let rowStart = getPositionFromDataset_Date(fullHour.date) - this.offset - 1 //TODO WHY -1?
+
+            if (rowStart < 0) {
+                /*To manage the exception to an event going after midnight, we add a full day as a positive offset*/
+                rowStart += FULLDAYSTEPS;
+            }
 
             const hourBlock  = new HTMLelem('div', undefined, 'hoursGridElement').render();
             hourBlock.style.gridRowStart = `${rowStart}`;
-            //hourBlock.style.span = getRowEndFromDatasetDuration(fullHour.duration);
 
             const hourText = new HTMLelem('span', '', 'hourText');
-            hourText.setText(`${fullHour.date.getHours()}:${standardizeTime(fullHour.date.getMinutes())}`);
+            hourText.setText(`${standardizeTime(fullHour.date.getHours())}:${standardizeTime(fullHour.date.getMinutes())}`);
             hourText.render().style.gridRowStart = `${rowStart}`;
 
             this.calHoursText.appendChild(hourText.render());

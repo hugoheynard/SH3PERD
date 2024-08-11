@@ -7,11 +7,14 @@ class GridBlock {
     constructor(input) {
         this._blockData = input.blockData;
 
-        this.block = new HTMLelem('div', undefined, 'block color').render();
-        this.block.setAttribute('draggable', true);
+        this.block = new HTMLelem('div', undefined, 'block color');
+        this.htmlElement = this.block.render();
+        this.htmlElement.setAttribute('draggable', true);
         this.blockResume = new HTMLelem('div', undefined, 'block_resume').render();
 
         this.addBlockTypeInDataset();
+        this.addBlockResume();
+        //addContent
     };
 
     get blockData(){
@@ -19,14 +22,14 @@ class GridBlock {
     };
 
     addBlockTypeInDataset() {
-        this.block.dataset.type = this.blockData.type;
+        this.htmlElement.dataset.type = this.blockData.type;
     };
 
     addBlockResume() {
         this.blockResume.appendChild(addTime(this.blockData));
         this.blockResume.appendChild(addBlockTitle(this.blockData));
 
-        this.block.appendChild(this.blockResume);
+        this.htmlElement.appendChild(this.blockResume);
     };
 
     squaredMiniBlock(width) {
@@ -60,21 +63,20 @@ class GridBlock {
     }
 
     renderBlock() {
-        this.block.innerHTML = '';
+        this.htmlElement.innerHTML = '';
 
         //this.block.addEventListener('dragover', dragOver)
         //this.block.addEventListener('dragover', dragStart)
 
-        //addContent
-        this.addBlockResume();
+
+
 
         //resizertest//TODO: RESIZER
         //this.resizeListener();
 
         //return element gridBlock
-        return this.block;
+        return this.htmlElement;
     };
-
 }
 
 export {GridBlock};

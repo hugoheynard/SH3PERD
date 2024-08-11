@@ -4,12 +4,12 @@ import {generateCssColors} from "../../../Utilities/DesignJS/ColorGenerator/crea
 import {getColorScheme} from "../../../../db/fakeDB-design.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {CalendarHeader} from "./class_CalendarHeader.js";
-import {GridBlock} from "./class_GridBlock/class_GridBlock.js";
 import {CalHoursGrid} from "./class_calHoursGrid.js";
+import {addMinutes} from "../../../../BackEnd/Utilities/Date_functions.js";
+import {ONE_MINUTE_IN_MS, STEP_DURATION} from "../../../Utilities/MAGIC NUMBERS.js";
 
 class Calendar {
     constructor(timeTable, staffList, baseIndex = 0) {
-
         this.timeTable = timeTable;
         this.staffList = staffList;
         this.baseIndex = baseIndex;
@@ -21,32 +21,47 @@ class Calendar {
         this.rowZoom = 18;
         this.fontZoom = 12;
 
-        this.parent = new HTMLelem('div', "calendars").render();
-    };
+        this.htmlElement = new HTMLelem('div', "calendars").render();
 
+        this.buildCalendar();
+    };
+    buildCalendar(){
+        this.resetInstanceAndContainer();
+        this.getOffset();
+        this.applyZoom();
+        this.addIndividualPlannings();
+        this.buildGridOverlay();
+        this.updateContainer();
+    };
     listGranularity(staffList) {
     };
+    defineGridRowsNumber(blockList) {
+        /*Difference between the end of the last block and midnight */
+        const firstWorkBlock = {...blockList[0]};
+        const lastWorkBlock = {...blockList.at(-1)};
+        const lastTime = addMinutes(lastWorkBlock.date, lastWorkBlock.duration).getTime();
+        const firstTime = firstWorkBlock.date;
 
-    resetInstanceAndContainer() {
-        this.parent.innerHTML = '';
+        this.gridRowsNumber = ((lastTime - firstTime) / ONE_MINUTE_IN_MS / STEP_DURATION)
     };
-
+    resetInstanceAndContainer() {
+        this.htmlElement.innerHTML = '';
+    };
     buildGridOverlay() {
         //TODO Grid overlay - si on tombe sur une heure pleine, faire en sorte que la barre de l'overlay remplace et le chiffre se mettent en rouge et faire disparaitre l'overlay now
-        this.gridContainer = new HTMLelem('div', 'gridOverlay', 'grid-overlay').render();
+        const hourGrid = new CalHoursGrid(this.timeTable, this.offset);
 
+        this.htmlElement.appendChild(hourGrid.calHoursLines);
+        this.htmlElement.appendChild(hourGrid.calHoursText);
 
-        const hourGrid = new CalHoursGrid(this.timeTable, this.offset)
-        this.parent.appendChild(hourGrid.calHoursLines)
-        this.parent.appendChild(hourGrid.calHoursText)
+        hourGrid.calHoursLines.style.gridTemplateRows = `repeat(${this.gridRowsNumber}, 1rem)`;
+        hourGrid.calHoursText.style.gridTemplateRows = `repeat(${this.gridRowsNumber}, 1rem)`;
     };
-
-
-
     addIndividualPlannings() {
         for (const subList of this.matrixList) {
 
             if (this.matrixList.indexOf(subList) === this.baseIndex) {
+                this.defineGridRowsNumber(this.timeTable);
 
                 this.header = new CalendarHeader(
                     {
@@ -61,57 +76,44 @@ class Calendar {
                             id: `planning_${artist.staffMember_id}`,
                             blockList: this.timeTable,
                             artist: artist,
-                            negativeOffset: this.offset
+                            negativeOffset: this.offset,
+                            numberOfRows: this.gridRowsNumber
                         })
                     );
                 }
             }
         }
-
     };
 
     updateContainer(){
         for (const planning of this.planningList) {
-            this.parent.appendChild(planning.renderPlanning())
+            planning.planning.style.gridTemplateRows = `repeat(${this.gridRowsNumber}, 1rem)`;
+            this.htmlElement.appendChild(planning.renderPlanning())
         }
     };
-
-    buildCalendar(){
-        this.resetInstanceAndContainer();
-        this.getOffset();
-        this.applyZoom();
-        this.buildGridOverlay();
-        this.addIndividualPlannings();
-        this.updateContainer();
-    };
-
-    render() {
-        return this.parent;
-    };
-
 
 
     getOffset() {
-
-        const ONE_MIN_IN_MS = 60000;
-        const STEP_DURATION = 5;
         const thisMatrixBlockArray = [];
 
         for (const artist of this.matrixList[this.baseIndex]) {
-
             thisMatrixBlockArray.push(...this.timeTable.filter(element => element.staff.includes(artist)));
-
         }
 
         const firstBlock = sortBlockArrayPerTime(thisMatrixBlockArray)[0];
-
         const dayStart = new Date(firstBlock.date);
+
         dayStart.setHours(0);
         dayStart.setMinutes(0);
 
-        return (firstBlock.date - dayStart) / (ONE_MIN_IN_MS * STEP_DURATION) - 1;
-
+        return (firstBlock.date - dayStart) / (ONE_MINUTE_IN_MS * STEP_DURATION) - 1;
     };
+
+
+
+
+
+
 
     applyZoom() {
 
@@ -138,7 +140,7 @@ class Calendar {
         this.fontZoom += 2;
         this.applyZoom();
 
-    }
+    };
 
     zoomDown() {
 
