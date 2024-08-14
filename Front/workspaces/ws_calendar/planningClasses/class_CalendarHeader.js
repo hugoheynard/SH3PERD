@@ -6,7 +6,7 @@ class CalendarHeader{
     //TODO : replace color attribution by adding dataset category/subcat/name
     constructor(input) {
 
-        this.colorScheme = input.colorScheme;
+        //this.colorScheme = input.colorScheme;
         this.subList = input.subList;
         this.header = new HTMLelem('div', "calHeaderMatrix").render();
         this.matrixContainer = new HTMLelem('div', "matrixContainer").render();
@@ -23,7 +23,6 @@ class CalendarHeader{
     initializeHeader() {
         this.header.innerHTML = '';
         this.header.style.gridTemplateColumns = `repeat(${this.subList.length}, 1fr)`;
-        //this.header.style.gridTemplateRows = `repeat(3, 1rem)`;
     };
 
     getOccurencesObjects() {
@@ -34,59 +33,53 @@ class CalendarHeader{
     manageCat() {
         for (const key in this.catOccurObject) {
 
-            const catColor = this.colorScheme[key].colorCategory;
-
+            //const catColor = this.colorScheme[key].colorCategory;
             const cat = document.createElement('span');
             cat.appendChild(document.createTextNode(key));
             cat.style.gridColumn = `span ${this.catOccurObject[key]}`;
             cat.style.gridRow = '1';
-            cat.style.backgroundImage = catColor;
+            //cat.style.backgroundImage = catColor;
 
             this.header.appendChild(cat);
         }
     };
 
     manageSubCat() {
-        for (const cat in this.catOccurObject) {
+        for (const subcat in this.subCatOccurObject) {
 
-            for (const key in this.subCatOccurObject) {
+            const subCat = document.createElement('span');
 
-                const subCatColor = this.colorScheme[cat].colorSubCategories//Object.keys(subCatOccurObject).indexOf(key)
-                const subCat = document.createElement('span');
+            subCat.appendChild((()=> {
 
-                subCat.appendChild((()=> {
+                if(subcat === "null") {
 
-                    if(key === "null") {
+                    return document.createTextNode('');
 
-                        return document.createTextNode('');
+                }
 
-                    }
+                return document.createTextNode(subcat);
 
-                    return document.createTextNode(key);
+            })());
 
-                })());
+            subCat.style.gridColumn = `span ${this.subCatOccurObject[subcat]}`;
+            subCat.style.gridRow = '2';
 
-                subCat.style.gridColumn = `span ${this.subCatOccurObject[key]}`;
-                subCat.style.gridRow = '2';
-                subCat.style.backgroundColor = subCatColor;
-
-                this.header.appendChild(subCat);
-
-            }
+            this.header.appendChild(subCat);
         }
-    }
+
+    };
 
     manageName() {
         for (const cat in this.catOccurObject) {
 
             for (const name of this.nameArray) {
 
-                const nameContainerColor = this.colorScheme[cat].columnColor[`${cat}_${this.nameArray.indexOf(name) + 1}`];
+                //const nameContainerColor = this.colorScheme[cat].columnColor[`${cat}_${this.nameArray.indexOf(name) + 1}`];
 
                 const artistName = document.createElement('span');
                 artistName.appendChild(document.createTextNode(name));
                 artistName.style.gridArea = `${3} / ${this.nameArray.indexOf(name) + 1} `;
-                artistName.style.backgroundColor = nameContainerColor;
+                //artistName.style.backgroundImage = nameContainerColor;
 
                 this.header.appendChild(artistName);
 

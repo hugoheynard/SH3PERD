@@ -6,9 +6,7 @@ class CalendarAll extends Calendar{
         super(timeTable, staffList, baseIndex = 0);
     };
     listGranularity(staffList) {
-        const matrixList = [];
-        matrixList.push([staffList]);
-        return matrixList;
+        return [staffList];
     };
 }
 

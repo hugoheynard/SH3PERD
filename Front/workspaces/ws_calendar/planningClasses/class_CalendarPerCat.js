@@ -1,5 +1,6 @@
 import {Calendar} from "./class_Calendar.js";
 
+
 class CalendarPerCat extends Calendar {
     constructor(timeTable, staffList, baseIndex) {
         super(timeTable, staffList, baseIndex = 0);

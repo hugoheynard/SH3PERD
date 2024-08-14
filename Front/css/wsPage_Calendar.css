@@ -56,9 +56,10 @@
 #calHeaderMatrix {
     display: grid;
     position: relative;
+    flex: auto;
     padding-left: 2.5rem;
     padding-right: 2.75rem;
-    grid-template-rows: repeat(3, 2rem);
+    grid-template-rows: repeat(3, 1rem);
     z-index: 6;
 }
 
@@ -70,9 +71,8 @@
     align-content: center;
     text-align: center;
     text-transform: uppercase;
-    font-weight: bold;
-    font-size: 1rem;
-
+    font-weight: 600;
+    font-size: 0.65rem;
 }
 
 
@@ -80,7 +80,7 @@
 /*The calendar grid*/
 .dailyPlanningCalendar {
     display: grid;
-    flex: 1;
+    flex: auto;
     z-index: 1;
     overflow-y: scroll;
 }
@@ -145,7 +145,7 @@
     padding: 0.1rem 0.1rem 0.1rem 0.1rem;
     gap: 0.4rem;
     font-weight: 800;
-    font-size: 0.8rem;
+    font-size: 0.6rem;
     text-transform: uppercase;
 }
 

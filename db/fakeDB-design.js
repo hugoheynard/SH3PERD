@@ -1,36 +1,54 @@
-const catColors = {
-    "dj": {
-        r: 0,
-        g: 34,
-        b: 77
-    },
-    "musician": {
-        r: 5,
-        g: 146,
-        b: 18
-    },
-    "dancer": {
-        r: 160,
-        g: 21,
-        b: 62
-    },
-    "singer": {
-        r: 255,
-        g: 64,
-        b: 125
-    },
-    "others": {
-        r: 115,
-        g: 98,
-        b: 11
+class ColorScheme {
+
+    static defaultColor = '#28425e';
+
+    static async populateScheme() {
+        this._colorScheme = {
+            default: '#28425e',
+            block: {
+                getIn: {
+                    backgroundColor: 'rgba(255, 32, 78, 0.2)',
+                    borderColor: 'rgba(255, 32, 78, 1)',
+                    textColor: 'rgba(255, 32, 78, 0.9)',
+                },
+            },
+            category: {
+                dj: '#05264a',
+                musician: '',
+                dancer: '',
+                singer: '',
+                others: '',
+            },
+            subCategory: {
+                cabaret: '',
+                aerial: '',
+
+            },
+            artist: {}
+        }
     }
+
+    get colorScheme() {
+        return this._colorScheme;
+    };
+    set colorScheme(value) {
+        this._colorScheme = value;
+    };
+
+
+    artistCategory(artistCategory) {
+        return this.colorScheme.category[artistCategory] ?? ColorScheme.defaultColor;
+    };
+    artistSubCategory(artistSubCategory) {
+        return this.colorScheme.category[artistSubCategory] ?? ColorScheme.defaultColor;
+    };
+    artistID(artistID) {
+      return this.colorScheme.artist[artistID] ?? ColorScheme.defaultColor;
+    };
+
+
 }
 
-const getColorScheme = () => {
-
-    return catColors;
-
-}
 
 
-export {getColorScheme};
+export {ColorScheme};

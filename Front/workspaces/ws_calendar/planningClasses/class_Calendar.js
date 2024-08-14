@@ -1,7 +1,7 @@
 import {IndividualPlanning} from "./class_IndividualPlanning.js";
 import {sortBlockArrayPerTime} from "../../../../BackEnd/Utilities/sortBlockArray.js";
 import {generateCssColors} from "../../../Utilities/DesignJS/ColorGenerator/createPlanningStylesheet.js";
-import {getColorScheme} from "../../../../db/fakeDB-design.js";
+
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {CalendarHeader} from "./class_CalendarHeader.js";
 import {CalHoursGrid} from "./class_calHoursGrid.js";
@@ -16,7 +16,7 @@ class Calendar {
         this.matrixList = this.listGranularity(this.staffList);
         this.planningList = [];
 
-        this.colorScheme = generateCssColors(getColorScheme(), this.staffList);
+
         this.offset = this.getOffset();
         this.rowZoom = 18;
         this.fontZoom = 12;
@@ -66,7 +66,7 @@ class Calendar {
                 this.header = new CalendarHeader(
                     {
                         subList: subList,
-                        colorScheme: this.colorScheme
+                        //colorScheme: this.colorScheme
                     }).render()
 
                 //build planning for each artist
