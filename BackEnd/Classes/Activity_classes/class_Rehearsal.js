@@ -3,13 +3,13 @@ import {getActiveStaffPool} from "../../Planning_Builder/Day_builder/DB_function
 
 class Rehearsal extends Activity {
 
-    constructor(date, duration = 5, [startTime_hours, startTime_minutes], staffArray, location, needsTechInstall, needsTechAssist) {
+    constructor(date, duration = 5, staffArray, location, needsTechInstall, needsTechAssist) {
 
-        super(date, duration, [startTime_hours, startTime_minutes], staffArray);
+        super(date, duration, staffArray);
 
         this.type = "rehearsal";
         this.location = location;
-        this.id = this.idFromArray([this.date, ...this.startTime, this.type, this.location]);
+        this.id = this.idFromArray([this.date, this.type, this.location]);
         this.needsTechInstall = needsTechInstall;
         this.needsTechAssist = needsTechAssist;
 

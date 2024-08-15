@@ -11,65 +11,43 @@ import {autoTechSetUp} from "../Planning_Algo/BlockGenerators/blockGen_autoTechS
 
 
 class Day {
-    constructor(date, endTime) {
-
-        this.date = date;
-        this.endTime = endTime;
+    constructor(input) {
+        this.date = input.date;
+        this.endTime = input.endTime;
         this.staff = getActiveStaffPool(this.date);
         //this.guests = getElementsFromTable(this.date, table_guests);
         this.events = getEvents(this.date);
         this.meetings = getElementsFromTable(this.date, table_meetings);
         this.shows = getElementsFromTable(this.date, table_club)
         this.activities = getElementsFromTable(this.date, table_rehearsals);
-        this.cabaret;
         this._timeTable = [];//getTimeTable(this.date);
         this.guestBlocks = [];
-
-
-
     };
 
     get timeTable() {
-
         return sortBlockArrayPerTime(this._timeTable);
-
-    }
+    };
 
     addPrivateBlocksToTimeTable() {
-
         this.events.privateEvents.forEach(event => {
-
             this.timeTable.push(event)
-
-
-
         });
 
         this.shows.forEach(show => {
-
             this.timeTable.push(show)
-
         });
 
         this.meetings.forEach(event => {
-
             this.timeTable.push(event)
-
-
-
         });
 
         this.activities.forEach(event => {
-
             this.timeTable.push(event)
-
             //this.timeTable.push(...rehearsalDependencies(event, this.staff));
-
         });
 
         this.timeTable.push(...autoTechSetUp(this.timeTable, this.date));
-
-        this.timeTable.push(...autoGetIn(this.timeTable, this.date));
+        //this.timeTable.push(...autoGetIn(this.timeTable, this.date));
 
     };
 
@@ -82,7 +60,13 @@ class Day {
 
 
 
-const testDay = [new Day(new Date (2024, 11, 19), [20, 0])]
+const testDay = [
+    new Day(
+    {
+        date: new Date(2024, 11, 19),
+        endTime: [20, 0]
+    })
+]
 
 testDay[0].addPrivateBlocksToTimeTable();
 

@@ -1,6 +1,5 @@
 import {IndividualPlanning} from "./class_IndividualPlanning.js";
 import {sortBlockArrayPerTime} from "../../../../BackEnd/Utilities/sortBlockArray.js";
-
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {CalendarHeader} from "./class_CalendarHeader.js";
 import {CalHoursGrid} from "./class_calHoursGrid.js";
@@ -15,7 +14,6 @@ class Calendar {
         this.baseIndex = baseIndex;
         this.matrixList = this.listGranularity(this.staffList);
         this.planningList = [];
-
 
         this.offset = this.getOffset();
         this.rowZoom = 18;

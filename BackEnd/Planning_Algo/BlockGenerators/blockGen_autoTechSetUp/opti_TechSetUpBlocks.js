@@ -1,6 +1,7 @@
 import {sortBlockArrayPerTime} from "../../../Utilities/sortBlockArray.js";
 import {TechSetUp} from "../../../Classes/Activity_classes/class_TechSetUp.js";
 import {art1} from "../../../../db/fakeDB.js";
+import {addMinutes} from "../../../Utilities/Date_functions.js";
 
 //TODO : refaire l'opti de tech set up pour la gestion du temps
 const optimiseTechSetupBlocks = blockList => {
@@ -13,7 +14,7 @@ const optimiseTechSetupBlocks = blockList => {
 
     const ascendingArray = sortBlockArrayPerTime(blockList);
 
-    const earliestBlockStartTime = ascendingArray[0].startTime;
+    const earliestBlockStartTime = ascendingArray[0].date;
     const date = ascendingArray[0].date;
     let totalDuration = 0;
     let startTime;
@@ -23,15 +24,15 @@ const optimiseTechSetupBlocks = blockList => {
 
         totalDuration += block.duration;
         allDescription = allDescription.concat(block.content.description);
-        startTime = decrementTime(earliestBlockStartTime, block.duration);
+        startTime = addMinutes(earliestBlockStartTime, block.duration);
 
     })
 
 
     return [new TechSetUp(
-        date,
-        totalDuration,
         startTime,
+        totalDuration,
+
         [art1], // voir répartition de la charge si indispo
         {
             title: "techSetUp",

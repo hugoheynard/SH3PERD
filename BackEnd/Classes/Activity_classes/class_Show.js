@@ -3,14 +3,14 @@ import {getActiveStaffPool} from "../../Planning_Builder/Day_builder/DB_function
 
 class Show extends Activity {
 
-    constructor(date, duration = 15, [startTime_hours, startTime_minutes], staffArray, category) {
+    constructor(date, duration = 15, staffArray, category) {
 
-        super(date, duration, [startTime_hours, startTime_minutes], staffArray, category);
+        super(date, duration, staffArray, category);
 
         this.type = "show";
         this.location = location;
         this.staff = staffArray;
-        this.id = this.idFromArray([this.date, ...this.startTime, this.type, this.location]);
+        this.id = this.idFromArray([this.date, this.type, this.location]);
         this.category = category;
 
 
