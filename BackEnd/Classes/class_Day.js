@@ -7,7 +7,8 @@ import {sortBlockArrayPerTime} from "../Utilities/sortBlockArray.js";
 import {Activity} from "./Activity_classes/class_Activity.js";
 import {rehearsalDependencies} from "../Planning_Algo/Morning_Builder_Algo/rehearsal_dependencies.js";
 import {autoGetIn} from "../Planning_Algo/BlockGenerators/blockGen_autoGetIn.js";
-import {autoTechSetUp} from "../Planning_Algo/BlockGenerators/blockGen_autoTechSetUp/blockGen_autoTechSetUp.js";
+import {Auto_TechSetup} from "../Planning_Algo/BlockGenerators/blockGen_autoTechSetUp/blockGen_autoTechSetUp.js";
+
 
 
 class Day {
@@ -46,7 +47,11 @@ class Day {
             //this.timeTable.push(...rehearsalDependencies(event, this.staff));
         });
 
-        this.timeTable.push(...autoTechSetUp(this.timeTable, this.date));
+        this.timeTable.push(...new Auto_TechSetup(
+            {
+                timeTable: this.timeTable,
+                date: this.date
+            }).buildTechBlocks());
         //this.timeTable.push(...autoGetIn(this.timeTable, this.date));
 
     };
