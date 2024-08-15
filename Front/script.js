@@ -11,6 +11,7 @@ import {wsPage_playlistManager} from "./workspaces/ws_PlaylistManager/wsPage_pla
 import {wsPage_planningCabaret} from "./workspaces/ws_cabManager/wsPage_planningCabaret.js";
 import {wsMenu_Calendar} from "./workspaces/ws_calendar/wsMenu_Calendar.js";
 import {wsPopMenu_CalendarHome} from "./workspaces/ws_calendar/PopMenus_Calendar/wsPopMenu_CalendarHome.js";
+import {ColorScheme} from "../db/fakeDB-design.js";
 
 
 const body = document.querySelectorAll('body')[0];
@@ -73,6 +74,8 @@ const appWorkspace = new WorkSpaceContext(
 mainContainer.appendChild(appWorkspace.render());
 
 
+
+
 export {
     appWorkspace,
     ws_Home,
@@ -80,5 +83,6 @@ export {
     ws_musicLibrary,
     ws_Playlists,
     ws_Cabaret,
-    ws_staffMember
+    ws_staffMember,
+
 };

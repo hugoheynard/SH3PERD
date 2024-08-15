@@ -599,4 +599,4 @@ const art13 = {
 
 const artistMockupDB = [art1, art2, art3, art4, art5, art6, art7, art8, art9, art10, art11, art12, art13];
 
-export {artistMockupDB, art1, art2, art3, art4, art5, art6, art7, art8, art9, art10};
+export {artistMockupDB, art1, art2, art3, art4, art5, art6, art7, art8, art9, art10, art11, art12, art13};

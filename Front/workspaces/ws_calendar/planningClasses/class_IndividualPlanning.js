@@ -21,6 +21,7 @@ class IndividualPlanning {
         this.gridBlockArray = [];
 
         this.planning = new HTMLelem('div', this.id, 'dailyPlanningCalendar').render();
+        this.backgroundColor = input.backgroundOverlay;
 
         //sets the
         this.collisionList = [];
@@ -28,6 +29,7 @@ class IndividualPlanning {
         this.maxElemInRow = this.getMaxElemInRow() ?? 1;
         this.numberOfCol = this.defineColumnTemplate();
         this.planning.style.gridTemplateColumns = `repeat(${this.numberOfCol}, 1fr)`;
+
 
         //TODO drop event listener
         /*
@@ -103,6 +105,12 @@ class IndividualPlanning {
             block.htmlElement.style.gridColumn = `span ${span}`;
         }
     };
+    addBackgroundOverlay(){
+        const opacity = 0.025
+        const currentColor = this.backgroundColor;
+        const newColor = currentColor.replace(/rgba\((\d+),(\d+),(\d+),(\d+)\)/, `rgba($1,$2,$3,${opacity})`);
+        this.planning.style.backgroundColor = newColor;
+    }
     buildGrid() {
         //generate Blocks from artist block list
         this.artistBlockList.forEach((block, index) => {
@@ -110,10 +118,12 @@ class IndividualPlanning {
             const newBlock  = new GridBlock({blockData: block});
             this.addRowCoordinates(newBlock);
             this.addColCoordinates(newBlock, index);
+            this.addBackgroundOverlay();
 
             this.gridBlockArray.push(newBlock);
             this.planning.appendChild(newBlock.htmlElement);
         });
+
     };
 
     //

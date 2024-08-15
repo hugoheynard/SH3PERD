@@ -1,12 +1,12 @@
 import {IndividualPlanning} from "./class_IndividualPlanning.js";
 import {sortBlockArrayPerTime} from "../../../../BackEnd/Utilities/sortBlockArray.js";
-import {generateCssColors} from "../../../Utilities/DesignJS/ColorGenerator/createPlanningStylesheet.js";
 
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {CalendarHeader} from "./class_CalendarHeader.js";
 import {CalHoursGrid} from "./class_calHoursGrid.js";
 import {addMinutes} from "../../../../BackEnd/Utilities/Date_functions.js";
 import {ONE_MINUTE_IN_MS, STEP_DURATION} from "../../../Utilities/MAGIC NUMBERS.js";
+import {ColorScheme} from "../../../../db/fakeDB-design.js";
 
 class Calendar {
     constructor(timeTable, staffList, baseIndex = 0) {
@@ -20,6 +20,8 @@ class Calendar {
         this.offset = this.getOffset();
         this.rowZoom = 18;
         this.fontZoom = 12;
+
+        this.colorScheme = new ColorScheme().getColorData();
 
         this.htmlElement = new HTMLelem('div', "calendars").render();
 
@@ -63,25 +65,30 @@ class Calendar {
             if (this.matrixList.indexOf(subList) === this.baseIndex) {
                 this.defineGridRowsNumber(this.timeTable);
 
-                this.header = new CalendarHeader(
-                    {
-                        subList: subList,
-                        //colorScheme: this.colorScheme
-                    }).render()
-
                 //build planning for each artist
                 for (const artist of subList) {
-                    this.planningList.push(new IndividualPlanning(
+
+                    const planning = new IndividualPlanning(
                         {
                             id: `planning_${artist.staffMember_id}`,
                             blockList: this.timeTable,
                             artist: artist,
                             negativeOffset: this.offset,
-                            numberOfRows: this.gridRowsNumber
-                        })
-                    );
+                            numberOfRows: this.gridRowsNumber,
+                            backgroundOverlay: this.colorScheme.artist({artistID: artist.staffMember_id})
+                        });
+
+                    this.planningList.push(planning);
                 }
+
+                this.header = new CalendarHeader(
+                    {
+                        subList: subList,
+                        colorScheme: this.colorScheme
+                    }).render()
             }
+
+
         }
     };
 
