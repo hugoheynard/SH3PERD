@@ -8,8 +8,7 @@ import {Activity} from "./Activity_classes/class_Activity.js";
 import {rehearsalDependencies} from "../Planning_Algo/Morning_Builder_Algo/rehearsal_dependencies.js";
 import {Auto_GetIn} from "../Planning_Algo/BlockGenerators/blockGen_autoGetIn.js";
 import {Auto_TechSetup} from "../Planning_Algo/BlockGenerators/blockGen_autoTechSetUp/blockGen_autoTechSetUp.js";
-import {Auto_Club} from "./class_Auto_Club.js";
-
+import {Auto_Club, testFrameGenBlock} from "./class_Auto_Club.js";
 
 
 class Day {
@@ -25,7 +24,7 @@ class Day {
         this._timeTable = [];//getTimeTable(this.date);
         this.guestBlocks = [];
 
-        this.club = new Auto_Club(this.date, this.staff)
+        this.club = testFrameGenBlock
 
     };
 
@@ -51,7 +50,7 @@ class Day {
             //this.timeTable.push(...rehearsalDependencies(event, this.staff));
         });
 
-        //this.timeTable.push(...this.club)
+        this.timeTable.push(...this.club)
 
 
         /*AUTO TECH SETUP*/

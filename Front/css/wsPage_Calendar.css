@@ -95,6 +95,13 @@
     border-radius: 0.25rem;
 }
 
+.color[data-type="void"] {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-left: 0.2rem solid rgb(255, 255, 255, 1);
+    border-bottom: 0.05rem solid rgb(255, 255, 255, 1);;
+    color: rgba(255, 255, 255, 0.9);
+}
+
 .color[data-type="getIn"] {
     background-color: rgba(255, 32, 78, 0.2);
     border-left: 0.2rem solid rgba(255, 32, 78, 1);

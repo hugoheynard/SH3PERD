@@ -21,7 +21,7 @@ class ViewContext {
         this.wsPageContainer.appendChild(this.leftSideContainer);
         this.wsPageContainer.appendChild(this.calContainer);
 
-        this.viewIndiv();
+        this.viewPerCat();
     };
 
     buildView() {

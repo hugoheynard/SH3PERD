@@ -5,6 +5,7 @@ class Void extends Activity {
     constructor(input) {
         super(input);
         this.type = "void";
+        this.workingMembers = [];
     };
 }
 
