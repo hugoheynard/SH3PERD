@@ -1,25 +1,20 @@
-import {inBetweenDates, indexOfDay} from "../../../Utilities/Date_functions.js";
+import {DateMethod} from "../../../Utilities/class_DateMethods.js";
 import {table_WeeklyEvents} from "../../../../db/fakeDB-events.js";
 
-const getRecurrentEvents = (date) => {
 
-    //importTableContent db functions
+const getRecurrentEvents = (date) => {
     const table = table_WeeklyEvents;
 
     //filter
     return table.filter(event => {
 
-        if (inBetweenDates(date, event.firstEventDate, event.lastEventDate)) {
+        if (DateMethod.inBetweenDates(date, event.firstEventDate, event.lastEventDate)) {
 
-            if(indexOfDay(date) === event.dayIndex) {
-
+            if (DateMethod.indexOfDay(date) === event.dayIndex) {
                 return event
             }
-
         }
-
     });
-
 }
 
 export {getRecurrentEvents};

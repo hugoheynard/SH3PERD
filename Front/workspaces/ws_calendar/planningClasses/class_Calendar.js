@@ -3,7 +3,7 @@ import {sortBlockArrayPerTime} from "../../../../BackEnd/Utilities/sortBlockArra
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {CalendarHeader} from "./class_CalendarHeader.js";
 import {CalHoursGrid} from "./class_calHoursGrid.js";
-import {addMinutes} from "../../../../BackEnd/Utilities/Date_functions.js";
+import {DateMethod} from "../../../../BackEnd/Utilities/class_DateMethods.js";
 import {ONE_MINUTE_IN_MS, STEP_DURATION} from "../../../Utilities/MAGIC NUMBERS.js";
 import {ColorScheme} from "../../../../db/fakeDB-design.js";
 
@@ -39,10 +39,10 @@ class Calendar {
         /*Difference between the end of the last block and midnight */
         const firstWorkBlock = {...blockList[0]};
         const lastWorkBlock = {...blockList.at(-1)};
-        const lastTime = addMinutes(lastWorkBlock.date, lastWorkBlock.duration).getTime();
+        const lastTime = DateMethod.addMinutes(lastWorkBlock.date, lastWorkBlock.duration).getTime();
         const firstTime = firstWorkBlock.date;
 
-        this.gridRowsNumber = ((lastTime - firstTime) / ONE_MINUTE_IN_MS / STEP_DURATION)
+        this.gridRowsNumber = DateMethod.differenceInMinutes(firstTime, lastTime) / STEP_DURATION
     };
     resetInstanceAndContainer() {
         this.htmlElement.innerHTML = '';

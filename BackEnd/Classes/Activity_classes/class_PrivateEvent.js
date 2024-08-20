@@ -3,12 +3,12 @@ import {getActiveStaffPool} from "../../Planning_Builder/Day_builder/DB_function
 
 
 class PrivateEvent extends Activity {
-    constructor(date, duration, staffArray, content, category, location) {
+    constructor(input) {
 
-        super(date, duration, staffArray);
+        super(input);
         this.type = "private";
-        this.category = category;
-        this.location = location;
+        this.category = input.category;
+        this.location = input.location;
         this.id = this.idFromArray([this.date, this.type, this.category, this.location]);
 
     };

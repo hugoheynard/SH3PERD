@@ -1,6 +1,6 @@
 import {TechSetUp} from "../../../Classes/Activity_classes/class_TechSetUp.js";
 import {art1} from "../../../../db/fakeDB.js";
-import {addMinutes} from "../../../Utilities/Date_functions.js";
+import {DateMethod} from "../../../Utilities/class_DateMethods.js";
 import {
     STANDARD_TECH_SETUP_DURATION,
     STANDARD_TECH_SETUP_HOUR,
@@ -26,21 +26,22 @@ class Auto_TechSetup{
     };
     get rules() {
         return this._rules;
-    };
+    }; //TODO: check si on peut insérer des rules
     blockRequiringTechInstall = blockList => blockList.filter(block => block.needsTechInstall);
     noAdditionalSetup = () => this.blockRequiringTechInstall(this.timeTable).length === 0;
     addStandardSetUp(date) {
+        /*standard setup is the base case in a daily operation scenario*/
         return new TechSetUp(
-            /*standard setup is the base case in a daily operation scenario*/
-            new Date(date.getFullYear(), date.getMonth(), date.getDate(), STANDARD_TECH_SETUP_HOUR, STANDARD_TECH_SETUP_MINUTES),
-            STANDARD_TECH_SETUP_DURATION,
-            [art1],
             {
-                title: "techSetUp",
-                description: ["PREP Standard setup"]
-            },
-            "generatedBlock"
-        );
+                date: new Date(date.getFullYear(), date.getMonth(), date.getDate(), STANDARD_TECH_SETUP_HOUR, STANDARD_TECH_SETUP_MINUTES),
+                duration: STANDARD_TECH_SETUP_DURATION,
+                staff: [art1],
+                content: {
+                    title: "techSetUp",
+                    description: ["PREP Standard setup"]
+                },
+                blockOrigin: "generatedBlock"
+            });
     }
     buildTechBlocks() {
         this.generatedBlocks.push(this.addStandardSetUp(this.date));
@@ -55,32 +56,20 @@ class Auto_TechSetup{
             if (block.type === "rehearsal") {
 
                 this.generatedBlocks.push(new TechSetUp(
-                        addMinutes(block.date, -15),
-                        15,
-                        [art1],
-                        {
+                    {
+                        date: DateMethod.substractMinutes(block.date, -15),
+                        duration: 15,
+                        staff: [art1],
+                        content: {
                             title: "techSetUp",
-                            description: [`Prep ${block.type} ${block.location} ${block.startTime}`]
+                            description: [`Prep ${block.type} ${block.location} ${block.date.getHours()}'${block.date.getMinutes()}`]
                         },
-                        "generatedBlock"
-                    )
-                )
-                //DEL TEST ->
-                this.generatedBlocks.push(new TechSetUp(
-                        addMinutes(block.date, -30),
-                        15,
-                        [art1],
-                        {
-                            title: "techSetUp",
-                            description: [`Prep2 ${block.type} ${block.location} ${block.startTime}`]
-                        },
-                        "generatedBlock"
-                    )
+                        blockOrigin: "generatedBlock"
+                    })
                 )
             }
         });
     };
 }
-
 
 export {Auto_TechSetup};

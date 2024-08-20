@@ -1,23 +1,24 @@
-const allMembersInBlockList = arrayOfBlocks => {
+class TimetableAction {
+    constructor(input) {
+        this._timeTable = input.timetable;
+    };
+    get timeTable() {
+        return this._timeTable;
+    };
 
-    const membersInBlocks = [];
+    allStaffMembersInTimetable() {
+        const staff = [];
 
-    arrayOfBlocks.forEach(block => {
+        for (const block of this.timeTable) {
+            for (const staffMember of block.staff) {
 
-        //get all the members
-        block.staff.forEach(member => {
-
-            if(!membersInBlocks.includes(member)) {
-
-                membersInBlocks.push(member);
-
+                if (!staff.includes(staffMember)) {
+                    staff.push(staffMember);
+                }
             }
+        }
+        return staff;
+    }
+}
 
-        });
-    });
-
-    return membersInBlocks;
-
-};
-
-export {allMembersInBlockList};
+export {TimetableAction};

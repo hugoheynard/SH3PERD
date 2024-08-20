@@ -1,5 +1,5 @@
 import {Day} from "../Classes/class_Day.js";
-import {addDays} from "../Utilities/Date_functions.js";
+import {DateMethod} from "../Utilities/class_DateMethods.js";
 /*Used to generate the instances of Days and returns them in an array*/
 
 const buildCurrentWeek = (startDate) => {
@@ -9,7 +9,7 @@ const buildCurrentWeek = (startDate) => {
     //generate weekdays
     for (let i = 0; i <= 6; i++) {
 
-        let dayDate = addDays(startDate, i);
+        let dayDate = DateMethod.addDays(startDate, i);
         currentWeek.push(new Day(dayDate));
 
     }

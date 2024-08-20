@@ -1,7 +1,7 @@
 import {GridBlock} from "./class_GridBlock/class_GridBlock.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {dragEnd, dragLeave, dragOver, dragStart, drop} from "../../../Utilities/DragNDropFunctions/dragAndDrop.js";
-import {addMinutes} from "../../../../BackEnd/Utilities/Date_functions.js";
+import {DateMethod} from "../../../../BackEnd/Utilities/class_DateMethods.js";
 import {
     getPositionFromDataset_Date,
     getRowEndFromDatasetDuration
@@ -47,10 +47,10 @@ class IndividualPlanning {
         const getStepArray = block => {
             const stepArray = [];
 
-            let step = addMinutes(block.date, -5);
+            let step = DateMethod.addMinutes(block.date, -5);
 
-            while (step < addMinutes(block.date, block.duration - 5)) {
-                step = addMinutes(step, 5);
+            while (step < DateMethod.addMinutes(block.date, block.duration - 5)) {
+                step = DateMethod.addMinutes(step, 5);
                 stepArray.push(JSON.stringify(step));
             }
 

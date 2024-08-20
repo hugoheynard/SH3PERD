@@ -6,8 +6,9 @@ import {sortBlockArrayPerTime} from "../Utilities/sortBlockArray.js";
 //import {table_guests} from "./class_Guest.js";
 import {Activity} from "./Activity_classes/class_Activity.js";
 import {rehearsalDependencies} from "../Planning_Algo/Morning_Builder_Algo/rehearsal_dependencies.js";
-import {autoGetIn} from "../Planning_Algo/BlockGenerators/blockGen_autoGetIn.js";
+import {Auto_GetIn} from "../Planning_Algo/BlockGenerators/blockGen_autoGetIn.js";
 import {Auto_TechSetup} from "../Planning_Algo/BlockGenerators/blockGen_autoTechSetUp/blockGen_autoTechSetUp.js";
+import {Auto_Club} from "./class_Auto_Club.js";
 
 
 
@@ -23,19 +24,22 @@ class Day {
         this.activities = getElementsFromTable(this.date, table_rehearsals);
         this._timeTable = [];//getTimeTable(this.date);
         this.guestBlocks = [];
+
+        this.club = new Auto_Club(this.date, this.staff)
+
     };
 
     get timeTable() {
         return sortBlockArrayPerTime(this._timeTable);
     };
 
-    addPrivateBlocksToTimeTable() {
+    build() {
         this.events.privateEvents.forEach(event => {
             this.timeTable.push(event)
         });
 
         this.shows.forEach(show => {
-            this.timeTable.push(show)
+            //this.timeTable.push(show)
         });
 
         this.meetings.forEach(event => {
@@ -47,16 +51,27 @@ class Day {
             //this.timeTable.push(...rehearsalDependencies(event, this.staff));
         });
 
-        this.timeTable.push(...new Auto_TechSetup(
+        //this.timeTable.push(...this.club)
+
+
+        /*AUTO TECH SETUP*/
+        this.timeTable.push(
+            ...new Auto_TechSetup(
             {
                 timeTable: this.timeTable,
                 date: this.date
             }).buildTechBlocks());
-        //this.timeTable.push(...autoGetIn(this.timeTable, this.date));
+
+        /*AUTO GET IN*/
+        this.timeTable.push(
+            ...new Auto_GetIn(
+                {
+                    timeTable: this.timeTable,
+                }).buildGetInBlocks()
+        );
+
 
     };
-
-
 
 }
 
@@ -73,9 +88,9 @@ const testDay = [
     })
 ]
 
-testDay[0].addPrivateBlocksToTimeTable();
+testDay[0].build();
 
 
 
 export {Day};
-export {testDay}
+export {testDay};

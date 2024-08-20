@@ -1,6 +1,6 @@
 import {GetIn} from "../../Classes/Activity_classes/class_GetIn.js";
-import {allMembersInBlockList} from "../../Utilities/BlocklistFunctions/allMembersInBlockList.js";
-import {substractMinutes} from "../../Utilities/Date_functions.js";
+import {TimetableAction} from "../../Utilities/BlocklistFunctions/allMembersInBlockList.js";
+import {DateMethod} from "../../Utilities/class_DateMethods.js";
 
 /*
 *ROLE : manage GetInBlocks for every Member
@@ -9,48 +9,63 @@ import {substractMinutes} from "../../Utilities/Date_functions.js";
 *INPUT : the current array of blocks generated
 *OUTPUT : an array of getInBlocks
 */
+class Auto_GetIn {
+    constructor(input) {
+        this._timeTable = input.timeTable;
+        this._generatedBlocks = [];
+    };
+    get timeTable() {
+        return this._timeTable;
+    };
+    get generatedBlocks() {
+        return this._generatedBlocks;
+    };
 
-const autoGetIn = (arrayOfBlocks, date) => {
+    buildGetInBlocks() {
+        new TimetableAction({timetable: this.timeTable}).allStaffMembersInTimetable().forEach(member => {
 
-    const generatedBlocks = [];
+            const returnBlocksThatIncludeElement =  (arrayOfBlocks, element) => arrayOfBlocks.filter(block => block.staff.includes(element));
 
-    allMembersInBlockList(arrayOfBlocks).forEach(member => {
+            const firstBlock = returnBlocksThatIncludeElement(this.timeTable, member)[0];
 
-        const returnBlocksThatIncludeElement =  (arrayOfBlocks, element) => arrayOfBlocks.filter(block => block.staff.includes(element));
+            let minusTime;
 
-        const firstBlock = returnBlocksThatIncludeElement(arrayOfBlocks, member)[0];
+            switch (firstBlock.type) {
 
-        let minusTime;
+                case 'techSetUp':
+                    minusTime = 5;
+                    break;
 
-        switch (firstBlock.type) {
+                case 'meeting':
+                    minusTime = 5;
+                    break;
 
-            case 'techSetUp':
-                minusTime = 5;
-                break;
+                case 'meal':
+                    minusTime = 5;
+                    break;
 
-            case 'meeting':
-                minusTime = 5;
-                break;
+                case 'rehearsal':
+                    minusTime = 15;
+                    break;
 
-            case 'meal':
-                minusTime = 5;
-                break;
+                case 'show':
+                    minusTime = 60;
+                    break;
 
-            case 'rehearsal':
-                minusTime = 15;
-                break;
+            }
 
-            case 'show':
-                minusTime = 60;
-                break;
+            this.generatedBlocks.push(new GetIn(
+                {
+                    date: DateMethod.substractMinutes(new Date(firstBlock.date), minusTime ?? 5),
+                    duration: undefined,
+                    staff: [member]
+                })
+            );
 
-        }
+        });
 
-        generatedBlocks.push(new GetIn(substractMinutes(new Date(firstBlock.date), minusTime), undefined, [], [member]));
+        return this.generatedBlocks;
+    };
+}
 
-    });
-
-    return generatedBlocks;
-};
-
-export {autoGetIn};
+export {Auto_GetIn};

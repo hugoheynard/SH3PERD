@@ -1,4 +1,4 @@
-import {addMinutes, standardizeTime} from "../../../../BackEnd/Utilities/Date_functions.js";
+import {DateMethod} from "../../../../BackEnd/Utilities/class_DateMethods.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {getPositionFromDataset_Date} from "../../../Utilities/dataset_functions/datasetFunctions.js";
 
@@ -32,10 +32,10 @@ class CalHoursGrid {
 
         const stepArray = [];
 
-        let step = addMinutes(firstElem.date, -5);
+        let step = DateMethod.addMinutes(firstElem.date, -5);
 
-        while(step < addMinutes(lastElem.date, lastElem.duration)) {
-            step = addMinutes(step, 5);
+        while(step < DateMethod.addMinutes(lastElem.date, lastElem.duration)) {
+            step = DateMethod.addMinutes(step, 5);
 
             if (step.getMinutes() === 0) {
                 stepArray.push({date: step, duration: 60});
@@ -60,7 +60,7 @@ class CalHoursGrid {
             hourBlock.style.gridRowStart = `${rowStart}`;
 
             const hourText = new HTMLelem('span', '', 'hourText');
-            hourText.setText(`${standardizeTime(fullHour.date.getHours())}:${standardizeTime(fullHour.date.getMinutes())}`);
+            hourText.setText(`${DateMethod.standardizeTime(fullHour.date.getHours())}:${DateMethod.standardizeTime(fullHour.date.getMinutes())}`);
             hourText.render().style.gridRowStart = `${rowStart}`;
 
             this.calHoursText.appendChild(hourText.render());

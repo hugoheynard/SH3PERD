@@ -4,12 +4,9 @@ import {art1} from "../../../db/fakeDB.js";
 
 class Meeting extends Activity {
 
-    constructor(date, duration = 5, staffArray) {
-
-        super(date, duration, staffArray);
-
+    constructor(input) {
+        super(input);
         this.type = "meeting";
-
     };
 }
 

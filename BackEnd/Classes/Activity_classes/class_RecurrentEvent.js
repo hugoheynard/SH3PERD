@@ -1,11 +1,11 @@
-import {indexOfDay} from "../../Utilities/Date_functions.js";
+import {DateMethod} from "../../Utilities/class_DateMethods.js";
 
 class RecurrentEvent {
     constructor(firstEventDate, lastEventDate, name, type) {
 
         this.firstEventDate = firstEventDate;
         this.lastEventDate = lastEventDate;
-        this.dayIndex = indexOfDay(this.firstEventDate);
+        this.dayIndex = DateMethod.indexOfDay(this.firstEventDate);
         this.name = name;
         this.type = type;
 

@@ -1,11 +1,11 @@
-import {standardizeTime} from "../../../../../BackEnd/Utilities/Date_functions.js";
+import {DateMethod} from "../../../../../BackEnd/Utilities/class_DateMethods.js";
 
 const addTime = (block) => {
 
     const date = new Date(block.date);
 
     const elemTime = document.createElement('span');
-    const timeContent = document.createTextNode(`${standardizeTime(date.getHours())}:${standardizeTime(date.getMinutes())}`);
+    const timeContent = document.createTextNode(`${DateMethod.standardizeTime(date.getHours())}:${DateMethod.standardizeTime(date.getMinutes())}`);
 
     elemTime.appendChild(timeContent);
 

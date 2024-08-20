@@ -3,14 +3,14 @@ import {generateIdFromArray} from "../../Utilities/generateIdFromArray.js";
 
 class TechSetUp extends Activity {
 
-    constructor(date, duration = 15, membersArray, content = {}, blockOrigin = "userEntry") {
+    constructor(input) {
 
-        super(date, duration, membersArray);
+        super(input);
 
         this.type = "techSetUp";
-        this.blockOrigin = blockOrigin;
+        this.blockOrigin = input.blockOrigin ?? "userEntry";
         this.id = generateIdFromArray([this.date, this.type, this.blockOrigin]);
-        this.content = content;
+        this.content = input.content;
 
 
     };
