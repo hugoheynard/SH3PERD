@@ -1,4 +1,8 @@
 import {DateMethod} from "../Utilities/class_DateMethods.js";
+import {Void} from "./Activity_classes/class_Void.js";
+import {getActiveStaffPool} from "../Planning_Builder/Day_builder/DB_functions/getActiveStaffPool.js";
+import {artistMockupDB} from "../../db/fakeDB.js";
+
 
 
 /*The rotation must find the best fit in candidates*/
@@ -72,6 +76,23 @@ const test = new TimeframeContext(
     })
 
 
+const testFrameGenBlock = []
+for (const timeSection of test.timeSplitStrategy.splitArray) {
+    testFrameGenBlock.push(
+        new Void(
+        {
+            date: timeSection.startTime,
+            duration: timeSection.duration,
+            staff: artistMockupDB.filter(member => member.category === 'dj')
+        }
+    ))
+}
+
+
+
+
+
+
 
 
 
@@ -84,4 +105,4 @@ class Auto_Club{
     };
 }
 
-export {Auto_Club};
+export {Auto_Club, testFrameGenBlock};
