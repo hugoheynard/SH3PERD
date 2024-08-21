@@ -4,7 +4,6 @@ class TimeSplit_Strategy{
     constructor(input){
         this.startTime = input.startTime;
         this.endTime = input.endTime;
-        this.timeframeDuration = DateMethod.differenceInMinutes(this.startTime, this.endTime);
         this.splitArray = [];
     };
 }
@@ -13,7 +12,6 @@ class UserDuration extends TimeSplit_Strategy{
     constructor(input) {
         super(input);
         this.rotationDuration = input.params.userDuration;
-        this.split();
     };
     split() {
         let current = this.startTime;
@@ -26,7 +24,32 @@ class UserDuration extends TimeSplit_Strategy{
             );
             current = DateMethod.addMinutes(current, this.rotationDuration);
         }
+        return this.splitArray;
     };
 }
 
-export {UserDuration}
+class TimePattern extends TimeSplit_Strategy{
+    constructor(input) {
+        super(input);
+        this.pattern = input.params.pattern;
+    };
+    split() {
+        let current = this.startTime;
+        let index = 0;
+
+        while (current < this.endTime) {
+            const duration = this.pattern[index % this.pattern.length]
+            this.splitArray.push(
+                {
+                    startTime: current,
+                    duration: duration
+                }
+            );
+            current = DateMethod.addMinutes(current, duration);
+            index++
+        }
+        return this.splitArray;
+    };
+}
+
+export {UserDuration, TimePattern}

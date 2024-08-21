@@ -11,15 +11,17 @@ class LinearPopulation extends PopulationStrategy{
     constructor(input) {
         super(input);
         this.offset = this.params.offset;
-        this.populate();
+        this.staffMax = this.params.staffMax;
     };
-    populate() {
+    populate(timeSplitArray) {
         const availablePeople = [...this.staff]
         const assignedPeople = [];
 
-        this.timeGrid.forEach(section => {
-
-        })
+        this.timeGrid.forEach((section, index) => {
+            section.worker = [this.staff[(index + this.offset) % this.staff.length]];
+            section.available = this.staff.filter(member => JSON.stringify(member) !== JSON.stringify(...section.worker));
+        });
+        return this.timeGrid
     };
 }
 
