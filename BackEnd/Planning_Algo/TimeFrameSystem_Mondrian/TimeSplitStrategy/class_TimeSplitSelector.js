@@ -1,4 +1,5 @@
-import {TimePattern, UserDuration} from "./class_TimeSplit_Strategy.js";
+import {UserDuration} from "./class_Strategy_UserDuration.js";
+import {TimePattern} from "./class_Strategy_TimePattern.js";
 
 
 class TimeSplitSelector{

@@ -1,11 +1,5 @@
-class PopulationStrategy{
-    constructor(input) {
-        this.timeGrid = input.timeGrid;
-        this.staff = input.staff;
-        this.params = input.params;
-    };
+import {PopulationStrategy} from "./class_PopulationStrategy.js";
 
-}
 
 class LinearPopulation extends PopulationStrategy{
     constructor(input) {
@@ -13,15 +7,19 @@ class LinearPopulation extends PopulationStrategy{
         this.offset = this.params.offset;
         this.staffMax = this.params.staffMax;
     };
-    populate(timeSplitArray) {
+
+    populate() {
         const availablePeople = [...this.staff]
         const assignedPeople = [];
 
-        this.timeGrid.forEach((section, index) => {
-            section.worker = [this.staff[(index + this.offset) % this.staff.length]];
+        this.timeSlots.forEach((section, index) => {
+
+            const candidate = [this.staff[(index + this.offset) % this.staff.length]]
+
+            section.worker = candidate;
             section.available = this.staff.filter(member => JSON.stringify(member) !== JSON.stringify(...section.worker));
         });
-        return this.timeGrid
+        return this.timeSlots
     };
 }
 

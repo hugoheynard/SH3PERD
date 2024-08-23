@@ -47,7 +47,7 @@ class IndividualPlanning {
         const getStepArray = block => {
             const stepArray = [];
 
-            let step = DateMethod.addMinutes(block.date, -5);
+            let step = DateMethod.substractMinutes(block.date, 5);
 
             while (step < DateMethod.addMinutes(block.date, block.duration - 5)) {
                 step = DateMethod.addMinutes(step, 5);

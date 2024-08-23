@@ -1,66 +1,58 @@
 import {Void} from "../../Classes/Activity_classes/class_Void.js";
 import {WorkSlot} from "../../Classes/Activity_classes/class_WorkSlot.js";
-
+import {No} from "../../Classes/Activity_classes/class_NoBlock.js";
+import {TimeSplit_Interface} from "./TimeSplitStrategy/class_TimeSplit_Interface.js";
+import {Population_Interface} from "./PopulationStrategy/class_Population_Interface.js";
 
 class TimeframeContext {
-    /*Creates a time canvas, instantiating time sections according to a split rule*/
+    /*
+    * Creates a time canvas, instantiating timeSlots according to a split rule
+    * Use of the bridge pattern to aggregate different interfaces of strategy
+    * */
     constructor(input) {
         this.timeframeTitle = input.timeframeTitle;
         this.startTime = input.startTime;
         this.endTime = input.endTime;
         this.staff = input.staff;
+
         this.generatedBlocks = [];
-    };
 
-    setSplitStrategy(input) {
-
-        this.timeSplitStrategy = new input.strategy(
+        //initialize the interfaces with default strategies
+        this.timeSplit = new TimeSplit_Interface(
             {
                 startTime: this.startTime,
-                endTime: this.endTime,
-                params: input.params
+                endTime: this.endTime
             });
-        this.timeSplitArray = this.timeSplitStrategy.split();
 
-        if (this.populationStrategy) {
-            //updates the timeSplitArray inside the populationStrategy
-            this.populationStrategy.timeGrid = this.timeSplitArray
-            //reapplies the current population strategy
-            this.populatedTimeSplit = this.populationStrategy.populate();
-            this.preview();
-        }
+        this.population = new Population_Interface(
+            {
+                staff: this.staff,
+                timeSlots: this.timeSplit.strategy.timeSlots,
+        });
 
     };
-
-    setPopulationStrategy(input) {
-        this.populationStrategy = new input.strategy(
-            {
-                timeGrid: this.timeSplitArray,
-                staff: this.staff,
-                params: input.params
-            }
-        )
-        this.populatedTimeSplit = this.populationStrategy.populate()
-        this.preview();
+    generate() {
+        this.population.strategy.timeSlots = this.timeSplit.strategy.timeSlots; //updates population strategy
+        this.population.strategy.populate();
     };
 
 
     preview() {
-        this.generatedBlocks = [];
+        this.generate();
+        //this.generatedBlocks = [];
+/*
         this.generatedBlocks.push(
-            ...this.populatedTimeSplit.map(timeSection => {
-
+            ...this.population.strategy.timeSlots.map(timeSection => {
                 return new WorkSlot(
                     {
                         date: timeSection.startTime,
                         duration: timeSection.duration,
                         staff: timeSection.worker
                     });
-                })
+            })
         )
         this.generatedBlocks.push(
-            ...this.populatedTimeSplit.map(timeSection => {
-
+            ...this.population.strategy.timeSlots.map(timeSection => {
                 return new Void(
                     {
                         date: timeSection.startTime,
@@ -69,13 +61,23 @@ class TimeframeContext {
                     });
             })
         )
+
+ */
+        //TODO: ICI CHAOS
+        /*
+        this.generatedBlocks.push(
+            ...this.population.strategy.timeSlots.map(timeSection => {
+                return new No(
+                    {
+                        date: timeSection.startTime,
+                        duration: timeSection.duration,
+                        staff: timeSection.staff
+                    });
+            })
+        )
+
+         */
     };
-
-
-
-
-
-
 }
 
 export {TimeframeContext};

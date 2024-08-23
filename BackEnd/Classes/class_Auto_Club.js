@@ -1,34 +1,28 @@
 import {TimeframeContext} from "../Planning_Algo/TimeFrameSystem_Mondrian/class_TimeframeContext.js";
-import {LinearPopulation} from "../Planning_Algo/TimeFrameSystem_Mondrian/class_PopulationStrategy.js";
-import {TimeSplitSelector} from "../Planning_Algo/TimeFrameSystem_Mondrian/class_TimeSplitSelector.js";
-import {PopulationSelector} from "../Planning_Algo/TimeFrameSystem_Mondrian/class_PopulationSelector.js";
-import {artistMockupDB} from "../../db/fakeDB.js";
+import {TimeSplitSelector} from "../Planning_Algo/TimeFrameSystem_Mondrian/TimeSplitStrategy/class_TimeSplitSelector.js";
+import {PopulationSelector} from "../Planning_Algo/TimeFrameSystem_Mondrian/PopulationStrategy/class_PopulationSelector.js";
+import {art1, artistMockupDB} from "../../db/fakeDB.js";
 
 
 /*The rotation must find the best fit in candidates*/
-
-
 const test = new TimeframeContext(
     {
         timeframeTitle: 'lunchCabaret',
-        startTime: new Date(2024, 11, 19, 12, 0),
-        endTime: new Date(2024, 11, 19, 15, 0),
+        startTime: new Date(2024, 11, 19, 15, 0),
+        endTime: new Date(2024, 11, 19, 19, 0),
         staff: artistMockupDB.filter(member => member.category === 'dj'),
     })
 
-test.setSplitStrategy(
-
+test.timeSplit.setStrategy(
     {
         strategy: new TimeSplitSelector('userDuration'),
         params: {
             userDuration: 30
         }
-
     }
 )
-
-
-test.setPopulationStrategy(
+/*
+test.population.setStrategy(
     {
         strategy: new PopulationSelector('linearPopulation'),
         params: {
@@ -37,8 +31,19 @@ test.setPopulationStrategy(
         }
     }
 )
+*/
 
-test.setSplitStrategy(
+test.population.setStrategy(
+    {
+        strategy: new PopulationSelector('bestFit_graphAnalytics'),
+        params: {
+            //staffMax: 2
+        }
+    }
+)
+
+/*
+test.timeSplit.setStrategy(
     {
         strategy: new TimeSplitSelector('timePattern'),
         params: {
@@ -46,10 +51,13 @@ test.setSplitStrategy(
         }
     }
 )
+*/
 
 
 
-//test.preview()
+
+test.preview()
+
 
 
 
@@ -57,17 +65,9 @@ const testFrameGenBlock = test.generatedBlocks
 
 
 
-class StaffPopulator {
-    constructor(input) {
-        this.timeframe = input.timeframe;
-    };
-
-}
 
 
-const noSuccessiveWorkBlocks = (array) => {
 
-}
 
 const randomPick = (array) => {
     return Math.floor(Math.random() * array.length)
