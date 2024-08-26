@@ -1,6 +1,4 @@
 import {TimeframeContext} from "../Planning_Algo/TimeFrameSystem_Mondrian/class_TimeframeContext.js";
-import {TimeSplitSelector} from "../Planning_Algo/TimeFrameSystem_Mondrian/TimeSplitStrategy/class_TimeSplitSelector.js";
-import {PopulationSelector} from "../Planning_Algo/TimeFrameSystem_Mondrian/PopulationStrategy/class_PopulationSelector.js";
 import {art1, artistMockupDB} from "../../db/fakeDB.js";
 
 
@@ -13,74 +11,57 @@ const test = new TimeframeContext(
         staff: artistMockupDB.filter(member => member.category === 'dj'),
     })
 
-test.timeSplit.setStrategy(
+test.setTimeSplitStrategy(
     {
-        strategy: new TimeSplitSelector('userDuration'),
+        strategy: 'userDuration',
         params: {
             userDuration: 30
         }
     }
 )
-/*
-test.population.setStrategy(
+
+test.setPopulationStrategy(
     {
-        strategy: new PopulationSelector('linearPopulation'),
+        strategy: 'linearPopulation',
         params: {
             offset: 0,
             staffMax: 2
         }
     }
 )
-*/
 
-test.population.setStrategy(
+
+test.setPopulationStrategy(
     {
-        strategy: new PopulationSelector('bestFit_graphAnalytics'),
+        strategy: 'bestFit_graphAnalytics',
         params: {
             //staffMax: 2
         }
     }
 )
 
+
 /*
-test.timeSplit.setStrategy(
+test.setTimeSplitStrategy(
     {
-        strategy: new TimeSplitSelector('timePattern'),
+        strategy: 'timePattern',
         params: {
             pattern: [45, 15],
         }
     }
 )
+
 */
 
 
 
 
+
 test.preview()
-
-
-
-
 const testFrameGenBlock = test.generatedBlocks
-
-
-
-
-
-
-
 const randomPick = (array) => {
     return Math.floor(Math.random() * array.length)
 };
 
 
-
-
-class Auto_Club{
-    constructor(input) {
-        this.startTime = input.startTime;
-
-    };
-}
-
-export {Auto_Club, testFrameGenBlock};
+export {testFrameGenBlock};

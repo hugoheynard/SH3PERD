@@ -8,7 +8,7 @@ import {Activity} from "./Activity_classes/class_Activity.js";
 import {rehearsalDependencies} from "../Planning_Algo/Morning_Builder_Algo/rehearsal_dependencies.js";
 import {Auto_GetIn} from "../Planning_Algo/BlockGenerators/blockGen_autoGetIn.js";
 import {Auto_TechSetup} from "../Planning_Algo/BlockGenerators/blockGen_autoTechSetUp/blockGen_autoTechSetUp.js";
-import {Auto_Club, testFrameGenBlock} from "./class_Auto_Club.js";
+import {testFrameGenBlock} from "./class_Auto_Club.js";
 
 
 class Day {

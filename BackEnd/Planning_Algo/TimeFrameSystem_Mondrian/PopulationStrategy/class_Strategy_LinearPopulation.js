@@ -9,9 +9,6 @@ class LinearPopulation extends PopulationStrategy{
     };
 
     populate() {
-        const availablePeople = [...this.staff]
-        const assignedPeople = [];
-
         this.timeSlots.forEach((section, index) => {
 
             const candidate = [this.staff[(index + this.offset) % this.staff.length]]

@@ -19,4 +19,30 @@ class Graph {
 
 }
 
-export {Graph};
+class GraphManager {
+    constructor(input) {
+        this.graph = new Graph()
+        this.staff = input.staff;
+        this.timeSlots = input.timeSlots;
+        this.rulesList = [];
+        this.numberOfPass = 0;
+
+
+    };
+    initMaxEdges() {
+        for (const member of this.staff) {
+            for (const period of this.timeSlots) {
+                this.graph.addEdge(member.staffMember_id, period)
+            }
+        }
+
+    }
+    run() {
+        this.initMaxEdges()
+
+
+        this.numberOfPass++;
+        console.log(this.numberOfPass)
+    };
+}
+export {Graph, GraphManager};

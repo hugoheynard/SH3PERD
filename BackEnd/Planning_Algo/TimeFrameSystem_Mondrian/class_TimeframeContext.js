@@ -3,6 +3,8 @@ import {WorkSlot} from "../../Classes/Activity_classes/class_WorkSlot.js";
 import {No} from "../../Classes/Activity_classes/class_NoBlock.js";
 import {TimeSplit_Interface} from "./TimeSplitStrategy/class_TimeSplit_Interface.js";
 import {Population_Interface} from "./PopulationStrategy/class_Population_Interface.js";
+import {TimeSplitSelector} from "./TimeSplitStrategy/class_TimeSplitSelector.js";
+import {PopulationSelector} from "./PopulationStrategy/class_PopulationSelector.js";
 
 class TimeframeContext {
     /*
@@ -23,23 +25,46 @@ class TimeframeContext {
                 startTime: this.startTime,
                 endTime: this.endTime
             });
-
+        this.timeSplit.setStrategy(
+            {
+                strategy: new TimeSplitSelector('defaultOneBlock'),
+                params: input.params
+            });
         this.population = new Population_Interface(
             {
-                staff: this.staff,
+                staff: this.staff
+            });
+        this.population.setStrategy(
+            {
+                strategy: new PopulationSelector('defaultNoStaff'),
                 timeSlots: this.timeSplit.strategy.timeSlots,
-        });
-
+                params: input.params
+            });
+    };
+    setTimeSplitStrategy(input) {
+        this.timeSplit.setStrategy(
+            {
+                strategy: new TimeSplitSelector(input.strategy),
+                params: input.params
+            });
+    };
+    setPopulationStrategy(input) {
+        this.population.setStrategy(
+            {
+                strategy: new PopulationSelector(input.strategy),
+                timeSlots: this.timeSplit.strategy.timeSlots,
+                params: input.params
+            });
     };
     generate() {
-        this.population.strategy.timeSlots = this.timeSplit.strategy.timeSlots; //updates population strategy
+        //updates population strategy
+        this.population.strategy.timeSlots = this.timeSplit.strategy.timeSlots;
         this.population.strategy.populate();
     };
 
-
     preview() {
         this.generate();
-        //this.generatedBlocks = [];
+        this.generatedBlocks = [];
 /*
         this.generatedBlocks.push(
             ...this.population.strategy.timeSlots.map(timeSection => {
@@ -62,7 +87,7 @@ class TimeframeContext {
             })
         )
 
- */
+
         //TODO: ICI CHAOS
         /*
         this.generatedBlocks.push(
