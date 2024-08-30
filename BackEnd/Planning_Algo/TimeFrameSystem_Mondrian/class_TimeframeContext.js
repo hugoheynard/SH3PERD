@@ -65,7 +65,7 @@ class TimeframeContext {
     preview() {
         this.generate();
         this.generatedBlocks = [];
-/*
+
         this.generatedBlocks.push(
             ...this.population.strategy.timeSlots.map(timeSection => {
                 return new WorkSlot(

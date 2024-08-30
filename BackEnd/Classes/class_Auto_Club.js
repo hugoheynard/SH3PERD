@@ -24,13 +24,14 @@ test.setPopulationStrategy(
     {
         strategy: 'linearPopulation',
         params: {
+            reverse: false,
             offset: 0,
             staffMax: 2
         }
     }
 )
 
-
+/*
 test.setPopulationStrategy(
     {
         strategy: 'bestFit_graphAnalytics',
@@ -39,7 +40,7 @@ test.setPopulationStrategy(
         }
     }
 )
-
+*/
 
 /*
 test.setTimeSplitStrategy(

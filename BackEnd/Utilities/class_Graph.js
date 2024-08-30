@@ -16,7 +16,6 @@ class Graph {
     getEdges(node) {
         return this.adjacencyList[node];
     };
-
 }
 
 class GraphManager {
