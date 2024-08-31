@@ -115,9 +115,9 @@ html, body {
     flex-shrink: 0;
     width: 2.5rem;
     align-items: center;
-    justify-content: space-around;
+    justify-content: flex-start;
     padding-top: 0.5rem;
-    gap: 2rem;
+    gap: 4rem;
     font-size: 1rem;
     background-color: var(--colorDarkMenus);
     color: var(--colorFadedGrey);

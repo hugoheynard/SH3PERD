@@ -61,12 +61,11 @@ wsMenu_Calendar.addButton_V2(
         content: new Icon(
             {
                 css: 'menuIcons',
-                publicURL: '../Front/Public/Icones/appMenus/calendarMenu/viewAll.svg',
+                publicURL: '../Front/Public/Icones/appMenus/calendarMenu/addEvent.svg',
                 alt: 'vI'
             }
         ),
-        callback: MenuAction.calViewAll,
-        ensemble: 'calMenu_viewButtonsEnsemble'
+        callback: MenuAction.calAddEventWindow,
     }
 )
 
@@ -76,12 +75,11 @@ wsMenu_Calendar.addButton_V2(
         content: new Icon(
             {
                 css: 'menuIcons',
-                publicURL: '../Front/Public/Icones/appMenus/calendarMenu/viewAll.svg',
+                publicURL: '../Front/Public/Icones/appMenus/calendarMenu/addTimeFrame.svg',
                 alt: 'vI'
             }
         ),
-        callback: MenuAction.calViewAll,
-        ensemble: 'calMenu_viewButtonsEnsemble'
+        callback: MenuAction.calAddTimeframeWindow,
     }
 )
 

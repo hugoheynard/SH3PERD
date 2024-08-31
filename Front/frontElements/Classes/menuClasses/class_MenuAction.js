@@ -32,6 +32,15 @@ class MenuAction {
         calendarViewContext.viewAll();
         appWorkspace.workSpaceStrategy.pageContext.setPage(wsPage_Calendar());
     }
+
+    static calAddEventWindow = () => {
+        appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopMenu_CalendarHome())
+    };
+
+    static calAddTimeframeWindow = () => {
+        appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopMenu_CalendarHome())
+    };
+
     static goPop_CalendarHome = () => appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopMenu_CalendarHome());
 
 
