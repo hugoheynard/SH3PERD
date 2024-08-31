@@ -11,7 +11,7 @@ wsMenu_Calendar.addEnsemble(
         css: 'defaultButtonEnsembles'
     });
 
-wsMenu_Calendar.addButton_V2(
+wsMenu_Calendar.addButton(
     {
         id: "calendarViewIndiv",
         content: new Icon(
@@ -26,7 +26,7 @@ wsMenu_Calendar.addButton_V2(
     }
 )
 
-wsMenu_Calendar.addButton_V2(
+wsMenu_Calendar.addButton(
     {
         id: "calendarViewCat",
         content: new Icon(
@@ -41,7 +41,7 @@ wsMenu_Calendar.addButton_V2(
     }
 )
 
-wsMenu_Calendar.addButton_V2(
+wsMenu_Calendar.addButton(
     {
         id: "calendarViewAll",
         content: new Icon(
@@ -55,7 +55,7 @@ wsMenu_Calendar.addButton_V2(
         ensemble: 'calMenu_viewButtonsEnsemble'
     }
 )
-wsMenu_Calendar.addButton_V2(
+wsMenu_Calendar.addButton(
     {
         id: 'createEvent',
         content: new Icon(
@@ -69,7 +69,7 @@ wsMenu_Calendar.addButton_V2(
     }
 )
 
-wsMenu_Calendar.addButton_V2(
+wsMenu_Calendar.addButton(
     {
         id: 'createTimeFrame',
         content: new Icon(

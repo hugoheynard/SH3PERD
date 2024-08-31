@@ -12,6 +12,7 @@ import {wsPage_workPeriods} from "../../../workspaces/ws_staffMember/staffMember
 import {createArtistProfile} from "../../Forms/appForms/artistProfileForms/createArtistProfile.js";
 import {wsPopMenu_CalendarHome} from "../../../workspaces/ws_calendar/PopMenus_Calendar/wsPopMenu_CalendarHome.js";
 import {calendarViewContext, wsPage_Calendar} from "../../../workspaces/ws_calendar/wsPage_Calendar.js";
+import {wsPopWindow_AddEvent} from "../../../workspaces/ws_calendar/wsCal_PopWindows/wsPopWindow_AddEventWindow.js";
 
 class MenuAction {
 
@@ -34,11 +35,11 @@ class MenuAction {
     }
 
     static calAddEventWindow = () => {
-        appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopMenu_CalendarHome())
+        appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopWindow_AddEvent());
     };
 
     static calAddTimeframeWindow = () => {
-        appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopMenu_CalendarHome())
+        appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopMenu_CalendarHome());
     };
 
     static goPop_CalendarHome = () => appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopMenu_CalendarHome());

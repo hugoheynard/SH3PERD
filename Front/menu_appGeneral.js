@@ -6,79 +6,93 @@ import {MenuAction} from "./frontElements/Classes/menuClasses/class_MenuAction.j
 const menu_appGeneral = new Menu('leftPermanentMenu', undefined, 'button_lpm')
 
 menu_appGeneral.addButton(
-    'button_home',
-    new Icon(
-        {
-            css: "menuIcons",
-            publicURL: '../Front/Public/Icones/appMenus/generalMenu/home.svg',
-            alt: "home"
-        }),
-    MenuAction.goHome
+    {
+        id: 'button_home',
+        content: new Icon(
+            {
+                css: "menuIcons",
+                publicURL: '../Front/Public/Icones/appMenus/generalMenu/home.svg',
+                alt: "home"
+            }),
+        callback: MenuAction.goHome
+    }
 );
 menu_appGeneral.addButton(
-     'button_calendar',
-     new Icon(
-         {
-             css: "menuIcons",
-             publicURL: '../Front/Public/Icones/appMenus/generalMenu/calendar.svg',
-             alt: "calendar"
-         }),
-     MenuAction.goCalendar
-);
-
-menu_appGeneral.addButton(
-    'button_musicLib',
-     new Icon(
-         {
-             css: "menuIcons",
-             publicURL: '../Front/Public/Icones/appMenus/generalMenu/musicLibrary.svg',
-             alt: "music"
-         }),
-     MenuAction.goMusicLibrary
+    {
+        id: 'button_calendar',
+        content: new Icon(
+            {
+                css: "menuIcons",
+                publicURL: '../Front/Public/Icones/appMenus/generalMenu/calendar.svg',
+                alt: "calendar"
+            }),
+        callback: MenuAction.goCalendar
+    }
 );
 
 menu_appGeneral.addButton(
-     'button_playlistManager',
-     new Icon(
-         {
-             css: "menuIcons",
-             publicURL: '../Front/Public/Icones/appMenus/generalMenu/playlists.svg',
-             alt: "playlists"
-         }),
-     MenuAction.goPlaylistManager
+    {
+        id: 'button_musicLib',
+        content: new Icon(
+            {
+                css: "menuIcons",
+                publicURL: '../Front/Public/Icones/appMenus/generalMenu/musicLibrary.svg',
+                alt: "music"
+            }),
+        callback: MenuAction.goMusicLibrary
+    }
 );
 
 menu_appGeneral.addButton(
-     'button_cabaretManager',
-     new Icon(
-         {
-             css: "menuIcons",
-             publicURL: '../Front/Public/Icones/appMenus/generalMenu/cabaret.svg',
-             alt: "cab"
-         }),
-     MenuAction.goCabaretManager
+    {
+        id: 'button_playlistManager',
+        content: new Icon(
+            {
+                css: "menuIcons",
+                publicURL: '../Front/Public/Icones/appMenus/generalMenu/playlists.svg',
+                alt: "playlists"
+            }),
+        callback: MenuAction.goPlaylistManager
+    }
 );
 
 menu_appGeneral.addButton(
-     'button_staffMember',
-     new Icon(
-         {
-             css: "menuIcons",
-             publicURL: '../Front/Public/Icones/appMenus/generalMenu/staffmember.svg',
-             alt: "staff"
-         }),
-     MenuAction.goStaffMember
+    {
+        id: 'button_cabaretManager',
+        content: new Icon(
+            {
+                css: "menuIcons",
+                publicURL: '../Front/Public/Icones/appMenus/generalMenu/cabaret.svg',
+                alt: "cab"
+            }),
+        callback: MenuAction.goCabaretManager
+    }
 );
 
 menu_appGeneral.addButton(
-     'button_logOut',
-     new Icon(
-         {
-             css: "menuIcons",
-             publicURL: '../Front/Public/Icones/appMenus/generalMenu/logout.svg',
-             alt: "cabaret page button"
-         }),
-     MenuAction.logOut
+    {
+        id: 'button_staffMember',
+        content: new Icon(
+            {
+                css: "menuIcons",
+                publicURL: '../Front/Public/Icones/appMenus/generalMenu/staffmember.svg',
+                alt: "staff"
+            }),
+        callback: MenuAction.goStaffMember
+    }
+);
+
+menu_appGeneral.addButton(
+    {
+        id: 'button_logOut',
+        content: new Icon(
+            {
+                css: "menuIcons",
+                publicURL: '../Front/Public/Icones/appMenus/generalMenu/logout.svg',
+                alt: "cabaret page button"
+            }),
+        callback: MenuAction.logOut
+    }
 );
 
 

@@ -1,13 +1,11 @@
 import {HTMLelem} from "./HTMLClasses/class_HTMLelem.js";
-import {MenuAction} from "./menuClasses/class_MenuAction.js";
-import {Icon} from "./icones/class_Icon.js";
 import {MenuButton} from "./MenuButton.js";
+
 
 class Menu{
 
     constructor(id= "", cssMenu = "", cssButtons = "") {
         this.cssButtons = cssButtons
-        this.defaultCallback = MenuAction.goHome
 
         this.menu = new HTMLelem('div', id, cssMenu);
         this.ensemblesArray = [];
@@ -28,25 +26,7 @@ class Menu{
         ensemble.container.isChildOf(this.menu)
     };
 
-    addButton(id = "", content, callBack = this.defaultCallback) {
-        //TODO gérer les types de content text img
-        const button = new HTMLelem('button', id, this.cssButtons);
-
-        if (typeof content === 'string') {
-            button.setText(content);
-        }
-
-        if (content instanceof Icon) {
-            content.render().isChildOf(button);
-        }
-
-        this.addClickAction(button, callBack);
-        this.buttonArray.push(button) // servira pour animations???
-
-        return button;
-    };
-
-    addButton_V2(input) {
+    addButton(input) {
         const button = new MenuButton(
             {
                 id: input.id,
@@ -64,10 +44,6 @@ class Menu{
         }
         this.buttonArray.push(button);
         button.isChildOf(this.menu);
-    };
-
-    addClickAction(element, callback) {
-        element.render().addEventListener('click', callback)
     };
 
     render() {
