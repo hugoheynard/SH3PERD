@@ -5,40 +5,56 @@ import {MenuAction} from "../../frontElements/Classes/menuClasses/class_MenuActi
 
 const wsMenu_Calendar = new Menu('wsMenu_Calendar', 'workspaceMenu', 'button_lpm')
 
-wsMenu_Calendar.addButton(
-    "calendarViewIndiv",
-    new Icon(
-        {
-            css:'menuIcons',
-            publicURL: '../Front/Public/Icones/appMenus/calendarMenu/viewIndiv.svg',
-            alt:'vI'
-        }
-    ),
-    MenuAction.calViewIndiv
+wsMenu_Calendar.addEnsemble(
+    {
+        id: 'calMenu_viewButtonsEnsemble',
+        css: 'defaultButtonEnsembles'
+    });
+
+wsMenu_Calendar.addButton_V2(
+    {
+        id: "calendarViewIndiv",
+        content: new Icon(
+            {
+                css: 'menuIcons',
+                publicURL: '../Front/Public/Icones/appMenus/calendarMenu/viewIndiv.svg',
+                alt: 'vI'
+            }
+        ),
+        callback: MenuAction.calViewIndiv,
+        ensemble: 'calMenu_viewButtonsEnsemble'
+    }
 )
 
-wsMenu_Calendar.addButton(
-    "calendarViewCat",
-    new Icon(
-        {
-            css:'menuIcons',
-            publicURL: '../Front/Public/Icones/appMenus/calendarMenu/viewCat.svg',
-            alt:'vI'
-        }
-    ),
-    MenuAction.calViewCat
+wsMenu_Calendar.addButton_V2(
+    {
+        id: "calendarViewCat",
+        content: new Icon(
+            {
+                css: 'menuIcons',
+                publicURL: '../Front/Public/Icones/appMenus/calendarMenu/viewCat.svg',
+                alt: 'vI'
+            }
+        ),
+        callback: MenuAction.calViewCat,
+        ensemble: 'calMenu_viewButtonsEnsemble'
+    }
 )
 
-wsMenu_Calendar.addButton(
-    "calendarViewAll",
-    new Icon(
-        {
-            css:'menuIcons',
-            publicURL: '../Front/Public/Icones/appMenus/calendarMenu/viewAll.svg',
-            alt:'vI'
-        }
-    ),
-    MenuAction.calViewAll
+wsMenu_Calendar.addButton_V2(
+    {
+        id: "calendarViewAll",
+        content: new Icon(
+            {
+                css: 'menuIcons',
+                publicURL: '../Front/Public/Icones/appMenus/calendarMenu/viewAll.svg',
+                alt: 'vI'
+            }
+        ),
+        callback: MenuAction.calViewAll,
+        ensemble: 'calMenu_viewButtonsEnsemble'
+    }
 )
+
 
 export {wsMenu_Calendar};

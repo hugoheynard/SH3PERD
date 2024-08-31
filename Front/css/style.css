@@ -48,6 +48,15 @@ html, body {
     color: var(--colorLightGrey);
 }
 
+.defaultButtonEnsembles {
+    display: inherit;
+    flex-direction: inherit;
+    height: 25%;
+    justify-content: space-around;
+    border: 1px solid #8a8d8d;
+    border-radius: 0.2rem;
+}
+
 .menuIcons{
     color: var(--colorFadedGrey);
     cursor: pointer;
