@@ -55,6 +55,35 @@ wsMenu_Calendar.addButton_V2(
         ensemble: 'calMenu_viewButtonsEnsemble'
     }
 )
+wsMenu_Calendar.addButton_V2(
+    {
+        id: 'createEvent',
+        content: new Icon(
+            {
+                css: 'menuIcons',
+                publicURL: '../Front/Public/Icones/appMenus/calendarMenu/viewAll.svg',
+                alt: 'vI'
+            }
+        ),
+        callback: MenuAction.calViewAll,
+        ensemble: 'calMenu_viewButtonsEnsemble'
+    }
+)
+
+wsMenu_Calendar.addButton_V2(
+    {
+        id: 'createTimeFrame',
+        content: new Icon(
+            {
+                css: 'menuIcons',
+                publicURL: '../Front/Public/Icones/appMenus/calendarMenu/viewAll.svg',
+                alt: 'vI'
+            }
+        ),
+        callback: MenuAction.calViewAll,
+        ensemble: 'calMenu_viewButtonsEnsemble'
+    }
+)
 
 
 export {wsMenu_Calendar};
