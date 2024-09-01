@@ -222,6 +222,10 @@ class Form {
     };
 
     render() {
+        if (!this.submitButton) {
+            throw new Error('Submit button is missing, use method "add_submitButton"')
+        };
+
         this.appendSections();
         this.appendFields();
 
