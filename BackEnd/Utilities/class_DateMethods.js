@@ -20,6 +20,9 @@ class DateMethod {
         result.setDate(result.getDate() + days);
         return result;
     };
+    static roundedTime(time, nearest = DateMethod.STEP_DURATION) {
+        return (Math.round(time / nearest) * nearest) % 60;
+    };
 
     //TIME COMPARISONS
     static differenceInMinutes(closestDate, furthestDate) {

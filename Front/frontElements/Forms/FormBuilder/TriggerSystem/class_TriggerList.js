@@ -12,10 +12,6 @@ class TriggerList{
 
     get validationCondition() {
         return this._validationCondition;
-    }
-
-    addTrigger(trigger) {
-        this.triggerList.push(trigger);
     };
 
     isValid() {

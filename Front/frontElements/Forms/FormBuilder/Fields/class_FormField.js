@@ -50,9 +50,7 @@ class FormField {
     };
 
     render() {
-
         return this.field.render();
-
     };
 }
 

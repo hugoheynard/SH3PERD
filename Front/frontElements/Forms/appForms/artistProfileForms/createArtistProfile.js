@@ -5,6 +5,7 @@ import {FormField_selectField} from "../../FormBuilder/Fields/class_FormField_Se
 import {FormField_Checkbox} from "../../FormBuilder/Fields/FormField_Checkbox.js";
 import {FormSection} from "../../FormBuilder/class_FormSection.js";
 import {HTMLelem} from "../../../Classes/HTMLClasses/class_HTMLelem.js";
+import {cssObj_AddTrackProcess} from "../cssFormsInJs/cssObj_AddTrackProcess.js";
 
 
 const artistBaseInfo = new Form(
@@ -13,13 +14,19 @@ const artistBaseInfo = new Form(
     undefined,
     false,
     'form col',
-    ''
+    '',
+    {
+        id: 'artistBaseInfos'
+
+    }
 );
 
-const cssSection = 'col gapMid';
-const cssHeader = 'row spaceBetween';
-const cssTitle = 'form_sectionTitle';
-const cssSecFieldContainer = 'row gapMid wrap';
+const sectionStyle = {
+    global: 'col gapMid',
+    header: 'row spaceBetween',
+    title: 'form_sectionTitle',
+    container: 'row gapMid wrap'
+};
 
 const css = 'field textField widthMid avg borderRoundLight capital'
 
@@ -28,16 +35,10 @@ artistBaseInfo.addSection(
     {
         id:'artistBaseInfos',
         positionInForm: 1,
-        element: new FormSection(
-            {
-                id:'artistBaseInfos',
-                title:'personal details',
-                cssSection:cssSection,
-                cssSectionHeader:cssHeader,
-                cssSectionTitle:cssTitle,
-                cssSectionFieldsContainer:cssSecFieldContainer
-            }
-            )
+        element: {
+            title:'personal details',
+            style: sectionStyle
+        }
     }
 );
 
@@ -91,15 +92,10 @@ artistBaseInfo.addSection(
     {
         id:'artistJobInfos',
         positionInForm: 2,
-        element: new FormSection(
-            {
-                id:'artistJobInfos',
-                title:'functions',
-                cssSection:cssSection,
-                cssSectionHeader:cssHeader,
-                cssSectionTitle:cssTitle,
-                cssSectionFieldsContainer:cssSecFieldContainer
-            })
+        element: {
+            title:'functions',
+            style: sectionStyle,
+        }
     }
 );
 
@@ -175,16 +171,10 @@ artistBaseInfo.addSection(
     {
         id:'artistContactInfos',
         positionInForm: 3,
-        element: new FormSection(
-            {
-                id:'artistContactInfos',
-                title:'Contact Informations',
-                cssSection:cssSection,
-                cssSectionHeader:cssHeader,
-                cssSectionTitle:cssTitle,
-                cssSectionFieldsContainer:cssSecFieldContainer
-            }
-        )
+        element: {
+            title:'Contact Informations',
+            style: sectionStyle,
+        }
     }
 );
 
