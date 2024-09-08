@@ -2,6 +2,7 @@ import {addBlockTitle, addTime} from "./addBlockContent.js";
 import {HTMLelem} from "../../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {dragOver, dragStart} from "../../../../Utilities/DragNDropFunctions/dragAndDrop.js";
 
+
 class GridBlock {
 
     constructor(input) {
@@ -15,6 +16,7 @@ class GridBlock {
         this.addBlockTypeInDataset();
         this.addBlockResume();
         //addContent
+
     };
 
     get blockData(){
@@ -22,7 +24,10 @@ class GridBlock {
     };
 
     addBlockTypeInDataset() {
+        this.htmlElement.dataset.id = this.blockData.id;
         this.htmlElement.dataset.type = this.blockData.type;
+
+
     };
 
     addBlockResume() {

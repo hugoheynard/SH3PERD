@@ -1,5 +1,6 @@
 import {HTMLelem} from "../../Classes/HTMLClasses/class_HTMLelem.js";
 import {FormSection} from "./class_FormSection.js";
+import {FormField_Checkbox} from "./Fields/FormField_Checkbox.js";
 
 
 class Form {
@@ -19,13 +20,14 @@ class Form {
         }
 
         this.formTree = {};
+        this.dynamicFieldsList = [];
 
         this.formDataJSON = null;
         this.returnedData = null;
 
-        this.formElement = this.form.render();
-        this.formElement.addEventListener('submit', (event) => this.handleSubmit(event));
+        //TODO manage button bottom div part
 
+        this.formElement = this.form.render();
     };
     async handleSubmit(event) {
         event.preventDefault();
@@ -102,9 +104,27 @@ class Form {
 
     //Dynamic Fields
     addDynamicField(input) {
+        this.dynamicFieldsList.push(input);
+
+        //utilities functions to manage custom containers cases
+        const eventType = field => {
+            if (field instanceof FormField_Checkbox) {
+                return 'change';
+            }
+            return 'input';
+        };
+        const listenerTarget = field => {
+            if (field instanceof FormField_Checkbox) {
+                return field.field.elem;
+            }
+            return field.render();
+        };
+
         for (const triggerField of input.triggerList.triggerList) {
-            this.getElement(triggerField.id).element.render()
-                .addEventListener('input', (event) => {
+            const field = this.getElement(triggerField.id).element;
+
+            listenerTarget(field)
+                .addEventListener(eventType(field), (event) => {
                     this.triggerFieldValidationState(triggerField, event);
 
                     if (!input.triggerList.isValid()) {
@@ -114,14 +134,17 @@ class Form {
 
                     const defaultPreviousElement = input.triggerList.triggerList.at(-1).id;
                     this.dynamicFieldRender(
-                        this.getElement(input.dynamicField).element,
+                        this.getElement(
+                            input.dynamicField).element,
                         input.previousElement ?? defaultPreviousElement
                     );
                 });
         }
     };
-    dynamicFieldRender(field, previousElement) {
-        document.getElementById(previousElement).insertAdjacentElement('afterend', field.render());
+    dynamicFieldRender(field, previousElementID) {
+        //Inserts dynamic element into this.formElement
+        const previousElem = this.formElement.querySelector(`#${previousElementID}`);
+        previousElem.insertAdjacentElement('afterend', field.render());
     };
     removeDynamicField(field) {
         const fieldToRemove = document.getElementById(field);
@@ -165,8 +188,13 @@ class Form {
         const button = new HTMLelem('button', id, css);
         button.setAttributes({'type': 'submit'});
         button.setText(text);
-
         this.submitButton = button.render();
+    };
+
+    add_deleteButton(text, id= '', css = '') {
+        const button = new HTMLelem('button', id, css);
+        button.setText(text);
+        this.deleteButton = button.render();
     };
 
     //DISPLAY DESIGN METHODS
@@ -197,7 +225,6 @@ class Form {
             .sort((a, b) => a.positionInForm - b.positionInForm)
             .map(section => this.formElement.appendChild(section.element.section));
     };
-
     appendFields() {
         Object.values(this.formTree)
             .filter(elem => elem.type === 'field')
@@ -209,11 +236,11 @@ class Form {
                 }
             });
     };
-
     render() {
         if (!this.submitButton) {
             throw new Error('Submit button is missing, use method "add_submitButton"')
         }
+        this.formElement.addEventListener('submit', (event) => this.handleSubmit(event));
 
         this.appendSections();
         this.appendFields();

@@ -129,6 +129,18 @@ class BackEndCall {
             .catch((error) => console.error('Error:', error));
 
     };
+
+    //CALENDAR
+
+    static POST_event(formDataJSON) {
+        console.log('goodPOST')
+    }
+    static PUT_event(formDataJSON) {
+        console.log('goodPUT')
+    }
+    static DELETE_event() {
+        console.log('delete')
+    }
 }
 
 export {BackEndCall};

@@ -9,7 +9,7 @@ class PrivateEvent extends Activity {
         this.type = "private";
         this.category = input.category;
         this.location = input.location;
-        this.id = this.idFromArray([this.date, this.type, this.category, this.location]);
+        //this.id = this.idFromArray([this.date, this.type, this.category, this.location]);
 
     };
 

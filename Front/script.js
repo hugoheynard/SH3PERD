@@ -13,6 +13,8 @@ import {wsMenu_Calendar} from "./workspaces/ws_calendar/wsMenu_Calendar.js";
 import {wsPopMenu_CalendarHome} from "./workspaces/ws_calendar/PopMenus_Calendar/wsPopMenu_CalendarHome.js";
 import {ColorScheme} from "../db/fakeDB-design.js";
 import {wsPopWindow_AddEvent} from "./workspaces/ws_calendar/wsCal_PopWindows/wsPopWindow_AddEventWindow.js";
+import {wsPopWindow_AddTimeframe} from "./workspaces/ws_calendar/wsCal_PopWindows/wsPopWindow_AddTimeframeWindow.js";
+
 
 
 const body = document.querySelectorAll('body')[0];
@@ -43,7 +45,7 @@ const ws_Calendar = new Workspace(
     {
         wsMenu: wsMenu_Calendar,
         defaultPage: wsPage_Calendar(),
-        defaultPopWindow: wsPopWindow_AddEvent()
+        defaultPopWindow: wsPopWindow_AddEvent()//wsPopWindow_AddTimeframe()//
     });
 
 const ws_musicLibrary = new Workspace(
@@ -71,6 +73,7 @@ const appWorkspace = new WorkSpaceContext(
     {
         defaultWorkspace: ws_Calendar
     });
+
 
 mainContainer.appendChild(appWorkspace.render());
 

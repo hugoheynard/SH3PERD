@@ -9,7 +9,7 @@ class TechSetUp extends Activity {
 
         this.type = "techSetUp";
         this.blockOrigin = input.blockOrigin ?? "userEntry";
-        this.id = generateIdFromArray([this.date, this.type, this.blockOrigin]);
+        //this.id = generateIdFromArray([this.date, this.type, this.blockOrigin]);
         this.content = input.content;
 
 

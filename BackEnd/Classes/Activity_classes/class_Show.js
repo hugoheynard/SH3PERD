@@ -10,7 +10,7 @@ class Show extends Activity {
         this.type = "show";
         this.location = location;
         this.staff = input.staff;
-        this.id = this.idFromArray([this.date, this.type, this.location]);
+        //this.id = this.idFromArray([this.date, this.type, this.location]);
         this.category = input.category;
 
 

@@ -3,9 +3,7 @@ import {HTMLelem} from "../../../Classes/HTMLClasses/class_HTMLelem.js";
 
 
 class FormField_Checkbox extends FormField{
-
     constructor(input){
-
         super(input)
 
         this._label = input.label ?? false
@@ -19,17 +17,25 @@ class FormField_Checkbox extends FormField{
             'class': this.cssCheckbox
         });
 
-        this.container = new HTMLelem('div', "", this.cssContainer).render();
+        this.container = new HTMLelem('div', this.id, this.cssContainer).render();
         this.addLabel();
 
         if(this.customizeCheckbox) {
-
             this.addCustomCheckbox();
             this.field.setAttributes({'class':''})
         }
 
         this.container.appendChild(this.field.render());
+    };
 
+    manageDefaultValue(newValue) {
+        super.manageDefaultValue(newValue);
+
+        if (this.defaultValue === "on") {
+            this.field.render().checked = true;
+            this.field.render().value = "on"
+            this.field.render().dispatchEvent(new Event('change'));
+        }
     };
 
 
@@ -47,13 +53,10 @@ class FormField_Checkbox extends FormField{
         const label = new HTMLelem('label', undefined, this.cssLabel);
         label.setAttributes({'for': this.id});
         label.setText(this.label);
-        //TODO :
-        // Insert the label before the checkbox in the DOM
         this.container.appendChild(label.render());
     };
 
     render() {
-
         return this.container;
     };
 

@@ -1,5 +1,4 @@
 import {FormField} from "./class_FormField.js";
-import {DateMethod} from "../../../../../BackEnd/Utilities/class_DateMethods.js";
 
 
 class FormField_Date extends FormField{
@@ -8,8 +7,11 @@ class FormField_Date extends FormField{
         this.field.setAttributes({
             'type': 'date',
             'name': this.id,
-            'value': DateMethod.today
         });
+        this.manageDefaultValue();
+    };
+    manageDefaultValue() {
+        this.field.setAttributes({'value': this.defaultValue});
     };
 }
 

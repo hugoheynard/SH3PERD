@@ -9,39 +9,51 @@ class FormField_selectField extends FormField{
         this._type = 'select';
         this._field = this.buildField();
 
-        this._name = input.name;
-        this._optionsArray = input.optionsArray ?? ['emptySelection'];
+        this._name = this.id;
+        this._optionsArray = [];
         this._descText = input.descText ?? input.id;
 
         this.field.setAttributes({'name': this.name});
         this.addDescOption();
-        this.addOptions();
+        this.addOptions(input.optionsArray ?? ['emptySelection']);
     };
 
     get name() {
         return this._name;
     };
-
     get descText() {
         return this._descText;
     };
-
     get optionsArray() {
         return this._optionsArray;
     };
 
-    addOptions() {
+    manageDefaultValue(newValue) {
+        super.manageDefaultValue(newValue);
 
-        for (const content of this.optionsArray) {
+        for (const option of this.optionsArray) {
+
+            if (option.getAttribute('selected') === "true") {
+                option.removeAttribute('selected');
+            }
+
+            if (option.getAttribute('value') === this.defaultValue) {
+                option.setAttribute('selected', true);
+            }
+        }
+        this.field.render().dispatchEvent(new Event('input'));
+    };
+
+    addOptions(array) {
+        for (const content of array) {
 
             const option = new HTMLelem("option");
             option.setAttributes({'value': content});
             option.setText(content);
 
             option.isChildOf(this.field);
-
+            this.optionsArray.push(option.render());
         }
-
     };
 
     addDescOption() {
@@ -57,6 +69,8 @@ class FormField_selectField extends FormField{
         option.setText(this.descText);
 
         option.isChildOf(this.field);
+
+        this.optionsArray.push(option.render());
 
     };
 

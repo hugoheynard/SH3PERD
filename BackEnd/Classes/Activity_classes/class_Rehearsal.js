@@ -7,7 +7,7 @@ class Rehearsal extends Activity {
 
         this.type = "rehearsal";
         this.location = input.location;
-        this.id = this.idFromArray([this.date, this.type, this.location]);
+        //this.id = this.idFromArray([this.date, this.type, this.location]);
         this.needsTechInstall = input.needsTechInstall;
         this.needsTechAssist = input.needsTechAssist;
 

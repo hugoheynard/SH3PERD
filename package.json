@@ -2,7 +2,7 @@
   "name": "SH3PHERD",
   "version": "1.0.0",
   "description": "",
-  "main": "scriptOLD.js",
+  "main": "script.js",
   "type": "module",
   "scripts": {
     "test": "jest"
@@ -13,6 +13,8 @@
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "jsdom": "^25.0.0",
+    "mongoose": "^8.6.1",
     "multer": "^1.4.5-lts.1",
     "nanoid": "^5.0.7",
     "path": "^0.12.7",

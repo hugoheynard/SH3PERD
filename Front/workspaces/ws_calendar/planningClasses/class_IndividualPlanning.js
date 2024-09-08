@@ -7,6 +7,9 @@ import {
     getRowEndFromDatasetDuration
 } from "../../../Utilities/dataset_functions/datasetFunctions.js";
 import {addTime} from "./class_GridBlock/addBlockContent.js";
+import {wsPopWindow_AddEvent} from "../wsCal_PopWindows/wsPopWindow_AddEventWindow.js";
+import {wsPopWindow_AddTimeframe} from "../wsCal_PopWindows/wsPopWindow_AddTimeframeWindow.js";
+import {appWorkspace} from "../../../script.js";
 
 
 class IndividualPlanning {
@@ -126,7 +129,6 @@ class IndividualPlanning {
 
     };
 
-    //
     //TODO: Display as a line -> rowheight = 0?
     buildDropDivOverlay() {
 
@@ -135,10 +137,19 @@ class IndividualPlanning {
 
     }
 
+    blockClickListener_formCallback() {
+        // double click triggers the form callback to modify event block
+        for (const block of this.gridBlockArray) {
+            const block_id = block.blockData.id;
+            block.htmlElement.addEventListener('dblclick', () => appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopWindow_AddEvent(block_id)))
+        } //TODO: better access to setpopmenu
+    };
+
     renderPlanning() {
         this.planning.innerHTML = '';
 
         this.buildGrid();
+        this.blockClickListener_formCallback();
         this.dragSystem();
 
         //adds Planning;
