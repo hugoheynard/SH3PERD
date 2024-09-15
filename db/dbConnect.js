@@ -3,20 +3,12 @@ const sqlite3Verbose = sqlite3.verbose();
 
 class Database {
     constructor() {
-
         if (!Database.instance) {
-
-
             this.db = new sqlite3.Database('/Users/hugo/WebstormProjects/SH3PHERD/db/database.sqlite', (err) => {
-
                 if (err) {
-
                     console.error('Failed to connect to the database.sqlite:', err.message);
-
                 } else {
-
                     console.log('Connected to the SQLite database.sqlite.');
-
                 }
 
             });
