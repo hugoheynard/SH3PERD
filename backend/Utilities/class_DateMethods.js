@@ -6,11 +6,19 @@ class DateMethod {
 
     //TIME MANIPULATIONS
     static addMinutes(date, minutes){
+        if (minutes <= 0 || !Number.isInteger(minutes)) {
+            throw new Error('minutes parameter must be positive integer only');
+        }
+
         const newDate = new Date(date);
         newDate.setMinutes(newDate.getMinutes() + minutes);
         return newDate;
     };
     static substractMinutes = (date, minutes) => {
+        if (minutes <= 0 || !Number.isInteger(minutes)) {
+            throw new Error('minutes parameter must be positive integer only');
+        }
+
         const newDate = new Date(date);
         newDate.setMinutes(date.getMinutes() - minutes);
         return newDate;
@@ -22,6 +30,13 @@ class DateMethod {
     };
     static roundedTime(time, nearest = DateMethod.STEP_DURATION) {
         return (Math.round(time / nearest) * nearest) % 60;
+    };
+
+    static startOfDay(date) {
+        return new Date(date.setHours(0, 0, 0, 0));
+    };
+    static endOfDay(date) {
+        return DateMethod.addDays(DateMethod.startOfDay(date), 1);
     };
 
     //TIME COMPARISONS

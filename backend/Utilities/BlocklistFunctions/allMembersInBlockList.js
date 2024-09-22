@@ -9,8 +9,8 @@ class TimetableAction {
     allStaffMembersInTimetable() {
         const staff = [];
 
-        for (const block of this.timeTable) {
-            for (const staffMember of block.staff) {
+        for (const event of this.timeTable) {
+            for (const staffMember of event.staff) {
 
                 if (!staff.includes(staffMember)) {
                     staff.push(staffMember);

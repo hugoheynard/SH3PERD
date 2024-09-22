@@ -1,4 +1,4 @@
-import {Database} from "../dbConnect.js";
+import {Database} from "../../backend/appServer_dbConnections/dbConnect.js";
 
 class DatabaseAction {
 

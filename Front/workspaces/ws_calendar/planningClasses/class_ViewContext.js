@@ -7,13 +7,14 @@ import {CalendarAll} from "./class_CalendarAll.js";
 
 
 class ViewContext {
-    constructor(timetable, artistList) {
+    constructor(input) {
 
-        this.timeTable = timetable;
-        this.artistList = artistList;
-        this.indivView = new CalendarIndiv(this.timeTable, this.artistList);
-        this.perCatView = new CalendarPerCat(this.timeTable, this.artistList);
-        this.allView = new CalendarAll(this.timeTable, this.artistList);
+        this.timetable = input.timetable;
+        this.staff = input.staff;
+
+        this.indivView = new CalendarIndiv(this.timetable, this.staff);
+        this.perCatView = new CalendarPerCat(this.timetable, this.staff);
+        this.allView = new CalendarAll(this.timetable, this.staff);
 
         this.wsPageContainer = new HTMLelem('div', 'wsPage_Calendars').render();
         this.calContainer = new HTMLelem('div', 'calContainer').render();

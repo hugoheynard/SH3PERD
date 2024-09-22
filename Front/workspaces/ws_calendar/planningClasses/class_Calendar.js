@@ -1,9 +1,9 @@
 import {IndividualPlanning} from "./class_IndividualPlanning.js";
-import {sortBlockArrayPerTime} from "../../../../BackEnd/Utilities/sortBlockArray.js";
+import {sortBlockArrayPerTime} from "../../../../backend/Utilities/sortBlockArray.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {CalendarHeader} from "./class_CalendarHeader.js";
 import {CalHoursGrid} from "./class_calHoursGrid.js";
-import {DateMethod} from "../../../../BackEnd/Utilities/class_DateMethods.js";
+import {DateMethod} from "../../../../backend/Utilities/class_DateMethods.js";
 import {ONE_MINUTE_IN_MS, STEP_DURATION} from "../../../Utilities/MAGIC NUMBERS.js";
 import {ColorScheme} from "../../../../db/fakeDB-design.js";
 

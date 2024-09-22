@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import {Contract} from "./Contract_Schema.js";
-import {connectToMongo} from "../mongoDB_connect.js";
+import {Contract} from "./class_ContractAction.js";
+import {DateMethod} from "../../backend/Utilities/class_DateMethods.js";
 
 
 const staff_Schema = new mongoose.Schema({
@@ -61,7 +61,7 @@ const staff_Schema = new mongoose.Schema({
 
 
 const Staff = mongoose.model('staff', staff_Schema);
-
+/*
 const test = new Staff({
     firstName: 'Tanguy',
     lastName: 'Paumier',
@@ -76,6 +76,7 @@ const test = new Staff({
 
 
 
+
 test.save().then(() => console.log('User created'))
     .catch(err => {
         if (err.code === 11000) {
@@ -84,18 +85,7 @@ test.save().then(() => console.log('User created'))
         //console.error('Error creating user:', err)
     });
 
-await connectToMongo()
-Contract.findOne({ _id: new mongoose.Types.ObjectId('66e0623bf5b6a92a3a4015a1') })
-    .populate('owner')  // Populate the 'staff' field with staff details
-    .then(contract => {
-        if (!contract) {
-            console.log('Contrat non trouvé');
-        } else {
-            console.log('Contrat trouvé:', contract);
-        }
-    })
-    .catch(err => {
-        console.error('Erreur lors de la récupération du contrat:', err);
-    });
+*/
+
 
 export {Staff};

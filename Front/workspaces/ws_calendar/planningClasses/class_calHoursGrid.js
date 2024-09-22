@@ -1,4 +1,4 @@
-import {DateMethod} from "../../../../BackEnd/Utilities/class_DateMethods.js";
+import {DateMethod} from "../../../../backend/Utilities/class_DateMethods.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {getPositionFromDataset_Date} from "../../../Utilities/dataset_functions/datasetFunctions.js";
 

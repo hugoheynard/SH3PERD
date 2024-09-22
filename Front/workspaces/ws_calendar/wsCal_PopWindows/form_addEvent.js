@@ -4,14 +4,14 @@ import {cssObj_AddTrackProcess} from "../../../frontElements/Forms/appForms/cssF
 import {FormField_Date} from "../../../frontElements/Forms/FormBuilder/Fields/class_FormField_Date.js";
 import {FormField_Time} from "../../../frontElements/Forms/FormBuilder/Fields/class_FormField_Time.js";
 import {FormField_NumInput} from "../../../frontElements/Forms/FormBuilder/Fields/class_FormField_NumInput.js";
-import {DateMethod} from "../../../../BackEnd/Utilities/class_DateMethods.js";
+import {DateMethod} from "../../../../backend/Utilities/class_DateMethods.js";
 import {FormField_selectField} from "../../../frontElements/Forms/FormBuilder/Fields/class_FormField_Select.js";
 import {FormField_Checkbox} from "../../../frontElements/Forms/FormBuilder/Fields/FormField_Checkbox.js";
 import {css} from "../../../frontElements/Forms/appForms/artistProfileForms/createArtistProfile.js";
 import {TriggerList} from "../../../frontElements/Forms/FormBuilder/TriggerSystem/class_TriggerList.js";
 import {TriggerField} from "../../../frontElements/Forms/FormBuilder/TriggerSystem/class_TriggerField.js";
 import {FormField_textInput} from "../../../frontElements/Forms/FormBuilder/Fields/class_FormField_TextInput.js";
-import {genID} from "../../../../BackEnd/Utilities/nanoIDgenerator.js";
+import {genID} from "../../../../backend/Utilities/nanoIDgenerator.js";
 
 
 const form_addEvent = new Form({

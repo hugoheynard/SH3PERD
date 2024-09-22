@@ -1,7 +1,7 @@
 import {GridBlock} from "./class_GridBlock/class_GridBlock.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {dragEnd, dragLeave, dragOver, dragStart, drop} from "../../../Utilities/DragNDropFunctions/dragAndDrop.js";
-import {DateMethod} from "../../../../BackEnd/Utilities/class_DateMethods.js";
+import {DateMethod} from "../../../../backend/Utilities/class_DateMethods.js";
 import {
     getPositionFromDataset_Date,
     getRowEndFromDatasetDuration

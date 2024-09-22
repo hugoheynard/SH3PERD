@@ -10,65 +10,40 @@ class Database {
                 } else {
                     console.log('Connected to the SQLite database.sqlite.');
                 }
-
             });
-
             Database.instance = this;
-
         }
 
         return Database.instance
         //return Object.freeze(Database.instance);
-
     };
 
     getConnection() {
-
         return new Promise((resolve, reject) => {
-
             if (this.db) {
-
                 resolve(this.db);
-
             } else {
-
                 reject(new Error('Database connection not established.'));
-
             }
-
         });
 
     };
 
     async closeDatabaseAsync() {
-
         return new Promise((resolve, reject) => {
-
             if (this.db) {
-
                 this.db.close((err) => {
-
                     if (err) {
-
                         reject(err);
-
                     } else {
-
                         console.log('Database connection closed.');
-
                         resolve();
-
                     }
-
                 });
-
             } else {
-
                 resolve(); // If there's no open connection, resolve immediately
             }
-
         });
-
     }
 }
 

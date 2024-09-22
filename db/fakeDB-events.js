@@ -1,5 +1,5 @@
-import {RecurrentEvent} from "../BackEnd/Classes/Activity_classes/class_RecurrentEvent.js";
-import {PrivateEvent} from "../BackEnd/Classes/Activity_classes/class_PrivateEvent.js";
+import {RecurrentEvent} from "../backend/Classes/Activity_classes/class_RecurrentEvent.js";
+import {PrivateEvent} from "../backend/Classes/Activity_classes/class_PrivateEvent.js";
 import {art1, art2} from "./fakeDB.js";
 
 //Mockup recurrent events

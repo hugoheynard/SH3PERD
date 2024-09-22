@@ -14,6 +14,7 @@ import {wsPopMenu_CalendarHome} from "./workspaces/ws_calendar/PopMenus_Calendar
 import {ColorScheme} from "../db/fakeDB-design.js";
 import {wsPopWindow_AddEvent} from "./workspaces/ws_calendar/wsCal_PopWindows/wsPopWindow_AddEventWindow.js";
 import {wsPopWindow_AddTimeframe} from "./workspaces/ws_calendar/wsCal_PopWindows/wsPopWindow_AddTimeframeWindow.js";
+import {BackEndCall} from "./frontElements/Classes/class_BackEndCalls.js";
 
 
 
@@ -34,7 +35,7 @@ meIcon.textContent = 'H';
 topMenu.appendChild(meIcon);
 mainContainer.appendChild(topMenu);
 
-
+const currentDay = new BackEndCall()
 
 // WORKSPACES INITIALISATION
 const ws_Home = new Workspace(

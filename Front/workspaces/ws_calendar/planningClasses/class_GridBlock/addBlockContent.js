@@ -1,4 +1,4 @@
-import {DateMethod} from "../../../../../BackEnd/Utilities/class_DateMethods.js";
+import {DateMethod} from "../../../../../backend/Utilities/class_DateMethods.js";
 
 const addTime = (block) => {
 
