@@ -1,3 +1,5 @@
+import {DateMethod} from "../../../backend/Utilities/class_DateMethods.js";
+
 class BackEndCall {
 
     static endpoint = 'http://localhost:3000'
@@ -141,6 +143,24 @@ class BackEndCall {
     static DELETE_event() {
         console.log('delete')
     }
+
+    //CALENDAR
+    static async getDay(date = DateMethod.today) {
+        try {
+            const response = await fetch(`${BackEndCall.endpoint}/calendar/${date}`);
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+
+            const data = await response.json(); // Parse the JSON response
+            console.log(data, 'from return call')
+            //return data.map(row => JSON.parse(row.jsonData));
+
+        } catch (error) {
+            console.error('There has been a problem with your fetch operation:', error);
+        }
+    };
 }
 
 export {BackEndCall};
