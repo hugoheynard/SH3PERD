@@ -33,6 +33,11 @@ class DateMethod {
     };
 
     static startOfDay(date) {
+
+        if (!date instanceof Date) {
+            throw new Error('date parameter must be instance of Date');
+        }
+
         return new Date(date.setHours(0, 0, 0, 0));
     };
     static endOfDay(date) {

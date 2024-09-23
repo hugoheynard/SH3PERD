@@ -6,7 +6,6 @@ import {
     getPositionFromDataset_Date,
     getRowEndFromDatasetDuration
 } from "../../../Utilities/dataset_functions/datasetFunctions.js";
-import {addTime} from "./class_GridBlock/addBlockContent.js";
 import {wsPopWindow_AddEvent} from "../wsCal_PopWindows/wsPopWindow_AddEventWindow.js";
 import {wsPopWindow_AddTimeframe} from "../wsCal_PopWindows/wsPopWindow_AddTimeframeWindow.js";
 import {appWorkspace} from "../../../script.js";
@@ -14,17 +13,15 @@ import {appWorkspace} from "../../../script.js";
 
 class IndividualPlanning {
     constructor (input) {
-
         this.id = input.id;
-        this.blockList = input.blockList;
         this.artist = input.artist;
         this.negativeOffset = input.negativeOffset;
 
-        this.artistBlockList = this.blockList.filter(blocks => blocks.staff.includes(this.artist));
+        this.artistBlockList = input.calendar_events;
         this.gridBlockArray = [];
 
         this.planning = new HTMLelem('div', this.id, 'dailyPlanningCalendar').render();
-        this.backgroundColor = input.backgroundOverlay;
+        //this.backgroundColor = input.backgroundOverlay;
 
         //sets the
         this.collisionList = [];
@@ -59,7 +56,6 @@ class IndividualPlanning {
 
             return stepArray;
         };
-
         return getStepArray(block1).some(elem => getStepArray(block2).includes(elem));
     };
     findCollisions() {
@@ -116,17 +112,16 @@ class IndividualPlanning {
     }
     buildGrid() {
         //generate Blocks from artist block list
-        this.artistBlockList.forEach((block, index) => {
+        for (const [index, event] of this.artistBlockList.entries()) {
+            const newBlock  = new GridBlock({blockData: event});
 
-            const newBlock  = new GridBlock({blockData: block});
             this.addRowCoordinates(newBlock);
             this.addColCoordinates(newBlock, index);
-            this.addBackgroundOverlay();
+            //this.addBackgroundOverlay();
 
             this.gridBlockArray.push(newBlock);
             this.planning.appendChild(newBlock.htmlElement);
-        });
-
+        }
     };
 
     //TODO: Display as a line -> rowheight = 0?

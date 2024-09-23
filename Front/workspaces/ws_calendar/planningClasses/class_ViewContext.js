@@ -1,20 +1,13 @@
-import {CalendarIndiv} from "./class_CalendarIndiv.js";
-import {CalendarPerCat} from "./class_CalendarPerCat.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {MiniCalendar} from "../../../frontElements/Classes/class_MiniCalendar.js";
 import {PlanningFilters} from "./class_PlanningFilters.js";
-import {CalendarAll} from "./class_CalendarAll.js";
+import {Calendar} from "./class_Calendar.js";
 
 
 class ViewContext {
     constructor(input) {
-
-        this.timetable = input.timetable;
-        this.staff = input.staff;
-
-        this.indivView = new CalendarIndiv(this.timetable, this.staff);
-        this.perCatView = new CalendarPerCat(this.timetable, this.staff);
-        this.allView = new CalendarAll(this.timetable, this.staff);
+        this.calendarData = input;
+        this.allView = new Calendar(this.calendarData);
 
         this.wsPageContainer = new HTMLelem('div', 'wsPage_Calendars').render();
         this.calContainer = new HTMLelem('div', 'calContainer').render();
@@ -22,19 +15,17 @@ class ViewContext {
         this.wsPageContainer.appendChild(this.leftSideContainer);
         this.wsPageContainer.appendChild(this.calContainer);
 
-        this.viewPerCat();
+        this.viewAll();
     };
 
     buildView() {
         this.undisplayCalendar();
-        this.calContainer.appendChild(this.currentView.header); //TODO: ba voila enlever
+        //this.calContainer.appendChild(this.currentView.header); //TODO: ba voila enlever
         this.calContainer.appendChild(this.currentView.htmlElement);
         this.addMiniCalendar();
         this.addFilters();
         this.viewControls();
     };
-    viewIndiv = () => this.currentView = this.indivView;
-    viewPerCat = () => this.currentView = this.perCatView;
     viewAll = () => this.currentView = this.allView;
     viewControls() {
         document.addEventListener('keydown', (event)=>{

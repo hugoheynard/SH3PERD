@@ -32,7 +32,7 @@ class CalHoursGrid {
 
         const stepArray = [];
 
-        let step = DateMethod.addMinutes(firstElem.date, -5);
+        let step = DateMethod.substractMinutes(firstElem.date, 5);
 
         while(step < DateMethod.addMinutes(lastElem.date, lastElem.duration)) {
             step = DateMethod.addMinutes(step, 5);

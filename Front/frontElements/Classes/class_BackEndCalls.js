@@ -153,9 +153,19 @@ class BackEndCall {
                 throw new Error('Network response was not ok ' + response.statusText);
             }
 
-            const data = await response.json(); // Parse the JSON response
-            console.log(data, 'from return call')
-            //return data.map(row => JSON.parse(row.jsonData));
+            const data = await response.json();
+            console.log(data)
+            //DATA PROCESSING:
+            // converts date back from string to Date Object
+            for (const key in data.events) {
+                const event = data.events[key]
+
+                if (event.date) {
+                    event.date = new Date(event.date)
+                }
+            }
+
+            return data
 
         } catch (error) {
             console.error('There has been a problem with your fetch operation:', error);

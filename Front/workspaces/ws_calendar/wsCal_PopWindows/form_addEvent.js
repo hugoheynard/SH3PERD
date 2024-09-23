@@ -11,7 +11,6 @@ import {css} from "../../../frontElements/Forms/appForms/artistProfileForms/crea
 import {TriggerList} from "../../../frontElements/Forms/FormBuilder/TriggerSystem/class_TriggerList.js";
 import {TriggerField} from "../../../frontElements/Forms/FormBuilder/TriggerSystem/class_TriggerField.js";
 import {FormField_textInput} from "../../../frontElements/Forms/FormBuilder/Fields/class_FormField_TextInput.js";
-import {genID} from "../../../../backend/Utilities/nanoIDgenerator.js";
 
 
 const form_addEvent = new Form({
@@ -27,7 +26,7 @@ const sectionStyle = {
     container: 'col gapMid'
 };
 
-form_addEvent.addHiddenField({name: 'event_id', value: genID()})
+//form_addEvent.addHiddenField({name: 'event_id', value: genID()})
 
 form_addEvent.addSection({
     id: 'dateTimeSection',
