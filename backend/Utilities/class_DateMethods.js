@@ -2,6 +2,7 @@
 class DateMethod {
     static ONE_MINUTE_IN_MS = 60000;
     static STEP_DURATION = 5;
+    static ONE_DAY_IN_STEPS = 24 * 60 /DateMethod.STEP_DURATION
     static today = new Date(Date.now()).toISOString().split('T')[0]; // returns today's date in good format
 
 
