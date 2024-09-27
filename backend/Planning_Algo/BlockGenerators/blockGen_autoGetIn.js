@@ -1,6 +1,5 @@
-import {GetIn} from "../../Classes/Activity_classes/class_GetIn.js";
-import {TimetableAction} from "../../Utilities/BlocklistFunctions/allMembersInBlockList.js";
 import {DateMethod} from "../../Utilities/class_DateMethods.js";
+import {findEarliestEventInArray} from "../../Utilities/sortBlockArray.js";
 
 /*
 *ROLE : manage GetInBlocks for every Member
@@ -10,60 +9,53 @@ import {DateMethod} from "../../Utilities/class_DateMethods.js";
 *OUTPUT : an array of getInBlocks
 */
 class Auto_GetIn {
-    constructor(input) {
-        this._timeTable = input.timeTable;
+    constructor() {
         this._generatedBlocks = [];
-    };
-    get timeTable() {
-        return this._timeTable;
     };
     get generatedBlocks() {
         return this._generatedBlocks;
     };
 
-    buildGetInBlocks() {
-        new TimetableAction({timetable: this.timeTable}).allStaffMembersInTimetable().forEach(member => {
+    generate(data) {
+        for (const planning of data.plannings) {
 
-            const returnBlocksThatIncludeElement =  (arrayOfBlocks, element) => arrayOfBlocks.filter(block => block.staff.includes(element));
+            const eventArray = planning.calendar_events.map(event => data.events[event]);
 
-            const firstBlock = returnBlocksThatIncludeElement(this.timeTable, member)[0];
+            if (eventArray.length) {
+                const firstBlock = findEarliestEventInArray(eventArray);
 
-            let minusTime;
+                let minusTime;
+                //TODO: search in season config collection - get in rules
+                switch (firstBlock.type) {
+                    case 'techSetUp':
+                        minusTime = 5;
+                        break;
+                    case 'meeting':
+                        minusTime = 5;
+                        break;
+                    case 'meal':
+                        minusTime = 5;
+                        break;
+                    case 'rehearsal':
+                        minusTime = 15;
+                        break;
+                    case 'show':
+                        minusTime = 60;
+                        break;
+                }
 
-            switch (firstBlock.type) {
-
-                case 'techSetUp':
-                    minusTime = 5;
-                    break;
-
-                case 'meeting':
-                    minusTime = 5;
-                    break;
-
-                case 'meal':
-                    minusTime = 5;
-                    break;
-
-                case 'rehearsal':
-                    minusTime = 15;
-                    break;
-
-                case 'show':
-                    minusTime = 60;
-                    break;
-
+                this.generatedBlocks.push(
+                    {
+                        temp_id: `generatedGetIn_${planning.staff_id}`,
+                        date: DateMethod.substractMinutes(firstBlock.date, minusTime ?? 5),
+                        duration: 5,
+                        participants: planning.staff_id,
+                        type: 'getIn',
+                        generated: true
+                    }
+                );
             }
-
-            this.generatedBlocks.push(new GetIn(
-                {
-                    date: DateMethod.substractMinutes(new Date(firstBlock.date), minusTime ?? 5),
-                    duration: undefined,
-                    staff: [member]
-                })
-            );
-
-        });
-
+        }
         return this.generatedBlocks;
     };
 }
