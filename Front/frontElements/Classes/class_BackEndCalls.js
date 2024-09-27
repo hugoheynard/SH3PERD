@@ -1,6 +1,6 @@
 import {DateMethod} from "../../../backend/Utilities/class_DateMethods.js";
 
-class BackEndCall {
+export class BackEndCall {
 
     static endpoint = 'http://localhost:3000'
 
@@ -172,5 +172,3 @@ class BackEndCall {
         }
     };
 }
-
-export {BackEndCall};
