@@ -1,28 +1,14 @@
-const STEPDURATION = 5;
+import {DateMethod} from "../../../backend/Utilities/class_DateMethods.js";
 
-const getPositionFromDataset_Date = data => {
+export const getPositionFromDate = data => {
 
     const date = new Date(data);
     const hours = date.getHours();
     const minutes = date.getMinutes();
 
-    return Number((hours * 60 + minutes) / STEPDURATION);
+    return (hours * 60 + minutes) / DateMethod.STEP_DURATION
+};
 
-}
-
-
-const getRowEndFromDatasetDuration = dataDuration => {
-
-    return Number(dataDuration) / STEPDURATION;
-}
-
-
-export {getPositionFromDataset_Date, getRowEndFromDatasetDuration}
-
-
-
-
-
-
-
-
+export const getRowEndFromDatasetDuration = dataDuration => {
+    return Number(dataDuration) / DateMethod.STEP_DURATION;
+};

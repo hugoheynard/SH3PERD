@@ -15,8 +15,28 @@ export const sortEventsArrayPerTime = array => {
     });
 };
 
-export const findEarliestEventInArray = array => {
-    array.reduce((earliest, current) => {
-        return new Date(current.date) < new Date(earliest.date) ? current : earliest;
-    });
+export const findEarliestEventInArray = array => { //TODO test
+
+    if (!Array.isArray(array)) {
+        throw new Error('input parameter must be an array');
+    }
+
+    if (array.length) {
+        return array.reduce((earliest, current) => {
+            return new Date(current.date) < new Date(earliest.date) ? current : earliest;
+        });
+    }
+};
+
+export const findLatestEventInArray = array => { //TODO test
+
+    if (!Array.isArray(array)) {
+        throw new Error('input parameter must be an array');
+    }
+
+    if (array.length) {
+        return array.reduce((latest, current) => {
+            return new Date(current.date) > new Date(latest.date) ? current : latest;
+        });
+    }
 };

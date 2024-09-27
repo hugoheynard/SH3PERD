@@ -4,29 +4,26 @@ import {PlanningFilters} from "./class_PlanningFilters.js";
 import {Calendar} from "./class_Calendar.js";
 
 
-class ViewContext {
+export class ViewContext {
     constructor(input) {
         this.calendarData = input;
-        this.allView = new Calendar(this.calendarData);
+        this.calendar = new Calendar(this.calendarData);
 
         this.wsPageContainer = new HTMLelem('div', 'wsPage_Calendars').render();
         this.calContainer = new HTMLelem('div', 'calContainer').render();
         this.leftSideContainer = new HTMLelem('div', 'leftSideElements', 'popMenu').render();
         this.wsPageContainer.appendChild(this.leftSideContainer);
         this.wsPageContainer.appendChild(this.calContainer);
-
-        this.viewAll();
     };
 
     buildView() {
         this.undisplayCalendar();
-        //this.calContainer.appendChild(this.currentView.header); //TODO: ba voila enlever
-        this.calContainer.appendChild(this.currentView.htmlElement);
+        //this.calContainer.appendChild(this.calendar.header); //TODO: ba voila enlever
+        this.calContainer.appendChild(this.calendar.htmlElement);
         this.addMiniCalendar();
         this.addFilters();
         this.viewControls();
     };
-    viewAll = () => this.currentView = this.allView;
     viewControls() {
         document.addEventListener('keydown', (event)=>{
 
@@ -94,7 +91,7 @@ class ViewContext {
         this.leftSideContainer.appendChild(new MiniCalendar('miniCal').render());
     };
     addFilters() {
-        this.leftSideContainer.appendChild(new PlanningFilters(this.currentView).render());
+        this.leftSideContainer.appendChild(new PlanningFilters(this.calendar).render());
     };
     undisplayCalendar() {
         this.leftSideContainer.innerHTML = '';
@@ -105,5 +102,3 @@ class ViewContext {
         return this.wsPageContainer;
     };
 }
-
-export {ViewContext};

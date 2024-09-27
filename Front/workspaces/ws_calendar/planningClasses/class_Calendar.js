@@ -1,19 +1,23 @@
 import {IndividualPlanning} from "./class_IndividualPlanning.js";
-import {sortEventsArrayPerTime} from "../../../../backend/Utilities/sortBlockArray.js";
+import {findEarliestEventInArray, findLatestEventInArray} from "../../../../backend/Utilities/sortBlockArray.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {CalendarHeader} from "./class_CalendarHeader.js";
 import {CalHoursGrid} from "./class_calHoursGrid.js";
 import {DateMethod} from "../../../../backend/Utilities/class_DateMethods.js";
 import {ColorScheme} from "../../../../db/fakeDB-design.js";
+import {EventDecorator_RecallFormOnClick} from "./class_EventDecorator_RecallFormOnClick.js";
+
 
 export class Calendar {
     constructor(calendarData) {
         this.calendarData = calendarData;
         this.planningList = [];
 
+        this.earliestEvent = findEarliestEventInArray(Object.values(this.calendarData.events));
+        this.latestEvent = findLatestEventInArray(Object.values(this.calendarData.events));
+
         this.offset = this.getOffset();
-        this.rowZoom = 18;
-        this.fontZoom = 12;
+        this.rowZoom = 15;
 
         this.colorScheme = new ColorScheme().getColorData();
         this.htmlElement = new HTMLelem('div', "calendars").render();
@@ -23,45 +27,38 @@ export class Calendar {
     buildCalendar(){
         this.resetInstanceAndContainer();
         this.getOffset();
-        this.addIndividualPlannings();
-        //this.buildGridOverlay();
-        this.updateContainer();
-    };
-    defineGridRowsNumber(blockList) {
-        /*Difference between the end of the last block and midnight */
-        const firstWorkBlock = {...blockList[0]};
-        const lastWorkBlock = {...blockList.at(-1)};
-        const lastTime = DateMethod.addMinutes(lastWorkBlock.date, lastWorkBlock.duration).getTime();
-        const firstTime = firstWorkBlock.date;
+        this.defineGridRowsNumber(Object.values(this.calendarData.events));
+        this.buildGridOverlay(Object.values(this.calendarData.events));
+        this.buildIndividualPlannings(this.calendarData.plannings);
 
-        this.gridRowsNumber = DateMethod.differenceInMinutes(firstTime, lastTime) / DateMethod.STEP_DURATION
+        new EventDecorator_RecallFormOnClick({eventsBlock: this.getAllEventsBlocks(this.planningList)});
+        //new PlanningDecorator_addBackGroundOverlay(planningList)
+        /*addBackgroundOverlay(){
+            const opacity = 0.025
+            const currentColor = this.backgroundColor;
+            const newColor = currentColor.replace(/rgba\((\d+),(\d+),(\d+),(\d+)\)/, `rgba($1,$2,$3,${opacity})`);
+            this.planning.style.backgroundColor = newColor;
+        }*/
     };
-    resetInstanceAndContainer() {
-        this.htmlElement.innerHTML = '';
+    getAllEventsBlocks(planningList) {
+        return planningList
+            .map(planning => planning.gridBlockArray)
+            .reduce((acc, curr) => [...acc, ...curr], []);
     };
-    buildGridOverlay() {
-        //TODO Grid overlay - si on tombe sur une heure pleine, faire en sorte que la barre de l'overlay remplace et le chiffre se mettent en rouge et faire disparaitre l'overlay now
-        const hourGrid = new CalHoursGrid(this.timeTable, this.offset);
 
-        this.htmlElement.appendChild(hourGrid.calHoursLines);
-        this.htmlElement.appendChild(hourGrid.calHoursText);
-
-        hourGrid.calHoursLines.style.gridTemplateRows = `repeat(${this.gridRowsNumber}, 1rem)`;
-        hourGrid.calHoursText.style.gridTemplateRows = `repeat(${this.gridRowsNumber}, 1rem)`;
-    };
-    addIndividualPlannings() {
+    buildIndividualPlannings(plannings) {
         //build planning for each artist
-        for (const elem of this.calendarData.plannings) {
+        for (const elem of plannings) {
 
             const planning = new IndividualPlanning({
                 id: `planning_${elem.staff_id}`,
-                calendar_events: elem.calendar_events
-                    .map(event_id => this.calendarData.events[event_id]),
+                calendar_events: elem.calendar_events.map(event_id => this.calendarData.events[event_id]),
                 negativeOffset: this.offset,
                 numberOfRows: this.gridRowsNumber,
-                //backgroundOverlay: this.colorScheme.artist({artistID: artist._id})
+                rowSize: this.rowZoom
             });
             this.planningList.push(planning);
+            this.htmlElement.appendChild(planning.renderPlanning());
         }
         /*
                this.header = new CalendarHeader(
@@ -73,17 +70,34 @@ export class Calendar {
                 */
     };
 
-    updateContainer(){
-        for (const planning of this.planningList) {
-            planning.planning.style.gridTemplateRows = `repeat(${this.gridRowsNumber}, 1rem)`;
-            this.htmlElement.appendChild(planning.renderPlanning())
-        }
+    buildGridOverlay(eventsArray) {
+        const hourGrid = new CalHoursGrid({
+            offset: this.offset,
+            earliestTimeStep: this.earliestEvent.date,
+            latestTimeStep: DateMethod.addMinutes(this.latestEvent.date, this.latestEvent.duration)
+        });
+
+        this.htmlElement.appendChild(hourGrid.calHoursLines);
+        this.htmlElement.appendChild(hourGrid.calHoursText);
+
+        hourGrid.calHoursLines.style.gridTemplateRows = `repeat(${this.gridRowsNumber}, ${this.rowZoom}px)`;
+        hourGrid.calHoursText.style.gridTemplateRows = `repeat(${this.gridRowsNumber}, ${this.rowZoom}px)`;
     };
 
+    defineGridRowsNumber(eventArray) {
+        const firstEventDate = findEarliestEventInArray(eventArray).date;
+        const lastEvent = findLatestEventInArray(eventArray);
+        const lastTime = DateMethod.addMinutes(lastEvent.date, lastEvent.duration);
+
+        this.gridRowsNumber = DateMethod.differenceInMinutes(firstEventDate, lastTime) / DateMethod.STEP_DURATION;
+    };
+
+    resetInstanceAndContainer() {
+        this.htmlElement.innerHTML = '';
+    };
 
     getOffset() {
-        const eventsArray = Object.values(this.calendarData.events);
-        const firstBlock = sortEventsArrayPerTime(eventsArray)[0];
+        const firstBlock = this.earliestEvent;
         const dayStart = DateMethod.startOfDay(new Date(firstBlock.date));
 
         return (firstBlock.date - dayStart) / (DateMethod.ONE_MINUTE_IN_MS * DateMethod.STEP_DURATION) - 1;
