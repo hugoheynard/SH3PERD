@@ -5,7 +5,7 @@ import {form_addEvent} from "./form_addEvent.js";
 import {recallEvent} from "../../../../db/fakeDB_addEventForm.js";
 
 
-const wsPopWindow_AddEvent = async (input) => {
+export const wsPopWindow_AddEvent = async (input) => {
     /*If there is an input, it means we are trying to modify an event,
     so it triggers an alternate version of the original form
     with the data fetched from the db as default values*/
@@ -29,5 +29,3 @@ const wsPopWindow_AddEvent = async (input) => {
     }
     return popWindow;
 };
-
-export {wsPopWindow_AddEvent};

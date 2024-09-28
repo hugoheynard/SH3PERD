@@ -64,8 +64,8 @@ class CalHoursGrid {
     };
 
     displayNowElements() {
-
         if (DateMethod.inBetweenDates(new Date(Date.now()), this.earliestTimeStep, this.latestTimeStep)) {
+
             this.nowLine = new HTMLelem('div', 'nowLine').render();
             this.nowText = new HTMLelem('div', 'nowText').render();
 

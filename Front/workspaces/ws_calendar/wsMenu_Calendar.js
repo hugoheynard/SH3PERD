@@ -1,6 +1,7 @@
 import {Menu} from "../../frontElements/Classes/class_Menu.js";
 import {Icon} from "../../frontElements/Classes/icones/class_Icon.js";
 import {MenuAction} from "../../frontElements/Classes/menuClasses/class_MenuAction.js";
+import {CalendarMenuAction} from "./planningClasses/class_CalendarMenuAction.js";
 
 
 const wsMenu_Calendar = new Menu('wsMenu_Calendar', 'workspaceMenu', 'button_lpm')
@@ -21,7 +22,7 @@ wsMenu_Calendar.addButton(
                 alt: 'vI'
             }
         ),
-        callback: MenuAction.calViewIndiv,
+        callback: CalendarMenuAction.calViewIndiv,
         ensemble: 'calMenu_viewButtonsEnsemble'
     }
 )
@@ -36,7 +37,7 @@ wsMenu_Calendar.addButton(
                 alt: 'vI'
             }
         ),
-        callback: MenuAction.calViewCat,
+        callback: CalendarMenuAction.calViewCat,
         ensemble: 'calMenu_viewButtonsEnsemble'
     }
 )
@@ -51,7 +52,7 @@ wsMenu_Calendar.addButton(
                 alt: 'vI'
             }
         ),
-        callback: MenuAction.calViewAll,
+        callback: CalendarMenuAction.calViewAll,
         ensemble: 'calMenu_viewButtonsEnsemble'
     }
 )
@@ -65,7 +66,7 @@ wsMenu_Calendar.addButton(
                 alt: 'vI'
             }
         ),
-        callback: MenuAction.calAddEventWindow,
+        callback: CalendarMenuAction.calAddEventWindow,
     }
 )
 
@@ -79,7 +80,7 @@ wsMenu_Calendar.addButton(
                 alt: 'vI'
             }
         ),
-        callback: MenuAction.calAddTimeframeWindow,
+        callback: CalendarMenuAction.calAddTimeframeWindow,
     }
 )
 

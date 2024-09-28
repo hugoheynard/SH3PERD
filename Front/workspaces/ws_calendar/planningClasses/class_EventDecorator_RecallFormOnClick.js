@@ -11,7 +11,7 @@ export class EventDecorator_RecallFormOnClick {
         // double click triggers the form callback to modify event block
         for (const block of eventsBlock) {
             const block_id = block.blockData._id;
-            block.htmlElement.addEventListener('dblclick', () => appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopWindow_AddEvent(block_id)))
+            block.htmlElement.addEventListener('dblclick', () => appWorkspace.workSpaceStrategy.rightPanelContext.setRightPanel(wsPopWindow_AddEvent(block_id)))
         } //TODO: better access to setpopmenu
     };
 }

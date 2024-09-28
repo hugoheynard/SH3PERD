@@ -19,30 +19,7 @@ class MenuAction {
     //For appGeneral menu
     static goHome = () => appWorkspace.setWorkspace(ws_Home);
 
-    //CALENDAR NAVIGATION
-    static goCalendar = ()=> appWorkspace.setWorkspace(ws_Calendar);
-    static calViewIndiv = () => {
-        calendarViewContext.viewIndiv();
-        appWorkspace.workSpaceStrategy.pageContext.setPage(wsPage_Calendar());
-    }
-    static calViewCat = () => {
-        calendarViewContext.viewPerCat();
-        appWorkspace.workSpaceStrategy.pageContext.setPage(wsPage_Calendar());
-    }
-    static calViewAll = () => {
-        calendarViewContext.viewAll();
-        appWorkspace.workSpaceStrategy.pageContext.setPage(wsPage_Calendar());
-    }
 
-    static calAddEventWindow = () => {
-        appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopWindow_AddEvent());
-    };
-
-    static calAddTimeframeWindow = () => {
-        appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopMenu_CalendarHome());
-    };
-
-    static goPop_CalendarHome = () => appWorkspace.workSpaceStrategy.popContext.setPopMenu(wsPopMenu_CalendarHome());
 
 
 

@@ -12,7 +12,6 @@ export class IndividualPlanning {
         this.gridBlockArray = [];
 
         this.planning = new HTMLelem('div', this.id, 'dailyPlanningCalendar').render();
-        //this.backgroundColor = input.backgroundOverlay;
 
         //sets the grid
         this.maxElemInRow = this.getMaxElemInRow() ?? 1;
@@ -40,7 +39,7 @@ export class IndividualPlanning {
         block.htmlElement.style.gridRowEnd = `${rowStart + span}`;
     };
 
-    addColCoordinates(block, index) {
+    addColCoordinates(block) {
 
         if (block.blockData.collisionList.length === 0) {
             block.htmlElement.style.gridColumn = '1 / -1';

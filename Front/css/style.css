@@ -132,7 +132,7 @@ html, body {
     overflow-y: scroll;
 }
 
-#popMenu {
+#rightPopPanel {
     display: flex;
     flex-direction: column;
     justify-content: space-between;

@@ -4,7 +4,7 @@ import {menu_appGeneral} from "./menu_appGeneral.js";
 import {wsMenu_staffMember} from "./workspaces/ws_staffMember/wsMenu_staffMember.js";
 import {wsPage_workPeriods} from "./workspaces/ws_staffMember/staffMemberPages/wsPage_workPeriods.js";
 import {wsPage_musicLibrary} from "./workspaces/ws_musicLibrary/wsPage_musicLibrary.js";
-import {Workspace} from "./workspaces/class_Worspace.js";
+import {Workspace} from "./workspaces/class_Workspace.js";
 import {wsPage_Calendar} from "./workspaces/ws_calendar/wsPage_Calendar.js";
 import {wsPage_Home} from "./workspaces/ws_Home/wsPage_Home.js";
 import {wsPage_playlistManager} from "./workspaces/ws_PlaylistManager/wsPage_playlistManager.js";
@@ -46,7 +46,7 @@ const ws_Calendar = new Workspace(
     {
         wsMenu: wsMenu_Calendar,
         defaultPage: wsPage_Calendar(),
-        defaultPopWindow: wsPopWindow_AddEvent()//wsPopWindow_AddTimeframe()//
+        //defaultRightPanel: wsPopWindow_AddEvent()//wsPopWindow_AddTimeframe()//
     });
 
 const ws_musicLibrary = new Workspace(

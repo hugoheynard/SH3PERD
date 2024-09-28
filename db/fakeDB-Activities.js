@@ -1,5 +1,4 @@
 import {Rehearsal} from "../backend/Classes/Activity_classes/class_Rehearsal.js";
-import {Meeting} from "../backend/Classes/Activity_classes/class_Meeting.js";
 import {art1, art10, art11, art12, art13, art2, art3, art4, art5, art6, art7, art8, art9} from "./fakeDB.js";
 import {Show} from "../backend/Classes/Activity_classes/class_Show.js";
 

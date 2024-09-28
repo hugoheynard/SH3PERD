@@ -17,6 +17,8 @@ class Auto_GetIn {
     };
 
     generate(data) {
+        this.generatedBlocks.length = 0;
+
         for (const planning of data.plannings) {
 
             const eventArray = planning.calendar_events.map(event => data.events[event]);
