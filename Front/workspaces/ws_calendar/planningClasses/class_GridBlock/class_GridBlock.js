@@ -21,7 +21,6 @@ class GridBlock {
 
     addDataset() {
         this.htmlElement.dataset.id = this.blockData._id;
-        this.htmlElement.dataset.type = this.blockData.type;
     };
 
     addBlockResume() {
