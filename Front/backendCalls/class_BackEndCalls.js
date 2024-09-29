@@ -1,4 +1,4 @@
-import {DateMethod} from "../../../backend/Utilities/class_DateMethods.js";
+import {DateMethod} from "../../backend/Utilities/class_DateMethods.js";
 
 export class BackEndCall {
 
@@ -40,20 +40,13 @@ export class BackEndCall {
 
         })
             .then(response => {
-
                 if (!response.ok) {
-
                     throw new Error('Network response was not ok - ' + response.status);
-
                 }
-
                 return response.json();
-
             })
             .then(data => {
-
                 return {'containerID': data.id};
-
             })
             .catch(error => console.error('Error:', error));
 
@@ -132,43 +125,6 @@ export class BackEndCall {
 
     };
 
-    //CALENDAR
 
-    static POST_event(formDataJSON) {
-        console.log('goodPOST')
-    }
-    static PUT_event(formDataJSON) {
-        console.log('goodPUT')
-    }
-    static DELETE_event() {
-        console.log('delete')
-    }
-
-    //CALENDAR
-    static async getDay(date = DateMethod.today) {
-        try {
-            const response = await fetch(`${BackEndCall.endpoint}/calendar/${date}`);
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
-            }
-
-            const data = await response.json();
-            console.log(data)
-            //DATA PROCESSING:
-            // converts date back from string to Date Object
-            for (const key in data.events) {
-                const event = data.events[key]
-
-                if (event.date) {
-                    event.date = new Date(event.date)
-                }
-            }
-
-            return data
-
-        } catch (error) {
-            console.error('There has been a problem with your fetch operation:', error);
-        }
-    };
 }
+
