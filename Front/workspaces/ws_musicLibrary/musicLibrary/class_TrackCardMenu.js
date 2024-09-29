@@ -1,6 +1,6 @@
 import {Menu} from "../../../frontElements/Classes/class_Menu.js";
 import {MenuAction} from "../../../frontElements/Classes/menuClasses/class_MenuAction.js";
-import {BackEndCall} from "../../../frontElements/Classes/class_BackEndCalls.js";
+import {BackEndCall} from "../../../backendCalls/class_BackEndCalls.js";
 
 class TrackCardMenu {
 
