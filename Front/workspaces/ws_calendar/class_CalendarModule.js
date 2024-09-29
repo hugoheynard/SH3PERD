@@ -1,12 +1,12 @@
-import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
-import {MiniCalendar} from "../../../frontElements/Classes/class_MiniCalendar.js";
-import {PlanningFilters} from "./class_PlanningFilters.js";
-import {Calendar} from "./class_Calendar.js";
+import {HTMLelem} from "../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
+import {MiniCalendar} from "../../frontElements/Classes/class_MiniCalendar.js";
+import {PlanningFilters} from "./planningClasses/class_PlanningFilters.js";
+import {Calendar} from "./planningClasses/class_Calendar.js";
 
 
-export class ViewContext {
+export class CalendarModule {
     constructor(input) {
-        this.calendarData = input;
+        this.calendarData = input.data;
         this.calendar = new Calendar(this.calendarData);
 
         this.wsPageContainer = new HTMLelem('div', 'wsPage_Calendars').render();
@@ -24,6 +24,10 @@ export class ViewContext {
         this.addFilters();
         this.viewControls();
     };
+    generateBlockColorRules() {
+
+    };
+
     viewControls() {
         document.addEventListener('keydown', (event)=>{
 
