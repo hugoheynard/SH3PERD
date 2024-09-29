@@ -84,6 +84,7 @@
 }
 
 .block {
+    border-left: 0.2rem solid;
     border-radius: 0.25rem;
     min-width: 1.2rem;
     overflow: hidden;
@@ -116,18 +117,7 @@
     color: rgba(255, 255, 255, 0.9);
 }
 
-.color[data-type="getIn"] {
-    background-color: rgba(255, 32, 78, 0.2);
-    border-left: 0.2rem solid rgba(255, 32, 78, 1);
-    color: rgba(255, 32, 78, 0.9);
-}
 
-
-.color[data-type="techSetUp"] {
-    background-color: rgba(243, 106, 75, 0.2);
-    border-left: 0.2rem solid rgba(243, 106, 75, 1);
-    color: rgba(243, 106, 75, 0.9);
-}
 
 .color[data-type="private"] {
     background-color: rgba(234, 185, 93, 0.2);
@@ -135,17 +125,9 @@
     color: rgb(236, 198, 35, 1)
 }
 
-.color[data-type="rehearsal"] {
-    background-color: rgba(76, 205, 153, 0.2);
-    border-left: 0.2rem solid rgba(76, 205, 153, 1);
-    color: rgba(76, 205, 153, 1);
-}
 
-.color[data-type="meeting"]{
-    background-color: rgba(166, 243, 222, 0.2);
-    border-left: 0.2rem solid rgba(166, 243, 222, 1);
-    color: rgba(166, 243, 222, 0.9);
-}
+
+
 
 .color[data-type="show"]{
     background-color: rgba(166, 197, 243, 0.2);
