@@ -1,5 +1,5 @@
+import {Calendar_BackendCall} from "../../../backendCalls/class_CalendarBackendCall.js";
 import {Form} from "../../../frontElements/Forms/FormBuilder/class_Form.js";
-import {BackEndCall} from "../../../frontElements/Classes/class_BackEndCalls.js";
 import {cssObj_AddTrackProcess} from "../../../frontElements/Forms/appForms/cssFormsInJs/cssObj_AddTrackProcess.js";
 import {FormField_Date} from "../../../frontElements/Forms/FormBuilder/Fields/class_FormField_Date.js";
 import {FormField_Time} from "../../../frontElements/Forms/FormBuilder/Fields/class_FormField_Time.js";
@@ -11,12 +11,13 @@ import {css} from "../../../frontElements/Forms/appForms/artistProfileForms/crea
 import {TriggerList} from "../../../frontElements/Forms/FormBuilder/TriggerSystem/class_TriggerList.js";
 import {TriggerField} from "../../../frontElements/Forms/FormBuilder/TriggerSystem/class_TriggerField.js";
 import {FormField_textInput} from "../../../frontElements/Forms/FormBuilder/Fields/class_FormField_TextInput.js";
+import {EventSettings} from "../../../frontElements/init/init_appSettings.js";
 
 
-const form_addEvent = new Form({
+export const form_addEvent = new Form({
     id: 'addEvent',
     css: 'sectionContainer',
-    submitAction:  BackEndCall.POST_event,
+    submitAction:  Calendar_BackendCall.POST_event
 });
 
 const sectionStyle = {
@@ -84,10 +85,10 @@ form_addEvent.addField({
     element: new FormField_selectField({
         id: 'eventType',
         css: cssObj_AddTrackProcess.fields,
-        require:false,
+        require: true,
         name:'eventType',
         descText: 'Select Event Type',
-        optionsArray:['show', 'rehearsal', 'meeting'],
+        optionsArray: await EventSettings.eventTypes(),
         defaultValue: 'Select Event Type'
     })
 });
@@ -224,5 +225,3 @@ form_addEvent.addField({
 });
 
 form_addEvent.add_submitButton('Create', '', cssObj_AddTrackProcess.submitButtons);
-
-export {form_addEvent};

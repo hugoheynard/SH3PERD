@@ -1,8 +1,8 @@
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {FormRecall} from "../../../frontElements/Forms/FormBuilder/class_FormCallback.js";
-import {BackEndCall} from "../../../frontElements/Classes/class_BackEndCalls.js";
 import {form_addEvent} from "./form_addEvent.js";
 import {recallEvent} from "../../../../db/fakeDB_addEventForm.js";
+import {Calendar_BackendCall} from "../../../backendCalls/class_CalendarBackendCall.js";
 
 
 export const wsPopWindow_AddEvent = async (input) => {
@@ -22,8 +22,8 @@ export const wsPopWindow_AddEvent = async (input) => {
         const recalledForm = new FormRecall({
             callbackForm: form,
             recalledValues: await recallEvent,
-            updateAction: BackEndCall.PUT_event,
-            deleteAction: BackEndCall.DELETE_event
+            updateAction: Calendar_BackendCall.PUT_event,
+            deleteAction: Calendar_BackendCall.DELETE_event
         })
         popWindow.appendChild(recalledForm.render());
     }
