@@ -1,5 +1,5 @@
-
 import {CalendarService} from "./class_CalendarService.js";
+import {app_db} from "../../app.js";
 
 export class CalendarController {
     constructor() {
@@ -20,6 +20,28 @@ export class CalendarController {
         this.calendarService.eventCollider.findCollisionList(this.currentData);
 
         return this.currentData;
+    };
+
+    async postEvent(eventData) {
+        const dateBuilder = input => {
+            const date = new Date(input.date);
+            const timeArray = input.time.split(':');
+            date.setHours(timeArray[0]);
+            date.setMinutes(timeArray[1]);
+            return date
+        }
+
+        const preparedData = {
+            date: dateBuilder({
+                date: eventData.date,
+                time: eventData.time
+            }),
+            duration: Number(eventData.duration),
+            type: 'rehearsal'
+
+        }
+
+        return await app_db.collection('calendar_events').insertOne(preparedData);
     };
 
     mergeEvents(events, data) {
