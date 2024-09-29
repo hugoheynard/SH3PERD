@@ -1,9 +1,9 @@
-import {Settings_BackendCall} from "../../workspaces/ws_Settings/class_Settings_BackendCall.js";
+import {Settings_BackendCall} from "../../backendCalls/class_Settings_BackendCall.js";
 
 class AppSettings{
     async getCompanySettings() {
         try {
-            this.companySettings = await Settings_BackendCall.getCompanySettings2();
+            this.companySettings = await Settings_BackendCall.getCompanySettings();
         } catch (e) {
             console.error('Error while fetching company settings', e);
             throw e;

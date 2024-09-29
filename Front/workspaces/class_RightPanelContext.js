@@ -25,7 +25,7 @@ export class RightPanelContext {
 
             this.currentRightPanel = await newFunctionalityPage;
             this.rightPopPanel_html.display = 'flex';
-            this.rightPopPanel_html.appendChild(this.currentRightPanel)
+            this.rightPopPanel_html.appendChild(this.currentRightPanel);
 
         } catch(e) {
             console.error("Error in calAddEventWindow: ", e)

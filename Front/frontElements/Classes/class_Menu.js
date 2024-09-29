@@ -2,7 +2,7 @@ import {HTMLelem} from "./HTMLClasses/class_HTMLelem.js";
 import {MenuButton} from "./MenuButton.js";
 
 
-class Menu{
+export class Menu{
 
     constructor(id= "", cssMenu = "", cssButtons = "") {
         this.cssButtons = cssButtons
@@ -51,5 +51,3 @@ class Menu{
     };
 
 }
-
-export {Menu};

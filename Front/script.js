@@ -2,7 +2,7 @@ import {ws_Calendar} from "./frontElements/init/init_appWorkspaces.js";
 import {HTMLelem} from "./frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {menu_appGeneral} from "./menu_appGeneral.js";
 import {WorkSpaceContext} from "./workspaces/class_WorkspaceContext.js";
-import {Settings_BackendCall} from "./workspaces/ws_Settings/class_Settings_BackendCall.js";
+import {Settings_BackendCall} from "./backendCalls/class_Settings_BackendCall.js";
 
 
 

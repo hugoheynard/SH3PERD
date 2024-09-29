@@ -1,9 +1,9 @@
+import {Menu} from "../../frontElements/Classes/class_Menu.js";
 import {Icon} from "../../frontElements/Classes/icones/class_Icon.js";
 import {MenuAction} from "../../frontElements/Classes/menuClasses/class_MenuAction.js";
-import {Menu} from "../../frontElements/Classes/class_Menu.js";
 
 
-const wsMenu_staffMember = new Menu('staffMemberMenu', 'workspaceMenu', 'button_lpm');
+export const wsMenu_staffMember = new Menu('staffMemberMenu', 'workspaceMenu', 'button_lpm');
 
 wsMenu_staffMember.addButton(
     "staffMemberHome",
@@ -53,4 +53,3 @@ wsMenu_staffMember.addButton(
     () => console.log('staffDocs')
 )
 
-export {wsMenu_staffMember};
