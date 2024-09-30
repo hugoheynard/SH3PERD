@@ -1,4 +1,4 @@
-import {EventSettings} from "../../../frontElements/init/init_appSettings.js";
+import {EventSettings} from "../../../../frontElements/init/init_appSettings.js";
 
 
 export class EventDecorator_ColorizeEvent {

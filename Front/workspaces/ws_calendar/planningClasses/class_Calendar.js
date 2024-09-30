@@ -5,8 +5,8 @@ import {CalendarHeader} from "./class_CalendarHeader.js";
 import {CalHoursGrid} from "./class_calHoursGrid.js";
 import {DateMethod} from "../../../../backend/Utilities/class_DateMethods.js";
 import {ColorScheme} from "../../../../db/fakeDB-design.js";
-import {EventDecorator_RecallFormOnClick} from "./class_EventDecorator_RecallFormOnClick.js";
-import {EventDecorator_ColorizeEvent} from "./class_EventDecorator_ColorizeEvent.js";
+import {EventDecorator_RecallFormOnClick} from "./eventDecorators/class_EventDecorator_RecallFormOnClick.js";
+import {EventDecorator_ColorizeEvent} from "./eventDecorators/class_EventDecorator_ColorizeEvent.js";
 
 
 export class Calendar {
@@ -35,12 +35,6 @@ export class Calendar {
         new EventDecorator_ColorizeEvent({eventsBlock: this.getAllEventsBlocks(this.planningList)});
         new EventDecorator_RecallFormOnClick({eventsBlock: this.getAllEventsBlocks(this.planningList)});
         //TODO: new PlanningDecorator_addBackGroundOverlay(planningList)
-        /*addBackgroundOverlay(){
-            const opacity = 0.025
-            const currentColor = this.backgroundColor;
-            const newColor = currentColor.replace(/rgba\((\d+),(\d+),(\d+),(\d+)\)/, `rgba($1,$2,$3,${opacity})`);
-            this.planning.style.backgroundColor = newColor;
-        }*/
     };
     getAllEventsBlocks(planningList) {
         return planningList
@@ -72,7 +66,7 @@ export class Calendar {
                 */
     };
 
-    buildGridOverlay() {
+    buildGridOverlay() { //TODO: extract as a Calendar Decorator
         const hourGrid = new CalHoursGrid({
             offset: this.offset,
             earliestTimeStep: this.earliestEvent.date,

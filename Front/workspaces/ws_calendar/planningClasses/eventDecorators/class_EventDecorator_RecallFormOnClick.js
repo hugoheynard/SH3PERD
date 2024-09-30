@@ -1,5 +1,5 @@
-import {appWorkspace} from "../../../script.js";
-import {wsPopWindow_AddEvent} from "../wsCal_PopWindows/wsPopWindow_AddEventWindow.js";
+import {appWorkspace} from "../../../../script.js";
+import {wsPopWindow_AddEvent} from "../../wsCal_RightPanelWindows/wsPopWindow_AddEventWindow.js";
 
 
 export class EventDecorator_RecallFormOnClick {

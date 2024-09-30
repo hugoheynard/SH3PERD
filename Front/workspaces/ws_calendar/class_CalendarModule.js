@@ -1,6 +1,6 @@
 import {HTMLelem} from "../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {MiniCalendar} from "../../frontElements/Classes/class_MiniCalendar.js";
-import {PlanningFilters} from "./planningClasses/class_PlanningFilters.js";
+import {PlanningFilters} from "./Filters/class_PlanningFilters.js";
 import {Calendar} from "./planningClasses/class_Calendar.js";
 
 
@@ -22,75 +22,8 @@ export class CalendarModule {
         this.calContainer.appendChild(this.calendar.htmlElement);
         this.addMiniCalendar();
         this.addFilters();
-        this.viewControls();
-    };
-    generateBlockColorRules() {
-
     };
 
-    viewControls() {
-        document.addEventListener('keydown', (event)=>{
-
-            switch(event.key){
-
-                case '1':
-                    this.viewIndiv();
-                    break;
-
-                case '2':
-                    this.viewPerCat();
-                    break;
-
-                case '+':
-                    this.viewAll();
-                    break;
-
-            }
-
-        });
-
-        //Navigation Controls
-        //document.getElementById("next").addEventListener('click', () => this.currentView.navigateUpList());
-        //document.getElementById("prev").addEventListener('click', () => this.currentView.navigateDownList());
-
-        document.addEventListener('keydown', (event)=>{
-
-            switch(event.key){
-
-                case 'ArrowRight':
-                    this.currentView.navigateUpList();
-                    break;
-
-                case 'ArrowLeft':
-                    this.currentView.navigateDownList();
-                    break;
-
-            }
-
-        });
-
-
-        //Zoom Controls
-        //document.getElementById("zoomUp").addEventListener('click', () => this.currentView.zoomUp());
-        //document.getElementById("zoomDown").addEventListener('click', () => this.currentView.zoomDown());
-
-        document.addEventListener('keydown', (event)=>{
-
-            switch(event.key){
-
-                case '+':
-                    this.currentView.zoomUp();
-                    break;
-
-                case '-':
-                    this.currentView.zoomDown();
-                    break;
-
-            }
-
-        });
-
-    };
     addMiniCalendar() {
         this.leftSideContainer.appendChild(new MiniCalendar('miniCal').render());
     };

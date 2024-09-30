@@ -2,12 +2,12 @@ import {wsMenu_Calendar} from "../../workspaces/ws_calendar/wsMenu_Calendar.js";
 import {wsMenu_staffMember} from "../../workspaces/ws_staffMember/wsMenu_staffMember.js";
 import {appModuleManager} from "./init_appModules.js";
 import {wsPage_Home} from "../../workspaces/ws_Home/wsPage_Home.js";
-import {wsPopWindow_AddEvent} from "../../workspaces/ws_calendar/wsCal_PopWindows/wsPopWindow_AddEventWindow.js";
+import {wsPopWindow_AddEvent} from "../../workspaces/ws_calendar/wsCal_RightPanelWindows/wsPopWindow_AddEventWindow.js";
 import {wsPage_musicLibrary} from "../../workspaces/ws_musicLibrary/wsPage_musicLibrary.js";
 import {wsPage_playlistManager} from "../../workspaces/ws_PlaylistManager/wsPage_playlistManager.js";
 import {wsPage_planningCabaret} from "../../workspaces/ws_cabManager/wsPage_planningCabaret.js";
 import {wsPage_workPeriods} from "../../workspaces/ws_staffMember/staffMemberPages/wsPage_workPeriods.js";
-import {Workspace} from "../../workspaces/class_Workspace.js";
+import {Workspace} from "../../workspaces/navigationArchitecture/class_Workspace.js";
 
 
 // WORKSPACES INITIALISATION

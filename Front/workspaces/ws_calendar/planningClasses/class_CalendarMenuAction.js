@@ -1,7 +1,7 @@
 import {appWorkspace} from "../../../script.js";
 import {ws_Calendar} from "../../../frontElements/init/init_appWorkspaces.js";
-import {wsPopWindow_AddEvent} from "../wsCal_PopWindows/wsPopWindow_AddEventWindow.js";
-import {wsPopMenu_CalendarHome} from "../PopMenus_Calendar/wsPopMenu_CalendarHome.js";
+import {wsPopWindow_AddEvent} from "../wsCal_RightPanelWindows/wsPopWindow_AddEventWindow.js";
+import {wsPopMenu_CalendarHome} from "../wsCal_RightPanelWindows/wsPopMenu_CalendarHome.js";
 
 
 export class CalendarMenuAction {

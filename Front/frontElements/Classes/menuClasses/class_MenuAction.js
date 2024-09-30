@@ -7,9 +7,9 @@ import {
 
 import {wsPage_workPeriods} from "../../../workspaces/ws_staffMember/staffMemberPages/wsPage_workPeriods.js";
 import {createArtistProfile} from "../../Forms/appForms/artistProfileForms/createArtistProfile.js";
-import {wsPopMenu_CalendarHome} from "../../../workspaces/ws_calendar/PopMenus_Calendar/wsPopMenu_CalendarHome.js";
+import {wsPopMenu_CalendarHome} from "../../../workspaces/ws_calendar/wsCal_RightPanelWindows/wsPopMenu_CalendarHome.js";
 
-import {wsPopWindow_AddEvent} from "../../../workspaces/ws_calendar/wsCal_PopWindows/wsPopWindow_AddEventWindow.js";
+import {wsPopWindow_AddEvent} from "../../../workspaces/ws_calendar/wsCal_RightPanelWindows/wsPopWindow_AddEventWindow.js";
 import {appWorkspace} from "../../../script.js";
 import {appModuleManager} from "../../init/init_appModules.js";
 

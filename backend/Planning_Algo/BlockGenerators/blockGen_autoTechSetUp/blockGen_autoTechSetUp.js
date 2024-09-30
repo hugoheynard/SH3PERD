@@ -5,7 +5,7 @@ import {
     STANDARD_TECH_SETUP_DURATION,
     STANDARD_TECH_SETUP_HOUR,
     STANDARD_TECH_SETUP_MINUTES
-} from "../../../../Front/Utilities/MAGIC NUMBERS.js";
+} from "../../../Utilities/MAGIC NUMBERS.js";
 
 
 class Auto_TechSetup{

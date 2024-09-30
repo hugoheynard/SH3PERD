@@ -1,4 +1,4 @@
-import {HTMLelem} from "../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
+import {HTMLelem} from "../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {PageContext} from "./class_pageContext.js";
 import {RightPanelContext} from "./class_RightPanelContext.js";
 
