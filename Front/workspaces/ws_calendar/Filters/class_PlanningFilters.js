@@ -21,7 +21,7 @@ class PlanningFilters {
 
         for (const planning of this.view.planningList) {
 
-            for (const type of planning.artistBlockList.map(block => block.type)) {
+            for (const type of planning.planning_events.map(block => block.type)) {
 
                 if (!filterArray.includes(type)) {
                     filterArray.push(type);

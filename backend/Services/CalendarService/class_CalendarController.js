@@ -12,12 +12,10 @@ export class CalendarController {
 
         this.currentData = this.calendarService.builder.build(this.staff, this.calendar_events);
 
-
-
-        const generatedGetIn = this.calendarService.eventGenerator.autoGetIn.generate(this.currentData);
-        this.mergeEvents(generatedGetIn, this.currentData);
-
         this.calendarService.eventCollider.findCollisionList(this.currentData);
+
+        //const generatedGetIn = this.calendarService.eventGenerator.autoGetIn.generate(this.currentData);
+        //this.mergeEvents(generatedGetIn, this.currentData);
 
         return this.currentData;
     };

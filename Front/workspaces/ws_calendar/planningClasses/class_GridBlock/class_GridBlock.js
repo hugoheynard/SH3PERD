@@ -2,13 +2,21 @@ import {addBlockTitle, addTime} from "./addBlockContent.js";
 import {HTMLelem} from "../../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 
 
-class GridBlock {
+export class GridBlock {
     constructor(input) {
+        this.id = input.id;
+        this.colCoordinates = input.colCoordinates;
+        this.rowCoordinates = input.rowCoordinates;
         this._blockData = input.blockData;
 
         this.block = new HTMLelem('div', undefined, 'block color');
-        this.htmlElement = this.block.render();
-        this.htmlElement.setAttribute('draggable', true);
+        this.html = this.block.render();
+        this.html.setAttribute('draggable', true);
+
+        this.html.style.gridColumn = this.colCoordinates;
+        this.html.style.gridRowStart = this.rowCoordinates.rowStart;
+        this.html.style.gridRowEnd = this.rowCoordinates.rowEnd;
+
         this.blockResume = new HTMLelem('div', undefined, 'block_resume').render();
 
         this.addDataset();
@@ -20,21 +28,19 @@ class GridBlock {
     };
 
     addDataset() {
-        this.htmlElement.dataset.id = this.blockData._id;
+        this.html.dataset.id = this.blockData._id;
     };
 
     addBlockResume() {
         this.blockResume.appendChild(addTime(this.blockData));
         this.blockResume.appendChild(addBlockTitle(this.blockData));
 
-        this.htmlElement.appendChild(this.blockResume);
+        this.html.appendChild(this.blockResume);
     };
 
     renderBlock() {
-        this.htmlElement.innerHTML = '';
+        this.html.innerHTML = '';
 
-        return this.htmlElement;
+        return this.html;
     };
 }
-
-export {GridBlock};

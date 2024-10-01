@@ -21,7 +21,7 @@ export class CalendarModule {
     buildView() {
         this.undisplayCalendar();
         this.calendar = new Calendar(this.calendarData);
-        this.currentSelector = new CalendarDecorator_singleSelector(this.calendar);
+        //this.currentSelector = new CalendarDecorator_singleSelector(this.calendar);
         //this.calContainer.appendChild(this.calendar.header); //TODO: ba voila enlever
         this.calContainer.appendChild(this.calendar.htmlElement);
         this.addMiniCalendar();

@@ -6,25 +6,30 @@ import {getPositionFromDate, getRowEndFromDatasetDuration} from "../../../Utilit
 export class IndividualPlanning {
     constructor (input) {
         this.id = input.id;
+        this.planning_events = input.calendar_events;
+        this.collisionList = input.collisionList;
         this.negativeOffset = input.negativeOffset;
+        this.numberOfRows = input.numberOfRows;
+        this.rowSize = input.rowSize;
 
-        this.artistBlockList = input.calendar_events;
-        this.gridBlockArray = [];
+        this.html = new HTMLelem('div', this.id, 'dailyPlanningCalendar').render();
+    };
+    renderPlanning() {
+        this.#resetPlanning();
+        this.#setGridSpecs();
+        this.#buildEventGridBlocks();
+        this.#appendEventsToPlanning();
 
-        this.planning = new HTMLelem('div', this.id, 'dailyPlanningCalendar').render();
-
-        //sets the grid
-        this.maxElemInRow = this.getMaxElemInRow() ?? 1;
-        this.numberOfCol = this.defineColumnTemplate();
-        this.planning.style.gridTemplateColumns = `repeat(${this.numberOfCol}, 1fr)`;
-        this.planning.style.gridTemplateRows = `repeat(${input.numberOfRows}, ${input.rowSize}px)`;
+        return this.html;
     };
 
-    getMaxElemInRow() {
-        return 1 + Math.max(...this.artistBlockList.map(event => event.collisionList.length));
+    //get grid specs
+    #getMaxElemInRow() {
+        const numberOfCollisionArray = Object.values(this.collisionList).map(array => array.length);
+        return 1 + Math.max(...numberOfCollisionArray);
     };
 
-    defineColumnTemplate() {
+    #defineColumnTemplate() {
         if (this.maxElemInRow % 2 !== 0) {
             return this.maxElemInRow * 2;
         }
@@ -32,38 +37,50 @@ export class IndividualPlanning {
     };
 
     //GRID BLOCKS METHODS
-    addRowCoordinates(block) {
-        const rowStart = getPositionFromDate(block.blockData.date) - this.negativeOffset;
-        const span = getRowEndFromDatasetDuration(block.blockData.duration);
-        block.htmlElement.style.gridRowStart = `${rowStart}`;
-        block.htmlElement.style.gridRowEnd = `${rowStart + span}`;
-    };
-
-    addColCoordinates(block) {
-
-        if (block.blockData.collisionList.length === 0) {
-            block.htmlElement.style.gridColumn = '1 / -1';
-            return;
+    #addRowCoordinates(event) {
+        const rowStart = getPositionFromDate(event.date) - this.negativeOffset;
+        const span = getRowEndFromDatasetDuration(event.duration);
+        return {
+            rowStart: `${rowStart}`,
+            rowEnd: `${rowStart + span}`
         }
-        block.htmlElement.style.gridColumn = `span ${this.numberOfCol / this.maxElemInRow}`;
     };
 
-    buildGrid() {
-        //generate Blocks from artist block list
-        for (const [index, event] of this.artistBlockList.entries()) {
-            const newBlock  = new GridBlock({blockData: event});
+    #addColCoordinates(event_id) {
 
-            this.addRowCoordinates(newBlock);
-            this.addColCoordinates(newBlock, index);
+        if (this.collisionList[event_id].length === 0) {
+            return '1 / -1';
+        }
+        return `span ${this.numberOfCol / this.maxElemInRow}`;
+    };
 
+    #buildEventGridBlocks() {
+        for (const event of this.planning_events) {
+            const newBlock  = new GridBlock({
+                id: event._id,
+                colCoordinates: this.#addColCoordinates(event._id),
+                rowCoordinates: this.#addRowCoordinates(event),
+                blockData: event
+            });
             this.gridBlockArray.push(newBlock);
-            this.planning.appendChild(newBlock.htmlElement);
         }
     };
 
-    renderPlanning() {
-        this.planning.innerHTML = '';
-        this.buildGrid();
-        return this.planning;
+    #resetPlanning() {
+        this.html.innerHTML = '';
+        this.gridBlockArray = [];
+    };
+
+    #setGridSpecs() {
+        this.maxElemInRow = this.#getMaxElemInRow() ?? 1;
+        this.numberOfCol = this.#defineColumnTemplate() ?? 1;
+        this.html.style.gridTemplateColumns = `repeat(${this.numberOfCol}, 1fr)`;
+        this.html.style.gridTemplateRows = `repeat(${this.numberOfRows}, ${this.rowSize}px)`;
+    };
+
+    #appendEventsToPlanning() {
+        for (const event of this.gridBlockArray) {
+            this.html.appendChild(event.html)
+        }
     };
 }

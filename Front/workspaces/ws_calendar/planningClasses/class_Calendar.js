@@ -49,6 +49,7 @@ export class Calendar {
             const planning = new IndividualPlanning({
                 id: `planning_${elem.staff_id}`,
                 calendar_events: elem.calendar_events.map(event_id => this.calendarData.events[event_id]),
+                collisionList: elem.collisionList,
                 negativeOffset: this.offset,
                 numberOfRows: this.gridRowsNumber,
                 rowSize: this.rowZoom

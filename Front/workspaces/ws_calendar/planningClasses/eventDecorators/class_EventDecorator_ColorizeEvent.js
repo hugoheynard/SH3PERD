@@ -14,7 +14,7 @@ export class EventDecorator_ColorizeEvent {
     async colorize() {
         try {
             for (const event of this.eventsBlock) {
-                const elem = event.htmlElement;
+                const elem = event.html;
 
                 if (!elem) {
                     console.warn('Event html block is undefined for event:', event);
