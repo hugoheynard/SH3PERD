@@ -12,10 +12,11 @@ export class CalendarController {
 
         this.currentData = this.calendarService.builder.build(this.staff, this.calendar_events);
 
-        this.calendarService.eventCollider.findCollisionList(this.currentData);
+        this.calendarService.individualPlanningCollider.findCollisionList(this.currentData);
+        this.currentData.crossEvents = this.calendarService.partnerPlanningCollider.calculate(this.currentData);
 
-        //const generatedGetIn = this.calendarService.eventGenerator.autoGetIn.generate(this.currentData);
-        //this.mergeEvents(generatedGetIn, this.currentData);
+        const generatedGetIn = this.calendarService.eventGenerator.autoGetIn.generate(this.currentData);
+        //this.mergeEvents(generatedGetIn, this.currentData); //TODO bug
 
         return this.currentData;
     };

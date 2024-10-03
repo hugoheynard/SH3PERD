@@ -12,22 +12,17 @@ import {EventDecorator_ColorizeEvent} from "./eventDecorators/class_EventDecorat
 export class Calendar {
     constructor(calendarData) {
         this.calendarData = calendarData;
-        this.planningList = [];
-
-        this.earliestEvent = findEarliestEventInArray(Object.values(this.calendarData.events));
-        this.latestEvent = findLatestEventInArray(Object.values(this.calendarData.events));
-
-        this.offset = this.getOffset();
         this.rowZoom = 15;
 
         this.colorScheme = new ColorScheme().getColorData();
-        this.htmlElement = new HTMLelem('div', "calendars").render();
+        this.html = new HTMLelem('div', "calendars").render();
 
         this.buildCalendar();
     };
     buildCalendar(){
         this.resetInstanceAndContainer();
-        this.getOffset();
+        this.findEarliestAndLatestEvent();
+        this.getRowOffset();
         this.defineGridRowsNumber(Object.values(this.calendarData.events));
         this.buildGridOverlay(Object.values(this.calendarData.events));
         this.buildIndividualPlannings(this.calendarData.plannings);
@@ -36,6 +31,10 @@ export class Calendar {
         new EventDecorator_RecallFormOnClick({eventsBlock: this.getAllEventsBlocks(this.planningList)});
         //TODO: new PlanningDecorator_addBackGroundOverlay(planningList)
     };
+    findEarliestAndLatestEvent() {
+        this.earliestEvent = findEarliestEventInArray(Object.values(this.calendarData.events));
+        this.latestEvent = findLatestEventInArray(Object.values(this.calendarData.events));
+    }
     getAllEventsBlocks(planningList) {
         return planningList
             .map(planning => planning.gridBlockArray)
@@ -55,7 +54,7 @@ export class Calendar {
                 rowSize: this.rowZoom
             });
             this.planningList.push(planning);
-            this.htmlElement.appendChild(planning.renderPlanning());
+            this.html.appendChild(planning.renderPlanning());
         }
         /*
                this.header = new CalendarHeader(
@@ -74,8 +73,8 @@ export class Calendar {
             latestTimeStep: DateMethod.addMinutes(this.latestEvent.date, this.latestEvent.duration)
         });
 
-        this.htmlElement.appendChild(hourGrid.calHoursLines);
-        this.htmlElement.appendChild(hourGrid.calHoursText);
+        this.html.appendChild(hourGrid.calHoursLines);
+        this.html.appendChild(hourGrid.calHoursText);
 
         hourGrid.calHoursLines.style.gridTemplateRows = `repeat(${this.gridRowsNumber}, ${this.rowZoom}px)`;
         hourGrid.calHoursText.style.gridTemplateRows = `repeat(${this.gridRowsNumber}, ${this.rowZoom}px)`;
@@ -90,13 +89,14 @@ export class Calendar {
     };
 
     resetInstanceAndContainer() {
-        this.htmlElement.innerHTML = '';
+        this.html.innerHTML = '';
+        this.planningList = [];
     };
 
-    getOffset() {
+    getRowOffset() {
         const firstBlock = this.earliestEvent;
         const dayStart = DateMethod.startOfDay(new Date(firstBlock.date));
 
-        return (firstBlock.date - dayStart) / (DateMethod.ONE_MINUTE_IN_MS * DateMethod.STEP_DURATION) - 1;
+        this.offset = (firstBlock.date - dayStart) / (DateMethod.ONE_MINUTE_IN_MS * DateMethod.STEP_DURATION) - 1;
     };
 }
