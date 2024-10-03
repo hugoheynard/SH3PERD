@@ -8,10 +8,10 @@ export class CalendarDecorator_singleSelector {
         this.undisplayNonSelectedPlannings()
     };
     displaySelection() {
-        this.currentDisplay.planning.style.display = 'grid';
+        this.currentDisplay.html.style.display = 'grid';
     };
     undisplayNonSelectedPlannings() {
         this.calendar.planningList.filter(planning => planning !== this.currentDisplay)
-            .map(planning => planning.planning.style.display = 'none');
+            .map(planning => planning.html.style.display = 'none');
     };
 }
