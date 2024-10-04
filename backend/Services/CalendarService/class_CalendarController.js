@@ -1,5 +1,6 @@
 import {CalendarService} from "./class_CalendarService.js";
 import {app_db} from "../../app.js";
+import {BatchEventColliderModule} from "./class_BatchEventColliderModule.js";
 
 export class CalendarController {
     constructor() {
@@ -13,8 +14,11 @@ export class CalendarController {
         this.currentData = this.calendarService.builder.build(this.staff, this.calendar_events);
 
         this.calendarService.individualPlanningCollider.findCollisionList(this.currentData);
-        this.currentData.crossEvents = this.calendarService.partnerPlanningCollider.calculate(this.currentData);
 
+        //collision calculations on events
+        this.currentData.crossEvents = new BatchEventColliderModule({eventsToCollide: Object.values(this.currentData.events)});
+
+        //generates getIn events from data.events
         const generatedGetIn = this.calendarService.eventGenerator.autoGetIn.generate(this.currentData);
         //this.mergeEvents(generatedGetIn, this.currentData); //TODO bug
 

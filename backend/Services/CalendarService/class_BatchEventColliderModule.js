@@ -18,7 +18,7 @@ export class BatchEventColliderModule{
         this.calculateCollisions();
     };
     sortList_DenseActivityPeriodFirst(input) {
-        //TODO ici
+        //TODO extract pre triage logic
         const data = input.data;
         const split = new Date(findEarliestEventInArray(data).date)
 
@@ -26,7 +26,7 @@ export class BatchEventColliderModule{
             data.sort((a, b) => a.date - b.date);
         }
 
-    }; //TODO extract pre triage logic
+    };
 
     /**
      * Calculates collisions between all pairs of events in the `eventsToCollide` array.
