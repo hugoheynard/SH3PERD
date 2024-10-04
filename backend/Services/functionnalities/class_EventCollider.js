@@ -4,9 +4,10 @@ import {deepCopy} from "../../Utilities/deepCopy.js";
  * Class representing an EventCollider that checks if two events collide based on their time steps.
  */
 export class EventCollider {
-    /** @private */
+    /**
+     * private fields
+     * */
     #referenceEvent;
-    /** @private */
     #comparedEvent;
     /**
      * Create an EventCollider.
