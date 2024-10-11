@@ -2,7 +2,6 @@ import {GridBlock} from "./class_GridBlock/class_GridBlock.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
 import {getPositionFromDate, getRowEndFromDatasetDuration} from "../../../Utilities/dataset_functions/datasetFunctions.js";
 
-
 export class IndividualPlanning {
     constructor (input) {
         this.id = input.id;
@@ -10,26 +9,30 @@ export class IndividualPlanning {
         this.collisionList = input.collisionList;
         this.negativeOffset = input.negativeOffset;
         this.numberOfRows = input.numberOfRows;
+        this.maxElemInRow = input.maxInternalCollisions + 1 //offset if no collisions;
         this.rowSize = input.rowSize;
 
         this.html = new HTMLelem('div', this.id, 'dailyPlanningCalendar').render();
+        this.createCollisionIdSet();
+        this.renderPlanning();
     };
     renderPlanning() {
-        this.#resetPlanning();
-        this.#setGridSpecs();
-        this.#buildEventGridBlocks();
-        this.#appendEventsToPlanning();
-
-        return this.html;
+        this.resetPlanning();
+        this.setGridSpecs();
+        this.buildEventGridBlocks({
+            eventSource: this.planning_events,
+        });
+        this.appendAllEventsToPlanning(this.gridBlockArray);
     };
 
-    //get grid specs
-    #getMaxElemInRow() {
-        const numberOfCollisionArray = Object.values(this.collisionList).map(array => array.length);
-        return 1 + Math.max(...numberOfCollisionArray);
+    createCollisionIdSet() {
+        this.collisionIdSet = new Set([
+            ...new Set(this.collisionList.map(ev => ev.referenceEvent)),
+            ...new Set(this.collisionList.map(ev => ev.comparedToEvent))
+        ]);
     };
 
-    #defineColumnTemplate() {
+    defineColumnTemplate() {
         if (this.maxElemInRow % 2 !== 0) {
             return this.maxElemInRow * 2;
         }
@@ -47,40 +50,46 @@ export class IndividualPlanning {
     };
 
     #addColCoordinates(event_id) {
-
-        if (this.collisionList[event_id].length === 0) {
+        if (!this.collisionIdSet.has(event_id)) {
             return '1 / -1';
         }
         return `span ${this.numberOfCol / this.maxElemInRow}`;
     };
 
-    #buildEventGridBlocks() {
-        for (const event of this.planning_events) {
-            const newBlock  = new GridBlock({
-                id: event._id,
-                colCoordinates: this.#addColCoordinates(event._id),
-                rowCoordinates: this.#addRowCoordinates(event),
-                blockData: event
-            });
-            this.gridBlockArray.push(newBlock);
+    buildEventGridBlocks(input) {
+        for (const event of input.eventSource) {
+            this.gridBlockArray.push(
+                new GridBlock({
+                    id: event._id,
+                    colCoordinates: this.#addColCoordinates(event._id),
+                    rowCoordinates: this.#addRowCoordinates(event),
+                    blockData: event
+                })
+            );
         }
     };
 
-    #resetPlanning() {
+    resetPlanning() {
         this.html.innerHTML = '';
         this.gridBlockArray = [];
     };
 
-    #setGridSpecs() {
-        this.maxElemInRow = this.#getMaxElemInRow() ?? 1;
-        this.numberOfCol = this.#defineColumnTemplate() ?? 1;
+    setGridSpecs() {
+        this.numberOfCol = this.defineColumnTemplate() ?? 1;
         this.html.style.gridTemplateColumns = `repeat(${this.numberOfCol}, 1fr)`;
         this.html.style.gridTemplateRows = `repeat(${this.numberOfRows}, ${this.rowSize}px)`;
     };
 
-    #appendEventsToPlanning() {
-        for (const event of this.gridBlockArray) {
-            this.html.appendChild(event.html)
+    appendAllEventsToPlanning(eventListToDisplay) {
+        for (const event of eventListToDisplay) {
+            this.html.appendChild(event.html);
         }
+    };
+    showPlanning() {
+        this.html.style.display = 'grid';
+    };
+
+    hidePlanning() {
+        this.html.style.display = 'none';
     };
 }
