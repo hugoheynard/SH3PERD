@@ -64,7 +64,6 @@
 }
 
 
-
 /*The calendar grid*/
 .dailyPlanningCalendar {
     display: grid;
@@ -73,14 +72,13 @@
     overflow-x: hidden;
 }
 
-
-#pcpContainer {
-    display: flex;
-    flex-direction: row;
-}
-
-.miniBlock {
+.crossPlanningCalendar {
+    display: grid;
     width: 18px;
+    /*flex: 1; pcp*/
+    z-index: 1;
+    overflow-x: hidden;
+    background-color: #2c2d2f;
 }
 
 .block {
@@ -90,12 +88,9 @@
     overflow: hidden;
 }
 
-.partnerBlock{
-    width: 20px;
-    height: 20px;
-    border: 2px solid white;
-    border-radius: 0.25rem;
-}
+
+
+
 
 .color[data-type="void"] {
     background-color: rgba(255, 255, 255, 0.2);

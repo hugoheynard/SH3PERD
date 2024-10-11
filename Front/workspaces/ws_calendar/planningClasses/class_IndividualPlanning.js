@@ -19,9 +19,7 @@ export class IndividualPlanning {
     renderPlanning() {
         this.resetPlanning();
         this.setGridSpecs();
-        this.buildEventGridBlocks({
-            eventSource: this.planning_events,
-        });
+        this.buildEventGridBlocks({ eventSource: this.planning_events});
         this.appendAllEventsToPlanning(this.gridBlockArray);
     };
 
@@ -57,6 +55,7 @@ export class IndividualPlanning {
     };
 
     buildEventGridBlocks(input) {
+        this.gridBlockArray = [];
         for (const event of input.eventSource) {
             this.gridBlockArray.push(
                 new GridBlock({
@@ -81,6 +80,7 @@ export class IndividualPlanning {
     };
 
     appendAllEventsToPlanning(eventListToDisplay) {
+        this.html.innerHTML = '';
         for (const event of eventListToDisplay) {
             this.html.appendChild(event.html);
         }

@@ -46,15 +46,16 @@ export class Calendar {
         for (const elem of plannings) {
 
             const planning = new IndividualPlanning({
-                id: `planning_${elem.staff_id}`,
+                id: elem.staff_id,
                 calendar_events: elem.calendar_events.map(event_id => this.calendarData.events[event_id]),
-                collisionList: elem.collisionList,
+                collisionList: elem.collisions.internal.crossEvent,
                 negativeOffset: this.offset,
                 numberOfRows: this.gridRowsNumber,
+                maxInternalCollisions: elem.collisions.internal.maxCollisions,
                 rowSize: this.rowZoom
             });
             this.planningList.push(planning);
-            this.html.appendChild(planning.renderPlanning());
+            this.html.appendChild(planning.html);
         }
         /*
                this.header = new CalendarHeader(
@@ -64,7 +65,9 @@ export class Calendar {
                 }).render()
                             }
                 */
+
     };
+
 
     buildGridOverlay() { //TODO: extract as a Calendar Decorator
         const hourGrid = new CalHoursGrid({

@@ -19,7 +19,7 @@ export const ws_Calendar = new Workspace(
     {
         wsMenu: wsMenu_Calendar,
         defaultPage: appModuleManager['calendar'].render(),
-        defaultRightPanel: wsPopWindow_AddEvent()//wsPopWindow_AddTimeframe()//
+        //defaultRightPanel: wsPopWindow_AddEvent()//wsPopWindow_AddTimeframe()//
     });
 
 export const ws_musicLibrary = new Workspace(
