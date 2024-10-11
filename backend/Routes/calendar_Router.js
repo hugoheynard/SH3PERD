@@ -1,15 +1,39 @@
 import express from "express";
 import {appManager} from "../app.js";
-
-
 export const calendarRouter = express.Router();
 
-calendarRouter.get('/:date', async (req, res) => {
+const validateDate = (req, res, next) => {
+    const { date } = req.body;
+
+    if (!date) {
+        return res.status(400).json({ error: 'Date is required' });
+    }
+
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) {
+        return res.status(400).json({ error: 'Invalid date format' });
+    }
+
+    next();
+};
+
+calendarRouter.post('/date', validateDate, async (req, res) => {
     try {
-        res.json(await appManager.calendarController.collectData(req.params.date));
+        return res.json({
+            success: true,
+            receivedDate: req.body.date,
+            data: await appManager.calendarController.collectData(req.body.date)
+        });
     } catch (error) {
-        console.error('Error retrieving day data:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error("Internal error while getting calendar day data:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: 'Internal error while getting calendar day data',
+            error: error.message,
+            stack: error.stack,
+            receivedDate: req.body.date,
+        });
     }
 });
 
@@ -34,3 +58,4 @@ calendarRouter.post('/events', async (req, res) => {
         throw (e);
     }
 })
+

@@ -31,13 +31,19 @@ export class Calendar_BackendCall {
 
     static async getDay(date = DateMethod.today) {
         try {
-            const response = await fetch(`${BackEndCall.endpoint}/calendar/${date}`);
+            const response = await fetch(`${BackEndCall.endpoint}/calendar/date`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ date })
+            });
 
             if (!response.ok) {
                 throw new Error('Network response was not ok ' + response.statusText);
             }
 
-            const data = await response.json();
+            const data = await response.json().then(res => res.data)
             console.log(data)
             //DATA PROCESSING:
             // converts date back from string to Date Object
