@@ -1,5 +1,5 @@
 import {DateMethod} from "../../Utilities/class_DateMethods.js";
-import {deepCopy} from "../../Utilities/deepCopy.js";
+import {deepCopy, deepCopyThroughJson} from "../../Utilities/deepCopy.js";
 /**
  * Class representing an EventCollider that checks if two events collide based on their time steps.
  */
@@ -72,14 +72,11 @@ export class EventCollider {
         const startDate = event.date;
         const endDate = DateMethod.addMinutes(startDate, event.duration);
 
-        const stepArray = [];
+        const totalSteps = Math.floor((endDate - startDate) / (DateMethod.STEP_DURATION * 60 * 1000));
 
-        let timeStep = startDate;
-        while (timeStep < endDate) {
-            stepArray.push(new Date(timeStep));
-            timeStep = DateMethod.addMinutes(timeStep, DateMethod.STEP_DURATION);
-        }
-        return stepArray;
+        return Array.from({ length: totalSteps }, (_, index) =>
+            new Date(DateMethod.addMinutes(startDate, index * DateMethod.STEP_DURATION))
+        );
     };
 
     /**
@@ -94,14 +91,10 @@ export class EventCollider {
         const comparedEvent_timeSteps = this.getTimeStepsArray(comparedEvent);
 
         const comparedEvent_timeSet = new Set(comparedEvent_timeSteps.map(ev => ev.getTime()));
-        const crossSteps = [];
 
-        for (const refEvStep of referenceEvent_timeSteps) {
-            if (comparedEvent_timeSet.has(refEvStep.getTime())) {
-                crossSteps.push(refEvStep);
-            }
-        }
-        return crossSteps;
+        return referenceEvent_timeSteps.filter(refEvStep =>
+            comparedEvent_timeSet.has(refEvStep.getTime())
+        );
     };
 
     /**
@@ -121,12 +114,11 @@ export class EventCollider {
         }
 
         if (this.collide) {
-
-            const collisionEvent = deepCopy(this.#comparedEvent);
+            const collisionEvent = deepCopyThroughJson(this.#comparedEvent);
             collisionEvent.date = this.collidingSteps[0];
             collisionEvent.duration = this.collidingSteps.length * DateMethod.STEP_DURATION;
 
-            this.result.collisionEvent = collisionEvent;
+            this._result.collisionEvent = collisionEvent;
         }
 
     };
