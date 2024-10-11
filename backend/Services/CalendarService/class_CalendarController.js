@@ -1,6 +1,6 @@
 import {CalendarService} from "./class_CalendarService.js";
 import {app_db} from "../../app.js";
-import {BatchEventColliderModule} from "./class_BatchEventColliderModule.js";
+
 
 export class CalendarController {
     constructor() {
@@ -12,15 +12,11 @@ export class CalendarController {
         this.calendar_events = await this.calendarService.ressourceProvider.getCalendarEvents(new Date(date));
 
         this.currentData = this.calendarService.builder.build(this.staff, this.calendar_events);
-
-        this.calendarService.individualPlanningCollider.findCollisionList(this.currentData);
-
-        //collision calculations on events
-        this.currentData.crossEvents = new BatchEventColliderModule({eventsToCollide: Object.values(this.currentData.events)});
+        this.calendarService.planningCollisionManager.execute(this.currentData)
 
         //generates getIn events from data.events
         const generatedGetIn = this.calendarService.eventGenerator.autoGetIn.generate(this.currentData);
-        //this.mergeEvents(generatedGetIn, this.currentData); //TODO bug
+        this.mergeEvents(generatedGetIn, this.currentData);
 
         return this.currentData;
     };
@@ -57,13 +53,13 @@ export class CalendarController {
             //checker si event déjà dans l'array
 
             data.events = {
-                [event.temp_id]: {...event},
+                [event._id]: {...event},
                 ...data.events
             }
 
             data.plannings
                 .filter(planning => event.participants.includes(planning.staff_id))
-                .map(planning => planning.calendar_events.push(event.temp_id));
+                .map(planning => planning.calendar_events.push(event._id));
         }
     }
 }
