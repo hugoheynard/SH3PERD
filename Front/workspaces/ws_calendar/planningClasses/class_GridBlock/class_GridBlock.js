@@ -9,7 +9,7 @@ export class GridBlock {
         this.rowCoordinates = input.rowCoordinates;
         this._blockData = input.blockData;
 
-        this.block = new HTMLelem('div', undefined, 'block color');
+        this.block = new HTMLelem('div', this.blockData._id, 'block color');
         this.html = this.block.render();
         this.html.setAttribute('draggable', true);
 

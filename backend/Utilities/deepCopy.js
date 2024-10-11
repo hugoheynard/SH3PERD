@@ -16,3 +16,5 @@ export const deepCopy = obj => {
 
     return copy;
 }
+
+export const deepCopyThroughJson = obj => JSON.parse(JSON.stringify(obj));

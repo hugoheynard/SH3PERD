@@ -24,7 +24,7 @@ class DateMethod {
     };
     static check_positiveIntegerParameter(number) {
 
-        if (number <= 0 || !Number.isInteger(number)) {
+        if (number < 0 || !Number.isInteger(number)) {
             throw new Error('parameter must be positive integer only');
         }
     };
