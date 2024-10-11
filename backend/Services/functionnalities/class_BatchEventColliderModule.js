@@ -1,4 +1,4 @@
-import {EventCollider} from "../functionnalities/class_EventCollider.js";
+import {EventCollider} from "./class_EventCollider.js";
 import {findEarliestEventInArray} from "../../Utilities/sortBlockArray.js";
 
 
@@ -34,6 +34,38 @@ export class BatchEventColliderModule{
      * If two events collide, they are added to the list of results.
      * @returns {Array<Object>} The list of collision results.
      */
+    calculateCollisions2() {
+        this.positiveCollisionlist.length = 0;
+        const events = this.eventsToCollide;
+
+        //this.sortList_DenseActivityPeriodFirst({data: events, split: '12:00', direction: 'splitToEnd', merge: 'reverse'})
+
+        for (let i = 0; i < events.length; i++) {
+            const collisionMap = new Map();
+
+            for (let j = i + 1; j < events.length; j++) {
+                const referenceEvent = events[i];
+                const comparedEvents = events[j];
+
+                const eventPairToCheck = [referenceEvent._id, comparedEvents._id].sort().join('-');
+
+                if (this.checkIfPairHasBeenCompared(eventPairToCheck)) {
+                    continue;
+                }
+
+                const collider = new EventCollider({
+                    referenceEvent: referenceEvent,
+                    comparedEvent: comparedEvents
+                })
+
+                if (collider.collide) {
+                    collisionMap.set(comparedEvents._id, collider)
+                }
+            }
+        }
+        return this.positiveCollisionlist;
+    };
+
     calculateCollisions() {
         this.positiveCollisionlist.length = 0;
         const events = this.eventsToCollide;
@@ -50,6 +82,8 @@ export class BatchEventColliderModule{
                 if (this.checkIfPairHasBeenCompared(eventPairToCheck)) {
                     continue;
                 }
+
+
 
                 this.addColliderToListIfCollide(
                     new EventCollider({
