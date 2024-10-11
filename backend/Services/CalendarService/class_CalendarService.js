@@ -1,8 +1,7 @@
 import {CalendarRessourceProvider} from "./class_CalendarRessourceProvider.js";
 import {EventGenerator} from "./class_EventGenerator.js";
 import {CalendarBuilder} from "./class_CalendarBuilder.js";
-import {EventColliderModule} from "./class_EventCollider.js";
-
+import {PlanningCollisionManager} from "./class PlanningCollisionManager.js";
 
 
 export class CalendarService {
@@ -10,7 +9,7 @@ export class CalendarService {
         this.ressourceProvider = new CalendarRessourceProvider();
         this.builder = new CalendarBuilder();
         this.eventGenerator = new EventGenerator();
-        this.individualPlanningCollider = new EventColliderModule();
+        this.planningCollisionManager = new PlanningCollisionManager();
         //this.staffInteractionTool = new StaffInteractionModule();
     };
 }
