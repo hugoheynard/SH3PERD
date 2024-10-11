@@ -48,7 +48,7 @@ class Auto_GetIn {
 
                 this.generatedBlocks.push(
                     {
-                        temp_id: `generatedGetIn_${planning.staff_id}`,
+                        _id: `generatedGetIn_${planning.staff_id}`,
                         date: DateMethod.substractMinutes(firstBlock.date, minusTime ?? 5),
                         duration: 5,
                         participants: planning.staff_id,
