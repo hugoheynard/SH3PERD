@@ -25,7 +25,7 @@ export class CalendarModule {
         new PlanningDecorator_CrossPlanningDisplayTransform({ calendar: this.calendar });
 
 
-        //this.calContainer.appendChild(this.calendar.header); //TODO: ba voila enlever
+        //this.calContainer.appendChild(this.calendar.header); //TODO: HEADER CAT SUBCAT
         this.calContainer.appendChild(this.calendar.html);
         this.addMiniCalendar();
         this.addFilters();

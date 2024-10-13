@@ -1,5 +1,3 @@
-
-
 export class PlanningDecorator_CrossPlanningDisplayTransform{
     constructor(input) {
         this.crossPlanningDisplayActive = true;
@@ -8,67 +6,21 @@ export class PlanningDecorator_CrossPlanningDisplayTransform{
         this.plannings = this.calendar.calendarData.plannings;
         this.referencePlanning = this.plannings[0];
 
-        this.displayCrossPlannings(this.referencePlanning);
+        this.displayCrossPlannings();
     };
 
-    displayCrossPlannings(triggerPlanning) {
-        this.findPlanningsToTransform(this.referencePlanning);
+    displayCrossPlannings() {
         const { planningList } = this.calendar;
+        const { external } = this.referencePlanning.collisions;
 
         for (const planning of planningList) {
 
-            if (this.isReferencePlanning(planning)) {
-                this.referencePlanningProcess(planning);
+            if (!external.hasOwnProperty(planning.id)) {
                 continue;
-            }
-
-            if (this.isNotACrossEventPlanning(planning)) {
-                this.noCrossPlanningProcess(planning);
             }
 
             this.crossPlanningProcess(planning);
         }
-    };
-
-    findPlanningsToTransform(triggerPlanning) {
-        console.log(triggerPlanning.collisions.external) //TODO: remove log
-        this.crossEventsPlanningMap = new Map();
-        this.noCrossEventsPlanningMap = new Map();
-
-        for (const planning of this.plannings) {
-
-            if (!triggerPlanning.collisions.external[planning.staff_id]) {
-                this.noCrossEventsPlanningMap.set(planning.staff_id, planning);
-            }
-
-            this.crossEventsPlanningMap.set(planning.staff_id, planning);
-        }
-    };
-
-    isReferencePlanning(planning) {
-        return planning.id === this.referencePlanning.staff_id;
-    };
-
-    isNotACrossEventPlanning(planning) {
-        return this.noCrossEventsPlanningMap.get(planning.id)
-    };
-
-    noCrossPlanningProcess(planning) {
-        planning.hidePlanning();
-        this.changePlanningStyle({
-            target: planning,
-            fromCssClass: 'crossPlanningCalendar',
-            toCssClass: 'dailyPlanningCalendar'
-        });
-    };
-
-    referencePlanningProcess(planning) {
-        planning.showPlanning();
-        this.changePlanningStyle({
-            target: planning,
-            fromCssClass: 'crossPlanningCalendar',
-            toCssClass: 'dailyPlanningCalendar'
-        });
     };
 
     crossPlanningProcess(planning) {

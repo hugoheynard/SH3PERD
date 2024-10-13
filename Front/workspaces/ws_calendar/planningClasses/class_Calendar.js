@@ -1,7 +1,6 @@
 import {IndividualPlanning} from "./class_IndividualPlanning.js";
 import {findEarliestEventInArray, findLatestEventInArray} from "../../../../backend/Utilities/sortBlockArray.js";
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
-import {CalendarHeader} from "./class_CalendarHeader.js";
 import {CalHoursGrid} from "./class_calHoursGrid.js";
 import {DateMethod} from "../../../../backend/Utilities/class_DateMethods.js";
 import {ColorScheme} from "../../../../db/fakeDB-design.js";
@@ -47,6 +46,7 @@ export class Calendar {
 
             const planning = new IndividualPlanning({
                 id: elem.staff_id,
+                firstName: elem.firstName,
                 calendar_events: elem.calendar_events.map(event_id => this.calendarData.events[event_id]),
                 collisionList: elem.collisions.internal.crossEvent,
                 negativeOffset: this.offset,
@@ -57,15 +57,6 @@ export class Calendar {
             this.planningList.push(planning);
             this.html.appendChild(planning.html);
         }
-        /*
-               this.header = new CalendarHeader(
-                   {
-                       subList: subList,
-                       colorScheme: this.colorScheme
-                }).render()
-                            }
-                */
-
     };
 
 

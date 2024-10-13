@@ -67,7 +67,7 @@
 /*The calendar grid*/
 .dailyPlanningCalendar {
     display: grid;
-    flex: 1;
+    flex: 3;
     z-index: 1;
     overflow-x: hidden;
 }
@@ -75,7 +75,7 @@
 .crossPlanningCalendar {
     display: grid;
     width: 18px;
-    /*flex: 1; pcp*/
+    flex: 1;
     z-index: 1;
     overflow-x: hidden;
     background-color: #2c2d2f;
@@ -86,6 +86,17 @@
     border-radius: 0.25rem;
     min-width: 1.2rem;
     overflow: hidden;
+}
+
+.blockName {
+    border-top-left-radius: 0.25rem;
+    min-width: 1.2rem;
+    overflow: hidden;
+    color: #e2e5e8;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: bold;
+    align-content: center;
 }
 
 

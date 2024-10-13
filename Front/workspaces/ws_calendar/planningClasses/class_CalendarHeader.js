@@ -10,6 +10,15 @@ class CalendarHeader{
         this.colorScheme = input.colorScheme;
         this.buildHeader(this.subList)
     };
+    buildHeader(subList) {
+        this.initializeHeader();
+        this.getSubListElements();
+        this.getOccurencesObjects();
+        this.manageCat();
+        this.manageSubCat();
+        this.manageName();
+    };
+
     getSubListElements(){
         this.catArray = this.subList.map(element => element.category);
         this.subcatArray = this.subList.map(element => element.subCategory);
@@ -29,7 +38,7 @@ class CalendarHeader{
             cat.setText(key);
             cat.render().style.gridColumn = `span ${this.catOccurObject[key]}`;
             cat.render().style.gridRow = '1';
-            cat.render().style.backgroundColor = this.colorScheme.artistCategory({artistCategory: key});
+            //cat.render().style.backgroundColor = this.colorScheme.artistCategory({artistCategory: key});
             this.header.appendChild(cat.render());
         }
     };
@@ -48,7 +57,7 @@ class CalendarHeader{
 
             subCat.style.gridColumn = `span ${this.subCatOccurObject[subcat]}`;
             subCat.style.gridRow = '2';
-            subCat.style.backgroundColor = this.colorScheme.artistSubCategory({artistSubCategory: subcat})
+            //subCat.style.backgroundColor = this.colorScheme.artistSubCategory({artistSubCategory: subcat})
 
             this.header.appendChild(subCat);
         }
@@ -59,19 +68,12 @@ class CalendarHeader{
             const artistName = new HTMLelem('span', undefined, undefined);
             artistName.setText(artist.firstName);
             artistName.render().style.gridArea = `${3} / ${this.nameArray.indexOf(name) + 1} `;
-            artistName.render().style.backgroundColor = this.colorScheme.artist({artistID: artist.staffMember_id}) ?? this.colorScheme.artistCategory({artistCategory: artist.category}) ;
+            //artistName.render().style.backgroundColor = this.colorScheme.artist({artistID: artist.staffMember_id}) ?? this.colorScheme.artistCategory({artistCategory: artist.category}) ;
             this.header.appendChild(artistName.render());
         }
     };
 
-    buildHeader(subList) {
-        this.initializeHeader();
-        this.getSubListElements();
-        this.getOccurencesObjects();
-        this.manageCat();
-        this.manageSubCat();
-        this.manageName();
-    };
+
     render() {
         return this.header;
     };

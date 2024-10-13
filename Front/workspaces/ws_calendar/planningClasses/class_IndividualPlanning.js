@@ -5,6 +5,7 @@ import {getPositionFromDate, getRowEndFromDatasetDuration} from "../../../Utilit
 export class IndividualPlanning {
     constructor (input) {
         this.id = input.id;
+        this.color = ' #142b3f';
         this.planning_events = input.calendar_events;
         this.collisionList = input.collisionList;
         this.negativeOffset = input.negativeOffset;
@@ -13,15 +14,18 @@ export class IndividualPlanning {
         this.rowSize = input.rowSize;
 
         this.html = new HTMLelem('div', this.id, 'dailyPlanningCalendar').render();
+        this.html.style.backgroundColor = ' #142b3f15';
         this.createCollisionIdSet();
         this.renderPlanning();
     };
+
     renderPlanning() {
         this.resetPlanning();
         this.setGridSpecs();
         this.buildEventGridBlocks({ eventSource: this.planning_events});
         this.appendAllEventsToPlanning(this.gridBlockArray);
     };
+
 
     createCollisionIdSet() {
         this.collisionIdSet = new Set([
