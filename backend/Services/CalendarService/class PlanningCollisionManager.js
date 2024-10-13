@@ -2,33 +2,13 @@ import {BatchEventColliderModule} from "../functionnalities/class_BatchEventColl
 
 export class PlanningCollisionManager {
     constructor(){
+        this.internalEventsMap = new Map();
+        this.internalCollisionsMap = new Map();
+        this.processedPairs = new Set();
     };
     execute(data) {
         this.data = data;
-
-        this.planningMap = new Map();
-        this.initMapping();
-
-        this.processedPairs = new Set();
-        this.collideEvents();
         this.manageCollisions();
-    };
-
-    collideEvents() {
-        //TODO out when working
-        this.collisions = new BatchEventColliderModule({eventsToCollide: Object.values(this.data.events)});
-    };
-    initMapping() {
-        this.mapPlannings();
-    };
-    mapPlannings() {
-        for (const planning of this.data.plannings) {
-            planning.collisions =  {
-                internal: {},
-                external: {}
-            };
-            this.planningMap.set(planning.staff_id, planning);
-        }
     };
 
     findMaxCollisions(eventRefArray) {
@@ -41,50 +21,69 @@ export class PlanningCollisionManager {
         return Math.max(...Array.from(eventCountMap.values()));
     };
 
+    addCollisionPropertiesInObject(planning) {
+        planning.collisions =  {
+            internal: {},
+            external: {}
+        };
+    };
 
     manageCollisions() {
-        for (const [staffId, planning] of this.planningMap) {
+        const { plannings } = this.data;
+
+        //internal Collisions
+        for (const planning of plannings) {
+            const { staff_id } = planning;
+
+            this.addCollisionPropertiesInObject(planning);
 
             if (!planning.calendar_events) {
                 continue;
             }
 
-            //internal Collisions
-            const internalEvents = planning.calendar_events.map(event => this.data.events[event]);
-            const internalCollisions = new BatchEventColliderModule({eventsToCollide: internalEvents});
+            this.internalEventsMap.set(staff_id, planning.calendar_events.map(event => this.data.events[event]));
+            this.internalCollisionsMap.set(staff_id, new BatchEventColliderModule({eventsToCollide: this.internalEventsMap.get(staff_id)}));
 
-            const resultInternal = internalCollisions.positiveCollisionlist
+            const { positiveCollisionlist, checkedPairs} = this.internalCollisionsMap.get(staff_id);
 
             planning.collisions.internal = {
-                crossEvent: [...resultInternal],
-                maxCollisions: this.findMaxCollisions(resultInternal.map(collision => collision.referenceEvent))
+                crossEvent: [...positiveCollisionlist],
+                maxCollisions: this.findMaxCollisions(positiveCollisionlist.map(collision => collision.referenceEvent))
             };
-            this.processedPairs = new Set([...this.processedPairs, ...internalCollisions.checkedPairs]);
+            this.processedPairs = new Set([...this.processedPairs, ...checkedPairs]);
+            //TODO: treat differently the common events where participants are there full range
+        }
 
-            // External Collisions
-            for (const [otherStaffId, otherPlanning] of this.planningMap) {
+        // External Collisions needs the pairs
+        for (const planning of plannings) {
+            const internalEvents = this.internalEventsMap.get(planning.staff_id);
+
+            for (const otherPlanning of plannings) {
+                const other_id = otherPlanning.staff_id;
 
                 // don't compare with yourself
-                if (staffId === otherStaffId || !otherPlanning.calendar_events) {
+                if (planning.staff_id === other_id) {
+                    continue;
+                }
+                // avoid empty plannings (or off days)
+                if (otherPlanning.calendar_events.length === 0) {
                     continue;
                 }
 
-                const externalEvents = otherPlanning.calendar_events.map(event => this.data.events[event]);
+                const externalEvents = this.internalEventsMap.get(other_id);
                 const externalCollisions = new BatchEventColliderModule({
-                    eventsToCollide: internalEvents,
-                    externalEvents: externalEvents,
+                    eventsToCollide: [...internalEvents, ...externalEvents],
                     pairExclusionSet: this.processedPairs
                 });
 
-                const result = externalCollisions.positiveCollisionlist
+                const { positiveCollisionlist, checkedPairs } = externalCollisions;
 
-                planning.collisions.external = planning.collisions.external || {};
-                planning.collisions.external[otherStaffId] = {
-                    crossEvent: [...result],
-                    maxCollisions: this.findMaxCollisions(result.map(collision => collision.referenceEvent))
+                planning.collisions.external[other_id] = {
+                    crossEvent: [...positiveCollisionlist],
+                    maxCollisions: this.findMaxCollisions(positiveCollisionlist.map(collision => collision.referenceEvent))
                 };
 
-                this.processedPairs = new Set([...this.processedPairs, ...externalCollisions.checkedPairs]);
+                this.processedPairs = new Set([...this.processedPairs, ...checkedPairs]);
             }
         }
     }

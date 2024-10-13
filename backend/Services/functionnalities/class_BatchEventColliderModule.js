@@ -12,8 +12,11 @@ export class BatchEventColliderModule{
 
     constructor(input) {
         this.eventsToCollide = input.eventsToCollide;
+        this.pairExclusionSet = input.pairExclusionSet;
 
         this.checkedPairs = new Set();
+        this.insertPairExclusionSet();
+
         this.positiveCollisionlist = [];
         this.calculateCollisions();
     };
@@ -34,6 +37,11 @@ export class BatchEventColliderModule{
      * If two events collide, they are added to the list of results.
      * @returns {Array<Object>} The list of collision results.
      */
+    insertPairExclusionSet() {
+        if (this.pairExclusionSet) {
+            this.checkedPairs = new Set(this.pairExclusionSet);
+        }
+    };
     calculateCollisions2() {
         this.positiveCollisionlist.length = 0;
         const events = this.eventsToCollide;
