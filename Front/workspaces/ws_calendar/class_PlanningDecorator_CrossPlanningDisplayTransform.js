@@ -37,6 +37,7 @@ export class PlanningDecorator_CrossPlanningDisplayTransform{
                 ...ev.collisionEvent
             }
         });
+        /*TODO: le fait que les blocks prennent le bon nombre de case en largeur sur les cross plannings*/
         planning.buildEventGridBlocks({eventSource: crossEventsSource});
         planning.appendAllEventsToPlanning(planning.gridBlockArray);
         this.changeEventBlockDesign(planning)
@@ -58,7 +59,7 @@ export class PlanningDecorator_CrossPlanningDisplayTransform{
     changeEventBlockDesign(planning) {
         for (const eventGridBlock of planning.gridBlockArray) {
             eventGridBlock.html.style.backgroundColor = 'red';
-            eventGridBlock.html.style.border = '2px solid blue';
+            eventGridBlock.html.style.border = '1px solid blue';
             eventGridBlock.html.style.width = `${planning.rowSize}px`;
         }
     };
