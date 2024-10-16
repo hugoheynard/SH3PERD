@@ -30,23 +30,22 @@ export class PasswordHasher{
 
     /**
      * Generates a random salt.
-     * @private
      * @returns {string} A hexadecimal string representing the generated salt.
      */
-    static #generateSalt() {
+    generateSalt() {
         return randomBytes(16).toString('hex');
     };
 
     /**
      * Generates a derived key from a password and a salt using PBKDF2.
-     * @private
      * @param {string} password - The password to derive the key from.
      * @param {string} salt - The salt to use for the key derivation.
-     * @returns {Promise<Buffer>} A promise that resolves to the derived key.
+     * @returns {Promise<string>} A promise that resolves to the derived key.
      */
-    static #generateKey(password, salt) {
+    async generateKey(password, salt) {
         const { iterations, keyLength, digest } = PasswordHasher.#hashParams;
-        return PasswordHasher.#pbkdf2Async(password, salt, iterations, keyLength, digest);
+        const derivedKey = await PasswordHasher.#pbkdf2Async(password, salt, iterations, keyLength, digest);
+        return derivedKey.toString('hex');
     };
 
     /**
@@ -61,10 +60,10 @@ export class PasswordHasher{
             throw new Error('Password is required.');
         }
 
-        const salt = PasswordHasher.#generateSalt();
-        const derivedKey = await PasswordHasher.#generateKey(input.password, salt);
+        const salt = input.salt ?? this.generateSalt();
+        const derivedKey = await this.generateKey(input.password, salt);
 
-        return `${salt}:${derivedKey.toString('hex')}`;
+        return `${salt}:${derivedKey}`;
     };
 
     /**
@@ -82,9 +81,9 @@ export class PasswordHasher{
         }
 
         const [salt, storedKey] = input.storedHash.split(':');
-        const { iterations, keyLength, digest } = PasswordHasher.#hashParams;
+        const derivedKey = await this.generateKey(input.password, salt);
 
-        const derivedKey = await PasswordHasher.#generateKey(input.password, salt);
-        return storedKey === derivedKey.toString('hex');
+
+        return storedKey === derivedKey;
     };
 }
