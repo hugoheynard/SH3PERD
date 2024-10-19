@@ -26,7 +26,7 @@ describe('class EventCollider', () => {
         });
     });
 
-    //SUB Methods tests
+    //SUB Methods tests_integration
     describe('method: getTimeStepsArray', () => {
 
         const validEvent1 = {

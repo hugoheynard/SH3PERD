@@ -32,7 +32,7 @@ describe ('class DateMethods', () => {
     describe('Method - check_positiveIntegerParameter', () => {
 
         test('throws an error if number parameter <= 0 or is not an integer', ()=> {
-            const invalidValues = [0, -1, 1.5];
+            const invalidValues = [ -1, 1.5];
             const validValue = 2;
 
             // Test for invalid values

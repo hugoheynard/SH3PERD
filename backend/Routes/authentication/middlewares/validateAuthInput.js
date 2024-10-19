@@ -13,7 +13,6 @@ export const validateAuthInput = (req, res, next) => {
 
         req.body.email = email.trim().toLowerCase();
         req.body.password = password.trim();
-
         next();
 
     } catch (err) {

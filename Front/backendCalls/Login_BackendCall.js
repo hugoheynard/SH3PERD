@@ -15,9 +15,6 @@ export class Login_BackendCall{
                 throw new Error('Network response was not ok - ' + response.status);
             }
 
-            const data = await response.json();
-            console.log('login response', data);
-
             return response.json();
         } catch (e) {
             throw e;

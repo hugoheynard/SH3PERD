@@ -1,6 +1,8 @@
+import {appManager} from "../../app.js";
 import express from "express";
-import {appManager} from "../app.js";
+
 export const calendarRouter = express.Router();
+
 
 const validateDate = (req, res, next) => {
     const { date } = req.body;

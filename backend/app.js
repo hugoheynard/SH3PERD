@@ -1,41 +1,36 @@
-import {AppManager} from "./Classes/class_AppManager.js";
+import dotenv from "dotenv";
 import express from 'express';
-import cors from 'cors';
-import {calendarRouter} from "./Routes/calendar_Router.js";
-import {musicLibraryRouter} from "./Routes/musicLibrary_Routes.js";
-import {MongoClient} from "mongodb";
-import {atlas_uri} from "./appServer_dbConnections/atlas_uri.js";
-import {companySettings_Router} from "./Routes/settings_Router.js";
-import {companyRouter} from "./Routes/company_Router.js";
+import {AppManager} from "./Classes/class_AppManager.js";
+import {connectDb} from "./db.js";
+import {startServer} from "./server.js";
+import {initRoutes} from "./initRoutes.js";
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+dotenv.config({ path: '../.env' });
 
-// Connect db and start the server
-const mongoClient = new MongoClient(atlas_uri);
-export const app_db = mongoClient.db('shepherd');
+export let app_db;
+async function startApp() {
+    try {
+        // Connect to the database
+        const db = await connectDb();
+        app_db = db;  // If you need the database object globally
 
-try {
-    await app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
-} catch (err) {
-    console.log(err);
+        // Initialize the Express app
+        const app = express();
+
+        // Initialize routes with the Express app and db
+        initRoutes(app, db);
+
+        // Start the server
+        await startServer(app);
+
+        console.log('Server started successfully');
+    } catch (error) {
+        console.error('Error starting the app:', error);
+        process.exit(1);  // Exit the process with a failure code if something goes wrong
+    }
 }
 
-// middlewares
-app.use(cors());
-app.use(express.json());
-
-//Routers
-app.use('/company', companyRouter);
-app.use('/calendar', calendarRouter);
-app.use('/musicLibrary', musicLibraryRouter);
-app.use('/company/settings', companySettings_Router);
-
-app.use((req, res, next) => {
-    res.status(404).send('Route does not exist');
-});
+startApp();
 
 
 export const appManager = new AppManager(); //TODO: Singleton?

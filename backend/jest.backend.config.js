@@ -1,13 +1,17 @@
 export default {
     rootDir: '.',
     transform: {
-        '^.+\\.js$': 'babel-jest',
+        "^.+\\.[tj]sx?$": "babel-jest",
     },
-    extensionsToTreatAsEsm: [], // Traite les fichiers .js comme des modules ECMAScript
-    testEnvironment: 'node', // Utilise l'environnement Node
-    moduleNameMapper: {}, // Si vous avez besoin de mapper des modules
-    testMatch: ['<rootDir>/**/*.test.js'], // Ajuste selon la structure de ton projet
+    extensionsToTreatAsEsm: [".ts", ".tsx", ".jsx"],
+    testEnvironment: 'node',
+    moduleNameMapper: {},
+    testMatch: ['<rootDir>/**/*.test.js'],
+    testPathIgnorePatterns: ['/node_modules/', '/dist/'],
     moduleDirectories: ['node_modules', '<rootDir>/src'],
-    // Autres configurations spécifiques au back-end
-
+    globals: {
+        "ts-jest": {
+            useESM: true, // Allow ts-jest to process TypeScript files as ESM
+        },
+    },
 };
