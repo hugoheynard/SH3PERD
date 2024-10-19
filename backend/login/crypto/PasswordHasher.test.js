@@ -18,7 +18,7 @@ describe('class PasswordHasher', () => {
 
     describe('method generateKey', () => {
         test('should generate the correct derived key from password and salt', async () => {
-            const result = await instance.generateKey(passwordToHash, mockSalt);
+            const result = await PasswordHasher.generateKey(passwordToHash, mockSalt);
 
             expect(result).toBe(expectedDerivedKey);
         });

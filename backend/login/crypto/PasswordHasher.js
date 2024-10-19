@@ -42,7 +42,7 @@ export class PasswordHasher{
      * @param {string} salt - The salt to use for the key derivation.
      * @returns {Promise<string>} A promise that resolves to the derived key.
      */
-    async generateKey(password, salt) {
+    static async generateKey(password, salt) {
         const { iterations, keyLength, digest } = PasswordHasher.#hashParams;
         const derivedKey = await PasswordHasher.#pbkdf2Async(password, salt, iterations, keyLength, digest);
         return derivedKey.toString('hex');
@@ -61,7 +61,7 @@ export class PasswordHasher{
         }
 
         const salt = input.salt ?? this.generateSalt();
-        const derivedKey = await this.generateKey(input.password, salt);
+        const derivedKey = await PasswordHasher.generateKey(input.password, salt);
 
         return `${salt}:${derivedKey}`;
     };
@@ -81,7 +81,7 @@ export class PasswordHasher{
         }
 
         const [salt, storedKey] = input.storedHash.split(':');
-        const derivedKey = await this.generateKey(input.password, salt);
+        const derivedKey = await PasswordHasher.generateKey(input.password, salt);
 
 
         return storedKey === derivedKey;
