@@ -1,10 +1,10 @@
 export const generateAuthToken = tokenGenerator => (req, res, next) => {
-    const { user } = req.user;
+    const { user } = req;
 
     try {
-        req.authToken = tokenGenerator.getToken({
+        req.authToken = tokenGenerator({
             payload: {
-                id: user._id,
+                id: user._id.toString(),
                 email: user.login.inApp.email
             }
         });

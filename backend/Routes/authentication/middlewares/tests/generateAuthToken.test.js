@@ -7,12 +7,10 @@ describe('generateAuthToken middleware', () => {
     beforeEach(() => {
         req = {
             user: {
-                user: {
-                    _id: 1,
-                    login: {
-                        inApp: {
-                            email: 'test@example.com'
-                        }
+                _id: 1,
+                login: {
+                    inApp: {
+                        email: 'test@example.com'
                     }
                 }
             }
@@ -22,22 +20,20 @@ describe('generateAuthToken middleware', () => {
 
         next = jest.fn();
 
-        tokenGenerator = {
-            getToken: jest.fn()
-        };
+        tokenGenerator = jest.fn();
     });
 
     test('should generate token and call next', () => {
         const fakeToken = 'fakeAuthToken123';
-        tokenGenerator.getToken.mockReturnValue(fakeToken);
+        tokenGenerator.mockReturnValue(fakeToken);
 
         const middleware = generateAuthToken(tokenGenerator);
         middleware(req, res, next);
 
-        expect(tokenGenerator.getToken).toHaveBeenCalledWith({
+        expect(tokenGenerator).toHaveBeenCalledWith({
             payload: {
-                id: req.user.user._id,
-                email: req.user.user.login.inApp.email
+                id: req.user._id.toString(),
+                email: req.user.login.inApp.email
             }
         });
 
@@ -47,7 +43,7 @@ describe('generateAuthToken middleware', () => {
 
     test('should call next with error if token generation fails', () => {
         const error = new Error('Token generation error');
-        tokenGenerator.getToken.mockImplementation(() => { throw error; });
+        tokenGenerator.mockImplementation(() => { throw error; });
 
         const middleware = generateAuthToken(tokenGenerator);
         middleware(req, res, next);
