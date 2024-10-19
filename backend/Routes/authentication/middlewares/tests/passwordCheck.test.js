@@ -8,18 +8,18 @@ describe('passwordCheck middleware', ()=> {
 
     beforeEach(()=> {
         req = {
-            body: {
-                password: 'plainPassword',
-                user: {
-                    _id: 1,
-                    username: 'test user',
-                    login: {
-                        inApp: {
-                            email: 'test@example.com',
-                            password: validPass
-                        }
+            user: {
+                _id: 1,
+                username: 'test user',
+                login: {
+                    inApp: {
+                        email: 'test@example.com',
+                        password: validPass
                     }
                 }
+            },
+            body: {
+                password: 'plainPassword',
             }
         };
 
@@ -30,19 +30,17 @@ describe('passwordCheck middleware', ()=> {
 
         next = jest.fn();
 
-        hasher = {
-            verify: jest.fn()
-        };
+        hasher = jest.fn();
     })
 
 
     test('should verify the password with the hasher and call next if valid', async () => {
-        hasher.verify.mockResolvedValue(true);
+        hasher.mockResolvedValue(true);
 
         const middleware = passwordCheck(hasher);
         await middleware(req, res, next);
 
-        expect(hasher.verify).toHaveBeenCalledWith({
+        expect(hasher).toHaveBeenCalledWith({
             password: 'plainPassword',
             storedHash: validPass
         });
@@ -52,12 +50,12 @@ describe('passwordCheck middleware', ()=> {
     })
 
     test('should return 401 if the password is invalid', async () => {
-        hasher.verify.mockResolvedValue(false);
+        hasher.mockResolvedValue(false);
 
         const middleware = passwordCheck(hasher);
         await middleware(req, res, next);
 
-        expect(hasher.verify).toHaveBeenCalledWith({
+        expect(hasher).toHaveBeenCalledWith({
             password: 'plainPassword',
             storedHash: validPass
         });
@@ -69,7 +67,7 @@ describe('passwordCheck middleware', ()=> {
 
     test('should call next with error if hasher throws an error', async () => {
         const error = new Error('Hasher error');
-        hasher.verify.mockRejectedValue(error);
+        hasher.mockRejectedValue(error);
 
         const middleware = passwordCheck(hasher);
         await middleware(req, res, next);
