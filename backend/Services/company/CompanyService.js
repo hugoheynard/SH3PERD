@@ -11,4 +11,13 @@ export class CompanyService{
 
         return await this.companyCollection.find({ _id: new ObjectId(company_id) }).toArray();
     };
+
+    async getCompanySettings(company_id) {
+        const result = await this.companyCollection
+            .findOne({
+                    _id: new ObjectId(company_id) },
+                { projection: { settings: 1, _id: 0 } }
+            )
+        return result.settings
+    }
 }

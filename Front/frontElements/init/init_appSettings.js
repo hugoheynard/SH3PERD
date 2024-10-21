@@ -36,12 +36,12 @@ await appSettings.build();
 
 export class EventSettings {
     static async eventTypes() {
-        const eventsData = await appSettings.companySettings.settings.events;
+        const eventsData = await appSettings.companySettings.events;
         return eventsData.map(event => event.type)
     };
 
     static async getEventColor(eventType) {
-        const eventsData = await appSettings.companySettings.settings.events;
+        const eventsData = await appSettings.companySettings.events;
         return eventsData.filter(event => event.type === eventType)
             .map(event => event.color);
     };
