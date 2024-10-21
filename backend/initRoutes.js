@@ -16,12 +16,10 @@ export const initRoutes = (app, { db, controllers }) => {
 
 //Routers
     app.use('/auth', authenticationRouter(db)); //TODO on pourrait injecter seulement une collection de login et tokens pour limiter la propagation de la db sur un point critique?
-    //app.use()
-    app.use('/company', companyRouter);
+    app.use('/company', companyRouter(controllers.companyController));
     app.use('/staff', staffRouter(controllers.staffController));
-    app.use('/calendar', calendarRouter(controllers.calendarController)); //TODO: ma ressource c'est des events et du staff mais groupés ?
+    app.use('/calendar', calendarRouter(controllers.calendarController));
     app.use('/musicLibrary', musicLibraryRouter);
-    app.use('/company/settings', companySettings_Router);
 
     app.use((req, res, next) => {
         res.status(404).send('Route does not exist');

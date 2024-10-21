@@ -30,10 +30,13 @@ export class Calendar_BackendCall {
     }
 
     static async getDay(date = DateMethod.today) {
+        const token = '';
+
         try {
             const response = await fetch(`${BackEndCall.endpoint}/calendar/date`, {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ date })

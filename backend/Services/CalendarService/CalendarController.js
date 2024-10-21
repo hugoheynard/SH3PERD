@@ -1,13 +1,17 @@
 export class CalendarController {
     constructor(input) {
         this.calendarService = input.service;
+        this.userService = input.userService;
+        this.eventService = input.eventService;
     };
-    async collectData(date) {
-        this.currentData = {};
-        this.staff = await this.calendarService.ressourceProvider.getActiveStaffPool(new Date(date));
-        this.calendar_events = await this.calendarService.ressourceProvider.getCalendarEvents(new Date(date));
+    async collectData(req) {
+        const { date } = req.body;
 
-        this.currentData = this.calendarService.builder.build(this.staff, this.calendar_events);
+        const users = await this.userService.getUser(req);
+        const events = await this.eventService.getEvents(req);
+        console.log(events)
+
+        this.currentData = this.calendarService.builder.build(users, events);
         this.calendarService.planningCollisionManager.execute(this.currentData)
 
         //generates getIn events from data.events
@@ -16,30 +20,7 @@ export class CalendarController {
 
         return this.currentData;
     };
-/*TODO move to event logic
-    async postEvent(eventData) {
-        const dateBuilder = input => {
-            const date = new Date(input.date);
-            const timeArray = input.time.split(':');
-            date.setHours(timeArray[0]);
-            date.setMinutes(timeArray[1]);
-            return date
-        }
 
-        const preparedData = {
-            date: dateBuilder({
-                date: eventData.date,
-                time: eventData.time
-            }),
-            duration: Number(eventData.duration),
-            type: 'rehearsal'
-
-        }
-
-        return await app_db.collection('calendar_events').insertOne(preparedData);
-    };
-
- */
 
     mergeEvents(events, data) {
 

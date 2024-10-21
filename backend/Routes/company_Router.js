@@ -1,6 +1,4 @@
 import express from "express";
-import {CompanyService} from "../Services/company/CompanyService.js";
-import {ObjectId} from "mongodb";
 
 
 export const companyRouter = (companyController) => {
