@@ -1,36 +1,29 @@
 import dotenv from "dotenv";
 import express from 'express';
-import {AppManager} from "./Classes/class_AppManager.js";
 import {connectDb} from "./db.js";
-import {startServer} from "./server.js";
+import {initServices} from "./initServices.js";
+import {initControllers} from "./initControllers.js";
 import {initRoutes} from "./initRoutes.js";
+import {startServer} from "./server.js";
+
 
 dotenv.config({ path: '../.env' });
 
-export let app_db;
 async function startApp() {
     try {
-        // Connect to the database
         const db = await connectDb();
-        app_db = db;  // If you need the database object globally
-
-        // Initialize the Express app
         const app = express();
-
-        // Initialize routes with the Express app and db
-        initRoutes(app, db);
-
-        // Start the server
+        const services = initServices({ db });
+        const controllers = initControllers({ services });
+        initRoutes(app, { db, controllers });
         await startServer(app);
 
-        console.log('Server started successfully');
+        const userContracts = await controllers.userController.getCompaniesByUserId('66df0404c4d622c017701e3d')
+
     } catch (error) {
         console.error('Error starting the app:', error);
-        process.exit(1);  // Exit the process with a failure code if something goes wrong
+        process.exit(1);
     }
 }
 
-startApp();
-
-
-export const appManager = new AppManager(); //TODO: Singleton?
+await startApp();
