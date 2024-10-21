@@ -3,7 +3,5 @@ export class ContractController{
         this.contractService = input.contractService;
     };
 
-    async getContractsByUserId(userId) {
-        return this.contractService.getContractsByUserId(userId);
-    };
+
 }
