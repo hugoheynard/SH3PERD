@@ -1,10 +1,6 @@
-import {CalendarService} from "./class_CalendarService.js";
-import {app_db} from "../../app.js";
-
-
 export class CalendarController {
-    constructor() {
-        this.calendarService = new CalendarService();
+    constructor(input) {
+        this.calendarService = input.service;
     };
     async collectData(date) {
         this.currentData = {};
@@ -20,7 +16,7 @@ export class CalendarController {
 
         return this.currentData;
     };
-
+/*TODO move to event logic
     async postEvent(eventData) {
         const dateBuilder = input => {
             const date = new Date(input.date);
@@ -42,6 +38,8 @@ export class CalendarController {
 
         return await app_db.collection('calendar_events').insertOne(preparedData);
     };
+
+ */
 
     mergeEvents(events, data) {
 

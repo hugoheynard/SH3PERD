@@ -1,12 +1,18 @@
-import {app_db} from "../../app.js";
 import {DateMethod} from "../../Utilities/class_DateMethods.js";
 
 /**
  * @method activeStaffPool: go through the contracts and find the staff on active period, returns array
  */
 export class CalendarRessourceProvider{
+    constructor(input) {
+        this._db = input.db;
+    };
+    get db() {
+        return this._db;
+    };
+
     async getActiveStaffPool(date) {
-        return await app_db.collection('contracts')
+        return await this.db.collection('contracts')
             .aggregate([
                 {
                     $match: {
@@ -45,7 +51,7 @@ export class CalendarRessourceProvider{
         }
 
         try {
-            return await app_db.collection('calendar_events')
+            return await this.db.collection('calendar_events')
                 .find({
                     date: {
                         $gte: DateMethod.startOfDay(date),

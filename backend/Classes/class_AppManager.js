@@ -1,4 +1,4 @@
-import {CalendarController} from "../Services/CalendarService/class_CalendarController.js";
+import {CalendarController} from "../Services/CalendarService/CalendarController.js";
 
 
 export class AppManager {
