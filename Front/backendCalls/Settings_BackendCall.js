@@ -1,9 +1,9 @@
 import {BackEndCall} from "./class_BackEndCalls.js";
 
 export class Settings_BackendCall {
-    static async getCompanySettings() {
+    static async getCompanySettings(company_id) {
         try {
-            const response = await fetch(`${BackEndCall.endpoint}/company/settings`);
+            const response = await fetch(`${BackEndCall.endpoint}/company/${company_id}/settings`);
 
             if (!response.ok) {
                 throw new Error('Network response was not ok ' + response.statusText);
