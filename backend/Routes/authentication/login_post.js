@@ -39,7 +39,7 @@ export const loginRouter = (db) => {
                 return res.status(200).json({
                     message: 'Login successful',
                     body: {
-                        token: req.authToken
+                        authToken: req.authToken
                     }
                 });
             } catch (err){

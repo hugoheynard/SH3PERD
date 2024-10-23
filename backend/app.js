@@ -18,8 +18,6 @@ async function startApp() {
         initRoutes(app, { db, controllers });
         await startServer(app);
 
-        const userContracts = await controllers.userController.getCompaniesByUserId('66df0404c4d622c017701e3d')
-
     } catch (error) {
         console.error('Error starting the app:', error);
         process.exit(1);

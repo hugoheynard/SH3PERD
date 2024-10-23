@@ -4,7 +4,6 @@ import {ContractController} from "./Services/contracts/ContractController.js";
 import {CompanyController} from "./Services/company/CompanyController.js";
 
 
-
 export const initControllers = ({ services }) => {
     return {
         userController: new UserController({
@@ -22,6 +21,7 @@ export const initControllers = ({ services }) => {
         staffController: new UserController({ userService: services.userService }),
 
         calendarController: new CalendarController({
+            calendarService: services.calendarService,
             userService: services.userService,
             eventService: services.eventService
         })

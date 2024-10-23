@@ -1,5 +1,5 @@
 import {PopulationStrategy} from "./class_PopulationStrategy.js";
-import {art1} from "../../../../db/fakeDB.js";
+//import {art1} from "../../../../db/fakeDB.js";
 import {Graph, GraphManager} from "../../../Utilities/class_Graph.js";
 import {DateMethod} from "../../../Utilities/class_DateMethods.js";
 

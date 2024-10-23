@@ -1,3 +1,5 @@
+import {DateMethod} from "../../Utilities/class_DateMethods.js";
+
 export class CalendarBuilder {
     buildPlanningObject(activeStaff, calendarEvents) {
         const plannings = [];
@@ -32,17 +34,46 @@ export class CalendarBuilder {
      * (converted to strings), and the values are the event objects.
      */
     buildEventsObject(calendarEvents) {
-        return calendarEvents
+        const tempSpecObj = {
+            earliestEvent: null,
+            latestEvent: null
+        };
+
+        const eventsObj = calendarEvents
             .reduce((acc, curr) => {
+                // buildKeyValue pair
                 acc[curr._id.toString()] = curr;
+
+                // Compare and assign the earliest event
+                if (!tempSpecObj.earliestEvent || new Date(curr.date) < new Date(tempSpecObj.earliestEvent.date)) {
+                    tempSpecObj.earliestEvent = curr;
+                }
+
+                // Compare and assign the latest event
+                if (!tempSpecObj.latestEvent || new Date(curr.date) > new Date(tempSpecObj.latestEvent.date)) {
+                    tempSpecObj.latestEvent = curr;
+                }
+
                 return acc;
-            }, {})
+            }, {});
+
+        const specObj = {
+            dayStartTimestamp: DateMethod.startOfDay(new Date(tempSpecObj.earliestEvent.date)),
+            earliestTimeStamp: tempSpecObj.earliestEvent.date,
+            latestTimeStamp: DateMethod.addMinutes(tempSpecObj.latestEvent.date, tempSpecObj.latestEvent.duration)
+        };
+
+        return { specObj, eventsObj };
     };
+
+
     build(activeStaff, calendarEvents) {
-        const build =  {
-            events: this.buildEventsObject(calendarEvents),
+        const { specObj, eventsObj } = this.buildEventsObject(calendarEvents);
+
+        return {
+            specs: specObj,
+            events: eventsObj,
             plannings: this.buildPlanningObject(activeStaff, calendarEvents)
         };
-        return build
     }
 }

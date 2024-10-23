@@ -1,4 +1,3 @@
-import {testFrameGenBlock} from "../../Classes/class_Auto_Club.js";
 import {Auto_GetIn} from "../../Planning_Algo/BlockGenerators/blockGen_autoGetIn.js";
 
 export class EventGenerator{

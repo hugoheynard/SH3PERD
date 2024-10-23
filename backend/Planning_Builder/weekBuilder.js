@@ -1,4 +1,4 @@
-import {Day} from "../Services/CalendarService/class_CalendarService.js";
+import {Day} from "../Services/CalendarService/CalendarService.js";
 import {DateMethod} from "../Utilities/class_DateMethods.js";
 /*Used to generate the instances of Days and returns them in an array*/
 
