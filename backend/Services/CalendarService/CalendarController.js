@@ -1,4 +1,3 @@
-import {ObjectId} from "mongodb";
 import {DateMethod} from "../../Utilities/class_DateMethods.js";
 
 export class CalendarController {
@@ -7,9 +6,6 @@ export class CalendarController {
         this.userService = input.userService;
         this.eventService = input.eventService;
     };
-    async buildUserCalendarData(req) {
-
-    }
 
     async collectData(req) {
         const { date } = req.body;
@@ -36,13 +32,74 @@ export class CalendarController {
             })
         );
 
+        const sortedStaffPool = new this.userService.tools.staffSorter()
+            .sortByHierarchy({
+                users: users,
+                customOrder: {
+                    artistic: {
+                        order: 1,
+                        categories: {
+                            dj: {
+                                order: 1,
+                                subCategories: { guest: 1 }
+                            },
+                            musician: {
+                                order: 2,
+                                subCategories: { saxophone : 1 }
+                            },
+                            singers: {
+                                order: 3,
+                                subCategories: {
+                                    clubbing: 1,
+                                    cabaret : 2
+                                }
+                            },
+                            dancers: {
+                                order: 4,
+                            },
+                            performers: {
+                                order: 5,
+                                subCategories: {
+                                    aerial: 1,
+                                    slackline: 2,
+                                }
+                            },
+                            others: {
+                                order: 6
+                            }
+                        }
+                    }
+                }
+            });
+        //console.log(sortedStaffPool)
 
-        const calendarData = new this.calendarService.tools.builder().build(users, events);
-        new this.calendarService.tools.planningCollisionManager().execute(calendarData);
+
+        const calendarData = new this.calendarService.tools.builder()
+            .build(users, events);
+
+        //const collidedData = new this.calendarService.tools.planningCollisionManager().manageCollisions(baseData);
 
         //generates getIn events from data.events
         //const generatedGetIn = this.calendarService.eventGenerator.autoGetIn.generate(this.currentData);
-        //this.mergeEvents(generatedGetIn, this.currentData);
+        //this.mergeEvents(generatedGetIn, calendarData);
+
+
+
+        new this.calendarService.tools.eventGridPositionCalculator()
+            .calculate({
+                plannings: calendarData.plannings,
+                events: calendarData.events,
+                collisions: calendarData.collisions,
+                totalColumnsPerPlanning: calendarData.specs.layout.planningsColNumber,
+                offsetFromDayStart: calendarData.specs.layout.offsetFromDayStart,
+                planningGridIndexes: calendarData.specs.layout.planningsGridIndexes,
+                addMinutesFunction: DateMethod.addMinutes,
+                stepDuration: DateMethod.STEP_DURATION
+            });
+
+        console.log(calendarData)
+
+
 
         return calendarData;
     };

@@ -2,8 +2,6 @@ import {HTMLelem} from "../../frontElements/Classes/HTMLClasses/class_HTMLelem.j
 import {MiniCalendar} from "../../frontElements/Classes/class_MiniCalendar.js";
 import {PlanningFilters} from "./planningClasses/PlanningFilters.js";
 import {Calendar} from "./planningClasses/Calendar.js";
-import {CalendarDecorator_singleSelector} from "./viewDecorators/class_CalendarDecorator_singleSelector.js";
-import {PlanningDecorator_CrossPlanningDisplayTransform} from "./class_PlanningDecorator_CrossPlanningDisplayTransform.js";
 
 
 export class CalendarPage {
@@ -24,8 +22,7 @@ export class CalendarPage {
     buildView() {
         this.undisplayCalendar();
         this.calendar = new Calendar(this.calendarData);
-        this.currentSelector = new CalendarDecorator_singleSelector({ calendar: this.calendar });
-        new PlanningDecorator_CrossPlanningDisplayTransform({ calendar: this.calendar });
+
 
         //this.calContainer.appendChild(this.calendar.header); //TODO: HEADER CAT SUBCAT
         this.calContainer.appendChild(this.calendar.html);

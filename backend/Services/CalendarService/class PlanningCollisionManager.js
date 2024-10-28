@@ -6,10 +6,6 @@ export class PlanningCollisionManager {
         this.internalCollisionsMap = new Map();
         this.processedPairs = new Set();
     };
-    execute(data) {
-        this.data = data;
-        this.manageCollisions();
-    };
 
     findMaxCollisions(eventRefArray) {
         const eventCountMap = new Map();
@@ -28,8 +24,8 @@ export class PlanningCollisionManager {
         };
     };
 
-    manageCollisions() {
-        const { plannings } = this.data;
+    manageCollisions(data) {
+        const { plannings, events } = data;
 
         //internal Collisions
         for (const planning of plannings) {
@@ -41,7 +37,7 @@ export class PlanningCollisionManager {
                 continue;
             }
 
-            this.internalEventsMap.set(staff_id, planning.calendar_events.map(event => this.data.events[event]));
+            this.internalEventsMap.set(staff_id, planning.calendar_events.map(ev_id => events[ev_id]));
             this.internalCollisionsMap.set(staff_id, new BatchEventColliderModule({eventsToCollide: this.internalEventsMap.get(staff_id)}));
 
             const { positiveCollisionlist, checkedPairs} = this.internalCollisionsMap.get(staff_id);
@@ -51,7 +47,6 @@ export class PlanningCollisionManager {
                 maxCollisions: this.findMaxCollisions(positiveCollisionlist.map(collision => collision.referenceEvent))
             };
             this.processedPairs = new Set([...this.processedPairs, ...checkedPairs]);
-            //TODO: treat differently the common events where participants are there full range
         }
 
         // External Collisions needs the pairs
@@ -86,5 +81,7 @@ export class PlanningCollisionManager {
                 this.processedPairs = new Set([...this.processedPairs, ...checkedPairs]);
             }
         }
+
+        return data
     }
 }

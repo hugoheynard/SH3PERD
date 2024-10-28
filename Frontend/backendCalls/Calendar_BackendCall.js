@@ -25,25 +25,27 @@ export class Calendar_BackendCall extends BackEndCall{
             }
 
             const data = await response.json().then(res => res.data)
-            console.log(data)
+
+            const { events, specs } = data
             //DATA PROCESSING:
             // converts date back from string to Date Object
-            for (const key in data.events) {
-                const event = data.events[key]
+            for (const key in events) {
+                const event = events[key]
 
                 if (event.date) {
                     event.date = new Date(event.date)
                 }
             }
 
-            for (const key in data.specs) {
-                const spec = data.specs[key]
+            for (const key in specs.timestamps) {
+                const spec = specs.timestamps[key]
 
                 if (!(spec instanceof Date)) {
-                    data.specs[key] = new Date(spec)
+                    specs.timestamps[key] = new Date(spec);
                 }
             }
 
+            console.log(data)
             return data
 
         } catch (error) {

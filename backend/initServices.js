@@ -8,6 +8,8 @@ import {CompanyService} from "./Services/company/CompanyService.js";
 import {EventService} from "./Services/events/EventService.js";
 import {EventQueryBuilder} from "./Services/events/EventQueryBuilder.js";
 import {UserQueryBuilder} from "./Services/users/UserQueryBuilder.js";
+import {StaffSortingAlgorithms} from "./Services/users/StaffSortingAlgorithms.js";
+import {EventGridPositionCalculator} from "./Services/CalendarService/EventGridPositionCalculator.js";
 
 
 export const initServices = ({ db }) => {
@@ -18,7 +20,8 @@ export const initServices = ({ db }) => {
         userService: new UserService({
             collection: db.collection('staffs'),
             tools: {
-                queryBuilder: UserQueryBuilder
+                queryBuilder: UserQueryBuilder,
+                staffSorter: StaffSortingAlgorithms
             }
         }),
 
@@ -32,6 +35,7 @@ export const initServices = ({ db }) => {
 
         calendarService: new CalendarService({
             tools: {
+                eventGridPositionCalculator: EventGridPositionCalculator,
                 builder: CalendarBuilder,
                 planningCollisionManager: PlanningCollisionManager,
                 eventGenerator: EventGenerator,

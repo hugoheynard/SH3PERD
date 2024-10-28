@@ -1,9 +1,8 @@
 import {HTMLelem} from "../../../frontElements/Classes/HTMLClasses/class_HTMLelem.js";
-import {IndividualPlanning} from "./IndividualPlanning.js";
 import {CalHoursGrid} from "./CalHoursGrid.js";
-import {DateMethod} from "../../../../backend/Utilities/class_DateMethods.js";
 import {EventDecorator_RecallFormOnClick} from "./eventDecorators/class_EventDecorator_RecallFormOnClick.js";
 import {EventDecorator_ColorizeEvent} from "./eventDecorators/class_EventDecorator_ColorizeEvent.js";
+import {GridBlock} from "./GridBlock.js";
 
 
 export class Calendar {
@@ -11,6 +10,8 @@ export class Calendar {
         this.calendarData = input.data;
         this.rowZoom = 15;
         this.specs = this.calendarData.specs;
+        this.gridRowsNumber = this.calendarData.specs.layout.gridRowsNumber;
+        this.offset = this.calendarData.specs.layout.offsetFromDayStart;
 
         this.html = new HTMLelem('div', "calendars").render();
 
@@ -19,11 +20,8 @@ export class Calendar {
     buildCalendar(){
         try{
             this.resetInstanceAndContainer();
-            this.getRowOffset(this.specs);
-            this.defineGridRowsNumber(this.specs);
             this.buildGridOverlay(this.specs);
-            this.buildIndividualPlannings(this.calendarData.plannings);
-
+            this.buildPlanningGrid(this.calendarData);
             new EventDecorator_ColorizeEvent({ eventsBlock: this.getAllEventsBlocks(this.planningList) });
             new EventDecorator_RecallFormOnClick({ eventsBlock: this.getAllEventsBlocks(this.planningList) });
         } catch (e) {
@@ -38,27 +36,30 @@ export class Calendar {
             .reduce((acc, curr) => [...acc, ...curr], []);
     };
 
-    buildIndividualPlannings(plannings) {
-        //build planning for each artist
-        for (const elem of plannings) {
+    buildPlanningGrid(data) {
+        const planning = new HTMLelem('div', 'planningGrid').render();
+        //set grid specs
+        planning.style.gridTemplateColumns = `repeat(${this.specs.layout.gridTotalColNumber}, 1fr)`;
+        planning.style.gridTemplateRows = `repeat(${this.specs.layout.gridRowsNumber}, ${this.rowZoom}px)`;
 
-            const planning = new IndividualPlanning({
-                id: elem.staff_id,
-                firstName: elem.firstName,
-                calendar_events: elem.calendar_events.map(event_id => this.calendarData.events[event_id]),
-                collisionList: elem.collisions.internal.crossEvent,
-                negativeOffset: this.offset,
-                numberOfRows: this.gridRowsNumber,
-                maxInternalCollisions: elem.collisions.internal.maxCollisions,
-                rowSize: this.rowZoom
-            });
-            this.planningList.push(planning);
-            this.html.appendChild(planning.html);
+        this.html.appendChild(planning);
+
+        for (const planningElement of data.plannings) {
+
+            planningElement.calendar_events
+                .map(event_id => this.calendarData.events[event_id])
+                .map(event => planning.appendChild(
+                    new GridBlock({
+                        id: event._id,
+                        gridCoordinates: planningElement.eventGridPositions[event._id],
+                        blockData: event
+                    }).html
+                ))
         }
     };
 
     buildGridOverlay(specs) { //TODO: extract as a Calendar Decorator
-        const { earliestTimeStamp, latestTimeStamp } = specs;
+        const { earliestTimeStamp, latestTimeStamp } = specs.timestamps;
 
         const hourGrid = new CalHoursGrid({
             offset: this.offset,
@@ -71,16 +72,6 @@ export class Calendar {
 
         hourGrid.calHoursLines.style.gridTemplateRows = `repeat(${this.gridRowsNumber}, ${this.rowZoom}px)`;
         hourGrid.calHoursText.style.gridTemplateRows = `repeat(${this.gridRowsNumber}, ${this.rowZoom}px)`;
-    };
-
-    defineGridRowsNumber(specs) {
-        const { earliestTimeStamp, latestTimeStamp } = specs;
-        this.gridRowsNumber = DateMethod.differenceInMinutes(earliestTimeStamp, latestTimeStamp) / DateMethod.STEP_DURATION;
-    };
-
-    getRowOffset(specs) {
-        const { earliestTimeStamp, dayStartTimestamp } = specs;
-        this.offset = (earliestTimeStamp - dayStartTimestamp) / (DateMethod.ONE_MINUTE_IN_MS * DateMethod.STEP_DURATION) - 1;
     };
 
     resetInstanceAndContainer() {

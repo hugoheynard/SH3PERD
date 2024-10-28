@@ -23,7 +23,7 @@ startProcess_connection({
 */
 
 
-export const workspaceContext = new WorkSpaceContext({ /*defaultWorkspace: ws_Calendar*/ });
+export const workspaceContext = new WorkSpaceContext();
 
 appContainer.buildCompanySpace({
     appMenu: menu_appGeneral.render(),
