@@ -1,0 +1,22 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-around;
+  width: inherit;
+  height: 100%;
+  color: #7d8080;
+
+
+  background-color: var(--colorDarkMenus);
+}
+
+
+.material-symbols-outlined {
+   font-variation-settings:
+     'FILL' 1,
+     'wght' 200,
+     'GRAD' 200,
+     'opsz' 24
+ }
