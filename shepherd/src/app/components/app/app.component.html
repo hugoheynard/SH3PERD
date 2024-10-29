@@ -1,0 +1,12 @@
+<app-header></app-header>
+
+<mat-sidenav-container>
+  <mat-sidenav #leftMenuSidenav mode="side" opened>
+    <app-appMenu></app-appMenu>
+  </mat-sidenav>
+
+  <section class="content">
+    <router-outlet />
+  </section>
+
+</mat-sidenav-container>;

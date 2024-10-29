@@ -1,0 +1,17 @@
+mat-sidenav-container{
+  height: 100vh;
+}
+
+.content {
+  height: 100vh;
+}
+
+mat-sidenav{
+  border-top-right-radius: 0.2rem;
+  border-bottom-right-radius: 0.2rem;
+  width: 4vw;
+  flex-shrink: 0;
+}
+
+
+
