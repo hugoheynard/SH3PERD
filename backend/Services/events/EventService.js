@@ -13,7 +13,7 @@ export class EventService {
         try {
             return await this.eventCollection.find(query).toArray();
         }catch (err) {
-            console.error("Error retrieving calendar events:", err);
+            console.error("Error retrieving calendarPage events:", err);
             throw err;
         }
     };

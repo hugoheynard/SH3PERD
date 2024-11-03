@@ -10,7 +10,7 @@ class MiniCalendar {
         this.currentYear = this.today.getFullYear();
         this.currentMonth = this.today.getMonth();
 
-        // Render calendar
+        // Render calendarPage
         this.renderCalendar();
     };
 
@@ -36,7 +36,7 @@ class MiniCalendar {
         this.calendar.innerHTML = '';
 
         const buildHeader = () => {
-            const header = new HTMLelem('div', 'miniCal_header', 'calendar-header').render();
+            const header = new HTMLelem('div', 'miniCal_header', 'calendarPage-header').render();
 
             const prevButton = new HTMLelem('button', 'prevMonthButton', 'prev-month miniCal_button')
             prevButton.setText('<');

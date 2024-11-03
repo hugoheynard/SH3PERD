@@ -1,4 +1,5 @@
 import {DateMethod} from "../../Utilities/class_DateMethods.js";
+import {getPositionFromDate} from "../../../Frontend/Utilities/dataset_functions/datasetFunctions.js";
 
 export class CalendarController {
     constructor(input) {
@@ -97,11 +98,75 @@ export class CalendarController {
                 stepDuration: DateMethod.STEP_DURATION
             });
 
-        console.log(calendarData)
+        //console.log(calendarData.plannings[0])
+
+        const eventsProcessed = (()=>{
+            const arr = []
+
+            for (const planning of calendarData.plannings) {
+                const res = planning.calendar_events
+                    .map(event_id => {
+                        const event = calendarData.events[event_id]
+
+                        event.user = planning.staff_id;
+                        event.gridCoordinates = planning.eventGridPositions[event_id];
+
+                        arr.push(event)
+                    })
+
+                //console.log(arr)
+            }
+
+            return arr
+        })();
+
+        const hoursList = (()=>{
+            const { earliestEventTimestamp, latestEventTimestamp} = calendarData.specs.timestamps;
+            const { offsetFromDayStart } = calendarData.specs.layout;
+            const stepArray = [];
+
+            let step = earliestEventTimestamp;
+            while(step <= latestEventTimestamp) {
+
+                if (step.getMinutes() === 0) {
+                    stepArray.push(step);
+                }
+
+                step = DateMethod.addMinutes(step, 5);
+            }
+            return stepArray.map(hour => {
+                return {
+                    timestamp: hour,
+                    rowStart: (()=> {
+                        let rowStart = getPositionFromDate(hour) - offsetFromDayStart - 1;
+
+                        if (rowStart < 0) {
+                            /*To manage the exception to an event going after midnight, we add a full day as a positive offset*/
+                            rowStart += DateMethod.ONE_DAY_IN_STEPS;
+                        }
+                        return rowStart
+                    })()
+                }
+            });
+        })();
 
 
-
-        return calendarData;
+        console.log({
+            timestamps: {
+                ...calendarData.specs.timestamps,
+                hoursList: hoursList
+            },
+            layout: calendarData.specs.layout,
+            events: eventsProcessed
+        })
+        return {
+            timestamps: {
+                ...calendarData.specs.timestamps,
+                hoursList: hoursList
+            },
+            layout: calendarData.specs.layout,
+            events: eventsProcessed
+        };
     };
 
 

@@ -57,11 +57,11 @@ export const dateRouter = calendarController => {
                     data: data
                 });
             } catch (error) {
-                console.error("Internal error while getting calendar day data:", error);
+                console.error("Internal error while getting calendarPage day data:", error);
 
                 return res.status(500).json({
                     success: false,
-                    message: 'Internal error while getting calendar day data',
+                    message: 'Internal error while getting calendarPage day data',
                     error: error.message,
                     stack: error.stack,
                     receivedDate: date,

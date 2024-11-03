@@ -34,6 +34,7 @@ export class Calendar_BackendCall extends BackEndCall{
 
                 if (event.date) {
                     event.date = new Date(event.date)
+
                 }
             }
 

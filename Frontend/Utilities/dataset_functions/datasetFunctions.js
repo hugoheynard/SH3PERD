@@ -7,7 +7,3 @@ export const getPositionFromDate = data => {
 
     return (hours * 60 + minutes) / DateMethod.STEP_DURATION
 };
-
-export const getRowEndFromDatasetDuration = dataDuration => {
-    return Number(dataDuration) / DateMethod.STEP_DURATION;
-};

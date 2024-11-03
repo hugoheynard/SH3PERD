@@ -24,7 +24,7 @@ export class CalendarPage {
         this.calendar = new Calendar(this.calendarData);
 
 
-        //this.calContainer.appendChild(this.calendar.header); //TODO: HEADER CAT SUBCAT
+        //this.calContainer.appendChild(this.calendarPage.header); //TODO: HEADER CAT SUBCAT
         this.calContainer.appendChild(this.calendar.html);
         this.addMiniCalendar();
         this.addFilters();

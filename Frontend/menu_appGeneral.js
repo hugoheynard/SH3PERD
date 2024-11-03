@@ -23,7 +23,7 @@ menu_appGeneral.addButton(
         content: new Icon(
             {
                 css: "menuIcons",
-                publicURL: '../Frontend/Public/Icones/appMenus/generalMenu/calendar.svg',
+                publicURL: '../Frontend/Public/Icones/appMenus/generalMenu/calendarPage.svg',
                 alt: "calendar"
             }),
         callback: MenuAction.goCalendar

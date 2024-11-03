@@ -21,7 +21,7 @@ class MenuAction {
 
     //For appGeneral menu
     //goHome = () => appWorkspace.setWorkspace(ws_Home);
-    //goCalendar = () => appWorkspace.setWorkspace(appModuleManager['calendar']);
+    //goCalendar = () => appWorkspace.setWorkspace(appModuleManager['calendarPage']);
     //goMusicLibrary = () => appWorkspace.setWorkspace(ws_musicLibrary);
     //goPlaylistManager = () => appWorkspace.setWorkspace(ws_Playlists);
     //goCabaretManager = () => appWorkspace.setWorkspace(ws_Cabaret);
