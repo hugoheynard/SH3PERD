@@ -1,0 +1,34 @@
+:root{
+  --paddingRight: 44px;
+}
+:host {
+  background-color: #262728;
+
+}
+#wsPage_Calendars{
+  height: 100vh;
+}
+
+#calContainer {
+  position: absolute;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  background-color: #262728;
+}
+
+#leftSidenav {
+  width: 15vw;
+  background-color: #C7C7CC;
+  color: #414344;
+  border-radius: 1px;
+  border-right: 2px solid #b6bdbd;
+}
+
+#rightSidenav {
+  width: 25vw;
+  background-color: #C7C7CC;
+  color: #414344;
+  border-radius: 1px;
+  border-right: 2px solid #b6bdbd;
+}

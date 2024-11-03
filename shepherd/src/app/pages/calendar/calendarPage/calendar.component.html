@@ -1,0 +1,15 @@
+<mat-sidenav-container id="wsPage_Calendars">
+  <mat-sidenav id="leftSidenav" #leftSidenav mode="side" [opened]="true"></mat-sidenav>
+  <mat-sidenav id="rightSidenav" #rightSidenav position="end" mode="side" [opened]="false"></mat-sidenav>
+
+  <section id="calContainer">
+    <app-planningGrid
+      [calendarData]="calendarDataSignal()"
+      [layout]="calendarDataSignal().layout" />
+
+    <app-calendar-hours-grid
+      [gridRowsNumber]="calendarDataSignal().layout.gridRowsNumber"
+      [hoursList]="calendarDataSignal().timestamps.hoursList" />
+  </section>
+
+</mat-sidenav-container>
