@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, inject, OnInit, signal} from '@angular/core';
 import {MatTab, MatTabGroup} from "@angular/material/tabs";
 import {DayTemplateComponent} from '../day-template/day-template.component';
 import {NgForOf} from '@angular/common';
@@ -6,6 +6,7 @@ import {EditSaveIconComponent} from '../edit-save-icon/edit-save-icon.component'
 import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {SettingsService} from '../../../services/settings.service';
+import {WeekTemplate} from '../../../interfaces/week-template-interface';
 
 @Component({
   selector: 'app-week-template',
@@ -27,7 +28,9 @@ export class WeekTemplateComponent implements OnInit, AfterViewInit{
 
   weekSettingsForm: FormGroup = new FormGroup<any>({});
   isModified: boolean = false;
-  weekDays: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  weekDays: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  weekTemplateSignal = signal<any>(null);
 
   ngOnInit(): void {
     this.weekSettingsForm = this.fb.group({
@@ -35,39 +38,10 @@ export class WeekTemplateComponent implements OnInit, AfterViewInit{
     });
   };
 
-  ngAfterViewInit() {
-    const weekSettingsData = {
-      days: [
-        {
-          clubbingHours: { start: '18:00', end: '02:00' },
-          weeklyEvent: {
-            hasWeeklyEvent: true,
-            selectedWeeklyEvent: 'Salsa Night'
-          },
-          cabaretSettings: {
-            hasCabaret: true,
-            numberOfShows: 2,
-            showsDetails: [
-              { playlist: '', startTime: '12:00'},
-              { playlist: '', startTime: '12:00'}
-            ]
-          }
-        },
-        {
-          clubbingHours: { start: '17:00', end: '01:00' },
-          weeklyEvent: { hasWeeklyEvent: false, selectedWeeklyEvent: '' },
-          cabaretSettings: { hasCabaret: true,
-            numberOfShows: 1,
-            showsDetails: [
-              { playlist: '', startTime: '12:00'},
-              { playlist: '', startTime: '12:00'}
-            ] }
-        },
-        // Ajoutez des données pour chaque jour de la semaine...
-      ]
-    };
+  async ngAfterViewInit() {
+    const data: any = await this.settingsService.getWeekTemplate(); //TODO: pourquoi mon week template interface marche pas
 
-    this.weekSettingsForm.patchValue(weekSettingsData);
+    this.weekSettingsForm.patchValue(data);
     this.cdr.detectChanges()
 
     this.weekSettingsForm.valueChanges.subscribe(() => {
@@ -77,7 +51,7 @@ export class WeekTemplateComponent implements OnInit, AfterViewInit{
 
   createDayFormGroup(day: string): FormGroup {
     return this.fb.group({
-      day: new FormControl(this.weekDays.indexOf(day)),
+      dayIndex: new FormControl(this.weekDays.indexOf(day)),
       clubbingHours: this.fb.group({
         start: [''],
         end: ['']

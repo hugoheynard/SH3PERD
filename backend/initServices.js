@@ -10,6 +10,7 @@ import {EventQueryBuilder} from "./Services/events/EventQueryBuilder.js";
 import {UserQueryBuilder} from "./Services/users/UserQueryBuilder.js";
 import {StaffSortingAlgorithms} from "./Services/users/StaffSortingAlgorithms.js";
 import {EventGridPositionCalculator} from "./Services/CalendarService/EventGridPositionCalculator.js";
+import {SettingsService} from "./Services/settings/SettingsService.js";
 
 
 export const initServices = ({ db }) => {
@@ -41,6 +42,10 @@ export const initServices = ({ db }) => {
                 eventGenerator: EventGenerator,
                 //staffInteractionTool: StaffInteractionModule
             },
+        }),
+
+        settingsService: new SettingsService({
+            collection: db.collection('settings')
         })
     }
 }

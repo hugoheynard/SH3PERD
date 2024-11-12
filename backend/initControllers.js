@@ -2,6 +2,7 @@ import {UserController} from "./Services/users/UserController.js";
 import {CalendarController} from "./Services/CalendarService/CalendarController.js";
 import {ContractController} from "./Services/contracts/ContractController.js";
 import {CompanyController} from "./Services/company/CompanyController.js";
+import {SettingsController} from "./Services/settings/SettingsController.js";
 
 
 export const initControllers = ({ services }) => {
@@ -24,6 +25,8 @@ export const initControllers = ({ services }) => {
             calendarService: services.calendarService,
             userService: services.userService,
             eventService: services.eventService
-        })
+        }),
+
+        settingsController: new SettingsController( { settingsService: services.settingsService })
     }
 };
