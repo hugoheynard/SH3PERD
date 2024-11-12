@@ -10,6 +10,7 @@
     --colorLightGrey: #f5f7f8;
 }
 
+
 /* LAYOUT */
 * {
     box-sizing: border-box;
@@ -23,29 +24,6 @@ html, body {
     margin: 0;
     font-family: "Helvetica", "Verdana", monospace;
     background-color: #c5c5c5;
-}
-#loginPage {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-}
-
-#logoContainer {
-    display: flex;
-    width: 40%;
-    height: 40%;
-}
-
-#login_formContainer {
-    display: flex;
-    width: 25%;
-    height: 20%;
-    padding: 0.5rem;
-    border-radius: 0.3rem;
-    background-color: #202020;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 #leftPermanentMenu {

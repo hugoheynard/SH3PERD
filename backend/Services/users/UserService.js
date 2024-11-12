@@ -5,9 +5,9 @@ export class UserService {
     };
 
     /**
-    * gets the user according to token information company
+    * gets the user according to token information settings
      * company_id: the companySpace you're currently visiting
-     * contract_id: the contract user is on with this company
+     * contract_id: the contract user is on with this settings
      * */
     async getUser(query) {
         try {

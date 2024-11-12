@@ -39,6 +39,14 @@ $appBackgroundColor: #c5c5c5;
 $colorDarkMenus: #191c1e;
 
 :root {
+  --darkCharcoal: #333333;
+  --greyMid: #555555;
+  --granite: #616161;
+  --platinium: #E5E5E5;
+  --slateBlueGrey: #708090;
+  --culturedWhite: #F5F5F5;
+
+
   --appBackgroundColor: #F7F7F7;
   --tableTopBackgroundColor: rgb(29, 29, 30);
   --tableHeaderBackgroundColor: #f5f7f8;
@@ -53,14 +61,15 @@ $colorDarkMenus: #191c1e;
 
 
 
-html, body { height: 100%; }
+html, body { height: 100vh; }
 body {
   margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
-  box-sizing: border-box;background-color: var(--appBackgroundColor)
+  box-sizing: border-box;background-color: var(--culturedWhite);
 };
 
 app-root {
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
+

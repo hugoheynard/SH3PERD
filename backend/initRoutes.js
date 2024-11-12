@@ -16,7 +16,7 @@ export const initRoutes = (app, { db, controllers }) => {
 
 //Routers
     app.use('/auth', authenticationRouter(db)); //TODO on pourrait injecter seulement une collection de login et tokens pour limiter la propagation de la db sur un point critique?
-    app.use('/company', companyRouter(controllers.companyController));
+    app.use('/settings', companyRouter(controllers.companyController));
     app.use('/staff', staffRouter(controllers.staffController));
     app.use('/calendar', calendarRouter(controllers.calendarController));
     app.use('/musicLibrary', musicLibraryRouter);

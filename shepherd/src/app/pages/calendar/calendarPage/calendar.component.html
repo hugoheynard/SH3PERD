@@ -1,6 +1,10 @@
 <mat-sidenav-container id="wsPage_Calendars">
-  <mat-sidenav id="leftSidenav" #leftSidenav mode="side" [opened]="true"></mat-sidenav>
-  <mat-sidenav id="rightSidenav" #rightSidenav position="end" mode="side" [opened]="false"></mat-sidenav>
+  <mat-sidenav id="leftSidenav" #leftSidenav mode="side" [opened]="false">
+    <app-date-picker-calendar />
+  </mat-sidenav>
+  <mat-sidenav id="rightSidenav" #rightSidenav position="end" mode="side" [opened]="false">
+    <app-event-reactform />
+  </mat-sidenav>
 
   <section id="calContainer">
     <app-planningGrid
@@ -12,4 +16,6 @@
       [hoursList]="calendarDataSignal().timestamps.hoursList" />
   </section>
 
-</mat-sidenav-container>
+  </mat-sidenav-container>
+
+<app-appMenu [menuItems]="[]" />

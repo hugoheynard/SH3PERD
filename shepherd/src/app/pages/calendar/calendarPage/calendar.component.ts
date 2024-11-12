@@ -4,6 +4,10 @@ import {MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
 import {MatButton} from '@angular/material/button';
 import {CalendarHoursGridComponent} from '../backgroundGrid/calendar-hours-grid/calendar-hours-grid.component';
 import {CalendarService} from '../../../services/calendar.service';
+import {AppMenuComponent} from '../../../components/menus/appMenu/app-menu.component';
+import {MatCalendar} from '@angular/material/datepicker';
+import {DatePickerCalendarComponent} from '../date-picker-calendar/date-picker-calendar.component';
+import {EventReactformComponent} from '../../../forms/event-reactform/event-reactform.component';
 
 @Component({
   selector: 'app-calendarPage',
@@ -13,7 +17,7 @@ import {CalendarService} from '../../../services/calendar.service';
   imports: [
     PlanningGridComponent,
     CalendarHoursGridComponent,
-    MatSidenavContainer, MatSidenav, MatButton
+    MatSidenavContainer, MatSidenav, MatButton, AppMenuComponent, MatCalendar, DatePickerCalendarComponent, EventReactformComponent
   ]
 })
 export class CalendarComponent implements OnInit{

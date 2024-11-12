@@ -2,17 +2,21 @@
   --paddingRight: 44px;
 }
 :host {
+  display: flex;
+  flex-direction: row;
   background-color: #262728;
-
+  width: 100%;
+  height: 100vh;
 }
+
 #wsPage_Calendars{
+  width: 100%;
   height: 100vh;
 }
 
 #calContainer {
-  position: absolute;
-  z-index: 2;
-  width: 100%;
+  margin-left: 5%;
+  width: 90%;
   height: 100%;
   background-color: #262728;
 }
@@ -22,7 +26,6 @@
   background-color: #C7C7CC;
   color: #414344;
   border-radius: 1px;
-  border-right: 2px solid #b6bdbd;
 }
 
 #rightSidenav {
@@ -30,5 +33,11 @@
   background-color: #C7C7CC;
   color: #414344;
   border-radius: 1px;
-  border-right: 2px solid #b6bdbd;
+}
+
+mat-sidenav{
+  border-top-right-radius: 0.2rem;
+  border-bottom-right-radius: 0.2rem;
+  width: 4vw;
+  flex-shrink: 0;
 }

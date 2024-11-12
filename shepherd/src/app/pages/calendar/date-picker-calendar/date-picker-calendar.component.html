@@ -1,0 +1,28 @@
+<div id="monthlyCal">
+  <div id="miniCal_header" class="calendarPage-header">
+    <button id="prevMonthButton" class="miniCal_button" (click)="prevMonth()"><</button>
+    <span>{{ monthArray[currentMonth] }} {{ currentYear }}</span>
+    <button id="nextMonthButton" class="miniCal_button" (click)="nextMonth()">></button>
+  </div>
+
+  <div id="days-of-week" class="days-grid">
+    <span
+      class="day-of-week"
+      [ngClass]="{'underlineCurrentDay': i === currentWeekDay}"
+      *ngFor="let day of ['S', 'M', 'T', 'W', 'T', 'F', 'S']; let i = index">
+      {{ day }}
+    </span>
+  </div>
+
+  <div class="days-grid">
+    <span class="day empty" *ngFor="let _ of emptyDaysArray"></span>
+    <span
+      class="day"
+      [ngClass]="{'miniCal_focus': selectedDate && date.getTime() === selectedDate.getTime()}"
+      *ngFor="let date of daysInMonth"
+      (click)="selectDate(date)">
+      {{ date.getDate() }}
+    </span>
+  </div>
+
+</div>

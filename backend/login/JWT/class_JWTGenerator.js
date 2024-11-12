@@ -73,6 +73,6 @@ export class JWT_module {
             throw new Error('Invalid signature');
         }
 
-        return { header, payload };
+        return { isValid: true, header, payload };
     };
 }

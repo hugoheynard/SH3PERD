@@ -1,0 +1,6 @@
+  <div class="eventBlock_header">
+    <span *ngIf="event.type !== 'off'">{{ event.date | date: 'HH:mm' }}</span>
+    <span>{{ event.type }}</span>
+  </div>
+
+  <div class="eventBlock_content"></div>

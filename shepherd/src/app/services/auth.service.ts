@@ -14,6 +14,44 @@ export class AuthService {
 
   isAuthenticatedSignal = signal(false);
 
+  async autoLog_localStorageCheck() {
+    const token = this.tokenService.getToken();
+
+    if (!token) {
+      return false;
+    }
+
+    const validToken = await this.verifyAuthToken(token);
+
+    if (!validToken) {
+      return false;
+    }
+
+    this.isAuthenticatedSignal.set(true);
+    return true;
+  };
+
+  async verifyAuthToken(token: string){
+    try {
+      const response = await firstValueFrom(
+        this.http.post<Response>(
+          'http://localhost:3000/auth/autoLog',
+          { authToken: token },
+          {
+            headers:
+              new HttpHeaders({ 'Content-Type': 'application/json' }),
+              observe: 'response'
+          }
+        )
+      );
+      return response.ok;
+
+    } catch(e) {
+      console.error('Error in token connexion process', e);
+      return false;
+    }
+  };
+
   async login(credentials: UserLoginInfos) {
     try {
       const response = await firstValueFrom (
@@ -39,11 +77,11 @@ export class AuthService {
       console.error('Error in connexion process', e);
       return false;
     }
-  }
+  };
 
   logout(): void {
     this.tokenService.removeToken();
     this.isAuthenticatedSignal.set(false);
-  }
+  };
 
 }

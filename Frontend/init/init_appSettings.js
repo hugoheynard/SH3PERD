@@ -5,7 +5,7 @@ class AppSettings{
         try {
             this.companySettings = await new Settings_BackendCall().getCompanySettings('66f805b2e0137375bc1429fd');
         } catch (e) {
-            console.error('Error while fetching company settings', e);
+            console.error('Error while fetching settings settings', e);
             throw e;
         }
     };

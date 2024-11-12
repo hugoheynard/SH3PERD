@@ -1,0 +1,45 @@
+<form>
+  <p>Create event</p>
+  <mat-form-field>
+    <mat-label>Choose a date</mat-label>
+    <input matInput [matDatepicker]="picker">
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Duration</mat-label>
+    <input matInput id="duration" type="number" min="5" step="5" [formControl]="duration">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Type</mat-label>
+    <mat-select>
+      <mat-option value="meeting">meeting</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p>Select participants</p>
+  <app-select-participants
+    [organisationSchema]="{
+    services: {
+      artistic: {
+        categories: {
+          dj: {},
+          musicians: {},
+          singers: {},
+          dancers: {},
+          performers: {}
+        }
+      },
+      administratif: {
+
+      }
+    }
+    }"/>
+
+
+  <!--<app-hierarchy-select />-->
+
+</form>

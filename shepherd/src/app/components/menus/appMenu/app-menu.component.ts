@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {CommonModule} from '@angular/common';
+import {IconFlatButtonComponent} from '../icon-flat-button/icon-flat-button.component';
 
 interface MenuItem {
-  label: string;
-  route: string;
-  icon?: string;
+  iconName: string;
+  action: any;
 }
 
 @Component({
@@ -13,10 +13,10 @@ interface MenuItem {
   standalone: true,
   templateUrl: './app-menu.component.html',
   styleUrl: './app-menu.component.scss',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, IconFlatButtonComponent],
 })
 export class AppMenuComponent {
-   menuItems: MenuItem[] = [
-     { label: 'CAL', route: '/calendarPage', icon: 'shepherd/public/Icones/appMenus/generalMenu/calendarPage.svg' },
-   ]
+
+   @Input() menuItems: MenuItem[] = [];
+
 }

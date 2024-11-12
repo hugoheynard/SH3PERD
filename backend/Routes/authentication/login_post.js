@@ -49,3 +49,26 @@ export const loginRouter = (db) => {
     );
     return loginRoute;
 };
+
+export const autoLogRouter = () => {
+    const router = express.Router();
+
+    router.post('/autoLog',
+        async (req, res, next) => {
+            try {
+                if (!JWT_module.decode(req.body.authToken).isValid) {
+                    return res.status(401).json({
+                        message: 'invalid auth_token'
+                    })
+                }
+
+                return res.status(200).json({
+                    message: 'valid auth_token'
+                })
+            } catch (e) {
+                next(e)
+            }
+        }
+    );
+    return router;
+}

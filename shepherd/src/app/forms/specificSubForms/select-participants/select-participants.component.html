@@ -1,0 +1,42 @@
+  <mat-label>Services</mat-label>
+  <mat-chip-listbox [formControl]="services" multiple="true">
+    <mat-chip-option>All</mat-chip-option>
+
+    <mat-chip-option
+      *ngFor="let service of serviceKeys"
+      [selected]="subCategories.value?.includes(service)">
+      {{ service }}
+    </mat-chip-option>
+
+  </mat-chip-listbox>
+
+
+  <mat-label>Categories</mat-label>
+  <mat-chip-listbox [formControl]="categories" multiple>
+    <mat-chip-option value="allCategories">All</mat-chip-option>
+    <mat-chip-option value="dj">DJ</mat-chip-option>
+  </mat-chip-listbox>
+
+  <mat-label>Sub Categories</mat-label>
+  <mat-chip-listbox
+    [formControl]="subCategories"
+    [multiple]="true">
+
+    <mat-chip-option
+      value="allsubCategories"
+      >
+      All
+    </mat-chip-option>
+
+    <mat-chip-option
+      value="artistic"
+      >
+      club
+    </mat-chip-option>
+
+    <mat-chip-option value="artistic">cabaret</mat-chip-option>
+  </mat-chip-listbox>
+
+
+
+

@@ -5,7 +5,7 @@ export const companySettings_Router = express.Router();
 
 companySettings_Router.get('/events', async (req, res) => {
     try {
-        /*const result = await app_db.collection('company').findOne(
+        /*const result = await app_db.collection('settings').findOne(
             { name: 'La Folie Douce Les Arcs'},
             { projection: { 'settings.events': 1, _id: 0 } }
         );

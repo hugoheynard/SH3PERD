@@ -1,0 +1,11 @@
+<form id="weeklyEventSelect" class="borderLightgreyRound" [formGroup]="weeklyEventAssignForm">
+  <div class="headerWithSwitch">
+    <h3>WEEKLY EVENT</h3>
+    <app-toggle-button formControlName="hasWeeklyEvent"/>
+  </div>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Select event</mat-label>
+    <mat-select class="fullWidth" formControlName="selectedWeeklyEvent"></mat-select>
+  </mat-form-field>
+</form>
