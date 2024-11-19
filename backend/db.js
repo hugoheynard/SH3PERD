@@ -6,8 +6,8 @@ const clusterName = 'Cluster83466';
 const password = 'YkRya3REd1lq';
 const dbName = 'shepherd';
 
-export const atlas_uri = `mongodb+srv://${clusterName}:${password}@${clusterName.toLowerCase()}.otv86.mongodb.net/${dbName}?retryWrites=true&w=majority&appName=${clusterName}"`;
-
+export const atlas_uri = `mongodb+srv://${clusterName}:${password}@${clusterName.toLowerCase()}.otv86.mongodb.net/${dbName}?retryWrites=true&w=majority&appName=${clusterName}&tls=true&tlsAllowInvalidCertificates=true`;
+//todo certificat ssl checker les options
 
 const mongoClient = new MongoClient(atlas_uri);
 
