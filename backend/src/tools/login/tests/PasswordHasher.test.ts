@@ -1,5 +1,7 @@
-import {PasswordHasher} from "./PasswordHasher.js";
+
 import {jest} from '@jest/globals';
+import {PasswordHasher} from "../PasswordHasher";
+
 
 describe('class PasswordHasher', () => {
 
