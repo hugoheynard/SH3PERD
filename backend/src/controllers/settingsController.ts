@@ -1,29 +1,53 @@
-import {ObjectId} from "mongodb";
+import type {NextFunction, Request, Response} from "express";
 
 export interface SettingsControllerInput {
-    services: {
-        settingsService: any
-    }
+
 }
 
 
-export const settingsController = (input: SettingsControllerInput): any => {
-    const { settingsService } = input.services;
+export const settingsController = (input: any): any => {
+    const { settingsService } = input;
 
     return {
-        settingService: settingsService,
-
-        async getWeekTemplate(id: string): Promise<any> {
-            const data = await this.settingsService.collection.findOne({ _id: new ObjectId(id)});
-            return data.weekTemplate;
+        async getWeekTemplate(req: Request, res: Response, next: NextFunction): Promise<void> {
+            try {
+                const result = await settingsService.getWeekTemplate({company_id: req.params.id});
+                res.status(200).json(result);
+                return;
+            } catch (err: any) {
+                next(err);
+            }
         },
 
-        async updateWeekTemplate(input: any): Promise<void> {
-            this.settingsService.collection.updateOne(
-                { "_id": new ObjectId(input.id) },
-                { "$set": { "weekTemplate": input.data } }
-            )
-        }
-    }
+        async updateWeekTemplate(req: Request, res: Response, next: NextFunction): Promise<void> {
+            try {
+                const result = await settingsService.updateWeekTemplate({
+                    settings_id: req.body.settings_id,
+                    data: req.body.data
+                })
+                res.status(200).json(result);
+                return;
+            } catch (err: any) {
+                next(err);
+            }
+        },
 
-}
+        async getOrganogram(req: Request, res: Response, next: NextFunction): Promise<void>{
+            try {
+                const organogram = await settingsService.getOrganogram({settings_id: req.params.id});
+                res.status(200).json(organogram);
+                return;
+            } catch(err: any) {
+                next(err);
+            }
+        },
+
+        async updateOrganogram(req: Request, res: Response, next: NextFunction): Promise<void>{
+            try {
+
+            } catch(err: any) {
+                next(err);
+            }
+        }
+    };
+};

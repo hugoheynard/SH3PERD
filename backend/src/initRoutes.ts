@@ -1,0 +1,38 @@
+import express, {type Express, type NextFunction, type Request, type Response} from "express";
+import cors from "cors";
+import {errorCatcher} from "./routes/middlewares/errorCatcher";
+
+import {authenticationRouter} from "./routes/authentication/authenticationRouter";
+import {settingsRouter} from "./routes/settings/settingsRouter";
+import {calendarRouter} from "./routes/calendar/calendarRouter";
+import {eventsRouter} from "./routes/events/eventsRouter";
+
+
+export const initRoutes = (app: Express, { controllers } : any): Express => {
+    try {
+// middlewares
+        app.use(cors());
+        app.use(express.json());
+
+//Routers
+        app.use('/auth', authenticationRouter(controllers.authenticationController));
+        app.use('/settings', settingsRouter(controllers.settingsController));
+        app.use('/events', eventsRouter(controllers.eventsController))
+        app.use('/calendar', calendarRouter(controllers.calendarController));
+        //app.use('/staff', userRouter(controllers.staffController));
+        //app.use('/company', companyRouter(controllers.companyController));
+        //
+        //app.use('/musicLibrary', musicLibraryRouter);
+
+        app.use((req: Request, res: Response, next: NextFunction) => {
+            res.status(404).send('Route does not exist');
+        });
+
+        app.use(errorCatcher);
+
+        return app;
+    } catch (e) {
+        console.error('Error during controller routes:', e);
+        throw new Error('Failed to initialize routes');
+    }
+};

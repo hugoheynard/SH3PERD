@@ -1,14 +1,46 @@
-import { ObjectId } from "mongodb";
 export const settingsController = (input) => {
-    const { settingsService } = input.services;
+    const { settingsService } = input;
     return {
-        settingService: settingsService,
-        async getWeekTemplate(id) {
-            const data = await this.settingsService.collection.findOne({ _id: new ObjectId(id) });
-            return data.weekTemplate;
+        async getWeekTemplate(req, res, next) {
+            try {
+                const result = await settingsService.getWeekTemplate({ company_id: req.params.id });
+                res.status(200).json(result);
+                return;
+            }
+            catch (err) {
+                next(err);
+            }
         },
-        async updateWeekTemplate(input) {
-            this.settingsService.collection.updateOne({ "_id": new ObjectId(input.id) }, { "$set": { "weekTemplate": input.data } });
+        async updateWeekTemplate(req, res, next) {
+            try {
+                const result = await settingsService.updateWeekTemplate({
+                    settings_id: req.body.settings_id,
+                    data: req.body.data
+                });
+                res.status(200).json(result);
+                return;
+            }
+            catch (err) {
+                next(err);
+            }
+        },
+        async getOrganogram(req, res, next) {
+            try {
+                const organogram = await settingsService.getOrganogram({ settings_id: req.params.id });
+                res.status(200).json(organogram);
+                return;
+            }
+            catch (err) {
+                next(err);
+            }
+        },
+        async updateOrganogram(req, res, next) {
+            try {
+            }
+            catch (err) {
+                next(err);
+            }
         }
     };
 };
+//# sourceMappingURL=settingsController.js.map

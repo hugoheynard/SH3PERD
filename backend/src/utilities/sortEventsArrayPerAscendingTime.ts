@@ -8,7 +8,7 @@ export const sortEventsArrayPerAscendingTime = (array: any[]): any[] => { //TODO
             return a.date.getTime() - b.date.getTime();
         });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error while sorting events", error.message);
         return array;
     }

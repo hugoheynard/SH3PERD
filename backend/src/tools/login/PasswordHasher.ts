@@ -1,5 +1,5 @@
-import { pbkdf2, randomBytes } from 'crypto';
-import { promisify } from 'util';
+import {pbkdf2, randomBytes} from 'crypto';
+import {promisify} from 'util';
 
 export interface HashPassInput {
     password: string;
@@ -17,7 +17,7 @@ export interface VerifyPassInput {
  * passwords against stored hashes.
  */
 
-export class PasswordHasher{
+export class PasswordHasher {
     //In a world of innocent sheeps, only a wise shepherd can keep the herd alive!;
     /**
      * @private
@@ -33,9 +33,9 @@ export class PasswordHasher{
      * @property {string} digest - The hash function to use (e.g., 'sha512').
      */
     static hashParams: {
-        iterations:number;
+        iterations: number;
         keyLength: number;
-        digest:string;
+        digest: string;
     } = {
         iterations: 200000,
         keyLength: 64,
@@ -57,7 +57,7 @@ export class PasswordHasher{
      * @returns {Promise<string>} A promise that resolves to the derived key.
      */
     static async generateKey(password: string, salt: string): Promise<string> {
-        const { iterations, keyLength, digest } = PasswordHasher.hashParams;
+        const {iterations, keyLength, digest} = PasswordHasher.hashParams;
         const derivedKey = await PasswordHasher.pbkdf2Async(password, salt, iterations, keyLength, digest);
         return derivedKey.toString('hex');
     };
@@ -95,7 +95,7 @@ export class PasswordHasher{
         }
 
         const [salt, storedKey] = input.storedHash.split(':');
-        const derivedKey: string  = await PasswordHasher.generateKey(input.password, salt);
+        const derivedKey: string = await PasswordHasher.generateKey(input.password, salt);
 
         return storedKey === derivedKey;
     };

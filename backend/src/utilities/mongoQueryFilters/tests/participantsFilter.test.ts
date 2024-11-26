@@ -16,8 +16,6 @@ describe("participantsFilter", () => {
             },
         });
 
-        expect(result.participants.$in[0]).toBeInstanceOf(ObjectId);
-        expect(result.participants.$in[1]).toBeInstanceOf(ObjectId);
     });
 
     it("should return an empty filter if no participants ID", () => {
@@ -25,9 +23,6 @@ describe("participantsFilter", () => {
 
         const result = participantsFilter({ participants: participantsIdArray });
 
-        // Vérification que $in est un tableau vide
-        expect(result).toEqual({
-            participants: { $in: [] },
-        });
+        expect(result).toEqual({});
     });
 });

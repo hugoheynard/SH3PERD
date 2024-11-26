@@ -4,6 +4,8 @@ import {SettingsComponent} from '../pages/settingsModule/settings/settings.compo
 import {WeeklyEventsComponent} from '../pages/settingsModule/weekly-events/weekly-events.component';
 import {WeekTemplateComponent} from '../pages/settingsModule/week-template/week-template.component';
 import {GeneralInformationsComponent} from '../pages/settingsModule/general-informations/general-informations.component';
+import {CalendarEventsComponent} from '../pages/settingsModule/calendarEventsTemplates/calendar-events/calendar-events.component';
+import {OrganogramComponent} from '../pages/settingsModule/organogramModule/organogram/organogram.component';
 
 const routes: Routes = [
   {
@@ -13,7 +15,9 @@ const routes: Routes = [
       { path: 'general-informations', component: GeneralInformationsComponent },
       { path: 'week-template', component: WeekTemplateComponent },
       { path: 'weekly-events', component: WeeklyEventsComponent },
-      { path: '', redirectTo: 'week-template', pathMatch: 'full' },
+      { path: 'calendar-events', component: CalendarEventsComponent },
+      { path: 'organogram', component: OrganogramComponent },
+      { path: '', redirectTo: 'organogram', pathMatch: 'full' },
     ]
   }
 ];

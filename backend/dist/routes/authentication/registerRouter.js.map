@@ -1,0 +1,1 @@
+{"version":3,"file":"registerRouter.js","sourceRoot":"","sources":["../../../src/routes/authentication/registerRouter.ts"],"names":[],"mappings":"AAAA,OAAO,OAAO,EAAE,EAAa,MAAM,SAAS,CAAC;AAE7C,MAAM,CAAC,MAAM,cAAc,GAAG,GAAW,EAAE;IACvC,MAAM,MAAM,GAAW,OAAO,CAAC,MAAM,EAAE,CAAC;IACxC;;;;;MAKE;IACF,OAAO,MAAM,CAAC;AAClB,CAAC,CAAA"}

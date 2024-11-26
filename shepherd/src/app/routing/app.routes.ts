@@ -12,7 +12,7 @@ export const routes: Routes = [
   { path: 'app/home', component: CalendarComponent, /*canActivate: [authGuard]*/ },
   {
     path: 'app/settings',
-    /*canActivate: [authGuard]*/
+    canActivate: [authGuard],
     loadChildren: () => import('../routing/settingsModule')
       .then(m => m.SettingsModule)},
   { path: '', redirectTo: 'login', pathMatch: 'full' }, // Default route

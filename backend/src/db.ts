@@ -12,7 +12,7 @@ export const atlas_uri: string = `mongodb+srv://${userName}:${password}@${cluste
 const mongoClient: MongoClient = new MongoClient(atlas_uri);
 
 
-export const connectDb = async (): Promise<Db> => {
+export const connectDb = async (): Promise<Db | null> => {
     try {
         await mongoClient.connect();
         console.log("Connected to db");

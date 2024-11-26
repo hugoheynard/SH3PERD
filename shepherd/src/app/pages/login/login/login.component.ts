@@ -29,6 +29,6 @@ export class LoginComponent implements OnInit {
     if (!success) {
       console.error('Login failed');
     }
-    await this.router.navigate(['/app/home']);
+    await this.router.navigate(['/app/settings']);
   };
 }

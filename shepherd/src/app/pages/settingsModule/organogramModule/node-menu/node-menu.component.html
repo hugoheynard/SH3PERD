@@ -1,0 +1,27 @@
+<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="edit node menu">
+  <mat-icon>more_vert</mat-icon>
+</button>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="onNodeEdit()">
+    <mat-icon>edit</mat-icon>
+    <span>Edit node</span>
+  </button>
+
+  <ng-container *ngIf="node.value.type !== 'staff'">
+    <button mat-menu-item (click)="onAddChildNode()">
+      <mat-icon>add_box</mat-icon>
+      <span>Add node type</span>
+    </button>
+
+    <button mat-menu-item (click)="onAddStaff()">
+      <mat-icon>person_add</mat-icon>
+      <span>Add staff</span>
+    </button>
+  </ng-container>
+
+  <button mat-menu-item (click)="onDeleteNodeType()">
+    <mat-icon>delete</mat-icon>
+    <span>Delete node type</span>
+  </button>
+</mat-menu>

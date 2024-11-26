@@ -8,10 +8,10 @@ import {firstValueFrom} from 'rxjs';
 export class SettingsService {
   private http = inject(HttpClient);
   private baseURL: string = 'http://localhost:3000'
-  private settingsID = '673362c5c2ca95290b7cfdd5'; //TODO on fera pas comme ça !
+  private settingsID = '6742c686a58bbb0da3b1ac0f'; //TODO on fera pas comme ça !
 
 
-  async getWeekTemplate() {
+  async getWeekTemplate():Promise<any> {
     try {
       const response = await firstValueFrom(this.http.get(
         `${this.baseURL}/settings/company/weekTemplate/id/${this.settingsID}`,
@@ -22,7 +22,7 @@ export class SettingsService {
       );
 
       if (!response.ok) return false;
-      return response.body;
+      return response.body.weekTemplate;
 
     } catch(e) {
       console.log('week template update went wrong', e)
@@ -33,7 +33,7 @@ export class SettingsService {
   async updateWeekTemplate(formData: any) {
     try {
       const response = await firstValueFrom(this.http.put(
-        `${this.baseURL}/settings/company/weekTemplate`,
+        `${this.baseURL}/settings/company/weekTemplate/`,
         {
           settings_id: this.settingsID,
           data: formData
@@ -49,6 +49,29 @@ export class SettingsService {
 
     } catch(e) {
       console.log('week template update went wrong', e)
+      return false;
+    }
+  };
+
+  async updateOrganogram(tree: any) {
+    try {
+      const response = await firstValueFrom(this.http.put(
+        `${this.baseURL}/settings/company/organogram`,
+        {
+          settings_id: this.settingsID,
+          data: tree
+        },
+        {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+          observe: 'response'
+        })
+      );
+
+      if (!response.ok) return false;
+      return response;
+
+    } catch(e) {
+      console.log('organogram update went wrong', e)
       return false;
     }
   };

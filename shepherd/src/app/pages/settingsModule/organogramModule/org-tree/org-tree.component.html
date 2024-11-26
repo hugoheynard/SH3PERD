@@ -1,0 +1,72 @@
+<mat-sidenav-container>
+  <mat-sidenav #treeNav position="end" mode="side" opened="true">
+    <app-node-edit-module
+      [nodeToEdit]="editingNode"
+      [nodeAction]="currentAction"
+      (nodeData)="onSaveNode($event)"/>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <cdk-tree #tree [dataSource]="data()" [childrenAccessor]="childrenAccessor" >
+      <!-- leaf nodes -->
+      <cdk-nested-tree-node #treeNode="cdkNestedTreeNode"
+
+                            *cdkTreeNodeDef="let node"
+                            class="tree-node"
+                            [ngClass]="data().indexOf(node) === 0 ? null : 'child-indentation'">
+
+        <div class="nodeRow">
+          <button mat-icon-button disabled><!--offset use--></button>
+
+          <mat-checkbox [(ngModel)]="node.selected">
+            <span class="nodeName"
+                  [ngStyle]="{ 'background-color': getNodeColor(node) }">
+              {{ node.value.name }}
+            </span>
+          </mat-checkbox>
+
+          <ng-container *ngIf="editMode">
+            <app-node-menu [node]="node"
+                           (nodeEdit)="openEditForm(node)"
+                           (addChildNode)="openAddForm(node)"
+                           (deleteNodeType)="deleteNode($event)" />
+          </ng-container>
+        </div>
+      </cdk-nested-tree-node>
+
+      <cdk-nested-tree-node #treeNode="cdkNestedTreeNode"
+
+                            *cdkTreeNodeDef="let node; when: hasChild"
+                            [cdkTreeNodeTypeaheadLabel]="node.value"
+                            isExpandable class="tree-node"
+                            [ngClass]="data().indexOf(node) === 0 ? null : 'child-indentation'">
+
+        <div class="nodeRow" >
+          <button mat-icon-button class="example-toggle" [attr.aria-label]="'Toggle ' + node.name" cdkTreeNodeToggle>
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{ tree.isExpanded(node) ? 'chevron_right' : 'expand_more' }}
+            </mat-icon>
+          </button>
+
+          <mat-checkbox [checked]="node.selected" (click)="treeUtils.toggleAllChildrenSelection(node)">
+            <span  class="nodeName"
+                  [ngStyle]="{ 'background-color': getNodeColor(node)}">{{node.value.name}}
+            </span>
+          </mat-checkbox>
+
+          <ng-container *ngIf="editMode">
+            <app-node-menu [node]="node"
+                           (nodeEdit)="openEditForm(node)"
+                           (addChildNode)="openAddForm(node)"
+                           (deleteNodeType)="deleteNode($event)" />
+          </ng-container>
+        </div>
+
+        <div [class.example-tree-invisible]="tree.isExpanded(node)">
+          <ng-container cdkTreeNodeOutlet />
+        </div>
+      </cdk-nested-tree-node>
+    </cdk-tree>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>

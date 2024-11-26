@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "./src",
+    "paths": {
+      "@utils/*": ["utils/*"]
+    },
+    "types": ["node", "express"],
+    "strict": true,
+    "noImplicitAny": true,
+    "lib": ["esnext"],
+    "allowJs": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true,
+    "sourceMap": true,
+    "experimentalDecorators": true, // Assure-toi que c'est activé
+    "emitDecoratorMetadata": true
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/tests/**"
+  ],
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
+  }
+}

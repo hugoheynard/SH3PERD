@@ -9,6 +9,12 @@ interface JWTPayload {
     [key: string]: any;
 }
 
+export interface AuthTokenDecoded {
+    isValid: boolean;
+    header: JWTHeader;
+    payload: JWTPayload
+}
+
 export class JWT_module {
     static readonly header: JWTHeader = {
         "alg": "HS256",
@@ -63,7 +69,7 @@ export class JWT_module {
             .digest('base64url');
     };
 
-    static decode(jwt: string): { isValid: boolean; header: JWTHeader; payload: JWTPayload } {
+    static decode(jwt: string): AuthTokenDecoded {
         const [header64, payload64, signature64] = jwt.split('.');
 
         const header: JWTHeader = JSON.parse(Buffer.from(JWT_module.urlSafe_decoder(header64), 'base64').toString());
@@ -78,6 +84,6 @@ export class JWT_module {
             throw new Error('Invalid signature');
         }
 
-        return { isValid: true, header, payload };
+        return {isValid: true, header, payload};
     };
 }

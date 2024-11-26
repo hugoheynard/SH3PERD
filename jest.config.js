@@ -1,12 +1,7 @@
 export default {
+    preset: 'ts-jest',  // Utilise ts-jest comme preset pour supporter TypeScript
+    testEnvironment: 'node',  // Définit l'environnement de test à 'node' (ou 'jsdom' pour les tests côté navigateur)
     transform: {
-        "^.+\\.[tj]sx?$": "babel-jest", // Use babel-jest for both TypeScript and JavaScript files
-    },
-    extensionsToTreatAsEsm: [".ts", ".tsx", ".jsx"],
-    testEnvironment: "node",
-    globals: {
-        "ts-jest": {
-            useESM: true, // Allow ts-jest to process TypeScript files as ESM
-        },
+        '^.+\\.tsx?$': 'ts-jest',  // Transpile les fichiers TypeScript avant les tests
     },
 };
