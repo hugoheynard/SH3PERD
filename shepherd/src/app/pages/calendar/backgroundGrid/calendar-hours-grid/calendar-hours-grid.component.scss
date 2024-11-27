@@ -4,26 +4,53 @@
   left: 0;
   height: 100%;
   width: 100%;
-  z-index: 1;
 }
 
-#nowLine{
-  border-bottom: 2px solid red;
-  z-index:4;
+.background-grid {
+  display: grid;
+  position: relative;
+  grid-template-columns: 50px 1fr 50px; /* Colonne pour les heures, colonne pour les événements */
+  grid-template-rows: repeat(288, 15px); /* 288 intervalles de 5 minutes, chaque ligne fait 10px */
+  gap: 0;
+  overflow-y: scroll;
+  background-color: #262728;
+}
+
+.hour-label {
+  position: relative;
+  grid-column: 1;
+  top: -7.5px;
+  font-size: 0.85rem;
+  text-align: center;
+  background-color: #282a2a ;
+}
+
+.plainHourColor {
+  color: rgba(138, 141, 141, 0.6);
+}
+
+.currenTimeColor {
+  color: red;
+  font-weight: bold;
+}
+
+.hourGridLine {
+  border-bottom: 1px solid rgba(138, 141, 141, 0.25);
+  z-index: 20;
+}
+
+.current-time-bar {
+  position: absolute;
+  grid-column-start: 2;
+  grid-column-end: 2;
+  background-color: red;
+  height: 2px;
+  width: 100%;
+  z-index: 10;
 }
 
 #rightFiller {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display:grid;
-  min-width: 40px;
-  grid-template-rows: repeat(600, 15px);
-  width: 5%;
-  height: 100%;
+  grid-column: 3;
   background-color: #282a2a;
 }
-
-
-
 
