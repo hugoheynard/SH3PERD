@@ -1,18 +1,11 @@
 :host{
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
+  box-sizing: border-box;
   width: 100%;
-}
-
-.background-grid {
   display: grid;
   position: relative;
-  grid-template-columns: 50px 1fr 50px; /* Colonne pour les heures, colonne pour les événements */
-  grid-template-rows: repeat(288, 15px); /* 288 intervalles de 5 minutes, chaque ligne fait 10px */
+  grid-template-columns: 50px 1fr 50px; /* hours text, hours lines, filler */
+  grid-template-rows: repeat(288, 15px); /* 288 intervals of 5mins */
   gap: 0;
-  overflow-y: scroll;
   background-color: #262728;
 }
 

@@ -6,18 +6,14 @@
   flex-direction: row;
   background-color: #262728;
   width: 100%;
-  height: 100vh;
 }
 
 #wsPage_Calendars{
   width: 100%;
-  height: 100vh;
 }
 
 #calContainer {
-  margin-left: 5%;
-  width: 90%;
-  height: 100%;
+  width: 100%;
   background-color: #262728;
 }
 
@@ -41,3 +37,4 @@ mat-sidenav{
   width: 4vw;
   flex-shrink: 0;
 }
+

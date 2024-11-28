@@ -2,6 +2,10 @@ import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
 
+interface WeekTemplateResponse {
+  weekTemplate?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,7 +26,7 @@ export class SettingsService {
       );
 
       if (!response.ok) return false;
-      return response.body.weekTemplate;
+      return (response.body as WeekTemplateResponse)?.weekTemplate;
 
     } catch(e) {
       console.log('week template update went wrong', e)

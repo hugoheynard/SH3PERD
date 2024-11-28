@@ -1,21 +1,31 @@
-import {Injectable, signal} from '@angular/core';
+import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, firstValueFrom, of} from 'rxjs';
+
+export interface CalendarDataRequest {
+  users: string[],
+  date: string[],
+  calendarOptions: {
+    viewMode: string
+    crossPath: boolean
+  }
+}
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class CalendarService {
+  private http: HttpClient = inject(HttpClient);
   private endpoint = 'http://localhost:3000';
   private token = '';
 
   calendarDataSignal = signal<any | null>({
     layout: [],
     timestamps: {}});
-  constructor(private http: HttpClient) {};
 
-  async getDay(date: string = '2024-12-19'): Promise<any> {
+
+  async getCalendarData(calendarDataRequest: CalendarDataRequest): Promise<any> {
 
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.token}`,
@@ -24,8 +34,8 @@ export class CalendarService {
 
     const response = await firstValueFrom(
       this.http.post<any>(
-        `${this.endpoint}/calendar/date`,
-        { date },
+        `${this.endpoint}/calendar/`,
+        { calendarDataRequest },
         { headers }
       ).pipe(
         catchError((error) => {
@@ -35,7 +45,7 @@ export class CalendarService {
       )
     );
 
-    this.calendarDataSignal.set(response.data);
+    this.calendarDataSignal.set(response);
   } catch (error: any) {
     console.error('Error in method getDay:', error);
     this.calendarDataSignal.set(null);

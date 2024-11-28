@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
     if (!canAutoLog) {
       await this.router.navigate(['/login']);
     }
-    await this.router.navigate(['/app/settings']);
+    await this.router.navigate(['/app/calendar']);
   }
 
   async onLogin(credentials: any) {
@@ -29,6 +29,6 @@ export class LoginComponent implements OnInit {
     if (!success) {
       console.error('Login failed');
     }
-    await this.router.navigate(['/app/settings']);
+    await this.router.navigate(['/app/calendar']);
   };
 }

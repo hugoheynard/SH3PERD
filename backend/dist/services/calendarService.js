@@ -7,6 +7,7 @@ import { eventService } from "./eventService.js";
 import { addMinutes } from "../utilities/dateFunctions/date_functions.js";
 import { DateMethod } from "../utilities/DateHelperFunctions.js";
 import { planningObjectBuilder } from "../tools/calendar/Builders/planningObjectBuilder.js";
+import { CalendarBuilder } from "../tools/calendar/class_CalendarBuilder.js";
 export const calendarService = (input) => {
     const { userService, eventService } = input;
     const tools = {
@@ -18,11 +19,15 @@ export const calendarService = (input) => {
     };
     return {
         async getCalendarData(input) {
-            const { date, staffMembers } = input;
-            const events = await eventService.eventSearch({ participants: staffMembers });
-            const users = await userService.userSearch({ usersId: staffMembers });
-            const plannings = planningObjectBuilder({ users: users, calendarEvents: events });
-            return plannings;
+            const { users, date } = input;
+            const resultEvents = await eventService.eventSearch({
+                participants: users,
+                date: date
+            });
+            const resultUsers = await userService.userSearch({ usersId: users });
+            //const plannings: Plannings[] = planningObjectBuilder({ users: resultUsers, calendarEvents: resultEvents });
+            const result = new CalendarBuilder().build({ users: resultUsers, calendarEvents: resultEvents });
+            return result;
             /*
             async buildCalendarData(req) {
                 const { date } = req.body;
@@ -34,7 +39,7 @@ export const calendarService = (input) => {
                         id: '66f805b2e0137375bc1429fd'
                     }
                 };
-    
+
                 //getting events and user data from subServices
                 const events = await this.eventService.getEvents(
                     new this.eventService.tools.queryBuilder({
@@ -42,15 +47,15 @@ export const calendarService = (input) => {
                         req: req.body
                     })
                 );
-    
-    
+
+
                 const users = await this.userService.getUser(
                     new this.userService.tools.queryBuilder({
                         authToken: authToken,
                         req: req.body
                     })
                 );
-    
+
                 const sortedStaffPool = new this.userService.tools.staffSorter()
                     .sortByHierarchy({
                         users: users,
@@ -91,18 +96,18 @@ export const calendarService = (input) => {
                         }
                     });
                 //console.log(sortedStaffPool)
-    
-    
+
+
                 const calendarData = new this.calendarService.tools.builder()
                     .build(users, events);
-    
+
                 //const collidedData = new this.calendarService.tools.planningCollisionManager().manageCollisions(baseData);
-    
+
                 //generates getIn events from data.events
                 //const generatedGetIn = this.calendarService.eventGenerator.autoGetIn.generate(this.currentData);
                 //this.mergeEvents(generatedGetIn, calendarData);
-    
-    
+
+
                 new this.calendarService.tools.eventGridPositionCalculator()
                     .calculate({
                         plannings: calendarData.plannings,
@@ -114,41 +119,41 @@ export const calendarService = (input) => {
                         addMinutesFunction: addMinutes,
                         stepDuration: DateMethod.STEP_DURATION
                     });
-    
+
                 //console.log(calendarData.plannings[0])
-    
+
                 const eventsProcessed = (() => {
                     const arr = []
-    
+
                     for (const planning of calendarData.plannings) {
                         const res = planning.calendar_events
                             .map(event_id => {
                                 const event = calendarData.events[event_id]
-    
+
                                 event.user = planning.staff_id;
                                 event.gridCoordinates = planning.eventGridPositions[event_id];
-    
+
                                 arr.push(event)
                             })
-    
+
                         //console.log(arr)
                     }
-    
+
                     return arr
                 })();
-    
+
                 const hoursList = (() => {
                     const {earliestEventTimestamp, latestEventTimestamp} = calendarData.specs.timestamps;
                     const {offsetFromDayStart} = calendarData.specs.layout;
                     const stepArray = [];
-    
+
                     let step = earliestEventTimestamp;
                     while (step <= latestEventTimestamp) {
-    
+
                         if (step.getMinutes() === 0) {
                             stepArray.push(step);
                         }
-    
+
                         step = DateMethod.addMinutes(step, 5);
                     }
                     return stepArray.map(hour => {
@@ -156,7 +161,7 @@ export const calendarService = (input) => {
                             timestamp: hour,
                             rowStart: (() => {
                                 let rowStart = getPositionFromDate(hour) - offsetFromDayStart - 1;
-    
+
                                 if (rowStart < 0) {
                                     //To manage the exception to an event going after midnight, we add a full day as a positive offset
                                     rowStart += DateMethod.ONE_DAY_IN_STEPS;
@@ -166,8 +171,8 @@ export const calendarService = (input) => {
                         }
                     });
                 })();
-    
-    
+
+
                 console.log({
                     timestamps: {
                         ...calendarData.specs.timestamps,
@@ -184,7 +189,7 @@ export const calendarService = (input) => {
                     layout: calendarData.specs.layout,
                     events: eventsProcessed
                 }
-    
+
                  */
         },
         mergeEvents(events, data) {

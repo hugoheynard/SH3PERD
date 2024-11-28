@@ -1,3 +1,9 @@
-<div id="planningGrid" [ngStyle]="gridSpecs">
-  <app-eventBlock *ngFor="let event of calendarData.events" [event]="event"></app-eventBlock>;
+<div class="centerCol">
+  <app-eventBlock
+    *ngFor="let event of events" [event]="event"
+    [style.grid-row-start]="getPosition(event.startDate)"
+    [style.grid-row-end]="getPosition(event.endDate)"/>
 </div>
+
+
+

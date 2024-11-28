@@ -7,6 +7,8 @@ export interface EventBlock {
   id: string,
   type: EventType;
   date: Date;
+  startDate: Date;
+  endDate: Date;
   duration: number;
   gridCoordinates: {
     rowStart: number;
@@ -27,20 +29,13 @@ export interface EventBlock {
     NgIf
   ]
 })
-export class EventBlockComponent implements OnInit{
+export class EventBlockComponent {
   @Input() event!: EventBlock;
 
   @HostBinding('style.gridRowStart') gridRowStart?: number;
   @HostBinding('style.gridRowEnd') gridRowEnd?: number;
   @HostBinding('style.gridColumnStart') gridColumnStart?: number;
   @HostBinding('style.gridColumnEnd') gridColumnEnd?: number;
-
-  ngOnInit() {
-    this.gridRowStart = this.event.gridCoordinates.rowStart;
-    this.gridRowEnd = this.event.gridCoordinates.rowEnd;
-    this.gridColumnStart = this.event.gridCoordinates.colStart;
-    this.gridColumnEnd = this.event.gridCoordinates.colEnd;
-  }
 
 
   onEventClick() {

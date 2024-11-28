@@ -1,30 +1,21 @@
-<div  class="background-grid">
-  <div class="hour-label plainHourColor"
+<div class="hour-label plainHourColor"
        *ngFor="let interval of timeIntervals; let i = index"
        [style.grid-row-start]="interval.rowStart"
        [style.grid-row-end]="interval.rowEnd">
     {{ interval.hour }}
   </div>
 
-  <div class="hour-label currenTimeColor"
-       [style.grid-row]="currentBarPosition">
-  {{ currentHour }}
+<div class="hour-label currenTimeColor" [style.grid-row]="currentBarPosition">{{ currentHour }}</div>
+
+<div class="current-time-bar" [style.top.px]="(currentBarPosition - 1) * 15"></div>
+
+<div class="hourGridLine"
+     *ngFor="let interval of timeIntervals; let i=index"
+     [style.grid-row-start]="interval.rowStart"
+     [style.grid-row-end]="interval.rowEnd">
 </div>
 
-  <div class="current-time-bar"
-       [style.top.px]="(currentBarPosition - 1) * 15">
-  </div>
-
-  <div
-    class="hourGridLine"
-    *ngFor="let interval of timeIntervals; let i=index"
-    [style.grid-row-start]="interval.rowStart"
-    [style.grid-row-end]="interval.rowEnd">
-  </div>
-
-  <div
-    id="rightFiller"
-    [style.grid-row-start]="timeIntervals[0].rowStart"
-    [style.grid-row-end]="timeIntervals[timeIntervals.length-1].rowEnd">
-  </div>
+<div id="rightFiller"
+     [style.grid-row-start]="timeIntervals[0].rowStart"
+     [style.grid-row-end]="timeIntervals[timeIntervals.length-1].rowEnd">
 </div>

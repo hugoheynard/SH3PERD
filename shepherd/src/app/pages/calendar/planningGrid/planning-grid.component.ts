@@ -1,7 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {CalendarService} from '../../../services/calendar.service';
 import {EventBlockComponent} from '../eventBlock/event-block.component';
 import {NgClass, NgForOf, NgIf, NgStyle} from '@angular/common';
+
 
 
 @Component({
@@ -12,27 +13,24 @@ import {NgClass, NgForOf, NgIf, NgStyle} from '@angular/common';
     NgStyle,
     NgForOf,
     NgIf,
-    NgClass
+    NgClass,
   ],
   templateUrl: './planning-grid.component.html',
   styleUrl: './planning-grid.component.scss'
 })
-export class PlanningGridComponent{
-  planningData: any; // Define the structure according to your data model
-  @Input() calendarData: any
-  @Input() layout!: { gridTotalColNumber: number; gridRowsNumber: number };
-  constructor(private calendarService: CalendarService) {}
+export class PlanningGridComponent {
+  @Input() events: any[] = [];
 
-  get gridSpecs() {
-    if (!this.layout) {
-      return {};
-    }
 
-    const { gridTotalColNumber , gridRowsNumber} = this.layout;
+  getPosition(date: string) {
 
-    return {
-      'grid-template-columns': `repeat(${gridTotalColNumber}, 1fr)`,
-      'grid-template-rows': `repeat(${gridRowsNumber}, 18px)`
-    }
+    const newDate: Date = new Date(date)
+    //calcul des coordonnées rowStart et RowEnd
+    const hours: number = newDate.getHours();
+    const minutes: number = newDate.getMinutes();
+    console.log((hours * 60 + minutes ) / 5 + 1)
+    return (hours * 60 + minutes ) / 5 + 1;
   };
+
+
 }

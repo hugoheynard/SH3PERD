@@ -8,11 +8,8 @@ export const calendarController  = (input: any): any => {
     const controller = {
 
         async getCalendarData(req: Request, res: Response, next: NextFunction): Promise<void> {
-            const calendarData = await calendarService.getCalendarData({
-                date: req.body.date,
-                staffMembers: req.body.staffMembers
-            })
-            res.status(200).json(calendarData);
+            const calendarData = await calendarService.getCalendarData(req.body.calendarDataRequest)
+            res.status(200).json({ calendarData: calendarData });
         }
     };
 
