@@ -12,11 +12,11 @@ export class EventCollider {
         if (!referenceEvent?.date || !comparedEvent?.date) {
             throw new Error(`Both events must have a valid 'date' property.`);
         }
-
+        this._collide = false;
         this.referenceEvent = referenceEvent;
         this.comparedEvent = comparedEvent;
         this.processCollisionTest();
-    }
+    };
 
     /**
      * @returns {boolean} Whether the events collide.

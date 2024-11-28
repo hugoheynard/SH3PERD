@@ -6,8 +6,8 @@ import { userService } from "./userService.js";
 import { eventService } from "./eventService.js";
 import { addMinutes } from "../utilities/dateFunctions/date_functions.js";
 import { DateMethod } from "../utilities/DateHelperFunctions.js";
-import { planningObjectBuilder } from "../tools/calendar/Builders/planningObjectBuilder.js";
-import { CalendarBuilder } from "../tools/calendar/class_CalendarBuilder.js";
+import { planningObjectBuilder } from "../tools/calendar/builders/planningObjectBuilder.js";
+import { CalendarBuilder } from "../tools/calendar/CalendarBuilder.js";
 export const calendarService = (input) => {
     const { userService, eventService } = input;
     const tools = {

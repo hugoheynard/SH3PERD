@@ -1,4 +1,4 @@
-import {eventObjectBuilder} from "../eventObjectBuilder";
+import {eventObjectBuilder} from "../builders/eventObjectBuilder";
 
 interface CalendarEvent {
     _id: string | number;

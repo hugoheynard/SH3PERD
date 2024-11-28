@@ -1,6 +1,7 @@
-import {addMinutes} from "../../utilities/dateFunctions/date_functions";
+import {addMinutes} from "../../../../../backend/src/utilities/dateFunctions/date_functions";
 
 export class EventGridPositionCalculator {
+    /*
     calculate(input) {
         const {
             plannings,
@@ -36,18 +37,6 @@ export class EventGridPositionCalculator {
                 planning.eventGridPositions[eventId].colEnd = colEnd;
             });
         });
-    }
-
-    eventGridRowPosition(event, stepDuration, offsetFromDayStart) {
-        // Fonction pour calculer les positions de ligne d'un événement dans la grille
-
-        const startDate = event.date;
-        const endDate = addMinutes(event.date, event.duration);
-
-        return {
-            rowStart: this.getRowPositionFromDate(startDate, stepDuration) - offsetFromDayStart,
-            rowEnd: this.getRowPositionFromDate(endDate, stepDuration) - offsetFromDayStart
-        };
     }
 
     markColumnsAsOccupied(columnOccupancy, colStart, colEnd) {
@@ -86,9 +75,6 @@ export class EventGridPositionCalculator {
         }
         return -1; // Pas de paire libre
     }
+    */
 
-
-    getRowPositionFromDate(date, stepDuration) {
-        return (date.getHours() * 60 + date.getMinutes()) / stepDuration;
-    };
 }

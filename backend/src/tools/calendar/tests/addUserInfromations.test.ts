@@ -1,4 +1,4 @@
-import {addUserInformations} from "../addUserInformations";
+import {addUserInformations} from "../builders/utilities/addUserInformations";
 
 describe('addUserInformations', () => {
     it('doit retourner un objet contenant le prénom et la catégorie des fonctions d’un utilisateur complet', () => {

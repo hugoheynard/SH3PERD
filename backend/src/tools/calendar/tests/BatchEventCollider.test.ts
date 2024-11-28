@@ -1,11 +1,11 @@
-// Mocking the EventCollider class
-import {BatchEventColliderModule} from "../BatchEventCollider";
-import {EventCollider} from "../EventCollider";
+// Mocking the EventCollider class // TODO redo Tests
+import {BatchEventColliderModule} from "../eventCollision/BatchEventCollider";
+import {EventCollider} from "../eventCollision/EventCollider";
 
-jest.mock('../EventCollider');
+jest.mock('../eventCollision/EventCollider');
 
 // Mocking the IntervalTree class and its methods
-jest.mock('../IntervalTree', () => {
+jest.mock('../eventCollision/IntervalTree', () => {
     return {
         IntervalTree: jest.fn().mockImplementation(() => {
             return {

@@ -1,4 +1,4 @@
-import {planningObjectBuilder} from "../planningObjectBuilder";
+import {planningObjectBuilder} from "../builders/planningObjectBuilder";
 
 
 describe('planningObjectBuilder', () => {

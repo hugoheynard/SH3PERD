@@ -1,3 +1,12 @@
+import type {CalendarEvent} from "../../../interfaces/CalendarEvent";
+
+export interface Interval {
+    id: string;
+    start: number;
+    end: number;
+    event: CalendarEvent
+}
+
 export class IntervalTree {
     private readonly intervals: any[];
     private midPoint: number;
@@ -18,8 +27,8 @@ export class IntervalTree {
         return this.intervals[mid].start;
     }
 
-    queryOverlap(queryInterval: { start: number; end: number }): any[] {
-        const result = [];
+    queryOverlap(queryInterval: { start: number; end: number }): Interval[] {
+        const result: Interval[] = [];
         for (const interval of this.intervals) {
             if (interval.end < queryInterval.start) continue;
             if (interval.start > queryInterval.end) break;

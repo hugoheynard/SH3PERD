@@ -1,9 +1,32 @@
-import { BatchEventColliderModule } from "../eventCollision/BatchEventCollider.ts";
+import { BatchEventColliderModule } from "../eventCollision/BatchEventCollider.js";
 export class InternalCollisionsBuilder {
+    internalEventsMap;
+    internalCollisionsMap;
+    processedPairs;
+    internalCollisionsOutputObject = {};
     constructor() {
         this.internalEventsMap = new Map();
         this.internalCollisionsMap = new Map();
         this.processedPairs = new Set();
+    }
+    ;
+    build(input) {
+        const { plannings, events } = input;
+        for (const planning of plannings) {
+            const { staff_id } = planning;
+            if (!planning.calendar_events) {
+                continue;
+            }
+            this.internalEventsMap.set(staff_id, planning.calendar_events.map((ev_id) => events[ev_id]));
+            this.internalCollisionsMap.set(staff_id, new BatchEventColliderModule({ eventsToCollide: this.internalEventsMap.get(staff_id) }));
+            const { positiveCollisionList, checkedPairs } = this.internalCollisionsMap.get(staff_id);
+            this.addResultToInternalCollisionObject({
+                staff_id: staff_id,
+                positiveCollisionList: positiveCollisionList
+            });
+            this.addProcessedPairsToProcessedPairSet({ checkedPairs: checkedPairs });
+        }
+        return this.internalCollisionsOutputObject;
     }
     ;
     findMaxCollisions(eventRefArray) {
@@ -14,24 +37,16 @@ export class InternalCollisionsBuilder {
         return Math.max(...Array.from(eventCountMap.values()));
     }
     ;
-    build({ plannings, events }) {
-        const internalCollisions = {};
-        for (const planning of plannings) {
-            const { staff_id } = planning;
-            internalCollisions[staff_id] = {};
-            if (!planning.calendar_events) {
-                continue;
-            }
-            this.internalEventsMap.set(staff_id, planning.calendar_events.map(ev_id => events[ev_id]));
-            this.internalCollisionsMap.set(staff_id, new BatchEventColliderModule({ eventsToCollide: this.internalEventsMap.get(staff_id) }));
-            const { positiveCollisionlist, checkedPairs } = this.internalCollisionsMap.get(staff_id);
-            internalCollisions[staff_id] = {
-                crossEvent: [...positiveCollisionlist],
-                maxCollisions: this.findMaxCollisions(positiveCollisionlist.map(collision => collision.referenceEvent))
-            };
-            this.processedPairs = new Set([...this.processedPairs, ...checkedPairs]);
-        }
-        return internalCollisions;
+    addProcessedPairsToProcessedPairSet(input) {
+        this.processedPairs = new Set([...this.processedPairs, ...input.checkedPairs]);
+    }
+    ;
+    addResultToInternalCollisionObject(input) {
+        const { staff_id, positiveCollisionList } = input;
+        this.internalCollisionsOutputObject[staff_id] = {
+            crossEvent: [...positiveCollisionList],
+            maxCollisions: this.findMaxCollisions(positiveCollisionList.map((collision) => collision.referenceEvent))
+        };
     }
     ;
 }

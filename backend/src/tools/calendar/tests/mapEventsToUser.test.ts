@@ -1,5 +1,5 @@
-import {mapEventsToUser} from "../mapEventsToUser";
-import {CalendarEvent} from "../../../../../interfaces/CalendarEvent";
+import {mapEventsToUser} from "../builders/utilities/mapEventsToUser";
+import {CalendarEvent} from "../../../interfaces/CalendarEvent";
 
 
 describe('mapEventsToUser', () => {

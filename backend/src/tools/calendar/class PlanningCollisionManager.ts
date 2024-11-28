@@ -1,6 +1,7 @@
 import {BatchEventColliderModule} from "./eventCollision/BatchEventCollider";
 
 export class PlanningCollisionManager {
+    /*
     constructor() {
         this.internalEventsMap = new Map();
         this.internalCollisionsMap = new Map();
@@ -84,4 +85,6 @@ export class PlanningCollisionManager {
 
         return data
     }
+
+     */
 }

@@ -1,4 +1,4 @@
-import {IntervalTree} from "../IntervalTree";
+import {IntervalTree} from "../eventCollision/IntervalTree";
 
 describe('IntervalTree', () => {
     let intervals: any[];

@@ -1,4 +1,4 @@
-import {EventCollider} from "../EventCollider";
+import {EventCollider} from "../eventCollision/EventCollider";
 
 describe('EventCollider', () => {
     it('should detect a collision when events overlap', () => {

@@ -32,5 +32,15 @@ export class PlanningGridComponent {
     return (hours * 60 + minutes ) / 5 + 1;
   };
 
-
+  /*
+  getPlanningsColumnNumber(internalCollisions: any) {
+    const planningColumnNumbers = Object.fromEntries(
+      Object.entries(internalCollisions)
+        .map(([key, planningCollision]) => [
+          key, (1 + planningCollision?.maxCollisions) * 2
+        ])
+    );
+    return Math.max(...Object.values(planningColumnNumbers));
+  };
+*/
 }

@@ -7,8 +7,8 @@ import {userService} from "./userService";
 import {eventService} from "./eventService";
 import {addMinutes} from "../utilities/dateFunctions/date_functions";
 import {DateMethod} from "../utilities/DateHelperFunctions";
-import {planningObjectBuilder, type Plannings} from "../tools/calendar/Builders/planningObjectBuilder";
-import {CalendarBuilder} from "../tools/calendar/class_CalendarBuilder";
+import {planningObjectBuilder, type Plannings} from "../tools/calendar/builders/planningObjectBuilder";
+import {CalendarBuilder} from "../tools/calendar/CalendarBuilder";
 
 
 export interface CalendarServiceInput {
