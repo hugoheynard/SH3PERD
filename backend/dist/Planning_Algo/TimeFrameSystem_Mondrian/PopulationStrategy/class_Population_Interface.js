@@ -1,4 +1,6 @@
-class Population_Interface {
+export class Population_Interface {
+    staff;
+    strategy;
     constructor(input) {
         this.staff = input.staff;
     }
@@ -16,5 +18,4 @@ class Population_Interface {
     }
     ;
 }
-export { Population_Interface };
 //# sourceMappingURL=class_Population_Interface.js.map

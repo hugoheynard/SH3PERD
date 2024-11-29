@@ -1,22 +1,24 @@
-import {TechSetUp} from "../../../Classes/Activity_classes/class_TechSetUp.js";
-import {art1} from "../../../../db/fakeDB.js";
-
-
-import {DateMethod} from "../../../utilities/DateHelperFunctions.ts";
 import {
     STANDARD_TECH_SETUP_DURATION,
     STANDARD_TECH_SETUP_HOUR,
     STANDARD_TECH_SETUP_MINUTES
-} from "../../../utilities/MAGIC NUMBERS.ts";
+} from "../../../../utilities/MAGIC NUMBERS";
+import {substractMinutes} from "../../../../utilities/dateFunctions/date_functions";
 
 
-class Auto_TechSetup{
-    constructor(input) {
+export class Auto_TechSetup{
+    _timeTable: any
+    _date: any;
+    _generatedBlocks: any[];
+    _rules: any[];
+
+    constructor(input: any) {
         this._timeTable = input.timeTable;
         this._date = input.date;
         this._generatedBlocks = [];
         this._rules = [];
     };
+
     get timeTable() {
         return this._timeTable;
     };
@@ -29,22 +31,21 @@ class Auto_TechSetup{
     get rules() {
         return this._rules;
     }; //TODO: check si on peut insérer des rules
-    blockRequiringTechInstall = blockList => blockList.filter(block => block.needsTechInstall);
-    noAdditionalSetup = () => this.blockRequiringTechInstall(this.timeTable).length === 0;
-    addStandardSetUp(date) {
+    blockRequiringTechInstall = (blockList: any) => blockList.filter((block: any) => block.needsTechInstall);
+    noAdditionalSetup = (): boolean => this.blockRequiringTechInstall(this.timeTable).length === 0;
+    addStandardSetUp(date: any): any {
         /*standard setup is the base case in a daily operation scenario*/
-        return new TechSetUp(
-            {
-                date: new Date(date.getFullYear(), date.getMonth(), date.getDate(), STANDARD_TECH_SETUP_HOUR, STANDARD_TECH_SETUP_MINUTES),
-                duration: STANDARD_TECH_SETUP_DURATION,
-                staff: [art1],
-                content: {
-                    title: "techSetUp",
-                    description: ["PREP Standard setup"]
-                },
-                blockOrigin: "generatedBlock"
-            });
-    }
+        return {
+            date: new Date(date.getFullYear(), date.getMonth(), date.getDate(), STANDARD_TECH_SETUP_HOUR, STANDARD_TECH_SETUP_MINUTES),
+            duration: STANDARD_TECH_SETUP_DURATION,
+            staff: [],
+            content: {
+                title: "techSetUp",
+                description: ["PREP Standard setup"]
+            },
+            blockOrigin: "generatedBlock"
+        }
+    };
     buildTechBlocks() {
         this.generatedBlocks.push(this.addStandardSetUp(this.date));
 
@@ -53,25 +54,24 @@ class Auto_TechSetup{
         }
 
         /*If there is a need for another installation dependant of another activity earlier, we transfer the setup tasks to the earliest block */
-        this.blockRequiringTechInstall(this.timeTable).forEach(block => {
+        this.blockRequiringTechInstall(this.timeTable).forEach((block: any): void => {
 
             if (block.type === "rehearsal") {
 
-                this.generatedBlocks.push(new TechSetUp(
+                this.generatedBlocks.push(
                     {
-                        date: DateMethod.substractMinutes(block.date, -15),
+                        date: substractMinutes(block.date, -15),
                         duration: 15,
-                        staff: [art1],
+                        staff: [],
                         content: {
                             title: "techSetUp",
                             description: [`Prep ${block.type} ${block.location} ${block.date.getHours()}'${block.date.getMinutes()}`]
                         },
                         blockOrigin: "generatedBlock"
-                    })
+                    }
                 )
             }
         });
     };
 }
 
-export {Auto_TechSetup};

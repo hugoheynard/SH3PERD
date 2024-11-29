@@ -1,13 +1,13 @@
-import { PopulationStrategy } from "./class_PopulationStrategy.ts";
 //Used as default strategy when creating a new TimeFrameContext
-class DefaultNoStaff extends PopulationStrategy {
+import { PopulationStrategy } from "./class_PopulationStrategy.js";
+export class DefaultNoStaff extends PopulationStrategy {
     constructor(input) {
         super(input);
         this.populate();
     }
     ;
     populate() {
-        this.timeSlots.map(section => {
+        this.timeSlots.map((section) => {
             section.worker = [];
             section.available = this.staff;
         });
@@ -15,5 +15,4 @@ class DefaultNoStaff extends PopulationStrategy {
     }
     ;
 }
-export { DefaultNoStaff };
 //# sourceMappingURL=class_Strategy_DefaultNoStaff.js.map

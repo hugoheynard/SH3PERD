@@ -1,10 +1,10 @@
-import type {CalendarEvent} from "../../../interfaces/CalendarEvent";
+import type {CalendarEvents_interface} from "../../../interfaces/CalendarEvents_interface";
 
 export interface Interval {
     id: string;
     start: number;
     end: number;
-    event: CalendarEvent
+    event: CalendarEvents_interface
 }
 
 export class IntervalTree {

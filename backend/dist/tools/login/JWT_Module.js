@@ -47,8 +47,8 @@ export class JWT_module {
             .digest('base64url');
     }
     ;
-    static decode(jwt) {
-        const [header64, payload64, signature64] = jwt.split('.');
+    static decode(input) {
+        const [header64, payload64, signature64] = input.jwt.split('.');
         const header = JSON.parse(Buffer.from(JWT_module.urlSafe_decoder(header64), 'base64').toString());
         const payload = JSON.parse(Buffer.from(JWT_module.urlSafe_decoder(payload64), 'base64').toString());
         // Recreate the unsigned token to verify the signature

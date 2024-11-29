@@ -1,10 +1,13 @@
+import {DefaultNoStaff} from "./class_Strategy_DefaultNoStaff";
 import {LinearPopulation} from "./class_Strategy_LinearPopulation";
 import {BestFit_GraphAnalytics} from "./class_Strategy_BestFit_GraphAnalytics";
-import {DefaultNoStaff} from "./class_Strategy_DefaultNoStaff";
 
 
-class PopulationSelector{
-    constructor(string) {
+export class PopulationSelector{
+    string: string;
+    selector: { [key: string]: any };
+
+    constructor(string: any) {
         this.string = string
         this.selector = {
             'defaultNoStaff': DefaultNoStaff,
@@ -14,5 +17,3 @@ class PopulationSelector{
         return this.selector[this.string]
     };
 }
-
-export {PopulationSelector};

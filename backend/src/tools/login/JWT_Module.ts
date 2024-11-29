@@ -69,8 +69,8 @@ export class JWT_module {
             .digest('base64url');
     };
 
-    static decode(jwt: string): AuthTokenDecoded {
-        const [header64, payload64, signature64] = jwt.split('.');
+    static decode(input: { jwt: string }): AuthTokenDecoded {
+        const [header64, payload64, signature64] = input.jwt.split('.');
 
         const header: JWTHeader = JSON.parse(Buffer.from(JWT_module.urlSafe_decoder(header64), 'base64').toString());
         const payload: JWTPayload = JSON.parse(Buffer.from(JWT_module.urlSafe_decoder(payload64), 'base64').toString());

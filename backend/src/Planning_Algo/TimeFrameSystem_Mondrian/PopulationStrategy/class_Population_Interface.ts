@@ -1,8 +1,11 @@
-class Population_Interface {
-    constructor(input){
+export class Population_Interface {
+    staff: any;
+    strategy: any;
+
+    constructor(input: any){
         this.staff = input.staff;
     };
-    setStrategy(input) {
+    setStrategy(input: any): void {
         this.strategy = new input.strategy(
             {
                 staff: this.staff,
@@ -14,5 +17,3 @@ class Population_Interface {
         return this.strategy.populate();
     };
 }
-
-export {Population_Interface};

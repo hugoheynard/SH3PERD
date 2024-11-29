@@ -1,59 +1,90 @@
-import { DateMethod } from "../../Utilities/class_DateMethods.js";
-import { findEarliestEventInArray } from "../../src/utilities/sortBlockArray.js";
-/*
-*ROLE : manage GetInBlocks for every Member
+import { addMinutes, substractMinutes } from "../../utilities/dateFunctions/date_functions.js";
+import { sortEventsArrayPerAscendingTime } from "../../utilities/sortEventsArrayPerAscendingTime.js";
+import { isEqual } from 'lodash';
+import {} from "../../interfaces/CalendarEvents_interface.js";
+/**
+*ROLE : manage GetInBlocks for a list of event
 *HOW By knowing which task/block is the first in the day of a staffMember, we can define the arrival time
 *MUST : be called after all the other push of blocks
-*INPUT : the current array of blocks generated
-*OUTPUT : an array of getInBlocks
 */
-class Auto_GetIn {
-    constructor() {
-        this._generatedBlocks = [];
+export class Auto_GetIn {
+    ascendingDateArraySorter;
+    updateEventInDb;
+    events;
+    staff_id;
+    getInDuration;
+    arrivalTimeSettingsObject;
+    constructor(input) {
+        this.ascendingDateArraySorter = sortEventsArrayPerAscendingTime; //TODO injecter depuis l'extérieur
+        this.updateEventInDb = input.updateEventInDb;
+        this.events = this.ascendingDateArraySorter(input.events);
+        this.staff_id = input.staff_id;
+        this.getInDuration = input.getInDuration;
+        this.arrivalTimeSettingsObject = {
+            'default': 60,
+            'techSetUp': 5,
+            'meeting': 5,
+            'meal': 5,
+            'rehearsal': 15,
+            'show': 60
+        };
     }
     ;
-    get generatedBlocks() {
-        return this._generatedBlocks;
-    }
-    ;
-    generate(data) {
-        this.generatedBlocks.length = 0;
-        for (const planning of data.plannings) {
-            const eventArray = planning.calendar_events.map(event => data.events[event]);
-            if (eventArray.length) {
-                const firstBlock = findEarliestEventInArray(eventArray);
-                let minusTime;
-                //TODO: search in season config collection - get in rules
-                switch (firstBlock.type) {
-                    case 'techSetUp':
-                        minusTime = 5;
-                        break;
-                    case 'meeting':
-                        minusTime = 5;
-                        break;
-                    case 'meal':
-                        minusTime = 5;
-                        break;
-                    case 'rehearsal':
-                        minusTime = 15;
-                        break;
-                    case 'show':
-                        minusTime = 60;
-                        break;
-                }
-                this.generatedBlocks.push({
-                    _id: `generatedGetIn_${planning.staff_id}`,
-                    date: DateMethod.substractMinutes(firstBlock.date, minusTime ?? 5),
-                    duration: 5,
-                    participants: planning.staff_id,
-                    type: 'getIn',
-                    generated: true
-                });
-            }
+    execute() {
+        const generatedGetInEvent = this.generateGetInEvent();
+        const existingGetInEvent = this.getExistingGetInEvent();
+        if (!existingGetInEvent) {
         }
-        return this.generatedBlocks;
+        if (this.compareGeneratedEventWithExisting({ generatedEvent: generatedGetInEvent, existingEvent: existingGetInEvent })) {
+            return;
+        }
+        this.updateGetInEventInCollection({ generatedEvent: generatedGetInEvent, existingEvent_id: existingGetInEvent._id });
+    }
+    ;
+    updateGetInEventInCollection(input) {
+    }
+    ;
+    getTimeToArriveBeforeFirstEvent(input) {
+        const { firstEvent } = input;
+        if (!firstEvent.type) {
+            return this.arrivalTimeSettingsObject['default'];
+        }
+        return this.arrivalTimeSettingsObject[firstEvent.type];
+    }
+    ;
+    generateGetInEvent() {
+        const firstEvent = this.events[0];
+        if (!firstEvent || firstEvent.type === 'off') {
+            return;
+        }
+        const startDate = substractMinutes(firstEvent.startDate, this.getTimeToArriveBeforeFirstEvent());
+        const endDate = addMinutes(startDate, this.getInDuration);
+        return {
+            startDate: startDate,
+            endDate: endDate,
+            participants: [this.staff_id],
+            type: 'getIn',
+            generated: true
+        };
+    }
+    ;
+    /**
+     * If true, existingEvent is valid;
+     * @param input
+     */
+    compareGeneratedEventWithExisting(input) {
+        const existingEventCopy = { ...input.existingEvent };
+        delete existingEventCopy._id;
+        return isEqual(input.generatedEvent, existingEventCopy);
+    }
+    ;
+    getExistingGetInEvent() {
+        const existing = this.events.find((event) => event.type === 'getIn');
+        if (!existing) {
+            return null;
+        }
+        return existing;
     }
     ;
 }
-export { Auto_GetIn };
 //# sourceMappingURL=blockGen_autoGetIn.js.map

@@ -1,11 +1,15 @@
-import { Void } from "../../Classes/Activity_classes/class_Void.js";
-import { WorkSlot } from "../../Classes/Activity_classes/class_WorkSlot.js";
-import { No } from "../../Classes/Activity_classes/class_NoBlock.js";
 import { TimeSplit_Interface } from "./TimeSplitStrategy/class_TimeSplit_Interface.js";
-import { Population_Interface } from "./PopulationStrategy/class_Population_Interface.ts";
 import { TimeSplitSelector } from "./TimeSplitStrategy/class_TimeSplitSelector.js";
-import { PopulationSelector } from "./PopulationStrategy/class_PopulationSelector.ts";
-class TimeframeContext {
+import { PopulationSelector } from "./PopulationStrategy/class_PopulationSelector.js";
+import { Population_Interface } from "./PopulationStrategy/class_Population_Interface.js";
+export class TimeframeContext {
+    generatedBlocks;
+    timeframeTitle;
+    startTime;
+    endTime;
+    staff;
+    timeSplit;
+    population;
     /*
     * Creates a time canvas, instantiating timeSlots according to a split rule
     * Use of the bridge pattern to aggregate different interfaces of strategy
@@ -59,19 +63,19 @@ class TimeframeContext {
     preview() {
         this.generate();
         this.generatedBlocks = [];
-        this.generatedBlocks.push(...this.population.strategy.timeSlots.map(timeSection => {
-            return new WorkSlot({
+        this.generatedBlocks.push(...this.population.strategy.timeSlots.map((timeSection) => {
+            return {
                 date: timeSection.startTime,
                 duration: timeSection.duration,
                 staff: timeSection.worker
-            });
+            };
         }));
-        this.generatedBlocks.push(...this.population.strategy.timeSlots.map(timeSection => {
-            return new Void({
+        this.generatedBlocks.push(...this.population.strategy.timeSlots.map((timeSection) => {
+            return {
                 date: timeSection.startTime,
                 duration: timeSection.duration,
                 staff: timeSection.available
-            });
+            };
         }));
         //TODO: ICI CHAOS
         /*
@@ -90,5 +94,4 @@ class TimeframeContext {
     }
     ;
 }
-export { TimeframeContext };
 //# sourceMappingURL=class_TimeframeContext.js.map

@@ -1,6 +1,7 @@
-import { DateMethod } from "../../../Utilities/class_DateMethods.js";
 import { TimeSplit_Strategy } from "./class_TimeSplit_Strategy.js";
-class TimePattern extends TimeSplit_Strategy {
+import { addMinutes } from "../../../utilities/dateFunctions/date_functions.js";
+export class TimePattern extends TimeSplit_Strategy {
+    pattern;
     constructor(input) {
         super(input);
         this.pattern = input.params.pattern;
@@ -15,12 +16,11 @@ class TimePattern extends TimeSplit_Strategy {
                 startTime: current,
                 duration: duration
             });
-            current = DateMethod.addMinutes(current, duration);
+            current = addMinutes(current, duration);
             index++;
         }
         return this.timeSlots;
     }
     ;
 }
-export { TimePattern };
 //# sourceMappingURL=class_Strategy_TimePattern.js.map

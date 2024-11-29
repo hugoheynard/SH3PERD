@@ -1,9 +1,11 @@
-<div class="centerCol">
-  <app-eventBlock
-    *ngFor="let event of events" [event]="event"
-    [style.grid-row-start]="getPosition(event.startDate)"
-    [style.grid-row-end]="getPosition(event.endDate)"/>
-</div>
+<app-eventBlock
+  *ngFor="let event of events" [event]="event"
+  [ngClass]="fullGridOrSplit(event._id)"
+  [style.grid-row-start]="getPosition(event.startDate)"
+  [style.grid-row-end]="getPosition(event.endDate)"
+
+  />
+
 
 
 

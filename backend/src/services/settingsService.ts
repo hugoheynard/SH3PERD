@@ -1,4 +1,4 @@
-import  {type ObjectId} from "mongodb";
+import  {ObjectId} from "mongodb";
 
 export interface SettingsService {
     [key: value]:any

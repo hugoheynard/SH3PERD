@@ -16,8 +16,8 @@ export const initServices = (db: Db | null): any => {
         }
 
         const settingsServiceInstance = settingsService({ collection: db.collection('settings') });
-        const eventServiceInstance = eventService( { collection: db.collection('calendar_events') });
-        const userServiceInstance = userService({ collection: db.collection('staffs') });
+        const eventServiceInstance: any = eventService( { collection: db.collection('calendar_events') });
+        const userServiceInstance: any = userService({ collection: db.collection('staffs') });
 
         return {
             authenticationService: authenticationService({
@@ -40,7 +40,7 @@ export const initServices = (db: Db | null): any => {
             //
 
         };
-    } catch (e) {
+    } catch (e: any) {
         console.error('Error during controller services:', e);
         throw new Error('Failed to initialize services');
     }

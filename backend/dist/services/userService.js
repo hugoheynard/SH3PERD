@@ -24,7 +24,7 @@ export const userService = (input) => {
         },
         async userSearch(input) {
             try {
-                const usersObjectIds = input.usersId.map((id) => new ObjectId(id));
+                const usersObjectIds = input.usersId.map(id => new ObjectId(id));
                 return await collection.find({ _id: { $in: usersObjectIds } }).toArray();
             }
             catch (err) {

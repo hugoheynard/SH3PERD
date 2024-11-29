@@ -23,6 +23,8 @@ import {NgForOf} from '@angular/common';
 })
 export class CalendarComponent implements OnInit, AfterViewInit{
   public calendarService = inject(CalendarService);
+  constructor(private el: ElementRef) {}
+  @ViewChild('calendarContainer') calendarContainer!: ElementRef;
 
   public calendarOptions: any  = {
     viewMode: 'singlePersonDay',
@@ -38,7 +40,7 @@ export class CalendarComponent implements OnInit, AfterViewInit{
     }
   });
 
-  @ViewChild('calendarContainer') calendarContainer!: ElementRef;
+
 
   currentHour: number = new Date().getHours();
   currentMinute: number = new Date().getMinutes();
@@ -46,7 +48,7 @@ export class CalendarComponent implements OnInit, AfterViewInit{
   async ngOnInit(): Promise<void> {
 
     await this.calendarService.getCalendarData({
-      users: ['66e6e31d450539b53874aee5'],
+      users: ['66e6e31d450539b53874aee5', '66df0404c4d622c017701e3d'],
       date: ['2024-12-19'],
       calendarOptions: this.calendarOptions
     });
@@ -55,28 +57,30 @@ export class CalendarComponent implements OnInit, AfterViewInit{
     console.log(this.calendarDataSignal());
   };
 
+  ngAfterViewInit(): void {
+    this.scrollToCurrentTime();
+  };
+
   getPlanningEvents(planning: any) {
     return planning.calendar_events.map((event: string) => this.calendarDataSignal().calendarData.events[event])
   };
 
   scrollToCurrentTime() {
-    // Calculer l'index de la ligne pour l'heure actuelle
     const totalMinutes = this.currentHour * 60 + this.currentMinute;
-    const rowIndex = Math.floor(totalMinutes / 5); // 1 ligne = 5 minutes
-    const scrollPosition = rowIndex * 15; // Chaque ligne = 10px
+    const rowIndex = Math.floor(totalMinutes / 5);
+    const scrollPosition = rowIndex * 15;
 
-    // Effectuer le défilement
+    console.log(this.el)
+
     this.calendarContainer.nativeElement.scrollTo({
       top: scrollPosition,
       behavior: 'smooth',
     });
+
+    // Effectuer le défilement
+    this.el.nativeElement.scrollTo({
+      top: scrollPosition,
+      behavior: 'smooth',
+    });
   }
-
-  ngAfterViewInit(): void {
-    //console.log(this.calendarContainer.nativeElement);
-    //this.scrollToCurrentTime();
-  };
-
-
-
 }

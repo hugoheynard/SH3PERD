@@ -1,13 +1,15 @@
-import {DateMethod} from "../../../Utilities/class_DateMethods.js";
 import {TimeSplit_Strategy} from "./class_TimeSplit_Strategy";
+import {addMinutes} from "../../../utilities/dateFunctions/date_functions";
 
-class UserDuration extends TimeSplit_Strategy{
-    constructor(input) {
+export class UserDuration extends TimeSplit_Strategy{
+    rotationDuration: number;
+
+    constructor(input: any) {
         super(input);
         this.rotationDuration = input.params.userDuration;
     };
     split() {
-        let current = this.startTime;
+        let current: Date = this.startTime;
         while (current < this.endTime) {
             this.timeSlots.push(
                 {
@@ -15,10 +17,8 @@ class UserDuration extends TimeSplit_Strategy{
                     duration: this.rotationDuration
                 }
             );
-            current = DateMethod.addMinutes(current, this.rotationDuration);
+            current = addMinutes(current, this.rotationDuration);
         }
         return this.timeSlots;
     };
 }
-
-export {UserDuration};

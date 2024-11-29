@@ -6,12 +6,19 @@
     <app-event-reactform />
   </mat-sidenav>
 
-  <section #calendarContainer id="calContainer">
+  <section  #calendarContainer id="calContainer">
     <app-calendar-hours-grid/> <!--on va mettre tout le background ici-->
 
-    <app-planningGrid
-      *ngFor="let planning of calendarDataSignal().calendarData.plannings"
-      [events] = "getPlanningEvents(planning)"/>
+    <div class="splitGrid">
+      <div class="centerCol">
+        <app-planningGrid class="planning"
+          *ngFor="let planning of calendarDataSignal().calendarData.plannings"
+          [events] = "getPlanningEvents(planning)"
+          [internalCollisions]="calendarDataSignal().calendarData.collisions[planning.staff_id]"/>
+      </div>
+    </div>
+
+
 
   </section>
 

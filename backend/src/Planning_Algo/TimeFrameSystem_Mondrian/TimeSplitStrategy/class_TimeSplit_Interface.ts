@@ -1,9 +1,12 @@
-class TimeSplit_Interface {
-    constructor(input){
+export class TimeSplit_Interface {
+    startTime: Date;
+    endTime: Date;
+    strategy: any;
+    constructor(input: any){
         this.startTime = input.startTime;
         this.endTime = input.endTime;
     };
-    setStrategy(input) {
+    setStrategy(input: any): void {
         this.strategy = new input.strategy(
             {
                 startTime: this.startTime,
@@ -16,5 +19,3 @@ class TimeSplit_Interface {
         return this.strategy.split();
     };
 }
-
-export {TimeSplit_Interface};

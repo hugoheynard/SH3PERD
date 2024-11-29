@@ -1,12 +1,13 @@
-import type {CalendarEvent} from "../../../../interfaces/CalendarEvent";
+import type {CalendarEvents_interface} from "../../../../interfaces/CalendarEvents_interface";
+import type {ObjectId} from "mongodb";
 
-export const mapEventsToUser = (input: { events: CalendarEvent[], user_id: string}): string[] => {
+export const mapEventsToUser = (input: { events: CalendarEvents_interface[], user_id: string}): string[] => {
     const { events, user_id } = input;
 
     return events
-        .filter(event => {
-            const participantsSet = new Set(event.participants.map(participant => participant.toString()));
+        .filter((event: CalendarEvents_interface) => {
+            const participantsSet: Set<string> = new Set(event.participants.map((participant: ObjectId) => participant.toString()));
             return participantsSet.has(user_id);
         })
-        .map(event => event._id.toString());
+        .map((event: CalendarEvents_interface): string => event._id.toString());
 };

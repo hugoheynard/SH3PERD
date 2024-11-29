@@ -5,7 +5,8 @@ import {eventsController} from "./controllers/eventController";
 
 
 export interface Controllers {
-    settingsController: SettingsController
+    settingsController: any;
+    [key: string]: any;
 }
 
 export const initControllers = ({services}: any): any => {

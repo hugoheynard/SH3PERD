@@ -1,7 +1,7 @@
 import { buildEventQuery } from "../tools/events/EventQueryBuilder.js";
 import { ObjectId } from "mongodb";
 export const eventService = (input) => {
-    const collection = input.collection;
+    const { collection } = input;
     const queryBuilder = buildEventQuery;
     return {
         /**
@@ -18,6 +18,11 @@ export const eventService = (input) => {
                 throw err;
             }
         },
+        /**
+         * Recherche un événement par son ID
+         * @param input
+         * @returns {Promise<CalendarEvent | null>}
+         */
         async getEventById(input) {
             try {
                 return await collection.findOne({ _id: new ObjectId(input.id) });
@@ -27,6 +32,11 @@ export const eventService = (input) => {
                 throw err;
             }
         },
+        /**
+         * Crée un nouvel événement
+         * @param eventData
+         * @returns {Promise<any>}
+         */
         async postEvent(eventData) {
             const dateBuilder = (input) => {
                 const date = new Date(input.date);

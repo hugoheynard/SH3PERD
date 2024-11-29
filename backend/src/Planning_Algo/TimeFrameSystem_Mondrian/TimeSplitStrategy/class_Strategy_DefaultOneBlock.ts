@@ -1,14 +1,15 @@
-import {DateMethod} from "../../../Utilities/class_DateMethods.js";
+import {DateMethod} from "../../../utilities/DateHelperFunctions";
 import {TimeSplit_Strategy} from "./class_TimeSplit_Strategy";
 
-class DefaultOneBlock extends TimeSplit_Strategy{
-    constructor(input) {
+export class DefaultOneBlock extends TimeSplit_Strategy{
+    private rotationDuration: any
+    constructor(input: any) {
         super(input);
         this.rotationDuration = DateMethod.differenceInMinutes(this.startTime, this.endTime);
         this.split();
     };
-    split() {
-        let current = this.startTime;
+    split(): any {
+        let current: Date = this.startTime;
         while (current < this.endTime) {
             this.timeSlots.push(
                 {
@@ -21,5 +22,3 @@ class DefaultOneBlock extends TimeSplit_Strategy{
         return this.timeSlots;
     };
 }
-
-export {DefaultOneBlock};

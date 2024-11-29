@@ -1,11 +1,18 @@
 import type {Collection} from "mongodb";
-import {type AuthTokenDecoded, JWT_module} from "../tools/login/JWT_Module";
+import {type AuthTokenDecoded} from "../tools/login/JWT_Module";
+import type {User} from "../interfaces/User";
 
-export interface AuthService {
-    collection: Collection,
+export interface AuthServiceInput {
+    collection: Collection<User>,
     verifyPasswordFunction: (input: { password: string, storedHash: string }) => Promise<boolean>,
     generateTokenFunction: (input: { payload: { id: string; email: string } }) => Promise<string>;
-    checkAuthTokenValidityFunction: (input: { authToken: string }) => AuthTokenDecoded,
+    checkAuthTokenValidityFunction: (input: { jwt: string }) => AuthTokenDecoded,
+}
+
+export interface AuthService {
+    userExists: (input: { email: string }) => Promise<User>;
+    login: (input: LoginInput) => Promise<string>;
+    autoLog: (input: { jwt: string }) => boolean;
 }
 
 interface LoginInput {
@@ -13,10 +20,10 @@ interface LoginInput {
     password: string;
 }
 
-export const authenticationService = (input: AuthService): any => {
+export const authenticationService = (input: AuthServiceInput): AuthService => {
     const {collection, verifyPasswordFunction, generateTokenFunction, checkAuthTokenValidityFunction} = input;
 
-    const userExists = async (input: { email: string }): Promise<any> => {
+    const userExists = async (input)  => {
         try {
             const user = await collection.findOne({'email': input.email});
 
@@ -34,7 +41,7 @@ export const authenticationService = (input: AuthService): any => {
     };
 
     return {
-        async login(input: LoginInput): Promise<string> {
+        async login(input) {
             try {
                 const user = await userExists({ email: input.email });
                 const storedPass = user.login.inApp.password;
@@ -56,8 +63,8 @@ export const authenticationService = (input: AuthService): any => {
             }
         },
 
-        async autoLog(input: { authToken: string }): boolean {
-            return checkAuthTokenValidityFunction(input.authToken).isValid;
+        autoLog(input) {
+            return checkAuthTokenValidityFunction({ jwt: input.jwt }).isValid;
         }
     };
 }

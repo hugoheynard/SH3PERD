@@ -6,10 +6,10 @@
 *
 *
 */
-import {TechSetUp} from "../../Classes/Activity_classes/class_TechSetUp.js";
 
 
-const rehearsalDependencies = (rehearsal, staffPoolArray) => {
+
+export const rehearsalDependencies = (rehearsal: any, staffPoolArray: any): void => {
 
 
 
@@ -23,4 +23,3 @@ const rehearsalDependencies = (rehearsal, staffPoolArray) => {
          */
 }
 
-export {rehearsalDependencies};

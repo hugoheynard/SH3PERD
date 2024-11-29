@@ -1,15 +1,15 @@
 import { EventCollider } from "./EventCollider";
 import {type Interval, IntervalTree} from "./IntervalTree";
-import type {CalendarEvent} from "../../../interfaces/CalendarEvent";
+import type {CalendarEvents_interface} from "../../../interfaces/CalendarEvents_interface";
 
 export interface BatchEventColliderInput {
-    eventsToCollide: CalendarEvent[];
+    eventsToCollide: CalendarEvents_interface[];
     pairExclusionSet?: Set<string>;
 }
 
 
 export class BatchEventColliderModule {
-    private eventsToCollide: CalendarEvent[];
+    private eventsToCollide: CalendarEvents_interface[];
     private pairExclusionSet: Set<string>;
     private checkedPairs: Set<string>;
     private positiveCollisionList: any[];
@@ -66,8 +66,8 @@ export class BatchEventColliderModule {
 
     }
 
-    transformEventsInIntervals(input: { events: CalendarEvent[]}): Interval[] {
-        return input.events.map((event: CalendarEvent): Interval => ({
+    transformEventsInIntervals(input: { events: CalendarEvents_interface[]}): Interval[] {
+        return input.events.map((event: CalendarEvents_interface): Interval => ({
             id: event._id.toString(),
             start: new Date(event.startDate).getTime(),
             end: new Date(event.endDate).getTime(),
@@ -78,14 +78,14 @@ export class BatchEventColliderModule {
     /**
      * Validates that events have the required fields.
      */
-    validateEvents(input: { events: CalendarEvent[]}): void {
+    validateEvents(input: { events: CalendarEvents_interface[]}): void {
         const { events } = input;
 
         if (!Array.isArray(events)) {
             throw new Error('eventsToCollide must be an array');
         }
 
-        events.forEach((event: CalendarEvent): void => {
+        events.forEach((event: CalendarEvents_interface): void => {
             if (!event._id || !event.startDate || !event.endDate) {
                 this.log(`Event with id ${event._id} is missing required fields (startDate, endDate)`);
                 throw new Error(`Event with id ${event._id} is missing required fields (startDate, endDate)`);

@@ -20,6 +20,7 @@ import {NgClass, NgForOf, NgIf, NgStyle} from '@angular/common';
 })
 export class PlanningGridComponent {
   @Input() events: any[] = [];
+  @Input() internalCollisions: any;
 
 
   getPosition(date: string) {
@@ -28,9 +29,27 @@ export class PlanningGridComponent {
     //calcul des coordonnées rowStart et RowEnd
     const hours: number = newDate.getHours();
     const minutes: number = newDate.getMinutes();
-    console.log((hours * 60 + minutes ) / 5 + 1)
+
     return (hours * 60 + minutes ) / 5 + 1;
   };
+
+  fullGridOrSplit(id: string): string | undefined{ //TODO bah faire marcher hein
+
+    const collision = this.internalCollisions.crossEvent.find(
+      (elem: any): any => elem.referenceEvent === id
+    )
+
+    if (!collision) {
+      return 'fullWidth'; // Full width
+    }
+
+    if (collision) {
+      return 'splitCol';
+    }
+    return undefined
+  };
+
+
 
   /*
   getPlanningsColumnNumber(internalCollisions: any) {

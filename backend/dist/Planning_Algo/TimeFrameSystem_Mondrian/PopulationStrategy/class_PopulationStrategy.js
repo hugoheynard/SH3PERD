@@ -1,4 +1,7 @@
-class PopulationStrategy {
+export class PopulationStrategy {
+    timeSlots;
+    staff;
+    params;
     constructor(input) {
         this.timeSlots = input.timeSlots;
         this.staff = input.staff;
@@ -6,5 +9,4 @@ class PopulationStrategy {
     }
     ;
 }
-export { PopulationStrategy };
 //# sourceMappingURL=class_PopulationStrategy.js.map

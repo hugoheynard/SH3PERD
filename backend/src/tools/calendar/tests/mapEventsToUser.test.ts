@@ -1,10 +1,10 @@
 import {mapEventsToUser} from "../builders/utilities/mapEventsToUser";
-import {CalendarEvent} from "../../../interfaces/CalendarEvent";
+import {CalendarEvents_interface} from "../../../interfaces/CalendarEvents_interface";
 
 
 describe('mapEventsToUser', () => {
     it('doit retourner les événements correspondant à un utilisateur donné', () => {
-        const events: CalendarEvent[] = [
+        const events: CalendarEvents_interface[] = [
             { _id: 'event1', participants: ['user1', 'user2'] },
             { _id: 'event2', participants: ['user3'] },
             { _id: 'event3', participants: ['user1'] },
@@ -18,7 +18,7 @@ describe('mapEventsToUser', () => {
     });
 
     it('doit retourner un tableau vide si aucun événement ne correspond à l’utilisateur', () => {
-        const events: CalendarEvent[] = [
+        const events: CalendarEvents_interface[] = [
             { _id: 'event1', participants: ['user2'] },
             { _id: 'event2', participants: ['user3'] },
         ];
@@ -31,7 +31,7 @@ describe('mapEventsToUser', () => {
     });
 
     it('doit gérer les données vides correctement', () => {
-        const events: CalendarEvent[] = [];
+        const events: CalendarEvents_interface[] = [];
         const user_id = 'user1';
 
         const result = mapEventsToUser({ events, user_id });
@@ -40,7 +40,7 @@ describe('mapEventsToUser', () => {
     });
 
     it('doit fonctionner avec des participants contenant des chaînes ou des objets convertibles en chaîne', () => {
-        const events: CalendarEvent[] = [
+        const events: CalendarEvents_interface[] = [
             { _id: 'event1', participants: [123, 'user2'] },
             { _id: 'event2', participants: ['user3', 'user1'] },
         ];

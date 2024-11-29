@@ -1,5 +1,5 @@
 import { mapEventsToUser } from "./utilities/mapEventsToUser.js";
-import { addUserInformations } from "./utilities/addUserInformations.js";
+import { addUserInformations, } from "./utilities/addUserInformations.js";
 export const planningObjectBuilder = (input) => {
     const { users, calendarEvents } = input;
     const plannings = [];

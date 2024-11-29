@@ -1,10 +1,10 @@
-import type {CalendarEvent} from "../../../interfaces/CalendarEvent";
+import type {CalendarEvents_interface} from "../../../interfaces/CalendarEvents_interface";
 import {mapEventsToUser} from "./utilities/mapEventsToUser";
-import {type AddUserInformationOutput, addUserInformations} from "./utilities/addUserInformations";
+import {type AddUserInformationOutput, addUserInformations,} from "./utilities/addUserInformations";
 
 interface PlanningBuilderInput {
     users: any;
-    calendarEvents: CalendarEvent[];
+    calendarEvents: CalendarEvents_interface[];
 }
 
 export interface Plannings {

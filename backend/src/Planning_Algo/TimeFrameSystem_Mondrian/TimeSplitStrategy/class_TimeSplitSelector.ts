@@ -1,10 +1,12 @@
-import {UserDuration} from "./class_Strategy_UserDuration.ts";
-import {TimePattern} from "./class_Strategy_TimePattern.ts";
-import {DefaultOneBlock} from "./class_Strategy_DefaultOneBlock.ts";
+import {DefaultOneBlock} from "./class_Strategy_DefaultOneBlock";
+import {UserDuration} from "./class_Strategy_UserDuration";
+import {TimePattern} from "./class_Strategy_TimePattern";
 
+export class TimeSplitSelector {
+    string: string;
+    selector: string;
 
-class TimeSplitSelector{
-    constructor(string) {
+    constructor(string: string) {
         this.string = string
         this.selector = {
             'defaultOneBlock': DefaultOneBlock,
@@ -14,5 +16,3 @@ class TimeSplitSelector{
         return this.selector[this.string]
     };
 }
-
-export {TimeSplitSelector};

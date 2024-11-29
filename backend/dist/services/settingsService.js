@@ -1,4 +1,4 @@
-import {} from "mongodb";
+import { ObjectId } from "mongodb";
 export const settingsService = (input) => {
     const settingsCollection = input.collection;
     return {

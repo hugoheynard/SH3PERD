@@ -1,6 +1,6 @@
 export class CompanyController{
-    constructor(input: any){
-        this.companyService = input.companyService;
+    constructor(input: { companyService: any }){
+        const companyService = input.companyService;
     };
 
 }

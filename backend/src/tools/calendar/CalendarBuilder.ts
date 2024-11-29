@@ -1,6 +1,6 @@
 import {planningObjectBuilder, type Plannings} from "./builders/planningObjectBuilder";
 import {eventObjectBuilder, type EventBuilderOutput} from "./builders/eventObjectBuilder";
-import type {CalendarEvent} from "../../interfaces/CalendarEvent";
+import type {CalendarEvents_interface} from "../../interfaces/CalendarEvents_interface";
 import {type CollisionObject, InternalCollisionsBuilder} from "./builders/InternalCollisionsBuilder";
 
 export class CalendarBuilder {
@@ -12,7 +12,7 @@ export class CalendarBuilder {
         //this.planningCollisionManager = new PlanningCollisionManager();
     };
 
-    build(input: { users: any, calendarEvents: CalendarEvent[] }): any {
+    build(input: { users: any, calendarEvents: CalendarEvents_interface[] }): any {
         const { users, calendarEvents } = input;
 
         const eventsObject: EventBuilderOutput = this.eventObjectBuilder({ events: calendarEvents });

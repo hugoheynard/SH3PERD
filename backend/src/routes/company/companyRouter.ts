@@ -1,4 +1,4 @@
-import express, {NextFunction, Request, Response, type Router} from "express";
+import express, {type NextFunction, type Request, type Response, type Router} from "express";
 
 
 export const companyRouter = (companyController: any): Router => {
@@ -8,8 +8,8 @@ export const companyRouter = (companyController: any): Router => {
         const company_id = req.params.id;
 
         try {
-            const result = await companyController.companyService.getCompanySettings(company_id)
-            res.send(result)
+            //const result = await companyController.companyService.getCompanySettings(company_id)
+            res.send()
 
         } catch (error) {
             console.error('Error retrieving day data:', error);

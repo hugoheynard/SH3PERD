@@ -1,7 +1,9 @@
+import { DefaultNoStaff } from "./class_Strategy_DefaultNoStaff.js";
 import { LinearPopulation } from "./class_Strategy_LinearPopulation.js";
 import { BestFit_GraphAnalytics } from "./class_Strategy_BestFit_GraphAnalytics.js";
-import { DefaultNoStaff } from "./class_Strategy_DefaultNoStaff.js";
-class PopulationSelector {
+export class PopulationSelector {
+    string;
+    selector;
     constructor(string) {
         this.string = string;
         this.selector = {
@@ -13,5 +15,4 @@ class PopulationSelector {
     }
     ;
 }
-export { PopulationSelector };
 //# sourceMappingURL=class_PopulationSelector.js.map

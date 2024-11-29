@@ -1,4 +1,7 @@
-class TimeSplit_Interface {
+export class TimeSplit_Interface {
+    startTime;
+    endTime;
+    strategy;
     constructor(input) {
         this.startTime = input.startTime;
         this.endTime = input.endTime;
@@ -18,5 +21,4 @@ class TimeSplit_Interface {
     }
     ;
 }
-export { TimeSplit_Interface };
 //# sourceMappingURL=class_TimeSplit_Interface.js.map

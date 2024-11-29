@@ -1,14 +1,15 @@
-import {PopulationStrategy} from "./class_PopulationStrategy.ts";
-//import {art1} from "../../../../db/fakeDB.js";
-import {Graph, GraphManager} from "../../../Utilities/class_Graph.js";
-import {DateMethod} from "../../../Utilities/class_DateMethods.js";
+import {DateMethod} from "../../../utilities/DateHelperFunctions";
+import {PopulationStrategy} from "./class_PopulationStrategy";
 
-class BestFit_GraphAnalytics extends PopulationStrategy{
-    constructor(input) {
+export class BestFit_GraphAnalytics extends PopulationStrategy{
+    /*
+    exclusionList: any;
+
+    constructor(input: any) {
         super(input);
         this.exclusionList = [
             {
-                staff: [art1],
+                staff: [],
                 startTime: new Date(2024, 11, 19, 15, 0),
                 duration: 30,
             }];
@@ -20,8 +21,8 @@ class BestFit_GraphAnalytics extends PopulationStrategy{
                 timeSlots: this.timeSlots
             });
     };
-    add_noConsecutiveSessions() {
-        this.timeSlots[0].worker = [art1]
+    add_noConsecutiveSessions(): void {
+        this.timeSlots[0].worker = []
         const graph = new Graph();
     };
     add_Unavailability() { // first criteria
@@ -48,7 +49,5 @@ class BestFit_GraphAnalytics extends PopulationStrategy{
         this.graphManager.run()
         return this.timeSlots
     };
-
+*/
 }
-
-export {BestFit_GraphAnalytics};

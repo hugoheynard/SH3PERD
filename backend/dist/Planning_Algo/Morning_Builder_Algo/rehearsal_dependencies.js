@@ -6,8 +6,7 @@
 *
 *
 */
-import { TechSetUp } from "../../Classes/Activity_classes/class_TechSetUp.js";
-const rehearsalDependencies = (rehearsal, staffPoolArray) => {
+export const rehearsalDependencies = (rehearsal, staffPoolArray) => {
     /*
     if(rehearsal.needsTechAssist) {
 
@@ -17,5 +16,4 @@ const rehearsalDependencies = (rehearsal, staffPoolArray) => {
 
      */
 };
-export { rehearsalDependencies };
 //# sourceMappingURL=rehearsal_dependencies.js.map

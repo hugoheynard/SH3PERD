@@ -1,17 +1,25 @@
-import {Void} from "../../Classes/Activity_classes/class_Void.js";
-import {WorkSlot} from "../../Classes/Activity_classes/class_WorkSlot.js";
-import {No} from "../../Classes/Activity_classes/class_NoBlock.js";
-import {TimeSplit_Interface} from "./TimeSplitStrategy/class_TimeSplit_Interface";
-import {Population_Interface} from "./PopulationStrategy/class_Population_Interface.ts";
-import {TimeSplitSelector} from "./TimeSplitStrategy/class_TimeSplitSelector";
-import {PopulationSelector} from "./PopulationStrategy/class_PopulationSelector.ts";
 
-class TimeframeContext {
+import {TimeSplit_Interface} from "./TimeSplitStrategy/class_TimeSplit_Interface";
+
+import {TimeSplitSelector} from "./TimeSplitStrategy/class_TimeSplitSelector";
+import {PopulationSelector} from "./PopulationStrategy/class_PopulationSelector";
+import {Population_Interface} from "./PopulationStrategy/class_Population_Interface";
+
+
+export class TimeframeContext {
+    generatedBlocks: any[]
+    timeframeTitle: string;
+    startTime: Date;
+    endTime: Date;
+    staff: any[];
+
+    timeSplit: any;
+    population: any;
     /*
     * Creates a time canvas, instantiating timeSlots according to a split rule
     * Use of the bridge pattern to aggregate different interfaces of strategy
     * */
-    constructor(input) {
+    constructor(input: any) {
         this.timeframeTitle = input.timeframeTitle;
         this.startTime = input.startTime;
         this.endTime = input.endTime;
@@ -41,14 +49,14 @@ class TimeframeContext {
                 params: input.params
             });
     };
-    setTimeSplitStrategy(input) {
+    setTimeSplitStrategy(input: any): void {
         this.timeSplit.setStrategy(
             {
                 strategy: new TimeSplitSelector(input.strategy),
                 params: input.params
             });
     };
-    setPopulationStrategy(input) {
+    setPopulationStrategy(input: any): void {
         this.population.setStrategy(
             {
                 strategy: new PopulationSelector(input.strategy),
@@ -56,34 +64,32 @@ class TimeframeContext {
                 params: input.params
             });
     };
-    generate() {
+    generate(): void {
         //updates population strategy
         this.population.strategy.timeSlots = this.timeSplit.strategy.timeSlots;
         this.population.strategy.populate();
     };
 
-    preview() {
+    preview(): void {
         this.generate();
         this.generatedBlocks = [];
 
         this.generatedBlocks.push(
-            ...this.population.strategy.timeSlots.map(timeSection => {
-                return new WorkSlot(
-                    {
+            ...this.population.strategy.timeSlots.map((timeSection: any) => {
+                return {
                         date: timeSection.startTime,
                         duration: timeSection.duration,
                         staff: timeSection.worker
-                    });
+                    }
             })
         )
         this.generatedBlocks.push(
-            ...this.population.strategy.timeSlots.map(timeSection => {
-                return new Void(
-                    {
+            ...this.population.strategy.timeSlots.map((timeSection: any) => {
+                return{
                         date: timeSection.startTime,
                         duration: timeSection.duration,
                         staff: timeSection.available
-                    });
+                    }
             })
         )
 
@@ -105,4 +111,3 @@ class TimeframeContext {
     };
 }
 
-export {TimeframeContext};

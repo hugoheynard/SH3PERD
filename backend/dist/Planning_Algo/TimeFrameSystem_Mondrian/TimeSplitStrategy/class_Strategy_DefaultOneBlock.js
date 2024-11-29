@@ -1,6 +1,7 @@
-import { DateMethod } from "../../../Utilities/class_DateMethods.js";
+import { DateMethod } from "../../../utilities/DateHelperFunctions.js";
 import { TimeSplit_Strategy } from "./class_TimeSplit_Strategy.js";
-class DefaultOneBlock extends TimeSplit_Strategy {
+export class DefaultOneBlock extends TimeSplit_Strategy {
+    rotationDuration;
     constructor(input) {
         super(input);
         this.rotationDuration = DateMethod.differenceInMinutes(this.startTime, this.endTime);
@@ -20,5 +21,4 @@ class DefaultOneBlock extends TimeSplit_Strategy {
     }
     ;
 }
-export { DefaultOneBlock };
 //# sourceMappingURL=class_Strategy_DefaultOneBlock.js.map

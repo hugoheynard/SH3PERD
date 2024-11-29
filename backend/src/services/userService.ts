@@ -1,14 +1,15 @@
 import {type Collection, ObjectId} from "mongodb";
 import {userQueryBuilder} from "../tools/users/UserQueryBuilder";
 import {StaffSortingAlgorithms} from "../tools/users/StaffSortingAlgorithms";
+import type {User, UsersQueryParams} from "../interfaces/User";
 
 export interface UserServiceInput {
-    collection: Collection<any>;
-    tools: any
+    collection: Collection<User>;
 }
 
 export interface UserService {
-    getUser(query: any): Promise<any[]>;
+    getUser: (query: UsersQueryParams) => Promise<User[]>;
+    userSearch: (input: { usersId : string[]}) => Promise<User[]>;
 }
 
 export const userService = (input: UserServiceInput): UserService => {
@@ -24,7 +25,7 @@ export const userService = (input: UserServiceInput): UserService => {
          * company_id: the companySpace you're currently visiting
          * contract_id: the contract user is on with this settings
          * */
-        async getUser(query: any): Promise<void> {
+        async getUser(query) {
             try {
                 return await collection.find(query).toArray();
             } catch (err: any) {
@@ -33,9 +34,9 @@ export const userService = (input: UserServiceInput): UserService => {
             }
         },
 
-        async userSearch(input: { usersId : string[]}): Promise<any> {
+        async userSearch(input){
             try {
-                const usersObjectIds: ObjectId[] = input.usersId.map((id: string)=> new ObjectId(id));
+                const usersObjectIds: ObjectId[] = input.usersId.map(id=> new ObjectId(id));
 
                 return await collection.find({ _id: { $in: usersObjectIds } }).toArray();
 

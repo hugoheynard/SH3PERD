@@ -1,4 +1,4 @@
-import { JWT_module } from "../tools/login/JWT_Module.js";
+import {} from "../tools/login/JWT_Module.js";
 export const authenticationService = (input) => {
     const { collection, verifyPasswordFunction, generateTokenFunction, checkAuthTokenValidityFunction } = input;
     const userExists = async (input) => {
@@ -37,8 +37,8 @@ export const authenticationService = (input) => {
                 throw new Error(`Authentication failed: ${err.message}`);
             }
         },
-        async autoLog(input) {
-            return checkAuthTokenValidityFunction(input.authToken).isValid;
+        autoLog(input) {
+            return checkAuthTokenValidityFunction({ jwt: input.jwt }).isValid;
         }
     };
 };

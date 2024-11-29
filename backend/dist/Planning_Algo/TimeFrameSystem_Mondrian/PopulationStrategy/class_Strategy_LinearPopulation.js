@@ -1,5 +1,8 @@
-import { PopulationStrategy } from "./class_PopulationStrategy.ts";
-class LinearPopulation extends PopulationStrategy {
+import { PopulationStrategy } from "./class_PopulationStrategy.js";
+export class LinearPopulation extends PopulationStrategy {
+    _offset;
+    _staffMax;
+    _reverse;
     constructor(input) {
         super(input);
         this._offset = this.params.offset;
@@ -30,11 +33,10 @@ class LinearPopulation extends PopulationStrategy {
     populate() {
         this.timeSlots.forEach((section, index) => {
             section.worker = this.getCandidate(index);
-            section.available = this.staff.filter(member => JSON.stringify(member) !== JSON.stringify(...section.worker));
+            section.available = this.staff.filter((member) => JSON.stringify(member) !== JSON.stringify(...section.worker));
         });
         return this.timeSlots;
     }
     ;
 }
-export { LinearPopulation };
 //# sourceMappingURL=class_Strategy_LinearPopulation.js.map

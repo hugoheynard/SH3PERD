@@ -1,5 +1,7 @@
-import { DateMethod } from "../../../Utilities/class_DateMethods.js";
-class TimeSplit_Strategy {
+export class TimeSplit_Strategy {
+    startTime;
+    endTime;
+    timeSlots;
     constructor(input) {
         this.startTime = input.startTime;
         this.endTime = input.endTime;
@@ -7,5 +9,4 @@ class TimeSplit_Strategy {
     }
     ;
 }
-export { TimeSplit_Strategy };
 //# sourceMappingURL=class_TimeSplit_Strategy.js.map
