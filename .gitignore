@@ -1,4 +1,4 @@
 /node_modules/
 /.idea/
-/backend/dist
+/backend/dist/
 ./.env
