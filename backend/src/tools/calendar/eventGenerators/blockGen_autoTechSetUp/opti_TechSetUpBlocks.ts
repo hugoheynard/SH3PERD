@@ -2,7 +2,7 @@
 
 //TODO : refaire l'opti de tech set up pour la gestion du temps
 import {addMinutes} from "../../../../utilities/dateFunctions/date_functions";
-import type {CalendarEvent} from "../../../../interfaces/CalendarEvents_interface";
+import type {CalendarEvent} from "../../../../interfaces/CalendarEventsObject";
 import {sortEventsArrayPerAscendingTime} from "../../../../utilities/sortEventsArrayPerAscendingTime";
 
 export const optimiseTechSetupBlocks = (blockList: CalendarEvent[]): CalendarEvent => {

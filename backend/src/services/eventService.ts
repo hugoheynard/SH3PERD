@@ -1,6 +1,6 @@
 import {buildEventQuery} from "../tools/events/EventQueryBuilder";
 import {type Collection, ObjectId} from "mongodb";
-import type {CalendarEvent, CalendarEventDocument} from "../interfaces/CalendarEvents_interface";
+import type {CalendarEvent, CalendarEventDocument} from "../interfaces/CalendarEventsObject";
 
 export const eventService = (input: { collection: Collection<CalendarEvent> }): any => {
     const { collection} = input;

@@ -1,19 +1,19 @@
 import { EventCollider } from "./EventCollider";
 import {type Interval, IntervalTree} from "./IntervalTree";
-import type {CalendarEvents_interface} from "../../../interfaces/CalendarEvents_interface";
+import type {CalendarEvent, CalendarEventsObject} from "../../../interfaces/CalendarEventsObject";
 
 export interface BatchEventColliderInput {
-    eventsToCollide: CalendarEvents_interface[];
+    eventsToCollide: CalendarEvent[];
     pairExclusionSet?: Set<string>;
 }
 
 
 export class BatchEventColliderModule {
-    private eventsToCollide: CalendarEvents_interface[];
+    private readonly eventsToCollide: CalendarEvent[];
     private pairExclusionSet: Set<string>;
     private checkedPairs: Set<string>;
     private positiveCollisionList: any[];
-    private debug: boolean;
+    private readonly debug: boolean;
 
     constructor(input: BatchEventColliderInput, debug: boolean = false) { //TODO pas sur de virer le debug
         this.debug = debug;
@@ -66,8 +66,8 @@ export class BatchEventColliderModule {
 
     }
 
-    transformEventsInIntervals(input: { events: CalendarEvents_interface[]}): Interval[] {
-        return input.events.map((event: CalendarEvents_interface): Interval => ({
+    transformEventsInIntervals(input: { events: CalendarEvent[]}): Interval[] {
+        return input.events.map((event: CalendarEvent): Interval => ({
             id: event._id.toString(),
             start: new Date(event.startDate).getTime(),
             end: new Date(event.endDate).getTime(),
@@ -78,14 +78,14 @@ export class BatchEventColliderModule {
     /**
      * Validates that events have the required fields.
      */
-    validateEvents(input: { events: CalendarEvents_interface[]}): void {
+    validateEvents(input: { events: CalendarEvent[]}): void {
         const { events } = input;
 
         if (!Array.isArray(events)) {
             throw new Error('eventsToCollide must be an array');
         }
 
-        events.forEach((event: CalendarEvents_interface): void => {
+        events.forEach((event: CalendarEventsObject): void => {
             if (!event._id || !event.startDate || !event.endDate) {
                 this.log(`Event with id ${event._id} is missing required fields (startDate, endDate)`);
                 throw new Error(`Event with id ${event._id} is missing required fields (startDate, endDate)`);

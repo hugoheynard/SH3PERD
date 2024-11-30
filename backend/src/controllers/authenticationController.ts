@@ -27,7 +27,7 @@ export const authenticationController = (input: any): any => {
                     return res.status(400).json({ message: 'auth_token is required' });
                 }
 
-                const authTokenValid = await authenticationService.autoLog({ authToken });
+                const authTokenValid = await authenticationService.autoLog({ jwt: authToken });
 
                 if (!authTokenValid) {
                     res.status(401).json({

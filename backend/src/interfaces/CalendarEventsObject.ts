@@ -1,15 +1,16 @@
 import type {ObjectId, WithId} from "mongodb";
 
 export interface CalendarEvent {
-    _id?: ObjectId | string;
+    _id: ObjectId | string;
     startDate: Date;
     endDate: Date;
     type: string;
     participants: string[];
     generated: boolean;
+    [key: string]: any;
 }
 
-export interface CalendarEvents_interface {
+export interface CalendarEventsObject {
     [key: string]: CalendarEvent;
 }
 

@@ -3,7 +3,7 @@ import type {Collection} from "mongodb";
 //import {EventGenerator} from "../tools/calendar/class_EventGenerator";
 import {type UserService} from "./userService";
 import {CalendarBuilder} from "../tools/calendar/CalendarBuilder";
-import type {CalendarEvents_interface} from "../interfaces/CalendarEvents_interface";
+import type {CalendarEventsObject} from "../interfaces/CalendarEventsObject";
 import {Auto_GetIn} from "../tools/calendar/eventGenerators/eventGen_autoGetIn";
 
 

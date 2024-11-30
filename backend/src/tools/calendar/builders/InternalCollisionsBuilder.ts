@@ -1,6 +1,7 @@
 import {BatchEventColliderModule} from "../eventCollision/BatchEventCollider";
 import type {Plannings} from "./planningObjectBuilder";
 import type {EventBuilderOutput} from "./eventObjectBuilder";
+import type {CalendarEventsObject} from "../../../interfaces/CalendarEventsObject";
 
 export interface CollisionObject {
     [key: string]: {
@@ -21,7 +22,7 @@ export class InternalCollisionsBuilder {
         this.processedPairs = new Set();
     };
 
-    build(input: { plannings: Plannings[], events: EventBuilderOutput }): CollisionObject {
+    build(input: { plannings: Plannings[], events: CalendarEventsObject }): CollisionObject {
         const {plannings, events} = input;
 
         for (const planning of plannings) {

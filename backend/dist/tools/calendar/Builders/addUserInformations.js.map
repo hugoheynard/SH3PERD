@@ -1,1 +1,0 @@
-{"version":3,"file":"addUserInformations.js","sourceRoot":"","sources":["../../../../src/tools/calendar/Builders/addUserInformations.ts"],"names":[],"mappings":"AAOA,MAAM,CAAC,MAAM,mBAAmB,GAAG,CAAC,IAAS,EAA4B,EAAE;IACvE,OAAO;QACH,SAAS,EAAE,IAAI,CAAC,SAAS;QACzB,SAAS,EAAE;YACP,QAAQ,EAAE,IAAI,CAAC,SAAS,CAAC,QAAQ;SACpC;KACJ,CAAC;AACN,CAAC,CAAA"}

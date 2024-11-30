@@ -1,6 +1,6 @@
 import {addMinutes, substractMinutes} from "../../../utilities/dateFunctions/date_functions";
 import {sortEventsArrayPerAscendingTime} from "../../../utilities/sortEventsArrayPerAscendingTime";
-import {type CalendarEvent} from "../../../interfaces/CalendarEvents_interface";
+import {type CalendarEvent} from "../../../interfaces/CalendarEventsObject";
 import pkg from 'lodash';
 const { isEqual } = pkg;
 

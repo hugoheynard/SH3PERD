@@ -1,10 +1,10 @@
-import type {CalendarEvents_interface} from "../../../interfaces/CalendarEvents_interface";
+import type {CalendarEvent, CalendarEventsObject} from "../../../interfaces/CalendarEventsObject";
 
 export interface EventBuilderOutput {
-    [key: string]: CalendarEvents_interface;
+    [key: string]: CalendarEventsObject;
 }
 
-export const eventObjectBuilder = (input: { events: CalendarEvents_interface[] }): EventBuilderOutput => {
+export const eventObjectBuilder = (input: { events: CalendarEvent[] }): CalendarEventsObject => {
     try {
         if (!Array.isArray(input.events)) {
             throw new Error('Invalid input: events should be an array');

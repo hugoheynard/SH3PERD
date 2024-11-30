@@ -1,1 +1,0 @@
-{"version":3,"file":"autoLogRouter.js","sourceRoot":"","sources":["../../../src/routes/authentication/autoLogRouter.ts"],"names":[],"mappings":"AAAA,OAAO,OAAO,EAAE,EAAa,MAAM,SAAS,CAAC;AAG7C,MAAM,CAAC,MAAM,aAAa,GAAG,CAAC,eAAoB,EAAU,EAAE;IAC1D,MAAM,MAAM,GAAW,OAAO,CAAC,MAAM,EAAE,CAAC;IAExC,MAAM,CAAC,IAAI,CAAC,GAAG,EAAE,eAAe,CAAC,CAAC;IAElC,OAAO,MAAM,CAAC;AAClB,CAAC,CAAA"}

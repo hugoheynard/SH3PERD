@@ -1,5 +1,5 @@
 import {type Db} from "mongodb";
-import {userService} from "./services/userService";
+import {type UserService, userService} from "./services/userService";
 import {eventService} from "./services/eventService";
 import {authenticationService} from "./services/authenticationService";
 import {PasswordHasher} from "./tools/login/PasswordHasher";
@@ -17,7 +17,7 @@ export const initServices = (db: Db | null): any => {
 
         const settingsServiceInstance = settingsService({ collection: db.collection('settings') });
         const eventServiceInstance: any = eventService( { collection: db.collection('calendar_events') });
-        const userServiceInstance: any = userService({ collection: db.collection('staffs') });
+        const userServiceInstance: UserService = userService({ collection: db.collection('staffs') });
 
         return {
             authenticationService: authenticationService({
