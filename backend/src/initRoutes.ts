@@ -6,6 +6,7 @@ import {authenticationRouter} from "./routes/authentication/authenticationRouter
 import {settingsRouter} from "./routes/settings/settingsRouter";
 import {calendarRouter} from "./routes/calendar/calendarRouter";
 import {eventsRouter} from "./routes/events/eventsRouter";
+import {musicLibraryRouter} from "./routes/musicLibrary/musicLibraryRouter";
 
 
 export const initRoutes = (app: Express, { controllers } : any): Express => {
@@ -19,10 +20,11 @@ export const initRoutes = (app: Express, { controllers } : any): Express => {
         app.use('/settings', settingsRouter(controllers.settingsController));
         app.use('/events', eventsRouter(controllers.eventsController))
         app.use('/calendar', calendarRouter(controllers.calendarController));
+        app.use('/musicLibrary', musicLibraryRouter(controllers.musicLibraryController));
         //app.use('/staff', userRouter(controllers.staffController));
         //app.use('/company', companyRouter(controllers.companyController));
-        //
-        //app.use('/musicLibrary', musicLibraryRouter);
+
+
 
         app.use((req: Request, res: Response, next: NextFunction) => {
             res.status(404).send('Route does not exist');

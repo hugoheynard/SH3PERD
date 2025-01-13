@@ -19,7 +19,7 @@ export const initServices = (db: Db | null): any => {
         const settingsServiceInstance = settingsService({ collection: db.collection('settings') });
         const eventServiceInstance: any = eventService( { collection: db.collection('calendar_events') });
         const userServiceInstance: UserService = userService({ collection: db.collection('staffs') });
-        const musicServiceInstance: any = musicService({ collection: db.collection('music') });
+        const musicServiceInstance: any = musicService({ collection: db.collection('music_library') });
 
         return {
             authenticationService: authenticationService({

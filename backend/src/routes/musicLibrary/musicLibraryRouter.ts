@@ -1,10 +1,41 @@
+import express, {type Router} from "express";
+
+export const musicLibraryRouter = (musicController: any): Router => {
+    const router: Router = express.Router();
+
+    /* Music routes, CRUD operations */
+
+    router.get('/', musicController.getMusicLibrary);
+    router.post('/music', musicController.postMusic);
+    router.put('/music/:music_id', musicController.updateMusic);
+    router.delete('/music/:music_id', musicController.deleteMusic);
+
+    /* Version routes, CRUD operations */
+    //
+    //
+    //
+    //
+
+    return router;
+};
+
+
+
+
+
+
+
+
+
+
+
+
 /*
-import express from "express";
 import multer from 'multer';
 import path from'path';
 import {DatabaseAction} from "../../../../db/audioFile_versionManager/class_DatabaseActions.js";
 
-const musicLibraryRouter = express.Router();
+
 
 musicLibraryRouter.get('/musiclibrary', async (req, res) => {
 

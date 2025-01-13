@@ -3,7 +3,7 @@ import {wrap_TryCatchNextErr} from "./utilities/wrap_tryCatchNextErr";
 
 
 export const calendarController  = (input: any): any => {
-    const { calendarService } = input
+    const { calendarService } = input;
 
     const controller = {
 
@@ -13,5 +13,5 @@ export const calendarController  = (input: any): any => {
         }
     };
 
-    return wrap_TryCatchNextErr(controller)
-}
+    return wrap_TryCatchNextErr(controller);
+};

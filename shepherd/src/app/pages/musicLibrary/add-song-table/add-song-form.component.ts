@@ -19,6 +19,6 @@ export class AddSongFormComponent {
 
   onSubmit(form: any): void {
     console.log('Form submitted!', form.value);
-    this.mlServ.addSong({ formData: form.value })
+    this.mlServ.postMusic({ formData: form.value });
   };
 }
