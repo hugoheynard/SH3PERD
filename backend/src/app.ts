@@ -17,9 +17,9 @@ async function startApp(): Promise<void> {
         const app: Express = express();
 
         const services = initServices(db);
-        const controllers: Controllers = initControllers({services});
+        const controllers: Controllers = initControllers({ services });
 
-        initRoutes(app, {db, controllers});
+        initRoutes(app, { db, controllers });
         await startServer(app);
 
     } catch (error: any) {

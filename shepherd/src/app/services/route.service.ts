@@ -33,6 +33,11 @@ export class RouteService {
   };
 
   @RouteService.tryCatchDecorator
+  async navigateToMusicLibrary(){
+    await this.router.navigate(['app/musicLibrary']);
+  };
+
+  @RouteService.tryCatchDecorator
   async navigateToSettings(){
     await this.router.navigate(['app/settings']);
   };

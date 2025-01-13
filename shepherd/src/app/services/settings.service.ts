@@ -11,7 +11,7 @@ interface WeekTemplateResponse {
 })
 export class SettingsService {
   private http = inject(HttpClient);
-  private baseURL: string = 'http://localhost:3000'
+  private baseURL: string = 'http://localhost:3000';
   private settingsID = '6742c686a58bbb0da3b1ac0f'; //TODO on fera pas comme ça !
 
 

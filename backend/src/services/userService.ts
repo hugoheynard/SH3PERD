@@ -3,23 +3,25 @@ import {userQueryBuilder} from "../tools/users/UserQueryBuilder";
 import {StaffSortingAlgorithms} from "../tools/users/StaffSortingAlgorithms";
 import type {User, UsersQueryParams} from "../interfaces/User";
 
-export interface UserServiceInput {
-    collection: Collection<User>;
-}
 
 export interface UserService {
-    getUser: (query: UsersQueryParams) => Promise<User[]>;
-    userSearch: (input: { usersId : string[]}) => Promise<User[]>;
+    input: {
+        collection: Collection<User>;
+    };
+    output: {
+        getUser: (query: UsersQueryParams) => Promise<User[]>;
+        userSearch: (input: { usersId : string[]}) => Promise<User[]>;
+    }
+
 }
 
-export const userService = (input: UserServiceInput): UserService => {
+export const userService = (input: UserService['input']): UserService['output'] => {
     const {collection} = input;
 
+    const queryBuilder = userQueryBuilder;
+    const staffSorter = StaffSortingAlgorithms
+
     return {
-        tools: {
-            queryBuilder: userQueryBuilder,
-            staffSorter: StaffSortingAlgorithms
-        },
         /**
          * gets the user according to token information settings
          * company_id: the companySpace you're currently visiting

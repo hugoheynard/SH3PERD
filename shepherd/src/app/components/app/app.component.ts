@@ -28,10 +28,10 @@ export class AppComponent{
   title = 'shepherd';
 
   constructor() {
-    effect(async () => {
+    /*effect(async () => {
       if (!this.authService.isAuthenticatedSignal()) {
         await this.routeService.navigateToLogin();
       }
-    });
+    });*/
   }
 }

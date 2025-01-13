@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
     if (!canAutoLog) {
       await this.router.navigate(['/login']);
     }
-    await this.router.navigate(['/app/calendar']);
+    await this.router.navigate(['/app/settings']);
   }
 
   async onLogin(credentials: any) {

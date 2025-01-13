@@ -7,7 +7,7 @@ export const eventsController = (input: any): any => {
 
     const controller =  {
         async eventSearch(req: Request, res: Response): Promise<void> {
-            res.status(200).json(await eventService.eventSearch(req.body.eventSearchParams));
+            res.status(200).json(await eventService.eventSearch({ queryParams: req.body.eventSearchParams }));
         },
 
         async getEventById(req: Request, res: Response): Promise<void> {

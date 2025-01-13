@@ -1,0 +1,15 @@
+<form #myForm="ngForm" id="addSongForm" (ngSubmit)="onSubmit(myForm)">
+  <input id="title"
+         name="title"
+         type="text"
+         placeholder="Song title"
+         [(ngModel)]="song.title"
+         required/>
+  <input id="artist"
+         name="artist"
+         type="text"
+         placeholder="Artist name"
+         [(ngModel)]="song.artist"
+         required/>
+  <button type="submit" [disabled]="myForm.invalid">Submit</button>
+</form>

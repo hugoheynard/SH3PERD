@@ -1,6 +1,6 @@
 <app-eventBlock
   *ngFor="let event of events" [event]="event"
-  [ngClass]="fullGridOrSplit(event._id)"
+  [ngClass]="fullGridOrSplit(event)"
   [style.grid-row-start]="getPosition(event.startDate)"
   [style.grid-row-end]="getPosition(event.endDate)"
 

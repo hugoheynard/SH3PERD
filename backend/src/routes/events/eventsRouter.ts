@@ -1,7 +1,7 @@
 import type {Router} from "express";
 import express from "express";
 
-export const eventsRouter = (eventsController): Router => {
+export const eventsRouter = (eventsController: any): Router => {
     const router: Router = express.Router();
 
     router.post('/search', eventsController.eventSearch);

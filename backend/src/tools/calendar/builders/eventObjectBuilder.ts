@@ -11,7 +11,7 @@ export const eventObjectBuilder = (input: { events: CalendarEvent[] }): Calendar
         }
 
         return input.events
-            .reduce((acc, curr) => {
+            .reduce<CalendarEventsObject>((acc, curr) => {
                 if (!curr._id) {
                     throw new Error(`Invalid event: missing or null _id for event ${JSON.stringify(curr)}`);
                 }

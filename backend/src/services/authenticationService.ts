@@ -10,7 +10,6 @@ export interface AuthServiceInput {
 }
 
 export interface AuthService {
-    userExists: (input: { email: string }) => Promise<User>;
     login: (input: LoginInput) => Promise<string>;
     autoLog: (input: { jwt: string }) => boolean;
 }
@@ -23,7 +22,7 @@ interface LoginInput {
 export const authenticationService = (input: AuthServiceInput): AuthService => {
     const {collection, verifyPasswordFunction, generateTokenFunction, checkAuthTokenValidityFunction} = input;
 
-    const userExists = async (input)  => {
+    const userExists = async (input:{ email: string }): Promise<User>  => {
         try {
             const user = await collection.findOne({'email': input.email});
 

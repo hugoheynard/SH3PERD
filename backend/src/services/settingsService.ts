@@ -1,19 +1,23 @@
-import  {ObjectId} from "mongodb";
+import {Collection, ObjectId} from "mongodb";
 
 export interface SettingsService {
-    [key: value]:any
+    getWeekTemplate: (input: { company_id: string }) => Promise<any>;
+    updateWeekTemplate: (input: { settings_id: string, data: any[] }) => Promise<void>;
+    getOrganogram: (input: { settings_id: string }) => Promise<any>;
+    updateOrganogram: (input: { settings_id: string }) => Promise<any>;
+    [key:any]:any;
 }
 
-export const settingsService = (input: any): any => {
-    const settingsCollection = input.collection;
+export const settingsService = (input: { collection: Collection }): SettingsService => {
+    const { collection } = input;
 
     return {
         //weekTemplate
-        async getWeekTemplate(input: { company_id: string }): Promise<any> {
+        async getWeekTemplate(input) {
             const { company_id } = input;
 
             try {
-                const result = await settingsCollection.findOne(
+                const result = await collection.findOne(
                     { _id: new ObjectId(company_id)},
                     { projection: { weekTemplate: 1, _id: 0 } });
 
@@ -27,11 +31,11 @@ export const settingsService = (input: any): any => {
             }
         },
 
-        async updateWeekTemplate(input: { settings_id: string, data: any[] }): Promise<void> {
+        async updateWeekTemplate(input){
             const { settings_id , data } = input;
 
             try {
-                const update = await settingsCollection.updateOne(
+                const update = await collection.updateOne(
                     { "_id": new ObjectId(settings_id) },
                     { "$set": { "weekTemplate": data } }
                 );
@@ -53,11 +57,11 @@ export const settingsService = (input: any): any => {
         },
 
         //organogram
-        async getOrganogram(input: { settings_id: string }): Promise<any>{
+        async getOrganogram(input){
             console.log('hello orga')
         },
 
-        async updateOrganogram(input: { settings_id: string }): Promise<any>{
+        async updateOrganogram(input){
 
         }
     }

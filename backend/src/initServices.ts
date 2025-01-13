@@ -6,6 +6,7 @@ import {PasswordHasher} from "./tools/login/PasswordHasher";
 import {JWT_module} from "./tools/login/JWT_Module";
 import {settingsService} from "./services/settingsService";
 import {calendarService} from "./services/calendarService";
+import {musicService} from "./services/musicService/musicService";
 
 
 
@@ -18,6 +19,7 @@ export const initServices = (db: Db | null): any => {
         const settingsServiceInstance = settingsService({ collection: db.collection('settings') });
         const eventServiceInstance: any = eventService( { collection: db.collection('calendar_events') });
         const userServiceInstance: UserService = userService({ collection: db.collection('staffs') });
+        const musicServiceInstance: any = musicService({ collection: db.collection('music') });
 
         return {
             authenticationService: authenticationService({
@@ -32,6 +34,7 @@ export const initServices = (db: Db | null): any => {
                 eventService: eventServiceInstance,
                 userService: userServiceInstance
             }),
+            musicService: musicServiceInstance
 
             //contractService: contractService({ collection: db.collection('contracts') }),
             //companyService: companyService({ collection: db.collection('companies') }),

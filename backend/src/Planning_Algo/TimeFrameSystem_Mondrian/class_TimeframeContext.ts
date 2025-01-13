@@ -1,6 +1,4 @@
-
 import {TimeSplit_Interface} from "./TimeSplitStrategy/class_TimeSplit_Interface";
-
 import {TimeSplitSelector} from "./TimeSplitStrategy/class_TimeSplitSelector";
 import {PopulationSelector} from "./PopulationStrategy/class_PopulationSelector";
 import {Population_Interface} from "./PopulationStrategy/class_Population_Interface";

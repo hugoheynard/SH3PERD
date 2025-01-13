@@ -1,8 +1,20 @@
 import {buildEventQuery} from "../tools/events/EventQueryBuilder";
-import {type Collection, ObjectId} from "mongodb";
-import type {CalendarEvent, CalendarEventDocument} from "../interfaces/CalendarEventsObject";
+import {type Collection, type InsertManyResult, type InsertOneResult, ObjectId} from "mongodb";
+import type {CalendarEvent} from "../interfaces/CalendarEventsObject";
 
-export const eventService = (input: { collection: Collection<CalendarEvent> }): any => {
+export interface EventService{
+    input: {
+      collection:  Collection<CalendarEvent>;
+    },
+    output: {
+        eventSearch: (input: { queryParams: any }) => Promise<CalendarEvent[]>;
+        getEventById: (input: { id: string }) => Promise<CalendarEvent | null>;
+        postEvent: (input: { eventData: CalendarEvent | CalendarEvent[] }) => Promise<InsertManyResult<CalendarEvent> | InsertOneResult<CalendarEvent>>;
+        [key: string]: any;
+    };
+}
+
+export const eventService = (input: EventService['input']): EventService['output'] => {
     const { collection} = input;
     const queryBuilder = buildEventQuery;
 
@@ -10,12 +22,12 @@ export const eventService = (input: { collection: Collection<CalendarEvent> }): 
     return {
         /**
          * getEvents according to query
-         * @param queryParams
+         * @param input
          * @returns {Promise<*>}
          */
-        async eventSearch(queryParams: any): Promise<CalendarEvent[]> {
+        async eventSearch(input) {
             try {
-                return await collection.find(queryBuilder(queryParams)).toArray();
+                return await collection.find(queryBuilder(input.queryParams)).toArray();
             } catch (err) {
                 console.error("Error retrieving events:", err);
                 throw err;
@@ -27,10 +39,10 @@ export const eventService = (input: { collection: Collection<CalendarEvent> }): 
          * @param input
          * @returns {Promise<CalendarEvent | null>}
          */
-        async getEventById(input: { id: string }): Promise<CalendarEvent | null> {
+        async getEventById(input){
             try {
                 return await collection.findOne({ _id: new ObjectId(input.id) });
-            } catch (err: any) {
+            } catch (err) {
                 console.error("Error retrieving events:", err);
                 throw err;
             }
@@ -38,28 +50,20 @@ export const eventService = (input: { collection: Collection<CalendarEvent> }): 
 
         /**
          * Crée un nouvel événement
-         * @param eventData
-         * @returns {Promise<any>}
+         * @param input
          */
-        async postEvent(eventData: any): Promise<any> {
-            const dateBuilder = (input: any) => {
-                const date = new Date(input.date);
-                const timeArray = input.time.split(':');
-                date.setHours(timeArray[0]);
-                date.setMinutes(timeArray[1]);
-                return date
-            }
+        async postEvent(input) {
+            try {
+                if (Array.isArray(input.eventData)) {
+                    return await collection.insertMany(input.eventData);
+                }
 
-            const preparedData = {
-                date: dateBuilder({
-                    date: eventData.date,
-                    time: eventData.time
-                }),
-                duration: Number(eventData.duration),
-                type: 'rehearsal'
-            }
+                return await collection.insertOne(input.eventData);
 
-            return await collection.insertOne(preparedData);
+            } catch(err) {
+                console.error("Error inserting events:", err);
+                throw new Error("Could not insert events");
+            }
         }
     };
 }

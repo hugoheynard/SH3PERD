@@ -4,23 +4,30 @@ import type {CalendarEvent, CalendarEventsObject} from "../../interfaces/Calenda
 import {type CollisionObject, InternalCollisionsBuilder} from "./builders/InternalCollisionsBuilder";
 import type {User} from "../../interfaces/User";
 
+
+
 export class CalendarBuilder {
     //Dependencies
     private readonly eventObjectBuilder = eventObjectBuilder;
     private readonly planningObjectBuilder = planningObjectBuilder;
     private readonly internalCollisionBuilder = new InternalCollisionsBuilder();
-    constructor() {
+
+    //inputs
+    private readonly users: User[];
+    private readonly calendarEvents: CalendarEvent[];
+
+    constructor(input: { users: User[]; calendarEvents: CalendarEvent[] }) {
+        this.users = input.users;
+        this.calendarEvents = input.calendarEvents;
         //this.planningCollisionManager = new PlanningCollisionManager();
     };
 
-    build(input: { users: User[], calendarEvents: CalendarEvent[] }): any {
-        const { users, calendarEvents } = input;
-
-        const eventsObject: CalendarEventsObject = this.eventObjectBuilder({ events: calendarEvents });
+    build(): any {
+        const eventsObject: CalendarEventsObject = this.eventObjectBuilder({ events: this.calendarEvents });
 
         const plannings: Plannings[] = this.planningObjectBuilder({
-            users: users,
-            calendarEvents: calendarEvents
+            users: this.users,
+            calendarEvents: this.calendarEvents
         });
 
         const internalCollisions: CollisionObject = this.internalCollisionBuilder.build({

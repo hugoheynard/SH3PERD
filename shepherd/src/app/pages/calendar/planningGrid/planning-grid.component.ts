@@ -33,21 +33,26 @@ export class PlanningGridComponent {
     return (hours * 60 + minutes ) / 5 + 1;
   };
 
-  fullGridOrSplit(id: string): string | undefined{ //TODO bah faire marcher hein
+  fullGridOrSplit(event: any): string { //TODO bah faire marcher hein
 
-    const collision = this.internalCollisions.crossEvent.find(
-      (elem: any): any => elem.referenceEvent === id
-    )
-
-    if (!collision) {
+    if (!this.collide(event)) {
       return 'fullWidth'; // Full width
     }
 
-    if (collision) {
-      return 'splitCol';
-    }
-    return undefined
+    return 'splitCol';
   };
+
+  collide(event: any): boolean {
+    for (const otherEvent of this.events) {
+      if (event._id === otherEvent._id) {
+        continue; // Ignore l'auto-comparaison
+      }
+      if ((event.startDate < otherEvent.endDate) && (otherEvent.startDate < event.endDate)) {
+        return true; // Collision détectée
+      }
+    }
+    return false; // Aucune collision détectée
+  }
 
 
 

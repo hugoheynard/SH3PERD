@@ -1,7 +1,6 @@
-import {BatchEventColliderModule} from "../eventCollision/BatchEventCollider";
 import type {Plannings} from "./planningObjectBuilder";
-import type {EventBuilderOutput} from "./eventObjectBuilder";
 import type {CalendarEventsObject} from "../../../interfaces/CalendarEventsObject";
+import {EventCollider} from "../../EventCollider";
 
 export interface CollisionObject {
     [key: string]: {
@@ -32,14 +31,26 @@ export class InternalCollisionsBuilder {
                 continue;
             }
 
-            this.internalEventsMap.set(staff_id, planning.calendar_events.map((ev_id: string) => events[ev_id]));
-            this.internalCollisionsMap.set(staff_id, new BatchEventColliderModule({eventsToCollide: this.internalEventsMap.get(staff_id)}));
+            if (plannings.indexOf(planning) !==1) { //test
+                continue;
+            }
 
-            const {positiveCollisionList, checkedPairs} = this.internalCollisionsMap.get(staff_id);
+            this.internalEventsMap.set(
+                staff_id,
+                planning.calendar_events.map((ev_id: string) => events[ev_id]));
+
+            this.internalCollisionsMap.set(
+                staff_id,
+                new EventCollider({
+                    eventsToCollide: this.internalEventsMap.get(staff_id)
+                }).calculateCollisions()
+            );
+
+            const {eventCollisionList, checkedPairs} = this.internalCollisionsMap.get(staff_id);
 
             this.addResultToInternalCollisionObject({
                 staff_id: staff_id,
-                positiveCollisionList: positiveCollisionList
+                eventCollisionList: eventCollisionList
             });
             this.addProcessedPairsToProcessedPairSet({checkedPairs: checkedPairs});
         }
@@ -61,12 +72,12 @@ export class InternalCollisionsBuilder {
         this.processedPairs = new Set([...this.processedPairs, ...input.checkedPairs]);
     };
 
-    addResultToInternalCollisionObject(input: { staff_id: string; positiveCollisionList: any }): void {
-        const {staff_id, positiveCollisionList} = input;
+    addResultToInternalCollisionObject(input: { staff_id: string; eventCollisionList: any }): void {
+        const {staff_id, eventCollisionList} = input;
 
         this.internalCollisionsOutputObject[staff_id] = {
-            crossEvent: [...positiveCollisionList],
-            maxCollisions: this.findMaxCollisions(positiveCollisionList.map((collision: any) => collision.referenceEvent))
+            crossEvent: [...eventCollisionList],
+            maxCollisions: this.findMaxCollisions(eventCollisionList.map((collision: any) => collision.referenceEvent))
         };
     };
 

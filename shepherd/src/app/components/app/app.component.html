@@ -1,11 +1,12 @@
+<!--
 <ng-container *ngIf="!authService.isAuthenticatedSignal()">
   <section class="content">
     <router-outlet />
   </section>
-</ng-container>
+</ng-container>-->
 
 
-<ng-container *ngIf="authService.isAuthenticatedSignal()">
+<ng-container> <!--*ngIf="authService.isAuthenticatedSignal()"-->
   <app-header />
   <mat-sidenav-container>
     <mat-sidenav #leftMenuSidenav mode="side" opened>
@@ -13,7 +14,7 @@
         [menuItems]="[
           { iconName: 'home', action:  routeService.navigateToHome.bind(routeService) },
           { iconName: 'calendar_clock', action: routeService.navigateToCalendar.bind(routeService) },
-          { iconName: 'library_music', action: routeService.navigateToCalendar.bind(routeService) },
+          { iconName: 'library_music', action: routeService.navigateToMusicLibrary.bind(routeService) },
           { iconName: 'settings', action: routeService.navigateToSettings.bind(routeService) },
           { iconName: 'logout', action: authService.logout.bind(authService) }
         ]"

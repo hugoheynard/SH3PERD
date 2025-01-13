@@ -1,6 +1,6 @@
 import {DefaultOneBlock} from "./class_Strategy_DefaultOneBlock";
-import {UserDuration} from "./class_Strategy_UserDuration";
-import {TimePattern} from "./class_Strategy_TimePattern";
+import {UserDuration} from "./UserDuration";
+import {TimePattern} from "./TimePattern";
 
 export class TimeSplitSelector {
     string: string;
