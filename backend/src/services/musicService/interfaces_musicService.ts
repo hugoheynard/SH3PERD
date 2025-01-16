@@ -1,21 +1,9 @@
-import type {Collection, InsertManyResult, ObjectId} from "mongodb";
-
-export interface MusicService {
-    input: {
-        collection: Collection<any> //todo interface Music mongo
-    },
-    output: {
-        getMusic: Promise<any>;
-        postMusic: Promise<InsertManyResult<any>>;
-        updateMusic: Promise<any>;
-        deleteMusic: Promise<any>;
-        [key: string]: any;
-    }
-}
+import type {Collection, DeleteResult, InsertManyResult, ObjectId, UpdateResult} from "mongodb";
 
 export interface PostMusic {
     title: string;
     artist: string;
+    versions: any[];
 }
 
 export interface MusicDocument{
@@ -23,3 +11,18 @@ export interface MusicDocument{
     title: string;
     artist: string;
 }
+
+export interface MusicService {
+    input: {
+        collection: Collection<any> //todo interface Music mongo
+    },
+    output: {
+        getMusicLibrary: Promise<MusicDocument[]>;
+        postMusic: Promise<InsertManyResult<any>>;
+        updateMusic: Promise<UpdateResult<any>>;
+        deleteMusic: Promise<DeleteResult>;
+        [key: string]: any;
+    }
+}
+
+

@@ -21,7 +21,7 @@ export class MusicLibraryService {
 
       if (!response.ok) return false;
 
-      return response.body;
+      return response.body.musicLibraryData;
     } catch(e) {
       console.log('error while getting music library', e);
       return false;

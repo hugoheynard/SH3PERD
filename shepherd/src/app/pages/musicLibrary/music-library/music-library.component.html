@@ -41,7 +41,7 @@
 
 
 
-    <ng-container *ngFor="let item of filteredSongs; let index = index">
+    <ng-container *ngFor="let music of filteredSongs; let index = index">
       <!-- music line -->
       <tr>
         <td>
@@ -51,15 +51,23 @@
             {{ expandedIndex === index ? '-' : '+' }}
           </button>
         </td>
-        <td>{{ item.title }}</td>
-        <td>{{ item.artist }}</td>
-        <td>{{ item.availability }}</td>
+        <td>{{ music.title }}</td>
+        <td>{{ music.artist }}</td>
+        <td>{{ music.availability }}</td>
+        <td>
+          <button mat-icon-button (click)="updateMusic({ music_id: music._id })"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button (click)="deleteMusic({ music_id: music._id })"><mat-icon>delete_forever</mat-icon></button>
+        </td>
       </tr>
       <!-- accordion detail versions -->
       <tr *ngIf="expandedIndex === index">
         <td></td>
         <td colspan="4">
-            <app-version-table [versions]="item.versions" />
+            <app-version-table *ngIf="music.versions else noVersions" [versions]="music.versions" />
+            <ng-template #noVersions>
+              <!--Ajouter le add version-->
+            </ng-template>
+
         </td>
       </tr>
     </ng-container>

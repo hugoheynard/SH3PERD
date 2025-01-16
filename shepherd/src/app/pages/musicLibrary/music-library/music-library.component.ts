@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {NgForOf, NgIf, NgStyle} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
@@ -8,6 +8,7 @@ import {VersionTableComponent} from '../version-table/version-table.component';
 import {FormsModule} from '@angular/forms';
 import {ToggleButtonComponent} from '../../settingsModule/toggle-button/toggle-button.component';
 import {AddSongFormComponent} from '../add-song-table/add-song-form.component';
+import {MusicLibraryService} from '../../../services/music-library.service';
 
 @Component({
   selector: 'app-music-library',
@@ -32,50 +33,37 @@ import {AddSongFormComponent} from '../add-song-table/add-song-form.component';
   styleUrl: './music-library.component.scss'
 })
 
-export class MusicLibraryComponent {
-  public activeArtistList: any[] = ['A', 'B', 'C', 'D', 'E', 'F']
+export class MusicLibraryComponent implements OnInit{
+  private mlServ: any = inject(MusicLibraryService);
+
   public testList: any[] = [
     {
       title: 'show must go on',
       artist: 'Queen',
       availability: ['A', 'B'],
-      versions: [
-        {
-          _id: 'ab2645hxkj1235',
+      versions: {
+        'ab2645hxkj1235': {
           type: 'original',
           genre: 'rock',
           energy: 'slow',
           pitch: 2
         },
-        {
-          _id: 'ab2645hx123235',
-          type: 'cover',
-          genre: 'pop',
-          energy: 'slow',
-          pitch: 4
-        },
-        {
-          _id: 'ab2645hx123235',
-          type: 'cover',
-          genre: 'pop',
-          energy: 'slow',
-          pitch: 4
-        }]
-    },
-    {
-      title: 'fire in the rain',
-      artist: 'Adele'
+      }
+
+
     }
   ];
-  public addSongTableVisible: boolean = true;
 
   private artistAscending: boolean = false;
   private titleAscending: boolean = false;
+  public addSongTableVisible: boolean = true;
+  public expandedIndex: number | null = null;
+  public filteredSongs: any[] = [];
+  public searchTerm: string = '';
 
-  expandedIndex: number | null = null;
-
-  filteredSongs: any[] = [...this.testList];
-  searchTerm: string = '';
+  async ngOnInit() {
+    this.filteredSongs = [...await this.mlServ.getMusic()];
+  };
 
   // Méthode pour filtrer les morceaux
   filterSongs(): void {
@@ -115,5 +103,13 @@ export class MusicLibraryComponent {
       return artistA > artistB ? -1 : artistA < artistB ? 1 : 0;
     });
     this.artistAscending = !this.artistAscending;
+  };
+
+  updateMusic(input: { music_id: string }) {
+    this.mlServ.updateMusic({ music_id: input.music_id });
+  };
+
+  deleteMusic(input: { music_id: string }): void {
+    this.mlServ.deleteMusic({ music_id: input.music_id });
   };
 }

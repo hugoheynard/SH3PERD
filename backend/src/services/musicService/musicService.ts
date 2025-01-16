@@ -1,5 +1,6 @@
 import type {Music, MusicService, PostMusic} from "./interfaces_musicService";
 import * as console from "console";
+import {ObjectId} from "mongodb";
 
 export const musicService = (input: MusicService['input']): MusicService['output'] => {
     const { collection } = input;
@@ -7,7 +8,8 @@ export const musicService = (input: MusicService['input']): MusicService['output
     return {
         async getMusicLibrary() {
             try {
-                return await collection.find().toArray();
+                const result = await collection.find().toArray();
+                return result;
             } catch(err) {
                 console.error('Error fetching music', err);
                 throw new Error('Could not fetch music');
@@ -22,10 +24,21 @@ export const musicService = (input: MusicService['input']): MusicService['output
                 throw new Error('Could not insert music');
             }
         },
-        async updateMusic(input: any){
-
+        async updateMusic(input: { music_id: string }){
+            try {
+                return await collection.updateOne({ _id: new ObjectId(input.music_id) });
+            } catch (err) {
+                console.error('Error updating music', err);
+                throw new Error('Could not update music');
+            }
         },
-        async deleteMusic(input: any) {
+        async deleteMusic(input: { music_id: string }) {
+            try {
+                return await collection.deleteOne({ _id: new ObjectId(input.music_id) });
+            } catch (err) {
+                console.error('Error deleting music', err);
+                throw new Error('Could not delete music');
+            }
         }
     };
 }
