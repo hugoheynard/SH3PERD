@@ -1,0 +1,6 @@
+<ng-container *ngIf="favorite; else notFavorite">
+  <mat-icon>favorite</mat-icon>
+</ng-container>
+<ng-template #notFavorite>
+  <mat-icon>favorite_border</mat-icon>
+</ng-template>

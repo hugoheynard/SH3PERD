@@ -1,0 +1,10 @@
+A client can access everybody's music that share the same contract.
+
+-> we get an array of staffPool that shares the contract
+    {
+    _id: ...,
+    firstName: ...,
+    }
+--> we call from the collection : creator_id $in[staffPool object ids]
+
+-> user can claim a version posted by someone else, it will be added to his repertoire / shared

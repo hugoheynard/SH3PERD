@@ -7,7 +7,7 @@
 
 #searchBar {
   height: 20px;
-  width: 200px;
+  width: 95%;
   padding: 3px;
   border: 2px solid grey;
   border-radius: 0.3rem;
@@ -20,34 +20,23 @@
   text-align: left;
 }
 
-.example-accordion{
-  width: 100%;
-}
-
 .firstCol {
   width: 20px;
 }
 
-#musicTable thead tr {
-  border-bottom: 1px solid #3331;
+/*-----THEAD DESIGN-----*/
+
+#musicTable thead td { //design header cells
+  padding: 6px 10px;
+  border: 1px solid #ddd;
   background-color: #8a8d8d;
+  text-transform: capitalize;
+  color: #cccccc;
   font-size: 14px;
 }
 
-#musicTable th {
-  padding: 6px 10px;
-  border: 1px solid #ddd;
-  font-size: 14px;
-}
-
-#musicTable td {
-  padding: 6px 10px;
-  border: 1px solid #ddd;
-  font-size: 14px;
-}
-
-#musicTable tbody tr:nth-child(even) {
-  background-color: #f1f1f1;
+#musicTableHeader button {
+  color: #cccccc;
 }
 
 .flexSpace {
@@ -56,12 +45,29 @@
   align-items: center;
 }
 
-.musicTableHeader {
+/* -----TBODY DESIGN-----*/
+
+.musicRow td{
+  padding: 6px 10px;
+  border: 1px solid #ddd;
   font-size: 14px;
-  text-transform: capitalize;
-  color: #cccccc;
 }
 
-.musicTableHeader button {
-  color: #cccccc;
+.offsetCellVersion {
+  background-color: #8a8d8d;
+}
+
+
+
+#musicTable tbody tr:nth-child(even) {
+  background-color: #f1f1f1;
+} //TODO in component even one color
+
+
+
+
+
+
+.addSongTr {
+  background-color: #6a6c6c;
 }

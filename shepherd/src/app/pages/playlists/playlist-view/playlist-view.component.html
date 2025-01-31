@@ -1,0 +1,41 @@
+<div id="editPlaylistForm">
+  <div id="sidenavHeader">
+    <h2>EDIT PLAYLIST</h2>
+    <button (click)="close()"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <form [formGroup]="playlistForm">
+    <label>Name:</label>
+    <input matInput type="text" formControlName="name">
+
+    <p>Length</p>
+
+    <label><mat-icon>offline_bolt</mat-icon>Energy</label>
+    <input matInput type="number" formControlName="energy" min="1" max="4" step="1">
+
+
+    <h3>Song list</h3>
+    <button mat-fab extended>
+      <mat-icon>library_add</mat-icon>
+      Add Song
+    </button>
+    <div cdkDropList class="song-list" (cdkDropListDropped)="drop($event)">
+      <div *ngFor="let song of playlist?.songList || [];
+       trackBy: trackSong"
+           cdkDrag
+           class="song">
+        <app-track-line [song]="song" />
+      </div>
+
+    </div>
+
+    <h3>Add notes</h3>
+    <input matInput type="text" formControlName="notes" id="notes">
+
+  </form>
+
+  <button type="submit">Save</button>
+</div>
+
+
+

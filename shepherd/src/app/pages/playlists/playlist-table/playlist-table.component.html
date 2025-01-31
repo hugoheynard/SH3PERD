@@ -1,0 +1,45 @@
+<table id="playlistTable">
+  <thead>
+    <tr>
+      <td class="dateCol">
+        <div class="flexSpace">
+          <span>Creation date</span>
+          <button mat-icon-button class="sortButton"
+                  (click)="sortByCreationDate()">
+            <mat-icon>compare_arrows</mat-icon>
+          </button>
+        </div>
+      </td>
+      <td>Name</td>
+      <td>
+        <div class="flexSpace">
+          <span>energy</span>
+          <button mat-icon-button class="sortButton"
+                  (click)="sortByEnergyLevel()">
+            <mat-icon>compare_arrows</mat-icon>
+          </button>
+        </div>
+      </td>
+      <td>tags</td>
+      <td class="iconCol"><mat-icon>favorite_border</mat-icon></td>
+      <td class="iconCol"><mat-icon>remove_red_eye</mat-icon></td>
+    </tr>
+  </thead>
+
+  <tbody>
+    <ng-container *ngFor="let playlist of playlists; let index = index" >
+      <tr >
+        <td>{{ playlist.creation_date }}</td>
+        <td>{{ playlist.name }}</td>
+        <td>{{ playlist.energy }}</td>
+        <td>{{ playlist.tags }}</td>
+        <td><app-favorite-dynamic-icon [favorite]="playlist.favorite"/></td>
+        <td>
+          <button mat-icon-button (click)="editPlaylist(playlist)">
+            <mat-icon>remove_red_eye</mat-icon>
+          </button>
+        </td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>

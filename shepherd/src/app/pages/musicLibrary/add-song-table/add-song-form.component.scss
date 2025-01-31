@@ -6,7 +6,17 @@
 }
 
 input {
-  width: 300px;
+  width: 200px;
   height: 30px;
 }
 
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+p, h3 {
+  color: #a2a8a8;
+}

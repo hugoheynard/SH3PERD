@@ -1,0 +1,63 @@
+:host {
+  overflow-y: scroll;
+}
+
+#playlistTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th{
+  position: sticky;
+  top: 0;
+}
+
+thead td { //design header cells
+  height: 30px;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  background-color: #8a8d8d;
+  text-transform: capitalize;
+  color: #ddd;
+  font-size: 14px;
+}
+
+.firstCol {
+  width: 20px;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #2e3031; /* Alternance de couleurs pour les lignes */
+  color: #ddd;
+}
+
+tbody tr {
+  height: 30px;
+}
+
+tbody td {
+  padding: 6px 10px;
+}
+
+.playlistRow {
+  height: 30px;
+}
+
+.flexSpace {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.iconCol {
+  width: 20px;
+}
+
+.sortButton {
+  transform: rotate(90deg);
+  color: #ddd;
+}
+
+.dateCol {
+  width: 150px;
+}

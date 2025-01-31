@@ -1,3 +1,5 @@
+<h3>Add new song</h3>
+
 <form #myForm="ngForm" id="addSongForm" (ngSubmit)="onSubmit(myForm)">
   <input id="title"
          name="title"
@@ -13,3 +15,5 @@
          required/>
   <button type="submit" [disabled]="myForm.invalid">Submit</button>
 </form>
+
+<p><i>Before entering a new track, search the database to avoid duplications</i></p>

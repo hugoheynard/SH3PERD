@@ -5,7 +5,7 @@ import {Router} from '@angular/router';
   providedIn: 'root'
 })
 export class RouteService {
-  private router = inject(Router);
+  private router: Router = inject(Router);
 
   static tryCatchDecorator(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
@@ -35,6 +35,11 @@ export class RouteService {
   @RouteService.tryCatchDecorator
   async navigateToMusicLibrary(){
     await this.router.navigate(['app/musicLibrary']);
+  };
+
+  @RouteService.tryCatchDecorator
+  async navigateToPlaylist(){
+    await this.router.navigate(['app/playlistManager']);
   };
 
   @RouteService.tryCatchDecorator

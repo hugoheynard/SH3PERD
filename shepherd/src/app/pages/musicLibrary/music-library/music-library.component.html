@@ -1,19 +1,11 @@
 <!--searchBar-->
 <div id="headerAndSearch">
   <h2>MUSIC LIBRARY</h2>
-  <input
-    id="searchBar"
-    type="text"
-    placeholder="Search for a song..."
-    [(ngModel)]="searchTerm"
-    (input)="filterSongs()"
-  />
-
 </div>
 
 <!--resultTable-->
 <table id="musicTable">
-  <thead class="musicTableHeader">
+  <thead id="musicTableHeader">
     <tr>
       <td class="firstCol"></td>
       <td>
@@ -27,24 +19,27 @@
         <button mat-icon-button (click)="sortByArtist()"><mat-icon>sort_by_alpha</mat-icon></button>
       </td>
       <td>Compatibility</td>
-      <td id="colMenu"><mat-icon>more_vert</mat-icon></td>
+      <td id="colMenu">
+        <input id="searchBar" type="text"
+        placeholder="Search for a song..."
+        [(ngModel)]="searchTerm"
+        (input)="filterSongs()"/>
+      </td>
     </tr>
   </thead>
   <tbody>
     <ng-container *ngIf="addSongTableVisible">
-      <tr>
+      <tr class="addSongTr">
         <td colspan="5">
           <app-add-song-form />
         </td>
       </tr>
     </ng-container>
 
-
-
     <ng-container *ngFor="let music of filteredSongs; let index = index">
       <!-- music line -->
-      <tr>
-        <td>
+      <tr class="musicRow">
+        <td >
           <button
             (click)="toggleAccordion(index)"
             [attr.aria-expanded]="expandedIndex === index ? 'true' : 'false'">
@@ -61,7 +56,7 @@
       </tr>
       <!-- accordion detail versions -->
       <tr *ngIf="expandedIndex === index">
-        <td></td>
+        <td class="offsetCellVersion"></td>
         <td colspan="4">
             <app-version-table *ngIf="music.versions else noVersions" [versions]="music.versions" />
             <ng-template #noVersions>

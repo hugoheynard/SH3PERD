@@ -1,0 +1,19 @@
+<mat-sidenav-container class="pageContainer">
+  <mat-sidenav position="end" #sidenav mode="side"
+               id="trackListContainer"
+               [opened]="isSidenavOpen"
+               (closed)="isSidenavOpen = false">
+    <app-playlist-view
+      (closeSidenav)="sidenav.close()"
+      [playlist]="selectedPlaylist"/>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="flexRowSpaceBetween">
+      <h1>PLAYLIST MANAGER</h1>
+      <button (click)="openSidenav(null)">CREATE NEW</button>
+    </div>
+
+    <app-playlist-table [playlists]="playlists" (edit)="openSidenav($event)"/>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -4,6 +4,7 @@ import {CalendarComponent} from '../pages/calendar/calendarPage/calendar.compone
 import {LoginComponent} from '../pages/login/login/login.component';
 import {authGuard} from '../auth.guard';
 import {MusicLibraryComponent} from '../pages/musicLibrary/music-library/music-library.component';
+import {PlaylistManagerComponent} from '../pages/playlists/playlist-manager/playlist-manager.component';
 
 
 export const routes: Routes = [
@@ -11,6 +12,7 @@ export const routes: Routes = [
   { path: 'app/home', component: CalendarComponent, /*canActivate: [authGuard]*/ },
   { path: 'app/calendar', component: CalendarComponent },
   { path: 'app/musicLibrary', component: MusicLibraryComponent },
+  { path: 'app/playlistManager', component: PlaylistManagerComponent },
   {
     path: 'app/settings',
     canActivate: [authGuard],
