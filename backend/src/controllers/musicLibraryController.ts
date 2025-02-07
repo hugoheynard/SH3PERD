@@ -25,5 +25,5 @@ export const musicLibraryController = (input: any): any => {
         }
     };
 
-    return wrap_TryCatchNextErr(controller)
+    return wrap_TryCatchNextErr(controller);
 };

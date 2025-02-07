@@ -1,0 +1,53 @@
+<table id="versionTable">
+    <thead>
+      <tr>
+        <td id="type">Type</td>
+        <td id="pitch">Pitch</td>
+        <td id="genre">Genre</td>
+        <td id="energy">Energy</td>
+        <td id="effort">Effort</td>
+        <td id="emergency">Emergency</td>
+        <td></td>
+      </tr>
+      </thead>
+    <tbody *ngFor="let version of versions; let i = index" class="tr">
+      <tr>
+        <!-- each line is a form -->
+        <ng-container [formGroup]="forms[i]">
+          <td class="td"><app-select [control]="getControl({ formIndex: i, controlName: 'type' })"
+                                     [options]="['original', 'acoustic', 'cover', 'remix']"/></td>
+
+          <td><input type="number" formControlName="pitch" min="-12" max="12"></td>
+
+          <td><app-select [control]="getControl({ formIndex: i, controlName: 'genre' })"
+                          [options]="['pop', 'rock', 'jazz', 'electro', 'disco/soul']"/></td>
+
+          <td><app-select [control]="getControl({ formIndex: i, controlName: 'energy' })"
+                          [options]="['slow', 'mid', 'up-mid', 'high']"/></td>
+
+          <td><app-select [control]="getControl({ formIndex: i, controlName: 'effort' })"
+                          [options]="['low', 'mid', 'high']"/></td>
+
+          <td><input type="checkbox" formControlName="emergency"></td>
+
+          <td>
+            <button mat-icon-button class="buttonsForm" (click)="toggleFileUpload(i)">
+              <mat-icon>library_music</mat-icon>
+            </button>
+            <button mat-icon-button class="buttonsForm"
+                    (click)="onSubmit({ index: i, version_id: version._id })"
+                    [disabled]="forms[i].invalid"
+                    *ngIf="forms[i].dirty">
+              <mat-icon>save</mat-icon>
+            </button>
+            <button mat-icon-button cdkDrag [cdkDragData]="version">
+              <mat-icon>drag_indicator</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+      </tr>
+      <tr *ngIf="expandedIndex === i">
+        <app-file-management [i]="i"/>
+      </tr>
+    </tbody>
+</table>

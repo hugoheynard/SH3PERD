@@ -1,24 +1,20 @@
 <div id="editPlaylistForm">
   <div id="sidenavHeader">
     <h2>EDIT PLAYLIST</h2>
-    <button (click)="close()"><mat-icon>close</mat-icon></button>
+    <button (click)="playlistDisplayService.closeSidenav()"><mat-icon>close</mat-icon></button>
   </div>
 
   <form [formGroup]="playlistForm">
     <label>Name:</label>
     <input matInput type="text" formControlName="name">
-
-    <p>Length</p>
-
-    <label><mat-icon>offline_bolt</mat-icon>Energy</label>
-    <input matInput type="number" formControlName="energy" min="1" max="4" step="1">
+    <app-playlist-short-infos
+      [energyControl]="getControl('energy')"/><!--TODO: envoyer les form controls-->
 
 
+    <!--TRACK LIST-->
     <h3>Song list</h3>
-    <button mat-fab extended>
-      <mat-icon>library_add</mat-icon>
-      Add Song
-    </button>
+    <button class="button-16" (click)="playlistDisplayService.openLibraryView()"><mat-icon>library_add</mat-icon>Add Song</button>
+
     <div cdkDropList class="song-list" (cdkDropListDropped)="drop($event)">
       <div *ngFor="let song of playlist?.songList || [];
        trackBy: trackSong"
@@ -26,15 +22,16 @@
            class="song">
         <app-track-line [song]="song" />
       </div>
-
     </div>
 
+
+    <!--NOTES-->
     <h3>Add notes</h3>
     <input matInput type="text" formControlName="notes" id="notes">
 
   </form>
 
-  <button type="submit">Save</button>
+  <button class="button-16" type="submit">Save</button>
 </div>
 
 

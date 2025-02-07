@@ -1,4 +1,8 @@
-<h3>Add new song</h3>
+<div class="flexRowSpaceBetween fullWidth">
+  <div class="third"></div>
+  <div class="third center"><h3>Add new song</h3></div>
+  <div class="closeBut third"><button (click)="addSongTableWindowService.close()">X</button></div>
+</div>
 
 <form #myForm="ngForm" id="addSongForm" (ngSubmit)="onSubmit(myForm)">
   <input id="title"

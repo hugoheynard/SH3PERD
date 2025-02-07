@@ -1,8 +1,10 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
 import {NgForOf, NgIf, NgStyle} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {FavoriteDynamicIconComponent} from '../favorite-dynamic-icon/favorite-dynamic-icon.component';
+import {PlaylistDisplayService} from '../playlist-display.service';
+import {Playlist} from '../playlist_interfaces';
 
 @Component({
   selector: 'app-playlist-table',
@@ -19,14 +21,17 @@ import {FavoriteDynamicIconComponent} from '../favorite-dynamic-icon/favorite-dy
   styleUrl: './playlist-table.component.scss'
 })
 export class PlaylistTableComponent {
+  public playlistDisplayService: any = inject(PlaylistDisplayService);
+
   @Input() playlists: any[] = [];
   @Output() edit: EventEmitter<any> = new EventEmitter<any>();
 
   private creationDateOrder: string = 'down';
   private energyLevelOrder: any = null;
 
-  editPlaylist(playlist: any): void {
-    this.edit.emit(playlist);
+  editPlaylist(playlist: Playlist): void {
+    this.playlistDisplayService.viewPlaylist(playlist);
+    this.playlistDisplayService.openSidenav();
   };
 
   sortByCreationDate(): void {

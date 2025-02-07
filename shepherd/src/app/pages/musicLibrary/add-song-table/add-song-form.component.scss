@@ -20,3 +20,23 @@ input {
 p, h3 {
   color: #a2a8a8;
 }
+
+.closeBut {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+}
+
+.third {
+  width: 33%;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.center {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}

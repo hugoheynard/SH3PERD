@@ -1,6 +1,7 @@
 import {Component, inject} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MusicLibraryService} from '../../../services/music-library.service';
+import {AddSongTableWindowService} from '../add-song-table-window-service';
 
 
 @Component({
@@ -14,6 +15,7 @@ import {MusicLibraryService} from '../../../services/music-library.service';
 })
 export class AddSongFormComponent {
   private mlServ: any = inject(MusicLibraryService);
+  public addSongTableWindowService: any = inject(AddSongTableWindowService);
 
   song: { title: string; artist: string } = { title: '', artist: '' };
 
@@ -21,4 +23,5 @@ export class AddSongFormComponent {
     console.log('Form submitted!', form.value);
     this.mlServ.postMusic({ formData: form.value });
   };
+
 }

@@ -17,9 +17,9 @@ thead td { //design header cells
   padding: 6px 10px;
   border: 1px solid #ddd;
   background-color: #8a8d8d;
-  text-transform: capitalize;
   color: #ddd;
   font-size: 14px;
+  text-transform: uppercase;
 }
 
 .firstCol {
@@ -37,6 +37,7 @@ tbody tr {
 
 tbody td {
   padding: 6px 10px;
+  border: 1px solid #ddd;
 }
 
 .playlistRow {
