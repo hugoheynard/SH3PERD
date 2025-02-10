@@ -37,7 +37,10 @@ export const musicService = (input: MusicService['input']): MusicService['output
         },
         async updateMusic(input){
             try {
-                return await collection.updateOne({ _id: new ObjectId(input.music_id) });
+                return await collection.updateOne(
+                    { _id: new ObjectId(input.music_id) },
+                    { $set: { ...input.musicData, last_modified: new Date() } }
+                    );
             } catch (err) {
                 console.error('Error updating music', err);
                 throw new Error('Could not update music');
@@ -75,7 +78,7 @@ export const musicService = (input: MusicService['input']): MusicService['output
             try {
                 const result =  await musicVersionsCollection.updateOne(
                     { _id: new ObjectId(input.version_id) },
-                    { $set: input.versionData }
+                    { $set: { ...input.versionData, last_modified: new Date() } }
                 );
                 console.log(`Version ${input.version_id} successfully updated`);
 

@@ -103,6 +103,12 @@ export class VersionTableComponent implements OnInit, OnChanges{
       versionData: formData
     });
     console.log(`New version added :`, result);
+    this.cdr.detectChanges();
+  };
+
+  async deleteVersion(input: { version_id: string }): Promise<void> {
+    const result = this.mlServ.deleteVersion({ version_id: input.version_id });
+    this.cdr.detectChanges();
   };
 
   getControl(input: { formIndex: number, controlName: string }) {

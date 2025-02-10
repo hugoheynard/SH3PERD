@@ -14,7 +14,7 @@ export interface MusicService {
     output: {
         getMusicLibrary: () => Promise<MusicDocument[]>;
         postMusic: (input: { musicData: Record<'title' | 'artist', string> }) => Promise<InsertManyResult<any>>;
-        updateMusic: (input: { music_id: string }) => Promise<UpdateResult<any>>;
+        updateMusic: (input: { music_id: string; musicData: any }) => Promise<UpdateResult<any>>;
         deleteMusic: (input: { music_id: string }) => Promise<DeleteResult>;
         //versions
         postVersion: (input: { referenceMusic_id: string; versionData: any }) => Promise<InsertOneResult<any>>;

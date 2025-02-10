@@ -97,4 +97,19 @@ export class MusicLibraryService {
       return false;
     }
   };
+
+  async deleteVersion(input: { version_id: string }): Promise<any> {
+    try {
+      const response: HttpResponse<any> = await firstValueFrom(
+        this.http.delete(
+          `${this.baseURL}/musicLibrary/version/${input.version_id}`,
+          { observe: 'response' })
+      );
+
+      return response.ok;
+    } catch(e){
+      console.log('error while deleting version', e);
+      return false;
+    }
+  };
 }

@@ -57,9 +57,8 @@
               : onSubmitUpdate({ index: index, version_id: version_id })"              [disabled]="form.invalid">
         <mat-icon>save</mat-icon>
       </button>
-      <button mat-icon-button class="buttonsForm" >
-        <mat-icon>library_music</mat-icon>
-      </button>
+      <button mat-icon-button (click)="deleteVersion({ version_id: version_id })"><mat-icon>delete_forever</mat-icon></button>
+      <button mat-icon-button class="buttonsForm" ><mat-icon>library_music</mat-icon></button>
       <button mat-icon-button *ngIf="!isNewVersion" cdkDrag [cdkDragData]="version_id">
         <mat-icon>drag_indicator</mat-icon>
       </button>
