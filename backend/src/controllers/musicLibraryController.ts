@@ -22,6 +22,29 @@ export const musicLibraryController = (input: any): any => {
         async deleteMusic(req: Request, res: Response, next: NextFunction): Promise<void> {
             const result = await musicService.deleteMusic({ music_id: req.params.music_id });
             res.status(200).json({ result: result });
+        },
+
+
+        /**VERSIONS CRUD OPERATIONS*/
+        async postVersion(req: Request, res: Response, next: NextFunction): Promise<void> {
+            const versionData = await musicService.postVersion({
+                referenceMusic_id: req.body.referenceMusic_id,
+                versionData: req.body.versionData
+            });
+            res.status(200).json({ versionData: versionData });
+        },
+
+        async updateVersion(req: Request, res: Response, next: NextFunction): Promise<any> {
+            const result = await musicService.updateVersion({
+                version_id: req.params.version_id,
+                versionData: req.body.versionData
+            });
+            res.status(200).json({ result: result });
+        },
+
+        async deleteVersion(req: Request, res: Response, next: NextFunction): Promise<any> {
+            const result = await musicService.deleteVersion({ version_id: req.params.version_id });
+            res.status(200).json({ result: result});
         }
     };
 

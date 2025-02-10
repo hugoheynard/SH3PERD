@@ -5,7 +5,7 @@ import {Injectable, signal, WritableSignal} from '@angular/core';
 })
 export class AddSongTableWindowService {
   public songTableVisibleSignal: WritableSignal<boolean> = signal(false);
-  public addVersionTr: WritableSignal<boolean> = signal(false);
+  public addVersionTrSignal: WritableSignal<boolean> = signal(false);
 
   open(): void {
     this.songTableVisibleSignal.set(true);
@@ -18,4 +18,13 @@ export class AddSongTableWindowService {
   toggle(): void {
     this.songTableVisibleSignal.update(state => !state);
   };
+
+  openAddVersionTr(): void {
+    this.addVersionTrSignal.set(true);
+  };
+
+  closeAddVersionTr(): void {
+    this.addVersionTrSignal.set(false);
+  };
+
 }

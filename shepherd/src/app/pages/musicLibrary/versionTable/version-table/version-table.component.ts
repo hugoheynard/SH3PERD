@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {NgForOf, NgIf} from '@angular/common';
+import {NgForOf, NgIf, NgTemplateOutlet} from '@angular/common';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
@@ -19,7 +19,8 @@ import {MusicLibraryService} from '../../../../services/music-library.service';
     MatIconButton,
     FileManagementComponent,
     CdkDrag,
-    SelectComponent
+    SelectComponent,
+    NgTemplateOutlet
   ],
   templateUrl: './version-table.component.html',
   styleUrl: './version-table.component.scss'
@@ -30,8 +31,11 @@ export class VersionTableComponent implements OnInit, OnChanges{
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef)
   public expandedIndex: number | null = null; // Index de la ligne en cours d'édition
 
+  @Input() referenceMusic_id: string = '';
   @Input() versions: any[] = [];
+  @Input() addVersionTr: boolean = false;
   forms: FormGroup[] = [];
+  newVersionForm: FormGroup = new FormGroup({});
 
   ngOnInit(): void {
     this.initializeForms();
@@ -45,21 +49,60 @@ export class VersionTableComponent implements OnInit, OnChanges{
   };
 
   initializeForms(): void {
-    this.forms = this.versions.map(version =>
-      this.fb.group({
-        type: [version.type || ''],
-        genre: [version.genre || ''],
-        energy: [version.energy || ''],
-        effort: [version.effort || ''],
-        emergency: [version.emergency || false],
-        pitch: [version.pitch || 0],
-      })
-    );
+    this.forms = this.versions.map(version => this.createVersionForm(version));
+    this.newVersionForm = this.createVersionForm();
   };
 
-  onSubmit(input:{ index: number, version_id: string }): void {
+  createVersionForm(version: any = {}): FormGroup {
+    return this.fb.group({
+      type: [version.type || ''],
+      genre: [version.genre || ''],
+      energy: [version.energy || ''],
+      effort: [version.effort || ''],
+      emergency: [version.emergency || false],
+      pitch: [version.pitch || 0],
+    });
+  };
+
+  addNewVersion(): void {
+    if (this.newVersionForm.invalid) return;
+
+    const newVersion = this.newVersionForm.value;
+    console.log("Nouvelle version ajoutée :", newVersion);
+
+    // Ajouter la version dans `versions` et générer un nouveau form
+    this.versions.push(newVersion);
+    this.forms.push(this.createVersionForm(newVersion));
+
+    // Réinitialiser le formulaire
+    this.newVersionForm.reset({
+      type: '',
+      genre: '',
+      energy: '',
+      effort: '',
+      emergency: false,
+      pitch: 0,
+    });
+  }
+
+  async onSubmitUpdate(input:{ index: number, version_id: string }): Promise<void> {
     const formData = this.forms[input.index].value;
-    console.log(`Line ${input.index} form submitted :`, formData);
+
+    const result = await this.mlServ.updateVersion({
+      version_id: input.version_id,
+      versionData: formData
+    })
+    console.log(`Line ${input.index} form submitted :`, result);
+  };
+
+  async onSubmitPostNew(input: { referenceMusic_id: string }): Promise<void> {
+    const formData = this.newVersionForm.value;
+
+    const result = await this.mlServ.postVersion({
+      referenceMusic_id: input.referenceMusic_id,
+      versionData: formData
+    });
+    console.log(`New version added :`, result);
   };
 
   getControl(input: { formIndex: number, controlName: string }) {

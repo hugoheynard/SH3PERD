@@ -1,4 +1,4 @@
-import type {Music, MusicService, PostMusic} from "./interfaces_musicService";
+import type {MusicService} from "./interfaces_musicService";
 import * as console from "console";
 import {ObjectId} from "mongodb";
 
@@ -25,7 +25,9 @@ export const musicService = (input: MusicService['input']): MusicService['output
                 throw new Error('Could not fetch music');
             }
         },
-        async postMusic(input: { musicData: Record<'title' | 'artist', string> }){
+
+        //MUSIC CRUD
+        async postMusic(input){
             try {
                 return await collection.insertOne(input.musicData);
             } catch(err) {
@@ -33,7 +35,7 @@ export const musicService = (input: MusicService['input']): MusicService['output
                 throw new Error('Could not insert music');
             }
         },
-        async updateMusic(input: { music_id: string }){
+        async updateMusic(input){
             try {
                 return await collection.updateOne({ _id: new ObjectId(input.music_id) });
             } catch (err) {
@@ -41,7 +43,7 @@ export const musicService = (input: MusicService['input']): MusicService['output
                 throw new Error('Could not update music');
             }
         },
-        async deleteMusic(input: { music_id: string }) {
+        async deleteMusic(input) {
             try {
                 return await collection.deleteOne({ _id: new ObjectId(input.music_id) });
             } catch (err) {
@@ -50,13 +52,48 @@ export const musicService = (input: MusicService['input']): MusicService['output
             }
         },
 
-        //VERSIONS
-        async updateVersion(input: { version_id: string }) {
+        //VERSIONS CRUD
+        async postVersion(input)  {
             try {
-                return await musicVersionsCollection.updateOne({ _id: input.version_id })
+                if (!input || !input.versionData || !input.referenceMusic_id) {
+                    throw new Error('Invalid input: versionData and referenceMusic_id are required');
+                }
+
+                const result = await musicVersionsCollection.insertOne({
+                    referenceMusic_id: new ObjectId(input.referenceMusic_id),
+                    ...input.versionData
+                });
+                console.log('Version successfully added:', result.insertedId);
+
+                return result;
+            } catch (err) {
+                console.error('Error adding new version', err);
+                throw new Error('Could not add version');
+            }
+        },
+        async updateVersion(input) {
+            try {
+                const result =  await musicVersionsCollection.updateOne(
+                    { _id: new ObjectId(input.version_id) },
+                    { $set: input.versionData }
+                );
+                console.log(`Version ${input.version_id} successfully updated`);
+
+                return result;
             } catch (err) {
                 console.error('Error updating version', err);
                 throw new Error('Could not update version');
+            }
+        },
+        async deleteVersion(input) {
+            try {
+                const result =  await musicVersionsCollection.deleteOne({ _id: new ObjectId(input.version_id) });
+                console.log(`Version ${input.version_id} successfully updated`);
+
+                return result;
+            } catch(err) {
+                console.error('Error deleting version', err);
+                throw new Error('Could not delete version');
             }
         }
     };

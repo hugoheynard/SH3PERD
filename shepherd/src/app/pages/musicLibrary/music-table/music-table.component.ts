@@ -50,9 +50,9 @@ export class MusicTableComponent implements OnInit{
     });
   };
 
-  openAddVersionWindow() {
-
-  }
+  openAddVersionWindow(): void {
+    this.addSongTableWindowService.openAddVersionTr();
+  };
 
   updateMusic(input: { music_id: string }) {
     this.mlServ.updateMusic({ music_id: input.music_id });

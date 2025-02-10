@@ -10,44 +10,59 @@
         <td></td>
       </tr>
       </thead>
-    <tbody *ngFor="let version of versions; let i = index" class="tr">
-      <tr>
-        <!-- each line is a form -->
-        <ng-container [formGroup]="forms[i]">
-          <td class="td"><app-select [control]="getControl({ formIndex: i, controlName: 'type' })"
-                                     [options]="['original', 'acoustic', 'cover', 'remix']"/></td>
+    <tbody>
+    <!-- Nouvelle Version -->
+      <ng-container *ngIf="addVersionTr">
+        <ng-container
+          *ngTemplateOutlet="versionRowTemplate;
+          context: { form: newVersionForm, index: -1, isNewVersion: true }" />
+      </ng-container>
 
-          <td><input type="number" formControlName="pitch" min="-12" max="12"></td>
-
-          <td><app-select [control]="getControl({ formIndex: i, controlName: 'genre' })"
-                          [options]="['pop', 'rock', 'jazz', 'electro', 'disco/soul']"/></td>
-
-          <td><app-select [control]="getControl({ formIndex: i, controlName: 'energy' })"
-                          [options]="['slow', 'mid', 'up-mid', 'high']"/></td>
-
-          <td><app-select [control]="getControl({ formIndex: i, controlName: 'effort' })"
-                          [options]="['low', 'mid', 'high']"/></td>
-
-          <td><input type="checkbox" formControlName="emergency"></td>
-
-          <td>
-            <button mat-icon-button class="buttonsForm" (click)="toggleFileUpload(i)">
-              <mat-icon>library_music</mat-icon>
-            </button>
-            <button mat-icon-button class="buttonsForm"
-                    (click)="onSubmit({ index: i, version_id: version._id })"
-                    [disabled]="forms[i].invalid"
-                    *ngIf="forms[i].dirty">
-              <mat-icon>save</mat-icon>
-            </button>
-            <button mat-icon-button cdkDrag [cdkDragData]="version">
-              <mat-icon>drag_indicator</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-      </tr>
-      <tr *ngIf="expandedIndex === i">
-        <app-file-management [i]="i"/>
-      </tr>
+      <!-- Versions existantes -->
+      <ng-container *ngFor="let version of versions; let i = index">
+        <ng-container
+          *ngTemplateOutlet="versionRowTemplate;
+          context: { form: forms[i], index: i, version_id: version._id }" />
+      </ng-container>
     </tbody>
 </table>
+
+<!-- Définition du template pour la ligne -->
+<ng-template #versionRowTemplate let-form="form" let-index="index" let-version_id="version_id" let-isNewVersion="isNewVersion">
+  <tr [formGroup]="form">
+    <td class="td">
+      <app-select [control]="form.get('type')" [options]="['original', 'acoustic', 'cover', 'remix']"/>
+    </td>
+
+    <td><input type="number" formControlName="pitch" min="-12" max="12"></td>
+
+    <td>
+      <app-select [control]="form.get('genre')" [options]="['pop', 'rock', 'jazz', 'electro', 'disco/soul']"/>
+    </td>
+
+    <td>
+      <app-select [control]="form.get('energy')" [options]="['slow', 'mid', 'up-mid', 'high']"/>
+    </td>
+
+    <td>
+      <app-select [control]="form.get('effort')" [options]="['low', 'mid', 'high']"/>
+    </td>
+
+    <td><input type="checkbox" formControlName="emergency"></td>
+
+    <td>
+      <button mat-icon-button class="buttonsForm" *ngIf="form.dirty"
+              (click)="isNewVersion
+              ? onSubmitPostNew({ referenceMusic_id: referenceMusic_id })
+              : onSubmitUpdate({ index: index, version_id: version_id })"              [disabled]="form.invalid">
+        <mat-icon>save</mat-icon>
+      </button>
+      <button mat-icon-button class="buttonsForm" >
+        <mat-icon>library_music</mat-icon>
+      </button>
+      <button mat-icon-button *ngIf="!isNewVersion" cdkDrag [cdkDragData]="version_id">
+        <mat-icon>drag_indicator</mat-icon>
+      </button>
+    </td>
+  </tr>
+</ng-template>

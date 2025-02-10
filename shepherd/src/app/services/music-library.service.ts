@@ -62,4 +62,39 @@ export class MusicLibraryService {
       return false;
     }
   };
+
+  async postVersion(input: { referenceMusic_id: string; versionData: any }): Promise<any> {
+    try {
+      const response: HttpResponse<any> = await firstValueFrom(
+        this.http.post(
+          `${this.baseURL}/musicLibrary/version`,
+          {
+            referenceMusic_id: input.referenceMusic_id,
+            versionData: input.versionData
+          },
+          { observe: 'response' }
+        )
+      );
+      return response.ok;
+    } catch(e) {
+      console.log('error while posting new version', e);
+      return false;
+    }
+  };
+
+  async updateVersion(input: { version_id: string; versionData: any}): Promise<any> {
+    try {
+      const response: HttpResponse<any> = await firstValueFrom(
+        this.http.put(
+          `${this.baseURL}/musicLibrary/version/${input.version_id}`,
+          { versionData: input.versionData},
+          { observe: 'response' }
+        )
+      );
+      return response.ok;
+    } catch(e) {
+      console.log('error while updating version', e);
+      return false;
+    }
+  };
 }

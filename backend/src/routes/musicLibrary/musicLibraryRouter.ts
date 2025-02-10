@@ -2,19 +2,23 @@ import express, {type Router} from "express";
 
 export const musicLibraryRouter = (musicController: any): Router => {
     const router: Router = express.Router();
+    const musicRouter: Router = express.Router();
+    const versionRouter: Router = express.Router();
 
     /* Music routes, CRUD operations */
 
     router.get('/', musicController.getMusicLibrary);
-    router.post('/music', musicController.postMusic);
-    router.put('/music/:music_id', musicController.updateMusic);
-    router.delete('/music/:music_id', musicController.deleteMusic);
+
+    router.use('/music', musicRouter);
+    musicRouter.post('/', musicController.postMusic);
+    musicRouter.put('/:music_id', musicController.updateMusic);
+    musicRouter.delete('/:music_id', musicController.deleteMusic);
 
     /* Version routes, CRUD operations */
-    //
-    //
-    //
-    //
+    router.use('/version', versionRouter)
+    versionRouter.post('/', musicController.postVersion);
+    versionRouter.put('/:version_id', musicController.updateVersion);
+    versionRouter.delete('/:version_id', musicController.deleteVersion);
 
     return router;
 };

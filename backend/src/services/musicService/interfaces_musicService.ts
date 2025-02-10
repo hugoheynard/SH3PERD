@@ -1,10 +1,4 @@
-import type {Collection, DeleteResult, InsertManyResult, ObjectId, UpdateResult} from "mongodb";
-
-export interface PostMusic {
-    title: string;
-    artist: string;
-    versions: any[];
-}
+import type {Collection, DeleteResult, InsertManyResult, InsertOneResult, ObjectId, UpdateResult} from "mongodb";
 
 export interface MusicDocument{
     _id: ObjectId;
@@ -18,13 +12,14 @@ export interface MusicService {
         musicVersionsCollection: Collection<any>
     },
     output: {
-        getMusicLibrary: Promise<MusicDocument[]>;
-        postMusic: Promise<InsertManyResult<any>>;
-        updateMusic: Promise<UpdateResult<any>>;
-        deleteMusic: Promise<DeleteResult>;
+        getMusicLibrary: () => Promise<MusicDocument[]>;
+        postMusic: (input: { musicData: Record<'title' | 'artist', string> }) => Promise<InsertManyResult<any>>;
+        updateMusic: (input: { music_id: string }) => Promise<UpdateResult<any>>;
+        deleteMusic: (input: { music_id: string }) => Promise<DeleteResult>;
         //versions
-        updateVersion: Promise<any>
-        [key: string]: any;
+        postVersion: (input: { referenceMusic_id: string; versionData: any }) => Promise<InsertOneResult<any>>;
+        updateVersion: (input: { version_id: string; versionData: any }) => Promise<UpdateResult<any>>;
+        deleteVersion: (input: { version_id: string }) => Promise<DeleteResult>;
     }
 }
 
