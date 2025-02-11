@@ -1,7 +1,7 @@
 import {Component, inject} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MusicLibraryService} from '../../../services/music-library.service';
-import {AddSongTableWindowService} from '../add-song-table-window-service';
+import {MlDisplayService} from '../mlDisplayService';
 
 
 @Component({
@@ -15,7 +15,7 @@ import {AddSongTableWindowService} from '../add-song-table-window-service';
 })
 export class AddSongFormComponent {
   private mlServ: any = inject(MusicLibraryService);
-  public addSongTableWindowService: any = inject(AddSongTableWindowService);
+  public addSongTableWindowService: any = inject(MlDisplayService);
 
   song: { title: string; artist: string } = { title: '', artist: '' };
 

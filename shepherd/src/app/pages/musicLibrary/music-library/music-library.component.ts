@@ -10,7 +10,8 @@ import {ToggleButtonComponent} from '../../settingsModule/toggle-button/toggle-b
 import {AddSongFormComponent} from '../add-song-table/add-song-form.component';
 import {MusicLibraryService} from '../../../services/music-library.service';
 import {MusicTableComponent} from '../music-table/music-table.component';
-import {AddSongTableWindowService} from '../add-song-table-window-service';
+import {MlDisplayService} from '../mlDisplayService';
+import {SidenavRightService} from '../../../components/sidenav-right.service';
 
 @Component({
   selector: 'app-music-library',
@@ -36,7 +37,12 @@ import {AddSongTableWindowService} from '../add-song-table-window-service';
   styleUrl: './music-library.component.scss'
 })
 
-export class MusicLibraryComponent {
-  public addSongTableWindowService: any = inject(AddSongTableWindowService);
+export class MusicLibraryComponent implements OnInit{
+  private sidenavRightService: SidenavRightService = inject(SidenavRightService);
+  public addSongTableWindowService: MlDisplayService = inject(MlDisplayService);
+
+  ngOnInit(): void {
+    //this.sidenavRightService.setSidenavContent();
+  };
 
 }

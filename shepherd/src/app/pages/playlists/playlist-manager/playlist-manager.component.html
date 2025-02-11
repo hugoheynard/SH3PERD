@@ -1,25 +1,12 @@
-<mat-sidenav-container class="pageContainer">
-  <mat-sidenav
-    position="end"
-    mode="side"
-    id="trackListContainer"
-    [opened]="playlistDisplayService.playlistSidenavSignal()">
-    <app-playlist-view [playlist]="playlistDisplayService.currentPlaylistSignal()"/>
-  </mat-sidenav>
+<div class="flexRowSpaceBetween">
+  <h1>PLAYLIST MANAGER</h1>
+  <button (click)="openSidenav(null)">CREATE NEW</button>
+</div>
 
-  <mat-sidenav-content>
-    <div class="flexRowSpaceBetween">
-      <h1>PLAYLIST MANAGER</h1>
-      <button (click)="openSidenav(null)">CREATE NEW</button>
-    </div>
+<ng-container *ngIf="playlistDisplayService.viewModeSignal() === 'playlist'">
+  <app-playlist-table [playlists]="playlists"/>
+</ng-container>
 
-    <ng-container *ngIf="playlistDisplayService.viewModeSignal() === 'playlist'">
-      <app-playlist-table [playlists]="playlists"/>
-    </ng-container>
-
-    <ng-container *ngIf="playlistDisplayService.viewModeSignal() === 'library'">
-      <app-music-table />
-    </ng-container>
-
-  </mat-sidenav-content>
-</mat-sidenav-container>
+<ng-container *ngIf="playlistDisplayService.viewModeSignal() === 'library'">
+  <app-music-table />
+</ng-container>

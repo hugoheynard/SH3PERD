@@ -6,6 +6,20 @@ export interface MusicDocument{
     artist: string;
 }
 
+export interface VersionDocument{
+    _id: ObjectId;
+    type: string;
+    pitch: number;
+    genre: string;
+    creator_id: ObjectId;
+    creation_date: Date;
+    referenceMusic_id: ObjectId;
+    last_modified?: Date;
+    energy: string;
+    effort: string;
+    emergency: boolean;
+}
+
 export interface MusicService {
     input: {
         collection: Collection<any> //todo interface Music mongo

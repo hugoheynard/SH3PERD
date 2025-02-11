@@ -5,6 +5,7 @@ import {MatIconButton} from '@angular/material/button';
 import {FavoriteDynamicIconComponent} from '../favorite-dynamic-icon/favorite-dynamic-icon.component';
 import {PlaylistDisplayService} from '../playlist-display.service';
 import {Playlist} from '../playlist_interfaces';
+import {SidenavRightService} from '../../../components/sidenav-right.service';
 
 @Component({
   selector: 'app-playlist-table',
@@ -21,17 +22,13 @@ import {Playlist} from '../playlist_interfaces';
   styleUrl: './playlist-table.component.scss'
 })
 export class PlaylistTableComponent {
-  public playlistDisplayService: any = inject(PlaylistDisplayService);
-
-  @Input() playlists: any[] = [];
-  @Output() edit: EventEmitter<any> = new EventEmitter<any>();
-
+  public playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
   private creationDateOrder: string = 'down';
   private energyLevelOrder: any = null;
+  @Input() playlists: any[] = [];
 
   editPlaylist(playlist: Playlist): void {
-    this.playlistDisplayService.viewPlaylist(playlist);
-    this.playlistDisplayService.openSidenav();
+    this.playlistDisplayService.openPlaylistInSidenav({ playlist: playlist});
   };
 
   sortByCreationDate(): void {

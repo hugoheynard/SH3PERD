@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AddSongTableWindowServiceService } from './add-song-table-window-service';
+import { AddSongTableWindowServiceService } from './mlDisplayService';
 
 describe('AddSongTableWindowServiceService', () => {
   let service: AddSongTableWindowServiceService;

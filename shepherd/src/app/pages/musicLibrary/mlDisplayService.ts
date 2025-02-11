@@ -3,7 +3,7 @@ import {Injectable, signal, WritableSignal} from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
-export class AddSongTableWindowService {
+export class MlDisplayService {
   public songTableVisibleSignal: WritableSignal<boolean> = signal(false);
   public addVersionTrSignal: WritableSignal<boolean> = signal(false);
 

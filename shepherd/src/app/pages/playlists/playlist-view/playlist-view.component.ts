@@ -1,15 +1,12 @@
 import {
-  AfterViewInit,
   Component,
-  EventEmitter,
   inject,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges
 } from '@angular/core';
-import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
+import {CdkDrag, CdkDragDrop, CdkDropList, transferArrayItem} from "@angular/cdk/drag-drop";
 import {NgForOf} from "@angular/common";
 import {TrackLineComponent} from "../track-line/track-line.component";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
@@ -39,8 +36,9 @@ import {PlaylistShortInfosComponent} from '../playlist-short-infos/playlist-shor
   styleUrl: './playlist-view.component.scss'
 })
 export class PlaylistViewComponent implements OnInit, OnChanges{
+  protected readonly FormControl = FormControl;
   private fb: FormBuilder = inject(FormBuilder);
-  public playlistDisplayService: any = inject(PlaylistDisplayService);
+  public playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
   public playlistForm: FormGroup = this.fb.group({
     name: [''],
     length: [''],
@@ -52,10 +50,10 @@ export class PlaylistViewComponent implements OnInit, OnChanges{
   @Input() public playlist: any = {};
 
   ngOnInit():void {
-    this.initForm()
+    this.initForm();
   };
 
-  initForm() {
+  initForm(): void {
     this.playlistForm = this.fb.group({
       name: [this.playlist?.name || ''],
       energy: [this.playlist?.energy || 1],
@@ -64,7 +62,7 @@ export class PlaylistViewComponent implements OnInit, OnChanges{
     });
   };
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['playlist'] && changes['playlist'].currentValue) {
       this.initForm();
     }
@@ -74,7 +72,7 @@ export class PlaylistViewComponent implements OnInit, OnChanges{
     return this.playlistForm.get(controlName) as FormControl;
   };
 
-  drop(event: CdkDragDrop<any[]>) {
+  drop(event: CdkDragDrop<any[]>): void {
     if (event.previousContainer !== event.container) {
       transferArrayItem(
         event.previousContainer.data,
@@ -85,18 +83,9 @@ export class PlaylistViewComponent implements OnInit, OnChanges{
     }
 
     console.log(event.previousContainer.data)
-  }
-
-
-
-
-
-
-
+  };
 
   trackSong(index: number, song: any): any {
     return song.id || index;
   };
-
-  protected readonly FormControl = FormControl;
 }

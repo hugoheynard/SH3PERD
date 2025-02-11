@@ -6,7 +6,7 @@ import {NgForOf, NgIf} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {VersionTableComponent} from "../versionTable/version-table/version-table.component";
 import {MusicLibraryService} from '../../../services/music-library.service';
-import {AddSongTableWindowService} from '../add-song-table-window-service';
+import {MlDisplayService} from '../mlDisplayService';
 import {AddVersionTableComponent} from '../versionTable/add-version-table/add-version-table.component';
 
 @Component({
@@ -27,9 +27,10 @@ import {AddVersionTableComponent} from '../versionTable/add-version-table/add-ve
   styleUrl: './music-table.component.scss'
 })
 export class MusicTableComponent implements OnInit{
-  private mlServ: any = inject(MusicLibraryService);
-  public addSongTableWindowService: any = inject(AddSongTableWindowService);
+  public mlServ: any = inject(MusicLibraryService);
+  public addSongTableWindowService: any = inject(MlDisplayService);
 
+  public songs: any[] = [];
   public filteredSongs: any[] = [];
   public searchTerm: string = '';
   private artistAscending: boolean = false;
@@ -37,14 +38,21 @@ export class MusicTableComponent implements OnInit{
   public expandedIndex: number | null = null;
 
 
-  async ngOnInit() {
-    this.filteredSongs = [...await this.mlServ.getMusic()];
+  async ngOnInit(): Promise<void> {
+    await this.refreshSongs();
+
+  };
+
+  async refreshSongs(): Promise<void> {
+    this.songs = [...await this.mlServ.getMusic()];
+    this.filteredSongs = [...this.songs];
+    //TODO faire une websocket pour la modif de morceaux
   };
 
   filterSongs(): void {
     const lowerCaseTerm: string = this.searchTerm.toLowerCase();
 
-    this.filteredSongs = this.filteredSongs.filter((song) => {
+    this.filteredSongs = this.songs.filter((song) => {
       return Object.values(song).some((value: string | any) =>
         typeof value === 'string' && value.toLowerCase().includes(lowerCaseTerm));
     });
