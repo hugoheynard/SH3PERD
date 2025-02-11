@@ -1,10 +1,9 @@
 import {
-  Component,
+  AfterViewInit,
+  Component, Inject,
   inject,
   Input,
-  OnChanges,
   OnInit,
-  SimpleChanges
 } from '@angular/core';
 import {CdkDrag, CdkDragDrop, CdkDropList, transferArrayItem} from "@angular/cdk/drag-drop";
 import {NgForOf} from "@angular/common";
@@ -35,7 +34,7 @@ import {PlaylistShortInfosComponent} from '../playlist-short-infos/playlist-shor
   templateUrl: './playlist-view.component.html',
   styleUrl: './playlist-view.component.scss'
 })
-export class PlaylistViewComponent implements OnInit, OnChanges{
+export class PlaylistViewComponent implements OnInit {
   protected readonly FormControl = FormControl;
   private fb: FormBuilder = inject(FormBuilder);
   public playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
@@ -46,8 +45,13 @@ export class PlaylistViewComponent implements OnInit, OnChanges{
     songList: [],
     notes: ['']
   });
+  public playlist: any = {};
 
-  @Input() public playlist: any = {};
+  constructor(@Inject('playlist') injectedPlaylist: any) {
+    if (injectedPlaylist) {
+      this.playlist = injectedPlaylist;
+    }
+  };
 
   ngOnInit():void {
     this.initForm();
@@ -60,12 +64,7 @@ export class PlaylistViewComponent implements OnInit, OnChanges{
       songList: this.fb.array(this.playlist?.songList || []),
       notes: [this.playlist?.notes || '']
     });
-  };
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['playlist'] && changes['playlist'].currentValue) {
-      this.initForm();
-    }
   };
 
   getControl(controlName: string) {

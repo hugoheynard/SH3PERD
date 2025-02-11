@@ -1,11 +1,10 @@
-import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
+import {Component, inject, Input} from '@angular/core';
 import {NgForOf, NgIf, NgStyle} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {FavoriteDynamicIconComponent} from '../favorite-dynamic-icon/favorite-dynamic-icon.component';
 import {PlaylistDisplayService} from '../playlist-display.service';
 import {Playlist} from '../playlist_interfaces';
-import {SidenavRightService} from '../../../components/sidenav-right.service';
 
 @Component({
   selector: 'app-playlist-table',
@@ -28,7 +27,7 @@ export class PlaylistTableComponent {
   @Input() playlists: any[] = [];
 
   editPlaylist(playlist: Playlist): void {
-    this.playlistDisplayService.openPlaylistInSidenav({ playlist: playlist});
+    this.playlistDisplayService.openPlaylistInSidenav({ playlist: playlist });
   };
 
   sortByCreationDate(): void {
