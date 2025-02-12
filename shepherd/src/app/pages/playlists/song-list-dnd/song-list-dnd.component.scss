@@ -1,0 +1,61 @@
+.song {
+  padding: 12px 16px;
+  border-bottom: solid 1px #ddd;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  cursor: grab; /* Changement du curseur pour plus d’intuition */
+  background: white;
+  font-size: 14px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.song:active {
+  cursor: grabbing; /* Quand on attrape l’élément */
+}
+
+.song-list {
+  width: 500px;
+  max-width: 100%;
+  border: solid 1px #ccc;
+  min-height: 80px; /* Augmenté pour meilleure UX */
+  display: flex;
+  flex-direction: column; /* Pour éviter le chevauchement */
+  background: white;
+  border-radius: 8px; /* Adoucissement des bords */
+  overflow: hidden;
+  padding: 8px 0;
+  transition: border-color 0.2s;
+}
+
+.song-list:hover {
+  border-color: #888; /* Effet visuel quand on passe la souris */
+}
+
+.cdk-drag-preview {
+  border-radius: 8px;
+  box-shadow: 0 8px 12px -4px rgba(0, 0, 0, 0.2),
+  0 12px 20px 2px rgba(0, 0, 0, 0.14),
+  0 6px 18px 3px rgba(0, 0, 0, 0.12);
+  transform: rotate(2deg); /* Effet visuel de levée */
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-list-dragging .song {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Effet quand une zone est prête à recevoir un élément */
+.cdk-drop-list-dragging {
+  border: 2px dashed #666;
+  background: rgba(0, 0, 0, 0.05);
+}

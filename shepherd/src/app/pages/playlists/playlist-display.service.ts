@@ -28,7 +28,7 @@ export class PlaylistDisplayService {
     this.viewModeSignal.set('library');
   };
 
-  openPlaylistInSidenav(input: { playlist: Playlist}): void {
+  openPlaylistInSidenav(input: { playlist: Playlist | null }): void {
     this.currentPlaylistSignal.set(input.playlist);
     this.sidenavRightService.setSidenavContent(PlaylistViewComponent);
     this.sidenavRightService.setComponentInput({ playlist: this.currentPlaylistSignal() });

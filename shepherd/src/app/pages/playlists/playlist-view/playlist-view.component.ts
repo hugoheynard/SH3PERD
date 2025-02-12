@@ -1,5 +1,5 @@
 import {
-  AfterViewInit,
+  AfterViewInit, ChangeDetectorRef,
   Component, Inject,
   inject,
   Input,
@@ -14,6 +14,7 @@ import {MatButton, MatFabButton, MatMiniFabButton} from '@angular/material/butto
 import {MatIcon} from '@angular/material/icon';
 import {PlaylistDisplayService} from '../playlist-display.service';
 import {PlaylistShortInfosComponent} from '../playlist-short-infos/playlist-short-infos.component';
+import {SongListDndComponent} from '../song-list-dnd/song-list-dnd.component';
 
 @Component({
   selector: 'app-playlist-view',
@@ -29,7 +30,8 @@ import {PlaylistShortInfosComponent} from '../playlist-short-infos/playlist-shor
     MatFabButton,
     MatIcon,
     MatMiniFabButton,
-    PlaylistShortInfosComponent
+    PlaylistShortInfosComponent,
+    SongListDndComponent
   ],
   templateUrl: './playlist-view.component.html',
   styleUrl: './playlist-view.component.scss'
@@ -69,22 +71,5 @@ export class PlaylistViewComponent implements OnInit {
 
   getControl(controlName: string) {
     return this.playlistForm.get(controlName) as FormControl;
-  };
-
-  drop(event: CdkDragDrop<any[]>): void {
-    if (event.previousContainer !== event.container) {
-      transferArrayItem(
-        event.previousContainer.data,
-        this.playlist.songList,
-        event.previousIndex,
-        event.currentIndex
-      );
-    }
-
-    console.log(event.previousContainer.data)
-  };
-
-  trackSong(index: number, song: any): any {
-    return song.id || index;
   };
 }

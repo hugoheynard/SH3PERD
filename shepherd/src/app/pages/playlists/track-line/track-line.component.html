@@ -1,4 +1,37 @@
-<mat-icon>drag_handle</mat-icon>
-<span>{{ song.title }}</span>
+<div class="trackLine">
+  <mat-icon>drag_handle</mat-icon>
+  <span>{{ song.title }}</span>
 
-<mat-icon>person_add</mat-icon>
+  <div class="tagContainer"></div>
+
+  <button mat-icon-button (click)="toggleExpand()" *ngIf="!expandedTrack; else expandedTemplate">
+    <mat-icon>expand_more</mat-icon>
+  </button>
+
+  <ng-template #expandedTemplate>
+    <button mat-icon-button (click)="toggleExpand()">
+      <mat-icon>expand_less</mat-icon>
+    </button>
+  </ng-template>
+</div>
+
+<div class="expandedTrack" *ngIf="expandedTrack">
+  <div class="flexRowSpaceBetween">
+    <div><mat-icon>person</mat-icon> Performers</div>
+    <mat-chip-set
+      class="example-chip"
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="drop($event)">
+      @for (performer of compatiblesPerformers; track performer.name) {
+        <mat-chip class="example-box" cdkDrag>{{performer.name}}</mat-chip>
+      }
+    </mat-chip-set>
+    <button>+</button>
+  </div>
+
+  <div class="flexRowSpaceBetween">
+    <div><mat-icon>airplanemode_active</mat-icon> Mark as aerial</div>
+    <input type="checkbox">
+  </div>
+</div>

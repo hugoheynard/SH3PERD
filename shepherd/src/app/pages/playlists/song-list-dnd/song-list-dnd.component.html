@@ -1,0 +1,10 @@
+<div cdkDropList
+     [cdkDropListData]="songList"
+     class="song-list"
+     (cdkDropListDropped)="drop($event)">
+  <div *ngFor="let song of songList || [] ; trackBy: trackSong"
+       cdkDrag
+       class="song">
+    <app-track-line [song]="song" />
+  </div>
+</div>
