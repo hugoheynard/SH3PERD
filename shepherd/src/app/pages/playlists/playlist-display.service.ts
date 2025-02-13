@@ -1,7 +1,7 @@
 import {inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {Playlist} from './playlist_interfaces';
 import {SidenavRightService} from '../../components/sidenav-right.service';
-import {PlaylistViewComponent} from './playlist-view/playlist-view.component';
+import {PlaylistViewComponent} from './playlistView/playlist-view/playlist-view.component';
 
 @Injectable({
   providedIn: 'root'
@@ -30,8 +30,7 @@ export class PlaylistDisplayService {
 
   openPlaylistInSidenav(input: { playlist: Playlist | null }): void {
     this.currentPlaylistSignal.set(input.playlist);
-    this.sidenavRightService.setSidenavContent(PlaylistViewComponent);
-    this.sidenavRightService.setComponentInput({ playlist: this.currentPlaylistSignal() });
+    this.sidenavRightService.openComponent(PlaylistViewComponent, { playlist: this.currentPlaylistSignal() });
     this.sidenavRightService.openRightSidenav();
   };
 

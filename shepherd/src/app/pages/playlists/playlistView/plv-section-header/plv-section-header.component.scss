@@ -1,0 +1,13 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem;
+  border-radius: 0.35rem 0.35rem 0 0;
+  background-color: var(--colorMidGrey);
+  color: var(--culturedWhite);
+  pointer-events: auto !important;
+  touch-action: auto !important;
+}
+

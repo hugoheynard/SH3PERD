@@ -1,15 +1,15 @@
 import {Component, inject} from '@angular/core';
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {MatIcon} from '@angular/material/icon';
-import {TrackLineComponent} from '../track-line/track-line.component';
+import {TrackLineComponent} from '../playlistView/track-line/track-line.component';
 import {NgForOf, NgIf} from '@angular/common';
 import {PlaylistTableComponent} from '../playlist-table/playlist-table.component';
-import {PlaylistViewComponent} from '../playlist-view/playlist-view.component';
+import {PlaylistViewComponent} from '../playlistView/playlist-view/playlist-view.component';
 import {MusicLibraryComponent} from '../../musicLibrary/music-library/music-library.component';
 import {MusicTableComponent} from '../../musicLibrary/music-table/music-table.component';
 import {PlaylistDisplayService} from '../playlist-display.service';
 import {Playlist} from '../playlist_interfaces';
-import {SongListDndComponent} from '../song-list-dnd/song-list-dnd.component';
+import {SongListDndComponent} from '../playlistView/song-list-dnd/song-list-dnd.component';
 
 
 @Component({
@@ -33,6 +33,10 @@ export class PlaylistManagerComponent {
       creation_date: '2025/01/28',
       energy: 4,
       favorite: true,
+      settings: {
+        containsAerial: true,
+        containsDuo: true,
+      },
       tags: ['duo'],
       songList: [
         {
@@ -41,6 +45,14 @@ export class PlaylistManagerComponent {
         },
         {
           _id: 2,
+          title: 'Up go must show'
+        },
+        {
+          _id: 3,
+          title: 'Show must go up'
+        },
+        {
+          _id: 4,
           title: 'Up go must show'
         }
       ]
@@ -64,6 +76,6 @@ export class PlaylistManagerComponent {
     }];
 
   createPlaylistInSidenav(playlist: Playlist | null): void {
-    this.playlistDisplayService.openPlaylistInSidenav({ playlist: playlist })
+    this.playlistDisplayService.openPlaylistInSidenav({ playlist: playlist });
   };
 }

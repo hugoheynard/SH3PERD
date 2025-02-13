@@ -1,0 +1,68 @@
+<div id="playlistViewHeader">
+  <h2>EDIT PLAYLIST</h2>
+  <button id="closePlaylistView_button" (click)="playlistDisplayService.closePlaylistInSidenav()"><mat-icon>close</mat-icon></button>
+</div>
+
+<form [formGroup]="playlistForm">
+  <div class="topInfos">
+    <label>Name:</label>
+    <input matInput type="text" formControlName="name">
+    <playlist-short-infos
+        [energyControl]="getControl('energy')"/><!--TODO: envoyer les form controls-->
+  </div>
+
+  <!--SETTINGS SECTION-->
+  <plv-section-container #settingsSectionContainer>
+    <plv-section-header sectionHeader [sectionTitle]="'Settings'" (openSection)="settingsSectionContainer.onHeaderToggle($event)"/>
+    <ng-container sectionContent *ngIf="settingsSectionContainer.isExpanded" formGroupName="settings">
+      <div class="flexRowSpaceBetween">
+        <div><mat-icon>airplanemode_active</mat-icon> Contains aerial</div>
+        <input type="checkbox" formControlName="containsAerial">
+      </div>
+
+      <div class="flexRowSpaceBetween">
+        <div><mat-icon>people</mat-icon> Contains duo</div>
+        <input type="checkbox" formControlName="containsDuo">
+      </div>
+    </ng-container>
+  </plv-section-container>
+
+
+  <!--TRACK LIST SECTION-->
+  <plv-section-container #tracklistSectionContainer>
+    <plv-section-header sectionHeader [sectionTitle]="'TrackList'" (openSection)="tracklistSectionContainer.onHeaderToggle($event)"/>
+    <ng-container sectionContent *ngIf="tracklistSectionContainer.isExpanded">
+      <!--TAGS-->
+      <div>
+        <h4><mat-icon>label</mat-icon>Tags</h4>
+        <div id="availableTagsContainer"></div>
+      </div>
+      <span>Drag and drop the available tags on the songs</span>
+      <!--SONGS-->
+      <app-song-list-dnd [songList]="playlist.songList"/>
+      <!--
+  <div class="paddingPlaylistView">
+
+    <button class="button-16" (click)="playlistDisplayService.openLibraryView()">
+      <mat-icon>library_add</mat-icon>
+      Add Song
+    </button>
+  </div>-->
+    </ng-container>
+  </plv-section-container>
+
+
+  <!--NOTES SECTION-->
+  <plv-section-container #noteSectionContainer>
+    <plv-section-header sectionHeader [sectionTitle]="'Notes'" (openSection)="noteSectionContainer.onHeaderToggle($event)"/>
+    <ng-container sectionContent *ngIf="noteSectionContainer.isExpanded">
+      <input matInput type="text" formControlName="notes" id="notes">
+    </ng-container>
+  </plv-section-container>
+
+</form>
+
+<button class="button-16" type="submit">Save</button>
+
+
+

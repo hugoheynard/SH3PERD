@@ -15,6 +15,7 @@ mat-sidenav {
   border-top-right-radius: 0.2rem;
   border-bottom-right-radius: 0.2rem;
   width: fit-content;
+
 }
 
 #rightSidenav {
@@ -22,6 +23,14 @@ mat-sidenav {
   border-radius: 0.1rem;
   background-color: var(--culturedWhite);
   box-shadow: -10px 0px 20px 5px rgba(0, 0, 0, 0.18);
+  touch-action: auto !important;
+  pointer-events: auto !important;
+  overscroll-behavior: contain;
 };
+
+
+
+
+
 
 
