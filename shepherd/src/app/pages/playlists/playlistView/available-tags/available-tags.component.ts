@@ -1,6 +1,6 @@
-import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
+import {Component, inject, Input} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
-import {CdkDrag, CdkDragDrop, CdkDragEnd, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {MatChip} from '@angular/material/chips';
 import {NgForOf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -25,21 +25,14 @@ export class AvailableTagsComponent {
   @Input() tagList: string[] = [];
 
   onDragStart(tag: string): void {
-    console.log(tag, 'send into signal')
     this.plDisplayService.setSelectedTag(tag);
   };
 
+  getSongDropListConnections(): string[] {
+    return this.plDisplayService.songDropListConnectionsSignal();
+  };
 
-  drop(event: CdkDragDrop<string[]>) {
-    //Pas sur que ça soit utile
-    if (event.previousContainer === event.container) {
-      moveItemInArray(this.tagList, event.previousIndex, event.currentIndex);
-    } else {
-      //this.inputValue = event.item.data;
-    }
-  }
-
-  dropTag(event: CdkDragDrop<string[]>, source: string) {
+  dropTag(event: CdkDragDrop<string[]>): void {
     if (event.previousContainer === event.container) {
       return;
     }
@@ -53,6 +46,4 @@ export class AvailableTagsComponent {
     // Ajout du tag dans la destination
     event.container.data.push(tag);
   }
-
-
 }

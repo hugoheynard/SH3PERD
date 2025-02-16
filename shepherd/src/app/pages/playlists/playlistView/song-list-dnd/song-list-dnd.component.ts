@@ -50,6 +50,7 @@ export class SongListDndComponent implements OnInit{
 
   generateSongDropListConnections(): void {
     this.songDropListConnections = this.songList.map((_: any, index: number): string => `tagDropZone-${index}`);
+    this.plDisplayService.setSongDropListConnectionsSignal(this.songDropListConnections);
   };
 
 }

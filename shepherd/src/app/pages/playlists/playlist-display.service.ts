@@ -12,10 +12,14 @@ export class PlaylistDisplayService {
   public viewModeSignal: WritableSignal<'library' | 'playlist'> = signal('playlist');
   public currentPlaylistSignal: WritableSignal<Playlist | null> = signal(null);
   public selectedTagSignal: WritableSignal<string | null> = signal<string | null>(null);
+  public songDropListConnectionsSignal: WritableSignal<string[]> = signal<string[]>(['']);
+
+  setSongDropListConnectionsSignal(value: string[]): void {
+    this.songDropListConnectionsSignal.set(value);
+  };
 
   setSelectedTag(tag: string | null): void {
     this.selectedTagSignal.set(tag);
-    console.log('signal fed', this.selectedTagSignal());
   };
 
   viewPlaylist(value: Playlist): void {

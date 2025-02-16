@@ -3,14 +3,14 @@
   <div id="availableTagsContainer"
        cdkDropList
        [cdkDropListData]="tagList"
-       [cdkDropListConnectedTo]="'tracklistDropZone'"
-       (cdkDropListDropped)="dropTag($event, 'availableTags')"
+       [cdkDropListConnectedTo]="getSongDropListConnections()"
+       (cdkDropListDropped)="dropTag($event)"
 
   class="chip-container">
     <mat-chip
       *ngFor="let tag of tagList"
       cdkDrag
-      [cdkDragData]="tag"
+      [cdkDragData]="{ tag: tag, source: 'availableTags'}"
       (cdkDragStarted)="onDragStart(tag)">
       {{ tag }}
     </mat-chip>

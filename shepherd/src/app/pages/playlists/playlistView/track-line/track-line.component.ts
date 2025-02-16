@@ -45,25 +45,43 @@ export class TrackLineComponent implements OnInit{
    this.expandedTrack = !this.expandedTrack;
  };
 
+ getConnections() : string[] {
+   return this.plDisplayService.songDropListConnectionsSignal();
+ };
+
  ngOnInit(): void {
  };
 
  onTagDropped(event: CdkDragDrop<string[]>): void {
+   const { tag, source, fromSong } = event.item.data;
+
+   // Trouver le song cible
    const targetContainerId = event.container.id;
-   const targetSong = this.songList.find((song: any): boolean => `tagDropZone-${this.songList.indexOf(song)}` === targetContainerId);
+   const targetSong = this.songList.find((_: any, index: number): boolean =>
+     `tagDropZone-${index}` === targetContainerId
+   );
 
    if (!targetSong) {
      console.error("❌ Target song introuvable !");
      return;
    }
 
-   const { tag, fromSong } = event.item.data;
-   console.log("🔄 Déplacement du tag:", tag, "de", fromSong.title, "vers", targetSong.title);
+   console.log(`✅ Tag "${tag}" déplacé depuis "${source}" vers "${targetSong.title}"`);
 
-   if (event.previousContainer === event.container) {
-     moveItemInArray(targetSong.tags, event.previousIndex, event.currentIndex);
-   } else {
+   if (source === "trackLine") {
+     if (event.previousContainer === event.container) {
+       moveItemInArray(targetSong.tags, event.previousIndex, event.currentIndex);
+       return;
+     }
      transferArrayItem(fromSong.tags, targetSong.tags, event.previousIndex, event.currentIndex);
    }
- }
+
+   if (source === "availableTags") {
+     if (!targetSong.tags.includes(tag)) {
+       targetSong.tags.push(tag);
+     }
+   }
+ };
+
+
 }

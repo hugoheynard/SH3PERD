@@ -7,12 +7,16 @@
        cdkDropList
        [id]="tagDropZoneId"
        [cdkDropListData]="song.tags"
-       [cdkDropListConnectedTo]="connectedDropLists"
+       [cdkDropListConnectedTo]="getConnections()"
        (cdkDropListDropped)="onTagDropped($event)">
 
     <mat-chip *ngFor="let tag of song.tags"
               cdkDrag
-              [cdkDragData]="{ tag: tag, fromSong: song }">
+              [cdkDragData]="{
+                tag: tag,
+                source: 'trackLine',
+                fromSong: song
+                }">
       {{ tag }}
     </mat-chip>
   </div>
