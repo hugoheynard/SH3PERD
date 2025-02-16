@@ -2,11 +2,7 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component, ComponentRef,
-  effect,
-  ElementRef,
-  inject,
-  Injector,
-  OnInit, Type,
+  inject, Type,
   ViewChild, ViewContainerRef
 } from '@angular/core';
 import {RouterOutlet} from '@angular/router';
@@ -68,7 +64,6 @@ export class AppComponent implements AfterViewInit {
       }
     }
   };
-
 
   closeSidenav() {
     this.container.clear();

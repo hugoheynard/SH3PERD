@@ -2,7 +2,20 @@
   <mat-icon>drag_handle</mat-icon>
   <span>{{ song.title }}</span>
 
-  <div class="tagContainer"></div>
+  <!--NEW-->
+  <div class="tagDropZone"
+       cdkDropList
+       [id]="tagDropZoneId"
+       [cdkDropListData]="song.tags"
+       [cdkDropListConnectedTo]="connectedDropLists"
+       (cdkDropListDropped)="onTagDropped($event)">
+
+    <mat-chip *ngFor="let tag of song.tags"
+              cdkDrag
+              [cdkDragData]="{ tag: tag, fromSong: song }">
+      {{ tag }}
+    </mat-chip>
+  </div>
 
   <button mat-icon-button (click)="toggleExpand()" *ngIf="!expandedTrack; else expandedTemplate">
     <mat-icon>expand_more</mat-icon>
@@ -21,8 +34,7 @@
     <mat-chip-set
       class="example-chip"
       cdkDropList
-      cdkDropListOrientation="horizontal"
-      (cdkDropListDropped)="drop($event)">
+      cdkDropListOrientation="horizontal">
       @for (performer of compatiblesPerformers; track performer.name) {
         <mat-chip class="example-box" cdkDrag>{{performer.name}}</mat-chip>
       }

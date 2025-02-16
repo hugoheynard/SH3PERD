@@ -1,0 +1,20 @@
+<div class="flexRowSpaceBetween">
+  <h4><mat-icon>label</mat-icon>Tags</h4>
+  <div id="availableTagsContainer"
+       cdkDropList
+       [cdkDropListData]="tagList"
+       [cdkDropListConnectedTo]="'tracklistDropZone'"
+       (cdkDropListDropped)="dropTag($event, 'availableTags')"
+
+  class="chip-container">
+    <mat-chip
+      *ngFor="let tag of tagList"
+      cdkDrag
+      [cdkDragData]="tag"
+      (cdkDragStarted)="onDragStart(tag)">
+      {{ tag }}
+    </mat-chip>
+  </div>
+</div>
+
+<span>Drag and drop the available tags on the songs</span>

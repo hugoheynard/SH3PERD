@@ -1,10 +1,20 @@
 <div cdkDropList
      [cdkDropListData]="songList"
      class="song-list"
-     (cdkDropListDropped)="drop($event)">
-  <div *ngFor="let song of songList || [] ; trackBy: trackSong"
+     (cdkDropListDropped)="dropSong($event)">
+
+  <div *ngFor="let song of songList || [] ; let i = index;
+       trackBy: trackSong"
        cdkDrag
-       class="song">
-    <app-track-line [song]="song" />
+       class="song"
+       [attr.data-index]="i">
+
+    <track-line
+      [tagDropZoneId]="'tagDropZone-' + i"
+      [plDisplayService]="plDisplayService"
+      [connectedDropLists] = songDropListConnections
+      [songList]="songList"
+      [song]="song"/>
+
   </div>
 </div>

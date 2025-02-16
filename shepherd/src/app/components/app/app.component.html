@@ -26,11 +26,6 @@
     </section>
 
     <!--SHARED RIGHT SIDE SIDENAV-->
-    <!--<mat-sidenav #sidenavRight position="end" mode="side" id="rightSidenav" disableClose="true">
-      <ng-container *ngIf="sidenavRightService.getSidenavContent() as sidenavComponent">
-        <ng-container *ngComponentOutlet="sidenavComponent; injector: createInjector(sidenavRightService.getSidenavInputs())" />
-      </ng-container>
-    </mat-sidenav>-->
     <mat-sidenav #sidenavRight position="end" mode="side" id="rightSidenav">
       <ng-template #sidenavContainer></ng-template>
     </mat-sidenav>

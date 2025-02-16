@@ -11,6 +11,12 @@ export class PlaylistDisplayService {
   public playlistSidenavSignal: WritableSignal<boolean> = signal(false);
   public viewModeSignal: WritableSignal<'library' | 'playlist'> = signal('playlist');
   public currentPlaylistSignal: WritableSignal<Playlist | null> = signal(null);
+  public selectedTagSignal: WritableSignal<string | null> = signal<string | null>(null);
+
+  setSelectedTag(tag: string | null): void {
+    this.selectedTagSignal.set(tag);
+    console.log('signal fed', this.selectedTagSignal());
+  };
 
   viewPlaylist(value: Playlist): void {
     this.currentPlaylistSignal.set(value);

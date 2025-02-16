@@ -10,6 +10,8 @@ import {MusicTableComponent} from '../../musicLibrary/music-table/music-table.co
 import {PlaylistDisplayService} from '../playlist-display.service';
 import {Playlist} from '../playlist_interfaces';
 import {SongListDndComponent} from '../playlistView/song-list-dnd/song-list-dnd.component';
+import {PlvSectionContainerComponent} from '../playlistView/plv-section-container/plv-section-container.component';
+import {PlvSectionHeaderComponent} from '../playlistView/plv-section-header/plv-section-header.component';
 
 
 @Component({
@@ -19,7 +21,7 @@ import {SongListDndComponent} from '../playlistView/song-list-dnd/song-list-dnd.
     MatIcon,
     TrackLineComponent,
     NgForOf,
-    PlaylistTableComponent, PlaylistViewComponent, NgIf, MusicLibraryComponent, MusicTableComponent, SongListDndComponent, SongListDndComponent
+    PlaylistTableComponent, PlaylistViewComponent, NgIf, MusicLibraryComponent, MusicTableComponent, SongListDndComponent, SongListDndComponent, PlvSectionContainerComponent, PlvSectionHeaderComponent
   ],
   templateUrl: './playlist-manager.component.html',
   styleUrl: './playlist-manager.component.scss'
@@ -37,23 +39,27 @@ export class PlaylistManagerComponent {
         containsAerial: true,
         containsDuo: true,
       },
-      tags: ['duo'],
+      tags: ['duo', 'aerial'],
       songList: [
         {
           _id: 1,
-          title: 'Show must go up'
+          title: 'Show must go up',
+          tags: ['duo', 'aerial'],
         },
         {
           _id: 2,
-          title: 'Up go must show'
+          title: 'Up go must show',
+          tags: [],
         },
         {
           _id: 3,
-          title: 'Show must go up'
+          title: 'Show must go up',
+          tags: [],
         },
         {
           _id: 4,
-          title: 'Up go must show'
+          title: 'Up go must show',
+          tags: [],
         }
       ]
     },

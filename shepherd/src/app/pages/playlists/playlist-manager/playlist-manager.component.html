@@ -2,19 +2,6 @@
   <h1>PLAYLIST MANAGER</h1>
   <button (click)="createPlaylistInSidenav(null)">CREATE NEW</button>
 </div>
-<app-song-list-dnd [songList]="[{
-          _id: 'A',
-          title: 'Show must go up',
-          aerial: true,
-          performers: [
-          { _id: 'H', role: 'lead'},
-          { _id: 'A', role: 'additional' },
-          ]
-        },
-        {
-          _id: 'B',
-          title: 'Up go must show'
-        }]"/>
 
 <ng-container *ngIf="playlistDisplayService.viewModeSignal() === 'playlist'">
   <app-playlist-table [playlists]="playlists"/>

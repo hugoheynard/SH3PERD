@@ -33,13 +33,11 @@
     <plv-section-header sectionHeader [sectionTitle]="'TrackList'" (openSection)="tracklistSectionContainer.onHeaderToggle($event)"/>
     <ng-container sectionContent *ngIf="tracklistSectionContainer.isExpanded">
       <!--TAGS-->
-      <div>
-        <h4><mat-icon>label</mat-icon>Tags</h4>
-        <div id="availableTagsContainer"></div>
-      </div>
-      <span>Drag and drop the available tags on the songs</span>
+      <available-tags #availableTags [tagList]="['duo', 'aerial']"/>
       <!--SONGS-->
-      <app-song-list-dnd [songList]="playlist.songList"/>
+      <app-song-list-dnd
+        [plDisplayService]="playlistDisplayService"
+        [songList]="playlist.songList"/>
       <!--
   <div class="paddingPlaylistView">
 

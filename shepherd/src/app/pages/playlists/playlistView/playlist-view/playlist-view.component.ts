@@ -17,6 +17,7 @@ import {PlaylistShortInfosComponent} from '../../playlist-short-infos/playlist-s
 import {SongListDndComponent} from '../song-list-dnd/song-list-dnd.component';
 import {PlvSectionHeaderComponent} from '../plv-section-header/plv-section-header.component';
 import {PlvSectionContainerComponent} from '../plv-section-container/plv-section-container.component';
+import {AvailableTagsComponent} from '../available-tags/available-tags.component';
 
 @Component({
   selector: 'app-playlist-view',
@@ -36,12 +37,13 @@ import {PlvSectionContainerComponent} from '../plv-section-container/plv-section
     SongListDndComponent,
     PlvSectionHeaderComponent,
     PlvSectionContainerComponent,
-    NgIf
+    NgIf,
+    AvailableTagsComponent
   ],
   templateUrl: './playlist-view.component.html',
   styleUrl: './playlist-view.component.scss',
 })
-export class PlaylistViewComponent implements OnInit, AfterViewInit {
+export class PlaylistViewComponent implements OnInit {
   protected readonly FormControl = FormControl;
   private cdr=inject(ChangeDetectorRef)
   private fb: FormBuilder = inject(FormBuilder);
@@ -62,10 +64,6 @@ export class PlaylistViewComponent implements OnInit, AfterViewInit {
   ngOnInit():void {
     this.initForm();
   };
-
-  ngAfterViewInit() {
-
-  }
 
   initForm(): void {
     this.playlistForm = this.fb.group({
