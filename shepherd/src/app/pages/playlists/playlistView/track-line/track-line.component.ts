@@ -1,4 +1,13 @@
-import {AfterViewInit, ChangeDetectorRef, Component, inject, Input, OnInit} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from '@angular/material/button';
 import {NgForOf, NgIf} from '@angular/common';
@@ -27,7 +36,7 @@ import {OpenMusicLibButtonComponent} from '../open-music-lib-button/open-music-l
   templateUrl: './track-line.component.html',
   styleUrl: './track-line.component.scss',
 })
-export class TrackLineComponent implements OnInit{
+export class TrackLineComponent implements OnInit {
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   //service from the parent because of dynamic calling of component
   @Input() pldServ!: PlaylistDisplayService;
@@ -51,10 +60,13 @@ export class TrackLineComponent implements OnInit{
    return this.pldServ.songDropListConnectionsSignal();
  };
 
- ngOnInit(): void {
- };
+  ngOnInit(): void {
+  }
 
- onTagDropped(event: CdkDragDrop<string[]>): void {
+
+
+
+  onTagDropped(event: CdkDragDrop<string[]>): void {
    const { tag, source, fromSong } = event.item.data;
 
    // Trouver le song cible
