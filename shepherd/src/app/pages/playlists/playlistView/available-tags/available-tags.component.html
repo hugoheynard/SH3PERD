@@ -1,20 +1,18 @@
 <div class="flexRowSpaceBetween">
-  <h4><mat-icon>label</mat-icon>Tags</h4>
+  <h4 class="flexRowSpaceBetween"><mat-icon>label</mat-icon></h4>
   <div id="availableTagsContainer"
        cdkDropList
        [cdkDropListData]="tagList"
        [cdkDropListConnectedTo]="getSongDropListConnections()"
-       (cdkDropListDropped)="dropTag($event)"
-
-  class="chip-container">
-    <mat-chip
+       (cdkDropListDropped)="dropTag($event)">
+    <div class="chips"
       *ngFor="let tag of tagList"
       cdkDrag
       [cdkDragData]="{ tag: tag, source: 'availableTags'}"
       (cdkDragStarted)="onDragStart(tag)">
       {{ tag }}
-    </mat-chip>
+    </div>
   </div>
 </div>
 
-<span>Drag and drop the available tags on the songs</span>
+<span id="usageDescription">Drag and drop the available tags on the songs</span>

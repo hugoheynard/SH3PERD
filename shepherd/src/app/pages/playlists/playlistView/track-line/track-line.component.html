@@ -1,6 +1,10 @@
 <div class="trackLine">
   <mat-icon>drag_handle</mat-icon>
-  <span>{{ song.title }}</span>
+
+  <span *ngIf="song.id; else noSong">{{ song.title }}</span>
+  <ng-template #noSong>
+    <open-music-lib-button [pldServ]="pldServ"/>
+  </ng-template>
 
   <!--NEW-->
   <div class="tagDropZone"
@@ -21,15 +25,10 @@
     </mat-chip>
   </div>
 
-  <button mat-icon-button (click)="toggleExpand()" *ngIf="!expandedTrack; else expandedTemplate">
-    <mat-icon>expand_more</mat-icon>
+  <button mat-icon-button (click)="toggleExpand()">
+    <mat-icon>{{ expandedTrack ? 'expand_less' : 'expand_more' }}</mat-icon>
   </button>
 
-  <ng-template #expandedTemplate>
-    <button mat-icon-button (click)="toggleExpand()">
-      <mat-icon>expand_less</mat-icon>
-    </button>
-  </ng-template>
 </div>
 
 <div class="expandedTrack" *ngIf="expandedTrack">

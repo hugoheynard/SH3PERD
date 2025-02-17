@@ -2,7 +2,7 @@ import {Component, inject, Input} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {MatChip} from '@angular/material/chips';
-import {NgForOf} from '@angular/common';
+import {NgForOf, NgStyle} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {PlaylistDisplayService} from '../../playlist-display.service';
 
@@ -15,7 +15,8 @@ import {PlaylistDisplayService} from '../../playlist-display.service';
     MatChip,
     CdkDrag,
     NgForOf,
-    FormsModule
+    FormsModule,
+    NgStyle
   ],
   templateUrl: './available-tags.component.html',
   styleUrl: './available-tags.component.scss'
@@ -46,4 +47,6 @@ export class AvailableTagsComponent {
     // Ajout du tag dans la destination
     event.container.data.push(tag);
   }
+
+
 }

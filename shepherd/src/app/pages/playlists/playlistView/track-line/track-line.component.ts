@@ -6,6 +6,7 @@ import {MatInput} from '@angular/material/input';
 import {MatChip, MatChipsModule, MatChipSet} from '@angular/material/chips';
 import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {PlaylistDisplayService} from '../../playlist-display.service';
+import {OpenMusicLibButtonComponent} from '../open-music-lib-button/open-music-lib-button.component';
 
 @Component({
   selector: 'track-line',
@@ -20,15 +21,16 @@ import {PlaylistDisplayService} from '../../playlist-display.service';
     CdkDropList,
     MatChip,
     CdkDrag,
-    NgForOf
+    NgForOf,
+    OpenMusicLibButtonComponent
   ],
   templateUrl: './track-line.component.html',
-  styleUrl: './track-line.component.scss'
+  styleUrl: './track-line.component.scss',
 })
 export class TrackLineComponent implements OnInit{
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   //service from the parent because of dynamic calling of component
-  @Input() plDisplayService!: PlaylistDisplayService;
+  @Input() pldServ!: PlaylistDisplayService;
   @Input() songList: any = [];
   @Input() song: any = {};
   @Input() tagDropZoneId: string ='';
@@ -46,7 +48,7 @@ export class TrackLineComponent implements OnInit{
  };
 
  getConnections() : string[] {
-   return this.plDisplayService.songDropListConnectionsSignal();
+   return this.pldServ.songDropListConnectionsSignal();
  };
 
  ngOnInit(): void {
