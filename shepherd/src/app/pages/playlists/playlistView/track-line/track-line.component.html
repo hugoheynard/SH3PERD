@@ -1,7 +1,7 @@
 <div class="trackLine">
   <mat-icon>drag_handle</mat-icon>
 
-  <span *ngIf="song._id; else noSong">{{ song.title }}</span>
+  <span *ngIf="song.get('_id').value; else noSong">{{ song.get('title').value }}</span>
   <ng-template #noSong>
     <open-music-lib-button [pldServ]="pldServ"/>
   </ng-template>
@@ -10,19 +10,18 @@
   <div class="tagDropZone"
        cdkDropList
        [id]="tagDropZoneId"
-       [cdkDropListData]="song.tags"
+       [cdkDropListData]="song.get('tags').value"
        [cdkDropListConnectedTo]="getConnections()"
        (cdkDropListDropped)="onTagDropped($event)">
 
-    <div class="chips" *ngFor="let tag of song.tags"
-              cdkDrag
-              [cdkDragData]="{
+    <div *ngFor="let tag of song.get('tags').value" TagStyle [text]="tag"
+         DragStyle
+         cdkDrag
+         [cdkDragData]="{
                 tag: tag,
                 source: 'trackLine',
                 fromSong: song
-                }">
-      {{ tag }}
-    </div>
+                }"></div>
   </div>
 
   <button mat-icon-button (click)="toggleExpand()">

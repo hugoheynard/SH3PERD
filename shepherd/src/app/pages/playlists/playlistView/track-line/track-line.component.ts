@@ -16,6 +16,8 @@ import {MatChip, MatChipsModule, MatChipSet} from '@angular/material/chips';
 import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {PlaylistDisplayService} from '../../playlist-display.service';
 import {OpenMusicLibButtonComponent} from '../open-music-lib-button/open-music-lib-button.component';
+import {TagStyleDirective} from '../../../../../Directives/tag-style.directive';
+import {DragStyleDirective} from '../../../../../Directives/drag-style.directive';
 
 @Component({
   selector: 'track-line',
@@ -31,7 +33,9 @@ import {OpenMusicLibButtonComponent} from '../open-music-lib-button/open-music-l
     MatChip,
     CdkDrag,
     NgForOf,
-    OpenMusicLibButtonComponent
+    OpenMusicLibButtonComponent,
+    TagStyleDirective,
+    DragStyleDirective
   ],
   templateUrl: './track-line.component.html',
   styleUrl: './track-line.component.scss',
@@ -61,9 +65,8 @@ export class TrackLineComponent implements OnInit {
  };
 
   ngOnInit(): void {
+    console.log(this.songList);
   }
-
-
 
 
   onTagDropped(event: CdkDragDrop<string[]>): void {

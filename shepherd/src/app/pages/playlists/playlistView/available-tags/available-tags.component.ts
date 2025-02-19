@@ -5,6 +5,7 @@ import {MatChip} from '@angular/material/chips';
 import {NgForOf, NgStyle} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {PlaylistDisplayService} from '../../playlist-display.service';
+import {TagStyleDirective} from '../../../../../Directives/tag-style.directive';
 
 @Component({
   selector: 'available-tags',
@@ -16,7 +17,8 @@ import {PlaylistDisplayService} from '../../playlist-display.service';
     CdkDrag,
     NgForOf,
     FormsModule,
-    NgStyle
+    NgStyle,
+    TagStyleDirective
   ],
   templateUrl: './available-tags.component.html',
   styleUrl: './available-tags.component.scss'
