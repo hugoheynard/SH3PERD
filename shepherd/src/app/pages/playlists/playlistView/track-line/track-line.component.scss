@@ -22,8 +22,15 @@
 }
 
 .tagDropZone {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.2rem;
   border-radius: 0.35rem;
-  border: 1px solid grey;
+  border: 1px solid rgba(128, 128, 128, 0.13);
   width: 150px;
   height: 2rem;
 }
+
+

@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, WritableSignal} from '@angular/core';
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {MatIcon} from '@angular/material/icon';
 import {TrackLineComponent} from '../playlistView/track-line/track-line.component';
@@ -12,6 +12,8 @@ import {Playlist} from '../playlist_interfaces';
 import {SongListDndComponent} from '../playlistView/song-list-dnd/song-list-dnd.component';
 import {PlvSectionContainerComponent} from '../playlistView/plv-section-container/plv-section-container.component';
 import {PlvSectionHeaderComponent} from '../playlistView/plv-section-header/plv-section-header.component';
+import {MatTab, MatTabGroup} from '@angular/material/tabs';
+import {PlTemplateFormComponent} from '../playlistTemplate/pl-template-form/pl-template-form.component';
 
 
 @Component({
@@ -21,13 +23,14 @@ import {PlvSectionHeaderComponent} from '../playlistView/plv-section-header/plv-
     MatIcon,
     TrackLineComponent,
     NgForOf,
-    PlaylistTableComponent, PlaylistViewComponent, NgIf, MusicLibraryComponent, MusicTableComponent, SongListDndComponent, SongListDndComponent, PlvSectionContainerComponent, PlvSectionHeaderComponent
+    PlaylistTableComponent, PlaylistViewComponent, NgIf, MusicLibraryComponent, MusicTableComponent, SongListDndComponent, SongListDndComponent, PlvSectionContainerComponent, PlvSectionHeaderComponent, MatTabGroup, MatTab, PlTemplateFormComponent
   ],
   templateUrl: './playlist-manager.component.html',
   styleUrl: './playlist-manager.component.scss'
 })
 export class PlaylistManagerComponent {
-  public playlistDisplayService: any = inject(PlaylistDisplayService);
+  private playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
+  public viewModeSignal: WritableSignal<'library' | 'playlist'> = this.playlistDisplayService.viewModeSignal;
 
   public playlists: any[] = [
     {
@@ -47,8 +50,7 @@ export class PlaylistManagerComponent {
           tags: ['duo', 'aerial'],
         },
         {
-          _id: 2,
-          title: 'Up go must show',
+
           tags: [],
         },
         {

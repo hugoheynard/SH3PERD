@@ -32,7 +32,9 @@
         <td>{{ playlist.creation_date }}</td>
         <td>{{ playlist.name }}</td>
         <td>{{ playlist.energy }}</td>
-        <td>{{ playlist.tags }}</td>
+        <td>
+          <div *ngFor="let tag of playlist.tags" TagStyle [text]='tag'></div>
+        </td>
         <td><app-favorite-dynamic-icon [favorite]="playlist.favorite"/></td>
         <td>
           <button mat-icon-button (click)="editPlaylist(playlist)">

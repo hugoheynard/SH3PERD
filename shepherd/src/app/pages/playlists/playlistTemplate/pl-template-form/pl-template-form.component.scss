@@ -1,0 +1,33 @@
+
+
+form {
+  width: 33%;
+  border: 1px solid rgba(133, 131, 131, 0.64);//A DELETE
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 1rem;
+}
+
+
+
+
+
+label {
+  font-size: 12px;
+  font-weight: lighter;
+}
+
+
+.inputWithLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.inputShadow {
+  border-radius: 0.35rem;
+  height: 1.5rem;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+}

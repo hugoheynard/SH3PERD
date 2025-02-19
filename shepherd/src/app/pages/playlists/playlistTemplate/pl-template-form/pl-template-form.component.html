@@ -1,0 +1,80 @@
+<form [formGroup]="templateForm">
+  <h4>Playlist template</h4>
+
+  <div class="inputWithLabel">
+    <label>Template name</label>
+    <input formControlName="name" class="inputShadow" type="text" >
+  </div>
+
+
+  <div class="flexRowSpaceBetween">
+
+    <div class="inputWithLabel">
+      <label>Usage</label>
+      <select formControlName="usage" class="inputShadow">
+        <option value="daily">Daily</option>
+        <option value="event">Event</option>
+      </select>
+    </div>
+
+
+    <div class="inputWithLabel">
+      <label>Playlist duration</label>
+      <input type="number" min="5" step="5" formControlName="requiredLength" class="inputShadow">
+    </div>
+
+    <div class="inputWithLabel">
+      <label>Number of songs</label>
+      <input type="number" min="1" step="1" formControlName="numberOfSongs" class="inputShadow">
+    </div>
+  </div>
+
+  <div formGroupName="performers">
+    <label>
+      Singers
+      <input type="checkbox" formControlName="singers">
+    </label>
+
+    <div formGroupName="singersConfig" *ngIf="templateForm.get('performers.singers')?.value">
+      <label>
+        Multi
+      <input type="checkbox" formControlName="multiples">
+      </label>
+
+      <label>
+        Contains duo
+        <input type="checkbox" formControlName="containsDuo">
+      </label>
+
+      <label>Split Mode</label>
+      <select formControlName="splitMode" class="inputShadow">
+        <option>Half split</option>
+        <option>Alternate</option>
+      </select>
+    </div>
+
+    <label>
+      Musicians
+      <input type="checkbox" formControlName="musicians">
+    </label>
+
+    <div formGroupName="musiciansConfig" *ngIf="templateForm.get('performers.musicians')?.value">
+      <select formControlName="role" class="inputShadow">
+        <option>Solo</option>
+        <option>Support</option>
+      </select>
+    </div>
+
+    <label>
+      Aerial
+      <input type="checkbox" formControlName="aerial" >
+    </label>
+
+  </div>
+
+  <div class="flexRowSpaceBetween">
+    <button>Cancel</button>
+    <button type="submit">Create Template</button>
+  </div>
+
+</form>

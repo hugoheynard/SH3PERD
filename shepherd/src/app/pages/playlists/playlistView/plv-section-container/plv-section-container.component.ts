@@ -8,7 +8,7 @@ import {Component, Input} from '@angular/core';
   styleUrl: './plv-section-container.component.scss'
 })
 export class PlvSectionContainerComponent {
-  public isExpanded: boolean = false;
+  @Input() isExpanded: boolean = false;
 
   onHeaderToggle(expanded: boolean): void {
     this.isExpanded = expanded;

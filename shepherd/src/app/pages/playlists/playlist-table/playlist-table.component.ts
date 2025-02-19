@@ -5,6 +5,7 @@ import {MatIconButton} from '@angular/material/button';
 import {FavoriteDynamicIconComponent} from '../favorite-dynamic-icon/favorite-dynamic-icon.component';
 import {PlaylistDisplayService} from '../playlist-display.service';
 import {Playlist} from '../playlist_interfaces';
+import {TagStyleDirective} from '../../../../Directives/tag-style.directive';
 
 @Component({
   selector: 'app-playlist-table',
@@ -15,7 +16,8 @@ import {Playlist} from '../playlist_interfaces';
     MatIconButton,
     NgIf,
     NgStyle,
-    FavoriteDynamicIconComponent
+    FavoriteDynamicIconComponent,
+    TagStyleDirective
   ],
   templateUrl: './playlist-table.component.html',
   styleUrl: './playlist-table.component.scss'

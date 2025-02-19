@@ -1,16 +1,15 @@
 import {
-  AfterViewInit, ChangeDetectorRef,
-  Component, Inject,
+  Component,
   inject,
   Input,
   OnInit,
 } from '@angular/core';
-import {CdkDrag, CdkDragDrop, CdkDropList, transferArrayItem} from "@angular/cdk/drag-drop";
+import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
 import {NgForOf, NgIf} from "@angular/common";
 import {TrackLineComponent} from "../track-line/track-line.component";
-import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {MatInput} from '@angular/material/input';
-import {MatButton, MatFabButton, MatMiniFabButton} from '@angular/material/button';
+import {MatButton, MatFabButton, MatIconButton, MatMiniFabButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {PlaylistDisplayService} from '../../playlist-display.service';
 import {PlaylistShortInfosComponent} from '../../playlist-short-infos/playlist-short-infos.component';
@@ -18,9 +17,11 @@ import {SongListDndComponent} from '../song-list-dnd/song-list-dnd.component';
 import {PlvSectionHeaderComponent} from '../plv-section-header/plv-section-header.component';
 import {PlvSectionContainerComponent} from '../plv-section-container/plv-section-container.component';
 import {AvailableTagsComponent} from '../available-tags/available-tags.component';
+import {PlaylistService} from '../../../../services/playlist.service';
+import {PlaylistFormService} from '../../formsServices/playlist-form.service';
 
 @Component({
-  selector: 'app-playlist-view',
+  selector: 'playlist-view',
   standalone: true,
   imports: [
     CdkDrag,
@@ -38,27 +39,18 @@ import {AvailableTagsComponent} from '../available-tags/available-tags.component
     PlvSectionHeaderComponent,
     PlvSectionContainerComponent,
     NgIf,
-    AvailableTagsComponent
+    AvailableTagsComponent,
+    MatIconButton
   ],
   templateUrl: './playlist-view.component.html',
   styleUrl: './playlist-view.component.scss',
 })
 export class PlaylistViewComponent implements OnInit {
-  protected readonly FormControl = FormControl;
-  private cdr=inject(ChangeDetectorRef)
   private fb: FormBuilder = inject(FormBuilder);
+  private plServ: PlaylistService = inject(PlaylistService);
+  public playlistFormService: PlaylistFormService =  inject(PlaylistFormService);
   public playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
-  public playlistForm: FormGroup = this.fb.group({
-    name: [''],
-    length: [''],
-    energy: [1],
-    settings: this.fb.group({
-      containsAerial: [false],
-      containsDuo: [false],
-    }),
-    songList: [],
-    notes: [''],
-  });
+  public playlistForm: FormGroup = this.fb.group({});
   @Input() playlist: any = {};
 
   ngOnInit():void {
@@ -66,20 +58,19 @@ export class PlaylistViewComponent implements OnInit {
   };
 
   initForm(): void {
-    this.playlistForm = this.fb.group({
-      name: [this.playlist?.name || ''],
-      energy: [this.playlist?.energy || 1],
-      settings: this.fb.group({
-        containsAerial: [this.playlist?.settings.containsAerial],
-        containsDuo: [this.playlist?.settings.containsDuo],
-      }),
-      songList: this.fb.array(this.playlist?.songList || []),
-      notes: [this.playlist?.notes || '']
-    });
-  };
+    this.playlistForm = this.playlistFormService.createPlaylistForm(this.playlist);
+  }; //OK
+
+
+
+
 
   getControl(controlName: string) {
     return this.playlistForm.get(controlName) as FormControl;
+  };
+
+  savePlaylist(): void {
+    this.plServ.savePlaylist({ data: this.playlistForm });
   };
 
 }

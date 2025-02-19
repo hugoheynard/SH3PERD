@@ -1,20 +1,39 @@
 <div id="playlistViewHeader">
-  <h2>EDIT PLAYLIST</h2>
+  <h2>EDIT {{ playlist.settings.name }}</h2>
   <button id="closePlaylistView_button" (click)="playlistDisplayService.closePlaylistInSidenav()"><mat-icon>close</mat-icon></button>
 </div>
 
-<form [formGroup]="playlistForm">
-  <div class="topInfos">
-    <label>Name:</label>
-    <input matInput type="text" formControlName="name">
-    <playlist-short-infos
-        [energyControl]="getControl('energy')"/><!--TODO: envoyer les form controls-->
-  </div>
+<playlist-short-infos [energyControl]="getControl('energy')"/>
 
+<form [formGroup]="playlistForm">
   <!--SETTINGS SECTION-->
   <plv-section-container #settingsSectionContainer>
     <plv-section-header sectionHeader [sectionTitle]="'Settings'" (openSection)="settingsSectionContainer.onHeaderToggle($event)"/>
     <ng-container sectionContent *ngIf="settingsSectionContainer.isExpanded" formGroupName="settings">
+      <div class="flexRowSpaceBetween">
+        <label>Name:</label>
+        <input matInput type="text" formControlName="name">
+      </div>
+
+      <div class="flexRowSpaceBetween">
+        <label>Usage:</label>
+        <select formControlName="usage">
+          <option value="daily">Daily</option>
+          <option value="event">Event</option>
+        </select>
+      </div>
+
+      <div class="flexRowSpaceBetween">
+        <div><mat-icon>timer</mat-icon> Required length</div>
+        <input type="number" min="5" step="5" formControlName="requiredLength">
+      </div>
+
+      <div class="flexRowSpaceBetween">
+        <div><mat-icon>music_video</mat-icon> Song number</div>
+        <input type="number" min="1" step="1" formControlName="numberOfSongs">
+      </div>
+
+
       <div class="flexRowSpaceBetween">
         <div><mat-icon>airplanemode_active</mat-icon> Contains aerial</div>
         <input type="checkbox" formControlName="containsAerial">
@@ -24,28 +43,20 @@
         <div><mat-icon>people</mat-icon> Contains duo</div>
         <input type="checkbox" formControlName="containsDuo">
       </div>
+
+      <button>GENERATE</button>
     </ng-container>
   </plv-section-container>
 
 
   <!--TRACK LIST SECTION-->
-  <plv-section-container #tracklistSectionContainer>
+  <plv-section-container #tracklistSectionContainer [isExpanded]="true">
     <plv-section-header sectionHeader [sectionTitle]="'TrackList'" (openSection)="tracklistSectionContainer.onHeaderToggle($event)"/>
     <ng-container sectionContent *ngIf="tracklistSectionContainer.isExpanded">
       <!--TAGS-->
-      <available-tags #availableTags [tagList]="['duo', 'aerial']"/>
+      <available-tags #availableTags [tagList]="playlistFormService.getAvailableTags()"/>
       <!--SONGS-->
-      <app-song-list-dnd
-        [plDisplayService]="playlistDisplayService"
-        [songList]="playlist.songList"/>
-      <!--
-  <div class="paddingPlaylistView">
-
-    <button class="button-16" (click)="playlistDisplayService.openLibraryView()">
-      <mat-icon>library_add</mat-icon>
-      Add Song
-    </button>
-  </div>-->
+      <app-song-list-dnd />
     </ng-container>
   </plv-section-container>
 
@@ -60,7 +71,7 @@
 
 </form>
 
-<button class="button-16" type="submit">Save</button>
+<button class="button-16" type="submit" (click)="savePlaylist()">Save</button>
 
 
 

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PlaylistDisplayService } from './playlist-display.service';
+import { PlaylistDisplayService } from '../playlist-display.service';
 
 describe('PlaylistDisplayService', () => {
   let service: PlaylistDisplayService;
