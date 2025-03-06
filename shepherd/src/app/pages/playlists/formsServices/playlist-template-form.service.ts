@@ -15,9 +15,10 @@ export class PlaylistTemplateFormService {
   createTemplateFormGroup(template: any = {}): FormGroup {
     return this.fb.group({
       name: [template?.name || 'New playlist template'],
-      usage: [template?.usage || 'Daily'],
+      usage: [template?.usage || 'daily'],
       requiredLength: [template?.requiredLength || 15],
       numberOfSongs: [template?.numberOfSongs || 4],
+      intensity: [template?.intensity || 1],
       performers: this.createPerformerSubGroup(template.performers)
     });
   };
@@ -25,21 +26,13 @@ export class PlaylistTemplateFormService {
   createPerformerSubGroup(performers: any = {}): FormGroup {
     const performerGroup =  this.fb.group({
       singers: [performers.singers || false],
-      singersConfig: this.fb.group({
-        multiples: [performers.multiples || false],
-        numberOfSingers: [{
-          value: performers.numberOfSingers || 2,
-          disabled: !performers.multiples
-        }],
-        containsDuo: [performers.containsDuo || false],
-        splitMode: [performers.splitMode || 'half split'],
-      }),
+      singersConfig: this.createSingersConfigSubGroup(performers.singersConfig),
       musicians: [performers.musicians || false],
       musiciansConfig: this.fb.group({
         role: [performers.role || 'solo']
       }),
 
-      aerial: [performers.musicians || false],
+      aerial: [performers.aerial || false],
       aerialPosition: [{
         value: performers.aerialPosition || 'end',
         disabled: !performers.containsAerial
@@ -58,7 +51,23 @@ export class PlaylistTemplateFormService {
       }
     });
 
+
     return performerGroup;
+  };
+
+  createSingersConfigSubGroup(singersConfig: any = {}): FormGroup {
+    const singersConfigGroup = this.fb.group({
+      quantity: [singersConfig.quantity || 1],
+      containsDuo: [singersConfig.containsDuo || false],
+      splitMode: [singersConfig.splitMode || 'half_split'],
+    });
+
+    if (singersConfig.quantity <= 1) {
+      singersConfig.get('containsDuo').disable();
+    }
+
+
+    return singersConfigGroup;
   };
 
 

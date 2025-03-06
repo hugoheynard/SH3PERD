@@ -3,6 +3,8 @@ import {settingsController} from "./controllers/settingsController";
 import {calendarController} from "./controllers/calendarController";
 import {eventsController} from "./controllers/eventController";
 import {musicLibraryController} from "./controllers/musicLibraryController";
+import {playlistController} from "./controllers/playlistController";
+import {playlistTemplateService} from "./services/playlistService/playlistTemplateService";
 
 
 
@@ -18,8 +20,19 @@ export const initControllers = ({services}: any): any => {
             authenticationController: authenticationController({ authenticationService: services.authenticationService }),
             settingsController: settingsController({ settingsService: services.settingsService}),
             eventsController: eventsController({ eventService: services.eventService}), //TODO: on en est là test API
-            calendarController: calendarController({ calendarService: services.calendarService, userService: services.userService, eventService: services.eventService}),
+            calendarController: calendarController({
+                calendarService: services.calendarService,
+                userService: services.userService,
+                eventService: services.eventService}),
             musicLibraryController: musicLibraryController( { musicService: services.musicService }),
+            playlistController: playlistController({
+                playlistService: services.playlistService,
+                playlistTemplateService: services.playlistTemplateService
+            }),
+
+
+
+
             /*
                         userController: userController({
                             services: {

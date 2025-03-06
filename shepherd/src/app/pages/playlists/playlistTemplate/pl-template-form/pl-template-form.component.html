@@ -1,13 +1,12 @@
 <form [formGroup]="templateForm">
   <h4>Playlist template</h4>
 
-  <div class="inputWithLabel">
-    <label>Template name</label>
-    <input formControlName="name" class="inputShadow" type="text" >
-  </div>
 
-
-  <div class="flexRowSpaceBetween">
+  <div class="playlistSettings">
+    <div class="inputWithLabel" style="grid-row: 0; grid-column: 1 / 5;">
+      <label>Template name</label>
+      <input formControlName="name" class="inputShadow" type="text" >
+    </div>
 
     <div class="inputWithLabel">
       <label>Usage</label>
@@ -17,8 +16,7 @@
       </select>
     </div>
 
-
-    <div class="inputWithLabel">
+    <div class="inputWithLabel gridObj">
       <label>Playlist duration</label>
       <input type="number" min="5" step="5" formControlName="requiredLength" class="inputShadow">
     </div>
@@ -27,54 +25,105 @@
       <label>Number of songs</label>
       <input type="number" min="1" step="1" formControlName="numberOfSongs" class="inputShadow">
     </div>
+
+    <div class="inputWithLabel">
+      <label>Intensity</label>
+      <input type="number" min="1" max="4" step="1" formControlName="intensity" class="inputShadow">
+    </div>
+
+    <div class="inputWithLabel" style="grid-row: 3 / 5; grid-column: 1 / 5;">
+      <label>Description</label>
+      <input formControlName="name" class="inputShadow" type="text" >
+    </div>
   </div>
+
+
+
 
   <div formGroupName="performers">
-    <label>
-      Singers
-      <input type="checkbox" formControlName="singers">
-    </label>
+    <!--SINGER CONFIG-->
+    <section>
+      <div class="flexRowSpaceBetween">
+        <label class="categoryLabel">
+          Singers
+        </label>
+        <input type="checkbox" formControlName="singers">
+      </div>
 
-    <div formGroupName="singersConfig" *ngIf="templateForm.get('performers.singers')?.value">
-      <label>
-        Multi
-      <input type="checkbox" formControlName="multiples">
-      </label>
+      <div formGroupName="singersConfig" *ngIf="singerActive()">
+        <div class="flexRowSpaceBetween">
+          <div class="inputWithLabel">
+            <label>Number of singers</label>
+            <input type="number" min="1" step="1" formControlName="quantity" class="inputShadow">
+          </div>
 
-      <label>
-        Contains duo
-        <input type="checkbox" formControlName="containsDuo">
-      </label>
+          <ng-container *ngIf="moreThanOneSinger()">
+            <div class="inputWithLabel">
+              <label>Split Mode</label>
+              <select formControlName="splitMode" class="inputShadow">
+                <option value="half_split">Half split</option>
+                <option value="alternate">Alternate</option>
+              </select>
+            </div>
+          </ng-container>
+        </div>
 
-      <label>Split Mode</label>
-      <select formControlName="splitMode" class="inputShadow">
-        <option>Half split</option>
-        <option>Alternate</option>
-      </select>
-    </div>
+        <ng-container *ngIf="moreThanOneSinger()">
+          <div class="flexRowSpaceBetween">
+            <label>Contains duo</label>
+            <input  class="inputWithLabel" type="checkbox" formControlName="containsDuo">
+          </div>
+        </ng-container>
 
-    <label>
-      Musicians
-      <input type="checkbox" formControlName="musicians">
-    </label>
+      </div>
+    </section>
 
-    <div formGroupName="musiciansConfig" *ngIf="templateForm.get('performers.musicians')?.value">
-      <select formControlName="role" class="inputShadow">
-        <option>Solo</option>
-        <option>Support</option>
-      </select>
-    </div>
+    <!--MUSICIANS CONFIG-->
+    <section>
+      <div class="flexRowSpaceBetween">
+        <label class="categoryLabel">Musicians</label>
+        <input type="checkbox" formControlName="musicians">
+      </div>
 
-    <label>
-      Aerial
-      <input type="checkbox" formControlName="aerial" >
-    </label>
+      <div formGroupName="musiciansConfig" *ngIf="musicianActive()">
+        <div class="inputWithLabel">
+          <label>Role</label>
+          <select formControlName="role" class="inputShadow">
+            <option value="solo">Solo</option>
+            <option value="support">Support</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!--AERIAL CONFIG-->
+    <section>
+      <div class="flexRowSpaceBetween">
+        <label class="categoryLabel">Aerial</label>
+        <input type="checkbox" formControlName="aerial" >
+      </div>
+
+      <div formGroupName="aerialConfig" *ngIf="aerialActive()">
+        <div class="inputWithLabel">
+          <label>Performance position</label>
+          <select formControlName="aerialPosition" class="inputShadow">
+            <option value="start">Start</option>
+            <option value="end">End</option>
+            <option value="manual">Manuel</option>
+          </select>
+        </div>
+      </div>
+
+    </section>
 
   </div>
 
-  <div class="flexRowSpaceBetween">
-    <button>Cancel</button>
-    <button type="submit">Create Template</button>
+  <!--FOOTER BUTTONS-->
+  <div class="footer">
+    <div class="flexRowSpaceBetween">
+      <button class="inputShadow">Cancel</button>
+      <button *ngIf="!editMode" class="submit" (click)="postPlTemplate({ formData: templateForm.value })">Create Template</button>
+      <button *ngIf="editMode"  class="submit" (click)="updatePlTemplate({ formData: templateForm.value })">Save changes</button>
+    </div>
   </div>
-
 </form>

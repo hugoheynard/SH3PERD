@@ -7,6 +7,7 @@ import {JWT_module} from "./tools/login/JWT_Module";
 import {settingsService} from "./services/settingsService";
 import {calendarService} from "./services/calendarService";
 import {musicService} from "./services/musicService/musicService";
+import {playlistTemplateService} from "./services/playlistService/playlistTemplateService";
 
 
 
@@ -37,8 +38,8 @@ export const initServices = (db: Db | null): any => {
                 eventService: eventServiceInstance,
                 userService: userServiceInstance
             }),
-            musicService: musicServiceInstance
-
+            musicService: musicServiceInstance,
+            playlistTemplateService: playlistTemplateService({ playlistTemplateCollection: db.collection('playlist_template') }),
             //contractService: contractService({ collection: db.collection('contracts') }),
             //companyService: companyService({ collection: db.collection('companies') }),
             //userService: userService,
