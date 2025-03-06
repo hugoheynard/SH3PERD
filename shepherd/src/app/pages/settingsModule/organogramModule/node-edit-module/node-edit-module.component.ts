@@ -7,13 +7,12 @@ import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton, MatFabButton} from '@angular/material/button';
 
 @Component({
-  selector: 'app-node-edit-module',
-  standalone: true,
-  imports: [
-    MatFormField, MatInput, MatLabel, MatCheckbox, ReactiveFormsModule, MatSelect, MatOption, MatButton, MatFabButton, MatHint
-  ],
-  templateUrl: './node-edit-module.component.html',
-  styleUrl: './node-edit-module.component.scss'
+    selector: 'app-node-edit-module',
+    imports: [
+        MatFormField, MatInput, MatLabel, MatCheckbox, ReactiveFormsModule, MatSelect, MatOption, MatButton, MatFabButton, MatHint
+    ],
+    templateUrl: './node-edit-module.component.html',
+    styleUrl: './node-edit-module.component.scss'
 })
 export class NodeEditModuleComponent {
   private fb = inject(FormBuilder);

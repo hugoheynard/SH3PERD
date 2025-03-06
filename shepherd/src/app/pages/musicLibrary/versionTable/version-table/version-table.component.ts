@@ -9,21 +9,20 @@ import {SelectComponent} from '../select/select.component';
 import {MusicLibraryService} from '../../../../services/music-library.service';
 
 @Component({
-  selector: 'app-version-table',
-  standalone: true,
-  imports: [
-    NgForOf,
-    ReactiveFormsModule,
-    NgIf,
-    MatIcon,
-    MatIconButton,
-    FileManagementComponent,
-    CdkDrag,
-    SelectComponent,
-    NgTemplateOutlet
-  ],
-  templateUrl: './version-table.component.html',
-  styleUrl: './version-table.component.scss'
+    selector: 'app-version-table',
+    imports: [
+        NgForOf,
+        ReactiveFormsModule,
+        NgIf,
+        MatIcon,
+        MatIconButton,
+        FileManagementComponent,
+        CdkDrag,
+        SelectComponent,
+        NgTemplateOutlet
+    ],
+    templateUrl: './version-table.component.html',
+    styleUrl: './version-table.component.scss'
 })
 export class VersionTableComponent implements OnInit, OnChanges{
   private mlServ = inject(MusicLibraryService);

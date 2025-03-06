@@ -5,14 +5,13 @@ import {NgIf} from '@angular/common';
 import {PlTemplateService} from '../../../../services/pl-template.service';
 
 @Component({
-  selector: 'pl-template-form',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    NgIf
-  ],
-  templateUrl: './pl-template-form.component.html',
-  styleUrl: './pl-template-form.component.scss'
+    selector: 'pl-template-form',
+    imports: [
+        ReactiveFormsModule,
+        NgIf
+    ],
+    templateUrl: './pl-template-form.component.html',
+    styleUrl: './pl-template-form.component.scss'
 })
 export class PlTemplateFormComponent {
    private playlistTemplateFormService: PlaylistTemplateFormService = inject(PlaylistTemplateFormService);

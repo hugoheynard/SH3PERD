@@ -6,14 +6,13 @@ import {MatButton} from '@angular/material/button';
 import {AuthService} from '../../../services/auth.service';
 
 @Component({
-  selector: 'app-login-form',
-  standalone: true,
-  imports: [
-    FormsModule,
-    MatFormField, MatLabel, MatInput, MatButton,
-  ],
-  templateUrl: './login-form.component.html',
-  styleUrl: './login-form.component.scss'
+    selector: 'app-login-form',
+    imports: [
+        FormsModule,
+        MatFormField, MatLabel, MatInput, MatButton,
+    ],
+    templateUrl: './login-form.component.html',
+    styleUrl: './login-form.component.scss'
 })
 export class LoginFormComponent {
 

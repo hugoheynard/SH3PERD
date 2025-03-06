@@ -11,15 +11,14 @@ import {EventReactformComponent} from '../../../forms/event-reactform/event-reac
 import {NgForOf} from '@angular/common';
 
 @Component({
-  selector: 'app-calendarPage',
-  standalone: true,
-  templateUrl: './calendar.component.html',
-  styleUrl: './calendar.component.scss',
-  imports: [
-    PlanningGridComponent,
-    CalendarHoursGridComponent,
-    MatSidenavContainer, MatSidenav, MatButton, AppMenuComponent, MatCalendar, DatePickerCalendarComponent, EventReactformComponent, NgForOf
-  ]
+    selector: 'app-calendarPage',
+    templateUrl: './calendar.component.html',
+    styleUrl: './calendar.component.scss',
+    imports: [
+        PlanningGridComponent,
+        CalendarHoursGridComponent,
+        MatSidenavContainer, MatSidenav, MatButton, AppMenuComponent, MatCalendar, DatePickerCalendarComponent, EventReactformComponent, NgForOf
+    ]
 })
 export class CalendarComponent implements OnInit, AfterViewInit{
   public calendarService = inject(CalendarService);

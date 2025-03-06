@@ -6,17 +6,16 @@ import {NgClass, NgForOf, NgIf, NgStyle} from '@angular/common';
 
 
 @Component({
-  selector: 'app-planningGrid',
-  standalone: true,
-  imports: [
-    EventBlockComponent,
-    NgStyle,
-    NgForOf,
-    NgIf,
-    NgClass,
-  ],
-  templateUrl: './planning-grid.component.html',
-  styleUrl: './planning-grid.component.scss'
+    selector: 'app-planningGrid',
+    imports: [
+        EventBlockComponent,
+        NgStyle,
+        NgForOf,
+        NgIf,
+        NgClass,
+    ],
+    templateUrl: './planning-grid.component.html',
+    styleUrl: './planning-grid.component.scss'
 })
 export class PlanningGridComponent {
   @Input() events: any[] = [];

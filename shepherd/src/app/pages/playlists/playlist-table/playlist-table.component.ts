@@ -8,19 +8,18 @@ import {Playlist} from '../playlist_interfaces';
 import {TagStyleDirective} from '../../../../Directives/tag-style.directive';
 
 @Component({
-  selector: 'app-playlist-table',
-  standalone: true,
-  imports: [
-    NgForOf,
-    MatIcon,
-    MatIconButton,
-    NgIf,
-    NgStyle,
-    FavoriteDynamicIconComponent,
-    TagStyleDirective
-  ],
-  templateUrl: './playlist-table.component.html',
-  styleUrl: './playlist-table.component.scss'
+    selector: 'app-playlist-table',
+    imports: [
+        NgForOf,
+        MatIcon,
+        MatIconButton,
+        NgIf,
+        NgStyle,
+        FavoriteDynamicIconComponent,
+        TagStyleDirective
+    ],
+    templateUrl: './playlist-table.component.html',
+    styleUrl: './playlist-table.component.scss'
 })
 export class PlaylistTableComponent {
   public playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);

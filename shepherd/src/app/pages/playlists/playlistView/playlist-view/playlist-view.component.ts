@@ -21,29 +21,28 @@ import {PlaylistService} from '../../../../services/playlist.service';
 import {PlaylistFormService} from '../../formsServices/playlist-form.service';
 
 @Component({
-  selector: 'playlist-view',
-  standalone: true,
-  imports: [
-    CdkDrag,
-    CdkDropList,
-    NgForOf,
-    TrackLineComponent,
-    ReactiveFormsModule,
-    MatInput,
-    MatButton,
-    MatFabButton,
-    MatIcon,
-    MatMiniFabButton,
-    PlaylistShortInfosComponent,
-    SongListDndComponent,
-    PlvSectionHeaderComponent,
-    PlvSectionContainerComponent,
-    NgIf,
-    AvailableTagsComponent,
-    MatIconButton
-  ],
-  templateUrl: './playlist-view.component.html',
-  styleUrl: './playlist-view.component.scss',
+    selector: 'playlist-view',
+    imports: [
+        CdkDrag,
+        CdkDropList,
+        NgForOf,
+        TrackLineComponent,
+        ReactiveFormsModule,
+        MatInput,
+        MatButton,
+        MatFabButton,
+        MatIcon,
+        MatMiniFabButton,
+        PlaylistShortInfosComponent,
+        SongListDndComponent,
+        PlvSectionHeaderComponent,
+        PlvSectionContainerComponent,
+        NgIf,
+        AvailableTagsComponent,
+        MatIconButton
+    ],
+    templateUrl: './playlist-view.component.html',
+    styleUrl: './playlist-view.component.scss'
 })
 export class PlaylistViewComponent implements OnInit {
   private fb: FormBuilder = inject(FormBuilder);

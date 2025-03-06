@@ -4,11 +4,10 @@ import {AuthService} from '../../../services/auth.service';
 import {Router} from '@angular/router';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [LoginFormComponent],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+    selector: 'app-login',
+    imports: [LoginFormComponent],
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
   private authService = inject(AuthService);

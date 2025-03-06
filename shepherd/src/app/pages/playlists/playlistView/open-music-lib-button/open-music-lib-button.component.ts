@@ -3,11 +3,10 @@ import { PlaylistDisplayService } from '../../playlist-display.service';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'open-music-lib-button',
-  standalone: true,
-  imports: [MatIcon],
-  templateUrl: './open-music-lib-button.component.html',
-  styleUrls: ['./open-music-lib-button.component.scss']
+    selector: 'open-music-lib-button',
+    imports: [MatIcon],
+    templateUrl: './open-music-lib-button.component.html',
+    styleUrls: ['./open-music-lib-button.component.scss']
 })
 export class OpenMusicLibButtonComponent {
   @Input() pldServ!: PlaylistDisplayService;

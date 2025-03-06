@@ -4,15 +4,14 @@ import {MatInput} from '@angular/material/input';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 
 @Component({
-  selector: 'playlist-short-infos',
-  standalone: true,
-  imports: [
-    MatIcon,
-    MatInput,
-    ReactiveFormsModule
-  ],
-  templateUrl: './playlist-short-infos.component.html',
-  styleUrl: './playlist-short-infos.component.scss'
+    selector: 'playlist-short-infos',
+    imports: [
+        MatIcon,
+        MatInput,
+        ReactiveFormsModule
+    ],
+    templateUrl: './playlist-short-infos.component.html',
+    styleUrl: './playlist-short-infos.component.scss'
 })
 export class PlaylistShortInfosComponent {
   @Input() energyControl!: FormControl;

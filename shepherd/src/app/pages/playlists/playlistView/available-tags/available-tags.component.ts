@@ -8,20 +8,19 @@ import {PlaylistDisplayService} from '../../playlist-display.service';
 import {TagStyleDirective} from '../../../../../Directives/tag-style.directive';
 
 @Component({
-  selector: 'available-tags',
-  standalone: true,
-  imports: [
-    MatIcon,
-    CdkDropList,
-    MatChip,
-    CdkDrag,
-    NgForOf,
-    FormsModule,
-    NgStyle,
-    TagStyleDirective
-  ],
-  templateUrl: './available-tags.component.html',
-  styleUrl: './available-tags.component.scss'
+    selector: 'available-tags',
+    imports: [
+        MatIcon,
+        CdkDropList,
+        MatChip,
+        CdkDrag,
+        NgForOf,
+        FormsModule,
+        NgStyle,
+        TagStyleDirective
+    ],
+    templateUrl: './available-tags.component.html',
+    styleUrl: './available-tags.component.scss'
 })
 export class AvailableTagsComponent {
   private plDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);

@@ -6,19 +6,18 @@ import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/mater
 import {NodeEditModuleComponent} from '../node-edit-module/node-edit-module.component';
 
 @Component({
-  selector: 'app-organogram',
-  standalone: true,
-  imports: [
-    OrgTreeComponent,
-    EditSaveIconComponent,
-    MatIconButton,
-    MatSidenavContainer,
-    MatSidenavContent,
-    MatSidenav,
-    NodeEditModuleComponent
-  ],
-  templateUrl: './organogram.component.html',
-  styleUrl: './organogram.component.scss'
+    selector: 'app-organogram',
+    imports: [
+        OrgTreeComponent,
+        EditSaveIconComponent,
+        MatIconButton,
+        MatSidenavContainer,
+        MatSidenavContent,
+        MatSidenav,
+        NodeEditModuleComponent
+    ],
+    templateUrl: './organogram.component.html',
+    styleUrl: './organogram.component.scss'
 })
 export class OrganogramComponent {
   editMode: boolean = false;

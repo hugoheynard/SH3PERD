@@ -5,18 +5,17 @@ import {MatIconButton} from '@angular/material/button';
 import {NgIf} from '@angular/common';
 
 @Component({
-  selector: 'app-node-menu',
-  standalone: true,
-  imports: [
-    MatIcon,
-    MatMenu,
-    MatMenuItem,
-    MatIconButton,
-    MatMenuTrigger,
-    NgIf
-  ],
-  templateUrl: './node-menu.component.html',
-  styleUrl: './node-menu.component.scss'
+    selector: 'app-node-menu',
+    imports: [
+        MatIcon,
+        MatMenu,
+        MatMenuItem,
+        MatIconButton,
+        MatMenuTrigger,
+        NgIf
+    ],
+    templateUrl: './node-menu.component.html',
+    styleUrl: './node-menu.component.scss'
 })
 export class NodeMenuComponent {
   @ViewChild(MatMenu, { static: true }) menu!: MatMenu;

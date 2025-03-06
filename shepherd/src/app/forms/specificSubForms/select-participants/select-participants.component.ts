@@ -6,21 +6,20 @@ import {MatInput} from '@angular/material/input';
 import {NgForOf} from '@angular/common';
 
 @Component({
-  selector: 'app-select-participants',
-  standalone: true,
-  imports: [
-    MatChip,
-    MatChipListbox,
-    MatChipOption,
-    MatFormField,
-    MatChipGrid,
-    MatLabel,
-    ReactiveFormsModule,
-    MatInput,
-    NgForOf
-  ],
-  templateUrl: './select-participants.component.html',
-  styleUrl: './select-participants.component.scss'
+    selector: 'app-select-participants',
+    imports: [
+        MatChip,
+        MatChipListbox,
+        MatChipOption,
+        MatFormField,
+        MatChipGrid,
+        MatLabel,
+        ReactiveFormsModule,
+        MatInput,
+        NgForOf
+    ],
+    templateUrl: './select-participants.component.html',
+    styleUrl: './select-participants.component.scss'
 })
 export class SelectParticipantsComponent {
   @Input() organisationSchema: any;

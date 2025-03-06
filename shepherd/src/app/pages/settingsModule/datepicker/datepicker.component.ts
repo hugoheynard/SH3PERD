@@ -5,21 +5,20 @@ import {MatNativeDateModule} from '@angular/material/core';
 import {MatInput} from '@angular/material/input';
 
 @Component({
-  selector: 'app-datepicker',
-  standalone: true,
-  imports: [
-    MatDatepicker,
-    MatDatepickerToggle,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatHint,
-    MatSuffix,
-    MatLabel,
-    MatInput,
-    MatFormField
-  ],
-  templateUrl: './datepicker.component.html',
-  styleUrl: './datepicker.component.scss'
+    selector: 'app-datepicker',
+    imports: [
+        MatDatepicker,
+        MatDatepickerToggle,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatHint,
+        MatSuffix,
+        MatLabel,
+        MatInput,
+        MatFormField
+    ],
+    templateUrl: './datepicker.component.html',
+    styleUrl: './datepicker.component.scss'
 })
 export class DatepickerComponent {
   @Input() label: string = '';

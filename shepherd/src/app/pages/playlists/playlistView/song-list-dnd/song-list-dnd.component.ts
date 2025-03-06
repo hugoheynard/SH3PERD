@@ -20,18 +20,17 @@ import {AbstractControl, FormArray, FormGroup} from '@angular/forms';
 import {PlaylistFormService} from '../../formsServices/playlist-form.service';
 
 @Component({
-  selector: 'app-song-list-dnd',
-  standalone: true,
-  imports: [
-    CdkDrag,
-    CdkDropList,
-    NgForOf,
-    TrackLineComponent,
-    AddSlotComponent,
-    DragStyleDirective
-  ],
-  templateUrl: './song-list-dnd.component.html',
-  styleUrl: './song-list-dnd.component.scss'
+    selector: 'app-song-list-dnd',
+    imports: [
+        CdkDrag,
+        CdkDropList,
+        NgForOf,
+        TrackLineComponent,
+        AddSlotComponent,
+        DragStyleDirective
+    ],
+    templateUrl: './song-list-dnd.component.html',
+    styleUrl: './song-list-dnd.component.scss'
 })
 export class SongListDndComponent implements OnInit{
   public pldServ = inject(PlaylistDisplayService);

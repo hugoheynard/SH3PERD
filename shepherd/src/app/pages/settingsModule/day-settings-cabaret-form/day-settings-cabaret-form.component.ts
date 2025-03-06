@@ -8,16 +8,15 @@ import {MatOption, MatSelect} from '@angular/material/select';
 import {ToggleButtonComponent} from '../toggle-button/toggle-button.component';
 
 @Component({
-  selector: 'app-day-settings-cabaret-form',
-  standalone: true,
-  imports: [
-    MatFormField, MatInput, MatLabel, MatSelect, MatOption,
-    MatSlideToggle,
-    NgForOf,
-    ReactiveFormsModule, NgIf, ToggleButtonComponent,
-  ],
-  templateUrl: './day-settings-cabaret-form.component.html',
-  styleUrl: './day-settings-cabaret-form.component.scss'
+    selector: 'app-day-settings-cabaret-form',
+    imports: [
+        MatFormField, MatInput, MatLabel, MatSelect, MatOption,
+        MatSlideToggle,
+        NgForOf,
+        ReactiveFormsModule, NgIf, ToggleButtonComponent,
+    ],
+    templateUrl: './day-settings-cabaret-form.component.html',
+    styleUrl: './day-settings-cabaret-form.component.scss'
 })
 export class DaySettingsCabaretFormComponent implements OnInit{
   @Input() cabaretSettingsForm: FormGroup = new FormGroup<any>({});

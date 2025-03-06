@@ -1,11 +1,10 @@
 import {Component, Input} from '@angular/core';
 
 @Component({
-  selector: 'plv-section-container',
-  standalone: true,
-  imports: [],
-  templateUrl: './plv-section-container.component.html',
-  styleUrl: './plv-section-container.component.scss'
+    selector: 'plv-section-container',
+    imports: [],
+    templateUrl: './plv-section-container.component.html',
+    styleUrl: './plv-section-container.component.scss'
 })
 export class PlvSectionContainerComponent {
   @Input() isExpanded: boolean = false;

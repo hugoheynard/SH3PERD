@@ -9,11 +9,10 @@ interface MenuItem {
 }
 
 @Component({
-  selector: 'app-appMenu',
-  standalone: true,
-  templateUrl: './app-menu.component.html',
-  styleUrl: './app-menu.component.scss',
-  imports: [CommonModule, RouterModule, IconFlatButtonComponent],
+    selector: 'app-appMenu',
+    templateUrl: './app-menu.component.html',
+    styleUrl: './app-menu.component.scss',
+    imports: [CommonModule, RouterModule, IconFlatButtonComponent]
 })
 export class AppMenuComponent {
 

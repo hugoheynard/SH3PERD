@@ -14,34 +14,32 @@ import {NavlistSettingsComponent} from '../navlist-settings/navlist-settings.com
 
 
 @Component({
-  selector: 'app-settings',
-  standalone: true,
-  imports: [
-    MatFormField,
-    MatInput,
-    MatLabel,
-    MatDatepickerInput,
-    MatDatepickerToggle,
-    MatDatepicker,
-    DatepickerComponent,
-    MatTabGroup,
-    MatTab,
-    MatSidenavContainer,
-    MatSidenav,
-    MatIcon,
-    MatIconModule,
-    MatSelect,
-    MatSlideToggle,
-    RouterOutlet,
-    MatNavList,
-    MatListItem,
-    RouterLink,
-    RouterLinkActive,
-    NavlistSettingsComponent,
-
-  ],
-  templateUrl: './settings.component.html',
-  styleUrl: './settings.component.scss'
+    selector: 'app-settings',
+    imports: [
+        MatFormField,
+        MatInput,
+        MatLabel,
+        MatDatepickerInput,
+        MatDatepickerToggle,
+        MatDatepicker,
+        DatepickerComponent,
+        MatTabGroup,
+        MatTab,
+        MatSidenavContainer,
+        MatSidenav,
+        MatIcon,
+        MatIconModule,
+        MatSelect,
+        MatSlideToggle,
+        RouterOutlet,
+        MatNavList,
+        MatListItem,
+        RouterLink,
+        RouterLinkActive,
+        NavlistSettingsComponent,
+    ],
+    templateUrl: './settings.component.html',
+    styleUrl: './settings.component.scss'
 })
 export class SettingsComponent {
 

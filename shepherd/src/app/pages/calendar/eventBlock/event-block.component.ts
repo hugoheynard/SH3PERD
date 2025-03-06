@@ -19,15 +19,14 @@ export interface EventBlock {
 }
 
 @Component({
-  selector: 'app-eventBlock',
-  standalone: true,
-  templateUrl: './event-block.component.html',
-  styleUrl: './event-block.component.scss',
-  imports: [
-    NgStyle,
-    DatePipe,
-    NgIf
-  ]
+    selector: 'app-eventBlock',
+    templateUrl: './event-block.component.html',
+    styleUrl: './event-block.component.scss',
+    imports: [
+        NgStyle,
+        DatePipe,
+        NgIf
+    ]
 })
 export class EventBlockComponent {
   @Input() event!: EventBlock;

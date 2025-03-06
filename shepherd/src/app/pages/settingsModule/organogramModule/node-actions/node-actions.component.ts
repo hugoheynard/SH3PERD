@@ -5,16 +5,15 @@ import {FormsModule} from '@angular/forms';
 import {NgIf} from '@angular/common';
 
 @Component({
-  selector: 'app-node-actions',
-  standalone: true,
-  imports: [
-    MatIcon,
-    MatIconButton,
-    FormsModule,
-    NgIf
-  ],
-  templateUrl: './node-actions.component.html',
-  styleUrl: './node-actions.component.scss'
+    selector: 'app-node-actions',
+    imports: [
+        MatIcon,
+        MatIconButton,
+        FormsModule,
+        NgIf
+    ],
+    templateUrl: './node-actions.component.html',
+    styleUrl: './node-actions.component.scss'
 })
 export class NodeActionsComponent {
   @Input() isAddingChild = false;

@@ -9,17 +9,16 @@ import {SettingsService} from '../../../services/settings.service';
 import {WeekTemplate} from '../../../interfaces/week-template-interface';
 
 @Component({
-  selector: 'app-week-template',
-  standalone: true,
-  imports: [
-    MatTabGroup, MatTab, MatButton,
-    DayTemplateComponent,
-    NgForOf,
-    EditSaveIconComponent,
-    ReactiveFormsModule, MatIconButton,
-  ],
-  templateUrl: './week-template.component.html',
-  styleUrl: './week-template.component.scss'
+    selector: 'app-week-template',
+    imports: [
+        MatTabGroup, MatTab, MatButton,
+        DayTemplateComponent,
+        NgForOf,
+        EditSaveIconComponent,
+        ReactiveFormsModule, MatIconButton,
+    ],
+    templateUrl: './week-template.component.html',
+    styleUrl: './week-template.component.scss'
 })
 export class WeekTemplateComponent implements OnInit, AfterViewInit{
   private fb = inject(FormBuilder);

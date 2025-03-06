@@ -2,18 +2,17 @@ import {Component, forwardRef} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Component({
-  selector: 'app-toggle-button',
-  standalone: true,
-  imports: [],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => ToggleButtonComponent),
-      multi: true,
-    }
-  ],
-  templateUrl: './toggle-button.component.html',
-  styleUrl: './toggle-button.component.scss'
+    selector: 'app-toggle-button',
+    imports: [],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => ToggleButtonComponent),
+            multi: true,
+        }
+    ],
+    templateUrl: './toggle-button.component.html',
+    styleUrl: './toggle-button.component.scss'
 })
 export class ToggleButtonComponent implements ControlValueAccessor{
   value = false;

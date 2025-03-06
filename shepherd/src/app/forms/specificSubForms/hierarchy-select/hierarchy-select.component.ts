@@ -4,11 +4,10 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {NgIf} from '@angular/common';
 
 @Component({
-  selector: 'app-hierarchy-select',
-  standalone: true,
-  imports: [SelectCheckboxComponent, ReactiveFormsModule, NgIf],
-  templateUrl: './hierarchy-select.component.html',
-  styleUrl: './hierarchy-select.component.scss'
+    selector: 'app-hierarchy-select',
+    imports: [SelectCheckboxComponent, ReactiveFormsModule, NgIf],
+    templateUrl: './hierarchy-select.component.html',
+    styleUrl: './hierarchy-select.component.scss'
 })
 export class HierarchySelectComponent implements OnInit, AfterViewInit{
 

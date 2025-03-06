@@ -20,25 +20,24 @@ import {TagStyleDirective} from '../../../../../Directives/tag-style.directive';
 import {DragStyleDirective} from '../../../../../Directives/drag-style.directive';
 
 @Component({
-  selector: 'track-line',
-  standalone: true,
-  imports: [
-    MatIcon,
-    MatIconButton,
-    NgIf,
-    MatInput,
-    MatChipSet,
-    MatChipsModule,
-    CdkDropList,
-    MatChip,
-    CdkDrag,
-    NgForOf,
-    OpenMusicLibButtonComponent,
-    TagStyleDirective,
-    DragStyleDirective
-  ],
-  templateUrl: './track-line.component.html',
-  styleUrl: './track-line.component.scss',
+    selector: 'track-line',
+    imports: [
+        MatIcon,
+        MatIconButton,
+        NgIf,
+        MatInput,
+        MatChipSet,
+        MatChipsModule,
+        CdkDropList,
+        MatChip,
+        CdkDrag,
+        NgForOf,
+        OpenMusicLibButtonComponent,
+        TagStyleDirective,
+        DragStyleDirective
+    ],
+    templateUrl: './track-line.component.html',
+    styleUrl: './track-line.component.scss'
 })
 export class TrackLineComponent implements OnInit {
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);

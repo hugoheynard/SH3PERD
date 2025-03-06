@@ -14,26 +14,25 @@ import {ToggleButtonComponent} from '../toggle-button/toggle-button.component';
 import {WeeklyEventAssignFormComponent} from '../weekly-event-assign-form/weekly-event-assign-form.component';
 
 @Component({
-  selector: 'app-day-template',
-  standalone: true,
-  imports: [
-    MatFormField,
-    MatInput,
-    MatLabel,
-    MatSelect,
-    MatSlideToggle,
-    MatTab,
-    ReactiveFormsModule,
-    NgForOf,
-    MatIcon,
-    EditSaveIconComponent,
-    ClubbingHoursFormComponent,
-    DaySettingsCabaretFormComponent,
-    ToggleButtonComponent,
-    WeeklyEventAssignFormComponent
-  ],
-  templateUrl: './day-template.component.html',
-  styleUrl: './day-template.component.scss'
+    selector: 'app-day-template',
+    imports: [
+        MatFormField,
+        MatInput,
+        MatLabel,
+        MatSelect,
+        MatSlideToggle,
+        MatTab,
+        ReactiveFormsModule,
+        NgForOf,
+        MatIcon,
+        EditSaveIconComponent,
+        ClubbingHoursFormComponent,
+        DaySettingsCabaretFormComponent,
+        ToggleButtonComponent,
+        WeeklyEventAssignFormComponent
+    ],
+    templateUrl: './day-template.component.html',
+    styleUrl: './day-template.component.scss'
 })
 export class DayTemplateComponent {
   @Input() dayName: string = '';

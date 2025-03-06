@@ -10,21 +10,20 @@ import {MlDisplayService} from '../mlDisplayService';
 import {AddVersionTableComponent} from '../versionTable/add-version-table/add-version-table.component';
 
 @Component({
-  selector: 'app-music-table',
-  standalone: true,
-  imports: [
-    AddSongFormComponent,
-    MatIcon,
-    MatIconButton,
-    NgForOf,
-    NgIf,
-    ReactiveFormsModule,
-    VersionTableComponent,
-    FormsModule,
-    AddVersionTableComponent
-  ],
-  templateUrl: './music-table.component.html',
-  styleUrl: './music-table.component.scss'
+    selector: 'app-music-table',
+    imports: [
+        AddSongFormComponent,
+        MatIcon,
+        MatIconButton,
+        NgForOf,
+        NgIf,
+        ReactiveFormsModule,
+        VersionTableComponent,
+        FormsModule,
+        AddVersionTableComponent
+    ],
+    templateUrl: './music-table.component.html',
+    styleUrl: './music-table.component.scss'
 })
 export class MusicTableComponent implements OnInit{
   public mlServ: any = inject(MusicLibraryService);

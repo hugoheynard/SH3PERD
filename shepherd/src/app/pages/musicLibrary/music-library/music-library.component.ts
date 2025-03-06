@@ -14,27 +14,26 @@ import {MlDisplayService} from '../mlDisplayService';
 import {SidenavRightService} from '../../../components/sidenav-right.service';
 
 @Component({
-  selector: 'app-music-library',
-  standalone: true,
-  imports: [
-    NgForOf,
-    NgStyle,
-    MatIcon,
-    MatMenuTrigger,
-    MatIconButton,
-    MatMenu,
-    MatMenuItem,
-    CdkAccordionItem,
-    CdkAccordion,
-    VersionTableComponent,
-    NgIf,
-    FormsModule,
-    ToggleButtonComponent,
-    AddSongFormComponent,
-    MusicTableComponent
-  ],
-  templateUrl: './music-library.component.html',
-  styleUrl: './music-library.component.scss'
+    selector: 'app-music-library',
+    imports: [
+        NgForOf,
+        NgStyle,
+        MatIcon,
+        MatMenuTrigger,
+        MatIconButton,
+        MatMenu,
+        MatMenuItem,
+        CdkAccordionItem,
+        CdkAccordion,
+        VersionTableComponent,
+        NgIf,
+        FormsModule,
+        ToggleButtonComponent,
+        AddSongFormComponent,
+        MusicTableComponent
+    ],
+    templateUrl: './music-library.component.html',
+    styleUrl: './music-library.component.scss'
 })
 
 export class MusicLibraryComponent implements OnInit{

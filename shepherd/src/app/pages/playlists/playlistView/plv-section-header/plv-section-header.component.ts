@@ -4,13 +4,12 @@ import {
 } from '../../../utilities/expand-more-less-button/expand-more-less-button.component';
 
 @Component({
-  selector: 'plv-section-header',
-  standalone: true,
-  imports: [
-    ExpandMoreLessButtonComponent
-  ],
-  templateUrl: './plv-section-header.component.html',
-  styleUrl: './plv-section-header.component.scss'
+    selector: 'plv-section-header',
+    imports: [
+        ExpandMoreLessButtonComponent
+    ],
+    templateUrl: './plv-section-header.component.html',
+    styleUrl: './plv-section-header.component.scss'
 })
 export class PlvSectionHeaderComponent {
   @Input() sectionTitle: string = '';

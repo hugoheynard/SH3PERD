@@ -25,16 +25,15 @@ import {SettingsService} from '../../../../services/settings.service';
 import {ColorShadeAuto} from '../color-shade-auto';
 
 @Component({
-  selector: 'app-org-tree',
-  standalone: true,
-  imports: [
-    CdkTree, CdkNestedTreeNode, CdkTreeNodeDef, CdkTreeNodeOutlet, CdkTreeNodeToggle,
-    MatIcon, MatIconButton, MatCheckbox, MatButton,
-    FormsModule,
-    NgIf, MatMenu, MatMenuItem, MatMenuTrigger, NodeMenuComponent, NgStyle, MatSidenav, MatSidenavContainer, MatSidenavContent, NodeEditModuleComponent, NgClass, NgForOf
-  ],
-  templateUrl: './org-tree.component.html',
-  styleUrl: './org-tree.component.scss'
+    selector: 'app-org-tree',
+    imports: [
+        CdkTree, CdkNestedTreeNode, CdkTreeNodeDef, CdkTreeNodeOutlet, CdkTreeNodeToggle,
+        MatIcon, MatIconButton, MatCheckbox, MatButton,
+        FormsModule,
+        NgIf, MatMenu, MatMenuItem, MatMenuTrigger, NodeMenuComponent, NgStyle, MatSidenav, MatSidenavContainer, MatSidenavContent, NodeEditModuleComponent, NgClass, NgForOf
+    ],
+    templateUrl: './org-tree.component.html',
+    styleUrl: './org-tree.component.scss'
 })
 
 export class OrgTreeComponent implements AfterViewInit{

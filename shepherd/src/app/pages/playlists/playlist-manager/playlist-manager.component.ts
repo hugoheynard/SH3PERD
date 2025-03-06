@@ -17,16 +17,15 @@ import {PlTemplateFormComponent} from '../playlistTemplate/pl-template-form/pl-t
 
 
 @Component({
-  selector: 'app-playlist-manager',
-  standalone: true,
-  imports: [MatSidenavContainer, MatSidenav, MatSidenavContent,
-    MatIcon,
-    TrackLineComponent,
-    NgForOf,
-    PlaylistTableComponent, PlaylistViewComponent, NgIf, MusicLibraryComponent, MusicTableComponent, SongListDndComponent, SongListDndComponent, PlvSectionContainerComponent, PlvSectionHeaderComponent, MatTabGroup, MatTab, PlTemplateFormComponent
-  ],
-  templateUrl: './playlist-manager.component.html',
-  styleUrl: './playlist-manager.component.scss'
+    selector: 'app-playlist-manager',
+    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent,
+        MatIcon,
+        TrackLineComponent,
+        NgForOf,
+        PlaylistTableComponent, PlaylistViewComponent, NgIf, MusicLibraryComponent, MusicTableComponent, SongListDndComponent, SongListDndComponent, PlvSectionContainerComponent, PlvSectionHeaderComponent, MatTabGroup, MatTab, PlTemplateFormComponent
+    ],
+    templateUrl: './playlist-manager.component.html',
+    styleUrl: './playlist-manager.component.scss'
 })
 export class PlaylistManagerComponent {
   private playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);

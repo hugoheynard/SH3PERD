@@ -4,8 +4,7 @@ import {MatListItem, MatNavList} from "@angular/material/list";
 import {RouterLink, RouterLinkActive} from "@angular/router";
 
 @Component({
-  selector: 'app-navlist-settings',
-  standalone: true,
+    selector: 'app-navlist-settings',
     imports: [
         MatIcon,
         MatListItem,
@@ -13,8 +12,8 @@ import {RouterLink, RouterLinkActive} from "@angular/router";
         RouterLink,
         RouterLinkActive
     ],
-  templateUrl: './navlist-settings.component.html',
-  styleUrl: './navlist-settings.component.scss'
+    templateUrl: './navlist-settings.component.html',
+    styleUrl: './navlist-settings.component.scss'
 })
 export class NavlistSettingsComponent {
 

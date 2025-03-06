@@ -5,12 +5,11 @@ import {NgClass, NgForOf} from '@angular/common';
 import {DateService} from '../../../services/date.service';
 
 @Component({
-  selector: 'app-date-picker-calendar',
-  standalone: true,
-  providers: [provideNativeDateAdapter()],
-  imports: [MatCalendar, NgForOf, NgClass],
-  templateUrl: './date-picker-calendar.component.html',
-  styleUrl: './date-picker-calendar.component.scss',
+    selector: 'app-date-picker-calendar',
+    providers: [provideNativeDateAdapter()],
+    imports: [MatCalendar, NgForOf, NgClass],
+    templateUrl: './date-picker-calendar.component.html',
+    styleUrl: './date-picker-calendar.component.scss'
 })
 
 export class DatePickerCalendarComponent {

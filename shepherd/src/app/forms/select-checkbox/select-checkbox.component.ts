@@ -6,18 +6,17 @@ import {MatSelect} from "@angular/material/select";
 import {NgForOf} from '@angular/common';
 
 @Component({
-  selector: 'app-select-checkbox',
-  standalone: true,
-  imports: [
-    MatCheckbox,
-    MatFormField,
-    MatLabel,
-    MatOption,
-    MatSelect,
-    NgForOf
-  ],
-  templateUrl: './select-checkbox.component.html',
-  styleUrl: './select-checkbox.component.scss'
+    selector: 'app-select-checkbox',
+    imports: [
+        MatCheckbox,
+        MatFormField,
+        MatLabel,
+        MatOption,
+        MatSelect,
+        NgForOf
+    ],
+    templateUrl: './select-checkbox.component.html',
+    styleUrl: './select-checkbox.component.scss'
 })
 export class SelectCheckboxComponent {
   public selectedValues: string[] = [];
