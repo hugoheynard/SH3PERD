@@ -14,18 +14,29 @@ import {PlvSectionContainerComponent} from '../playlistView/plv-section-containe
 import {PlvSectionHeaderComponent} from '../playlistView/plv-section-header/plv-section-header.component';
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {PlTemplateFormComponent} from '../playlistTemplate/pl-template-form/pl-template-form.component';
+import {PlTemplateTableComponent} from '../playlistTemplate/pl-template-table/pl-template-table.component';
 
 
 @Component({
-    selector: 'app-playlist-manager',
-    imports: [MatSidenavContainer, MatSidenav, MatSidenavContent,
-        MatIcon,
-        TrackLineComponent,
-        NgForOf,
-        PlaylistTableComponent, PlaylistViewComponent, NgIf, MusicLibraryComponent, MusicTableComponent, SongListDndComponent, SongListDndComponent, PlvSectionContainerComponent, PlvSectionHeaderComponent, MatTabGroup, MatTab, PlTemplateFormComponent
-    ],
-    templateUrl: './playlist-manager.component.html',
-    styleUrl: './playlist-manager.component.scss'
+  selector: 'app-playlist-manager',
+  imports: [MatSidenavContainer, MatSidenav, MatSidenavContent,
+    MatIcon,
+    TrackLineComponent,
+    NgForOf,
+    PlaylistTableComponent,
+    PlaylistViewComponent,
+    NgIf,
+    MusicLibraryComponent,
+    MusicTableComponent,
+    SongListDndComponent,
+    PlvSectionContainerComponent,
+    PlvSectionHeaderComponent, MatTabGroup, MatTab,
+    PlTemplateFormComponent,
+    PlTemplateTableComponent
+  ],
+  templateUrl: './playlist-manager.component.html',
+  standalone: true,
+  styleUrl: './playlist-manager.component.scss'
 })
 export class PlaylistManagerComponent {
   private playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);

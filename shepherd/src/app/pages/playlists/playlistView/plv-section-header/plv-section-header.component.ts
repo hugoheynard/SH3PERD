@@ -9,6 +9,7 @@ import {
         ExpandMoreLessButtonComponent
     ],
     templateUrl: './plv-section-header.component.html',
+    standalone: true,
     styleUrl: './plv-section-header.component.scss'
 })
 export class PlvSectionHeaderComponent {

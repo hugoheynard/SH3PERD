@@ -37,6 +37,7 @@ import {DragStyleDirective} from '../../../../../Directives/drag-style.directive
         DragStyleDirective
     ],
     templateUrl: './track-line.component.html',
+    standalone: true,
     styleUrl: './track-line.component.scss'
 })
 export class TrackLineComponent implements OnInit {

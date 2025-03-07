@@ -19,6 +19,7 @@ import {TagStyleDirective} from '../../../../Directives/tag-style.directive';
         TagStyleDirective
     ],
     templateUrl: './playlist-table.component.html',
+    standalone: true,
     styleUrl: './playlist-table.component.scss'
 })
 export class PlaylistTableComponent {

@@ -23,6 +23,7 @@ import {AddVersionTableComponent} from '../versionTable/add-version-table/add-ve
         AddVersionTableComponent
     ],
     templateUrl: './music-table.component.html',
+    standalone: true,
     styleUrl: './music-table.component.scss'
 })
 export class MusicTableComponent implements OnInit{

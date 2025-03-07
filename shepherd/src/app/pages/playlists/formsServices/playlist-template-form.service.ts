@@ -15,6 +15,7 @@ export class PlaylistTemplateFormService {
   createTemplateFormGroup(template: any = {}): FormGroup {
     return this.fb.group({
       name: [template?.name || 'New playlist template'],
+      description: [template?.description || ''],
       usage: [template?.usage || 'daily'],
       requiredLength: [template?.requiredLength || 15],
       numberOfSongs: [template?.numberOfSongs || 4],
@@ -33,10 +34,7 @@ export class PlaylistTemplateFormService {
       }),
 
       aerial: [performers.aerial || false],
-      aerialPosition: [{
-        value: performers.aerialPosition || 'end',
-        disabled: !performers.containsAerial
-      }],
+      aerialConfig: this.createAerialConfigSubGroup(performers.aerialConfig),
     });
 
     if (!performers.singers) {
@@ -50,7 +48,6 @@ export class PlaylistTemplateFormService {
         performerGroup.get('singersConfig')?.disable();
       }
     });
-
 
     return performerGroup;
   };
@@ -66,11 +63,16 @@ export class PlaylistTemplateFormService {
       singersConfig.get('containsDuo').disable();
     }
 
-
     return singersConfigGroup;
   };
 
-
-
-
+  /**
+   * Manages aerial performer configuration
+   * @param aerialConfig
+   */
+  createAerialConfigSubGroup(aerialConfig: any = {}): FormGroup {
+    return this.fb.group({
+      performancePosition: [aerialConfig.performancePosition || 'end'],
+    });
+  };
 }

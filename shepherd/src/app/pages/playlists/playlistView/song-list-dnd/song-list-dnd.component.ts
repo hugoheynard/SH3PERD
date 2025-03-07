@@ -30,6 +30,7 @@ import {PlaylistFormService} from '../../formsServices/playlist-form.service';
         DragStyleDirective
     ],
     templateUrl: './song-list-dnd.component.html',
+    standalone: true,
     styleUrl: './song-list-dnd.component.scss'
 })
 export class SongListDndComponent implements OnInit{

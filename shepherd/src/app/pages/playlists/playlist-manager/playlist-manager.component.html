@@ -4,13 +4,14 @@
 </div>
 
 <mat-tab-group>
-  <mat-tab label="First">
+  <mat-tab label="TEMPLATES">
     <!--TEMPLATES-->
+    <pl-template-table />
     <pl-template-form />
   </mat-tab>
 
   <!--PLAYLISTS-->
-  <mat-tab label="Second">
+  <mat-tab label="PLAYLISTS">
     <ng-container *ngIf="viewModeSignal() === 'playlist'">
       <app-playlist-table [playlists]="playlists"/>
     </ng-container>

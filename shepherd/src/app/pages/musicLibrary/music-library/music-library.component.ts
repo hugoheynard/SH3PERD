@@ -33,6 +33,7 @@ import {SidenavRightService} from '../../../components/sidenav-right.service';
         MusicTableComponent
     ],
     templateUrl: './music-library.component.html',
+    standalone: true,
     styleUrl: './music-library.component.scss'
 })
 

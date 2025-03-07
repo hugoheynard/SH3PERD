@@ -13,7 +13,10 @@ export const playlistRouter = (playlistController: any): Router => {
 
 
     router.use('/template', playlistTemplateRouter);
+    playlistTemplateRouter.get('/', playlistController.getPlaylistTemplates);
     playlistTemplateRouter.post('/', playlistController.postPlaylistTemplate);
+    playlistTemplateRouter.put('/:id', playlistController.updatePlaylistTemplate);
+    playlistTemplateRouter.delete('/:id', playlistController.deletePlaylistTemplate);
 
     return router;
 }

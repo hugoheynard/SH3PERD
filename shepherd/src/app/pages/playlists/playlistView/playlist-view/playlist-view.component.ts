@@ -42,6 +42,7 @@ import {PlaylistFormService} from '../../formsServices/playlist-form.service';
         MatIconButton
     ],
     templateUrl: './playlist-view.component.html',
+    standalone: true,
     styleUrl: './playlist-view.component.scss'
 })
 export class PlaylistViewComponent implements OnInit {
