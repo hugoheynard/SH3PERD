@@ -1,7 +1,7 @@
-import {wrap_TryCatchNextErr} from "./utilities/wrap_tryCatchNextErr";
+import {wrap_TryCatchNextErr} from "../controllers/utilities/wrap_tryCatchNextErr";
 import type {NextFunction, Request, Response} from "express";
 import type {DeleteResult, InsertOneResult, UpdateResult} from "mongodb";
-import type {PlaylistTemplateDocument} from "../services/playlistService/playlistTemplateService";
+import type {PlaylistTemplateDocument} from "./playlistTemplateService";
 import type {PlaylistTemplateService} from "../../../shared/interfaces/mongoDocuments/playlistTemplateInterfaces";
 
 export interface PlaylistController {
@@ -23,8 +23,27 @@ export const playlistController = (input: PlaylistController['input']): Playlist
 
     const controller: PlaylistController['output'] = {
 
+        async testPlaylistModule(req, res, next) {
+          res.status(200).json(playlistService.getEmptyPlaylistFromTemplate())
+        },
+
+        async getPlaylist(req, res, next) {},
+
+        async postPlaylist(req, res, next) {
+
+            const body = req.body;
+            const { usePlaylistTemplate, playlistTemplate  } = body;
+
+            if (usePlaylistTemplate) {
+                const playlistFromTemplateSettings = await playlistService.generateEmptyPlaylistFromTemplate({ playlistTemplate: playlistTemplate });
+                //res.status(201).json(playlistFromTemplateSettings);
+            }
+            //do regular post playlist
+            //res.status(201).json(await playlistService.postPlaylist({ playlistData: body.playlistData }));
+        },
+
         async getPlaylistTemplates(req, res, next){
-            const templates = await playlistTemplateService.getPlaylistTemplates();
+            const templates = await playlistTemplateService.getPlaylistTemplates({ playlistTemplate_id : req.params.id });
             res.status(200).json({ playlistTemplates: templates });
         },
 

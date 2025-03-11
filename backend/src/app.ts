@@ -7,6 +7,7 @@ import {initServices} from "./initServices";
 import {type Controllers, initControllers} from "./initControllers";
 import {initRoutes} from "./initRoutes";
 import {startServer} from "./server";
+import {initMiddlewares} from "./initMiddlewares";
 
 
 dotenv.config({path: '../.env'});
@@ -17,9 +18,11 @@ async function startApp(): Promise<void> {
         const app: Express = express();
 
         const services = initServices(db);
+        const middlewares = initMiddlewares({ services });
         const controllers: Controllers = initControllers({ services });
 
-        initRoutes(app, { db, controllers });
+        initRoutes(app, { controllers } , { middlewares });
+
         await startServer(app);
 
     } catch (error: any) {

@@ -1,12 +1,20 @@
-import type {PlaylistTemplateService} from "../interfaces/PlaylistService";
+import type {PlaylistTemplateService} from "./interfaces/PlaylistService";
+import {ObjectId} from "mongodb";
 
 export const playlistTemplateService = (input: PlaylistTemplateService["input"]): PlaylistTemplateService["output"] => {
     const { playlistTemplateCollection } = input;
 
     return {
-        async getPlaylistTemplates(){
+        async getPlaylistTemplates(input) {
             try {
-                return await playlistTemplateCollection.find().toArray();
+                const { playlistTemplate_id } = input;
+
+                if (!playlistTemplate_id) {
+                    return await playlistTemplateCollection.find().toArray();
+                }
+
+                return await playlistTemplateCollection.findOne({ _id: new ObjectId(playlistTemplate_id) });
+
             } catch (err) {
                 throw new Error('[Service error]: Could not get playlist templates', err);
             }

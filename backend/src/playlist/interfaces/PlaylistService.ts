@@ -6,6 +6,7 @@ export interface PlaylistTemplateService {
         playlistTemplateCollection: Collection<PlaylistTemplateDocument>;
     },
     output: {
+        getPlaylistTemplates: (input: { playlistTemplate_id?: string }) => Promise<PlaylistTemplateDocument[]>;
         postPlaylistTemplate: (input: { playlistTemplateData: any } ) => Promise<InsertOneResult<PlaylistTemplateDocument>>
         [key: string]: any
     }

@@ -3,8 +3,8 @@ import {settingsController} from "./controllers/settingsController";
 import {calendarController} from "./controllers/calendarController";
 import {eventsController} from "./controllers/eventController";
 import {musicLibraryController} from "./controllers/musicLibraryController";
-import {playlistController} from "./controllers/playlistController";
-import {playlistTemplateService} from "./services/playlistService/playlistTemplateService";
+import {playlistController} from "./playlist/playlistController";
+import {playlistTemplateService} from "./playlist/playlistTemplateService";
 
 
 
@@ -13,7 +13,7 @@ export interface Controllers {
     [key: string]: any;
 }
 
-export const initControllers = ({services}: any): any => {
+export const initControllers = ({ services }: any): any => {
 
     try {
         return {

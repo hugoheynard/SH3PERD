@@ -1,1 +1,41 @@
-<p>pl-template-table works!</p>
+<table>
+  <thead>
+    <tr>
+      <th>Name </th>
+      <th>Description</th>
+      <th>Usage</th>
+      <th>Length</th>
+      <th>Songs</th>
+      <th>Singers</th>
+      <th>Actions</th>
+    </tr>
+
+    <tr>
+      <th><input type="text" placeholder="Filter Name" (input)="filterTable($event, 'name')"></th>
+      <th><input type="text" placeholder="Filter Description" (input)="filterTable($event, 'description')"></th>
+      <th><input type="text" placeholder="Filter Usage" (input)="filterTable($event, 'usage')"></th>
+      <th><input type="text" placeholder="Filter Length" (input)="filterTable($event, 'requiredLength')"></th>
+      <th><input type="text" placeholder="Filter Songs" (input)="filterTable($event, 'numberOfSongs')"></th>
+      <th><input type="text" placeholder="Filter Singers" (input)="filterTable($event, 'performers.singers')"></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+
+
+
+  <tr *ngFor="let plTemp of filteredPlTemplates">
+    <td>{{plTemp.name}}</td>
+    <td>{{plTemp.description}}</td>
+    <td>{{plTemp.usage}}</td>
+    <td>{{plTemp.requiredLength}}</td>
+    <td>{{plTemp.numberOfSongs}}</td>
+    <td>{{plTemp.performers.singers}}</td>
+    <td>
+      <button mat-icon-button (click)="createPlaylistFromTemplate({ playlistTemplate_id: plTemp._id })"><mat-icon>playlist_add</mat-icon></button>
+      <button mat-icon-button (click)="editPlaylistTemplate(plTemp)"><mat-icon>edit</mat-icon></button>
+      <button mat-icon-button (click)="deletePlaylistTemplate(plTemp)"><mat-icon>delete_forever</mat-icon></button>
+    </td>
+  </tr>
+  </tbody>
+</table>

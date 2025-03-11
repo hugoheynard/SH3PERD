@@ -9,6 +9,7 @@ import {NgIf} from "@angular/common";
         NgIf
     ],
     templateUrl: './favorite-dynamic-icon.component.html',
+    standalone: true,
     styleUrl: './favorite-dynamic-icon.component.scss'
 })
 export class FavoriteDynamicIconComponent {

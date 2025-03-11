@@ -7,7 +7,10 @@ import {JWT_module} from "./tools/login/JWT_Module";
 import {settingsService} from "./services/settingsService";
 import {calendarService} from "./services/calendarService";
 import {musicService} from "./services/musicService/musicService";
-import {playlistTemplateService} from "./services/playlistService/playlistTemplateService";
+import {playlistTemplateService} from "./playlist/playlistTemplateService";
+import {playlistService} from "./playlist/playlistService";
+import {Playlist} from "./playlist/classes/Playlist";
+import {PlaylistModule} from "./playlist/classes/PlaylistModule";
 
 
 
@@ -32,13 +35,23 @@ export const initServices = (db: Db | null): any => {
                 generateTokenFunction: JWT_module.getToken,
                 checkAuthTokenValidityFunction: JWT_module.decode
             }),
+
             settingsService: settingsServiceInstance,
+
             eventService: eventServiceInstance,
+
             calendarService: calendarService({
                 eventService: eventServiceInstance,
                 userService: userServiceInstance
             }),
+
             musicService: musicServiceInstance,
+
+            playlistService: playlistService({
+                playlistCollection: db.collection('playlists'),
+                PlaylistForm: Playlist,
+                PlaylistModule: PlaylistModule
+            }),
             playlistTemplateService: playlistTemplateService({ playlistTemplateCollection: db.collection('playlist_template') }),
             //contractService: contractService({ collection: db.collection('contracts') }),
             //companyService: companyService({ collection: db.collection('companies') }),

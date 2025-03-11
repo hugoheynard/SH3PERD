@@ -7,10 +7,10 @@ import {settingsRouter} from "./routes/settings/settingsRouter";
 import {calendarRouter} from "./routes/calendar/calendarRouter";
 import {eventsRouter} from "./routes/events/eventsRouter";
 import {musicLibraryRouter} from "./routes/musicLibrary/musicLibraryRouter";
-import {playlistRouter} from "./routes/playlist/playlistRouter";
+import {playlistRouter} from "./playlist/playlistRouter";
 
 
-export const initRoutes = (app: Express, { controllers } : any): Express => {
+export const initRoutes = (app: Express, { controllers } : any, { middlewares }: any): Express => {
     try {
 // middlewares
         app.use(cors());
@@ -22,7 +22,7 @@ export const initRoutes = (app: Express, { controllers } : any): Express => {
         app.use('/events', eventsRouter(controllers.eventsController))
         app.use('/calendar', calendarRouter(controllers.calendarController));
         app.use('/musicLibrary', musicLibraryRouter(controllers.musicLibraryController));
-        app.use('/playlist', playlistRouter(controllers.playlistController));
+        app.use('/playlist', playlistRouter(controllers.playlistController, middlewares.playlist));
         //app.use('/staff', userRouter(controllers.staffController));
         //app.use('/company', companyRouter(controllers.companyController));
 
