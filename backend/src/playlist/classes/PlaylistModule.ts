@@ -1,34 +1,60 @@
 import {type IPlaylist, PlaylistBuilder} from "./playlistBuilder/PlaylistBuilder";
-import {PlaylistSettings} from "./PlaylistSettings";
-import {SingersConfig} from "./playlistBuilder/SingersConfig";
-import {MusicianConfig} from "./playlistBuilder/MusicianConfig";
-import {AerialConfig} from "./playlistBuilder/AerialConfig";
 import {PlaylistSong} from "./playlistBuilder/PlaylistSong";
 import {PlaylistTemplateTransformer} from "./PlaylistTemplateTransformer";
+import {TagCreator} from "./playlistTemplateTransformer/TagCreator";
+import {ObjectUpdater} from "./ObjectUpdater";
+import {PlaylistSettingsValidator} from "./playlistValidators/PlaylistSettingsValidator";
+import {AerialConfigValidator} from "./playlistValidators/AerialConfigValidator";
+import {SingersConfigValidator} from "./playlistValidators/SingersConfigValidator";
+import {SINGERS_CONFIG_DEFAULT} from "./playlistBuilder/SINGERS_CONFIG_DEFAULT";
+import {AERIAL_CONFIG_DEFAULT} from "./playlistBuilder/AERIAL_CONFIG_DEFAULT";
+import {MUSICIAN_CONFIG_DEFAULT} from "./playlistBuilder/MUSICIAN_CONFIG_DEFAULT";
+import {PLAYLIST_SETTINGS_DEFAULT} from "./playlistBuilder/PLAYLIST_SETTINGS_DEFAULT";
 
 export class PlaylistModule {
-    private playlistBuilder: PlaylistBuilder = new PlaylistBuilder(
-        {
-            playlistSettings: PlaylistSettings,
-            singersConfig: SingersConfig,
-            musiciansConfig: MusicianConfig,
-            aerialConfig: AerialConfig,
-            playlistSong: PlaylistSong,
-        });
-    private playlistTemplateTransformer: PlaylistTemplateTransformer = new PlaylistTemplateTransformer(
+    private playlistBuilder: PlaylistBuilder;
+    private playlistTemplateTransformer: PlaylistTemplateTransformer;
 
-    );
+    constructor() {
+        this.playlistBuilder = new PlaylistBuilder(
+            {
+                playlistSettings: PLAYLIST_SETTINGS_DEFAULT,
+                singersConfig: SINGERS_CONFIG_DEFAULT,
+                musiciansConfig: MUSICIAN_CONFIG_DEFAULT,
+                aerialConfig: AERIAL_CONFIG_DEFAULT,
+                playlistSong: PlaylistSong,
+            });
+
+        this.playlistTemplateTransformer = new PlaylistTemplateTransformer(
+            {
+                objectUpdater: new ObjectUpdater(),
+                validators: {
+                    settings: (input) => new PlaylistSettingsValidator().getValidationObject(input),
+                    performers: {
+                        singersConfig: (input) => new SingersConfigValidator().getValidationObject(input),
+                        aerialConfig: (input) => new AerialConfigValidator().getValidationObject(input),
+                    }
+                },
+
+
+                tagCreator: TagCreator,
+            },
+        );
+    };
 
     generateEmptyPlaylist(): IPlaylist {
         return this.playlistBuilder.build();
     };
 
-    generatePlaylistFromTemplate(input: { playlistTemplate: Partial<IPlaylist> } = {}): IPlaylist {
+    generatePlaylistFromTemplate(input: { playlistTemplate: Partial<IPlaylist> }): IPlaylist {
+
         const emptyPlaylist: IPlaylist = this.generateEmptyPlaylist();
 
-        this.playlistTemplateTransformer.initDatas({ playlistToUpdate: emptyPlaylist, update: input.playlistTemplate});
-
-        return emptyPlaylist
+        return this.playlistTemplateTransformer.applyTemplate(
+            {
+                playlistToUpdate: emptyPlaylist,
+                template: input.playlistTemplate
+            })
     };
 
 

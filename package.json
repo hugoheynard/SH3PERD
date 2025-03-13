@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf backend/dist",
-    "dev": "concurrently \"tsc --watch -p backend/tsconfig.json 2>&1\" \"tsc-alias -p backend/tsconfig.json --watch\" \"nodemon --watch 'backend/dist/**/*.js' --exec 'node backend/dist/app.js'\"",
+    "dev": "concurrently \"tsc --watch -p backend/tsconfig.json 2>&1\" \"tsc-alias -p backend/tsconfig.json --watch\" \"nodemon --watch 'backend/dist/**/*.js' --exec 'node --inspect=9229 backend/dist/app.js'\"",
     "build": "echo 'Étape 1: Compilation...' ; tsc -p backend/tsconfig.json ; echo 'Étape 2: Résolution des alias...' && tsc-alias -p backend/tsconfig.json ;",
     "start": "nodemon node backend/dist/app.js",
     "test:backend": "NODE_OPTIONS='--experimental-vm-modules' jest --config=backend/jest.backend.config.js",

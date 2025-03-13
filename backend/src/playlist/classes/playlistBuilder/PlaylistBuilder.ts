@@ -1,18 +1,26 @@
-import type {IPlaylistSettings, PlaylistSettings} from "../PlaylistSettings";
-import type {ISingersConfig, SingersConfig} from "./SingersConfig";
-import type {IMusicianConfig, MusicianConfig} from "./MusicianConfig";
-import type {AerialConfig, IAerialConfig} from "./AerialConfig";
+import type {IPlaylistSettings} from "./PLAYLIST_SETTINGS_DEFAULT";
+import type {ISingersConfig} from "./SINGERS_CONFIG_DEFAULT";
+import type {IMusicianConfig} from "./MUSICIAN_CONFIG_DEFAULT";
+import type {IAerialConfig} from "./AERIAL_CONFIG_DEFAULT";
 import type {IPlaylistSong, PlaylistSong} from "./PlaylistSong";
 
 
 export interface IPlaylist {
     settings: IPlaylistSettings,
-    songList: any[],
+    songList: IPlaylistSong[],
     performers: {
         singersConfig: ISingersConfig,
         musiciansConfig: IMusicianConfig,
         aerialConfig: IAerialConfig,
     }
+}
+
+interface IPlaylistBuilderInput {
+    playlistSettings: IPlaylistSettings,
+    singersConfig: ISingersConfig,
+    musiciansConfig: IMusicianConfig,
+    aerialConfig: IAerialConfig,
+    playlistSong: typeof PlaylistSong
 }
 
 /**
@@ -21,13 +29,13 @@ export interface IPlaylist {
  */
 
 export class PlaylistBuilder {
-    private playlistSettings: PlaylistSettings;
-    private singersConfig: SingersConfig;
-    private musiciansConfig: MusicianConfig;
-    private aerialConfig: AerialConfig;
-    private playlistSong: PlaylistSong;
+    private readonly playlistSettings: IPlaylistSettings;
+    private readonly singersConfig: ISingersConfig;
+    private readonly musiciansConfig: IMusicianConfig;
+    private readonly aerialConfig: IAerialConfig;
+    private playlistSong: typeof PlaylistSong;
 
-    constructor(input: any) {
+    constructor(input: IPlaylistBuilderInput) {
         this.playlistSettings = input.playlistSettings;
         this.singersConfig = input.singersConfig;
         this.musiciansConfig = input.musiciansConfig;
@@ -36,17 +44,16 @@ export class PlaylistBuilder {
     };
 
     build(): IPlaylist {
-        const settings:IPlaylistSettings = this.playlistSettings.createDefault();
-        const songList:IPlaylistSong[] = Array.from({ length: settings.numberOfSongs }, (_, i) => this.playlistSong.createDefault());
-
         return {
-            settings: settings,
-            songList: songList,
+            settings: this.playlistSettings,
+            songList: Array.from(
+                { length: this.playlistSettings.numberOfSongs },
+                (_, i) => this.playlistSong.createDefault()),
             performers: {
-                singersConfig: this.singersConfig.createDefault(),
-                musiciansConfig: this.musiciansConfig.createDefault(),
-                aerialConfig: this.aerialConfig.createDefault(),
+                singersConfig: this.singersConfig,
+                musiciansConfig: this.musiciansConfig,
+                aerialConfig: this.aerialConfig,
             }
-        }
+        };
     };
 }

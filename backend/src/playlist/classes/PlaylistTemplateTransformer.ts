@@ -1,75 +1,52 @@
 import type {IPlaylist} from "./playlistBuilder/PlaylistBuilder";
+import {TagCreator} from "./playlistTemplateTransformer/TagCreator";
+
 
 export class PlaylistTemplateTransformer {
-    private playlistToUpdate: IPlaylist = {};
-    private update: Partial<IPlaylist> = {};
+    private objectUpdater: T;
+    private validators: { settings: T };
+    private tagCreator: TagCreator;
 
-    initDatas(input: { playlistToUpdate: IPlaylist; update: Partial<IPlaylist> }): void {
-        this.playlistToUpdate = input.playlistToUpdate;
-        this.update = input.update;
+    constructor(input: any) {
+        this.objectUpdater = input.objectUpdater;
+        this.validators = input.validators;
+        this.tagCreator = input.tagCreator;
     };
 
+    applyTemplate(input: { playlistToUpdate: IPlaylist, template: Partial<IPlaylist> }): IPlaylist {
+        const { playlistToUpdate, template } = input;
 
-
-
-    updatePlaylist(): IPlaylist {
-        this.applyValidUpdates();
-        return this.playlistToUpdate;
-    }
-
-    private applyValidUpdates(): void {
-        if (!this.update) return;
-
-        if (typeof this.update.settings === 'object') {
-            this.playlistToUpdate.settings = this.validateSettings(this.update.settings);
+        const updatedPlaylist: IPlaylist = {
+            settings: this.objectUpdater.update({
+                objectToUpdate: playlistToUpdate.settings,
+                updateObject: template.settings,
+                validator: this.validators.settings
+            }),
+            performers: {
+                aerialConfig: this.objectUpdater.update({
+                    objectToUpdate: playlistToUpdate.performers.aerialConfig,
+                    updateObject: template.performers.aerialConfig,
+                    validator: this.validators.performers.aerialConfig
+                })
+            }
         }
 
-        if (Array.isArray(this.update.songList)) {
-            this.playlistToUpdate.songList = this.update.songList.map(song => this.validateSong(song));
-        }
+        return updatedPlaylist;
 
-        if (typeof this.update.performers === 'object') {
-            this.playlistToUpdate.performers = this.validatePerformers(this.update.performers);
-        }
-    }
 
-    private validateSettings(settings: any): any {
-        return {
-            name: typeof settings.name === 'string' ? settings.name : this.playlistToUpdate.settings.name,
-            usage: typeof settings.usage === 'string' ? settings.usage : this.playlistToUpdate.settings.usage,
-            energy: typeof settings.energy === 'number' ? settings.energy : this.playlistToUpdate.settings.energy,
-            requiredLength: typeof settings.requiredLength === 'number' ? settings.requiredLength : this.playlistToUpdate.settings.requiredLength,
-            numberOfSongs: typeof settings.numberOfSongs === 'number' ? settings.numberOfSongs : this.playlistToUpdate.settings.numberOfSongs,
-            singers: typeof settings.singers === 'boolean' ? settings.singers : this.playlistToUpdate.settings.singers,
-            musicians: typeof settings.musicians === 'boolean' ? settings.musicians : this.playlistToUpdate.settings.musicians,
-            aerial: typeof settings.aerial === 'boolean' ? settings.aerial : this.playlistToUpdate.settings.aerial,
-        };
-    }
 
-    private validateSong(song: any): any {
-        return {
-            _id: typeof song._id === 'string' ? song._id : null,
-            title: typeof song.title === 'string' ? song.title : null,
-            artist: typeof song.artist === 'string' ? song.artist : null,
-            version_id: typeof song.version_id === 'string' ? song.version_id : null,
-            version_length: typeof song.version_length === 'number' && song.version_length >= 0 ? song.version_length : null,
-            tags: Array.isArray(song.tags) ? song.tags.filter(tag => typeof tag === 'string') : [],
-        };
-    }
 
-    private validatePerformers(performers: any): any {
-        return {
-            singersConfig: {
-                quantity: typeof performers.singersConfig?.quantity === 'number' ? performers.singersConfig.quantity : null,
-                containsDuo: typeof performers.singersConfig?.containsDuo === 'boolean' ? performers.singersConfig.containsDuo : null,
-                splitMode: typeof performers.singersConfig?.splitMode === 'string' ? performers.singersConfig.splitMode : null,
-            },
-            musiciansConfig: {
-                role: typeof performers.musiciansConfig?.role === 'string' ? performers.musiciansConfig.role : null,
-            },
-            aerialConfig: {
-                performancePosition: typeof performers.aerialConfig?.performancePosition === 'string' ? performers.aerialConfig.performancePosition : null,
-            },
-        };
-    }
+        //this.createTags();
+    };
+/*
+    createTags(): void {
+        this.playlistToUpdate = new this.tagCreator(
+            {
+                playlistToUpdate: this.playlistToUpdate,
+                template: this.template
+            }
+        ).generateTags();
+    };
+
+ */
 }
