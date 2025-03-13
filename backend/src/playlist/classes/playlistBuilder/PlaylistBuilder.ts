@@ -2,7 +2,7 @@ import type {IPlaylistSettings} from "./PLAYLIST_SETTINGS_DEFAULT";
 import type {ISingersConfig} from "./SINGERS_CONFIG_DEFAULT";
 import type {IMusicianConfig} from "./MUSICIAN_CONFIG_DEFAULT";
 import type {IAerialConfig} from "./AERIAL_CONFIG_DEFAULT";
-import type {IPlaylistSong, PlaylistSong} from "./PlaylistSong";
+import type {IPlaylistSong, PlaylistSong} from "./PLAYLIST_SONG_DEFAULT";
 
 
 export interface IPlaylist {
@@ -33,7 +33,7 @@ export class PlaylistBuilder {
     private readonly singersConfig: ISingersConfig;
     private readonly musiciansConfig: IMusicianConfig;
     private readonly aerialConfig: IAerialConfig;
-    private playlistSong: typeof PlaylistSong;
+    private playlistSong: IPlaylistSong;
 
     constructor(input: IPlaylistBuilderInput) {
         this.playlistSettings = input.playlistSettings;
@@ -48,7 +48,7 @@ export class PlaylistBuilder {
             settings: this.playlistSettings,
             songList: Array.from(
                 { length: this.playlistSettings.numberOfSongs },
-                (_, i) => this.playlistSong.createDefault()),
+                (_, i) => this.playlistSong),
             performers: {
                 singersConfig: this.singersConfig,
                 musiciansConfig: this.musiciansConfig,

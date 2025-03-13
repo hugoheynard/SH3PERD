@@ -1,5 +1,5 @@
 import {type IPlaylist, PlaylistBuilder} from "./playlistBuilder/PlaylistBuilder";
-import {PlaylistSong} from "./playlistBuilder/PlaylistSong";
+import {PLAYLIST_SONG_DEFAULT} from "./playlistBuilder/PLAYLIST_SONG_DEFAULT";
 import {PlaylistTemplateTransformer} from "./PlaylistTemplateTransformer";
 import {TagCreator} from "./playlistTemplateTransformer/TagCreator";
 import {ObjectUpdater} from "./ObjectUpdater";
@@ -22,7 +22,7 @@ export class PlaylistModule {
                 singersConfig: SINGERS_CONFIG_DEFAULT,
                 musiciansConfig: MUSICIAN_CONFIG_DEFAULT,
                 aerialConfig: AERIAL_CONFIG_DEFAULT,
-                playlistSong: PlaylistSong,
+                playlistSong: PLAYLIST_SONG_DEFAULT,
             });
 
         this.playlistTemplateTransformer = new PlaylistTemplateTransformer(
