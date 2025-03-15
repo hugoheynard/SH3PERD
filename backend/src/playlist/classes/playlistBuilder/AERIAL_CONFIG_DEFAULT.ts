@@ -4,4 +4,4 @@ export interface IAerialConfig {
 
 export const AERIAL_CONFIG_DEFAULT: Readonly<IAerialConfig> = Object.freeze({
     performancePosition: null,
-}) ;
+});

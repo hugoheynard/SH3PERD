@@ -12,7 +12,7 @@ export interface IPlaylistSettings {
 }
 
 export const PLAYLIST_SETTINGS_DEFAULT: Readonly<IPlaylistSettings> = Object.freeze({
-    name: `New Playlist ${new Date().toLocaleDateString()}`,
+    name: `New Playlist ${new Date().toLocaleDateString()}` as string,
     description: '',
     usage: 'daily',
     tags: [],

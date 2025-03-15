@@ -3,6 +3,12 @@
  * takes an object and updates it with the values of another object if this object passes validation
  */
 
+export type ObjectUpdaterFunction<T> = (input: {
+    referenceObject: T;
+    updateObject: Partial<T>;
+    validator: (input: { propsToValidate: Partial<T> }) => Partial<Record<keyof T, boolean>>;
+}) => T;
+
 export class ObjectUpdater<T> {
     /**
      *
@@ -11,11 +17,7 @@ export class ObjectUpdater<T> {
      * updateObject: object with new values
      * validator: tool that analyzes the updateObject and returns a validation object with a structure like { key: boolean } + errors: { key: string }
      */
-    update(input: {
-            referenceObject: T;
-            updateObject: Partial<T>;
-            validator: (input: { propsToValidate: Partial<T> }) => Partial<Record<keyof T, boolean>>;
-    }): T {
+    update(input: Parameters<ObjectUpdaterFunction<T>>[0]): T {
         try {
             const { referenceObject, updateObject, validator } = input;
 

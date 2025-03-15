@@ -21,7 +21,7 @@ const updateMock = {
             role: 'support'
         },
         aerialConfig: {
-            performancePosition: "start"
+            performancePosition: "end"
         }
     }
 };

@@ -1,47 +1,75 @@
-import type {ISingersConfig} from "../playlistBuilder/SINGERS_CONFIG_DEFAULT";
 import type {IPlaylist} from "../playlistBuilder/PlaylistBuilder";
+import type {IAerialConfig} from "../playlistBuilder/AERIAL_CONFIG_DEFAULT";
+import type {IPlaylistSong} from "../playlistBuilder/PLAYLIST_SONG_DEFAULT";
+
+export interface ISubTagCreatorsReturns {
+    playlistTags: string[];
+    songListTags: string[];
+}
 
 export class TagCreator {
-    private playlistToUpdate: any = {};
-    private template: any = {};
+    private errors: any;
 
-    constructor(input: any = {}) {
-        this.playlistToUpdate = input.playlistToUpdate;
-        this.template = input.template;
+
+    constructor() {};
+
+    generateTags(input: { playlistToTag: IPlaylist }): IPlaylist {
+        const { playlistToTag } = input;
+        const { songList } = songList;
+        const { singersConfig, musiciansConfig, aerialConfig } = playlistToTag.performers;
+
+        this.applyTagsFromSingerConfig({ singersConfig }, { numberOfSongs: songList.length });
+        this.applyTagsFromAerialConfig({ songListToTag: songList, aerialConfig: aerialConfig});
+
     };
 
-    applyTagsFromSingerConfig(): void {
-        const singerConfig = this.singerConfig
-
+    applyTagsFromSingerConfig({ singerConfig }, input: { numberOfSongs: number }): ISubTagCreatorsReturns {
         const { quantity, containsDuo, splitMode } = singerConfig;
 
-        const singerTags: string[] = [];
+        const tagObject = this.createSubTagObject();
+
         for (let i: number= 1; i <= quantity; i++) {
-            singerTags.push(`singer-${i}`);
-            this.playlistTags.push(`singer-${i}`);
+            tagObject.playlistTags.push(`singer-${i}`);
         }
 
         if (containsDuo) {
-            playlistTags.push("duo");
+            tagObject.playlistTags.push("duo");
         }
+
+        if (splitMode === 'alternate') {
+            tagObject.songListTags.push(splitMode);
+        }
+
+        if (splitMode === 'alternate' && input.numberOfSongs > 0) {
+            let index: number = 0;
+            for (const song of songList) {
+                const assignedSinger: string = `singer-${(index % quantity) + 1}`;
+                if (!song.tags) {
+                    song.tags = [];
+                }
+                song.tags.push(assignedSinger);
+                index++;
+            }
+        }
+
+        return tagObject;
     };
 
-    generateTags(): IPlaylist {
-        const { songList } = this.playlistToUpdate;
-        const { singersConfig, musiciansConfig, aerialConfig } = this.template.performers;
+    createSubTagObject(): ISubTagCreatorsReturns {
+        return {
+            playlistTags: [],
+            songListTags: []
+        };
 
-
-        this.applyTagsFromAerialConfig({ songListToTag: songList, aerialConfig: aerialConfig});
-        return this.playlistToUpdate;
-    };
+    }
 
 
 
     applyTagsFromMusicianConfig(): void {};
 
-    applyTagsFromAerialConfig(input: { songListToTag: any; aerialConfig: any } = {}): void {
+    applyTagsFromAerialConfig(input: { songListToTag: IPlaylistSong[]; aerialConfig: IAerialConfig } = {}): void {
 
-        if(!input) return;
+        if (input === undefined) return;
 
         const { songListToTag, aerialConfig } = input;
         const aerialTag: string = 'aerial';

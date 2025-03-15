@@ -1,4 +1,5 @@
 import {ObjectValidator} from "./ObjectValidator";
+import type {IPlaylistSettings} from "../playlistBuilder/PLAYLIST_SETTINGS_DEFAULT";
 
 
 /**
@@ -6,7 +7,7 @@ import {ObjectValidator} from "./ObjectValidator";
  * validates playlist settings
  */
 export class PlaylistSettingsValidator extends ObjectValidator{
-    protected checkProps<T>(propsToValidate: Partial<T>): void {
+    protected checkProps<T extends IPlaylistSettings>(propsToValidate: Partial<T>): void {
         this.validateName(propsToValidate.name);
         this.validateDescription(propsToValidate.description);
         this.validateUsage(propsToValidate.usage);

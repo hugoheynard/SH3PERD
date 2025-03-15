@@ -1,15 +1,17 @@
 import {type IPlaylist, PlaylistBuilder} from "./playlistBuilder/PlaylistBuilder";
-import {PLAYLIST_SONG_DEFAULT} from "./playlistBuilder/PLAYLIST_SONG_DEFAULT";
 import {PlaylistTemplateTransformer} from "./PlaylistTemplateTransformer";
 import {TagCreator} from "./playlistTemplateTransformer/TagCreator";
 import {ObjectUpdater} from "./ObjectUpdater";
 import {PlaylistSettingsValidator} from "./playlistValidators/PlaylistSettingsValidator";
 import {AerialConfigValidator} from "./playlistValidators/AerialConfigValidator";
 import {SingersConfigValidator} from "./playlistValidators/SingersConfigValidator";
+import {MusiciansConfigValidator} from "./playlistValidators/MusiciansConfigValidator";
 import {SINGERS_CONFIG_DEFAULT} from "./playlistBuilder/SINGERS_CONFIG_DEFAULT";
 import {AERIAL_CONFIG_DEFAULT} from "./playlistBuilder/AERIAL_CONFIG_DEFAULT";
 import {MUSICIAN_CONFIG_DEFAULT} from "./playlistBuilder/MUSICIAN_CONFIG_DEFAULT";
 import {PLAYLIST_SETTINGS_DEFAULT} from "./playlistBuilder/PLAYLIST_SETTINGS_DEFAULT";
+import {PLAYLIST_SONG_DEFAULT} from "./playlistBuilder/PLAYLIST_SONG_DEFAULT";
+
 
 export class PlaylistModule {
     private playlistBuilder: PlaylistBuilder;
@@ -27,16 +29,15 @@ export class PlaylistModule {
 
         this.playlistTemplateTransformer = new PlaylistTemplateTransformer(
             {
-                objectUpdater: new ObjectUpdater(),
+                objectUpdater: (input) => new ObjectUpdater().update(input),
                 validators: {
                     settings: (input) => new PlaylistSettingsValidator().getValidationObject(input),
                     performers: {
                         singersConfig: (input) => new SingersConfigValidator().getValidationObject(input),
+                        musiciansConfig: (input) => new MusiciansConfigValidator().getValidationObject(input),
                         aerialConfig: (input) => new AerialConfigValidator().getValidationObject(input),
                     }
                 },
-
-
                 tagCreator: TagCreator,
             },
         );
@@ -56,6 +57,4 @@ export class PlaylistModule {
                 template: input.playlistTemplate
             })
     };
-
-
 }
