@@ -1,6 +1,6 @@
 import {type IPlaylist, PlaylistBuilder} from "./playlistBuilder/PlaylistBuilder";
-import {PlaylistTemplateTransformer} from "./PlaylistTemplateTransformer";
-import {TagCreator} from "./playlistTemplateTransformer/TagCreator";
+import {PlaylistTemplateTransformer} from "./playlistTemplateTransformer/PlaylistTemplateTransformer";
+import {TagCreator} from "./tagGenerator/TagCreator";
 import {ObjectUpdater} from "./ObjectUpdater";
 import {PlaylistSettingsValidator} from "./playlistValidators/PlaylistSettingsValidator";
 import {AerialConfigValidator} from "./playlistValidators/AerialConfigValidator";
@@ -11,6 +11,8 @@ import {AERIAL_CONFIG_DEFAULT} from "./playlistBuilder/AERIAL_CONFIG_DEFAULT";
 import {MUSICIAN_CONFIG_DEFAULT} from "./playlistBuilder/MUSICIAN_CONFIG_DEFAULT";
 import {PLAYLIST_SETTINGS_DEFAULT} from "./playlistBuilder/PLAYLIST_SETTINGS_DEFAULT";
 import {PLAYLIST_SONG_DEFAULT} from "./playlistBuilder/PLAYLIST_SONG_DEFAULT";
+import {SingersTagGenerator} from "./tagGenerator/SingersTagGenerator";
+import {AerialTagGenerator} from "./tagGenerator/AerialTagGenerator";
 
 
 export class PlaylistModule {
@@ -38,7 +40,11 @@ export class PlaylistModule {
                         aerialConfig: (input) => new AerialConfigValidator().getValidationObject(input),
                     }
                 },
-                tagCreator: TagCreator,
+                tagCreator: new TagCreator(
+                    {
+                        generateSingersTags: (input) => new SingersTagGenerator().generate(input),
+                        generateAerialTags: (input) => new AerialTagGenerator().generate(input),
+                    }),
             },
         );
     };

@@ -1,6 +1,8 @@
-import type {IPlaylist} from "./playlistBuilder/PlaylistBuilder";
-import {TagCreator} from "./playlistTemplateTransformer/TagCreator";
-import type {ObjectUpdaterFunction} from "./ObjectUpdater";
+import type {IPlaylist} from "../playlistBuilder/PlaylistBuilder";
+import {TagCreator} from "../tagGenerator/TagCreator";
+import type {ObjectUpdaterFunction} from "../ObjectUpdater";
+import {SingersTagGenerator} from "../tagGenerator/SingersTagGenerator";
+import {AerialTagGenerator} from "../tagGenerator/AerialTagGenerator";
 
 export interface IPlaylistTemplateTransformer {
     input: {
@@ -43,45 +45,32 @@ export class PlaylistTemplateTransformer {
 
         const updatedPlaylist: IPlaylist = {
             settings: this.objectUpdater({
-                objectToUpdate: playlistToUpdate.settings,
+                referenceObject: playlistToUpdate.settings,
                 updateObject: template.settings,
                 validator: this.validators.settings
             }),
+            songList: playlistToUpdate.songList, //toDo : validation
             performers: {
                 singersConfig: this.objectUpdater({
-                    objectToUpdate: playlistToUpdate.performers.singersConfig,
+                    referenceObject: playlistToUpdate.performers.singersConfig,
                     updateObject: template.performers.singersConfig,
                     validator: this.validators.performers.singersConfig
                 }),
                 musiciansConfig: this.objectUpdater({
-                    objectToUpdate: playlistToUpdate.performers.musiciansConfig,
+                    referenceObject: playlistToUpdate.performers.musiciansConfig,
                     updateObject: template.performers.musiciansConfig,
                     validator: this.validators.performers.musiciansConfig
                 }),
                 aerialConfig: this.objectUpdater({
-                    objectToUpdate: playlistToUpdate.performers.aerialConfig,
+                    referenceObject: playlistToUpdate.performers.aerialConfig,
                     updateObject: template.performers.aerialConfig,
                     validator: this.validators.performers.aerialConfig
                 })
             }
         }
 
-        return updatedPlaylist;
+        const taggedPlaylist: IPlaylist = this.tagCreator.generateTags({ playlistToTag: updatedPlaylist });
 
-
-
-
-        //this.createTags();
+        return taggedPlaylist;
     };
-/*
-    createTags(): void {
-        this.playlistToUpdate = new this.tagCreator(
-            {
-                playlistToUpdate: this.playlistToUpdate,
-                template: this.template
-            }
-        ).generateTags();
-    };
-
- */
 }

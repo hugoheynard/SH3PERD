@@ -4,24 +4,24 @@ import type {ISingersConfig} from "../playlistBuilder/SINGERS_CONFIG_DEFAULT";
 export class SingersConfigValidator extends ObjectValidator{
 
     protected checkProps<T extends ISingersConfig>(propsToValidate: Partial<T>): void {
-        this.validateQuantity(propsToValidate.quantity);
+        this.validateNumberOfSingers(propsToValidate.numberOfSingers);
         this.validateContainsDuo(propsToValidate.containsDuo);
         this.validateSplitMode(propsToValidate.splitMode);
     };
 
-    validateQuantity(quantity?: number | null): void {
-        if (quantity === undefined) {
-            this.checkedProps.quantity = false;
+    validateNumberOfSingers(numberOfSingers?: number | null): void {
+        if (numberOfSingers === undefined) {
+            this.checkedProps.numberOfSingers = false;
             return;
         }
 
-        if (quantity !== null && (typeof quantity !== 'number' || quantity < 0)) {
+        if (numberOfSingers !== null && (typeof numberOfSingers !== 'number' || numberOfSingers < 0)) {
             this.errors.quantity = 'Quantity must be a positive number';
-            this.checkedProps.quantity = false;
+            this.checkedProps.numberOfSingers = false;
             return;
         }
 
-        this.checkedProps.quantity = true;
+        this.checkedProps.numberOfSingers = true;
     };
 
     validateContainsDuo(containsDuo?: boolean | null): void {
