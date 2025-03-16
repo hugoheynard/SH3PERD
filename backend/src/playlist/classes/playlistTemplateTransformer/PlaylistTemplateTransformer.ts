@@ -16,9 +16,6 @@ export interface IPlaylistTemplateTransformer {
             };
         };
         tagCreator: TagCreator;
-    },
-    output: {
-
     }
 }
 
