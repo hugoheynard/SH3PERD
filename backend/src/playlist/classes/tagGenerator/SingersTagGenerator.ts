@@ -1,6 +1,5 @@
 import type {ISingersConfig} from "../playlistBuilder/SINGERS_CONFIG_DEFAULT";
-import type {ISubTagCreatorsReturns} from "./TagCreator";
-import {PlaylistTagGenerator} from "./PlaylistTagGenerator";
+import {ISubTagCreatorsReturns, PlaylistTagGenerator} from "./PlaylistTagGenerator";
 
 
 export class SingersTagGenerator extends PlaylistTagGenerator<{ singersConfig: ISingersConfig; numberOfSongs: number }> {

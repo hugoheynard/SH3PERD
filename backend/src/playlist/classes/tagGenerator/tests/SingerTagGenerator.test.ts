@@ -1,6 +1,7 @@
 import {SingersTagGenerator} from "../SingersTagGenerator";
 import {ISingersConfig} from "../../playlistBuilder/SINGERS_CONFIG_DEFAULT";
-import {ISubTagCreatorsReturns} from "../PlaylistTagGenerator";
+import {type ISubTagCreatorsReturns} from "../PlaylistTagGenerator";
+
 
 describe("SingersTagGenerator", () => {
     let generator: SingersTagGenerator;
@@ -11,7 +12,7 @@ describe("SingersTagGenerator", () => {
 
     test("should generate correct playlist tags", () => {
         const input: { singersConfig: ISingersConfig; numberOfSongs: number } = {
-            singersConfig: { quantity: 3, containsDuo: true, splitMode: "alternate" },
+            singersConfig: { numberOfSingers: 3, containsDuo: true, splitMode: "alternate" },
             numberOfSongs: 10,
         };
 
@@ -22,7 +23,7 @@ describe("SingersTagGenerator", () => {
 
     test("should distribute songs correctly in alternate mode", () => {
         const input: { singersConfig: ISingersConfig; numberOfSongs: number } = {
-            singersConfig: { quantity: 2, containsDuo: false, splitMode: "alternate" },
+            singersConfig: { numberOfSingers: 2, containsDuo: false, splitMode: "alternate" },
             numberOfSongs: 4,
         };
 
@@ -38,7 +39,7 @@ describe("SingersTagGenerator", () => {
 
     test("should distribute songs correctly in half_split mode", () => {
         const input: { singersConfig: ISingersConfig; numberOfSongs: number } = {
-            singersConfig: { quantity: 2, containsDuo: false, splitMode: "half_split" },
+            singersConfig: { numberOfSingers: 2, containsDuo: false, splitMode: "half_split" },
             numberOfSongs: 5,
         };
 
@@ -55,7 +56,7 @@ describe("SingersTagGenerator", () => {
 
     test("should reset tags after calling generate", () => {
         const input: { singersConfig: ISingersConfig; numberOfSongs: number } = {
-            singersConfig: { quantity: 2, containsDuo: true, splitMode: "alternate" },
+            singersConfig: { numberOfSingers: 2, containsDuo: true, splitMode: "alternate" },
             numberOfSongs: 6,
         };
 

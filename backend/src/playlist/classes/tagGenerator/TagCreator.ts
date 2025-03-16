@@ -27,7 +27,7 @@ export class TagCreator {
         });
 
 
-        console.log('aerialTags', aerialTags);
+        console.log('aerialTags', singerTags);
     };
 }
 

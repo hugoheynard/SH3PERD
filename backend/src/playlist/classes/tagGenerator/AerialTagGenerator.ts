@@ -1,10 +1,9 @@
-import {PlaylistTagGenerator} from "./PlaylistTagGenerator";
+import {type ISubTagCreatorsReturns, PlaylistTagGenerator} from "./PlaylistTagGenerator";
 import type {IAerialConfig} from "../playlistBuilder/AERIAL_CONFIG_DEFAULT";
-import type {ISubTagCreatorsReturns} from "./TagCreator";
 
 export class AerialTagGenerator extends PlaylistTagGenerator<{ aerialConfig: IAerialConfig; numberOfSongs: number }> {
-    private aerialConfig: IAerialConfig;
-    private numberOfSongs: number;
+    private aerialConfig: IAerialConfig = {} as IAerialConfig;
+    private numberOfSongs: number = 0;
 
     public generate(input: { aerialConfig: IAerialConfig; numberOfSongs: number }): ISubTagCreatorsReturns {
         return super.generate(input);
@@ -12,9 +11,6 @@ export class AerialTagGenerator extends PlaylistTagGenerator<{ aerialConfig: IAe
 
     protected execute(input: { aerialConfig: IAerialConfig; numberOfSongs: number }): void {
         try {
-            if (!input.aerialConfig) {
-                return;
-            }
             this.initData(input);
             this.managePlaylistTags();
             this.tagPerformancePosition();
@@ -24,19 +20,16 @@ export class AerialTagGenerator extends PlaylistTagGenerator<{ aerialConfig: IAe
     };
 
     initData(input: { aerialConfig: IAerialConfig; numberOfSongs: number }): void {
-        try {
+
             if (!input.aerialConfig) {
-                throw new Error("No aerial configuration provided.");
+                throw new Error("[AerialTagGenerator - initData]: No aerial configuration provided.");
             }
             this.aerialConfig = input.aerialConfig;
 
             if (!input.numberOfSongs) {
-                throw new Error("No number of songs provided.");
+                throw new Error("[AerialTagGenerator - initData]: No number of songs provided.");
             }
             this.numberOfSongs = input.numberOfSongs;
-        } catch(error) {
-            console.error(`[AerialTagGenerator - initData]: Error initializing data: ${error}`);
-        }
     };
 
     managePlaylistTags(): void {};
@@ -59,7 +52,7 @@ export class AerialTagGenerator extends PlaylistTagGenerator<{ aerialConfig: IAe
                 this.tagObject.playlistTags.push('aerial');
             }
 
-            if (perormancePosition === 'manual') {
+            if (performancePosition === 'manual') {
                 this.tagObject.playlistTags.push('aerial');
             }
 

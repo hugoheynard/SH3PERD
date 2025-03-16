@@ -44,6 +44,7 @@ export class PlaylistModule {
                     {
                         generateSingersTags: (input) => new SingersTagGenerator().generate(input),
                         generateAerialTags: (input) => new AerialTagGenerator().generate(input),
+                        //tagMerger: (input) => new TagMerger().merge(input),
                     }),
             },
         );
