@@ -1,5 +1,5 @@
 import type {ISingersConfig} from "../playlistBuilder/SINGERS_CONFIG_DEFAULT";
-import {ISubTagCreatorsReturns, PlaylistTagGenerator} from "./PlaylistTagGenerator";
+import {type ISubTagCreatorsReturns, PlaylistTagGenerator} from "./PlaylistTagGenerator";
 
 
 export class SingersTagGenerator extends PlaylistTagGenerator<{ singersConfig: ISingersConfig; numberOfSongs: number }> {
@@ -82,7 +82,7 @@ export class SingersTagGenerator extends PlaylistTagGenerator<{ singersConfig: I
     private manageSplitMode(input: { numberOfSingers: number; numberOfSongs: number; splitMode: string }): void {
         const { splitMode , numberOfSingers, numberOfSongs} = input;
 
-        if (splitMode === 'half_split') {
+        if (splitMode === 'equal_split') {
             this.equalSplit({ numberOfSingers: numberOfSingers, numberOfSongs: numberOfSongs });
             return;
         }

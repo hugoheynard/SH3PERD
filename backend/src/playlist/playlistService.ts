@@ -15,7 +15,7 @@ const updateMock = {
         singersConfig: {
             numberOfSingers: 3,
             containsDuo: true,
-            splitMode: "half_split"
+            splitMode: "alternate"
         },
         musiciansConfig: {
             role: 'support'

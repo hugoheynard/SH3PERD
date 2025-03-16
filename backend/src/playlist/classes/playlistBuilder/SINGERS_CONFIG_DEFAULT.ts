@@ -1,7 +1,7 @@
 export interface ISingersConfig {
     numberOfSingers: number | null;
     containsDuo: boolean | null;
-    splitMode: "alternate" | "half_split" | null;
+    splitMode: "alternate" | "equal_split" | null;
 }
 
 export const SINGERS_CONFIG_DEFAULT: Readonly<ISingersConfig> = Object.freeze({

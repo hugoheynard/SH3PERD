@@ -39,14 +39,14 @@ export class SingersConfigValidator extends ObjectValidator{
         this.checkedProps.containsDuo = true;
     };
 
-    validateSplitMode(splitMode?: "alternate" | "half_split" | null): void {
+    validateSplitMode(splitMode?: "alternate" | "equal_split" | null): void {
         if (splitMode === undefined) {
             this.checkedProps.splitMode = false;
             return;
         }
 
-        if (splitMode !== null && !["alternate", "half_split"].includes(splitMode)) {
-            this.errors.splitMode = 'SplitMode must be "alternate" or "half_split"';
+        if (splitMode !== null && !["alternate", "equal_split"].includes(splitMode)) {
+            this.errors.splitMode = 'SplitMode must be "alternate" or "equal_split"';
             this.checkedProps.splitMode = false;
             return;
         }
