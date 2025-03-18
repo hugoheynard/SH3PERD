@@ -1,6 +1,6 @@
 
 .song {
-  padding: 12px 16px;
+  padding: 8px 8px;
   border-bottom: solid 1px #ddd;
   color: rgba(0, 0, 0, 0.87);
   display: flex;
@@ -9,7 +9,7 @@
   box-sizing: border-box;
   cursor: grab; /* Changement du curseur pour plus d’intuition */
   background: white;
-  font-size: 14px;
+  font-size: 12px;
   transition: background-color 0.3s ease-in-out;
 }
 
@@ -18,7 +18,6 @@
 }
 
 .song-list {
-  width: 500px;
   max-width: 100%;
   border: solid 1px #ccc;
   min-height: 80px; /* Augmenté pour meilleure UX */
@@ -27,7 +26,7 @@
   background: white;
   border-radius: 8px; /* Adoucissement des bords */
   overflow: hidden;
-  padding: 8px 0;
+  padding: 0 0;
   transition: border-color 0.2s;
 }
 

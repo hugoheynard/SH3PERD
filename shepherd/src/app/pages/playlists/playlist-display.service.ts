@@ -57,8 +57,10 @@ export class PlaylistDisplayService {
     this.viewModeSignal.set('library');
   };
 
-  openPlaylistInSidenav(input: { playlist: Playlist | null }): void {
-    this.currentPlaylistSignal.set(input.playlist);
+  openPlaylistInSidenav(input: { playlist: Playlist }): void {
+    const playlist = input.playlist;
+    this.currentPlaylistSignal.set(playlist);
+
     this.sidenavRightService.openComponent(PlaylistViewComponent, { playlist: this.currentPlaylistSignal() });
     this.sidenavRightService.openRightSidenav();
   };

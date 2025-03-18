@@ -6,18 +6,40 @@ import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 })
 export class PlaylistFormService {
   private fb: FormBuilder = inject(FormBuilder);
-  public playlistForm!: FormGroup;
+  public playlistForm: FormGroup = {} as FormGroup;
 
   /** Crée le FormGroup pour la playlist */
   createPlaylistForm(playlist: any = {}): FormGroup {
+    if (!playlist) {
+      console.error('Playlist is undefined!');
+      return this.fb.group({});
+    }
+    const { settings, songList } = playlist;
+
     this.playlistForm = this.fb.group({
-      energy: [playlist.energy || 1],
-      settings: this.createSettingsFormGroup(playlist),
-      songList: this.createSongListFormArray(playlist),
-      notes: [playlist.notes || '']
+      settings: this.createSettingsFormGroup(settings),
+      tags: playlist.tags,
+      songList: this.createSongListFormArray(songList),
     });
+
     return this.playlistForm;
   };
+
+  createSettingsFormGroup(settings: any = {}): FormGroup {
+
+    return this.fb.group({
+      name: [settings.name],
+      description: [settings.description],
+      usage: [settings.usage],
+      energy: [settings.energy],
+      requiredLength: [settings.requiredLength],
+      numberOfSongs: [settings.numberOfSongs],
+      singers: [settings.singers],
+      musicians: [settings.musicians],
+      aerial: [settings.aerial],
+    });
+  };
+
 
   /** Crée un FormGroup pour une chanson */
   createSongFormGroup(song: any = {}): FormGroup {
@@ -29,19 +51,11 @@ export class PlaylistFormService {
     });
   };
 
-  createSettingsFormGroup(playlist: any = {}): FormGroup {
-    return this.fb.group({
-      name: [playlist?.settings.name || 'New Playlist'],
-      usage: [playlist?.settings.type || 'Daily'],
-      requiredLength: [playlist?.settings.requiredLength || 15],
-      numberOfSongs: [playlist?.settings.numberOfSongs || 4],
-      containsAerial: [playlist?.settings.containsAerial || false],
-      containsDuo: [playlist?.settings.containsDuo || false],
-    });
-  };
 
-  createSongListFormArray(playlist: any = {}): FormArray {
-    return this.fb.array(playlist.songList?.map((song: any) => this.createSongFormGroup(song)) || [])
+
+  createSongListFormArray(songList: any = {}): FormArray {
+    return this.fb.array(songList?.map(
+      (song: any) => this.createSongFormGroup(song)) || [])
   };
 
   /** Gets song FormArray */ //OK

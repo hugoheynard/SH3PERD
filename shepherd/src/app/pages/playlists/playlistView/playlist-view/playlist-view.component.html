@@ -3,30 +3,30 @@
   <button id="closePlaylistView_button" (click)="playlistDisplayService.closePlaylistInSidenav()"><mat-icon>close</mat-icon></button>
 </div>
 
-<playlist-short-infos [energyControl]="getControl('energy')"/>
-
 <form [formGroup]="playlistForm">
-  <!--SETTINGS SECTION-->
+  <ng-container formGroupName="settings">
+    <input type="text" formControlName="name" StyledInput label="playlist name">
+
+    <input type="text" formControlName="description" StyledInput label="description">
+
+    <div style="display: flex; flex-direction: row; justify-content: space-around;">
+      <select formControlName="usage" StyledInput label="usage">
+        <option value="daily">Daily</option>
+        <option value="event">Event</option>
+      </select>
+
+      <input type="number" min="5" step="5" formControlName="requiredLength" StyledInput label="duration">
+      <input type="number" min="1" step="1" formControlName="numberOfSongs" StyledInput label="songs">
+      <input type="number" min="1" max='4' step="1" formControlName="energy" StyledInput label="energy">
+    </div>
+  </ng-container>
+
+  <!--SETTINGS SECTION
   <plv-section-container #settingsSectionContainer>
     <plv-section-header sectionHeader [sectionTitle]="'Settings'" (openSection)="settingsSectionContainer.onHeaderToggle($event)"/>
     <ng-container sectionContent *ngIf="settingsSectionContainer.isExpanded" formGroupName="settings">
-      <div class="flexRowSpaceBetween">
-        <label>Name:</label>
-        <input matInput type="text" formControlName="name">
-      </div>
 
-      <div class="flexRowSpaceBetween">
-        <label>Usage:</label>
-        <select formControlName="usage">
-          <option value="daily">Daily</option>
-          <option value="event">Event</option>
-        </select>
-      </div>
 
-      <div class="flexRowSpaceBetween">
-        <div><mat-icon>timer</mat-icon> Required length</div>
-        <input type="number" min="5" step="5" formControlName="requiredLength">
-      </div>
 
       <div class="flexRowSpaceBetween">
         <div><mat-icon>music_video</mat-icon> Song number</div>
@@ -35,39 +35,26 @@
 
 
       <div class="flexRowSpaceBetween">
-        <div><mat-icon>airplanemode_active</mat-icon> Contains aerial</div>
-        <input type="checkbox" formControlName="containsAerial">
+        <div><mat-icon>airplanemode_active</mat-icon>aerial</div>
+        <input type="checkbox" formControlName="aerial">
       </div>
 
-      <div class="flexRowSpaceBetween">
-        <div><mat-icon>people</mat-icon> Contains duo</div>
-        <input type="checkbox" formControlName="containsDuo">
-      </div>
 
       <button>GENERATE</button>
     </ng-container>
-  </plv-section-container>
+  </plv-section-container>-->
 
 
-  <!--TRACK LIST SECTION-->
   <plv-section-container #tracklistSectionContainer [isExpanded]="true">
     <plv-section-header sectionHeader [sectionTitle]="'TrackList'" (openSection)="tracklistSectionContainer.onHeaderToggle($event)"/>
     <ng-container sectionContent *ngIf="tracklistSectionContainer.isExpanded">
-      <!--TAGS-->
+
       <available-tags #availableTags [tagList]="playlistFormService.getAvailableTags()"/>
-      <!--SONGS-->
+
       <app-song-list-dnd />
     </ng-container>
   </plv-section-container>
 
-
-  <!--NOTES SECTION-->
-  <plv-section-container #noteSectionContainer>
-    <plv-section-header sectionHeader [sectionTitle]="'Notes'" (openSection)="noteSectionContainer.onHeaderToggle($event)"/>
-    <ng-container sectionContent *ngIf="noteSectionContainer.isExpanded">
-      <input matInput type="text" formControlName="notes" id="notes">
-    </ng-container>
-  </plv-section-container>
 
 </form>
 

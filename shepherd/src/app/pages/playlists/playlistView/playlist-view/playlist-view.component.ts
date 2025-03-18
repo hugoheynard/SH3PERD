@@ -19,28 +19,32 @@ import {PlvSectionContainerComponent} from '../plv-section-container/plv-section
 import {AvailableTagsComponent} from '../available-tags/available-tags.component';
 import {PlaylistService} from '../../../../services/playlist.service';
 import {PlaylistFormService} from '../../formsServices/playlist-form.service';
+import {StyledInputDirective} from '../../../../../Directives/styled-input.directive';
 
 @Component({
     selector: 'playlist-view',
-    imports: [
-        CdkDrag,
-        CdkDropList,
-        NgForOf,
-        TrackLineComponent,
-        ReactiveFormsModule,
-        MatInput,
-        MatButton,
-        MatFabButton,
-        MatIcon,
-        MatMiniFabButton,
-        PlaylistShortInfosComponent,
-        SongListDndComponent,
-        PlvSectionHeaderComponent,
-        PlvSectionContainerComponent,
-        NgIf,
-        AvailableTagsComponent,
-        MatIconButton
-    ],
+  imports: [
+    CdkDrag,
+    CdkDropList,
+    NgForOf,
+    TrackLineComponent,
+    ReactiveFormsModule,
+    MatInput,
+    MatButton,
+    MatFabButton,
+    MatIcon,
+    MatMiniFabButton,
+    PlaylistShortInfosComponent,
+    SongListDndComponent,
+    PlvSectionHeaderComponent,
+    PlvSectionContainerComponent,
+    NgIf,
+    AvailableTagsComponent,
+    MatIconButton,
+    StyledInputDirective,
+    StyledInputDirective,
+    StyledInputDirective
+  ],
     templateUrl: './playlist-view.component.html',
     standalone: true,
     styleUrl: './playlist-view.component.scss'

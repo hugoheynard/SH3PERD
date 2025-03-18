@@ -14,7 +14,26 @@ export class PlaylistService {
     console.log('hello', input.data)
   };
 
-  async createEmptyPlaylist(input: { playlistTemplate_id?: string }): Promise<any> {
+  async createNewEmptyPlaylist(): Promise<any> {
+    try{
+      const response: HttpResponse<any> = await firstValueFrom(
+        this.http.get(
+          `${this.baseUrl}/playlist/new`,
+          {
+            headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+            observe: 'response'
+          }));
+
+      if (!response.ok) {
+        console.error('Error creating new empty playlist');
+      }
+      return response.body.playlist;
+    } catch(err) {
+      console.error(err);
+    }
+  };
+
+  async createNewEmptyPlaylistFromTemplate(input: { playlistTemplate_id?: string }): Promise<any> {
     console.log('3-I am the service')
     console.log('4-I get playlistTemplate_id:', input.playlistTemplate_id);
     try {

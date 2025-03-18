@@ -2,7 +2,6 @@ export interface IPlaylistSettings {
     name: string;
     description: string;
     usage: 'daily' | 'event';
-    tags: string[];
     energy: 1 | 2 | 3 | 4;
     requiredLength: number;
     numberOfSongs: number;
@@ -15,7 +14,6 @@ export const PLAYLIST_SETTINGS_DEFAULT: Readonly<IPlaylistSettings> = Object.fre
     name: `New Playlist ${new Date().toLocaleDateString()}` as string,
     description: '',
     usage: 'daily',
-    tags: [],
     energy: 1,
     requiredLength: 15,
     numberOfSongs: 4,

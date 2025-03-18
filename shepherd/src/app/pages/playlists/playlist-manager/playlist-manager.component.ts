@@ -15,6 +15,7 @@ import {PlvSectionHeaderComponent} from '../playlistView/plv-section-header/plv-
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {PlTemplateFormComponent} from '../playlistTemplate/pl-template-form/pl-template-form.component';
 import {PlTemplateTableComponent} from '../playlistTemplate/pl-template-table/pl-template-table.component';
+import {PlaylistService} from '../../../services/playlist.service';
 
 
 @Component({
@@ -40,60 +41,17 @@ import {PlTemplateTableComponent} from '../playlistTemplate/pl-template-table/pl
 })
 export class PlaylistManagerComponent {
   private playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
+  private playlistService: PlaylistService = inject(PlaylistService);
   public viewModeSignal: WritableSignal<'library' | 'playlist'> = this.playlistDisplayService.viewModeSignal;
 
-  public playlists: any[] = [
-    {
-      name: 'Hello world',
-      creation_date: '2025/01/28',
-      energy: 4,
-      favorite: true,
-      settings: {
-        containsAerial: true,
-        containsDuo: true,
-      },
-      tags: ['duo', 'aerial'],
-      songList: [
-        {
-          _id: 1,
-          title: 'Show must go up',
-          tags: ['duo', 'aerial'],
-        },
-        {
+  public playlists: any[] = [];
 
-          tags: [],
-        },
-        {
-          _id: 3,
-          title: 'Show must go up',
-          tags: [],
-        },
-        {
-          _id: 4,
-          title: 'Up go must show',
-          tags: [],
-        }
-      ]
-    },
-    {
-      name: 'World world',
-      creation_date: '2025/01/29',
-      energy: 4,
-      favorite: false,
-      tags: [],
-      songList: [
-        {
-          _id: 1,
-          title: 'Show must go up'
-        },
-        {
-          _id: 2,
-          title: 'Up go must show'
-        }
-      ]
-    }];
-
-  createPlaylistInSidenav(playlist: Playlist | null): void {
-    this.playlistDisplayService.openPlaylistInSidenav({ playlist: playlist });
+  async createEmptyPlaylist(): Promise<void> {
+    try {
+      const playlist = await this.playlistService.createNewEmptyPlaylist();
+      this.playlistDisplayService.openPlaylistInSidenav({ playlist: playlist });
+    }catch (error) {
+      console.error('error creating empty playlist', error);
+    }
   };
 }

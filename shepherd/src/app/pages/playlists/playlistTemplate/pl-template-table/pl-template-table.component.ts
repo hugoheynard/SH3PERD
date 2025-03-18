@@ -55,7 +55,7 @@ export class PlTemplateTableComponent implements OnInit {
 
      */
 
-    await this.playlistService.createEmptyPlaylist({ playlistTemplate_id: playlistTemplate_id });
+    await this.playlistService.createNewEmptyPlaylistFromTemplate({ playlistTemplate_id: playlistTemplate_id });
     return;
   };
 

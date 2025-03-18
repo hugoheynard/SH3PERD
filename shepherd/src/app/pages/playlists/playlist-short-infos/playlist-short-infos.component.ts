@@ -10,6 +10,7 @@ import {FormControl, ReactiveFormsModule} from '@angular/forms';
         MatInput,
         ReactiveFormsModule
     ],
+  standalone: true,
     templateUrl: './playlist-short-infos.component.html',
     styleUrl: './playlist-short-infos.component.scss'
 })

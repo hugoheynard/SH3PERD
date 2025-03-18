@@ -19,6 +19,7 @@ import {TagStyleDirective} from '../../../../../Directives/tag-style.directive';
         NgStyle,
         TagStyleDirective
     ],
+    standalone: true,
     templateUrl: './available-tags.component.html',
     styleUrl: './available-tags.component.scss'
 })
