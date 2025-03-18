@@ -1,10 +1,7 @@
-import type {IPlaylist} from "../playlistBuilder/PlaylistBuilder";
-import {TagCreator} from "../tagGenerator/TagCreator";
-import type {ObjectUpdaterFunction} from "../ObjectUpdater";
-import {SingersTagGenerator} from "../tagGenerator/SingersTagGenerator";
-import {AerialTagGenerator} from "../tagGenerator/AerialTagGenerator";
+import type {IPlaylist} from "./playlistBuilder/PlaylistBuilder";
+import type {ObjectUpdaterFunction} from "./ObjectUpdater";
 
-export interface IPlaylistTemplateTransformer {
+export interface IPlaylistUpdater {
     input: {
         objectUpdater: ObjectUpdaterFunction<T>;
         validators: {
@@ -15,59 +12,60 @@ export interface IPlaylistTemplateTransformer {
                 aerialConfig: any;
             };
         };
-        tagCreator: TagCreator;
     }
 }
 
-export class PlaylistTemplateTransformer {
-    private objectUpdater: any;
+export class PlaylistUpdater {
+    private readonly objectUpdater: any;
     private validators: {
         settings: any;
+        songList: any;
         performers: {
             singersConfig: any;
             musiciansConfig: any;
             aerialConfig: any;
         };
     };
-    private tagCreator: TagCreator;
 
-    constructor(input: IPlaylistTemplateTransformer) {
+    constructor(input: IPlaylistUpdater) {
         this.objectUpdater = input.objectUpdater;
         this.validators = input.validators;
-        this.tagCreator = input.tagCreator;
     };
 
-    applyTemplate(input: { playlistToUpdate: IPlaylist, template: Partial<IPlaylist> }): IPlaylist {
-        const { playlistToUpdate, template } = input;
+    update(input: { playlistToUpdate: IPlaylist, update: Partial<IPlaylist> }): IPlaylist {
+        const { playlistToUpdate, update } = {...input};
 
-        const updatedPlaylist: IPlaylist = {
+        return {
             settings: this.objectUpdater({
                 referenceObject: playlistToUpdate.settings,
-                updateObject: template.settings,
+                updateObject: update.settings,
                 validator: this.validators.settings
             }),
-            songList: playlistToUpdate.songList, //toDo : validation
+            tags: [],
+            songList: update.songList.map((updateSong, index) => {
+                return this.objectUpdater({
+                    referenceObject: playlistToUpdate.songList[index] || {},
+                    updateObject: updateSong,
+                    validator: this.validators.songList
+                });
+            }),
             performers: {
                 singersConfig: this.objectUpdater({
                     referenceObject: playlistToUpdate.performers.singersConfig,
-                    updateObject: template.performers.singersConfig,
+                    updateObject: update.performers.singersConfig,
                     validator: this.validators.performers.singersConfig
                 }),
                 musiciansConfig: this.objectUpdater({
                     referenceObject: playlistToUpdate.performers.musiciansConfig,
-                    updateObject: template.performers.musiciansConfig,
+                    updateObject: update.performers.musiciansConfig,
                     validator: this.validators.performers.musiciansConfig
                 }),
                 aerialConfig: this.objectUpdater({
                     referenceObject: playlistToUpdate.performers.aerialConfig,
-                    updateObject: template.performers.aerialConfig,
+                    updateObject: update.performers.aerialConfig,
                     validator: this.validators.performers.aerialConfig
                 })
             }
         }
-
-        const taggedPlaylist: IPlaylist = this.tagCreator.generateTags({ playlistToTag: updatedPlaylist });
-
-        return taggedPlaylist;
     };
 }

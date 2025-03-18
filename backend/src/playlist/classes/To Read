@@ -1,0 +1,5 @@
+PlaylistBuilder: returns a valid default playlist;
+Playlist Validators: produce an object with [key]: boolean indicating if new value
+                    can replace the old one;
+
+

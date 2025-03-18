@@ -1,5 +1,5 @@
 import {type IPlaylist, PlaylistBuilder} from "./playlistBuilder/PlaylistBuilder";
-import {PlaylistTemplateTransformer} from "./playlistTemplateTransformer/PlaylistTemplateTransformer";
+import {PlaylistUpdater} from "./PlaylistUpdater";
 import {TagCreator} from "./tagGenerator/TagCreator";
 import {ObjectUpdater} from "./ObjectUpdater";
 import {PlaylistSettingsValidator} from "./playlistValidators/PlaylistSettingsValidator";
@@ -13,11 +13,14 @@ import {PLAYLIST_SETTINGS_DEFAULT} from "./playlistBuilder/PLAYLIST_SETTINGS_DEF
 import {PLAYLIST_SONG_DEFAULT} from "./playlistBuilder/PLAYLIST_SONG_DEFAULT";
 import {SingersTagGenerator} from "./tagGenerator/SingersTagGenerator";
 import {AerialTagGenerator} from "./tagGenerator/AerialTagGenerator";
+import {PlaylistTagMerger} from "./tagGenerator/PlaylistTagMerger";
+import {SongValidator} from "./playlistValidators/SongValidator";
 
 
 export class PlaylistModule {
     private playlistBuilder: PlaylistBuilder;
-    private playlistTemplateTransformer: PlaylistTemplateTransformer;
+    private playlistUpdater: PlaylistUpdater;
+    private tagCreator: TagCreator;
 
     constructor() {
         this.playlistBuilder = new PlaylistBuilder(
@@ -29,39 +32,50 @@ export class PlaylistModule {
                 playlistSong: PLAYLIST_SONG_DEFAULT,
             });
 
-        this.playlistTemplateTransformer = new PlaylistTemplateTransformer(
+        this.playlistUpdater = new PlaylistUpdater(
             {
                 objectUpdater: (input) => new ObjectUpdater().update(input),
                 validators: {
                     settings: (input) => new PlaylistSettingsValidator().getValidationObject(input),
+                    songList: (input) => new SongValidator().getValidationObject(input),
                     performers: {
                         singersConfig: (input) => new SingersConfigValidator().getValidationObject(input),
                         musiciansConfig: (input) => new MusiciansConfigValidator().getValidationObject(input),
                         aerialConfig: (input) => new AerialConfigValidator().getValidationObject(input),
                     }
                 },
-                tagCreator: new TagCreator(
-                    {
-                        generateSingersTags: (input) => new SingersTagGenerator().generate(input),
-                        generateAerialTags: (input) => new AerialTagGenerator().generate(input),
-                        //tagMerger: (input) => new TagMerger().merge(input),
-                    }),
             },
         );
+
+        this.tagCreator =  new TagCreator(
+            {
+                generateSingersTags: (input) => new SingersTagGenerator().generate(input),
+                generateAerialTags: (input) => new AerialTagGenerator().generate(input),
+                tagMerger: (input) => new PlaylistTagMerger().merge(input),
+            });
     };
 
-    generateEmptyPlaylist(): IPlaylist {
+    generateDefaultEmptyPlaylist(): IPlaylist {
         return this.playlistBuilder.build();
     };
 
-    generatePlaylistFromTemplate(input: { playlistTemplate: Partial<IPlaylist> }): IPlaylist {
+    generateNewPlaylistFromTemplate(input: { playlistTemplate: Partial<IPlaylist> }): IPlaylist {
 
-        const emptyPlaylist: IPlaylist = this.generateEmptyPlaylist();
+        const emptyPlaylist: IPlaylist = this.generateDefaultEmptyPlaylist();
 
-        return this.playlistTemplateTransformer.applyTemplate(
+        const updatedPlaylist: IPlaylist =  this.playlistUpdater.update(
             {
                 playlistToUpdate: emptyPlaylist,
-                template: input.playlistTemplate
-            })
+                update: input.playlistTemplate
+            });
+
+        const taggedPlaylist: IPlaylist = this.tagCreator.tag({ playlistToTag: updatedPlaylist});
+
+        return taggedPlaylist;
     };
+
+    updatePlaylist(input: { playlistToUpdate: IPlaylist, update: Partial<IPlaylist> }): IPlaylist {
+        return this.playlistUpdater.update(input);
+    };
+
 }

@@ -10,7 +10,7 @@ import type { IPlaylistSong } from "./PLAYLIST_SONG_DEFAULT";
 export interface IPlaylist {
     /** General playlist settings */
     settings: IPlaylistSettings;
-
+    tags: string[];
     /** List of songs in the playlist */
     songList: IPlaylistSong[];
 
@@ -90,6 +90,7 @@ export class PlaylistBuilder {
     build(): IPlaylist {
         return {
             settings: this.playlistSettings,
+            tags: [],
             songList: Array.from(
                 { length: this.playlistSettings.numberOfSongs },
                 () => ({ ...this.playlistSong })

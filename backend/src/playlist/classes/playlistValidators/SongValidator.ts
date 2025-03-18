@@ -1,7 +1,7 @@
 import { ObjectValidator } from "./ObjectValidator";
 import type { IPlaylistSong } from "../playlistBuilder/PLAYLIST_SONG_DEFAULT";
 
-export class SongListValidator extends ObjectValidator {
+export class SongValidator extends ObjectValidator {
 
     protected checkProps<T extends IPlaylistSong>(propsToValidate: Partial<T>): void {
         this.validateTitle(propsToValidate.title);

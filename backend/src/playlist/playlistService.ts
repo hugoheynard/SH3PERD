@@ -1,50 +1,35 @@
 import type {IPlaylist} from "./classes/playlistBuilder/PlaylistBuilder";
 
-const updateMock = {
-    settings: {
-        name: "Evening Chill Playlist",
-        usage: "daily",
-        energy: 2,
-        requiredLength: 20,
-        numberOfSongs: 5,
-        singers: true,
-        musicians: false,
-        aerial: true,
+
+export interface IPlaylistService {
+    input: {
+        playlistCollection: any;
+        PlaylistForm: any;
+        PlaylistModule: any;
     },
-    performers: {
-        singersConfig: {
-            numberOfSingers: 3,
-            containsDuo: true,
-            splitMode: "alternate"
-        },
-        musiciansConfig: {
-            role: 'support'
-        },
-        aerialConfig: {
-            performancePosition: "end"
-        }
+    output: {
+        getDefaultPlaylist: () => Promise<IPlaylist>;
+        getNewPlaylistFromTemplate: (input: { playlistTemplate: Partial<IPlaylist> }) => IPlaylist;
     }
-};
+}
 
 
-export const playlistService = (input) => {
+export const playlistService = (input: IPlaylistService['input']) => {
     const { playlistCollection, PlaylistForm, PlaylistModule } = input;
 
-    const service = {
+    const service: IPlaylistService['output'] = {
 
-        getEmptyPlaylist() {
-            return new PlaylistModule().generateEmptyPlaylist();
+        async getDefaultPlaylist() {
+            return new PlaylistModule().generateDefaultEmptyPlaylist();
         },
 
-        getEmptyPlaylistFromTemplate(input: { playlistTemplate: Partial<IPlaylist> } = {}): IPlaylist {
-            const { playlistTemplate } = input;
-
-            const playlist = new PlaylistModule().generatePlaylistFromTemplate({ playlistTemplate: updateMock });
-
-            return playlist;
+        async getNewPlaylistFromTemplate(input) {
+            return new PlaylistModule()
+                .generateNewPlaylistFromTemplate(
+                    {
+                        playlistTemplate: input
+                    });
         },
-
-
     };
 
     return service;
