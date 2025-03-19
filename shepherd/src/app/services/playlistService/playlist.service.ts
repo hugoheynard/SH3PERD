@@ -1,7 +1,8 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
-import {environment} from '../../environments/environment';
+import {environment} from '../../../environments/environment';
 import {firstValueFrom} from 'rxjs';
+import {savePlaylist} from './savePlaylist';
 
 @Injectable({
   providedIn: 'root'
@@ -10,10 +11,18 @@ export class PlaylistService {
   private http: HttpClient = inject(HttpClient);
   private baseUrl: string = environment.baseURL;
 
-  savePlaylist(input: { data: any}): any {
-    console.log('hello', input.data)
+  async savePlaylist(input: { playlistData: any }): Promise<any> {
+    return await savePlaylist(
+      {
+        http: this.http,
+        url: `${this.baseUrl}/playlist/`,
+        playlistData: input.playlistData
+      });
   };
 
+  /**
+   * * Create a new empty playlist by getting a default playlist object from the backend
+   */
   async createNewEmptyPlaylist(): Promise<any> {
     try{
       const response: HttpResponse<any> = await firstValueFrom(
