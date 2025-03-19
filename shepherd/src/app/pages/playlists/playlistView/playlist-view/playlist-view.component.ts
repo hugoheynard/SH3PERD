@@ -7,7 +7,7 @@ import {
 import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
 import {NgForOf, NgIf} from "@angular/common";
 import {TrackLineComponent} from "../track-line/track-line.component";
-import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {MatInput} from '@angular/material/input';
 import {MatButton, MatFabButton, MatIconButton, MatMiniFabButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
@@ -56,10 +56,10 @@ export class PlaylistViewComponent implements OnInit {
   private plServ: PlaylistService = inject(PlaylistService);
   public playlistFormService: PlaylistFormService =  inject(PlaylistFormService);
   public playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
-  public playlistForm: FormGroup = this.fb.group({});
   private snackBarService: SnackbarService = inject(SnackbarService);
+  public playlistForm: FormGroup = this.fb.group({});
   @Input() playlist: any = {};
-  public isAccordionOpen = true;
+
 
   ngOnInit():void {
     this.initForm();
@@ -67,11 +67,7 @@ export class PlaylistViewComponent implements OnInit {
 
   initForm(): void {
     this.playlistForm = this.playlistFormService.createPlaylistForm(this.playlist);
-  }; //OK
-
-
-
-
+  };
 
   getControl(controlName: string) {
     return this.playlistForm.get(controlName) as FormControl;
@@ -93,7 +89,6 @@ export class PlaylistViewComponent implements OnInit {
       console.error(error);
       this.snackBarService.show('Error saving playlist');
     }
-
   };
 
 }

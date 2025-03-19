@@ -13,12 +13,12 @@ thead th{
 }
 
 thead td { //design header cells
-  height: 30px;
-  padding: 6px 10px;
+  height: 2rem;
+  padding: 1px 10px;
   border: 1px solid #ddd;
-  background-color: #8a8d8d;
+  background-color: var(--GreyLevel2);
   color: #ddd;
-  font-size: 14px;
+  font-size: 0.75rem;
   text-transform: uppercase;
 }
 
@@ -27,21 +27,22 @@ thead td { //design header cells
 }
 
 tbody tr:nth-child(even) {
-  background-color: #2e3031; /* Alternance de couleurs pour les lignes */
-  color: #ddd;
+  background-color: #acb0b015; /* Alternance de couleurs pour les lignes */
 }
 
 tbody tr {
-  height: 30px;
+  height: 0.5rem !important; // Définit une hauteur de 1rem pour les lignes
+  line-height: 0.5rem;
+  font-size: 0.75rem;
 }
 
 tbody td {
-  padding: 6px 10px;
+  padding: 1px 10px;
   border: 1px solid #ddd;
 }
 
 .playlistRow {
-  height: 30px;
+  height: 10px;
 }
 
 .flexSpace {

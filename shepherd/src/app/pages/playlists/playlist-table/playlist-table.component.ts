@@ -8,7 +8,7 @@ import {Playlist} from '../playlist_interfaces';
 import {TagStyleDirective} from '../../../../Directives/tag-style.directive';
 
 @Component({
-    selector: 'app-playlist-table',
+    selector: 'playlist-table',
     imports: [
         NgForOf,
         MatIcon,

@@ -28,7 +28,7 @@ export const initRoutes = (app: Express, { controllers } : any, { middlewares }:
 
 
 
-        app.use((req: Request, res: Response, next: NextFunction) => {
+        app.use((req: Request, res: Response, next: NextFunction): void => {
             res.status(404).send('Route does not exist');
         });
 

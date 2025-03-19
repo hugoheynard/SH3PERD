@@ -4,6 +4,7 @@ import {environment} from '../../../environments/environment';
 import {firstValueFrom} from 'rxjs';
 import {savePlaylist} from './savePlaylist';
 import {getNewEmptyPlaylistObject} from './getNewEmptyPlaylistObject';
+import {getPlaylists} from './getPlaylists';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,14 @@ import {getNewEmptyPlaylistObject} from './getNewEmptyPlaylistObject';
 export class PlaylistService {
   private http: HttpClient = inject(HttpClient);
   private baseUrl: string = environment.baseURL;
+
+  async getPlaylists(): Promise<any> {
+    return await getPlaylists(
+      {
+        http: this.http,
+        url: `${this.baseUrl}/playlist/`
+      });
+  };
 
   async savePlaylist(input: { playlistData: any }): Promise<any> {
     return await savePlaylist(

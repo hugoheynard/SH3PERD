@@ -13,7 +13,7 @@
   <!--PLAYLISTS-->
   <mat-tab label="PLAYLISTS">
     <ng-container *ngIf="viewModeSignal() === 'playlist'">
-      <app-playlist-table [playlists]="playlists"/>
+      <playlist-table [playlists]="playlists"/>
     </ng-container>
 
     <ng-container *ngIf="viewModeSignal() === 'library'">

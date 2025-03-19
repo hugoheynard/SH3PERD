@@ -16,16 +16,16 @@
   &.level-1 {
     height: 3rem;
     padding: 16px;
-    background-color: #5e5e5e;
-    color: #cccccc;
+    background-color: var(--GreyLevel1);
+    color: var(--ContrastOnGreyLevel1);
     text-transform: uppercase;
   }
 
   &.level-2 {
     height: 2rem;
     padding: 6px 16px;
-    background-color: #7f7f7f;
-    color: #e1dfdf;
+    background-color: var(--GreyLevel2);
+    color: var(--ContrastOnGreyLevel2);
     text-transform: capitalize;
   }
 }
