@@ -16,11 +16,12 @@ import {PlaylistShortInfosComponent} from '../../playlist-short-infos/playlist-s
 import {SongListDndComponent} from '../song-list-dnd/song-list-dnd.component';
 import {PlvSectionContainerComponent} from '../plv-section-container/plv-section-container.component';
 import {AvailableTagsComponent} from '../available-tags/available-tags.component';
-import {PlaylistService} from '../../../../services/playlist.service';
+import {PlaylistService} from '../../../../services/playlistService/playlist.service';
 import {PlaylistFormService} from '../../formsServices/playlist-form.service';
 import {StyledInputDirective} from '../../../../../Directives/styled-input.directive';
 import {CdkAccordion, CdkAccordionItem} from '@angular/cdk/accordion';
 import {StyledCheckboxDirective} from '../../../../../Directives/styled-checkbox.directive';
+import {SnackbarService} from '../../../../services/snackbar.service';
 
 @Component({
     selector: 'playlist-view',
@@ -56,6 +57,7 @@ export class PlaylistViewComponent implements OnInit {
   public playlistFormService: PlaylistFormService =  inject(PlaylistFormService);
   public playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
   public playlistForm: FormGroup = this.fb.group({});
+  private snackBarService: SnackbarService = inject(SnackbarService);
   @Input() playlist: any = {};
   public isAccordionOpen = true;
 
@@ -75,8 +77,23 @@ export class PlaylistViewComponent implements OnInit {
     return this.playlistForm.get(controlName) as FormControl;
   };
 
-  savePlaylist(): void {
-    this.plServ.savePlaylist({ data: this.playlistForm });
+  async savePlaylist(): Promise<void> {
+    try {
+      if (!this.playlistForm.valid) {
+        this.snackBarService.show('Invalid form');
+        return;
+      }
+
+      const response = await this.plServ.savePlaylist({ playlistData: this.playlistForm.value });
+
+      if (response.ok) {
+        this.snackBarService.show('New Playlist saved');
+      }
+    } catch(error) {
+      console.error(error);
+      this.snackBarService.show('Error saving playlist');
+    }
+
   };
 
 }

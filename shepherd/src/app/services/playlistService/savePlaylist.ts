@@ -1,11 +1,11 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
-export async function savePlaylist(input: { http: HttpClient, url: string, playlistData: any }): Promise<any> {
+export const savePlaylist = async (input: { http: HttpClient, url: string, playlistData: any }): Promise<any> => {
   try {
     const { http, playlistData, url } = input;
 
-    if (!http || !baseURL || !playlistData) {
+    if (!http || !url || !playlistData) {
       throw new Error('[savePlaylist]: Invalid input parameters');
     }
 

@@ -14,7 +14,7 @@ import {PlvSectionContainerComponent} from '../playlistView/plv-section-containe
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {PlTemplateFormComponent} from '../playlistTemplate/pl-template-form/pl-template-form.component';
 import {PlTemplateTableComponent} from '../playlistTemplate/pl-template-table/pl-template-table.component';
-import {PlaylistService} from '../../../services/playlist.service';
+import {PlaylistService} from '../../../services/playlistService/playlist.service';
 
 
 @Component({

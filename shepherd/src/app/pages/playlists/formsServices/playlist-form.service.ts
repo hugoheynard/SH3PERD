@@ -34,6 +34,12 @@ export class PlaylistFormService {
         numberOfSingers: singersConfig.singers,
         containsDuo: singersConfig.containsDuo,
         splitMode: singersConfig.splitMode,
+       }),
+        musiciansConfig: this.fb.group({
+          //numberOfMusicians: musiciansConfig.musicians,
+        }),
+       aerialConfig: this.fb.group({
+         performancePosition: [performers.aerialConfig.performancePosition],
        })
      })
   };
@@ -63,10 +69,6 @@ export class PlaylistFormService {
       tags: this.fb.array(song.tags || [])
     });
   };
-
-
-
-
 
   createSongListFormArray(songList: any = {}): FormArray {
     return this.fb.array(songList?.map(

@@ -3,6 +3,7 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {firstValueFrom} from 'rxjs';
 import {savePlaylist} from './savePlaylist';
+import {getNewEmptyPlaylistObject} from './getNewEmptyPlaylistObject';
 
 @Injectable({
   providedIn: 'root'
@@ -24,22 +25,11 @@ export class PlaylistService {
    * * Create a new empty playlist by getting a default playlist object from the backend
    */
   async createNewEmptyPlaylist(): Promise<any> {
-    try{
-      const response: HttpResponse<any> = await firstValueFrom(
-        this.http.get(
-          `${this.baseUrl}/playlist/new`,
-          {
-            headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-            observe: 'response'
-          }));
-
-      if (!response.ok) {
-        console.error('Error creating new empty playlist');
-      }
-      return response.body.playlist;
-    } catch(err) {
-      console.error(err);
-    }
+      return await getNewEmptyPlaylistObject(
+        {
+          http: this.http,
+          url: `${this.baseUrl}/playlist/new`
+        });
   };
 
   async createNewEmptyPlaylistFromTemplate(input: { playlistTemplate_id?: string }): Promise<any> {

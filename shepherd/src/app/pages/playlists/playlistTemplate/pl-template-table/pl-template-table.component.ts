@@ -3,7 +3,7 @@ import {PlTemplateService} from '../../../../services/pl-template.service';
 import {NgForOf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
-import {PlaylistService} from '../../../../services/playlist.service';
+import {PlaylistService} from '../../../../services/playlistService/playlist.service';
 
 @Component({
   selector: 'pl-template-table',

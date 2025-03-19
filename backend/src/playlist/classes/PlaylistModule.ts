@@ -74,8 +74,12 @@ export class PlaylistModule {
         return taggedPlaylist;
     };
 
-    updatePlaylist(input: { playlistToUpdate: IPlaylist, update: Partial<IPlaylist> }): IPlaylist {
-        return this.playlistUpdater.update(input);
+    updatePlaylist(input: { update: Partial<IPlaylist> }): IPlaylist {
+        return this.playlistUpdater.update(
+            {
+                playlistToUpdate: this.generateDefaultEmptyPlaylist(),
+                update: input.update
+            });
     };
 
 }

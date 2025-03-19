@@ -14,9 +14,7 @@ export const playlistRouter = (plControl: any , plMidWare: any): Router => {
         '/new/fromTemplate/:playlistTemplate_id',
         plMidWare.checkPlaylistTemplate,
         plControl.getNewPlaylistFromTemplate);
-
-
-    //playlistRouter.post('/', , plControl.postPlaylist);
+    playlistRouter.post('/', plControl.postPlaylist);
 
 
     playlistRouter.use('/template', playlistTemplateRouter);

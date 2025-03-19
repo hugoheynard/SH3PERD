@@ -5,7 +5,8 @@ import type {PlaylistTemplateDocument} from "./playlistTemplateService";
 import type {PlaylistTemplateService} from "../../../shared/interfaces/mongoDocuments/playlistTemplateInterfaces";
 import type {IPlaylist} from "./classes/playlistBuilder/PlaylistBuilder";
 
-export interface PlaylistController {
+
+export interface IPlaylistController {
     input: {
         playlistTemplateService: PlaylistTemplateService;
         playlistService: any;
@@ -14,6 +15,7 @@ export interface PlaylistController {
         getPlaylist: (req: Request, res: Response, next: NextFunction) => Promise<any>;
         getDefaultPlaylist: (req: Request, res: Response, next: NextFunction) => Promise<{ playlist: IPlaylist }>;
         getNewPlaylistFromTemplate: (req: Request, res: Response, next: NextFunction) => Promise<{ playlist: IPlaylist }>;
+        postPlaylist: (req: Request, res: Response, next: NextFunction) => Promise<InsertOneResult<IPlaylist>>;
 
         getPlaylistTemplates: (req: Request, res: Response, next: NextFunction) => Promise<PlaylistTemplateDocument[]>;
         postPlaylistTemplate: (req: Request, res: Response, next: NextFunction) => Promise<InsertOneResult<PlaylistTemplateDocument>>;
@@ -23,34 +25,29 @@ export interface PlaylistController {
     }
 }
 
-export const playlistController = (input: PlaylistController['input']): PlaylistController['output'] => {
+export const playlistController = (input: IPlaylistController['input']): IPlaylistController['output'] => {
     const { playlistService, playlistTemplateService } = input;
 
-    const controller: PlaylistController['output'] = {
+    const controller: IPlaylistController['output'] = {
 
-        async getPlaylist(req, res, next) {},
+        async getPlaylist(req, res, next) {
+            const playlist = await playlistService.getPlaylist();
+            return res.status(200).json({ playlist });
+        },
 
         async getDefaultPlaylist(req, res, next){
-            const result = await playlistService.getDefaultPlaylist();
-            return res.status(200).json({ playlist: result });
+            const defaultPlaylist = await playlistService.getDefaultPlaylist();
+            return res.status(200).json({ playlist: defaultPlaylist });
         },
 
         async getNewPlaylistFromTemplate(req, res, next) {
-            const result = await playlistService.getNewPlaylistFromTemplate({ playlistTemplate: req.body.playlistTemplate });
-            return res.status(200).json({ playlist: result });
+            const playlistFromTemplate = await playlistService.getNewPlaylistFromTemplate({ playlistTemplate: req.body.playlistTemplate });
+            return res.status(200).json({ playlist: playlistFromTemplate });
         },
 
         async postPlaylist(req, res, next) {
-
-            const body = req.body;
-            const { usePlaylistTemplate, playlistTemplate  } = body;
-
-            if (usePlaylistTemplate) {
-                //const playlistFromTemplateSettings = await playlistService.generateEmptyPlaylistFromTemplate({ playlistTemplate: playlistTemplate });
-                //res.status(201).json(playlistFromTemplateSettings);
-            }
-            //do regular post playlist
-            //res.status(201).json(await playlistService.postPlaylist({ playlistData: body.playlistData }));
+            const result = await playlistService.postPlaylist({ playlistData : req.body.playlistData });
+            return res.status(201).json(result);
         },
 
         async getPlaylistTemplates(req, res, next){
