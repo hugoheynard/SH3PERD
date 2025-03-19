@@ -14,12 +14,13 @@ import {MatIcon} from '@angular/material/icon';
 import {PlaylistDisplayService} from '../../playlist-display.service';
 import {PlaylistShortInfosComponent} from '../../playlist-short-infos/playlist-short-infos.component';
 import {SongListDndComponent} from '../song-list-dnd/song-list-dnd.component';
-import {PlvSectionHeaderComponent} from '../plv-section-header/plv-section-header.component';
 import {PlvSectionContainerComponent} from '../plv-section-container/plv-section-container.component';
 import {AvailableTagsComponent} from '../available-tags/available-tags.component';
 import {PlaylistService} from '../../../../services/playlist.service';
 import {PlaylistFormService} from '../../formsServices/playlist-form.service';
 import {StyledInputDirective} from '../../../../../Directives/styled-input.directive';
+import {CdkAccordion, CdkAccordionItem} from '@angular/cdk/accordion';
+import {StyledCheckboxDirective} from '../../../../../Directives/styled-checkbox.directive';
 
 @Component({
     selector: 'playlist-view',
@@ -36,14 +37,14 @@ import {StyledInputDirective} from '../../../../../Directives/styled-input.direc
     MatMiniFabButton,
     PlaylistShortInfosComponent,
     SongListDndComponent,
-    PlvSectionHeaderComponent,
     PlvSectionContainerComponent,
     NgIf,
     AvailableTagsComponent,
     MatIconButton,
+    CdkAccordion,
+    CdkAccordionItem,
     StyledInputDirective,
-    StyledInputDirective,
-    StyledInputDirective
+    StyledCheckboxDirective
   ],
     templateUrl: './playlist-view.component.html',
     standalone: true,
@@ -56,6 +57,7 @@ export class PlaylistViewComponent implements OnInit {
   public playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
   public playlistForm: FormGroup = this.fb.group({});
   @Input() playlist: any = {};
+  public isAccordionOpen = true;
 
   ngOnInit():void {
     this.initForm();

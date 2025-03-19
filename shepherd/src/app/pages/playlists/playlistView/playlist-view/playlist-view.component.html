@@ -1,64 +1,93 @@
 <div id="playlistViewHeader">
-  <h2>EDIT {{ playlist.settings.name }}</h2>
-  <button id="closePlaylistView_button" (click)="playlistDisplayService.closePlaylistInSidenav()"><mat-icon>close</mat-icon></button>
+  <h3>EDIT {{ playlist.settings.name }}</h3>
+  <button id="closePlaylistView_button" class="button-16" (click)="playlistDisplayService.closePlaylistInSidenav()"><mat-icon>close</mat-icon></button>
 </div>
 
 <form [formGroup]="playlistForm">
-  <ng-container formGroupName="settings">
-    <input type="text" formControlName="name" StyledInput label="playlist name">
+  <!--SETTINGS-->
+  <plv-section-container [title]="'settings'" [isExpanded]="false" [nestingLevel]="1">
+    <ng-container section formGroupName="settings">
+      <input type="text" formControlName="name" StyledInput label="name">
+      <input type="text" formControlName="description" StyledInput label="description">
 
-    <input type="text" formControlName="description" StyledInput label="description">
+      <div style="display: flex; flex-direction: row; justify-content: space-around;">
+        <select formControlName="usage" StyledInput label="usage">
+          <option value="daily">Daily</option>
+          <option value="event">Event</option>
+        </select>
 
-    <div style="display: flex; flex-direction: row; justify-content: space-around;">
-      <select formControlName="usage" StyledInput label="usage">
-        <option value="daily">Daily</option>
-        <option value="event">Event</option>
-      </select>
+        <input type="number" min="5" step="5" formControlName="requiredLength" StyledInput label="duration">
+        <input type="number" min="1" step="1" formControlName="numberOfSongs" StyledInput label="songs">
+        <input type="number" min="1" max='4' step="1" formControlName="energy" StyledInput label="energy">
 
-      <input type="number" min="5" step="5" formControlName="requiredLength" StyledInput label="duration">
-      <input type="number" min="1" step="1" formControlName="numberOfSongs" StyledInput label="songs">
-      <input type="number" min="1" max='4' step="1" formControlName="energy" StyledInput label="energy">
-    </div>
-  </ng-container>
-
-  <!--SETTINGS SECTION
-  <plv-section-container #settingsSectionContainer>
-    <plv-section-header sectionHeader [sectionTitle]="'Settings'" (openSection)="settingsSectionContainer.onHeaderToggle($event)"/>
-    <ng-container sectionContent *ngIf="settingsSectionContainer.isExpanded" formGroupName="settings">
-
-
-
-      <div class="flexRowSpaceBetween">
-        <div><mat-icon>music_video</mat-icon> Song number</div>
-        <input type="number" min="1" step="1" formControlName="numberOfSongs">
       </div>
 
-
-      <div class="flexRowSpaceBetween">
-        <div><mat-icon>airplanemode_active</mat-icon>aerial</div>
-        <input type="checkbox" formControlName="aerial">
+      <div style="display: flex; flex-direction: column;">
+        <input type="checkbox" formControlName="singers" StyledCheckbox label="singers">
+        <input type="checkbox" formControlName="musicians" StyledCheckbox label="musicians">
+        <input type="checkbox" formControlName="aerial" StyledCheckbox label="aerial">
       </div>
 
-
-      <button>GENERATE</button>
     </ng-container>
-  </plv-section-container>-->
+  </plv-section-container>
+
+  <plv-section-container [title]="'Performers'" [isExpanded]="true">
+    <ng-container section formGroupName="performers">
+
+      <plv-section-container [title]="'Singer configuration'" [isExpanded]="true" [nestingLevel]="2">
+        <ng-container section formGroupName="singersConfig">
+          <div style="display: flex; flex-direction: row; justify-content: space-around;">
+            <input type="number" min="1" step="1" formControlName="numberOfSingers" StyledInput label="Quantity">
+            <select formControlName="splitMode" StyledInput label="split mode">
+              <option value="alternate">Alternate</option>
+              <option value="equal_split">Divide Equally</option>
+            </select>
+            <input type="checkbox" formControlName="containsDuo">
+          </div>
+        </ng-container>
+      </plv-section-container>
+
+      <plv-section-container [title]="'Musicians configuration'" [isExpanded]="false" [nestingLevel]="2">
+        <ng-container section formGroupName="singersConfig">
 
 
-  <plv-section-container #tracklistSectionContainer [isExpanded]="true">
-    <plv-section-header sectionHeader [sectionTitle]="'TrackList'" (openSection)="tracklistSectionContainer.onHeaderToggle($event)"/>
-    <ng-container sectionContent *ngIf="tracklistSectionContainer.isExpanded">
+        </ng-container>
+      </plv-section-container>
 
-      <available-tags #availableTags [tagList]="playlistFormService.getAvailableTags()"/>
+      <plv-section-container [title]="'Aerial configuration'" [isExpanded]="false" [nestingLevel]="2">
+        <ng-container section formGroupName="singersConfig">
 
-      <app-song-list-dnd />
+
+        </ng-container>
+      </plv-section-container>
+
+
+
+
+
+
     </ng-container>
   </plv-section-container>
 
 
+
+  <plv-section-container [title]="'Song List'" [isExpanded]="true">
+      <song-list-dnd section/>
+  </plv-section-container>
+
+
+
+
+
+
+
+
+  <button class="button-16"
+          type="submit"
+          (click)="savePlaylist()">Save</button>
 </form>
 
-<button class="button-16" type="submit" (click)="savePlaylist()">Save</button>
+
 
 
 

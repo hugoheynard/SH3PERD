@@ -14,15 +14,28 @@ export class PlaylistFormService {
       console.error('Playlist is undefined!');
       return this.fb.group({});
     }
-    const { settings, songList } = playlist;
+    const { settings, songList, performers } = playlist;
 
     this.playlistForm = this.fb.group({
       settings: this.createSettingsFormGroup(settings),
+      performers: this.createPerformersFormGroup(performers),
       tags: playlist.tags,
       songList: this.createSongListFormArray(songList),
     });
 
     return this.playlistForm;
+  };
+
+  createPerformersFormGroup(performers: any = {}): FormGroup {
+    const { singersConfig, musiciansConfig, aerialConfig } = performers;
+
+     return this.fb.group({
+       singersConfig: this.fb.group({
+        numberOfSingers: singersConfig.singers,
+        containsDuo: singersConfig.containsDuo,
+        splitMode: singersConfig.splitMode,
+       })
+     })
   };
 
   createSettingsFormGroup(settings: any = {}): FormGroup {
@@ -50,6 +63,8 @@ export class PlaylistFormService {
       tags: this.fb.array(song.tags || [])
     });
   };
+
+
 
 
 

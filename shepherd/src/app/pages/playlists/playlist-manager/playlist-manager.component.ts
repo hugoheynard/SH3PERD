@@ -11,7 +11,6 @@ import {PlaylistDisplayService} from '../playlist-display.service';
 import {Playlist} from '../playlist_interfaces';
 import {SongListDndComponent} from '../playlistView/song-list-dnd/song-list-dnd.component';
 import {PlvSectionContainerComponent} from '../playlistView/plv-section-container/plv-section-container.component';
-import {PlvSectionHeaderComponent} from '../playlistView/plv-section-header/plv-section-header.component';
 import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {PlTemplateFormComponent} from '../playlistTemplate/pl-template-form/pl-template-form.component';
 import {PlTemplateTableComponent} from '../playlistTemplate/pl-template-table/pl-template-table.component';
@@ -31,7 +30,7 @@ import {PlaylistService} from '../../../services/playlist.service';
     MusicTableComponent,
     SongListDndComponent,
     PlvSectionContainerComponent,
-    PlvSectionHeaderComponent, MatTabGroup, MatTab,
+    MatTabGroup, MatTab,
     PlTemplateFormComponent,
     PlTemplateTableComponent
   ],
