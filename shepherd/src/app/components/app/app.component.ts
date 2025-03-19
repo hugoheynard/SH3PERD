@@ -18,15 +18,16 @@ import {CdkDrag} from '@angular/cdk/drag-drop';
 
 
 @Component({
-    selector: 'app-root',
-    imports: [
-        RouterOutlet,
-        NgIf,
-        AppMenuComponent, HeaderComponent, FooterComponent,
-        MatSidenavContainer, MatSidenav, NgComponentOutlet, CdkDrag,
-    ],
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.scss'
+  selector: 'app-root',
+  imports: [
+    RouterOutlet,
+    NgIf,
+    AppMenuComponent, HeaderComponent, FooterComponent,
+    MatSidenavContainer, MatSidenav, NgComponentOutlet, CdkDrag,
+  ],
+  templateUrl: './app.component.html',
+  standalone: true,
+  styleUrl: './app.component.scss'
 })
 export class AppComponent implements AfterViewInit {
   public authService: AuthService = inject(AuthService);

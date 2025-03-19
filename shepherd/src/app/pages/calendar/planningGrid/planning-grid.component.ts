@@ -15,6 +15,7 @@ import {NgClass, NgForOf, NgIf, NgStyle} from '@angular/common';
         NgClass,
     ],
     templateUrl: './planning-grid.component.html',
+    standalone: true,
     styleUrl: './planning-grid.component.scss'
 })
 export class PlanningGridComponent {

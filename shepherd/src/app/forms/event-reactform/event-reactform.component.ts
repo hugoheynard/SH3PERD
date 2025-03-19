@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
 import {MatIcon} from '@angular/material/icon';
-import {MatInput, MatInputModule} from '@angular/material/input';
+import {MatInputModule} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
 import {
@@ -18,18 +18,19 @@ import {HierarchySelectComponent} from '../specificSubForms/hierarchy-select/hie
 import {SelectParticipantsComponent} from '../specificSubForms/select-participants/select-participants.component';
 
 @Component({
-    selector: 'app-event-reactform',
-    imports: [ReactiveFormsModule, MatFormField, MatLabel, MatHint, MatIcon, MatInputModule, MatSelect, MatOption,
-        MatDatepicker, MatDatepickerToggle, MatDatepickerInput, MatNativeDateModule, MatCheckbox, SelectCheckboxComponent, HierarchySelectComponent, SelectParticipantsComponent
-    ],
-    providers: [
-        // Fournir l'adaptateur natif de la date
-        provideNativeDateAdapter(),
-        { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }, // Localisation (français dans cet exemple)
-        { provide: MAT_DATE_FORMATS, useValue: MAT_DATE_FORMATS } // Formats de date par défaut
-    ],
-    templateUrl: './event-reactform.component.html',
-    styleUrl: './event-reactform.component.scss'
+  selector: 'app-event-reactform',
+  imports: [ReactiveFormsModule, MatFormField, MatLabel, MatHint, MatIcon, MatInputModule, MatSelect, MatOption,
+    MatDatepicker, MatDatepickerToggle, MatDatepickerInput, MatNativeDateModule, MatCheckbox, SelectCheckboxComponent, HierarchySelectComponent, SelectParticipantsComponent
+  ],
+  providers: [
+    // Fournir l'adaptateur natif de la date
+    provideNativeDateAdapter(),
+    {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'}, // Localisation (français dans cet exemple)
+    {provide: MAT_DATE_FORMATS, useValue: MAT_DATE_FORMATS} // Formats de date par défaut
+  ],
+  templateUrl: './event-reactform.component.html',
+  standalone: true,
+  styleUrl: './event-reactform.component.scss'
 })
 export class EventReactformComponent implements OnInit{
   @Input() formGroup: any;

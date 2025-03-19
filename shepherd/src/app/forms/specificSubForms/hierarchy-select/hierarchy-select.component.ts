@@ -7,6 +7,7 @@ import {NgIf} from '@angular/common';
     selector: 'app-hierarchy-select',
     imports: [SelectCheckboxComponent, ReactiveFormsModule, NgIf],
     templateUrl: './hierarchy-select.component.html',
+    standalone: true,
     styleUrl: './hierarchy-select.component.scss'
 })
 export class HierarchySelectComponent implements OnInit, AfterViewInit{

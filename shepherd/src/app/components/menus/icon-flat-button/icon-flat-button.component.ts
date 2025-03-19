@@ -1,10 +1,11 @@
 import {Component, Input} from '@angular/core';
 
 @Component({
-    selector: 'app-icon-flat-button',
-    imports: [],
-    templateUrl: './icon-flat-button.component.html',
-    styleUrl: './icon-flat-button.component.scss'
+  selector: 'app-icon-flat-button',
+  imports: [],
+  templateUrl: './icon-flat-button.component.html',
+  standalone: true,
+  styleUrl: './icon-flat-button.component.scss'
 })
 export class IconFlatButtonComponent {
 

@@ -12,6 +12,7 @@ interface MenuItem {
     selector: 'app-appMenu',
     templateUrl: './app-menu.component.html',
     styleUrl: './app-menu.component.scss',
+    standalone: true,
     imports: [CommonModule, RouterModule, IconFlatButtonComponent]
 })
 export class AppMenuComponent {

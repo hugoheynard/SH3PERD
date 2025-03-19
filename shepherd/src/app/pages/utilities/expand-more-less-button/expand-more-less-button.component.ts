@@ -4,15 +4,16 @@ import {MatIconButton} from "@angular/material/button";
 import {NgIf} from "@angular/common";
 
 @Component({
-    selector: 'expand-more-less-button',
-    imports: [
-        MatIcon,
-        MatIconButton,
-        NgIf
-    ],
-    templateUrl: './expand-more-less-button.component.html',
-    styleUrl: './expand-more-less-button.component.scss',
-    encapsulation: ViewEncapsulation.None
+  selector: 'expand-more-less-button',
+  imports: [
+    MatIcon,
+    MatIconButton,
+    NgIf
+  ],
+  templateUrl: './expand-more-less-button.component.html',
+  styleUrl: './expand-more-less-button.component.scss',
+  standalone: true,
+  encapsulation: ViewEncapsulation.None
 })
 export class ExpandMoreLessButtonComponent {
   public expanded: boolean = false;

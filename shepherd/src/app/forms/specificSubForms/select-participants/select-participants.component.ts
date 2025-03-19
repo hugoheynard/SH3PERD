@@ -19,6 +19,7 @@ import {NgForOf} from '@angular/common';
         NgForOf
     ],
     templateUrl: './select-participants.component.html',
+    standalone: true,
     styleUrl: './select-participants.component.scss'
 })
 export class SelectParticipantsComponent {

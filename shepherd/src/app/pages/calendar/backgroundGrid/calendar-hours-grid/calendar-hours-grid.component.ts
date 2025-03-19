@@ -3,11 +3,12 @@ import {DatePipe, NgForOf} from '@angular/common';
 
 
 @Component({
-    selector: 'app-calendar-hours-grid',
-    imports: [NgForOf,],
-    providers: [DatePipe],
-    templateUrl: './calendar-hours-grid.component.html',
-    styleUrl: './calendar-hours-grid.component.scss'
+  selector: 'app-calendar-hours-grid',
+  imports: [NgForOf,],
+  providers: [DatePipe],
+  templateUrl: './calendar-hours-grid.component.html',
+  standalone: true,
+  styleUrl: './calendar-hours-grid.component.scss'
 })
 export class CalendarHoursGridComponent implements OnInit,OnDestroy{
   private datePipe: DatePipe = inject(DatePipe);

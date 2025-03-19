@@ -1,2 +1,20 @@
-<ng-content select="[sectionHeader]"></ng-content>
-<ng-content select="[sectionContent]"></ng-content>
+<cdk-accordion>
+  <cdk-accordion-item #accordionItem="cdkAccordionItem"
+                      class="example-accordion-item">
+
+    <button #toggleButton
+            (click)="accordionItem.toggle()"
+            [ngClass]="'level-' + nestingLevel"
+            class="header">
+      {{ title }}
+      <mat-icon>{{ accordionItem.expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+    </button>
+
+    <div *ngIf="accordionItem.expanded"
+         [ngClass]="'level-' + nestingLevel"
+         class="body">
+      <ng-content select="[section]"/>
+    </div>
+
+  </cdk-accordion-item>
+</cdk-accordion>

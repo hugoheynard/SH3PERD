@@ -9,6 +9,7 @@ import {DateService} from '../../../services/date.service';
     providers: [provideNativeDateAdapter()],
     imports: [MatCalendar, NgForOf, NgClass],
     templateUrl: './date-picker-calendar.component.html',
+    standalone: true,
     styleUrl: './date-picker-calendar.component.scss'
 })
 

@@ -16,6 +16,7 @@ import {NgForOf} from '@angular/common';
         NgForOf
     ],
     templateUrl: './select-checkbox.component.html',
+    standalone: true,
     styleUrl: './select-checkbox.component.scss'
 })
 export class SelectCheckboxComponent {

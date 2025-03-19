@@ -10,7 +10,7 @@ import {
   computed, Signal
 } from '@angular/core';
 import { CdkDragDrop, CdkDrag, CdkDropList, transferArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
-import { NgForOf } from '@angular/common';
+import {CommonModule, NgForOf} from '@angular/common';
 import { TrackLineComponent } from '../track-line/track-line.component';
 import {PlaylistDisplayService} from '../../playlist-display.service';
 import {AvailableTagsComponent} from '../available-tags/available-tags.component';
@@ -20,7 +20,7 @@ import {AbstractControl, FormArray, FormGroup} from '@angular/forms';
 import {PlaylistFormService} from '../../formsServices/playlist-form.service';
 
 @Component({
-    selector: 'app-song-list-dnd',
+    selector: 'song-list-dnd',
     imports: [
         CdkDrag,
         CdkDropList,
@@ -44,6 +44,7 @@ export class SongListDndComponent implements OnInit{
 
   ngOnInit(): void {
     this.songList = this.playlistFormService.getSongList();
+    console.log('SongList:', this.songList);
     this.generateSongDropListConnections();
   };
 
