@@ -1,10 +1,12 @@
 import {ObjectId} from "mongodb";
 
 export interface IDataInformation {
-    creation_date: Date;
-    creator_id: ObjectId;
-    last_modified: Date;
-    updateNumber: number;
+    dataInformations: {
+        creation_date: Date;
+        creator_id: ObjectId;
+        last_modified: Date;
+        updateNumber: number;
+    }
 }
 
 /**
@@ -26,13 +28,39 @@ export class DataInformationManager {
      * @returns IDataInformation
      */
     createDataInformationObject(input: { creator_id: ObjectId | string}): IDataInformation {
-        if (input === undefined || input.creator_id === undefined || null) return;
+        if (input === undefined || input.creator_id === undefined || null) {
+            throw new Error('[DataInformationManager -createDataInformationObject]:creator_id is required');
+        }
 
         return {
-            creation_date: this.creation_date,
-            creator_id: this.parseCreatorId(input.creator_id),
-            last_modified: this.last_modified,
-            updateNumber: this.updateNumber
+            dataInformations: {
+                creation_date: this.creation_date,
+                creator_id: this.parseCreatorId(input.creator_id),
+                last_modified: this.last_modified,
+                updateNumber: this.updateNumber
+            }
+        }
+    };
+
+    /**
+     * updates the DataInformation object with a timestamp and an update number.
+     * @param input dataInformationObject
+     * @returns DataInformation updated
+     */
+    updateDataInformation(input: { dataInformationObject: IDataInformation }): IDataInformation {
+        if (!input) {
+            throw new Error('[DataInformationManager -updateDataInformation]:dataInformationObject is required');
+        }
+
+        const { dataInformationObject } = input;
+
+        return {
+            dataInformations: {
+                creation_date: dataInformationObject.dataInformations.creation_date,
+                creator_id: this.parseCreatorId(dataInformationObject.dataInformations.creator_id),
+                last_modified: new Date(),
+                updateNumber: dataInformationObject.dataInformations.updateNumber + 1
+            }
         }
     };
 
@@ -44,7 +72,7 @@ export class DataInformationManager {
      */
     private parseCreatorId(creator_id: ObjectId | string): ObjectId {
         if (!creator_id) {
-            throw new Error('creator_id is required');
+            throw new Error("[DataInformationManager -createDataInformationObject]:creator_id is required");
         }
 
         if (typeof creator_id === 'string') {
@@ -58,20 +86,24 @@ export class DataInformationManager {
     };
 
     /**
-     * updates the DataInformation object with a timestamp and an update number.
-     * @param input dataInformationObject
-     * @returns DataInformation updated
+     * Manages the dataInformation object of a given object.
+     * @param input object to manage and creator_id
+     * @returns IDataInformation
      */
-    updateDataInformation(input: { dataInformationObject: IDataInformation }): IDataInformation {
-        if (!input) return;
+    manageDataInformation<T extends Record<string, any>>(input: { object: T; creator_id: ObjectId | string | null }): IDataInformation {
+        const { object, creator_id } = input;
 
-        const { dataInformationObject } = input;
-
-        return {
-            creation_date: dataInformationObject.creation_date,
-            creator_id: this.parseCreatorId(dataInformationObject.creator_id),
-            last_modified: new Date(),
-            updateNumber: dataInformationObject.updateNumber + 1
+        if (!object || !creator_id) {
+            throw new Error('[DataInformationManager - manageDataInformation]: object and creator_id are required');
         }
+
+        if (object.hasOwnProperty('dataInformation')) {
+            return this.updateDataInformation(
+                { dataInformationObject: object.dataInformation }
+            );
+        }
+        return this.createDataInformationObject(
+            { creator_id: creator_id }
+        );
     };
 }

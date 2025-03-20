@@ -1,4 +1,5 @@
 import type {IPlaylist} from "./classes/playlistBuilder/PlaylistBuilder";
+import type {IDataInformation} from "./classes/DataInformationManager";
 
 
 export interface IPlaylistService {
@@ -50,7 +51,6 @@ export const playlistService = (input: IPlaylistService['input']) => {
             } catch(error) {
                 throw new Error('[playlistService - getPlaylist]:', error);
             }
-
         },
 
         /**
@@ -58,10 +58,22 @@ export const playlistService = (input: IPlaylistService['input']) => {
          */
         async postPlaylist(input) {
             try {
-                const validatedPlaylist: IPlaylist = new PlaylistModule().updatePlaylist({ update: input.playlistData });
-                return await playlistCollection.insertOne(validatedPlaylist);
+                const plMod = new PlaylistModule();
+                const validatedPlaylist: IPlaylist = plMod.updatePlaylist({
+                    update: input.playlistData
+                });
+                const dataInformation: IDataInformation = plMod.manageDataInformation(
+                    {
+                        playlist: validatedPlaylist,
+                        creator_id: input.creator_id
+                    });
+                return await playlistCollection.insertOne({
+                    ...validatedPlaylist,
+                    dataInformation
+                });
             } catch(error) {
-                throw new Error('[playlistService - postPlaylist]:', error);
+                console.error('[playlistService - postPlaylist] Error:', error);
+                throw new Error(`[playlistService - postPlaylist] ${error.message}`);
             }
         }
     };
