@@ -58,15 +58,21 @@ export class PlaylistViewComponent implements OnInit {
   public playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
   private snackBarService: SnackbarService = inject(SnackbarService);
   public playlistForm: FormGroup = this.fb.group({});
+  public submitButtonLabel: string = 'Save';
   @Input() playlist: any = {};
 
 
   ngOnInit():void {
     this.initForm();
+    this.defineViewMode();
   };
 
   initForm(): void {
     this.playlistForm = this.playlistFormService.createPlaylistForm(this.playlist);
+  };
+
+  getViewMode(): string {
+    return this.playlistDisplayService.playlistViewModeSignal();
   };
 
   getControl(controlName: string) {
@@ -80,7 +86,7 @@ export class PlaylistViewComponent implements OnInit {
         return;
       }
 
-      const response = await this.plServ.savePlaylist({ playlistData: this.playlistForm.value });
+      const response = await this.plServ.savePlaylist({ playlistData: this.playlistFormService.getRawValue() });
 
       if (response.ok) {
         this.snackBarService.show('New Playlist saved');
@@ -91,4 +97,50 @@ export class PlaylistViewComponent implements OnInit {
     }
   };
 
+  async updatePlaylist(input:{ playlist_id: string }): Promise<void> {
+    try {
+      if (!this.playlistForm.valid) {
+        this.snackBarService.show('Invalid form');
+        return;
+      }
+
+      if (!input.playlist_id) {
+        this.snackBarService.show("Can't update: Invalid playlist id");
+        return;
+      }
+
+      const response = await this.plServ.updatePlaylist(
+        {
+          playlist_id: input.playlist_id,
+          playlistData: this.playlistFormService.getRawValue(),
+        });
+
+      if (response.ok) {
+        this.snackBarService.show('Playlist updated');
+      }
+    } catch (error) {
+      console.error(error);
+      this.snackBarService.show('Error updating playlist');
+    }
+  };
+
+  submitAction(): void {
+    if (this.getViewMode() === 'create') {
+      this.savePlaylist();
+    }
+
+    if (this.getViewMode() === 'edit') {
+      this.updatePlaylist({ playlist_id: this.playlist._id });
+    }
+  };
+
+  defineViewMode(): void {
+    if (this.getViewMode() === 'create') {
+      this.submitButtonLabel = 'Save';
+    }
+
+    if (this.getViewMode() === 'edit') {
+      this.submitButtonLabel = 'Update';
+    }
+  };
 }

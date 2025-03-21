@@ -10,6 +10,7 @@ export class PlaylistDisplayService {
   private sidenavRightService: SidenavRightService = inject(SidenavRightService);
   public playlistSidenavSignal: WritableSignal<boolean> = signal(false);
   public currentPlaylistSignal: WritableSignal<Playlist | null> = signal(null);
+  public playlistViewModeSignal: WritableSignal<'create' | 'edit'> = signal('create');
 
 
   /**
@@ -57,9 +58,10 @@ export class PlaylistDisplayService {
     this.viewModeSignal.set('library');
   };
 
-  openPlaylistInSidenav(input: { playlist: Playlist }): void {
-    const playlist = input.playlist;
+  openPlaylistInSidenav(input: { playlist: Playlist; viewMode: 'create' | 'edit' }): void {
+    const {playlist, viewMode } = input;
     this.currentPlaylistSignal.set(playlist);
+    this.playlistViewModeSignal.set(viewMode);
 
     this.sidenavRightService.openComponent(PlaylistViewComponent, { playlist: this.currentPlaylistSignal() });
     this.sidenavRightService.openRightSidenav();

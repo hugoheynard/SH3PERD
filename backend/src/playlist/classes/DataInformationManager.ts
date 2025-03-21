@@ -1,12 +1,10 @@
 import {ObjectId} from "mongodb";
 
 export interface IDataInformation {
-    dataInformations: {
-        creation_date: Date;
-        creator_id: ObjectId;
-        last_modified: Date;
-        updateNumber: number;
-    }
+    creation_date: Date;
+    creator_id: ObjectId;
+    last_modified: Date;
+    updateNumber: number;
 }
 
 /**
@@ -28,17 +26,15 @@ export class DataInformationManager {
      * @returns IDataInformation
      */
     createDataInformationObject(input: { creator_id: ObjectId | string}): IDataInformation {
-        if (input === undefined || input.creator_id === undefined || null) {
+        if (!input || input.creator_id == null) {
             throw new Error('[DataInformationManager -createDataInformationObject]:creator_id is required');
         }
 
         return {
-            dataInformations: {
-                creation_date: this.creation_date,
-                creator_id: this.parseCreatorId(input.creator_id),
-                last_modified: this.last_modified,
-                updateNumber: this.updateNumber
-            }
+            creation_date: this.creation_date,
+            creator_id: this.parseCreatorId(input.creator_id),
+            last_modified: this.last_modified,
+            updateNumber: this.updateNumber
         }
     };
 
@@ -48,19 +44,17 @@ export class DataInformationManager {
      * @returns DataInformation updated
      */
     updateDataInformation(input: { dataInformationObject: IDataInformation }): IDataInformation {
-        if (!input) {
+        if (input === undefined || input.dataInformationObject === undefined) {
             throw new Error('[DataInformationManager -updateDataInformation]:dataInformationObject is required');
         }
 
         const { dataInformationObject } = input;
 
         return {
-            dataInformations: {
-                creation_date: dataInformationObject.dataInformations.creation_date,
-                creator_id: this.parseCreatorId(dataInformationObject.dataInformations.creator_id),
-                last_modified: new Date(),
-                updateNumber: dataInformationObject.dataInformations.updateNumber + 1
-            }
+            creation_date: dataInformationObject.creation_date,
+            creator_id: this.parseCreatorId(dataInformationObject.creator_id),
+            last_modified: new Date(),
+            updateNumber: dataInformationObject.updateNumber + 1
         }
     };
 
@@ -83,27 +77,5 @@ export class DataInformationManager {
             }
         }
         return creator_id;
-    };
-
-    /**
-     * Manages the dataInformation object of a given object.
-     * @param input object to manage and creator_id
-     * @returns IDataInformation
-     */
-    manageDataInformation<T extends Record<string, any>>(input: { object: T; creator_id: ObjectId | string | null }): IDataInformation {
-        const { object, creator_id } = input;
-
-        if (!object || !creator_id) {
-            throw new Error('[DataInformationManager - manageDataInformation]: object and creator_id are required');
-        }
-
-        if (object.hasOwnProperty('dataInformation')) {
-            return this.updateDataInformation(
-                { dataInformationObject: object.dataInformation }
-            );
-        }
-        return this.createDataInformationObject(
-            { creator_id: creator_id }
-        );
     };
 }

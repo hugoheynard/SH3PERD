@@ -7,14 +7,20 @@ export const playlistRouter = (plControl: any , plMidWare: any): Router => {
     const playlistRouter: Router = express.Router();
     const playlistTemplateRouter: Router = express.Router();
 
+    /**
+    * CRUD for playlists
+     */
+    playlistRouter.get('/', plControl.getPlaylists);
+    playlistRouter.post('/', plControl.postPlaylist);
+    playlistRouter.put('/:id', plControl.updatePlaylist);
+    //playlistRouter.delete('/:id', plControl.deletePlaylist);
 
-    playlistRouter.get('/', plControl.getPlaylist);
     playlistRouter.get('/new', plControl.getDefaultPlaylist);
     playlistRouter.get(
         '/new/fromTemplate/:playlistTemplate_id',
         plMidWare.checkPlaylistTemplate,
         plControl.getNewPlaylistFromTemplate);
-    playlistRouter.post('/', plControl.postPlaylist);
+
 
 
     playlistRouter.use('/template', playlistTemplateRouter);

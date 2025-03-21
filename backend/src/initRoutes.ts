@@ -8,6 +8,7 @@ import {calendarRouter} from "./routes/calendar/calendarRouter";
 import {eventsRouter} from "./routes/events/eventsRouter";
 import {musicLibraryRouter} from "./routes/musicLibrary/musicLibraryRouter";
 import {playlistRouter} from "./playlist/playlistRouter";
+import {addUser_id} from "./playlist/middlewares/addUser_id";
 
 
 export const initRoutes = (app: Express, { controllers } : any, { middlewares }: any): Express => {
@@ -22,7 +23,7 @@ export const initRoutes = (app: Express, { controllers } : any, { middlewares }:
         app.use('/events', eventsRouter(controllers.eventsController))
         app.use('/calendar', calendarRouter(controllers.calendarController));
         app.use('/musicLibrary', musicLibraryRouter(controllers.musicLibraryController));
-        app.use('/playlist', playlistRouter(controllers.playlistController, middlewares.playlist));
+        app.use('/playlist', addUser_id, playlistRouter(controllers.playlistController, middlewares.playlist));
         //app.use('/staff', userRouter(controllers.staffController));
         //app.use('/company', companyRouter(controllers.companyController));
 

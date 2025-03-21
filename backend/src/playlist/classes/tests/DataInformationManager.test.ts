@@ -12,7 +12,7 @@ describe("DataInformationManager", () => {
 
     describe("createDataInformationObject", () => {
         it("should create a valid DataInformation object", () => {
-            const dataInfo = manager.createDataInformationObject({ creator_id: validObjectId }).dataInformations;
+            const dataInfo = manager.createDataInformationObject({ creator_id: validObjectId });
 
             expect(dataInfo).toBeDefined();
             expect(dataInfo.creation_date).toBeInstanceOf(Date);
@@ -29,7 +29,7 @@ describe("DataInformationManager", () => {
 
         it("should convert a string creator_id into ObjectId", () => {
             const stringId = new ObjectId().toString();
-            const dataInfo = manager.createDataInformationObject({ creator_id: stringId }).dataInformations;
+            const dataInfo = manager.createDataInformationObject({ creator_id: stringId });
 
             expect(dataInfo).toBeDefined();
             expect(dataInfo.creator_id).toBeInstanceOf(ObjectId);
@@ -45,22 +45,20 @@ describe("DataInformationManager", () => {
     describe("updateDataInformation", () => {
         it("should update last_modified date and increment updateNumber", () => {
             const dataInfo = manager.createDataInformationObject({ creator_id: validObjectId });
-            const updatedInfo = manager.updateDataInformation({ dataInformationObject: dataInfo }).dataInformations;
+            const updatedInfo = manager.updateDataInformation({ dataInformationObject: dataInfo });
 
             expect(updatedInfo).toBeDefined();
             expect(updatedInfo.last_modified).toBeInstanceOf(Date);
-            expect(updatedInfo.last_modified.getTime()).toBeGreaterThanOrEqual(dataInfo.dataInformations.last_modified.getTime());
-            expect(updatedInfo.updateNumber).toBe(dataInfo.dataInformations.updateNumber + 1);
+            expect(updatedInfo.last_modified.getTime()).toBeGreaterThanOrEqual(dataInfo.last_modified.getTime());
+            expect(updatedInfo.updateNumber).toBe(dataInfo.updateNumber + 1);
         });
 
         it("should throw an error when updating with an invalid creator_id", () => {
             const invalidDataInfo = {
-                dataInformations: {
-                    creation_date: new Date(),
-                    creator_id: "invalid_id" as unknown as ObjectId,
-                    last_modified: new Date(),
-                    updateNumber: 0
-                }
+                creation_date: new Date(),
+                creator_id: "invalid_id" as unknown as ObjectId,
+                last_modified: new Date(),
+                updateNumber: 0
             };
 
             expect(() => manager.updateDataInformation({ dataInformationObject: invalidDataInfo }))
@@ -74,8 +72,8 @@ describe("DataInformationManager", () => {
             const result = manager.manageDataInformation({ object: newObject, creator_id: validObjectId });
 
             expect(result).toBeDefined();
-            expect(result.dataInformations.creator_id.toString()).toBe(validObjectId.toString());
-            expect(result.dataInformations.updateNumber).toBe(0);
+            expect(result.creator_id.toString()).toBe(validObjectId.toString());
+            expect(result.updateNumber).toBe(0);
         });
 
         it("should update an existing DataInformation object when object already has dataInformation", () => {
@@ -87,7 +85,7 @@ describe("DataInformationManager", () => {
             const result = manager.manageDataInformation({ object: existingObject, creator_id: validObjectId });
 
             expect(result).toBeDefined();
-            expect(result.dataInformations.updateNumber).toBe(1); // 1 mise à jour
+            expect(result.updateNumber).toBe(1);
         });
 
         it("should throw an error if object or creator_id is missing", () => {

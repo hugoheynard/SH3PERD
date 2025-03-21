@@ -59,7 +59,11 @@ export class PlaylistManagerComponent implements OnInit{
   async createEmptyPlaylist(): Promise<void> {
     try {
       const playlist = await this.playlistService.createNewEmptyPlaylist();
-      this.playlistDisplayService.openPlaylistInSidenav({ playlist: playlist });
+      this.playlistDisplayService.openPlaylistInSidenav(
+        {
+          playlist: playlist,
+          viewMode: 'create'
+        });
     } catch (error) {
       throw new Error (`[PlaylistService]: impossible to create new playlist', ${error}`);
     }

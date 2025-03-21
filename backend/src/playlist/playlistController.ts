@@ -1,40 +1,44 @@
 import {wrap_TryCatchNextErr} from "../controllers/utilities/wrap_tryCatchNextErr";
-import type {NextFunction, Request, Response} from "express";
-import type {DeleteResult, InsertOneResult, UpdateResult} from "mongodb";
-import type {PlaylistTemplateDocument} from "./playlistTemplateService";
-import type {PlaylistTemplateService} from "../../../shared/interfaces/mongoDocuments/playlistTemplateInterfaces";
-import type {IPlaylist} from "./classes/playlistBuilder/PlaylistBuilder";
+import type {IPlaylistController} from "./interfaces/IPlaylistController";
 
-
-export interface IPlaylistController {
-    input: {
-        playlistTemplateService: PlaylistTemplateService;
-        playlistService: any;
-    },
-    output: {
-        getPlaylist: (req: Request, res: Response, next: NextFunction) => Promise<any>;
-        getDefaultPlaylist: (req: Request, res: Response, next: NextFunction) => Promise<{ playlist: IPlaylist }>;
-        getNewPlaylistFromTemplate: (req: Request, res: Response, next: NextFunction) => Promise<{ playlist: IPlaylist }>;
-        postPlaylist: (req: Request, res: Response, next: NextFunction) => Promise<InsertOneResult<IPlaylist>>;
-
-        getPlaylistTemplates: (req: Request, res: Response, next: NextFunction) => Promise<PlaylistTemplateDocument[]>;
-        postPlaylistTemplate: (req: Request, res: Response, next: NextFunction) => Promise<InsertOneResult<PlaylistTemplateDocument>>;
-        updatePlaylistTemplate: (req: Request, res: Response, next: NextFunction) => Promise<UpdateResult<PlaylistTemplateDocument>>;
-        deletePlaylistTemplate: (req: Request, res: Response, next: NextFunction) => Promise<DeleteResult>;
-        [key: string]: any;
-    }
-}
 
 export const playlistController = (input: IPlaylistController['input']): IPlaylistController['output'] => {
     const { playlistService, playlistTemplateService } = input;
 
     const controller: IPlaylistController['output'] = {
 
-        async getPlaylist(req, res, next) {
+        /**
+         * general CRUD playlist opérations
+         */
+        async getPlaylists(req, res, next ) {
             const playlist = await playlistService.getPlaylist();
             return res.status(200).json({ playlist });
         },
 
+        async postPlaylist(req, res, next) {
+            const result = await playlistService.postPlaylist({
+                user_id : req.user_id,
+                playlistData : req.body.playlistData
+            });
+            return res.status(201).json(result);
+        },
+
+        async updatePlaylist(req, res, next) {
+            const result = await playlistService.updatePlaylist({
+                user_id : req.user_id,
+                playlist_id : req.params.id,
+                playlistData : req.body.playlistData,
+            });
+            return res.status(204).json(result);
+        },
+
+        async deletePlaylist(req, res, next) {
+            const result = await playlistService.deletePlaylist({ playlist_id: req.params.id });
+            return res.status(204).json(result);
+        },
+
+
+        //special playlist operations
         async getDefaultPlaylist(req, res, next){
             const defaultPlaylist = await playlistService.getDefaultPlaylist();
             return res.status(200).json({ playlist: defaultPlaylist });
@@ -45,11 +49,13 @@ export const playlistController = (input: IPlaylistController['input']): IPlayli
             return res.status(200).json({ playlist: playlistFromTemplate });
         },
 
-        async postPlaylist(req, res, next) {
-            const result = await playlistService.postPlaylist({ playlistData : req.body.playlistData });
-            return res.status(201).json(result);
-        },
 
+
+
+
+
+
+        //CRUD playlist template operations
         async getPlaylistTemplates(req, res, next){
             const templates = await playlistTemplateService.getPlaylistTemplates({ playlistTemplate_id : req.params.id });
             res.status(200).json({ playlistTemplates: templates });

@@ -21,9 +21,10 @@ import {ObjectId} from "mongodb";
 
 export class PlaylistModule {
     private readonly playlistBuilderFunction: () => IPlaylist;
-    private readonly playlistUpdaterFunction: (input: { playlistToUpdate: IPlaylist, update: partial<IPlaylist> }) => IPlaylist;
+    private readonly playlistUpdaterFunction: (input: { playlistToUpdate: IPlaylist, update: Partial<IPlaylist> }) => IPlaylist;
     private readonly tagCreatorFunction:(input: { playlistToTag: IPlaylist }) => IPlaylist;
-    private readonly manageDataInformationFunction: (input: { object: T; creator_id: ObjectId | string | null }) => IDataInformation;
+    private readonly createDataInformationFunction: (input: { creator_id: ObjectId | string | null }) => IDataInformation;
+    private readonly updateDataInformationFunction: (input: { dataInfoToUpdate: IDataInformation; creator_id: ObjectId | string | null }) => IDataInformation;
 
     constructor() {
         this.playlistBuilderFunction = () => new PlaylistBuilder({
@@ -50,7 +51,8 @@ export class PlaylistModule {
                 generateAerialTags: (input) => new AerialTagGenerator().generate(input),
                 tagMerger: (input) => new PlaylistTagMerger().merge(input),
             }).tag(input);
-        this.manageDataInformationFunction = (input) => new DataInformationManager().manageDataInformation(input);
+        this.createDataInformationFunction = (input) => new DataInformationManager().createDataInformationObject(input);
+        this.updateDataInformationFunction = (input) => new DataInformationManager().updateDataInformation(input);
     };
 
     generateDefaultEmptyPlaylist(): IPlaylist {
@@ -76,16 +78,5 @@ export class PlaylistModule {
                 playlistToUpdate: this.generateDefaultEmptyPlaylist(),
                 update: input.update
             });
-    };
-
-    manageDataInformation(input: { playlist: IPlaylist; creator_id: any }): IDataInformation {
-        const { playlist, creator_id } = input;
-        if (!playlist) return;
-        if (!creator_id) return;
-
-        return this.manageDataInformationFunction({
-            object: playlist,
-            creator_id: creator_id
-        });
     };
 }

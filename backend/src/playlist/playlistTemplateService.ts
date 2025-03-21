@@ -1,47 +1,31 @@
-import type {PlaylistTemplateService} from "./interfaces/PlaylistService";
+import type {IPlaylistTemplateService} from "./interfaces/IPlaylistTemplateService";
 import {ObjectId} from "mongodb";
+import {wrapServiceWithTryCatch} from "../services/tryCatchServiceWrapper";
+import type {PlaylistTemplateDocument} from "./interfaces/IPlaylistTemplate";
 
-export const playlistTemplateService = (input: PlaylistTemplateService["input"]): PlaylistTemplateService["output"] => {
+export const playlistTemplateService = (input: IPlaylistTemplateService["input"]) => {
     const { playlistTemplateCollection } = input;
 
-    return {
-        async getPlaylistTemplates(input) {
-            try {
-                const { playlistTemplate_id } = input;
+    const service: IPlaylistTemplateService["output"] = {
+        getPlaylistTemplates: async (): Promise<PlaylistTemplateDocument[]> => {
+            return await playlistTemplateCollection.find().toArray();
+        },
+        postPlaylistTemplate: async (input)=>{
+            return await playlistTemplateCollection.insertOne(input.playlistTemplateData);
+        },
+        updatePlaylistTemplate: async (input)=>{
+            return await playlistTemplateCollection.updateOne(
+                { _id: new ObjectId(input.playlistTemplateData._id) },
+                { $set: input.playlistTemplateData }
+            );
+        },
+        deletePlaylistTemplate: async (input) =>{
+            return await playlistTemplateCollection.deleteOne({_id: new ObjectId(input.playlistTemplate_id) });
+        },
+    };
 
-                if (!playlistTemplate_id) {
-                    return await playlistTemplateCollection.find().toArray();
-                }
-
-                return await playlistTemplateCollection.findOne({ _id: new ObjectId(playlistTemplate_id) });
-
-            } catch (err) {
-                throw new Error('[Service error]: Could not get playlist templates', err);
-            }
-        },
-        async postPlaylistTemplate(input){
-            try {
-                return await playlistTemplateCollection.insertOne(input.playlistTemplateData);
-            } catch (err) {
-                throw new Error('[Service error]: Could not insert playlist template', err);
-            }
-        },
-        async updatePlaylistTemplate(input){
-            try {
-                return await playlistTemplateCollection.updateOne(
-                    { _id: input.playlistTemplateData._id },
-                    { $set: input.playlistTemplateData }
-                );
-            } catch (err) {
-                throw new Error('[Service error]: Could not update playlist template', err);
-            }
-        },
-        async deletePlaylistTemplate(input) {
-            try {
-                return await playlistTemplateCollection.deleteOne({_id: input.playlistTemplate_id});
-            } catch (err) {
-                throw new Error('[Service error]: Could not delete playlist template', err);
-            }
-        },
-    }
+    return wrapServiceWithTryCatch({
+        service: service,
+        serviceName: 'playlistTemplateService'
+    });
 };

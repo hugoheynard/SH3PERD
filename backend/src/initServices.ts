@@ -9,7 +9,6 @@ import {calendarService} from "./services/calendarService";
 import {musicService} from "./services/musicService/musicService";
 import {playlistTemplateService} from "./playlist/playlistTemplateService";
 import {playlistService} from "./playlist/playlistService";
-import {Playlist} from "./playlist/classes/Playlist";
 import {PlaylistModule} from "./playlist/classes/PlaylistModule";
 
 
@@ -49,7 +48,6 @@ export const initServices = (db: Db | null): any => {
 
             playlistService: playlistService({
                 playlistCollection: db.collection('playlists'),
-                PlaylistForm: Playlist,
                 PlaylistModule: PlaylistModule
             }),
             playlistTemplateService: playlistTemplateService({ playlistTemplateCollection: db.collection('playlist_template') }),

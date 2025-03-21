@@ -29,7 +29,11 @@ export class PlaylistTableComponent {
   @Input() playlists: any[] = [];
 
   editPlaylist(playlist: Playlist): void {
-    this.playlistDisplayService.openPlaylistInSidenav({ playlist: playlist });
+    this.playlistDisplayService.openPlaylistInSidenav(
+      {
+        playlist: playlist,
+        viewMode: 'edit'
+      });
   };
 
   sortByCreationDate(): void {
