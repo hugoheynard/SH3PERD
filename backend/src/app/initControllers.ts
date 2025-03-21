@@ -1,10 +1,10 @@
-import {authenticationController} from "./controllers/authenticationController";
-import {settingsController} from "./controllers/settingsController";
-import {calendarController} from "./controllers/calendarController";
-import {eventsController} from "./controllers/eventController";
-import {musicLibraryController} from "./controllers/musicLibraryController";
-import {playlistController} from "./playlist/playlistController";
-import {playlistTemplateService} from "./playlist/playlistTemplateService";
+import {authenticationController} from "../controllers/authenticationController";
+import {settingsController} from "../controllers/settingsController";
+import {calendarController} from "../controllers/calendarController";
+import {planningBlocksController} from "../planningBlocks/planningBlocksController";
+import {musicLibraryController} from "../controllers/musicLibraryController";
+import {playlistController} from "../playlist/playlistController";
+import {playlistTemplateService} from "../playlist/playlistTemplateService";
 
 
 
@@ -19,11 +19,11 @@ export const initControllers = ({ services }: any): any => {
         return {
             authenticationController: authenticationController({ authenticationService: services.authenticationService }),
             settingsController: settingsController({ settingsService: services.settingsService}),
-            eventsController: eventsController({ eventService: services.eventService}), //TODO: on en est là test API
+            planningBlocksController: planningBlocksController({ planningBlocksService: services.planningBlocksService}), //TODO: on en est là test API
             calendarController: calendarController({
                 calendarService: services.calendarService,
                 userService: services.userService,
-                eventService: services.eventService}),
+                planningBlocksService: services.planningBlocksService}),
             musicLibraryController: musicLibraryController( { musicService: services.musicService }),
             playlistController: playlistController({
                 playlistService: services.playlistService,

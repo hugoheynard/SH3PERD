@@ -1,4 +1,4 @@
-import type {CalendarEvent, CalendarEventsObject} from "../../../interfaces/CalendarEventsObject";
+import type {CalendarEvent, CalendarEventsObject} from "../../../planningBlocks/interfaces_events/CalendarEventsObject";
 
 export interface EventBuilderOutput {
     [key: string]: CalendarEventsObject;
@@ -7,7 +7,7 @@ export interface EventBuilderOutput {
 export const eventObjectBuilder = (input: { events: CalendarEvent[] }): CalendarEventsObject => {
     try {
         if (!Array.isArray(input.events)) {
-            throw new Error('Invalid input: events should be an array');
+            throw new Error('Invalid input: planningBlocks should be an array');
         }
 
         return input.events
@@ -19,7 +19,7 @@ export const eventObjectBuilder = (input: { events: CalendarEvent[] }): Calendar
                 return acc;}, {}
             );
     } catch(err: any) {
-        console.error('Error building events object:', {
+        console.error('Error building planningBlocks object:', {
             error: err.message,
             stack: err.stack,
             input,

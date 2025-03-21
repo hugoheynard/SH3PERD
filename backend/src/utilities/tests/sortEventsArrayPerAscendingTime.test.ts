@@ -12,7 +12,7 @@ describe('sortEventsArrayPerAscendingTime', () => {
         expect(result).toEqual(singleEvent);
     });
 
-    it('should sort events in ascending order based on the date', () => {
+    it('should sort planningBlocks in ascending order based on the date', () => {
         const events = [
             { date: new Date('2024-11-23T12:00:00'), title: 'Event 3' },
             { date: new Date('2024-11-21T12:00:00'), title: 'Event 2' },

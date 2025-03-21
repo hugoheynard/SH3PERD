@@ -1,5 +1,5 @@
 import { Db, MongoClient } from 'mongodb';
-import { connectDb} from '../db';
+import { connectDb} from '../app/db';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 let mongoServer: MongoMemoryServer;

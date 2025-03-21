@@ -13,7 +13,7 @@ export const playlistRouter = (plControl: any , plMidWare: any): Router => {
     playlistRouter.get('/', plControl.getPlaylists);
     playlistRouter.post('/', plControl.postPlaylist);
     playlistRouter.put('/:id', plControl.updatePlaylist);
-    //playlistRouter.delete('/:id', plControl.deletePlaylist);
+    playlistRouter.delete('/:id', plControl.deletePlaylist);
 
     playlistRouter.get('/new', plControl.getDefaultPlaylist);
     playlistRouter.get(

@@ -1,29 +1,37 @@
 import {Component, inject, Input} from '@angular/core';
-import {NgForOf, NgIf, NgStyle} from '@angular/common';
+import {DatePipe, NgForOf, NgIf, NgStyle} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
-import {MatIconButton} from '@angular/material/button';
+import {MatButton, MatIconButton} from '@angular/material/button';
 import {FavoriteDynamicIconComponent} from '../favorite-dynamic-icon/favorite-dynamic-icon.component';
 import {PlaylistDisplayService} from '../playlist-display.service';
 import {Playlist} from '../playlist_interfaces';
 import {TagStyleDirective} from '../../../../Directives/tag-style.directive';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {PlaylistService} from '../../../services/playlistService/playlist.service';
 
 @Component({
     selector: 'playlist-table',
-    imports: [
-        NgForOf,
-        MatIcon,
-        MatIconButton,
-        NgIf,
-        NgStyle,
-        FavoriteDynamicIconComponent,
-        TagStyleDirective
-    ],
+  imports: [
+    NgForOf,
+    MatIcon,
+    MatIconButton,
+    NgIf,
+    NgStyle,
+    FavoriteDynamicIconComponent,
+    TagStyleDirective,
+    DatePipe,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger,
+    MatButton
+  ],
     templateUrl: './playlist-table.component.html',
     standalone: true,
     styleUrl: './playlist-table.component.scss'
 })
 export class PlaylistTableComponent {
   public playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
+  private playlistService: any = inject(PlaylistService);
   private creationDateOrder: string = 'down';
   private energyLevelOrder: any = null;
   @Input() playlists: any[] = [];
@@ -34,6 +42,10 @@ export class PlaylistTableComponent {
         playlist: playlist,
         viewMode: 'edit'
       });
+  };
+
+  deletePlaylist(input : { playlist_id: string }): void {
+    this.playlistService.deletePlaylist({ playlist_id: input.playlist_id});
   };
 
   sortByCreationDate(): void {

@@ -1,14 +1,14 @@
 import express, {type Express, type NextFunction, type Request, type Response} from "express";
 import cors from "cors";
-import {errorCatcher} from "./routes/middlewares/errorCatcher";
+import {errorCatcher} from "../routes/middlewares/errorCatcher";
 
-import {authenticationRouter} from "./routes/authentication/authenticationRouter";
-import {settingsRouter} from "./routes/settings/settingsRouter";
-import {calendarRouter} from "./routes/calendar/calendarRouter";
-import {eventsRouter} from "./routes/events/eventsRouter";
-import {musicLibraryRouter} from "./routes/musicLibrary/musicLibraryRouter";
-import {playlistRouter} from "./playlist/playlistRouter";
-import {addUser_id} from "./playlist/middlewares/addUser_id";
+import {authenticationRouter} from "../routes/authentication/authenticationRouter";
+import {settingsRouter} from "../routes/settings/settingsRouter";
+import {calendarRouter} from "../routes/calendar/calendarRouter";
+import {planningBlocksRouter} from "../planningBlocks/planningBlocksRouter";
+import {musicLibraryRouter} from "../routes/musicLibrary/musicLibraryRouter";
+import {playlistRouter} from "../playlist/playlistRouter";
+import {addUser_id} from "../playlist/middlewares/addUser_id";
 
 
 export const initRoutes = (app: Express, { controllers } : any, { middlewares }: any): Express => {
@@ -20,7 +20,7 @@ export const initRoutes = (app: Express, { controllers } : any, { middlewares }:
 //Routers
         app.use('/auth', authenticationRouter(controllers.authenticationController));
         app.use('/settings', settingsRouter(controllers.settingsController));
-        app.use('/events', eventsRouter(controllers.eventsController))
+        app.use('/planningBlocks', planningBlocksRouter(controllers.planningBlocksController))
         app.use('/calendar', calendarRouter(controllers.calendarController));
         app.use('/musicLibrary', musicLibraryRouter(controllers.musicLibraryController));
         app.use('/playlist', addUser_id, playlistRouter(controllers.playlistController, middlewares.playlist));

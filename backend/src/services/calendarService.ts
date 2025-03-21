@@ -1,15 +1,15 @@
 import type {Collection} from "mongodb";
 import type {UserService} from "./userService";
 import type {User} from "../interfaces/User";
-import type {EventService} from "./eventService";
-import type {CalendarEvent} from "../interfaces/CalendarEventsObject";
+import type {PlanningBlocksService} from "../planningBlocks/planningBlocksService";
+import type {CalendarEvent} from "../planningBlocks/interfaces_events/CalendarEventsObject";
 import {CalendarBuilder} from "../tools/calendar/CalendarBuilder";
 
 export interface CalendarService {
     input: {
         collection?: Collection<any>;
         userService: UserService['output'];
-        eventService: EventService['output'];
+        eventService: PlanningBlocksService['output'];
     };
     output: {
         getCalendarData: (input: { users: string[]; date: Date }) => Promise<any>;

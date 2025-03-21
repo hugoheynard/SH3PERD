@@ -1,15 +1,15 @@
 import {type Db} from "mongodb";
-import {type UserService, userService} from "./services/userService";
-import {eventService} from "./services/eventService";
-import {authenticationService} from "./services/authenticationService";
-import {PasswordHasher} from "./tools/login/PasswordHasher";
-import {JWT_module} from "./tools/login/JWT_Module";
-import {settingsService} from "./services/settingsService";
-import {calendarService} from "./services/calendarService";
-import {musicService} from "./services/musicService/musicService";
-import {playlistTemplateService} from "./playlist/playlistTemplateService";
-import {playlistService} from "./playlist/playlistService";
-import {PlaylistModule} from "./playlist/classes/PlaylistModule";
+import {type UserService, userService} from "../services/userService";
+import {planningBlocksService} from "../planningBlocks/planningBlocksService";
+import {authenticationService} from "../services/authenticationService";
+import {PasswordHasher} from "../tools/login/PasswordHasher";
+import {JWT_module} from "../tools/login/JWT_Module";
+import {settingsService} from "../services/settingsService";
+import {calendarService} from "../services/calendarService";
+import {musicService} from "../services/musicService/musicService";
+import {playlistTemplateService} from "../playlist/playlistTemplateService";
+import {playlistService} from "../playlist/playlistService";
+import {PlaylistModule} from "../playlist/classes/PlaylistModule";
 
 
 
@@ -20,7 +20,7 @@ export const initServices = (db: Db | null): any => {
         }
 
         const settingsServiceInstance = settingsService({ collection: db.collection('settings') });
-        const eventServiceInstance: any = eventService( { collection: db.collection('calendar_events') });
+        const planningBlocksServiceInstance: any = planningBlocksService( { collection: db.collection('calendar_events') });
         const userServiceInstance: UserService = userService({ collection: db.collection('staffs') });
         const musicServiceInstance: any = musicService({
             collection: db.collection('music_library'),
@@ -37,10 +37,10 @@ export const initServices = (db: Db | null): any => {
 
             settingsService: settingsServiceInstance,
 
-            eventService: eventServiceInstance,
+            planningBlocksService: planningBlocksServiceInstance,
 
             calendarService: calendarService({
-                eventService: eventServiceInstance,
+                eventService: planningBlocksServiceInstance,
                 userService: userServiceInstance
             }),
 

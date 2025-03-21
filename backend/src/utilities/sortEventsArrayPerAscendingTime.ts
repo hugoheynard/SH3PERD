@@ -9,7 +9,7 @@ export const sortEventsArrayPerAscendingTime = (array: any[]): any[] => { //TODO
         });
 
     } catch (error: any) {
-        console.error("Error while sorting events", error.message);
+        console.error("Error while sorting planningBlocks", error.message);
         return array;
     }
 };

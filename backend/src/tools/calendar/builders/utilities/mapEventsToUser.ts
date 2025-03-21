@@ -1,4 +1,4 @@
-import type {CalendarEventsObject} from "../../../../interfaces/CalendarEventsObject";
+import type {CalendarEventsObject} from "../../../../planningBlocks/interfaces_events/CalendarEventsObject";
 import type {ObjectId} from "mongodb";
 
 export const mapEventsToUser = (input: { events: CalendarEventsObject[], user_id: string}): string[] => {

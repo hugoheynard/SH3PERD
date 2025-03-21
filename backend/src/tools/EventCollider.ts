@@ -1,4 +1,4 @@
-import type {CalendarEvent} from "../interfaces/CalendarEventsObject";
+import type {CalendarEvent} from "../planningBlocks/interfaces_events/CalendarEventsObject";
 
 export interface CollisionReport{
     referenceEvent_id: string;
@@ -36,7 +36,7 @@ export class EventCollider {
     };
 
     /**
-     * Calculates all collisions between events.
+     * Calculates all collisions between planningBlocks.
      */
     calculateCollisions(): { checkedPairs: Set<string>; eventCollisionList: CollisionReport[]; } {
         try {
@@ -123,7 +123,7 @@ export class EventCollider {
     };
 
     /**
-     * Validates that events have the required fields.
+     * Validates that planningBlocks have the required fields.
      */
     validateInput(input: { events: CalendarEvent[]}): void {
         if (!Array.isArray(input.events)) {
@@ -157,8 +157,8 @@ export class EventCollider {
     };
 
     /**
-     * Checks if a pair of events has already been compared.
-     * @param input The identifier for the pair of events.
+     * Checks if a pair of planningBlocks has already been compared.
+     * @param input The identifier for the pair of planningBlocks.
      * @returns true if the pair has been compared, false otherwise.
      */
     checkIfPairHasBeenCompared(input: { pair_id: string }): boolean {

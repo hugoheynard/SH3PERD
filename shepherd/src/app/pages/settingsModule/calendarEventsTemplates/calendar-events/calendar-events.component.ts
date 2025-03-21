@@ -5,7 +5,7 @@ import {MatOption, MatSelect} from '@angular/material/select';
 import {MatInput} from '@angular/material/input';
 
 @Component({
-    selector: 'app-calendar-events',
+    selector: 'app-calendar-planningBlocks',
     imports: [
         MatFormField,
         ReactiveFormsModule,

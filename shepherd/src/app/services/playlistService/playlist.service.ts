@@ -6,6 +6,7 @@ import {savePlaylist} from './savePlaylist';
 import {getNewEmptyPlaylistObject} from './getNewEmptyPlaylistObject';
 import {getPlaylists} from './getPlaylists';
 import {updatePlaylist} from './updatePlaylist';
+import {deletePlaylist} from './deletePlaylist';
 
 @Injectable({
   providedIn: 'root'
@@ -32,14 +33,21 @@ export class PlaylistService {
   };
 
   async updatePlaylist(input: { playlistData: any; playlist_id: string; }): Promise<any> {
-    console.log(input.playlistData)
-
     return await updatePlaylist(
       {
         http: this.http,
         url: `${this.baseUrl}/playlist/${input.playlist_id}`,
         playlistData: input.playlistData,
       });
+  };
+
+  async deletePlaylist(input: { playlist_id: string }): Promise<any> {
+    return await deletePlaylist(
+      {
+        http: this.http,
+        url: `${this.baseUrl}/playlist/${input.playlist_id}`
+      }
+    )
   };
 
   /**

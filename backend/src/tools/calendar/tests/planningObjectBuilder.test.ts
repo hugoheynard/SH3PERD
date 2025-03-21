@@ -41,7 +41,7 @@ describe('planningObjectBuilder', () => {
         ]);
     });
 
-    it('must manage users without events', () => {
+    it('must manage users without planningBlocks', () => {
         // Mock des données
         const users = [
             { _id: '1', firstName: 'Alice', functions: { category: 'Engineer' } },

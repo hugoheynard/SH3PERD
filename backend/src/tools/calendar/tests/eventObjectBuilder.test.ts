@@ -12,7 +12,7 @@ interface EventBuilderOutput {
 }
 
 describe('eventObjectBuilder', () => {
-    it('should build an object from a list of events', () => {
+    it('should build an object from a list of planningBlocks', () => {
         // Données mockées
         const input = {
             events: [
@@ -34,7 +34,7 @@ describe('eventObjectBuilder', () => {
         expect(result).toEqual(expectedOutput);
     });
 
-    it('should return an empty object when input events are empty', () => {
+    it('should return an empty object when input planningBlocks are empty', () => {
         // Données mockées
         const input = { events: [] as CalendarEvent[] };
 
@@ -65,7 +65,7 @@ describe('eventObjectBuilder', () => {
         expect(result['2']).toBeDefined();
     });
 
-    it('should not overwrite events with the same _id', () => {
+    it('should not overwrite planningBlocks with the same _id', () => {
         // Données mockées avec identifiants en conflit
         const input = {
             events: [
@@ -99,7 +99,7 @@ describe('eventObjectBuilder (error handling)', () => {
         consoleErrorSpy.mockRestore();
     });
 
-    it('should return an empty object when input.events is not an array', () => {
+    it('should return an empty object when input.planningBlocks is not an array', () => {
         // Cas avec une entrée invalide
         const input = { events: null } as unknown as { events: CalendarEvent[] };
 
@@ -112,9 +112,9 @@ describe('eventObjectBuilder (error handling)', () => {
         // Assertions
         expect(result).toEqual(expectedOutput);
         expect(consoleErrorSpy).toHaveBeenCalledWith(
-            'Error building events object:',
+            'Error building planningBlocks object:',
             expect.objectContaining({
-                error: 'Invalid input: events should be an array',
+                error: 'Invalid input: planningBlocks should be an array',
                 input: { events: null },
                 stack: expect.any(String), // On accepte n'importe quelle stack trace
             })
@@ -132,7 +132,7 @@ describe('eventObjectBuilder (error handling)', () => {
         // Assertions
         expect(result).toEqual({});
         expect(consoleErrorSpy).toHaveBeenCalledWith(
-            'Error building events object:',
+            'Error building planningBlocks object:',
             expect.objectContaining({
                 error: 'Invalid event: missing or null _id for event {"_id":null,"name":"Invalid Event"}',
                 input,
@@ -156,7 +156,7 @@ describe('eventObjectBuilder (error handling)', () => {
             // Assertions
             expect(result).toEqual({});
             expect(consoleErrorSpy).toHaveBeenCalledWith(
-                'Error building events object:',
+                'Error building planningBlocks object:',
                 expect.objectContaining({
                     error: 'Simulated error',
                     stack: expect.any(String),

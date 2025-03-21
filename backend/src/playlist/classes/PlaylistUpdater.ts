@@ -1,18 +1,17 @@
 import type {IPlaylist} from "./playlistBuilder/PlaylistBuilder";
 import type {ObjectUpdaterFunction} from "./ObjectUpdater";
 
-export interface IPlaylistUpdater {
-    input: {
-        objectUpdater: ObjectUpdaterFunction<T>;
-        validators: {
-            settings: any;
-            performers: {
-                singersConfig: any;
-                musiciansConfig: any;
-                aerialConfig: any;
-            };
+export interface IPlaylistUpdaterInput {
+    objectUpdater: ObjectUpdaterFunction<T>;
+    validators: {
+        settings: any;
+        songList: any;
+        performers: {
+            singersConfig: any;
+            musiciansConfig: any;
+            aerialConfig: any;
         };
-    }
+    };
 }
 
 export class PlaylistUpdater {
@@ -27,7 +26,7 @@ export class PlaylistUpdater {
         };
     };
 
-    constructor(input: IPlaylistUpdater) {
+    constructor(input: IPlaylistUpdaterInput) {
         this.objectUpdater = input.objectUpdater;
         this.validators = input.validators;
     };

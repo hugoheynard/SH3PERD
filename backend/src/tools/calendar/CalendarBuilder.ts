@@ -1,6 +1,6 @@
 import {planningObjectBuilder, type Plannings} from "./builders/planningObjectBuilder";
 import {eventObjectBuilder, type EventBuilderOutput} from "./builders/eventObjectBuilder";
-import type {CalendarEvent, CalendarEventsObject} from "../../interfaces/CalendarEventsObject";
+import type {CalendarEvent, CalendarEventsObject} from "../../planningBlocks/interfaces_events/CalendarEventsObject";
 import {type CollisionObject, InternalCollisionsBuilder} from "./builders/InternalCollisionsBuilder";
 import type {User} from "../../interfaces/User";
 

@@ -14,8 +14,8 @@ const routes: Routes = [
     children: [
       { path: 'general-informations', component: GeneralInformationsComponent },
       { path: 'week-template', component: WeekTemplateComponent },
-      { path: 'weekly-events', component: WeeklyEventsComponent },
-      { path: 'calendar-events', component: CalendarEventsComponent },
+      { path: 'weekly-planningBlocks', component: WeeklyEventsComponent },
+      { path: 'calendar-planningBlocks', component: CalendarEventsComponent },
       { path: 'organogram', component: OrganogramComponent },
       { path: '', redirectTo: 'organogram', pathMatch: 'full' },
     ]

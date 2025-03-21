@@ -86,7 +86,7 @@ export class PlaylistViewComponent implements OnInit {
         return;
       }
 
-      const response = await this.plServ.savePlaylist({ playlistData: this.playlistFormService.getRawValue() });
+      const response = await this.plServ.savePlaylist({ playlistData: this.playlistFormService.getValues() });
 
       if (response.ok) {
         this.snackBarService.show('New Playlist saved');
@@ -112,7 +112,7 @@ export class PlaylistViewComponent implements OnInit {
       const response = await this.plServ.updatePlaylist(
         {
           playlist_id: input.playlist_id,
-          playlistData: this.playlistFormService.getRawValue(),
+          playlistData: this.playlistFormService.getValues(),
         });
 
       if (response.ok) {

@@ -1,6 +1,6 @@
 
 import {EventCollider} from "../../EventCollider";
-import {CalendarEvent} from "../../../interfaces/CalendarEventsObject";
+import {CalendarEvent} from "../../../planningBlocks/interfaces_events/CalendarEventsObject";
 
 // Fonction helper pour créer des événements simulés
 const createMockEvent = (overrides: Partial<CalendarEvent>): CalendarEvent => {
@@ -38,7 +38,7 @@ describe('EventCollider', () => {
 
 
 
-    it('should detect a collision between overlapping events', () => {
+    it('should detect a collision between overlapping planningBlocks', () => {
         const collider = new EventCollider({ eventsToCollide: [mockEvent1, mockEvent2] });
         const collisions = collider['eventCollisionList'];
 
@@ -47,7 +47,7 @@ describe('EventCollider', () => {
         expect(collisions[0].collision_id).toBe('1-2');
     });
 
-    it('should not detect a collision between non-overlapping events', () => {
+    it('should not detect a collision between non-overlapping planningBlocks', () => {
         const collider = new EventCollider({ eventsToCollide: [mockEvent1, mockEvent3] });
         const collisions = collider['eventCollisionList'];
 
@@ -73,7 +73,7 @@ describe('EventCollider', () => {
 
     });
 
-    it('should validate events properly', () => {
+    it('should validate planningBlocks properly', () => {
         const invalidEvent = createMockEvent({
             _id: '4',
             startDate: undefined,

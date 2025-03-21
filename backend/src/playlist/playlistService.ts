@@ -10,7 +10,6 @@ export const playlistService = (input: IPlaylistService['input']) => {
     const { playlistCollection, PlaylistModule } = input;
 
     const service: IPlaylistService['output'] = {
-
         /**
          * used to send a valid playlist object to the front end to feed the form
          * @returns {Promise<IPlaylist>}

@@ -14,7 +14,7 @@ export class PlaylistFormService {
       console.error('Playlist is undefined!');
       return this.fb.group({});
     }
-    const { settings, songList, performers, dataInformation } = playlist;
+    const { settings, songList, performers } = playlist;
 
     this.playlistForm = this.fb.group({
       settings: this.createSettingsFormGroup(settings),
@@ -46,7 +46,6 @@ export class PlaylistFormService {
 
 
   createSettingsFormGroup(settings: any = {}): FormGroup {
-
     return this.fb.group({
       name: [settings.name],
       description: [settings.description],
@@ -122,7 +121,7 @@ export class PlaylistFormService {
     return this.playlistForm;
   };
 
-  getRawValue(): any {
-    return this.playlistForm.getRawValue();
+  getValues(): any {
+    return this.playlistForm.value;
   };
 }

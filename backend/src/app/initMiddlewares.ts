@@ -1,4 +1,4 @@
-import {playlistMiddlewares} from "./playlist/playlistMiddlewares";
+import {playlistMiddlewares} from "../playlist/playlistMiddlewares";
 
 export const initMiddlewares = ({ services }: any): any => {
     try {

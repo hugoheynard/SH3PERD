@@ -51,12 +51,12 @@ export class CalendarService {
     this.calendarDataSignal.set(null);
   }
 /*
-      const { events, specs } = response.data;
+      const { planningBlocks, specs } = response.data;
 
       // Data Processing
       // Convert date back from string to Date Object
-      for (const key in events) {
-        const event = events[key];
+      for (const key in planningBlocks) {
+        const event = planningBlocks[key];
         if (event.date) {
           event.date = new Date(event.date);
         }

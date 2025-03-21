@@ -1,10 +1,12 @@
 :host {
-  overflow-y: scroll;
+  width: 100%;
+  overflow-x: auto;
 }
 
 #playlistTable {
-  width: 100%;
   border-collapse: collapse;
+  min-width: 1000px;
+
 }
 
 thead th{
@@ -44,12 +46,6 @@ tbody td {
 
 .playlistRow {
   height: 10px;
-}
-
-.flexSpace {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .iconCol {

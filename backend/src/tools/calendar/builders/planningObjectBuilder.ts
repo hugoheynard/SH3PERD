@@ -1,4 +1,4 @@
-import type {CalendarEventsObject} from "../../../interfaces/CalendarEventsObject";
+import type {CalendarEventsObject} from "../../../planningBlocks/interfaces_events/CalendarEventsObject";
 import {mapEventsToUser} from "./utilities/mapEventsToUser";
 import {type AddUserInformationOutput, addUserInformations,} from "./utilities/addUserInformations";
 

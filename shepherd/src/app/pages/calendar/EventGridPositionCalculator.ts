@@ -5,7 +5,7 @@ export class EventGridPositionCalculator {
     calculate(input) {
         const {
             plannings,
-            events,
+            planningBlocks,
             totalColumnsPerPlanning,
             collisions,
             offsetFromDayStart,
@@ -25,7 +25,7 @@ export class EventGridPositionCalculator {
             let columnOccupancy = Array(totalColumns).fill(false); // Occupation des colonnes pour cet événement
 
             calendar_events.forEach(eventId => {
-                const event = events[eventId];
+                const event = planningBlocks[eventId];
                 planning.eventGridPositions[eventId] = this.eventGridRowPosition(event, stepDuration, offsetFromDayStart);
 
                 // Assigne les colonnes pour chaque événement en utilisant `startIndex`

@@ -1,5 +1,5 @@
 import type {Plannings} from "./planningObjectBuilder";
-import type {CalendarEventsObject} from "../../../interfaces/CalendarEventsObject";
+import type {CalendarEventsObject} from "../../../planningBlocks/interfaces_events/CalendarEventsObject";
 import {EventCollider} from "../../EventCollider";
 
 export interface CollisionObject {

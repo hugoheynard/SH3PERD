@@ -1,6 +1,6 @@
 
 import { Express } from 'express';
-import {startServer} from "../server";
+import {startServer} from "../app/server";
 
 jest.mock('express', () => {
     return jest.fn().mockImplementation(() => ({
