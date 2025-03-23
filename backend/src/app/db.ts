@@ -15,7 +15,7 @@ const mongoClient: MongoClient = new MongoClient(atlas_uri);
 export const connectDb = async (): Promise<Db | null> => {
     try {
         await mongoClient.connect();
-        console.log("Connected to db");
+        console.log("✅Connected to db");
         return mongoClient.db('shepherd');
     } catch (error: any) {
         console.error("Error connecting to MongoDB :", error);

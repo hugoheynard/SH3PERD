@@ -17,7 +17,9 @@ export interface Controllers {
 export const initControllers = ({ services }: any): any => {
 
     try {
-        return {
+
+
+        const controllers ={
             registrationController: registrationController({
                 registrationService: services.registrationService
             }),
@@ -64,6 +66,8 @@ export const initControllers = ({ services }: any): any => {
                         */
 
         }
+        console.log('✅ initControllers executed');
+        return controllers;
     } catch (e) {
         console.error('Error during controller initialization:', e);
         throw new Error('Failed to initialize services');

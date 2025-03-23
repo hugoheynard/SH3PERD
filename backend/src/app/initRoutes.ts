@@ -19,10 +19,13 @@ export const initRoutes = (app: Express, { controllers } : any, { middlewares }:
 
 
 //Routers
+
         app.use('/register', registrationRouter({
             registrationController: controllers.registrationController,
             registrationMiddlewares: middlewares.registration
         }));
+
+
 
 
         //app.use('/auth', authenticationRouter(controllers.authenticationController));
@@ -41,15 +44,19 @@ export const initRoutes = (app: Express, { controllers } : any, { middlewares }:
         app.use((req: Request, res: Response, next: NextFunction): void => {
             res.status(404).send('Route does not exist');
             console.log(`[404] ${req.method} ${req.url}`);
-            next();
         });
-
-
-
 
 
         app.use(errorCatcher);
 
+        console.log('✅ initRoutes executed');
+        app._router.stack.forEach((layer: any) => {
+            if (layer.route) {
+                const methods = Object.keys(layer.route.methods).join(', ').toUpperCase();
+                console.log(`📡 ${methods} ${layer.route.path}`);
+            }
+        });
+        console.log('✅ initRoutes executed');
         return app;
     } catch (e) {
         console.error('Error during controller routes:', e);

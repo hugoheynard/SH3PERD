@@ -14,12 +14,13 @@ import {registrationService} from "../registration/registrationService";
 
 
 
-export const initServices = (db: Db | null): any => {
+export const initServices = async (db: Db | null): any => {
     try {
         if (db === null) {
             throw new Error('Database connection is not initialized');
         }
 
+        const registrationServiceInstance = registrationService({ users_loginsCollection: db.collection('users_logins') });
         const settingsServiceInstance = settingsService({ collection: db.collection('settings') });
         const planningBlocksServiceInstance: any = planningBlocksService( { collection: db.collection('calendar_events') });
         const userServiceInstance: UserService = userService({ collection: db.collection('staffs') });
@@ -28,8 +29,8 @@ export const initServices = (db: Db | null): any => {
             musicVersionsCollection: db.collection('music_versions')
         });
 
-        return {
-            registrationService: registrationService({ users_loginsCollection: db.collection('users_logins') }),
+        const services = {
+            registrationService: registrationServiceInstance,
 
             authenticationService: authenticationService({
                 collection: db.collection('staffs'),
@@ -61,6 +62,9 @@ export const initServices = (db: Db | null): any => {
             //
 
         };
+        console.log('✅ initServices executed');
+        return services;
+
     } catch (e: any) {
         console.error('Error during controller services:', e);
         throw new Error('Failed to initialize services');

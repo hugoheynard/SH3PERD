@@ -3,13 +3,17 @@ import {registrationMiddlewares} from "../registration/registrationMiddleware";
 
 export const initMiddlewares = ({ services }: any): any => {
     try {
+        const { registrationService, playlistTemplateService } = services;
 
-        return {
+        const middlewares = {
             registration: registrationMiddlewares({
-                checkUserExistByMailFunction: services.registrationService.getUserLoginByEmail
+                checkUserExistByMailFunction: (input) => registrationService.getUserLoginByEmail(input)
             }),
             playlist: playlistMiddlewares({ playlistTemplateService: services.playlistTemplateService }),
         }
+
+        console.log('✅ initMiddleware executed');
+        return middlewares;
 
     } catch (err) {
         console.log('[initMiddlewares error]: ', err);

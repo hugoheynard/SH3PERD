@@ -6,6 +6,7 @@ export const registrationService = (input: IRegistrationService['input']): IRegi
     const { users_loginsCollection } = input;
 
     const service: IRegistrationService['output'] = {
+
         getUserLoginByEmail: async (input: { email: string }): Promise<any> => {
           return await users_loginsCollection.findOne({ email: input.email });
         },
@@ -22,5 +23,8 @@ export const registrationService = (input: IRegistrationService['input']): IRegi
         }
     };
 
-    return wrapServiceWithTryCatch(service);
+    return wrapServiceWithTryCatch({
+        service: service,
+        serviceName: 'Registration Service'
+    });
 };

@@ -19,6 +19,7 @@ export const registrationRouter = (input: IRegistrationRouter): Router => {
         registrationMiddlewares.userAlreadyExistsManual,
         registrationController.registerUser);
 
+
     //router.post('/0Auth')
     return registrationRouter;
 };
