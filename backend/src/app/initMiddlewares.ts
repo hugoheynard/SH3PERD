@@ -1,9 +1,14 @@
 import {playlistMiddlewares} from "../playlist/playlistMiddlewares";
+import {registrationMiddlewares} from "../registration/registrationMiddleware";
 
 export const initMiddlewares = ({ services }: any): any => {
     try {
+
         return {
-           playlist: playlistMiddlewares({ playlistTemplateService: services.playlistTemplateService }),
+            registration: registrationMiddlewares({
+                checkUserExistByMailFunction: services.registrationService.getUserLoginByEmail
+            }),
+            playlist: playlistMiddlewares({ playlistTemplateService: services.playlistTemplateService }),
         }
 
     } catch (err) {

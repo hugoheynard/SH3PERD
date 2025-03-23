@@ -1,8 +1,8 @@
-import type { Collection } from 'mongodb';
 import type { Request, Response, NextFunction } from 'express';
 
-export const userAlreadyExistsManual = (userLoginsCollection: Collection) =>
+export const userAlreadyExistsManual = (input: { checkUserExistByMailFunction: any }) =>
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { checkUserExistByMailFunction } = input;
         const { email } = req.body;
 
         if (!email) {
@@ -10,7 +10,7 @@ export const userAlreadyExistsManual = (userLoginsCollection: Collection) =>
             return;
         }
 
-        const user = await userLoginsCollection.findOne({ email });
+        const user = await checkUserExistByMailFunction({ email });
 
         if (user) {
             res.status(409).json({ message: 'User already exists' });

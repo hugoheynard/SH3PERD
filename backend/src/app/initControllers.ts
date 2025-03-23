@@ -5,6 +5,7 @@ import {planningBlocksController} from "../planningBlocks/planningBlocksControll
 import {musicLibraryController} from "../controllers/musicLibraryController";
 import {playlistController} from "../playlist/playlistController";
 import {playlistTemplateService} from "../playlist/playlistTemplateService";
+import {registrationController} from "../registration/registrationController";
 
 
 
@@ -17,6 +18,11 @@ export const initControllers = ({ services }: any): any => {
 
     try {
         return {
+            registrationController: registrationController({
+                registrationService: services.registrationService
+            }),
+
+
             authenticationController: authenticationController({ authenticationService: services.authenticationService }),
             settingsController: settingsController({ settingsService: services.settingsService}),
             planningBlocksController: planningBlocksController({ planningBlocksService: services.planningBlocksService}), //TODO: on en est là test API

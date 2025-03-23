@@ -10,6 +10,7 @@ import {musicService} from "../services/musicService/musicService";
 import {playlistTemplateService} from "../playlist/playlistTemplateService";
 import {playlistService} from "../playlist/playlistService";
 import {PlaylistModule} from "../playlist/classes/PlaylistModule";
+import {registrationService} from "../registration/registrationService";
 
 
 
@@ -28,6 +29,8 @@ export const initServices = (db: Db | null): any => {
         });
 
         return {
+            registrationService: registrationService({ users_loginsCollection: db.collection('users_logins') }),
+
             authenticationService: authenticationService({
                 collection: db.collection('staffs'),
                 verifyPasswordFunction: new PasswordHasher().verify,

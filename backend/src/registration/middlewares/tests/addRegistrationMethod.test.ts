@@ -1,6 +1,6 @@
 import { addRegistrationMethod } from '../addRegistrationMethod';
 import type { Request, Response, NextFunction } from 'express';
-import type { IRegistrationMethods } from '../../../interfaces/IRegistrationMethod';
+import type { IRegistrationMethods } from '../../interfaces/IRegistrationMethod';
 
 describe('addRegistrationMethod middleware', () => {
     const mockNext: NextFunction = jest.fn();

@@ -23,7 +23,6 @@ async function startApp(): Promise<void> {
 
         initRoutes(app, { controllers } , { middlewares });
 
-
         await startServer(app);
 
     } catch (error: any) {
