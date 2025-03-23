@@ -1,16 +1,20 @@
 import express, {type Router} from "express";
-import {validManualRegisterInput} from "./middlewares/validManualRegisterInput";
-import {addRegisterMethodManual, addRegistrationMethod} from "./middlewares/addRegistrationMethod";
+import {validManualRegisterInput} from "./middlewares/register/validManualRegisterInput";
+import {addRegistrationMethod} from "./middlewares/register/addRegistrationMethod";
+import {userAlreadyExistsManual} from "./middlewares/register/userAlreadyExistsManual";
+import type {Collection} from "mongodb";
 
-export const registerRouter = (authCtrl: any): Router => {
+export const registerRouter = (authCtrl: any, userLoginCollection: Collection): Router => {
     const router: Router = express.Router();
 
     router.post('/',
-        validManualRegisterInput(),
+        validManualRegisterInput,
         addRegistrationMethod({ registrationMethod: 'manualRegistration'}),
+        userAlreadyExistsManual({ userLoginCollection }),
         authCtrl.register);
+
+    //router.post('/0Auth')
 
 
     return router;
-}
-
+};

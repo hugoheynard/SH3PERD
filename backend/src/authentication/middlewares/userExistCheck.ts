@@ -1,7 +1,7 @@
 import {type NextFunction, type Request, type Response} from "express";
 import {type Collection} from "mongodb";
 
-export const userExistsCheck = (collection: Collection<any>) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const userExistsCheck = (collection: Collection) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const user: any = await collection.findOne({'login.inApp.email': req.body.email});
 
