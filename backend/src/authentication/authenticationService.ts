@@ -1,6 +1,8 @@
-import type {Collection} from "mongodb";
-import {type AuthTokenDecoded} from "../tools/login/JWT_Module";
+import type {Collection, InsertOneResult} from "mongodb";
+import {type AuthTokenDecoded} from "./login/JWT_Module";
 import type {User} from "../interfaces/User";
+import {wrapServiceWithTryCatch} from "../services/tryCatchServiceWrapper";
+import {ObjectId} from "mongodb";
 
 export interface AuthServiceInput {
     collection: Collection<User>,
@@ -22,6 +24,8 @@ interface LoginInput {
 export const authenticationService = (input: AuthServiceInput): AuthService => {
     const {collection, verifyPasswordFunction, generateTokenFunction, checkAuthTokenValidityFunction} = input;
 
+
+
     const userExists = async (input:{ email: string }): Promise<User>  => {
         try {
             const user = await collection.findOne({'email': input.email});
@@ -39,7 +43,19 @@ export const authenticationService = (input: AuthServiceInput): AuthService => {
         }
     };
 
-    return {
+    const service = {
+        manualRegistration: async (input: { email: string; password: string; }): Promise<InsertOneResult> => {
+
+            const registrationObject = {
+                email: input.email,
+                password: input.password,
+                created_at: new Date(),
+                userProfile_id: new ObjectId()
+            };
+
+            return await collection.insertOne(registrationObject);
+        },
+
         async login(input) {
             try {
                 const user = await userExists({ email: input.email });
@@ -66,4 +82,7 @@ export const authenticationService = (input: AuthServiceInput): AuthService => {
             return checkAuthTokenValidityFunction({ jwt: input.jwt }).isValid;
         }
     };
+
+
+    return wrapServiceWithTryCatch(service);
 }

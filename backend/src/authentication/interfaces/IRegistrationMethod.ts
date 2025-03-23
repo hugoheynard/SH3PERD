@@ -1,0 +1,1 @@
+export type IRegistrationMethods = 'manual' | 'oauth';

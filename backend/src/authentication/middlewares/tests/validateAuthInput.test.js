@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import express from "express";
 import request from 'supertest';
-import { validateAuthInput } from "../validateAuthInput.js";
+import { validateAuthInput } from "../validateAuthInput.ts";
 import {expect} from "@jest/globals";
 
 

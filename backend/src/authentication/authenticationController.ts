@@ -1,9 +1,20 @@
 import type {NextFunction, Request, Response} from "express";
+import {wrap_TryCatchNextErr} from "../controllers/utilities/wrap_tryCatchNextErr";
+import {ObjectId} from "mongodb";
 
 export const authenticationController = (input: any): any => {
     const { authenticationService } = input;
 
-    return {
+    const controller = {
+        async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+            if (req.body.registrationMethod === 'manual') {
+                const result = await authenticationService.manualRegistration({
+                    email: req.body.email,
+                    password: req.body.password,
+                });
+            }
+        },
+
         async login(req: Request, res: Response, next: NextFunction): Promise<void> {
             try {
                 const token = await authenticationService.login({ email: req.body.email, password: req.body.password });
@@ -42,6 +53,10 @@ export const authenticationController = (input: any): any => {
             } catch(err: any) {
                 next(err);
             }
-        }
+        },
+
+
     }
+
+    return wrap_TryCatchNextErr(controller);
 }

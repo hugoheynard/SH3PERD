@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import {userExistsCheck} from "../userExistCheck.js";
+import {userExistsCheck} from "../userExistCheck.ts";
 
 
 describe('userExistsCheck middleware', () => {

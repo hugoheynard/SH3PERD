@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import {passwordCheck} from "../passwordCheck.js";
+import {passwordCheck} from "../passwordCheck.ts";
 
 describe('passwordCheck middleware', ()=> {
     let req, res, next, hasher, user

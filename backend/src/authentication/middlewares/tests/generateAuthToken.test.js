@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { generateAuthToken } from "../generateAuthToken.js";
+import { generateAuthToken } from "../generateAuthToken.ts";
 
 describe('generateAuthToken middleware', () => {
     let req, res, next, tokenGenerator;

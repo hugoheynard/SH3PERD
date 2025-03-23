@@ -2,7 +2,7 @@ import express, {type Express, type NextFunction, type Request, type Response} f
 import cors from "cors";
 import {errorCatcher} from "../routes/middlewares/errorCatcher";
 
-import {authenticationRouter} from "../routes/authentication/authenticationRouter";
+import {authenticationRouter} from "../authentication/authenticationRouter";
 import {settingsRouter} from "../routes/settings/settingsRouter";
 import {calendarRouter} from "../routes/calendar/calendarRouter";
 import {planningBlocksRouter} from "../planningBlocks/planningBlocksRouter";

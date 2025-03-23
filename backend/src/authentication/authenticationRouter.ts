@@ -8,9 +8,10 @@ export const authenticationRouter = (loginController: any): Router => {
     const { login, autoLog } = loginController;
     const router: Router = express.Router();
 
+    router.use('/register', registerRouter());
     router.use('/login', loginRouter(login));
     router.use('/autoLog', autoLogRouter(autoLog));
-    router.use('/register', registerRouter())
+
 
     return router;
 };

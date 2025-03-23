@@ -1,9 +1,9 @@
 import {type Db} from "mongodb";
 import {type UserService, userService} from "../services/userService";
 import {planningBlocksService} from "../planningBlocks/planningBlocksService";
-import {authenticationService} from "../services/authenticationService";
-import {PasswordHasher} from "../tools/login/PasswordHasher";
-import {JWT_module} from "../tools/login/JWT_Module";
+import {authenticationService} from "../authentication/authenticationService";
+import {PasswordHasher} from "../authentication/login/PasswordHasher";
+import {JWT_module} from "../authentication/login/JWT_Module";
 import {settingsService} from "../services/settingsService";
 import {calendarService} from "../services/calendarService";
 import {musicService} from "../services/musicService/musicService";

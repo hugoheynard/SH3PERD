@@ -1,4 +1,4 @@
-import {authenticationController} from "../controllers/authenticationController";
+import {authenticationController} from "../authentication/authenticationController";
 import {settingsController} from "../controllers/settingsController";
 import {calendarController} from "../controllers/calendarController";
 import {planningBlocksController} from "../planningBlocks/planningBlocksController";
