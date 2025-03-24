@@ -1,0 +1,11 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"tsc --watch -p tsconfig.json\" \"tsc-alias -p tsconfig.json --watch\" \"nodemon --watch 'dist/**/*.js' --exec 'node --inspect=9229 dist/app.js'\"",
+    "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
+    "start": "nodemon dist/app.js"
+  }
+}

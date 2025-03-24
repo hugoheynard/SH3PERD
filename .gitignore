@@ -1,4 +1,23 @@
+# Dépendances
 /node_modules/
-/.idea/
-/backend/dist/
-./.env
+
+# Builds locaux (tous les packages)
+packages/*/dist/
+dist/
+
+# Cache TypeScript
+*.tsbuildinfo
+
+# IDE / Editor config
+.idea/
+
+# Environnements
+.env
+.env.*
+
+# Logs
+*.log
+
+# Tests / Jest
+coverage/
+packages/*/coverage/
