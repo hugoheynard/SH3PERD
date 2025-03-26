@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync, existsSync, readFileSync, rmSync } from 'fs';
 import { join } from 'path';
 
-const packageName = process.argv[2];
+const packageName: string = process.argv[2];
 
 if (!packageName) {
     console.error('❌ Tu dois fournir un nom de package :');
@@ -9,10 +9,10 @@ if (!packageName) {
     process.exit(1);
 }
 
-const basePath = join('packages', packageName);
-const srcPath = join(basePath, 'src');
-const testPath = join(basePath, '__tests__');
-const templatePath = join('dev-toolbox', 'templates');
+const basePath: string = join('packages', packageName);
+const srcPath: string = join(basePath, 'src');
+const testPath: string = join(basePath, '__tests__');
+const templatePath: string = join('dev-toolbox', 'templates');
 
 if (existsSync(basePath)) {
     console.error(`❌ Le package ${packageName} existe déjà.`);
@@ -44,7 +44,7 @@ try {
 } catch (err) {
     console.error('❌ Une erreur est survenue pendant la création du package :', err);
 
-    // 🧯 Rollback en cas d'échec
+    // 🧯 Rollback in case of failure
     try {
         rmSync(basePath, { recursive: true, force: true });
         console.log(`🗑️  Package partiel supprimé : /packages/${packageName}`);
@@ -55,7 +55,7 @@ try {
     process.exit(1);
 }
 
-// 🧹 Nettoyage post-script
+// 🧹 Cleaning post-script
 try {
     rmSync('dist-dev-toolbox', { recursive: true, force: true });
     console.log('🧹 Dossier dist-dev-toolbox supprimé après exécution');

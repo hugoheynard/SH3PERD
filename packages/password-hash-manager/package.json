@@ -1,5 +1,5 @@
 {
-  "name": "@sh3pherd/testcrea",
+  "name": "@sh3pherd/password-hash-manager",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -4,5 +4,5 @@ module.exports = {
     ...base,
     projects: undefined,
     rootDir: './',
-    displayName: 'testcrea'
+    displayName: 'password-hash-manager'
 };
