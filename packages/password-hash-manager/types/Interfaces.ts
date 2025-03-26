@@ -29,6 +29,14 @@ export interface IHashParser {
     };
 }
 
+export interface ICompareResult {
+    isValid: boolean;
+    wasRehashed: boolean;
+    newHash?: string;
+}
+
+export type TVerifyLastHashDateFunction = (input: { lastHashDate: string, rehashAfterDays: number}) => boolean;
+
 /**
  * IArgon2_Options
  *
@@ -74,6 +82,7 @@ export interface IHasherConfigObject<TOptions = unknown> {
     /** Algorithm-specific configuration options */
     configOptions: TOptions;
 }
+
 
 
 
