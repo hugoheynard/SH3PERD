@@ -1,5 +1,21 @@
 import {Options} from "argon2";
 
+
+export interface IPasswordManagerInput {
+    currentStrategyKey: string;
+    registry: Record<string, IHasherStrategy>;
+    hashParserFunction: THashParserFunction;
+    verifyLastHashDateFunction: TVerifyLastHashDateFunction;
+    rehashAfterDays: number;
+}
+
+export interface ICompareResult {
+    isValid: boolean;
+    wasRehashed: boolean;
+    newHash?: string;
+}
+
+//STRATEGIES
 /**
  * IHasherStrategy
  * Common interface for password hashing strategies classes.
@@ -15,27 +31,6 @@ export interface IHasherConstructor<TOptions> {
         hashParser: IHashParser;
     }): IHasherStrategy;
 }
-
-/**
- * IHashParser
- * Common interface for hash parser classes.
- */
-export interface IHashParser {
-    extract(input: string): {
-        library: string;
-        algorithm: string;
-        versionConfig: string;
-        rawHash: string;
-    };
-}
-
-export interface ICompareResult {
-    isValid: boolean;
-    wasRehashed: boolean;
-    newHash?: string;
-}
-
-export type TVerifyLastHashDateFunction = (input: { lastHashDate: string, rehashAfterDays: number}) => boolean;
 
 /**
  * IArgon2_Options
@@ -83,6 +78,29 @@ export interface IHasherConfigObject<TOptions = unknown> {
     configOptions: TOptions;
 }
 
+//UTILS
+/**
+ * IHashParser
+ * Common interface for hash parser classes.
+ */
+export interface IHashParser {
+    extract: THashParserFunction;
+}
 
+/**
+ * THashParserFunction
+ * type for hashParser function.
+ */
+export type THashParserFunction = (hash: string) => {
+    library: string;
+    algorithm: string;
+    versionConfig: string;
+    hashed_at: string;
+    rawHash: string;
+};
 
-
+/**
+ * TVerifyLastHashDateFunction
+ * type for verifying if a date conditions rehash.
+ */
+export type TVerifyLastHashDateFunction = (input: { lastHashDate: string, rehashAfterDays: number}) => boolean;
