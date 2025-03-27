@@ -1,4 +1,4 @@
-import type {IHasherConfigObject, IHashParser} from "../types/Interfaces";
+import type {IHasherConfigObject, IHashParser, TAlgoLibs, TAlgorithms} from "../types/Interfaces";
 import {BaseHasherStrategy} from "../src/strategies/BaseHasherStrategy";
 
 
@@ -11,10 +11,11 @@ describe("BaseHasherStrategy", () => {
     };
 
     const mockParser: IHashParser = {
-        extract: (input: string) => ({
-            library: "testlib",
-            algorithm: "testalgo",
+        extract: (input ) => ({
+            library: "testlib" as TAlgoLibs,
+            algorithm: "testalgo" as TAlgorithms,
             versionConfig: "v1",
+            hashed_at: '2025-12-31',
             rawHash: input
         }),
     };

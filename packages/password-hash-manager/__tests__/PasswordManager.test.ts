@@ -1,104 +1,88 @@
-import type {IHasherStrategy, IHashParser} from "../types/Interfaces";
-import {PasswordManager} from "../src/PasswordManager";
 import { jest } from '@jest/globals';
-
-
-const FAKE_HASH = 'lib:::algo:::v1:::2000-01-01:::$hash$';
-const PASSWORD = 'correct_password';
-
-// 🧪 Fake hashing strategy
-class MockHasher implements IHasherStrategy {
-    async hashPassword(): Promise<string> {
-        return FAKE_HASH;
-    }
-
-    async comparePassword(input: { password: string; hashedPassword: string }): Promise<boolean> {
-        return input.password === PASSWORD;
-    }
-}
-
-// 🧪 Fake parser that returns an old hash date
-const mockParser: IHashParser = {
-    extract: (input: string)=> {
-        const [, algorithm, version, date, rawHash] = input
-            .replace(/[<>]/g, '')
-            .split(':');
-
-        return {
-            library: 'lib',
-            algorithm,
-            versionConfig: version,
-            date: new Date(date),
-            rawHash,
-        };
-    },
-};
+import type {IHasherStrategy, TAlgoLibs, TAlgorithms} from "../types/Interfaces";
+import {PasswordManager} from "../src/PasswordManager";
 
 describe('PasswordManager', () => {
-    it('should call onRehash if hash is too old', async () => {
-        const onRehash: (newHash: string) => Promise<void> = jest.fn().mockResolvedValue(undefined);
-        const verifyLastHashDateFunction = jest.fn().mockReturnValue(true);
+    const mockHashParserFunction = jest.fn((_hash: string) => ({
+        library: 'argon2' as TAlgoLibs,
+        algorithm: 'argon2id' as TAlgorithms,
+        versionConfig: 'v1',
+        hashed_at: new Date().toISOString(),
+        rawHash: 'raw',
+    }));
 
-        const manager = new PasswordManager({
-            currentStrategyKey: 'algo:v1',
-            registry: { 'algo:v1': new MockHasher() },
-            hashParser: mockParser,
-            verifyLastHashDateFunction,
-            onRehash,
-            rehashAfterDays: 30,
-        });
+    const mockVerifyLastHashDateFunction = jest.fn(() => false);
 
-        const result = await manager.comparePassword({
-            password: PASSWORD,
-            hashedPassword: FAKE_HASH,
-        });
+    const mockStrategy: IHasherStrategy = {
+        hashPassword: jest.fn(({ password }) => Promise.resolve(`hashed-${password}`)),
+        comparePassword: jest.fn(({ password, hashedPassword }) =>
+            Promise.resolve(password === 'correct' && hashedPassword === 'hashed-correct')
+        ),
+    };
 
-        expect(result).toBe(true);
-        expect(verifyLastHashDateFunction).toHaveBeenCalled();
-        expect(onRehash).toHaveBeenCalledWith(FAKE_HASH);
+    const registry = {
+        'argon2id:v1': mockStrategy,
+        'current:v1': mockStrategy,
+    };
+
+    const passwordManager = new PasswordManager({
+        currentStrategyKey: 'argon2id:v1',
+        registry,
+        hashParserFunction: mockHashParserFunction,
+        verifyLastHashDateFunction: mockVerifyLastHashDateFunction,
+        rehashAfterDays: 30,
     });
 
-    it('should not call onRehash if rehash not needed', async () => {
-        const onRehash: (newHash: string) => Promise<void> = jest.fn().mockResolvedValue(undefined);
-        const verifyLastHashDateFunction = jest.fn().mockReturnValue(false);
-
-        const manager = new PasswordManager({
-            currentStrategyKey: 'algo:v1',
-            registry: { 'algo:v1': new MockHasher() },
-            hashParser: mockParser,
-            verifyLastHashDateFunction,
-            onRehash,
-            rehashAfterDays: 30,
+    it('should return isValid: true and wasRehashed: false for valid password and no rehash needed', async () => {
+        const result = await passwordManager.comparePassword({
+            password: 'correct',
+            hashedPassword: 'some-fake-hash',
         });
 
-        const result = await manager.comparePassword({
-            password: PASSWORD,
-            hashedPassword: FAKE_HASH,
+        expect(result).toEqual({
+            isValid: true,
+            wasRehashed: false,
         });
-
-        expect(result).toBe(true);
-        expect(onRehash).not.toHaveBeenCalled();
     });
 
-    it('should return false if password is invalid', async () => {
-        const onRehash: (newHash: string) => Promise<void> = jest.fn().mockResolvedValue(undefined);
-        const verifyLastHashDateFunction = jest.fn();
+    it('should return isValid: false when password is incorrect', async () => {
+        const result = await passwordManager.comparePassword({
+            password: 'wrong',
+            hashedPassword: 'hashed-correct',
+        });
+
+        expect(result).toEqual({
+            isValid: false,
+            wasRehashed: false,
+        });
+    });
+
+    it('should rehash if key differs from currentStrategyKey', async () => {
+        const differentStrategyParser = jest.fn(() => ({
+            library: 'argon2' as TAlgoLibs,
+            algorithm: 'argon2id' as TAlgorithms,
+            versionConfig: 'v2', // different version
+            hashed_at: new Date().toISOString(),
+            rawHash: 'raw',
+        }));
 
         const manager = new PasswordManager({
-            currentStrategyKey: 'algo:v1',
-            registry: { 'algo:v1': new MockHasher() },
-            hashParser: mockParser,
-            verifyLastHashDateFunction,
-            onRehash,
+            currentStrategyKey: 'argon2id:v1',
+            registry: {
+                'argon2id:v1': mockStrategy,
+                'argon2id:v2': mockStrategy,
+            },
+            hashParserFunction: differentStrategyParser,
+            verifyLastHashDateFunction: mockVerifyLastHashDateFunction,
             rehashAfterDays: 30,
         });
 
         const result = await manager.comparePassword({
-            password: 'wrong_password',
-            hashedPassword: FAKE_HASH,
+            password: 'correct',
+            hashedPassword: 'some-fake-hash',
         });
 
-        expect(result).toBe(false);
-        expect(onRehash).not.toHaveBeenCalled();
+        expect(result.wasRehashed).toBe(true);
+        expect(result.newHash).toBeDefined();
     });
 });

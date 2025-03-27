@@ -1,22 +1,24 @@
 import { describe, it, expect } from '@jest/globals';
 import argon2 from 'argon2';
 
-import type { IArgon2_Options, IHasherConfigObject, IHashParser } from '../types/Interfaces';
+import type {IArgon2_Options, IHasherConfigObject, IHashParser, TAlgoLibs, TAlgorithms} from '../types/Interfaces';
 import { Argon2Hasher } from '../src/strategies/Argon2Hasher';
 
 // 🧪 Parser réel utilisé dans la stratégie
 const HashParser: IHashParser = {
-    extract(versionedHash: string) {
+    extract: (versionedHash) =>{
         const parts = versionedHash.split(':::');
         if (parts.length !== 5) {
             throw new Error(`Invalid hash format: expected 5 parts, got ${parts.length}`);
         }
 
-        const [library, algorithm, versionConfig, date, rawHash] = parts.map(part =>
-            part.replace(/[<>]/g, '')
-        );
-
-        return { library, algorithm, versionConfig, date, rawHash };
+        const [library, algorithm, versionConfig, hashed_at, rawHash] = parts;
+        return {
+            library: library as TAlgoLibs,
+            algorithm: algorithm as TAlgorithms,
+            versionConfig,
+            hashed_at,
+            rawHash };
     },
 };
 

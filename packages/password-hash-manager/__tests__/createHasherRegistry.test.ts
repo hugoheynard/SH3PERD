@@ -1,15 +1,16 @@
-import type {IHashParser} from "../types/Interfaces";
+import type {IHashParser, THashParserFunction} from "../types/Interfaces";
 import {createHasherRegistry} from "../src/hasherRegistry/createHasherRegistry";
 import { jest } from '@jest/globals';
 
 describe('createHasherRegistry', () => {
     const mockParser: IHashParser = {
-        extract: jest.fn((_hash: string) => ({
+        extract: jest.fn(((_hash: string) => ({
             library: 'argon2',
             algorithm: 'argon2id',
-            version: 'v1',
+            versionConfig: 'v1',
+            hashed_at: '2025-01-01',
             rawHash: '$argon2id$example',
-        })),
+        })) as THashParserFunction),
     };
 
     it('should return a registry with the expected keys and instances', () => {

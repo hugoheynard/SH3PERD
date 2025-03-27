@@ -13,7 +13,7 @@ import type {TVerifyLastHashDateFunction} from "../../types/Interfaces";
  *
  * @returns `true` if the hash is old enough to require rehashing, otherwise `false`.
  */
-export const isRehashDueFromLastHashDate = TVerifyLastHashDateFunction = (input) => {
+export const isRehashDueFromLastHashDate : TVerifyLastHashDateFunction = (input) => {
     const { lastHashDate, rehashAfterDays } = input;
 
     const parsedDate = new Date(lastHashDate);

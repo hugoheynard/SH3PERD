@@ -1,5 +1,5 @@
 import {BcryptHasher} from "../src/strategies/BcryptHasher";
-import type {Bcrypt_Options, IHasherConfigObject, IHashParser} from "../types/Interfaces";
+import type {Bcrypt_Options, IHasherConfigObject, IHashParser, TAlgoLibs, TAlgorithms} from "../types/Interfaces";
 import { jest } from '@jest/globals';
 
 
@@ -10,8 +10,8 @@ describe("BcryptHasher", () => {
             const [library, algorithm, versionConfig, hashed_at, rawHash] = parts;
 
             return {
-                library,
-                algorithm,
+                library: library as TAlgoLibs,
+                algorithm: algorithm as TAlgorithms,
                 versionConfig,
                 hashed_at,
                 rawHash,
@@ -73,8 +73,8 @@ describe("BcryptHasher", () => {
         const badHash = "$invalid$format$hash";
 
         mockHashParser.extract = jest.fn(() => ({
-            library: "bcrypt",
-            algorithm: "bcrypt",
+            library: "bcrypt" as TAlgoLibs,
+            algorithm: "bcrypt" as TAlgorithms,
             versionConfig: "v1",
             hashed_at: "20250326",
             rawHash: badHash,

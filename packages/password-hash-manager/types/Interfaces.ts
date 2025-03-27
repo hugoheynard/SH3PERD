@@ -9,7 +9,10 @@ export interface IPasswordManagerInput {
     rehashAfterDays: number;
 }
 
-export interface ICompareResult {
+export type TAlgoLibs = 'argon2' | 'bcrypt';
+export type TAlgorithms = 'argon2id' | '$2b$';
+
+export type ICompareResult = {
     isValid: boolean;
     wasRehashed: boolean;
     newHash?: string;
@@ -23,6 +26,11 @@ export interface ICompareResult {
 export interface IHasherStrategy {
     hashPassword(input: { password: string }): Promise<string>;
     comparePassword(input: { password: string, hashedPassword: string }): Promise<boolean>;
+}
+
+export interface IPasswordManager {
+    hashPassword(input: { password: string }): Promise<string>;
+    comparePassword(input: { password: string, hashedPassword: string }): Promise<ICompareResult>;
 }
 
 export interface IHasherConstructor<TOptions> {
@@ -92,8 +100,8 @@ export interface IHashParser {
  * type for hashParser function.
  */
 export type THashParserFunction = (hash: string) => {
-    library: string;
-    algorithm: string;
+    library: TAlgoLibs;
+    algorithm: TAlgorithms;
     versionConfig: string;
     hashed_at: string;
     rawHash: string;
