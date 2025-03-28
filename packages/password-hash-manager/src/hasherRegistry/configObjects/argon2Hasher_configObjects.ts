@@ -1,5 +1,5 @@
 import argon2 from 'argon2';
-import type {IArgon2_Options, IHasherConfigObject} from "../../../types/Interfaces";
+import type {IArgon2_Options, IHasherConfigObject} from "../../types/Interfaces";
 
 
 export const argon2Hasher_config_v1: IHasherConfigObject<IArgon2_Options>  = Object.freeze({

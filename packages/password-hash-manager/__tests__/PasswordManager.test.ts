@@ -1,42 +1,61 @@
 import { jest } from '@jest/globals';
-import type {IHasherStrategy, TAlgoLibs, TAlgorithms} from "../types/Interfaces";
+import type {
+    IHasherStrategy,
+    TAlgoLibs,
+    TAlgorithms,
+    THashParserFunction,
+    TVerifyLastHashDateFunction
+} from "../src/types/Interfaces";
 import {PasswordManager} from "../src/PasswordManager";
 
+export const createMockHasherStrategy = (isValid: boolean): IHasherStrategy => ({
+    hashPassword: jest.fn(({ password }) => Promise.resolve(`hashed-${password}`)),
+    comparePassword: jest.fn(({ password, hashedPassword }) =>
+        Promise.resolve(isValid && hashedPassword === `hashed-${password}`)
+    ),
+});
+
+export const mockParsedHash = (
+    overrides?: Partial<ReturnType<THashParserFunction>>
+): ReturnType<THashParserFunction> => ({
+    library: 'argon2' as TAlgoLibs,
+    algorithm: 'argon2id' as TAlgorithms,
+    versionConfig: 'v1',
+    hashed_at: new Date().toISOString(),
+    rawHash: 'some-hash',
+    ...overrides,
+});
+
+export const createMockHashParser = (
+    overrides?: Partial<ReturnType<THashParserFunction>>
+): jest.MockedFunction<THashParserFunction> =>
+    jest.fn((_hash) => mockParsedHash(overrides));
+
+export const createMockDateVerifier = (
+    shouldRehash: boolean
+): jest.MockedFunction<TVerifyLastHashDateFunction> =>
+    jest.fn(() => shouldRehash);
+
 describe('PasswordManager', () => {
-    const mockHashParserFunction = jest.fn((_hash: string) => ({
-        library: 'argon2' as TAlgoLibs,
-        algorithm: 'argon2id' as TAlgorithms,
-        versionConfig: 'v1',
-        hashed_at: new Date().toISOString(),
-        rawHash: 'raw',
-    }));
+    let passwordManager: PasswordManager;
 
-    const mockVerifyLastHashDateFunction = jest.fn(() => false);
+    beforeEach(() => {
+        const mockStrategy = createMockHasherStrategy(true);
+        const registry = { 'argon2id:v1': mockStrategy };
 
-    const mockStrategy: IHasherStrategy = {
-        hashPassword: jest.fn(({ password }) => Promise.resolve(`hashed-${password}`)),
-        comparePassword: jest.fn(({ password, hashedPassword }) =>
-            Promise.resolve(password === 'correct' && hashedPassword === 'hashed-correct')
-        ),
-    };
-
-    const registry = {
-        'argon2id:v1': mockStrategy,
-        'current:v1': mockStrategy,
-    };
-
-    const passwordManager = new PasswordManager({
-        currentStrategyKey: 'argon2id:v1',
-        registry,
-        hashParserFunction: mockHashParserFunction,
-        verifyLastHashDateFunction: mockVerifyLastHashDateFunction,
-        rehashAfterDays: 30,
+        passwordManager = new PasswordManager({
+            currentStrategyKey: 'argon2id:v1',
+            registry,
+            hashParserFunction: createMockHashParser(),
+            verifyLastHashDateFunction: createMockDateVerifier(false),
+            rehashAfterDays: 30,
+        });
     });
 
-    it('should return isValid: true and wasRehashed: false for valid password and no rehash needed', async () => {
+    it('should validate a correct password', async () => {
         const result = await passwordManager.comparePassword({
             password: 'correct',
-            hashedPassword: 'some-fake-hash',
+            hashedPassword: 'hashed-correct',
         });
 
         expect(result).toEqual({
@@ -45,7 +64,7 @@ describe('PasswordManager', () => {
         });
     });
 
-    it('should return isValid: false when password is incorrect', async () => {
+    it('should reject an incorrect password', async () => {
         const result = await passwordManager.comparePassword({
             password: 'wrong',
             hashedPassword: 'hashed-correct',
@@ -57,29 +76,43 @@ describe('PasswordManager', () => {
         });
     });
 
-    it('should rehash if key differs from currentStrategyKey', async () => {
-        const differentStrategyParser = jest.fn(() => ({
-            library: 'argon2' as TAlgoLibs,
-            algorithm: 'argon2id' as TAlgorithms,
-            versionConfig: 'v2', // different version
-            hashed_at: new Date().toISOString(),
-            rawHash: 'raw',
-        }));
-
+    it('should trigger rehash if version key is different', async () => {
+        const mockStrategy = createMockHasherStrategy(true);
         const manager = new PasswordManager({
             currentStrategyKey: 'argon2id:v1',
             registry: {
                 'argon2id:v1': mockStrategy,
                 'argon2id:v2': mockStrategy,
             },
-            hashParserFunction: differentStrategyParser,
-            verifyLastHashDateFunction: mockVerifyLastHashDateFunction,
+            hashParserFunction: createMockHashParser({ versionConfig: 'v2' }),
+            verifyLastHashDateFunction: createMockDateVerifier(false),
             rehashAfterDays: 30,
         });
 
         const result = await manager.comparePassword({
             password: 'correct',
-            hashedPassword: 'some-fake-hash',
+            hashedPassword: 'hashed-correct',
+        });
+
+        expect(result.wasRehashed).toBe(true);
+        expect(result.newHash).toBeDefined();
+    });
+
+    it('should trigger rehash if hash is too old', async () => {
+        const pastDate = new Date();
+        pastDate.setDate(pastDate.getDate() - 40);
+
+        const manager = new PasswordManager({
+            currentStrategyKey: 'argon2id:v1',
+            registry: { 'argon2id:v1': createMockHasherStrategy(true) },
+            hashParserFunction: createMockHashParser({ hashed_at: pastDate.toISOString() }),
+            verifyLastHashDateFunction: createMockDateVerifier(true),
+            rehashAfterDays: 30,
+        });
+
+        const result = await manager.comparePassword({
+            password: 'correct',
+            hashedPassword: 'hashed-correct',
         });
 
         expect(result.wasRehashed).toBe(true);

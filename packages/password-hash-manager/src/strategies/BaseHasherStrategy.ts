@@ -1,4 +1,4 @@
-import type {IHasherConfigObject, IHasherStrategy, IHashParser} from "../../types/Interfaces";
+import type {IHasherConfigObject, IHasherStrategy, IHashParser} from "../types/Interfaces";
 
 
 export abstract class BaseHasherStrategy<TOptions> implements IHasherStrategy {

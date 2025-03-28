@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import {BaseHasherStrategy} from "./BaseHasherStrategy";
-import type {Bcrypt_Options, IHasherConfigObject, IHashParser} from "../../types/Interfaces";
+import type {Bcrypt_Options, IHasherConfigObject, IHashParser} from "../types/Interfaces";
 
 
 /**

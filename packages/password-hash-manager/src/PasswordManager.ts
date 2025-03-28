@@ -3,7 +3,7 @@ import type {
     IHasherStrategy, IPasswordManager,
     IPasswordManagerInput, THashParserFunction,
     TVerifyLastHashDateFunction
-} from "../types/Interfaces";
+} from "./types/Interfaces";
 
 
 export class PasswordManager implements IPasswordManager {

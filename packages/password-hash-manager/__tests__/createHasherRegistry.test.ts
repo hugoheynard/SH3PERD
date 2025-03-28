@@ -1,4 +1,4 @@
-import type {IHashParser, THashParserFunction} from "../types/Interfaces";
+import type {IHashParser, THashParserFunction} from "../src/types/Interfaces";
 import {createHasherRegistry} from "../src/hasherRegistry/createHasherRegistry";
 import { jest } from '@jest/globals';
 

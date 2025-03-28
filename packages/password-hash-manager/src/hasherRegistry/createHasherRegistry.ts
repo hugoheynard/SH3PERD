@@ -1,4 +1,4 @@
-import type {IHasherStrategy, IHashParser} from "../../types/Interfaces";
+import type {IHasherStrategy, IHashParser} from "../types/Interfaces";
 import {Argon2Hasher} from "../strategies/Argon2Hasher";
 import {argon2Hasher_config_v1} from "./configObjects/argon2Hasher_configObjects";
 import {BcryptHasher} from "../strategies/BcryptHasher";

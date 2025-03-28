@@ -1,4 +1,4 @@
-import type {IHashParser, TAlgoLibs, TAlgorithms} from "../../types/Interfaces";
+import type {IHashParser, TAlgoLibs, TAlgorithms} from "../types/Interfaces";
 
 /**
  * HashParser is a utility that extracts metadata from a versioned password hash string.

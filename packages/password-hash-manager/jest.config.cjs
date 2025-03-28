@@ -4,5 +4,11 @@ module.exports = {
     ...base,
     projects: undefined,
     rootDir: './',
-    displayName: 'password-hash-manager'
+    displayName: 'password-hash-manager',
+    globals: {
+        'ts-jest': {
+            tsconfig: './tsconfig.test.json',
+            useESM: true
+        }
+    }
 };

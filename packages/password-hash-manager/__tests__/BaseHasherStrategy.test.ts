@@ -1,4 +1,4 @@
-import type {IHasherConfigObject, IHashParser, TAlgoLibs, TAlgorithms} from "../types/Interfaces";
+import type {IHasherConfigObject, IHashParser, TAlgoLibs, TAlgorithms} from "../src/types/Interfaces";
 import {BaseHasherStrategy} from "../src/strategies/BaseHasherStrategy";
 
 

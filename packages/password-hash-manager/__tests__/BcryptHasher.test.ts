@@ -1,5 +1,5 @@
 import {BcryptHasher} from "../src/strategies/BcryptHasher";
-import type {Bcrypt_Options, IHasherConfigObject, IHashParser, TAlgoLibs, TAlgorithms} from "../types/Interfaces";
+import type {Bcrypt_Options, IHasherConfigObject, IHashParser, TAlgoLibs, TAlgorithms} from "../src/types/Interfaces";
 import { jest } from '@jest/globals';
 
 
