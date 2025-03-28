@@ -1,5 +1,5 @@
 {
-  "name": "@sh3pherd/password-hash-manager",
+  "name": "@sh3pherd/password-manager",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

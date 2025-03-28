@@ -5,5 +5,5 @@ module.exports = {
     ...base,
     projects: undefined,
     rootDir: './',
-    displayName: 'password-hash-manager',
+    displayName: 'password-manager',
 };
