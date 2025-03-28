@@ -2,6 +2,7 @@ import type {IHashParser, THashParserFunction} from "../src/types/Interfaces";
 import {createHasherRegistry} from "../src/hasherRegistry/createHasherRegistry";
 import { jest } from '@jest/globals';
 
+
 describe('createHasherRegistry', () => {
     const mockParser: IHashParser = {
         extract: jest.fn(((_hash: string) => ({

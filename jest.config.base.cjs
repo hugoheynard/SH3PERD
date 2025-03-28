@@ -6,7 +6,7 @@ module.exports = {
     transform: {
         '^.+\\.tsx?$': ['ts-jest', {
             useESM: true,
-            tsconfig: './tsconfig.test.json', // 👈 chaque package peut avoir le sien
+            tsconfig: './tsconfig.test.json',
         }],
     },
 

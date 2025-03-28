@@ -3,6 +3,7 @@ import type {Bcrypt_Options, IHasherConfigObject, IHashParser, TAlgoLibs, TAlgor
 import { jest } from '@jest/globals';
 
 
+
 describe("BcryptHasher", () => {
     const mockHashParser: IHashParser = {
         extract: jest.fn((versionedHash: string) => {
