@@ -1,6 +1,6 @@
 // userAlreadyExistsManual.test.ts
 import type { Request, Response, NextFunction } from 'express';
-import { userAlreadyExistsManual } from '../userAlreadyExistsManual';
+import { userAlreadyExistsManual } from '../../../backend/src/registration/middlewares/userAlreadyExistsManual';
 
 describe('userAlreadyExistsManual middleware', () => {
     let mockReq: Partial<Request>;

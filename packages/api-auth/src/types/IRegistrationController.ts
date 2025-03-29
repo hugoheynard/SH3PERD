@@ -1,5 +1,5 @@
 import type {NextFunction, Request, Response} from "express";
-import type {IRegistrationService} from "./IRegistrationService";
+import type {IRegistrationService} from "../../../auth-core/src/types/IRegistrationService";
 
 export interface IRegistrationController{
     input: {

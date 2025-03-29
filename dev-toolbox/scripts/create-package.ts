@@ -33,6 +33,7 @@ try {
 
     writeFileSync(join(basePath, 'package.json'), loadTemplate('package.json', { packageName }));
     writeFileSync(join(basePath, 'tsconfig.json'), loadTemplate('tsconfig.json', { packageName }));
+    writeFileSync(join(basePath, 'tsconfig.test.json'), loadTemplate('tsconfig.test.json', { packageName }));
     writeFileSync(join(basePath, 'jest.config.cjs'), loadTemplate('jest.config.cjs', { packageName }));
     writeFileSync(join(srcPath, 'index.ts'), `// Entry point for @sh3pherd/${packageName}\n`);
     writeFileSync(join(testPath, `${packageName}.test.ts`), `test('${packageName} works', () => {

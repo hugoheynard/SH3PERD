@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import type { IRegistrationMethods } from "../interfaces/IRegistrationMethod";
+import type { IRegistrationMethods } from "../../../../api-auth/src/types/IRegistrationMethod";
 
 /**
  * Middleware factory that injects a specific registration method into the request body.

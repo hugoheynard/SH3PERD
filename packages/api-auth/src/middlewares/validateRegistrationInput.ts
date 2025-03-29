@@ -1,11 +1,11 @@
 import type { Request, Response, NextFunction } from 'express';
 
-export const validManualRegisterInput = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-): void => {
+export const validateRegistrationInput = (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
+
+    if (email === undefined || password=== undefined) {
+        return res.status(400).json({ message: 'Missing email or password' });
+    }
 
     if (typeof email !== 'string' || email.trim() === '') {
         res.status(400).json({ message: 'Email is required and must be a string.' });

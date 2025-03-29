@@ -1,6 +1,6 @@
-import { addRegistrationMethod } from '../addRegistrationMethod';
+import { addRegistrationMethod } from '../../../backend/src/registration/middlewares/addRegistrationMethod';
 import type { Request, Response, NextFunction } from 'express';
-import type { IRegistrationMethods } from '../../interfaces/IRegistrationMethod';
+import type { IRegistrationMethods } from '../../src/types/IRegistrationMethod';
 import { jest } from '@jest/globals';
 
 describe('addRegistrationMethod middleware', () => {

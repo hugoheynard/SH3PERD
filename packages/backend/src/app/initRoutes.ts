@@ -8,7 +8,7 @@ import {planningBlocksRouter} from "../planningBlocks/planningBlocksRouter";
 import {musicLibraryRouter} from "../routes/musicLibrary/musicLibraryRouter";
 import {playlistRouter} from "../playlist/playlistRouter";
 import {addUser_id} from "../playlist/middlewares/addUser_id";
-import {registrationRouter} from "../registration/registrationRouter";
+import {registerRoute} from "../../../api-auth/src/routes/register.route";
 
 
 export const initRoutes = (app: Express, { controllers } : any, { middlewares }: any): Express => {
@@ -20,7 +20,7 @@ export const initRoutes = (app: Express, { controllers } : any, { middlewares }:
 
 //Routers
 
-        app.use('/register', registrationRouter({
+        app.use('/register', registerRoute({
             registrationController: controllers.registrationController,
             registrationMiddlewares: middlewares.registration
         }));

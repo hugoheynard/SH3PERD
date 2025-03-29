@@ -3,6 +3,9 @@
     "target": "ES2022",
     "module": "ESNext",
     "baseUrl": "./",
+    "paths": {
+      "@sh3pherd/*": ["packages/*/src/index.ts"]
+    },
     "types": ["node", "jest"],
     "lib": ["esnext"],
     "moduleResolution": "node",
@@ -18,6 +21,7 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
-  }
+  },
+
 }
 

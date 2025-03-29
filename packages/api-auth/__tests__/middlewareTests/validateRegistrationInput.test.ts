@@ -1,5 +1,7 @@
-import { validManualRegisterInput } from '../validManualRegisterInput';
+import { validateRegistrationInput } from '../../src/middlewares/validateRegistrationInput';
 import type { Request, Response, NextFunction } from 'express';
+import { jest } from '@jest/globals';
+
 
 describe('validManualRegisterInput middleware', () => {
     let mockReq: Partial<Request>;
@@ -8,15 +10,18 @@ describe('validManualRegisterInput middleware', () => {
 
     beforeEach(() => {
         mockReq = { body: {} };
-        mockRes = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn(),
-        };
+
+        const res = {} as Response;
+        res.status = jest.fn().mockReturnValue(res) as unknown as Response['status'];
+        res.json = jest.fn().mockReturnValue(res) as unknown as Response['json'];
+
+        mockRes = res;
+
         jest.clearAllMocks();
     });
 
     const trigger = () =>
-        validManualRegisterInput(
+        validateRegistrationInput(
             mockReq as Request,
             mockRes as Response,
             mockNext as NextFunction
@@ -42,7 +47,20 @@ describe('validManualRegisterInput middleware', () => {
 
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.json).toHaveBeenCalledWith({
-            message: 'Email is required and must be a string.',
+            message: 'Missing email or password',
+        });
+    });
+
+    it('should reject missing password', () => {
+        mockReq.body = {
+            email: 'user@example.com',
+        };
+
+        trigger();
+
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({
+            message: 'Missing email or password',
         });
     });
 

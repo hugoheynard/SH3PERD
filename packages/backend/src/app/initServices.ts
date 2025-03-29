@@ -10,7 +10,7 @@ import {musicService} from "../services/musicService/musicService";
 import {playlistTemplateService} from "../playlist/playlistTemplateService";
 import {playlistService} from "../playlist/playlistService";
 import {PlaylistModule} from "../playlist/classes/PlaylistModule";
-import {registrationService} from "../registration/registrationService";
+import {registrationService} from "../../../auth-core/src/services/registrationService";
 
 
 

@@ -5,7 +5,7 @@ import {planningBlocksController} from "../planningBlocks/planningBlocksControll
 import {musicLibraryController} from "../controllers/musicLibraryController";
 import {playlistController} from "../playlist/playlistController";
 import {playlistTemplateService} from "../playlist/playlistTemplateService";
-import {registrationController} from "../registration/registrationController";
+import {registerController} from "../../../api-auth/src/controllers/register.controller";
 
 
 
@@ -20,7 +20,7 @@ export const initControllers = ({ services }: any): any => {
 
 
         const controllers ={
-            registrationController: registrationController({
+            registrationController: registerController({
                 registrationService: services.registrationService
             }),
 

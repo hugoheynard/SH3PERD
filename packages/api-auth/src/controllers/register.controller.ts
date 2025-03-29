@@ -1,9 +1,9 @@
 import type {NextFunction, Request, Response} from "express";
-import {wrap_TryCatchNextErr} from "../controllers/utilities/wrap_tryCatchNextErr";
-import type {IRegistrationController} from "./interfaces/IRegistrationController";
+import {wrap_TryCatchNextErr} from "../../../backend/src/controllers/utilities/wrap_tryCatchNextErr";
+import type {IRegistrationController} from "../types/IRegistrationController";
 
 
-export const registrationController = (input: IRegistrationController['input']): IRegistrationController['output'] => {
+export const registerController = (input: IRegistrationController['input']): IRegistrationController['output'] => {
     const { registrationService } = input;
 
     const controller: IRegistrationController['output'] = {
