@@ -1,4 +1,4 @@
-test('auth-core works', () => {
+test('user-adapters works', () => {
     expect(true).toBe(true);
   });
   

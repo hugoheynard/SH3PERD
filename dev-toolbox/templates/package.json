@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -w -p tsconfig.json",
     "test": "jest"
   }
 }

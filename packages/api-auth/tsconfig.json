@@ -3,9 +3,17 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "typeRoots": ["./src/types", "./node_modules/@types"],
     "composite": true,
     "declaration": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../auth-core"
+    },
+    {
+      "path": "../shared-utils"
+    }
+
+  ]
 }

@@ -3,15 +3,18 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "baseUrl": "src",
-    "paths": {
-      "@utils/*": ["utils/*"]
-    }
+    "composite": true,
+    "declaration": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/tests/**"],
-  "tsc-alias": {
-    "resolveFullPaths": true,
-    "verbose": false
-  }
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "../shared-utils"
+    },
+    {
+      "path": "../api-auth"
+    }
+  ]
 }

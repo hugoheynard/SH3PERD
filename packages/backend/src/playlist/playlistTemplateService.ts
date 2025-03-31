@@ -1,6 +1,6 @@
 import type {IPlaylistTemplateService} from "./interfaces/IPlaylistTemplateService";
 import {ObjectId} from "mongodb";
-import {wrapServiceWithTryCatch} from "../services/tryCatchServiceWrapper";
+import {wrapServiceWithTryCatch} from "@sh3pherd/shared-utils/tryCatchs/tryCatchServiceWrapper";
 import type {PlaylistTemplateDocument} from "./interfaces/IPlaylistTemplate";
 
 export const playlistTemplateService = (input: IPlaylistTemplateService["input"]) => {

@@ -1,5 +1,5 @@
-import {playlistMiddlewares} from "../playlist/playlistMiddlewares";
-import {registrationMiddlewares} from "../../../api-auth/src/middlewares/registerMiddlewares";
+import {playlistMiddlewares} from "@sh3pherd/backend/playlist/playlistMiddlewares";
+import {registrationMiddlewares} from "@sh3pherd/api-auth/middlewares/registerMiddlewares";
 
 export const initMiddlewares = ({ services }: any): any => {
     try {

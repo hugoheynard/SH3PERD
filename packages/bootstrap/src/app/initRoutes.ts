@@ -1,14 +1,14 @@
 import express, {type Express, type NextFunction, type Request, type Response} from "express";
 import cors from "cors";
-import {errorCatcher} from "../routes/middlewares/errorCatcher";
-import {authenticationRouter} from "../authentication/authenticationRouter";
-import {settingsRouter} from "../routes/settings/settingsRouter";
-import {calendarRouter} from "../routes/calendar/calendarRouter";
-import {planningBlocksRouter} from "../planningBlocks/planningBlocksRouter";
-import {musicLibraryRouter} from "../routes/musicLibrary/musicLibraryRouter";
-import {playlistRouter} from "../playlist/playlistRouter";
-import {addUser_id} from "../playlist/middlewares/addUser_id";
-import {registerRoute} from "../../../api-auth/src/routes/register.route";
+import {errorCatcher} from "@sh3pherd/backend/routes/middlewares/errorCatcher";
+import {authenticationRouter} from "@sh3pherd/backend/authentication/authenticationRouter";
+import {settingsRouter} from "@sh3pherd/backend/routes/settings/settingsRouter";
+import {calendarRouter} from "@sh3pherd/backend/routes/calendar/calendarRouter";
+import {planningBlocksRouter} from "@sh3pherd/backend/planningBlocks/planningBlocksRouter";
+import {musicLibraryRouter} from "@sh3pherd/backend/routes/musicLibrary/musicLibraryRouter";
+import {playlistRouter} from "@sh3pherd/backend/playlist/playlistRouter";
+import {addUser_id} from "@sh3pherd/backend/playlist/middlewares/addUser_id";
+import {registerRoute} from "@sh3pherd/api-auth/routes/register.route";
 
 
 export const initRoutes = (app: Express, { controllers } : any, { middlewares }: any): Express => {

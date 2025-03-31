@@ -1,15 +1,12 @@
+import type {CreateUserInput, User} from "@sh3pherd/domain-user";
+import type {UserId} from "@sh3pherd/domain-user/dist/types/types";
+
 export interface IRegistrationService{
     input: {
-        generateUserIdFunction: () => string;
+        generateUserIdFunction: () => UserId;
         hashPasswordFunction: (input: { password: string }) => Promise<string>;
-        createUserFunction: (input: {}) => Promise<void>; // ou Result<User>
-        saveUserFunction: (input: {
-            user_id: string;
-            email: string;
-            hashedPassword: string;
-            created_at: Date;
-            updated_at: Date;
-        }) => Promise<void>; // ou Result<User>
+        createUserFunction: (input: CreateUserInput) => User; // ou Result<User>
+        saveUserFunction: (input: User) => Promise<void>; // ou Result<User>
         findUserByEmailFunction: (input: { email: string }) => Promise<any>; // ou Result<User>
 
     },
@@ -19,3 +16,5 @@ export interface IRegistrationService{
         //manualRegistration: (input: { email: string; password: string; }) => Promise<InsertOneResult>;
     }
 }
+
+export type TRegistrationServiceOutput = IRegistrationService['output'];

@@ -1,16 +1,21 @@
 import {type Db} from "mongodb";
-import {type UserService, userService} from "../services/userService";
-import {planningBlocksService} from "../planningBlocks/planningBlocksService";
-import {authenticationService} from "../authentication/authenticationService";
-import {PasswordHasher} from "../authentication/login/PasswordHasher";
-import {JWT_module} from "../authentication/login/JWT_Module";
-import {settingsService} from "../services/settingsService";
-import {calendarService} from "../services/calendarService";
-import {musicService} from "../services/musicService/musicService";
-import {playlistTemplateService} from "../playlist/playlistTemplateService";
-import {playlistService} from "../playlist/playlistService";
-import {PlaylistModule} from "../playlist/classes/PlaylistModule";
-import {registrationService} from "../../../auth-core/src/services/registrationService";
+import {type UserService, userService} from "@sh3pherd/backend/services/userService";
+import {RegistrationService} from "@sh3pherd/auth-core/";
+import {planningBlocksService} from "@sh3pherd/backend/planningBlocks/planningBlocksService";
+import {authenticationService} from "@sh3pherd/backend/authentication/authenticationService";
+import {PasswordHasher} from "@sh3pherd/backend/authentication/login/PasswordHasher";
+import {JWT_module} from "@sh3pherd/backend/authentication/login/JWT_Module";
+import {settingsService} from "@sh3pherd/backend/services/settingsService";
+import {calendarService} from "@sh3pherd/backend/services/calendarService";
+import {musicService} from "@sh3pherd/backend/services/musicService/musicService";
+import {playlistTemplateService} from "@sh3pherd/backend/playlist/playlistTemplateService";
+import {playlistService} from "@sh3pherd/backend/playlist/playlistService";
+import {PlaylistModule} from "@sh3pherd/backend/playlist/classes/PlaylistModule";
+import {generateTypedId} from "@sh3pherd/shared-utils";
+import {createMongoUserRepository} from "@sh3pherd/user-adapters/";
+import {createUser} from "@sh3pherd/domain-user/";
+import {passwordManager} from "@sh3pherd/password-manager";
+
 
 
 
@@ -20,7 +25,16 @@ export const initServices = async (db: Db | null): any => {
             throw new Error('Database connection is not initialized');
         }
 
-        const registrationServiceInstance = registrationService({ users_loginsCollection: db.collection('users_logins') });
+        const userMongoRepository = createMongoUserRepository({ collection: db.collection('users_logins') });
+
+        const registrationService =  new RegistrationService({
+            generateUserIdFunction: () => generateTypedId('user'),
+            hashPasswordFunction: passwordManager.hashPassword,
+            createUserFunction: createUser,
+            saveUserFunction: userMongoRepository.saveUser,
+            findUserByEmailFunction: userMongoRepository.findUserByEmail,
+        });
+
         const settingsServiceInstance = settingsService({ collection: db.collection('settings') });
         const planningBlocksServiceInstance: any = planningBlocksService( { collection: db.collection('calendar_events') });
         const userServiceInstance: UserService = userService({ collection: db.collection('staffs') });
@@ -30,7 +44,7 @@ export const initServices = async (db: Db | null): any => {
         });
 
         const services = {
-            registrationService: registrationServiceInstance,
+            registrationService: registrationService,
 
             authenticationService: authenticationService({
                 collection: db.collection('staffs'),

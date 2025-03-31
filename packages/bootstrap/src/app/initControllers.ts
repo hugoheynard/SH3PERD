@@ -1,11 +1,11 @@
-import {authenticationController} from "../authentication/authenticationController";
-import {settingsController} from "../controllers/settingsController";
-import {calendarController} from "../controllers/calendarController";
-import {planningBlocksController} from "../planningBlocks/planningBlocksController";
-import {musicLibraryController} from "../controllers/musicLibraryController";
-import {playlistController} from "../playlist/playlistController";
-import {playlistTemplateService} from "../playlist/playlistTemplateService";
-import {registerController} from "../../../api-auth/src/controllers/register.controller";
+import {authenticationController} from "@sh3pherd/backend/authentication/authenticationController";
+import {settingsController} from "@sh3pherd/backend/controllers/settingsController";
+import {calendarController} from "@sh3pherd/backend/controllers/calendarController";
+import {planningBlocksController} from "@sh3pherd/backend/planningBlocks/planningBlocksController";
+import {musicLibraryController} from "@sh3pherd/backend/controllers/musicLibraryController";
+import {playlistController} from "@sh3pherd/backend/playlist/playlistController";
+import {playlistTemplateService} from "@sh3pherd/backend/playlist/playlistTemplateService";
+import {registerController} from "@sh3pherd/api-auth/controllers/register.controller";
 
 
 

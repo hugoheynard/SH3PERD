@@ -3,9 +3,6 @@
     "target": "ES2022",
     "module": "ESNext",
     "baseUrl": "./",
-    "paths": {
-      "@sh3pherd/*": ["packages/*/src/index.ts"]
-    },
     "types": ["node", "jest"],
     "lib": ["esnext"],
     "moduleResolution": "node",
@@ -14,14 +11,17 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "allowJs": true,
+    "declarationMap": true,
+    "allowJs": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
     "sourceMap": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "paths": {
+      "@sh3pherd/*": ["packages/*/src/index.ts"],
+    }
   },
-
 }
 

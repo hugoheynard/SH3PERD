@@ -1,7 +1,7 @@
-import type {IRegistrationService} from "../types/IRegistrationService";
+import type {IRegistrationService, TRegistrationServiceOutput} from "../types/IRegistrationService";
 
 
-export class RegistrationService implements IRegistrationService['output'] {
+export class RegistrationService implements TRegistrationServiceOutput {
     private readonly generateUserIdFunction: IRegistrationService['input']['generateUserIdFunction'];
     private readonly hashPasswordFunction: IRegistrationService['input']['hashPasswordFunction'];
     private readonly createUserFunction: IRegistrationService['input']['createUserFunction'];
@@ -16,21 +16,21 @@ export class RegistrationService implements IRegistrationService['output'] {
         this.findUserByEmailFunction = input.findUserByEmailFunction;
     };
 
-    async getUserLoginByEmail(input: { email: string }): Promise<any>{
-        return await this.findUserByEmailFunction({ email: input.email });
-    };
-
-
     async registerUser(input: { email: string, password: string }): Promise<any> {
         const hashedPassword = await this.hashPasswordFunction({ password: input.password });
 
         const user = await this.createUserFunction({
             email: input.email,
             password: hashedPassword,
+            user_id: this.generateUserIdFunction(),
         });
 
         await this.saveUserFunction(user);
 
         return { user_id: user.user_id };
+    };
+
+    async getUserLoginByEmail(input: { email: string }): Promise<any>{
+        return await this.findUserByEmailFunction({ email: input.email });
     };
 }

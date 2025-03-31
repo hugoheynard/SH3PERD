@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "exclude": ["dist", "node_modules"],
+  "references": [
+    { "path": "packages/bootstrap" },
+    { "path": "packages/password-manager" },
+    { "path": "packages/api-auth" },
+    { "path": "packages/auth-core" },
+    { "path": "packages/backend" },
+    { "path": "packages/domain-user" },
+    { "path": "packages/shared-utils" },
+    { "path": "packages/user-adapters" }
+  ]
+}

@@ -2,7 +2,7 @@ import {buildEventQuery} from "../tools/events/EventQueryBuilder";
 import {ObjectId} from "mongodb";
 import type {CalendarEvent} from "./interfaces_events/CalendarEventsObject";
 import type {IPlanningBlocksService} from "./interfaces_events/IPlanningBlocksService";
-import {wrapServiceWithTryCatch} from "../services/tryCatchServiceWrapper";
+import {wrapServiceWithTryCatch} from "@sh3pherd/shared-utils/tryCatchs/tryCatchServiceWrapper";
 
 
 export const planningBlocksService = (input: IPlanningBlocksService['input']) => {

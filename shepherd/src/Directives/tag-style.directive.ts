@@ -1,4 +1,4 @@
-import {Directive, ElementRef, inject, Input, OnInit, Renderer2} from '@angular/core';
+import {Directive, ElementRef, inject, Input, type OnInit, Renderer2} from '@angular/core';
 
 @Directive({
   selector: '[TagStyle]',

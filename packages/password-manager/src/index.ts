@@ -16,7 +16,7 @@ import {isRehashDueFromLastHashDate} from "./utils/isRehashDueFromLastHashDate";
 export const passwordManager = new PasswordManager({
     currentStrategyKey: 'argon2id:v1',
     registry: createHasherRegistry({ hashParser: HashParser }),
-    hashParser: HashParser.extract,
+    hashParserFunction: HashParser.extract,
     verifyLastHashDateFunction: isRehashDueFromLastHashDate,
     rehashAfterDays: 30,
 });

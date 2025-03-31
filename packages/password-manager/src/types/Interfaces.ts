@@ -1,4 +1,4 @@
-import {Options} from "argon2";
+import type {Options} from "argon2";
 
 
 export interface IPasswordManagerInput {

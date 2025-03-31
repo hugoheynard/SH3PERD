@@ -1,6 +1,6 @@
 
 import type { Request, Response, NextFunction } from 'express';
-import {wrap_TryCatchNextErr} from "../wrap_tryCatchNextErr";
+import {wrap_TryCatchNextErr} from "../src/tryCatch/wrap_tryCatchNextErr";
 
 describe('wrap_TryCatchNextErr', () => {
     let req: Request;

@@ -1,7 +1,7 @@
 import type {Collection, InsertOneResult} from "mongodb";
 import {type AuthTokenDecoded} from "./login/JWT_Module";
 import type {User} from "../interfaces/User";
-import {wrapServiceWithTryCatch} from "../services/tryCatchServiceWrapper";
+import {wrapServiceWithTryCatch} from "@sh3pherd/shared-utils/tryCatchs/tryCatchServiceWrapper";
 import {ObjectId} from "mongodb";
 
 export interface AuthServiceInput {

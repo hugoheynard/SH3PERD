@@ -1,5 +1,5 @@
 import type {NextFunction, Request, Response} from "express";
-import {wrap_TryCatchNextErr} from "./utilities/wrap_tryCatchNextErr";
+import {wrap_TryCatchNextErr} from "@sh3pherd/shared-utils/tryCatchs/wrap_tryCatchNextErr";
 
 export const musicLibraryController = (input: any): any => {
     const { musicService } = input;

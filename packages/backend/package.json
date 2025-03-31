@@ -6,6 +6,11 @@
   "scripts": {
     "dev": "concurrently \"tsc --watch -p tsconfig.json\" \"tsc-alias -p tsconfig.json --watch\" \"nodemon --watch 'dist/**/*.js' --exec 'node --inspect=9229 dist/app.js'\"",
     "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
+    "build:watch": "tsc -w -p tsconfig.json",
     "start": "nodemon dist/app.js"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.14"
   }
 }
