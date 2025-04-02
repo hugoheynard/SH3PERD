@@ -23,7 +23,7 @@
       "path": "../user-adapters"
     },
     {
-      "path": "../domain-user"
+      "path": "../user"
     },
     {
       "path": "../password-manager"

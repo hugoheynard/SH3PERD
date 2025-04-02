@@ -1,4 +1,4 @@
-import type {Express, Request, Response} from "express";
+import type {Express} from "express";
 import express from "express"
 import cors from "cors";
 import {errorCatcherMw_simple, notFound_404_Handler} from "@sh3pherd/shared-utils";
@@ -32,10 +32,8 @@ export const initRoutes = (app: Express, { controllers } : any, { middlewares }:
         ));
         //app.use('/staff', userRouter(controllers.staffController));
         //app.use('/company', companyRouter(controllers.companyController));
-
-
-
 */
+        // Error handling
         app.use(notFound_404_Handler);
         app.use(errorCatcherMw_simple);
 

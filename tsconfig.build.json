@@ -6,25 +6,13 @@
       "path": "packages/shared-utils"
     },
     {
-      "path": "packages/domain-user"
-    },
-    {
-      "path": "packages/domain-auth"
-    },
-    {
-      "path": "packages/auth-core"
+      "path": "packages/user"
     },
     {
       "path": "packages/auth"
     },
     {
-      "path": "packages/api-auth"
-    },
-    {
       "path": "packages/backend"
-    },
-    {
-      "path": "packages/user-adapters"
     },
     {
       "path": "packages/password-manager"

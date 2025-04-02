@@ -11,6 +11,9 @@ dist/
 # IDE / Editor config
 .idea/
 
+#dev-toolbox
+dev-toolbox/.fix-cache.json
+
 # Environnements
 .env
 .env.*

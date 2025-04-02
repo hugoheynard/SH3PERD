@@ -1,6 +1,5 @@
-import type {UserId} from "@sh3pherd/domain-user/dist/types/types";
-import type {THashPasswordFunction} from "../../types";
-import type {CreateUserInput, UserDomainModel} from "@sh3pherd/domain-user";
+import type {THashPasswordFunction} from "../../domain/types";
+import type {CreateUserInput, UserDomainModel, UserId} from "@sh3pherd/user";
 
 
 export interface IRegisterServiceInput {

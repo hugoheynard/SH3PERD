@@ -1,4 +1,3 @@
-
 import argon2 from "argon2";
 import { BaseHasherStrategy } from "./BaseHasherStrategy";
 import type {IArgon2_Options, IHasherConfigObject, IHashParser} from "../types/Interfaces";

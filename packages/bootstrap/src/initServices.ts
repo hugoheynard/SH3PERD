@@ -3,8 +3,8 @@ import {type Db} from "mongodb";
 import {RegisterService} from "@sh3pherd/auth";
 import {generateTypedId} from "@sh3pherd/shared-utils";
 import {createMongoUserRepository} from "@sh3pherd/user-adapters";
-import {createUser} from "@sh3pherd/domain-user";
 import {passwordManager} from "@sh3pherd/password-manager";
+import {createUser} from "@sh3pherd/user";
 
 
 //import {type UserService, userService} from "@sh3pherd/backend/services/userService";

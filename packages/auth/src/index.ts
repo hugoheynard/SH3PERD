@@ -3,7 +3,7 @@
 export type {
     THashPasswordFunction as THashPasswordFunction,
     TComparePasswordFunction as TComparePasswordFunction
-} from './types';
+} from './domain/types';
 
 export type {IRegisterController} from './api/controllers/IRegisterController';
 

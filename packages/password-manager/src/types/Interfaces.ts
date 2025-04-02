@@ -1,5 +1,5 @@
 import type {Options} from "argon2";
-import type {TComparePasswordFunction, THashPasswordFunction,} from "@sh3pherd/domain-auth";
+import type {TComparePasswordFunction, THashPasswordFunction} from "@sh3pherd/auth";
 
 
 export interface IPasswordManagerInput {

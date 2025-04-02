@@ -1,0 +1,13 @@
+{
+  "name": "@sh3pherd/user",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev:watch": "concurrently \"tsc -p tsconfig.json --watch\" \"tsc-alias --watch\"",
+    "test": "jest"
+  }
+}

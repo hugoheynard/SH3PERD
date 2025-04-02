@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "dev:watch": "concurrently \"tsc -p tsconfig.json --watch\" \"tsc-alias --watch\" \"nodemon --watch 'dist/**/*.js' --exec 'node --inspect=9229 dist/app.js'\"",
+    "dev:watch": "concurrently \"tsc -p tsconfig.json --watch\" \"tsc-alias --watch\" \"nodemon --watch 'dist/**/*.js' --exec 'tsx ../../dev-toolbox/scripts/fix-js-extensions.ts && node --inspect=9229 dist/app.js'\"",
     "test": "jest"
   }
 }
