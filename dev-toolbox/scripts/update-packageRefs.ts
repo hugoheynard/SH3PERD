@@ -70,7 +70,72 @@ async function updateReferences(): Promise<void> {
     }
 }
 
+async function generateTsconfigBuild(): Promise<void> {
+    const packages = await fs.readdir(packagesDir);
+
+    const dependencyGraph: Record<string, Set<string>> = {};
+    const allPackages = new Set<string>();
+
+    for (const pkg of packages) {
+        const tsconfigPath = path.join(packagesDir, pkg, 'tsconfig.json');
+
+        try {
+            const raw = await fs.readFile(tsconfigPath, 'utf-8');
+            const tsconfig = JSON.parse(raw);
+            allPackages.add(pkg);
+            const refs: string[] = (tsconfig.references || [])
+                .map((ref: { path: string }) => path.basename(ref.path));
+
+            dependencyGraph[pkg] = new Set(refs);
+        } catch {
+            continue;
+        }
+    }
+
+    // Topological sort
+    const sorted: string[] = [];
+    const visited = new Set<string>();
+    const visiting = new Set<string>();
+
+    function visit(pkg: string) {
+        if (visited.has(pkg)) return;
+        if (visiting.has(pkg)) {
+            throw new Error(`🚨 Dépendance circulaire détectée dans ${pkg}`);
+        }
+
+        visiting.add(pkg);
+        for (const dep of dependencyGraph[pkg] || []) {
+            visit(dep);
+        }
+        visiting.delete(pkg);
+        visited.add(pkg);
+        sorted.push(pkg);
+    }
+
+    for (const pkg of allPackages) {
+        visit(pkg);
+    }
+
+    const buildConfig = {
+        extends: './tsconfig.base.json',
+        files: [],
+        references: sorted.map((pkg) => ({ path: `packages/${pkg}` })),
+        exclude: ['dist', 'node_modules']
+    };
+
+    const buildPath = path.resolve(__dirname, '../../tsconfig.build.json');
+    await fs.writeFile(buildPath, JSON.stringify(buildConfig, null, 2));
+
+    console.log(`✅ tsconfig.build.json généré avec ${sorted.length} packages dans le bon ordre`);
+}
+
+
 updateReferences().catch((err) => {
     console.error('❌ Erreur pendant updateReferences :', err);
     process.exit(1);
 });
+
+(async () => {
+    await updateReferences();
+    await generateTsconfigBuild();
+})();

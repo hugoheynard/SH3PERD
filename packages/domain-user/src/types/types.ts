@@ -1,4 +1,4 @@
-export type User = {
+export type UserDomainModel = {
     user_id: UserId;
     email: string;
     password: string;
@@ -14,5 +14,5 @@ export type CreateUserInput = {
     user_id: UserId;
 };
 
-export type CreateUserFunction = (input: CreateUserInput) => User;
+export type CreateUserFunction = (input: CreateUserInput) => UserDomainModel;
 

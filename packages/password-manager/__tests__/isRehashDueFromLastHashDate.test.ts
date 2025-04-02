@@ -29,7 +29,9 @@ describe('isLastHashDateValid', () => {
     });
 
     it('should return true if the hash date is exactly rehashAfterDays ago', () => {
-        const exactDate = new Date(today);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const exactDate = today;
         exactDate.setDate(today.getDate() - 7);
 
         const result = isRehashDueFromLastHashDate({

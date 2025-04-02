@@ -13,12 +13,19 @@ import type {TVerifyLastHashDateFunction} from "../types/Interfaces";
  *
  * @returns `true` if the hash is old enough to require rehashing, otherwise `false`.
  */
-export const isRehashDueFromLastHashDate : TVerifyLastHashDateFunction = (input) => {
+export const isRehashDueFromLastHashDate: TVerifyLastHashDateFunction = (input) => {
     const { lastHashDate, rehashAfterDays } = input;
 
     const parsedDate = new Date(lastHashDate);
     const now = new Date();
-    const diffMs = now.getTime() - parsedDate.getTime();
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+    // On force les dates à minuit (précision jour)
+    parsedDate.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+
+    const diffTime = now.getTime() - parsedDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // important: floor
+
     return diffDays >= rehashAfterDays;
 };
+

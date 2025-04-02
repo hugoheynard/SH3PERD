@@ -2,12 +2,12 @@ import dotenv from "dotenv";
 import express, {type Express} from 'express';
 import {type Db} from "mongodb";
 
-import {connectDb} from "./app/db";
-import {initServices} from "./app/initServices";
-import {type Controllers, initControllers} from "./app/initControllers";
-import {startServer} from "./app/server";
-import {initMiddlewares} from "./app/initMiddlewares";
-import {initRoutes} from "./app/initRoutes";
+import {connectDb} from "./db";
+import {initServices} from "./initServices";
+import {initControllers, type AppControllers} from "./initControllers";
+import {startServer} from "./server";
+import {initMiddlewares} from "./initMiddlewares";
+import {initRoutes} from "./initRoutes";
 
 
 dotenv.config({path: '../.env'});
@@ -20,8 +20,10 @@ async function startApp(): Promise<void> {
 
         const services = await initServices(db);
         const middlewares = initMiddlewares({ services });
-        const controllers: Controllers = initControllers({ services });
+        const controllers: AppControllers = initControllers({ services });
         initRoutes(app, { controllers } , { middlewares });
+
+
         await startServer(app);
 
 

@@ -1,4 +1,5 @@
 import type {Options} from "argon2";
+import type {TComparePasswordFunction, THashPasswordFunction,} from "@sh3pherd/domain-auth";
 
 
 export interface IPasswordManagerInput {
@@ -24,12 +25,12 @@ export type ICompareResult = {
  * Common interface for password hashing strategies classes.
  */
 export interface IHasherStrategy {
-    hashPassword(input: { password: string }): Promise<string>;
-    comparePassword(input: { password: string, hashedPassword: string }): Promise<boolean>;
+    hashPassword:THashPasswordFunction;
+    comparePassword: TComparePasswordFunction;
 }
 
 export interface IPasswordManager {
-    hashPassword(input: { password: string }): Promise<string>;
+    hashPassword:THashPasswordFunction;
     comparePassword(input: { password: string, hashedPassword: string }): Promise<ICompareResult>;
 }
 

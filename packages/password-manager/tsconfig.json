@@ -9,5 +9,8 @@
   "include": [
     "src"
   ],
-  "references": []
+  "references": [{
+    "path": "../auth"
+  }]
+
 }

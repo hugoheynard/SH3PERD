@@ -1,7 +1,8 @@
-import type {CreateUserInput, User} from "./types/types";
+import type {CreateUserInput, UserDomainModel} from "./types/types";
 
 
-export const createUser = ({ email, password, user_id }: CreateUserInput): User => {
+export const createUser = (input: CreateUserInput): UserDomainModel => {
+    const { email, password, user_id } = input;
     return {
         user_id,
         email,

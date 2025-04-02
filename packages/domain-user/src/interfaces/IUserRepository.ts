@@ -1,6 +1,6 @@
-import type {User} from "../types/types";
+import type {UserDomainModel} from "../types/types";
 
 export interface IUserRepository {
-    saveUser: (input: { user: User }) => Promise<void>;
-    findUserByEmail: (input: { email: string }) => Promise<User | null>;
+    saveUser: (input: { user: UserDomainModel }) => Promise<void>;
+    findUserByEmail: (input: { email: string }) => Promise<UserDomainModel | null>;
 }

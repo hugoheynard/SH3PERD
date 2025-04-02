@@ -14,10 +14,7 @@
       "path": "../backend"
     },
     {
-      "path": "../api-auth"
-    },
-    {
-      "path": "../auth-core"
+      "path": "../auth"
     },
     {
       "path": "../shared-utils"

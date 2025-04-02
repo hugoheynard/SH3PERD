@@ -1,6 +1,6 @@
 
 import type { Request, Response, NextFunction } from 'express';
-import {wrap_TryCatchNextErr} from "../src/tryCatch/wrap_tryCatchNextErr";
+import {wrap_tryCatchNextErr} from "../src";
 
 describe('wrap_TryCatchNextErr', () => {
     let req: Request;
@@ -26,7 +26,7 @@ describe('wrap_TryCatchNextErr', () => {
             },
         };
 
-        const wrappedObject = wrap_TryCatchNextErr(originalObject);
+        const wrappedObject = wrap_tryCatchNextErr(originalObject);
 
         // Appeler la première méthode
         await wrappedObject.methodOne(req, res, next);

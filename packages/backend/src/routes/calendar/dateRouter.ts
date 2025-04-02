@@ -1,5 +1,5 @@
 import express, {Router} from "express";
-import {verifyAuthToken} from "../middlewares/verifyAuthToken";
+import {verifyAuthToken} from "../../../../shared-utils/src/middlewares/verifyAuthToken";
 
 
 export const dateRouter = (calendarController: any): Router => {
