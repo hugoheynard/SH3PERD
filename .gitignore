@@ -24,3 +24,8 @@ dev-toolbox/.fix-cache.json
 # Tests / Jest
 coverage/
 packages/*/coverage/
+
+# Cookies / test outputs
+*.cookies
+*.token
+*.session
