@@ -4,5 +4,5 @@ module.exports = {
     ...base,
     projects: undefined,
     rootDir: './',
-    displayName: 'domain-user'
+    displayName: 'user'
 };

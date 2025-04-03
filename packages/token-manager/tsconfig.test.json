@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@sh3pherd/*": ["packages/*/src/"]
+    }
+  },
+  "include": ["src",
+    "src/__tests__", "../../test/jest-globals.d.ts"]
+}

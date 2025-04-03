@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "@sh3pherd/backend",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -10,9 +10,5 @@
     "build": "tsc -p tsconfig.json",
     "dev:watch": "concurrently \"tsc -p tsconfig.json --watch\" \"tsc-alias --watch\"",
     "test": "jest"
-  },
-  "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.14"
   }
 }

@@ -1,13 +1,13 @@
 import type { Collection, ObjectId } from 'mongodb';
-import type {IUserRepository, UserDomainModel} from "../../../domain/types";
+import type {IUserRepository, TSaveUserResult, UserDomainModel} from "../../../domain/types";
 
-type MongoUser = UserDomainModel & { _id: ObjectId};
+export type MongoUser = UserDomainModel & { _id: ObjectId};
 
-export const createMongoUserRepository = (input: { collection: Collection<MongoUser> })  => {
+export const createMongoUserRepository = (input: { collection: Collection<UserDomainModel> })  => {
     const { collection } = input;
 
     const repository: IUserRepository =  {
-        saveUser: async (input) => {
+        saveUser: async (input: { user: UserDomainModel }): Promise<TSaveUserResult> => {
             const result = await collection.insertOne(input.user);
 
             if (result.acknowledged) {
@@ -18,7 +18,7 @@ export const createMongoUserRepository = (input: { collection: Collection<MongoU
         },
 
         findUserByEmail: async ({ email})=> {
-            const result = await collection.findOne({ email }) as MongoUser;
+            const result = await collection.findOne({ email }) as MongoUser | null;
             if (!result) return null;
 
             const { _id, ...user } = result;

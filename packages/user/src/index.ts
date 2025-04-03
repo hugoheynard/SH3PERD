@@ -1,5 +1,6 @@
 // Entry point for @sh3pherd/domain-user
 
+
 export type {
     UserId as UserId,
     UserDomainModel as UserDomainModel,
@@ -14,4 +15,6 @@ export type {
 
 
 export {createUser as createUser} from "./domain/createUser";
+export {createMongoUserRepository as createMongoUserRepository} from "./repository/adapters/mongo/createMongoUserRepository";
+
 

@@ -19,6 +19,9 @@
     },
     {
       "path": "packages/bootstrap"
+    },
+    {
+      "path": "packages/playlist"
     }
   ],
   "exclude": [

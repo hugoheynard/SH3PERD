@@ -1,5 +1,5 @@
 import {wrap_TryCatchNextErr} from "@sh3pherd/shared-utils/tryCatchs/wrap_tryCatchNextErr";
-import type {IPlaylistController} from "./interfaces/IPlaylistController";
+import type {IPlaylistController} from "../core/interfaces/IPlaylistController";
 import type {NextFunction, Request, Response} from "express";
 
 

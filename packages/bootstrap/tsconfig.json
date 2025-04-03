@@ -20,13 +20,10 @@
       "path": "../shared-utils"
     },
     {
-      "path": "../user-adapters"
+      "path": "../password-manager"
     },
     {
       "path": "../user"
-    },
-    {
-      "path": "../password-manager"
     }
   ]
 }

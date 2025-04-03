@@ -1,6 +1,6 @@
 import {jest} from '@jest/globals';
 import {RegisterService} from "../RegisterService";
-import type {UserDomainModel, UserId} from "@sh3pherd/user";
+import type {TSaveUserResult, UserDomainModel, UserId} from "@sh3pherd/user";
 
 
 describe('RegistrationService', () => {
@@ -13,7 +13,9 @@ describe('RegistrationService', () => {
         created_at: new Date(),
         updated_at: new Date(),
     }));
-    const mockSaveUser = jest.fn(async () => {});
+    const mockSaveUser = jest.fn(async (): Promise<TSaveUserResult> => {
+        return { success: true };
+    });
     const mockFindUser = jest.fn(async ({ email }): Promise<UserDomainModel> => ({
         email,
         user_id: 'user_fake-id-123',

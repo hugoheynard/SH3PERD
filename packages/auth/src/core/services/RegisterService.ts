@@ -1,4 +1,5 @@
 import type {IRegisterService, IRegisterServiceInput} from "./IRegisterServiceInput";
+import type {TSaveUserResult, UserDomainModel} from "@sh3pherd/user";
 
 
 export class RegisterService implements IRegisterService {
@@ -16,7 +17,7 @@ export class RegisterService implements IRegisterService {
         this.findUserByEmailFunction = input.findUserByEmailFunction;
     };
 
-    async registerUser(input: { email: string, password: string }): Promise<any> {
+    async registerUser(input: { email: string, password: string }): Promise<TSaveUserResult> {
         const hashedPassword = await this.hashPasswordFunction({ password: input.password });
 
         const user = await this.createUserFunction({
@@ -25,12 +26,12 @@ export class RegisterService implements IRegisterService {
             user_id: this.generateUserIdFunction(),
         });
 
-        await this.saveUserFunction(user);
+        const saveResult = await this.saveUserFunction({ user: user});
 
-        return { user_id: user.user_id };
+        return saveResult;
     };
 
-    async getUserByEmail(input: { email: string }): Promise<any>{
+    async getUserByEmail(input: { email: string }): Promise<UserDomainModel | null>{
         return await this.findUserByEmailFunction({ email: input.email });
     };
 }

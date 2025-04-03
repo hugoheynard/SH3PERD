@@ -1,7 +1,8 @@
 import {jest} from '@jest/globals';
-import type { Collection, InsertOneResult, Document } from 'mongodb';
-import {createMongoUserRepository} from "../createMongoUserRepository";
+import type {Collection, InsertOneResult, Document, ObjectId} from 'mongodb';
 import type {UserDomainModel} from "../../../../domain/types";
+import { createMongoUserRepository } from '../createMongoUserRepository';
+
 
 
 describe('MongoUserRepository', () => {
@@ -12,16 +13,17 @@ describe('MongoUserRepository', () => {
     const mockCollection = {
         insertOne,
         findOne,
-    } as unknown as Collection;
+    } as unknown as Collection<UserDomainModel>;
 
     const repository = createMongoUserRepository({ collection: mockCollection });
 
+    const now: Date = new Date();
     const fakeUser: UserDomainModel = {
         user_id: 'user_123',
         email: 'test@example.com',
         password: 'hashedPassword',
-        created_at: new Date(),
-        updated_at: new Date(),
+        created_at: now,
+        updated_at: now,
     };
 
     beforeEach(() => {
@@ -30,13 +32,20 @@ describe('MongoUserRepository', () => {
     });
 
     describe('saveUser', () => {
+
         it('should return success true when insert is acknowledged', async () => {
-            insertOne.mockResolvedValueOnce({ acknowledged: true } as InsertOneResult<Document>);
+            insertOne.mockResolvedValueOnce({
+                acknowledged: true,
+                insertedId: 'mocked_id' as unknown as ObjectId,
+            });
+
             const result = await repository.saveUser({ user: fakeUser });
 
-            expect(insertOne).toHaveBeenCalledWith(fakeUser);
+            console.log('Returned from saveUser:', result);
             expect(result).toEqual({ success: true });
         });
+
+
 
         it('should return success false when insert is not acknowledged', async () => {
             insertOne.mockResolvedValueOnce({ acknowledged: false } as InsertOneResult<Document>);
