@@ -7,7 +7,13 @@ import type {
     TRefreshTokenManagerInput, TRevokeRefreshTokenResult,
 } from "@sh3pherd/auth";
 
-
+/**
+ * RefreshTokenManager handles the lifecycle of refresh tokens,
+ * including generation, validation, and revocation.
+ *
+ * This class follows a clean architecture principle where responsibilities
+ * like token generation, persistence, and validation are injected.
+ */
 export class RefreshTokenManager implements IRefreshTokenManager {
     private readonly refreshTokenRepository: IRefreshTokenRepository;
     private readonly generatorFunction: () => Promise<TRefreshToken>;
@@ -21,6 +27,13 @@ export class RefreshTokenManager implements IRefreshTokenManager {
         this.ttlMs = input.ttlMs;
     };
 
+    /**
+     * Generates a new refresh token for a given user.
+     *
+     * @param input - The user ID for which to generate the refresh token.
+     * @returns A promise that resolves to a new refresh token string.
+     * @throws If token generation or saving fails.
+     */
     async generateRefreshToken(input: { user_id: UserId }): Promise<TRefreshToken> {
         const newRefreshToken = await this.generatorFunction();
 
@@ -43,12 +56,25 @@ export class RefreshTokenManager implements IRefreshTokenManager {
         return newRefreshToken
     };
 
+    /**
+     * Verifies the validity of a refresh token.
+     *
+     * @param input - The refresh token to validate.
+     * @returns A promise that resolves to a boolean indicating whether the token is valid.
+     */
     async verifyRefreshToken(input : { refreshToken: TRefreshToken }): Promise<boolean> {
         const { refreshToken } = input;
 
         return this.validateRefreshTokenFunction({ refreshToken });
     };
 
+    /**
+     * Revokes a given refresh token.
+     *
+     * @param input - The refresh token to revoke.
+     * @returns A promise that resolves to an object containing the revoked token.
+     * @throws If the revocation fails or the token does not exist.
+     */
     async revokeRefreshToken(input : { refreshToken: TRefreshToken }): Promise<TRevokeRefreshTokenResult> {
         // Logic to revoke the refresh token
         const result = await this.refreshTokenRepository
