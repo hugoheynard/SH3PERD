@@ -24,6 +24,7 @@ describe('RefreshTokenManager', () => {
         })),
     }
 
+
     const manager = new RefreshTokenManager({
         refreshTokenRepository: repositoryMock,
         generatorFunction,
@@ -68,5 +69,26 @@ describe('RefreshTokenManager', () => {
         await expect(manager.generateRefreshToken({ user_id: mockUserId })).rejects.toThrow("Failed to generate refresh token")
     })
 
+    //error catching from repository layer
+    it('should throw if saveRefreshToken throws', async () => {
+        (repositoryMock.saveRefreshToken as jest.MockedFunction<IRefreshTokenRepository['saveRefreshToken']>)
+            .mockImplementationOnce(async () => {
+                throw new Error('DB failure')
+            })
 
+        await expect(manager.generateRefreshToken({ user_id: mockUserId }))
+            .rejects
+            .toThrow(`Unable to save refresh token for user ${mockUserId}: DB failure`)
+    })
+
+    it('should throw if revokeRefreshToken throws', async () => {
+        (repositoryMock.revokeRefreshToken as jest.MockedFunction<IRefreshTokenRepository['revokeRefreshToken']>)
+            .mockImplementationOnce(async () => {
+                throw new Error('Revoke error')
+            })
+
+        await expect(manager.revokeRefreshToken({ refreshToken: mockToken }))
+            .rejects
+            .toThrow('Unable to revoke refresh token: Revoke error')
+    })
 })

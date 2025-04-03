@@ -35,25 +35,27 @@ export class RefreshTokenManager implements IRefreshTokenManager {
      * @throws If token generation or saving fails.
      */
     async generateRefreshToken(input: { user_id: UserId }): Promise<TRefreshToken> {
-        const newRefreshToken = await this.generatorFunction();
+        try {
+            const newRefreshToken = await this.generatorFunction();
 
-        if (!newRefreshToken) {
-            throw new Error("Failed to generate refresh token");
+            if (!newRefreshToken) {
+                throw new Error("Failed to generate refresh token");
+            }
+
+            const record: TRefreshTokenRecord = {
+                refreshToken: newRefreshToken,
+                user_id: input.user_id,
+                expiresAt: new Date(Date.now() + this.ttlMs),
+                createdAt: new Date()
+            };
+
+            await this.refreshTokenRepository.saveRefreshToken({ refreshTokenRecord: record });
+
+            return newRefreshToken
+        } catch (error){
+            throw new Error(`Unable to save refresh token for user ${input.user_id}: ${(error as Error).message}`)
+
         }
-
-        const record: TRefreshTokenRecord = {
-            refreshToken: newRefreshToken,
-            user_id: input.user_id,
-            expiresAt: new Date(Date.now() + this.ttlMs),
-            createdAt: new Date()
-        };
-
-        const result = await this.refreshTokenRepository.saveRefreshToken({ refreshTokenRecord: record });
-
-        if (!result.success) {
-            throw new Error("Failed to save refresh token");
-        }
-        return newRefreshToken
     };
 
     /**
@@ -76,16 +78,12 @@ export class RefreshTokenManager implements IRefreshTokenManager {
      * @throws If the revocation fails or the token does not exist.
      */
     async revokeRefreshToken(input : { refreshToken: TRefreshToken }): Promise<TRevokeRefreshTokenResult> {
-        // Logic to revoke the refresh token
-        const result = await this.refreshTokenRepository
-            .revokeRefreshToken({
-                refreshToken: input.refreshToken
-            });
+        try {
+            await this.refreshTokenRepository.revokeRefreshToken({ refreshToken: input.refreshToken});
 
-        if (!result) {
-            throw new Error("Failed to revoke refresh token");
+            return { revokedToken: input.refreshToken };
+        } catch (error) {
+            throw new Error(`Unable to revoke refresh token: ${(error as Error).message}`);
         }
-
-        return { revokedToken: input.refreshToken };
     };
 }
