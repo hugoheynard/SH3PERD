@@ -70,12 +70,7 @@ describe('RefreshTokenManager', () => {
     /**
      * checks if the refresh token is valid or not
      * */
-    it('🔎 debug direct: validateRefreshTokenDateFunction fonctionne', () => {
-        const fn = jest.fn<(input: { expirationDate: Date }) => boolean>().mockReturnValue(true);
-        const result = fn({ expirationDate: new Date() });
-        console.log('✅ direct return:', result, 'type:', typeof result);
-        expect(result).toBe(true);
-    });
+
     it('should verify a refresh token as valid', () => {
         const validDateToken = {
             ...mockTokenRecord,
