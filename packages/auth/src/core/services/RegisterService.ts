@@ -1,4 +1,4 @@
-import type {IRegisterService, IRegisterServiceInput} from "./IRegisterServiceInput";
+import type {IRegisterService, IRegisterServiceInput} from "../../domain/models/IRegisterServiceInput";
 import type {TSaveUserResult, UserDomainModel} from "@sh3pherd/user";
 
 

@@ -1,4 +1,10 @@
-import type {TTokenManagerOptions, TAuthTokenPayload} from "@sh3pherd/auth";
+import type {
+    TTokenManagerOptions,
+    TAuthTokenPayload,
+    IAbstractAuthTokenManager,
+    TVerifyAuthTokenFunction,
+    TGenerateAuthTokenFunction
+} from "@sh3pherd/auth";
 import jwt from 'jsonwebtoken'
 
 
@@ -12,7 +18,7 @@ import jwt from 'jsonwebtoken'
  * Refresh token logic (rotation, persistence, revocation) should be handled
  * by a separate RefreshTokenManager.
  */
-export class JwtAuthTokenManager {
+export class JwtAuthTokenManager implements IAbstractAuthTokenManager{
     private readonly options: TTokenManagerOptions;
 
     /**
@@ -22,7 +28,7 @@ export class JwtAuthTokenManager {
      */
     constructor(input: { options: TTokenManagerOptions }) {
         this.options = input.options;
-    }
+    };
 
     /**
      * Signs and returns a new access token for the provided payload.
@@ -30,7 +36,7 @@ export class JwtAuthTokenManager {
      * @param input - Contains the payload to embed inside the JWT (e.g. user ID).
      * @returns A signed JWT as a string.
      */
-    async generateAuthToken(input: { payload: TAuthTokenPayload }): Promise<string> {
+    generateAuthToken:TGenerateAuthTokenFunction = async (input) => {
         const { payload } = input;
 
         return Promise.resolve(
@@ -39,7 +45,7 @@ export class JwtAuthTokenManager {
                 expiresIn: this.options.accessTokenExpiresIn,
             })
         );
-    }
+    };
 
     /**
      * Verifies a given access token and returns the decoded payload.
@@ -47,7 +53,7 @@ export class JwtAuthTokenManager {
      * @param input - Object containing the JWT string to verify.
      * @returns The decoded payload if valid, or throws if invalid/expired.
      */
-    async verifyAuthToken(input: { token: string }): Promise<TAuthTokenPayload> {
+    verifyAuthToken: TVerifyAuthTokenFunction = async (input) =>{
         const { token } = input;
 
         const payload = jwt.verify(token, this.options.publicKey as string, {
@@ -55,5 +61,5 @@ export class JwtAuthTokenManager {
         });
 
         return Promise.resolve(payload as TAuthTokenPayload);
-    }
+    };
 }

@@ -1,5 +1,10 @@
 // Entry point for @sh3pherd/shared-utils
 
+//repoAdaptersHelpers
+export { mapMongoDocToDomainModel as mapMongoDocToDomainModel } from './repoAdaptersHelpers/mapMongoDocToDomainModel';
+export type { TmapMongoDocToDomainModelFunction as TmapMongoDocToDomainModelFunction } from './repoAdaptersHelpers/IMongoRepoWithDocMapper';
+export type { IMongoRepoWithDocMapper as IMongoRepoWithDocMapper } from './repoAdaptersHelpers/IMongoRepoWithDocMapper';
+
 export { MiddlewareFn as MiddlewareFn } from './types/types';
 export { generateTypedId as generateTypedId} from './ids/generateTypedId';
 export { wrap_tryCatchNextErr as wrap_tryCatchNextErr} from './tryCatch/wrap_tryCatchNextErr';

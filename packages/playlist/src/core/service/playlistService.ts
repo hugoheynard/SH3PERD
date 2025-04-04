@@ -1,5 +1,5 @@
-import type {IPlaylist} from "../../../../backend/src/playlist/classes/playlistBuilder/PlaylistBuilder";
-import type {IDataInformation} from "../../../../backend/src/playlist/classes/DataInformationManager";
+import type {IPlaylist} from "@sh3pherd/backend/playlist/classes/playlistBuilder/PlaylistBuilder";
+import type {IDataInformation} from "@sh3pherd/backend/playlist/classes/DataInformationManager";
 import type {IPlaylistService} from "../interfaces/IPlaylistService";
 import type {IPlaylistDocument} from "../interfaces/IPlaylistDocument";
 import type {InsertOneResult, UpdateResult, DeleteResult} from "mongodb";

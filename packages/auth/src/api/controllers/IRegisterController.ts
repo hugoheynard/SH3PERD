@@ -1,5 +1,5 @@
 import type {NextFunction, Request, Response} from "express";
-import type {IRegisterService} from "../../core/services/IRegisterServiceInput";
+import type {IRegisterService} from "../../domain/models/IRegisterServiceInput";
 
 
 

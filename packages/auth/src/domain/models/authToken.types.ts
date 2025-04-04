@@ -1,3 +1,6 @@
+import type {KeyObject} from 'crypto'
+
+
 export type TAuthTokenPayload = {
     user_id: string;
 }
@@ -8,7 +11,3 @@ export type TAuthTokenManagerOptions = {
     accessTokenExpiresIn: number;
     refreshTokenExpiresIn: number;
 }
-
-export type TGenerateAuthTokenFunction = (input: { payload: TAuthTokenPayload }) => Promise<string>;
-export type TVerifyAuthTokenFunction = (input: { token: string }) => Promise<TAuthTokenPayload>;
-

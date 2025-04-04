@@ -1,9 +1,11 @@
 import {type Db} from "mongodb";
-//Register Service imports
-import {RegisterService} from "@sh3pherd/auth";
-import {generateTypedId} from "@sh3pherd/shared-utils";
+
+//Auth imports
+import {generateTypedId, mapMongoDocToDomainModel} from "@sh3pherd/shared-utils";
 import {passwordManager} from "@sh3pherd/password-manager";
 import {createMongoUserRepository, createUser} from "@sh3pherd/user";
+import {RegisterService, createAuthTokenService} from "@sh3pherd/auth";
+import {JwtAuthTokenManager, RefreshTokenManager, checkExpirationDate} from "@sh3pherd/token-manager";
 
 
 
@@ -37,6 +39,9 @@ export const initServices = async (db: Db | null): any => {
             saveUserFunction: userMongoRepository.saveUser,
             findUserByEmailFunction: userMongoRepository.findUserByEmail,
         });
+
+        //TODO factory
+        const authTokenService = createAuthTokenService({});
 
 
 

@@ -1,11 +1,15 @@
-import type {UserId} from "@sh3pherd/user";
 import type {
     TRefreshToken,
     TRefreshTokenRecord,
     IRefreshTokenRepository,
-    IRefreshTokenManager,
-    TRefreshTokenManagerInput, TRevokeRefreshTokenResult,
+    IAbstractRefreshTokenManager,
+    TGenerateRefreshTokenFunction,
+    TVerifyRefreshTokenFunction,
+    TRevokeRefreshTokenFunction,
+    TRefreshTokenManagerInput,
 } from "@sh3pherd/auth";
+import type {TCheckExpirationDateFunction} from "./utils/checkExpirationDate";
+
 
 /**
  * RefreshTokenManager handles the lifecycle of refresh tokens,
@@ -14,16 +18,16 @@ import type {
  * This class follows a clean architecture principle where responsibilities
  * like token generation, persistence, and validation are injected.
  */
-export class RefreshTokenManager implements IRefreshTokenManager {
+export class RefreshTokenManager implements IAbstractRefreshTokenManager {
     private readonly refreshTokenRepository: IRefreshTokenRepository;
     private readonly generatorFunction: () => Promise<TRefreshToken>;
-    private readonly validateRefreshTokenFunction: (input: { refreshToken: TRefreshToken }) => Promise<boolean>;
+    private readonly validateRefreshTokenDateFunction: TCheckExpirationDateFunction;
     private readonly ttlMs: number;
 
     constructor(input: TRefreshTokenManagerInput) {
         this.refreshTokenRepository = input.refreshTokenRepository;
         this.generatorFunction = input.generatorFunction;
-        this.validateRefreshTokenFunction = input.validateRefreshTokenFunction;
+        this.validateRefreshTokenDateFunction = input.validateRefreshTokenDateFunction;
         this.ttlMs = input.ttlMs;
     };
 
@@ -34,7 +38,7 @@ export class RefreshTokenManager implements IRefreshTokenManager {
      * @returns A promise that resolves to a new refresh token string.
      * @throws If token generation or saving fails.
      */
-    async generateRefreshToken(input: { user_id: UserId }): Promise<TRefreshToken> {
+    generateRefreshToken: TGenerateRefreshTokenFunction = async (input)=> {
         try {
             const newRefreshToken = await this.generatorFunction();
 
@@ -64,10 +68,10 @@ export class RefreshTokenManager implements IRefreshTokenManager {
      * @param input - The refresh token to validate.
      * @returns A promise that resolves to a boolean indicating whether the token is valid.
      */
-    async verifyRefreshToken(input : { refreshToken: TRefreshToken }): Promise<boolean> {
-        const { refreshToken } = input;
+    verifyRefreshToken: TVerifyRefreshTokenFunction = (input) => {
+        const { refreshTokenRecord } = input;
 
-        return this.validateRefreshTokenFunction({ refreshToken });
+        return this.validateRefreshTokenDateFunction({ expirationDate: refreshTokenRecord.expiresAt });
     };
 
     /**
@@ -77,7 +81,7 @@ export class RefreshTokenManager implements IRefreshTokenManager {
      * @returns A promise that resolves to an object containing the revoked token.
      * @throws If the revocation fails or the token does not exist.
      */
-    async revokeRefreshToken(input : { refreshToken: TRefreshToken }): Promise<TRevokeRefreshTokenResult> {
+    revokeRefreshToken: TRevokeRefreshTokenFunction = async (input) => {
         try {
             await this.refreshTokenRepository.revokeRefreshToken({ refreshToken: input.refreshToken});
 

@@ -8,7 +8,7 @@
 export type {
     THashPasswordFunction as THashPasswordFunction,
     TComparePasswordFunction as TComparePasswordFunction
-} from './domain/types';
+} from './domain/models/function.types';
 
 // Exporting the types and interfaces for the authToken module
 export type {
@@ -19,14 +19,24 @@ export type {
 export type {
     TRefreshToken as TRefreshToken,
     TRefreshTokenRecord as TRefreshTokenRecord,
-    IRefreshTokenManager as IRefreshTokenManager,
-    TRefreshTokenManagerInput as TRefreshTokenManagerInput,
-    IRefreshTokenRepository as IRefreshTokenRepository,
-    TRevokeRefreshTokenResult as TRevokeRefreshTokenResult,
 } from './domain/models/refreshToken.types';
 
-export type {IAuthTokenService as IAuthTokenService} from './domain/services/IAuthTokenService';
-export type {IRefreshTokenService as IRefreshTokenService} from './domain/services/IRefreshTokenService';
+//authTokenManager
+export type {IAbstractAuthTokenManager as IAbstractAuthTokenManager,} from './domain/models/IAbstractAuthTokenManager';
+
+//refreshTokenManager
+export type {
+    IAbstractRefreshTokenManager as IAbstractRefreshTokenManager,
+    TRefreshTokenManagerInput as TRefreshTokenManagerInput,
+} from "./domain/models/IAbstractRefreshTokenManager";
+
+//refreshTokenRepository
+export {RefreshTokenMongoRepository as RefreshTokenMongoRepository} from './adapters/repositories/RefreshTokenMongoRepository';
+
+//authTokenService
+export {AuthTokenService as AuthTokenService} from './core/services/AuthTokenService';
+export type {IAuthTokenService as IAuthTokenService} from './domain/models/IAuthTokenService';
+export {createAuthTokenService as createAuthTokenService} from './factories/createAuthTokenService';
 
 
 // Exporting the types and interfaces for the auth module
@@ -39,4 +49,19 @@ export {RegisterService as RegisterService} from './core/services/RegisterServic
 
 //Middleware Exports
 export {validateRegistrationInput as validateRegistrationInput} from './api/middlewares/validateRegistrationInput';
+
+export type{
+    TRevokeRefreshTokenFunction as TRevokeRefreshTokenFunction,
+    TVerifyRefreshTokenFunction as TVerifyRefreshTokenFunction,
+    TGenerateRefreshTokenFunction as TGenerateRefreshTokenFunction,
+    TVerifyAuthTokenFunction as TVerifyAuthTokenFunction,
+    TGenerateAuthTokenFunction as TGenerateAuthTokenFunction,
+} from "./domain/models/function.types";
+
+export type {
+    IRefreshTokenMongoRepositoryInput as IRefreshTokenRepositoryInput,
+    IRefreshTokenRepository as IRefreshTokenRepository,
+} from "./domain/models/IRefreshTokenRepository";
+
+
 
