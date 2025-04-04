@@ -59,7 +59,7 @@ export type{
 } from "./domain/models/function.types";
 
 export type {
-    IRefreshTokenMongoRepositoryInput as IRefreshTokenRepositoryInput,
+    IRefreshTokenMongoRepositoryInput as IRefreshTokenMongoRepositoryInput,
     IRefreshTokenRepository as IRefreshTokenRepository,
 } from "./domain/models/IRefreshTokenRepository";
 

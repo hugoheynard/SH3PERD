@@ -6,7 +6,9 @@ import { ObjectId } from 'mongodb';
  * @returns The document cast as a domain entity without `_id`
  * @param input
  */
-export const mapMongoDocToDomainModel = <T>(input: { document: T & { _id: ObjectId | undefined } }): T => {
+export const mapMongoDocToDomainModel = <T>(
+    input: { document: T & { _id: ObjectId | undefined } }
+): T => {
     const { _id, ...rest } = input.document;
     return rest as T
 }

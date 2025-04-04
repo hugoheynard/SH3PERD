@@ -1,16 +1,18 @@
 import type {TRefreshToken, TRefreshTokenRecord} from "../../domain/models/refreshToken.types";
 import type {Collection} from "mongodb";
 import type {TmapMongoDocToDomainModelFunction} from "@sh3pherd/shared-utils";
-import type {IRefreshTokenRepository} from "../../domain/models/IRefreshTokenRepository";
+import type {
+    IRefreshTokenMongoRepositoryInput,
+    IRefreshTokenRepository
+} from "../../domain/models/IRefreshTokenRepository";
 import type {TRevokeRefreshTokenResult} from "../../domain/models/authResults.types";
-import type {IRefreshTokenRepositoryInput} from "@sh3pherd/auth";
 
 export class RefreshTokenMongoRepository implements IRefreshTokenRepository {
     private readonly refreshTokenCollection: Collection<TRefreshTokenRecord>;
     private readonly mapMongoDocToDomainModelFunction: TmapMongoDocToDomainModelFunction
 
 
-    constructor(input: IRefreshTokenRepositoryInput) {
+    constructor(input: IRefreshTokenMongoRepositoryInput) {
         this.refreshTokenCollection = input.refreshTokenCollection;
         this.mapMongoDocToDomainModelFunction = input.mapMongoDocToDomainModelFunction;
     };
