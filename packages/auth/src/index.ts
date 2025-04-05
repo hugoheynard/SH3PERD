@@ -40,7 +40,7 @@ export {createAuthTokenService as createAuthTokenService} from './factories/crea
 
 
 // Exporting the types and interfaces for the auth module
-export type {IRegisterController} from './api/controllers/IRegisterController';
+export type {IRegisterController as IRegisterController} from './api/controllers/IRegisterController';
 
 export {createRegisterRouter as createRegisterRouter} from './api/routes/createRegisterRouter';
 export {createRegisterMiddlewares as createRegisterMiddlewares} from './api/middlewares/createRegisterMiddlewares';

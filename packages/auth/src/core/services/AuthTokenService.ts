@@ -64,8 +64,8 @@ export class AuthTokenService implements IAuthTokenService {
      * @throws If the token is invalid or expired
      */
     verifyAuthToken: TVerifyAuthTokenFunction = async (input) => {
-        return this.authTokenManager.verifyAuthToken({ token: input.token })
-    }
+        return this.authTokenManager.verifyAuthToken({ token: input.token });
+    };
 
     /**
      * Verifies the validity of a refresh token.
@@ -78,7 +78,7 @@ export class AuthTokenService implements IAuthTokenService {
      */
     verifyRefreshToken: TVerifyRefreshTokenFunction = (input) => {
         return this.refreshTokenManager.verifyRefreshToken({ refreshTokenRecord: input.refreshTokenRecord });
-    }
+    };
 
     /**
      * Revokes the given refresh token.
@@ -92,5 +92,5 @@ export class AuthTokenService implements IAuthTokenService {
      */
     revokeRefreshToken: TRevokeRefreshTokenFunction = async (input) => {
         return await this.refreshTokenManager.revokeRefreshToken({ refreshToken: input.refreshToken });
-    }
+    };
 }
