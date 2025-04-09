@@ -2,14 +2,13 @@ import {RouterBuilder} from "./RouterBuilder";
 import {validateRouteDef} from "./utils/validateRouteDef";
 import {createContext} from "./utils/createContext";
 import {createRouterFromFactory} from "./utils/createRouterFromFactory";
-import {mountRoute} from "./utils/mountRoute";
+import {resolveMiddlewares} from "./utils/resolveMiddlewares";
+
 
 
 export const routerBuilder = new RouterBuilder({
     validateRouteDefFunction: validateRouteDef,
     createContextFunction: createContext,
     createRouterFromFactoryFunction: createRouterFromFactory,
-    mountRouteFunction: mountRoute
+    resolveMiddlewaresFunction: resolveMiddlewares
 });
-
-export {injectAsyncMiddleware as injectAsyncMiddleware} from "./utils/injectAsyncMiddleware";

@@ -13,7 +13,7 @@ import type {RequestHandler} from "express";
  * in route definitions and still be composed correctly with or without
  * async initialization or dependency injection.
  *
- * @param middlewares - An array of middleware entries (either plain `RequestHandler`s or
+ * @param input middlewares - An array of middleware entries (either plain `RequestHandler`s or
  *                      declarative middleware with dependency injection and async support)
  *
  * @returns A Promise that resolves to an array of `RequestHandler`s ready to be applied via `router.use(...)`.
@@ -37,9 +37,9 @@ import type {RequestHandler} from "express";
  *   }
  * ]);
  */
-export const resolveMiddlewares = async (
-    middlewares: MiddlewareEntry[] = []
-): Promise<RequestHandler[]> => {
+export const resolveMiddlewares = async (input: {middlewares: MiddlewareEntry[]} = { middlewares: [] }): Promise<RequestHandler[]> => {
+    const { middlewares } = input;
+
     const resolved: RequestHandler[] = [];
 
     for (const entry of middlewares) {

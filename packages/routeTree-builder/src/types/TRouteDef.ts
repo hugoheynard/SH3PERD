@@ -1,5 +1,5 @@
-import type {RequestHandler, Router} from 'express';
-import type {MiddlewareFactory, RouteFactoryContext} from './types';
+import {Router} from 'express';
+import type {MiddlewareEntry, RouteFactoryContext} from './types';
 
 /**
  * Represents a declarative route definition in the application tree.

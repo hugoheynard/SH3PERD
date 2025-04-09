@@ -4,8 +4,8 @@ import type {Request, Response} from "express";
 import {RouterBuilder} from "../src/RouterBuilder";
 import {validateRouteDef} from "../src/utils/validateRouteDef";
 import {createRouterFromFactory} from "../src/utils/createRouterFromFactory";
-import {mountRoute} from "../src/utils/mountRoute";
 import {createContext} from "../src/utils/createContext";
+import {resolveMiddlewares} from "../src/utils/resolveMiddlewares";
 
 
 describe('Integration - RouterBuilder', () => {
@@ -25,7 +25,7 @@ describe('Integration - RouterBuilder', () => {
             validateRouteDefFunction: validateRouteDef,
             createContextFunction: createContext,
             createRouterFromFactoryFunction: createRouterFromFactory,
-            mountRouteFunction: mountRoute
+            resolveMiddlewaresFunction: resolveMiddlewares,
         });
 
         const app = express();

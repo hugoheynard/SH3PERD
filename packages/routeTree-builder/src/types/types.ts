@@ -14,3 +14,8 @@ type MiddlewareWithDeps<TDeps = Record<string, any>> = {
 };
 
 export type MiddlewareEntry = SimpleMiddleware | MiddlewareWithDeps;
+
+export type ResolveMiddlewaresFunction = (input: {
+    middlewares: MiddlewareEntry[];
+    name?: string;
+}) => Promise<RequestHandler[]>;

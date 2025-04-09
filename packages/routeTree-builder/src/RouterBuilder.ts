@@ -2,7 +2,6 @@ import {Router} from "express";
 import type {IAbstractRouterBuilder, TRouterBuilderDependencies} from "./types/IAbstractRouterbuilder";
 import {assertRequiredKeys} from "@sh3pherd/shared-utils";
 import type {RouteDef} from "./types/TRouteDef";
-import {resolveMiddlewares} from "./utils/resolveMiddlewares";
 
 
 /**
@@ -85,15 +84,16 @@ export class RouterBuilder implements IAbstractRouterBuilder {
         assertRequiredKeys<TRouterBuilderDependencies>(
             deps,
             [
-            'validateRouteDefFunction',
-            'createContextFunction',
-            'createRouterFromFactoryFunction',
-        ],
+                'validateRouteDefFunction',
+                'createContextFunction',
+                'createRouterFromFactoryFunction',
+                'resolveMiddlewaresFunction',
+            ],
             'RouterBuilder deps')
         this.deps = deps;
     };
 
-    public build(input: { routeDefs: RouteDef[] }): Router {
+    public async build(input: { routeDefs: RouteDef[] }): Promise<Router> {
         const { routeDefs } = input;
         const rootRouter = Router();
 
@@ -105,7 +105,7 @@ export class RouterBuilder implements IAbstractRouterBuilder {
             const context = this.deps.createContextFunction({ routeDef: def });
             const router = this.deps.createRouterFromFactoryFunction({ routeDef: def, routeContext: context });
 
-            const middlewares = await resolveMiddlewares(def.middlewares ?? []);
+            const middlewares = await this.deps.resolveMiddlewaresFunction({ middlewares: def.middlewares ?? []});
             middlewares.forEach(mw => router.use(mw));
 
             // No parent context propagation — children must inject everything they need
@@ -115,11 +115,11 @@ export class RouterBuilder implements IAbstractRouterBuilder {
                 throw new Error(`Children in "${def.path}" must be an array`);
             }
 
-            const childRouter = this.build({ routeDefs: children });
+            const childRouter = await this.build({ routeDefs: children });
             router.use(childRouter);
 
             //mount the route
-            rootRouter.use(routeDef.path, router);
+            rootRouter.use(def.path, router);
         }
         return rootRouter;
     };

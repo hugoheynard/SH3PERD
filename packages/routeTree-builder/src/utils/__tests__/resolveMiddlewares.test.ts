@@ -15,7 +15,7 @@ describe('resolveMiddlewares', () => {
 
     it('should return static middlewares unchanged', async () => {
         const mw1 = makeHandler('static');
-        const resolved = await resolveMiddlewares([mw1]);
+        const resolved = await resolveMiddlewares({ middlewares: [mw1] });
         expect(resolved).toHaveLength(1);
         expect(resolved[0]).toBe(mw1);
     });
@@ -29,7 +29,7 @@ describe('resolveMiddlewares', () => {
             mw: (deps) => makeHandler(deps.message)
         };
 
-        const resolved = await resolveMiddlewares([entry]);
+        const resolved = await resolveMiddlewares({ middlewares: [entry] });
         expect(typeof resolved[0]).toBe('function');
     });
 
@@ -45,12 +45,13 @@ describe('resolveMiddlewares', () => {
             }
         };
 
-        const resolved = await resolveMiddlewares([entry]);
+        const resolved = await resolveMiddlewares({ middlewares: [entry] });
         expect(typeof resolved[0]).toBe('function');
     });
 
     it('should throw on invalid entry', async () => {
         const badEntry = { notMiddleware: true } as unknown as MiddlewareEntry;
-        await expect(resolveMiddlewares([badEntry])).rejects.toThrow('Invalid middleware entry');
-    });
+        await expect(
+            resolveMiddlewares({ middlewares: [badEntry] })
+        ).rejects.toThrow('Invalid middleware entry');    });
 });
