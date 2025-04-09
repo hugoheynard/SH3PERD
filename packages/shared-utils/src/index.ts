@@ -2,7 +2,7 @@
 
 //repoAdaptersHelpers
 
-
+export { assertRequiredKeys as assertRequiredKeys } from './assert/assertRequiredKeys';
 
 export { mapMongoDocToDomainModel as mapMongoDocToDomainModel } from './repoAdaptersHelpers/mapMongoDocToDomainModel';
 export type { TmapMongoDocToDomainModelFunction as TmapMongoDocToDomainModelFunction } from './repoAdaptersHelpers/IMongoRepoWithDocMapper';
