@@ -5,7 +5,7 @@ interface AuthBody {
     password?: string;
 }
 
-export const validateAuthInput = async (req: Request<{}, {}, AuthBody>, res: Response, next: NextFunction): Promise<void> => {
+export const validateAuthInput = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const {email, password} = req.body;
 
     try {
