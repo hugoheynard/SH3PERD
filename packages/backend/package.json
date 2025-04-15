@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "dev:watch": "concurrently \"tsc -p tsconfig.json --watch\" \"tsc-alias --watch\"",
-    "test": "jest"
+    "dev:watch": "concurrently \"tsc -b tsconfig.json --watch\" \"tsc-alias --watch\"",
+    "test": "jest",
+    "clean": "find . -type d -name dist -o -name .turbo -o -name .cache -exec rm -rf {} + && find . -type f -name '*.tsbuildinfo' -delete"
   }
 }

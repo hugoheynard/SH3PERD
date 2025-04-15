@@ -1,12 +1,12 @@
-import type {IRefreshTokenRepository, TRefreshToken, TRefreshTokenRecord} from '@sh3pherd/auth'
-import type { UserId } from '@sh3pherd/user'
+import type {IRefreshTokenRepository, TRefreshToken, TRefreshTokenDomainModel} from '@sh3pherd/auth'
+import type {TUserId } from '@sh3pherd/user'
 import {RefreshTokenManager} from "../RefreshTokenManager";
 import { jest } from '@jest/globals';
 
 describe('RefreshTokenManager', () => {
-    const mockUserId: UserId = 'user_123' as UserId
+    const mockUserId: TUserId = 'user_123' as TUserId
     const mockToken: TRefreshToken = 'refreshToken_abc123';
-    const mockTokenRecord: TRefreshTokenRecord = {
+    const mockTokenRecord: TRefreshTokenDomainModel = {
         refreshToken: mockToken,
         user_id: mockUserId,
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
@@ -30,7 +30,7 @@ describe('RefreshTokenManager', () => {
     const repositoryMock: IRefreshTokenRepository = {
         saveRefreshToken: jest.fn(async () => ({ success: true })),
         revokeRefreshToken: jest.fn(async (input: { refreshToken: TRefreshToken }) => ({ revokedToken: input.refreshToken })),
-        findRefreshToken: jest.fn(async (input: { refreshToken: TRefreshToken }): Promise<TRefreshTokenRecord | null> => ({
+        findRefreshToken: jest.fn(async (input: { refreshToken: TRefreshToken }): Promise<TRefreshTokenDomainModel | null> => ({
             refreshToken: input.refreshToken,
             user_id: mockUserId,
             expiresAt: new Date(Date.now() + ttlMs_ONEDAY),
@@ -42,7 +42,7 @@ describe('RefreshTokenManager', () => {
     const sut = new RefreshTokenManager({
         refreshTokenRepository: repositoryMock,
         generatorFunction,
-        validateRefreshTokenDateFunction: validateRefreshTokenDateFunction,
+        validateRefreshTokenDateFn: validateRefreshTokenDateFunction,
         ttlMs: ttlMs_ONEDAY
     });
 

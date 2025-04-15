@@ -1,14 +1,13 @@
 import type {
     TRefreshToken,
-    TRefreshTokenRecord,
+    TRefreshTokenDomainModel,
     IRefreshTokenRepository,
     IAbstractRefreshTokenManager,
-    TGenerateRefreshTokenFunction,
-    TVerifyRefreshTokenFunction,
-    TRevokeRefreshTokenFunction,
-    TRefreshTokenManagerInput,
+    TGenerateRefreshToken,
+    TVerifyRefreshToken,
+    TRevokeRefreshToken,
+    TRefreshTokenManagerDeps,
 } from "@sh3pherd/auth";
-import type {TCheckExpirationDateFunction} from "./utils/checkExpirationDate";
 
 
 /**
@@ -24,10 +23,10 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
     private readonly validateRefreshTokenDateFunction: TCheckExpirationDateFunction;
     private readonly ttlMs: number;
 
-    constructor(input: TRefreshTokenManagerInput) {
+    constructor(input: TRefreshTokenManagerDeps) {
         this.refreshTokenRepository = input.refreshTokenRepository;
         this.generatorFunction = input.generatorFunction;
-        this.validateRefreshTokenDateFunction = input.validateRefreshTokenDateFunction;
+        this.validateRefreshTokenDateFunction = input.validateRefreshTokenDateFn;
         this.ttlMs = input.ttlMs;
     };
 
@@ -38,7 +37,7 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
      * @returns A promise that resolves to a new refresh token string.
      * @throws If token generation or saving fails.
      */
-    generateRefreshToken: TGenerateRefreshTokenFunction = async (input)=> {
+    generateRefreshToken: TGenerateRefreshToken = async (input)=> {
         try {
             const newRefreshToken = await this.generatorFunction();
 
@@ -46,14 +45,14 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
                 throw new Error("Failed to generate refresh token");
             }
 
-            const record: TRefreshTokenRecord = {
+            const record: TRefreshTokenDomainModel = {
                 refreshToken: newRefreshToken,
                 user_id: input.user_id,
                 expiresAt: new Date(Date.now() + this.ttlMs),
                 createdAt: new Date()
             };
 
-            await this.refreshTokenRepository.saveRefreshToken({ refreshTokenRecord: record });
+            await this.refreshTokenRepository.saveRefreshToken({ refreshTokenDomainModel: record });
 
             return newRefreshToken
         } catch (error){
@@ -68,7 +67,7 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
      * @param input - The refresh token to validate.
      * @returns A promise that resolves to a boolean indicating whether the token is valid.
      */
-    verifyRefreshToken: TVerifyRefreshTokenFunction = (input) => {
+    verifyRefreshToken: TVerifyRefreshToken = (input) => {
         const { refreshTokenRecord } = input;
 
         return this.validateRefreshTokenDateFunction({ expirationDate: refreshTokenRecord.expiresAt });
@@ -81,7 +80,7 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
      * @returns A promise that resolves to an object containing the revoked token.
      * @throws If the revocation fails or the token does not exist.
      */
-    revokeRefreshToken: TRevokeRefreshTokenFunction = async (input) => {
+    revokeRefreshToken: TRevokeRefreshToken = async (input) => {
         try {
             await this.refreshTokenRepository.revokeRefreshToken({ refreshToken: input.refreshToken});
 

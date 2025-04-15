@@ -39,12 +39,12 @@ describe("BcryptHasher", () => {
 
         expect(hash).toMatch(/\$2[abxy]\$/);
 
-        const isValid = await hasher.comparePassword({
+        const result = await hasher.comparePassword({
             password: plainPassword,
             hashedPassword: hash,
         });
 
-        expect(isValid).toBe(true);
+        expect(result).toStrictEqual({isValid: true, wasRehashed: false});
         expect(mockHashParser.extract).toHaveBeenCalledWith(hash);
     });
 
@@ -62,12 +62,12 @@ describe("BcryptHasher", () => {
     it("should fail verification with a wrong password", async () => {
         const hash = await hasher.hashPassword({ password: plainPassword });
 
-        const isValid = await hasher.comparePassword({
+        const result = await hasher.comparePassword({
             password: "wrongPassword",
             hashedPassword: hash,
         });
 
-        expect(isValid).toBe(false);
+        expect(result).toStrictEqual({isValid: false, wasRehashed: false});
     });
 
     it("should throw on invalid hash format", async () => {

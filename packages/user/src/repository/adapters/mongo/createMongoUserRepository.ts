@@ -1,13 +1,13 @@
 import type { Collection, ObjectId } from 'mongodb';
-import type {IUserRepository, TSaveUserResult, UserDomainModel} from "../../../domain/types";
+import type {IUserRepository, TSaveUserResult, TUserDomainModel} from "../../../domain/types";
 
-export type MongoUser = UserDomainModel & { _id: ObjectId};
+export type MongoUser = TUserDomainModel & { _id: ObjectId};
 
-export const createMongoUserRepository = (input: { collection: Collection<UserDomainModel> })  => {
+export const createMongoUserRepository = (input: { collection: Collection<TUserDomainModel> })  => {
     const { collection } = input;
 
     const repository: IUserRepository =  {
-        saveUser: async (input: { user: UserDomainModel }): Promise<TSaveUserResult> => {
+        saveUser: async (input: { user: TUserDomainModel }): Promise<TSaveUserResult> => {
             const result = await collection.insertOne(input.user);
 
             if (result.acknowledged) {

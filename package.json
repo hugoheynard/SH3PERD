@@ -13,12 +13,12 @@
     "create:package": "tsx dev-toolbox/scripts/create-package.ts",
     "updatePackagesRefs": "tsx dev-toolbox/scripts/update-packageRefs.ts",
     "lint:imports": "tsx dev-toolbox/scripts/scan-cross-package-imports.ts",
-    "clean": "rimraf packages/*/dist packages/*/*.tsbuildinfo",
     "check:dev-watch": "tsx dev-toolbox/scripts/find-missing-devWatch.ts",
     "fix:js-extensions": "tsx dev-toolbox/scripts/fix-js-extensions.ts",
     "build": "turbo run build",
     "dev:watch": "turbo run dev:watch",
-    "test": "jest --workspaces"
+    "test": "jest --workspaces",
+    "clean": "turbo run clean"
   },
   "tsc-alias": {
     "resolveFullPaths": true,
@@ -50,7 +50,8 @@
     "tsup": "^8.4.0",
     "tsx": "^4.19.3",
     "turbo": "^2.4.4",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "wait-on": "^8.0.3"
   },
   "dependencies": {
     "argon2": "^0.41.1",

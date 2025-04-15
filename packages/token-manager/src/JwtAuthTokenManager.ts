@@ -2,8 +2,8 @@ import type {
     TTokenManagerOptions,
     TAuthTokenPayload,
     IAbstractAuthTokenManager,
-    TVerifyAuthTokenFunction,
-    TGenerateAuthTokenFunction
+    TVerifyAuthToken,
+    TGenerateAuthToken
 } from "@sh3pherd/auth";
 import jwt from 'jsonwebtoken'
 
@@ -36,7 +36,7 @@ export class JwtAuthTokenManager implements IAbstractAuthTokenManager{
      * @param input - Contains the payload to embed inside the JWT (e.g. user ID).
      * @returns A signed JWT as a string.
      */
-    generateAuthToken:TGenerateAuthTokenFunction = async (input) => {
+    generateAuthToken:TGenerateAuthToken = async (input) => {
         const { payload } = input;
 
         return Promise.resolve(
@@ -53,7 +53,7 @@ export class JwtAuthTokenManager implements IAbstractAuthTokenManager{
      * @param input - Object containing the JWT string to verify.
      * @returns The decoded payload if valid, or throws if invalid/expired.
      */
-    verifyAuthToken: TVerifyAuthTokenFunction = async (input) =>{
+    verifyAuthToken: TVerifyAuthToken = async (input) =>{
         const { token } = input;
 
         const payload = jwt.verify(token, this.options.publicKey as string, {

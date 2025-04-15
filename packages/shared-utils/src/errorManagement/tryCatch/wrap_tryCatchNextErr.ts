@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 
-type AsyncHandler = (req: Request, res: Response, next: NextFunction) => Promise<any>;
+type AsyncHandler = (req: Request, res: Response, next?: NextFunction) => Promise<void>;
 
 type WrapHandlers<T extends Record<string, AsyncHandler>> = {
     [K in keyof T]: AsyncHandler;

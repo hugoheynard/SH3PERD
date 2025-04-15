@@ -2,12 +2,12 @@
 
 
 export type {
-    UserId as UserId,
-    UserDomainModel as UserDomainModel,
+    TUserId as TUserId,
+    TUserDomainModel as TUserDomainModel,
     CreateUserInput as CreateUserInput,
     CreateUserFunction as CreateUserFunction,
-    TSaveUserFunction as TSaveUserFunction,
-    TFindUserByEmailFunction as TFindUserByEmailFunction,
+    TSaveUser as TSaveUser,
+    TFindUserByEmail as TFindUserByEmail,
     TSaveUserResult as TSaveUserResult,
     IUserRepository as IUserRepository,
 } from "./domain/types";

@@ -1,4 +1,10 @@
-import type {IHasherConfigObject, IHashParser, TAlgoLibs, TAlgorithms} from "../src/types/Interfaces";
+import type {
+    ICompareResult_copy,
+    IHasherConfigObject,
+    IHashParser,
+    TAlgoLibs,
+    TAlgorithms
+} from "../src/types/Interfaces";
 import {BaseHasherStrategy} from "../src/strategies/BaseHasherStrategy";
 
 
@@ -26,7 +32,7 @@ describe("BaseHasherStrategy", () => {
             throw new Error("not implemented");
         }
 
-        async comparePassword(): Promise<boolean> {
+        async comparePassword(): Promise<ICompareResult_copy> {
             throw new Error("not implemented");
         }
 

@@ -1,6 +1,7 @@
 import type {Router} from "express";
-import {routerBuilder} from "@sh3pherd/routeTree-builder";
-import {validateAuthInput} from "../middlewares/login/validateAuthInput";
+import {createLoginRouter} from "./createLoginRouter";
+import {validateAuthInput} from "../middlewares/validateAuthInput";
+import {routerBuilder} from "@sh3pherd/router-builder";
 
 
 export const createAuthRouter = (input: { authController: any }): Router => {
@@ -16,9 +17,10 @@ export const createAuthRouter = (input: { authController: any }): Router => {
                         {
                             path: '/login',
                             inject: { loginFunction: authController.login },
-                            factory: () => Router(),
+                            factory: ({ loginFunction }) => createLoginRouter({ loginFn: loginFunction }),
                             middlewares: [validateAuthInput]
                         },
+                        /*
                         {
                             path: '/logout',
                             inject: { logoutFunction: authController.logout },
@@ -34,10 +36,15 @@ export const createAuthRouter = (input: { authController: any }): Router => {
                             ]
 
                         }
+
+                         */
+
+
                     ]
                 },
             ]
         });
 }
 
-app.use('/api', createAuthRouter({}));
+//app.use('/api', createAuthRouter({}));
+

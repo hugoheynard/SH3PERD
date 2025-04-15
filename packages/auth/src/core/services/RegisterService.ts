@@ -1,20 +1,20 @@
-import type {IRegisterService, IRegisterServiceInput} from "../../domain/models/IRegisterServiceInput";
-import type {TSaveUserResult, UserDomainModel} from "@sh3pherd/user";
+import type {IRegisterService, RegisterServiceTypes} from "../../domain/models/registerService.types";
+import type {TSaveUserResult, TUserDomainModel} from "@sh3pherd/user";
 
 
 export class RegisterService implements IRegisterService {
-    private readonly generateUserIdFunction: IRegisterServiceInput['generateUserIdFunction'];
-    private readonly hashPasswordFunction: IRegisterServiceInput['hashPasswordFunction'];
-    private readonly createUserFunction: IRegisterServiceInput['createUserFunction'];
-    private readonly saveUserFunction: IRegisterServiceInput['saveUserFunction'];
-    private readonly findUserByEmailFunction: IRegisterServiceInput['findUserByEmailFunction'];
+    private readonly generateUserIdFunction: RegisterServiceTypes['generateUserIdFn'];
+    private readonly hashPasswordFunction: RegisterServiceTypes['hashPasswordFn'];
+    private readonly createUserFunction: RegisterServiceTypes['createUserFn'];
+    private readonly saveUserFunction: RegisterServiceTypes['saveUserFn'];
+    private readonly findUserByEmailFunction: RegisterServiceTypes['findUserByEmailFn'];
 
-    constructor(input: IRegisterServiceInput) {
-        this.generateUserIdFunction = input.generateUserIdFunction;
-        this.hashPasswordFunction = input.hashPasswordFunction;
-        this.createUserFunction = input.createUserFunction;
-        this.saveUserFunction = input.saveUserFunction;
-        this.findUserByEmailFunction = input.findUserByEmailFunction;
+    constructor(input: RegisterServiceTypes) {
+        this.generateUserIdFunction = input.generateUserIdFn;
+        this.hashPasswordFunction = input.hashPasswordFn;
+        this.createUserFunction = input.createUserFn;
+        this.saveUserFunction = input.saveUserFn;
+        this.findUserByEmailFunction = input.findUserByEmailFn;
     };
 
     async registerUser(input: { email: string, password: string }): Promise<TSaveUserResult> {
@@ -31,7 +31,7 @@ export class RegisterService implements IRegisterService {
         return saveResult;
     };
 
-    async getUserByEmail(input: { email: string }): Promise<UserDomainModel | null>{
+    async getUserByEmail(input: { email: string }): Promise<TUserDomainModel | null>{
         return await this.findUserByEmailFunction({ email: input.email });
     };
 }

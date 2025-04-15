@@ -53,23 +53,23 @@ describe('Argon2Hasher', () => {
     it('should successfully compare a valid password', async () => {
         const hash = await hasher.hashPassword({ password: 'secret123' });
 
-        const isValid = await hasher.comparePassword({
+        const result = await hasher.comparePassword({
             password: 'secret123',
             hashedPassword: hash,
         });
 
-        expect(isValid).toBe(true);
+        expect(result).toStrictEqual({isValid: true, wasRehashed: false});
     });
 
     it('should reject an invalid password', async () => {
         const hash = await hasher.hashPassword({ password: 'secret123' });
 
-        const isValid = await hasher.comparePassword({
+        const result = await hasher.comparePassword({
             password: 'wrongpass',
             hashedPassword: hash,
         });
 
-        expect(isValid).toBe(false);
+        expect(result.isValid).toBe(false);
     });
 
     it('should throw on malformed hash format', async () => {

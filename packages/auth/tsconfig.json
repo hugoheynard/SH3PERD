@@ -10,9 +10,26 @@
     "src"
   ],
   "references": [
-    { "path": "../shared-utils" },
-    { "path": "../user" },
-    { "path": "../token-manager" },
-    { "path": "../routeTree-builder" }
+    {
+      "path": "../token-manager"
+    },
+    {
+      "path": "../shared-utils"
+    },
+    {
+      "path": "../shared-types"
+    },
+    {
+      "path": "../user"
+    },
+    {
+      "path": "../router-builder"
+    },
+    {
+      "path": "../backend"
+    },
+    {
+      "path": "../password-manager"
+    }
   ]
 }

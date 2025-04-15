@@ -9,8 +9,8 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false, //true
+    "noUnusedParameters": false, //true
     "noFallthroughCasesInSwitch": true,
     "declarationMap": true,
     "allowJs": false,
@@ -20,9 +20,13 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "noEmit": false, //added
+    "emitDeclarationOnly": false, //added
     "baseUrl": ".",
     "paths": {
       "@sh3pherd/*": ["packages/*/src/index.ts"],
+      "@sh3pherd/shared-types/*": ["packages/shared-types/src/*"],
+      "@sh3pherd/shared-utils/*": ["packages/shared-utils/src/*"]
     }
   },
 }

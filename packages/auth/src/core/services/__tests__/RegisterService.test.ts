@@ -1,12 +1,12 @@
 import {jest} from '@jest/globals';
 import {RegisterService} from "../RegisterService";
-import type {TSaveUserResult, UserDomainModel, UserId} from "@sh3pherd/user";
+import type {TSaveUserResult, TUserDomainModel, UserId} from "@sh3pherd/user";
 
 
 describe('RegistrationService', () => {
     const mockGenerateUserId = jest.fn((): UserId  => 'user_fake-id-123');
     const mockHashPassword = jest.fn(async ({ password }): Promise<string> => `hashed-${password}`);
-    const mockCreateUser = jest.fn(({ email, password, user_id }): UserDomainModel => ({
+    const mockCreateUser = jest.fn(({ email, password, user_id }): TUserDomainModel => ({
         email,
         password,
         user_id,
@@ -16,7 +16,7 @@ describe('RegistrationService', () => {
     const mockSaveUser = jest.fn(async (): Promise<TSaveUserResult> => {
         return { success: true };
     });
-    const mockFindUser = jest.fn(async ({ email }): Promise<UserDomainModel> => ({
+    const mockFindUser = jest.fn(async ({ email }): Promise<TUserDomainModel> => ({
         email,
         user_id: 'user_fake-id-123',
         password: 'hashed-securepassword',
@@ -25,11 +25,11 @@ describe('RegistrationService', () => {
     }));
 
     const registrationService = new RegisterService({
-        generateUserIdFunction: mockGenerateUserId,
-        hashPasswordFunction: mockHashPassword,
-        createUserFunction: mockCreateUser,
-        saveUserFunction: mockSaveUser,
-        findUserByEmailFunction: mockFindUser,
+        generateUserIdFn: mockGenerateUserId,
+        hashPasswordFn: mockHashPassword,
+        createUserFn: mockCreateUser,
+        saveUserFn: mockSaveUser,
+        findUserByEmailFn: mockFindUser,
     });
 
     beforeEach(() => {

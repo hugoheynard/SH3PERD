@@ -1,13 +1,17 @@
 {
   "name": "@sh3pherd/bootstrap",
   "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "type": "module",
   "private": true,
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "dev:watch": "concurrently \"tsc -p tsconfig.json --watch\" \"tsc-alias --watch\" \"nodemon --watch 'dist/**/*.js' --exec 'tsx ../../dev-toolbox/scripts/fix-js-extensions.ts && node --inspect=9229 dist/app.js'\"",
-    "test": "jest"
+    "dev:watch": "concurrently \"tsc -b tsconfig.json --watch\" \"tsc-alias --watch\" \"wait-on dist/app.js && nodemon --watch 'dist/**/*.js' --exec 'tsx ../../dev-toolbox/scripts/fix-js-extensions.ts && node --inspect=9229 dist/app.js'\"",
+    "test": "jest",
+    "clean": "find . -type d -name dist -o -name .turbo -o -name .cache -exec rm -rf {} + && find . -type f -name '*.tsbuildinfo' -delete"
   }
 }

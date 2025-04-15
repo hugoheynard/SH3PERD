@@ -1,123 +1,116 @@
-import { jest } from '@jest/globals';
-
-
-import type {
-    IHasherStrategy,
-    TAlgoLibs,
-    TAlgorithms,
-    THashParserFunction,
-    TVerifyLastHashDateFunction
-} from "../src/types/Interfaces";
+import {isRehashDueFromLastHashDate} from "../src/utils/isRehashDueFromLastHashDate";
+import {HashParser} from "../src/utils/HashParser";
+import {createHasherRegistry} from "../src/hasherRegistry/createHasherRegistry";
 import {PasswordManager} from "../src/PasswordManager";
+import bcrypt from "bcrypt";
 
-export const createMockHasherStrategy = (isValid: boolean): IHasherStrategy => ({
-    hashPassword: jest.fn(({ password }) => Promise.resolve(`hashed-${password}`)),
-    comparePassword: jest.fn(({ password, hashedPassword }) =>
-        Promise.resolve(isValid && hashedPassword === `hashed-${password}`)
-    ),
+const passwordManager = new PasswordManager({
+    currentStrategyKey: 'argon2id:v1',
+    registry: createHasherRegistry({ hashParser: HashParser }),
+    hashParserFunction: HashParser.extract,
+    verifyLastHashDateFunction: isRehashDueFromLastHashDate,
+    rehashAfterDays: 30,
 });
 
-export const mockParsedHash = (
-    overrides?: Partial<ReturnType<THashParserFunction>>
-): ReturnType<THashParserFunction> => ({
-    library: 'argon2' as TAlgoLibs,
-    algorithm: 'argon2id' as TAlgorithms,
-    versionConfig: 'v1',
-    hashed_at: new Date().toISOString(),
-    rawHash: 'some-hash',
-    ...overrides,
-});
+describe('PasswordManager - real instance', () => {
+    it('should validate correct password', async () => {
+        const password = 'correctHorseBatteryStaple';
+        const hash = await passwordManager.hashPassword({ password });
 
-export const createMockHashParser = (
-    overrides?: Partial<ReturnType<THashParserFunction>>
-): jest.MockedFunction<THashParserFunction> =>
-    jest.fn((_hash) => mockParsedHash(overrides));
-
-export const createMockDateVerifier = (
-    shouldRehash: boolean
-): jest.MockedFunction<TVerifyLastHashDateFunction> =>
-    jest.fn(() => shouldRehash);
-
-describe('PasswordManager', () => {
-    let passwordManager: PasswordManager;
-
-    beforeEach(() => {
-        const mockStrategy = createMockHasherStrategy(true);
-        const registry = { 'argon2id:v1': mockStrategy };
-
-        passwordManager = new PasswordManager({
-            currentStrategyKey: 'argon2id:v1',
-            registry,
-            hashParserFunction: createMockHashParser(),
-            verifyLastHashDateFunction: createMockDateVerifier(false),
-            rehashAfterDays: 30,
-        });
-    });
-
-    it('should validate a correct password', async () => {
         const result = await passwordManager.comparePassword({
-            password: 'correct',
-            hashedPassword: 'hashed-correct',
+            password,
+            hashedPassword: hash,
         });
 
-        expect(result).toEqual({
-            isValid: true,
-            wasRehashed: false,
-        });
+        expect(result.isValid).toBe(true);
+        expect(result.wasRehashed).toBe(false);
     });
 
-    it('should reject an incorrect password', async () => {
+    it('should reject wrong password', async () => {
+        const hash = await passwordManager.hashPassword({ password: 'secret123' });
+
         const result = await passwordManager.comparePassword({
-            password: 'wrong',
-            hashedPassword: 'hashed-correct',
+            password: 'wrongpassword',
+            hashedPassword: hash,
         });
 
-        expect(result).toEqual({
-            isValid: false,
-            wasRehashed: false,
-        });
+
+        expect(result.isValid).toBe(false);
+        expect(result.wasRehashed).toBe(false);
     });
 
-    it('should trigger rehash if version key is different', async () => {
-        const mockStrategy = createMockHasherStrategy(true);
-        const manager = new PasswordManager({
-            currentStrategyKey: 'argon2id:v1',
-            registry: {
-                'argon2id:v1': mockStrategy,
-                'argon2id:v2': mockStrategy,
-            },
-            hashParserFunction: createMockHashParser({ versionConfig: 'v2' }),
-            verifyLastHashDateFunction: createMockDateVerifier(false),
+    it('should validate and rehash if password was hashed with bcrypt', async () => {
+        const password = 'SafePass123!';
+
+        // Instance en bcrypt
+        const bcryptManager = new PasswordManager({
+            currentStrategyKey: 'bcrypt:v1',
+            registry: createHasherRegistry({ hashParser: HashParser }),
+            hashParserFunction: HashParser.extract,
+            verifyLastHashDateFunction: isRehashDueFromLastHashDate,
             rehashAfterDays: 30,
         });
 
-        const result = await manager.comparePassword({
-            password: 'correct',
-            hashedPassword: 'hashed-correct',
+        // Hash with old strategy
+        const bcryptHash = await bcryptManager.hashPassword({ password });
+        // Instance argon
+
+        const argon2Manager = new PasswordManager({
+            currentStrategyKey: 'argon2id:v1',
+            registry: createHasherRegistry({ hashParser: HashParser }),
+            hashParserFunction: HashParser.extract,
+            verifyLastHashDateFunction: isRehashDueFromLastHashDate,
+            rehashAfterDays: 30,
         });
 
+        const result = await argon2Manager.comparePassword({
+            password,
+            hashedPassword: bcryptHash,
+        });
+
+        expect(result.isValid).toBe(true);
         expect(result.wasRehashed).toBe(true);
         expect(result.newHash).toBeDefined();
     });
 
-    it('should trigger rehash if hash is too old', async () => {
+    it('should trigger rehash if hash is older than rehashAfterDays', async () => {
+        const password = 'SafePass123!';
+        const daysAgo = 90;
+
         const pastDate = new Date();
-        pastDate.setDate(pastDate.getDate() - 40);
+        pastDate.setDate(pastDate.getDate() - daysAgo);
+        const hashed_at = pastDate.toISOString();
 
+        // 🔐 Hash réel
+        const rawHash = await bcrypt.hash(password, 12);
+
+        // 🧱 Construit un hash enrichi avec vieille date
+        const oldHashWithMeta = [
+            'bcrypt',
+            'bcrypt',
+            'v1',
+            hashed_at,
+            rawHash
+        ].join(':::');
+
+        // 🔐 Vérifie avec un manager qui va rehasher si date trop ancienne
         const manager = new PasswordManager({
-            currentStrategyKey: 'argon2id:v1',
-            registry: { 'argon2id:v1': createMockHasherStrategy(true) },
-            hashParserFunction: createMockHashParser({ hashed_at: pastDate.toISOString() }),
-            verifyLastHashDateFunction: createMockDateVerifier(true),
-            rehashAfterDays: 30,
+            currentStrategyKey: 'bcrypt:v1',
+            registry: createHasherRegistry({ hashParser: HashParser }),
+            hashParserFunction: HashParser.extract,
+            verifyLastHashDateFunction: isRehashDueFromLastHashDate,
+            rehashAfterDays: 30, // ← forcera un rehash
         });
 
         const result = await manager.comparePassword({
-            password: 'correct',
-            hashedPassword: 'hashed-correct',
+            password,
+            hashedPassword: oldHashWithMeta,
         });
 
+        expect(result.isValid).toBe(true);
         expect(result.wasRehashed).toBe(true);
         expect(result.newHash).toBeDefined();
     });
+
+
 });

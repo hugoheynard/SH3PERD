@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import {BaseHasherStrategy} from "./BaseHasherStrategy";
-import type {Bcrypt_Options, IHasherConfigObject, IHashParser} from "../types/Interfaces";
+import type {Bcrypt_Options, ICompareResult_copy, IHasherConfigObject, IHashParser} from "../types/Interfaces";
 
 
 /**
@@ -37,7 +37,7 @@ export class BcryptHasher extends BaseHasherStrategy<Bcrypt_Options> {
     async comparePassword(input: {
         password: string;
         hashedPassword: string;
-    }): Promise<boolean> {
+    }): Promise<ICompareResult_copy> {
         const { password, hashedPassword } = input;
 
         const parsed = this.hashParser.extract(hashedPassword);
@@ -48,6 +48,13 @@ export class BcryptHasher extends BaseHasherStrategy<Bcrypt_Options> {
             throw new Error("Invalid Bcrypt hash format");
         }
 
-        return await bcrypt.compare(password, rawHash);
+        const isValid =  await bcrypt.compare(password, rawHash);
+
+        return {
+            isValid,
+            wasRehashed: false,
+        }
+
+
     }
 }

@@ -1,6 +1,6 @@
 import type { Collection, InsertOneResult, DeleteResult, Document} from 'mongodb';
 import { ObjectId } from 'mongodb';
-import type {TRefreshToken, TRefreshTokenRecord} from "../../../domain/models/refreshToken.types";
+import type {TRefreshToken, TRefreshTokenDomainModel} from "../../../domain/models/refreshToken.types";
 import {RefreshTokenMongoRepository} from "../RefreshTokenMongoRepository";
 import {jest} from '@jest/globals';
 import type {TmapMongoDocToDomainModelFunction} from "@sh3pherd/shared-utils";
@@ -11,9 +11,9 @@ describe('RefreshTokenMongoRepository', () => {
         insertOne: jest.fn(),
         findOne: jest.fn(),
         deleteOne: jest.fn(),
-    } as unknown as jest.Mocked<Collection<TRefreshTokenRecord>>;
+    } as unknown as jest.Mocked<Collection<TRefreshTokenDomainModel>>;
 
-    const mockTokenRecord: TRefreshTokenRecord = {
+    const mockTokenRecord: TRefreshTokenDomainModel = {
         refreshToken: 'refresh_abc123' as TRefreshToken,
         user_id: 'user_001',
         expiresAt: new Date(Date.now() + 1000 * 60 * 60),
@@ -25,7 +25,7 @@ describe('RefreshTokenMongoRepository', () => {
 
     const repository = new RefreshTokenMongoRepository({
         refreshTokenCollection: mockCollection,
-        mapMongoDocToDomainModelFunction: mockMapDocToDomain as unknown as TmapMongoDocToDomainModelFunction,
+        mapMongoDocToDomainModelFn: mockMapDocToDomain as unknown as TmapMongoDocToDomainModelFunction,
     });
 
 
@@ -36,7 +36,7 @@ describe('RefreshTokenMongoRepository', () => {
     it('should save refresh token successfully', async () => {
         mockCollection.insertOne.mockResolvedValueOnce({ acknowledged: true, insertedId: new ObjectId() } as InsertOneResult<Document>);
 
-        const result = await repository.saveRefreshToken({ refreshTokenRecord: mockTokenRecord });
+        const result = await repository.saveRefreshToken({ refreshTokenDomainModel: mockTokenRecord });
 
         expect(result).toEqual({ success: true });
         expect(mockCollection.insertOne).toHaveBeenCalledWith(mockTokenRecord);
@@ -45,7 +45,7 @@ describe('RefreshTokenMongoRepository', () => {
     it('should throw if save fails', async () => {
         mockCollection.insertOne.mockResolvedValueOnce({ acknowledged: false } as InsertOneResult<Document>);
 
-        await expect(repository.saveRefreshToken({ refreshTokenRecord: mockTokenRecord }))
+        await expect(repository.saveRefreshToken({ refreshTokenDomainModel: mockTokenRecord }))
             .rejects
             .toThrow('Failed to save refresh token');
     });
@@ -73,7 +73,7 @@ describe('RefreshTokenMongoRepository', () => {
     it('should revoke refresh token', async () => {
         mockCollection.deleteOne.mockResolvedValueOnce({ deletedCount: 1 } as DeleteResult);
 
-        const result = await repository.revokeRefreshToken({ refreshToken: mockTokenRecord.refreshToken });
+        const result = await repository.deleteRefreshToken({ refreshToken: mockTokenRecord.refreshToken });
 
         expect(result).toEqual({ revokedToken: mockTokenRecord.refreshToken });
         expect(mockCollection.deleteOne).toHaveBeenCalledWith({ refreshToken: mockTokenRecord.refreshToken });
@@ -82,7 +82,7 @@ describe('RefreshTokenMongoRepository', () => {
     it('should throw if token not found when revoking', async () => {
         mockCollection.deleteOne.mockResolvedValueOnce({ deletedCount: 0 } as DeleteResult);
 
-        await expect(repository.revokeRefreshToken({ refreshToken: mockTokenRecord.refreshToken }))
+        await expect(repository.deleteRefreshToken({ refreshToken: mockTokenRecord.refreshToken }))
             .rejects
             .toThrow(`Refresh token ${mockTokenRecord.refreshToken} not found or already revoked`);
     });

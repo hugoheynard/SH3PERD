@@ -1,6 +1,6 @@
 import argon2 from "argon2";
 import { BaseHasherStrategy } from "./BaseHasherStrategy";
-import type {IArgon2_Options, IHasherConfigObject, IHashParser} from "../types/Interfaces";
+import type {IArgon2_Options, ICompareResult_copy, IHasherConfigObject, IHashParser} from "../types/Interfaces";
 
 /**
  * Argon2Hasher
@@ -37,7 +37,7 @@ export class Argon2Hasher extends BaseHasherStrategy<IArgon2_Options> {
     async comparePassword(input: {
         password: string;
         hashedPassword: string;
-    }): Promise<boolean> {
+    }): Promise<ICompareResult_copy> {
         const { password, hashedPassword } = input;
         const parsed = this.hashParser.extract(hashedPassword);
 
@@ -47,6 +47,11 @@ export class Argon2Hasher extends BaseHasherStrategy<IArgon2_Options> {
             throw new Error("Invalid Argon2 hash format");
         }
 
-        return await argon2.verify(rawHash, password);
+        const isValid =  await argon2.verify(rawHash, password);
+
+        return {
+            isValid,
+            wasRehashed: false,
+        };
     }
 }

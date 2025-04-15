@@ -1,5 +1,4 @@
 import type {Options} from "argon2";
-import type {TComparePasswordFunction, THashPasswordFunction} from "@sh3pherd/auth";
 
 
 export interface IPasswordManagerInput {
@@ -13,7 +12,7 @@ export interface IPasswordManagerInput {
 export type TAlgoLibs = 'argon2' | 'bcrypt';
 export type TAlgorithms = 'argon2id' | '$2b$';
 
-export type ICompareResult = {
+export type ICompareResult_copy = {
     isValid: boolean;
     wasRehashed: boolean;
     newHash?: string;
@@ -25,21 +24,16 @@ export type ICompareResult = {
  * Common interface for password hashing strategies classes.
  */
 export interface IHasherStrategy {
-    hashPassword:THashPasswordFunction;
-    comparePassword: TComparePasswordFunction;
+    hashPassword:(input: { password: string }) => Promise<string>;
+    comparePassword: (input: { password: string, hashedPassword: string }) => Promise<ICompareResult_copy>;
 }
 
 export interface IPasswordManager {
-    hashPassword:THashPasswordFunction;
-    comparePassword(input: { password: string, hashedPassword: string }): Promise<ICompareResult>;
+    hashPassword:(input: { password: string }) => Promise<string>;
+    comparePassword: (input: { password: string, hashedPassword: string }) => Promise<ICompareResult_copy>;
 }
 
-export interface IHasherConstructor<TOptions> {
-    new(input: {
-        configObject: IHasherConfigObject<TOptions>;
-        hashParser: IHashParser;
-    }): IHasherStrategy;
-}
+
 
 /**
  * IArgon2_Options

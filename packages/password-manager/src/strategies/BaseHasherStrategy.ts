@@ -1,4 +1,4 @@
-import type {IHasherConfigObject, IHasherStrategy, IHashParser} from "../types/Interfaces";
+import type {ICompareResult_copy, IHasherConfigObject, IHasherStrategy, IHashParser} from "../types/Interfaces";
 
 
 export abstract class BaseHasherStrategy<TOptions> implements IHasherStrategy {
@@ -25,5 +25,5 @@ export abstract class BaseHasherStrategy<TOptions> implements IHasherStrategy {
     };
 
     abstract hashPassword(input: { password: string }): Promise<string>;
-    abstract comparePassword(input: { password: string, hashedPassword: string }): Promise<boolean>;
+    abstract comparePassword(input: { password: string, hashedPassword: string }): Promise<ICompareResult_copy>;
 }

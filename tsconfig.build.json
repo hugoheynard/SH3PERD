@@ -6,6 +6,9 @@
       "path": "packages/shared-utils"
     },
     {
+      "path": "packages/shared-types"
+    },
+    {
       "path": "packages/user"
     },
     {
@@ -25,6 +28,9 @@
     },
     {
       "path": "packages/token-manager"
+    },
+    {
+      "path": "packages/router-builder"
     }
   ],
   "exclude": [

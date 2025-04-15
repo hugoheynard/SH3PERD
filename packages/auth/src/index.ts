@@ -5,10 +5,9 @@
  */
 
 // Exporting the types and interfaces for the password module
-export type {
-    THashPasswordFunction as THashPasswordFunction,
-    TComparePasswordFunction as TComparePasswordFunction
-} from './domain/models/function.types';
+
+
+export {TCreateAuthSession as TCreateAuthSession} from './domain/authFunctions.types';
 
 // Exporting the types and interfaces for the authToken module
 export type {
@@ -16,9 +15,11 @@ export type {
     TAuthTokenManagerOptions as TTokenManagerOptions
 } from './domain/models/authToken.types';
 
+
+
 export type {
     TRefreshToken as TRefreshToken,
-    TRefreshTokenRecord as TRefreshTokenRecord,
+    TRefreshTokenDomainModel as TRefreshTokenDomainModel,
 } from './domain/models/refreshToken.types';
 
 //authTokenManager
@@ -27,11 +28,17 @@ export type {IAbstractAuthTokenManager as IAbstractAuthTokenManager,} from './do
 //refreshTokenManager
 export type {
     IAbstractRefreshTokenManager as IAbstractRefreshTokenManager,
-    TRefreshTokenManagerInput as TRefreshTokenManagerInput,
+    TRefreshTokenManagerDeps as TRefreshTokenManagerDeps,
 } from "./domain/models/IAbstractRefreshTokenManager";
 
 //refreshTokenRepository
 export {RefreshTokenMongoRepository as RefreshTokenMongoRepository} from './adapters/repositories/RefreshTokenMongoRepository';
+export {
+    //TSaveRefreshToken as TSaveRefreshToken,
+    //TFindRefreshToken as TFindRefreshToken,
+    //TDeleteRefreshToken as TDeleteRefreshToken,
+} from './domain/authFunctions.types';
+
 
 //authTokenService
 export {AuthTokenService as AuthTokenService} from './core/services/AuthTokenService';
@@ -43,25 +50,31 @@ export {createAuthTokenService as createAuthTokenService} from './factories/crea
 export type {IRegisterController as IRegisterController} from './api/controllers/IRegisterController';
 
 export {createRegisterRouter as createRegisterRouter} from './api/routes/createRegisterRouter';
-export {createRegisterMiddlewares as createRegisterMiddlewares} from './api/middlewares/createRegisterMiddlewares';
-export {createRegisterController as createRegisterController} from './api/controllers/createRegisterController';
 export {RegisterService as RegisterService} from './core/services/RegisterService';
 
 //Middleware Exports
 export {validateRegistrationInput as validateRegistrationInput} from './api/middlewares/validateRegistrationInput';
 
+export {createAuthRouter as createAuthRouter} from './api/routes/createAuthRouter';
+
 export type{
-    TRevokeRefreshTokenFunction as TRevokeRefreshTokenFunction,
-    TVerifyRefreshTokenFunction as TVerifyRefreshTokenFunction,
-    TGenerateRefreshTokenFunction as TGenerateRefreshTokenFunction,
-    TVerifyAuthTokenFunction as TVerifyAuthTokenFunction,
-    TGenerateAuthTokenFunction as TGenerateAuthTokenFunction,
-} from "./domain/models/function.types";
+    TRevokeRefreshToken as TRevokeRefreshToken,
+    TVerifyRefreshToken as TVerifyRefreshToken,
+    TGenerateRefreshToken as TGenerateRefreshToken,
+    TVerifyAuthToken as TVerifyAuthToken,
+    TGenerateAuthToken as TGenerateAuthToken,
+} from "./domain/authFunctions.types";
 
 export type {
-    IRefreshTokenMongoRepositoryInput as IRefreshTokenMongoRepositoryInput,
     IRefreshTokenRepository as IRefreshTokenRepository,
 } from "./domain/models/IRefreshTokenRepository";
 
 
+//factories
+export {createRegisterService as createRegisterService} from '../../bootstrap/src/initServices/createRegisterService';
 
+
+export {RegisterController as RegisterController} from "./api/controllers/RegisterController";
+export {AuthController as AuthController} from "./api/controllers/AuthController";
+export {TComparePassword} from "./domain/models/passwordManager.types";
+export {THashPassword} from "./domain/models/passwordManager.types";

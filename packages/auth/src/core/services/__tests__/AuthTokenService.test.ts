@@ -1,7 +1,7 @@
 import {RefreshTokenMongoRepository} from "../../../adapters/repositories/RefreshTokenMongoRepository";
 import {RefreshTokenManager} from "@sh3pherd/token-manager";
-import type {UserId} from "@sh3pherd/user";
-import type {TRefreshToken, TRefreshTokenRecord} from "../../../domain/models/refreshToken.types";
+import type {TUserId_shared} from "@sh3pherd/shared-utils";
+import type {TRefreshToken, TRefreshTokenDomainModel} from "../../../domain/models/refreshToken.types";
 import type {IAbstractAuthTokenManager} from "../../../domain/models/IAbstractAuthTokenManager";
 import {AuthTokenService} from "../AuthTokenService";
 import {mapMongoDocToDomainModel} from "@sh3pherd/shared-utils";
@@ -10,9 +10,9 @@ import {ObjectId} from "mongodb";
 import {jest} from "@jest/globals";
 
 describe('AuthTokenService - Intégration', () => {
-    const mockUserId = 'user_123' as UserId;
+    const mockUserId = 'user_123' as TUserId_shared;
 
-    const fakeMongoDoc: WithId<TRefreshTokenRecord> = {
+    const fakeMongoDoc: WithId<TRefreshTokenDomainModel> = {
         _id: new ObjectId(),
         refreshToken: 'refreshToken_abc123',
         user_id: 'user_001',
@@ -25,18 +25,18 @@ describe('AuthTokenService - Intégration', () => {
             acknowledged: true,
             insertedId: new ObjectId(),
         }),
-        findOne: jest.fn<() => Promise<WithId<TRefreshTokenRecord> | null>>().mockResolvedValue(fakeMongoDoc),
+        findOne: jest.fn<() => Promise<WithId<TRefreshTokenDomainModel> | null>>().mockResolvedValue(fakeMongoDoc),
 
         deleteOne: jest.fn<() => Promise<DeleteResult>>().mockResolvedValue({ deletedCount: 1, acknowledged: true }),
     };
 
     const realRefreshTokenManager = new RefreshTokenManager({
         refreshTokenRepository: new RefreshTokenMongoRepository({
-            refreshTokenCollection: mockMongoCollection as unknown as Collection<TRefreshTokenRecord>,
-            mapMongoDocToDomainModelFunction: mapMongoDocToDomainModel,
+            refreshTokenCollection: mockMongoCollection as unknown as Collection<TRefreshTokenDomainModel>,
+            mapMongoDocToDomainModelFn: mapMongoDocToDomainModel,
         }),
         generatorFunction: () => Promise.resolve('refreshToken_abc123' as TRefreshToken),
-        validateRefreshTokenDateFunction: () => true,
+        validateRefreshTokenDateFn: () => true,
         ttlMs: 1000 * 60 * 60 * 24,
     });
 

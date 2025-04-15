@@ -6,12 +6,10 @@
     "composite": true,
     "declaration": true
   },
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "references": [
     {
-      "path": "../backend"
+      "path": "../user"
     },
     {
       "path": "../auth"
@@ -20,13 +18,16 @@
       "path": "../shared-utils"
     },
     {
+      "path": "../backend"
+    },
+    {
       "path": "../password-manager"
     },
     {
-      "path": "../user"
+      "path": "../token-manager"
     },
     {
-      "path": "../token-manager"
+      "path": "../use-cases"
     }
   ]
 }

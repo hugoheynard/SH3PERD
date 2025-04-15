@@ -1,21 +1,13 @@
 import type {
-    IAbstractAuthTokenManager
-} from "../../domain/models/IAbstractAuthTokenManager";
-import type {
-    IAbstractRefreshTokenManager,
-
-
-} from "../../domain/models/IAbstractRefreshTokenManager";
-import type {
     IAuthTokenService,
-    TAuthTokenServiceInput
+    TAuthTokenServiceDeps,
 } from "../../domain/models/IAuthTokenService";
 import type {
-    TCreateAuthSessionFunction,
-    TRevokeRefreshTokenFunction,
-    TVerifyAuthTokenFunction,
-    TVerifyRefreshTokenFunction
-} from "../../domain/models/function.types";
+    TCreateAuthSession,
+    TRevokeRefreshToken,
+    TVerifyAuthToken,
+    TVerifyRefreshToken
+} from "../../domain/authFunctions.types";
 
 /**
  * AuthTokenService orchestrates the creation and validation of both access and refresh tokens.
@@ -29,12 +21,9 @@ import type {
  * - Revoking refresh tokens
  */
 export class AuthTokenService implements IAuthTokenService {
-    private readonly authTokenManager: IAbstractAuthTokenManager;
-    private readonly refreshTokenManager: IAbstractRefreshTokenManager;
 
-    constructor(input: TAuthTokenServiceInput) {
-        this.authTokenManager = input.authTokenManager;
-        this.refreshTokenManager = input.refreshTokenManager;
+    constructor(private readonly deps: TAuthTokenServiceDeps) {
+        this.deps = deps;
     };
 
     /**
@@ -47,9 +36,9 @@ export class AuthTokenService implements IAuthTokenService {
      * @param input - Object containing the user's unique identifier
      * @returns An object containing both access and refresh tokens
      */
-    public createAuthSession: TCreateAuthSessionFunction = async (input) => {
-        const authToken = await this.authTokenManager.generateAuthToken({ payload: { user_id: input.user_id } });
-        const refreshToken = await this.refreshTokenManager.generateRefreshToken({ user_id: input.user_id });
+    public createAuthSession: TCreateAuthSession = async (input) => {
+        const authToken = await this.deps.generateAuthTokenFn({ payload: { user_id: input.user_id } });
+        const refreshToken = await this.deps.generateRefreshTokenFn({ user_id: input.user_id });
         return {authToken, refreshToken};
     };
 
@@ -63,8 +52,8 @@ export class AuthTokenService implements IAuthTokenService {
      * @returns The decoded token payload if verification is successful
      * @throws If the token is invalid or expired
      */
-    verifyAuthToken: TVerifyAuthTokenFunction = async (input) => {
-        return this.authTokenManager.verifyAuthToken({ token: input.token });
+    verifyAuthToken: TVerifyAuthToken = async (input) => {
+        return this.deps.verifyAuthTokenFn({ token: input.token });
     };
 
     /**
@@ -76,8 +65,8 @@ export class AuthTokenService implements IAuthTokenService {
      * @param input - Object containing the refresh token
      * @returns A boolean indicating whether the token is valid
      */
-    verifyRefreshToken: TVerifyRefreshTokenFunction = (input) => {
-        return this.refreshTokenManager.verifyRefreshToken({ refreshTokenRecord: input.refreshTokenRecord });
+    verifyRefreshToken: TVerifyRefreshToken = (input) => {
+        return this.deps.verifyRefreshTokenFn({ refreshTokenRecord: input.refreshTokenRecord });
     };
 
     /**
@@ -90,7 +79,7 @@ export class AuthTokenService implements IAuthTokenService {
      * @returns An object with the revoked token identifier
      * @throws If the revocation fails or token is not found
      */
-    revokeRefreshToken: TRevokeRefreshTokenFunction = async (input) => {
-        return await this.refreshTokenManager.revokeRefreshToken({ refreshToken: input.refreshToken });
+    revokeRefreshToken: TRevokeRefreshToken = async (input) => {
+        return await this.deps.revokeRefreshTokenFn({ refreshToken: input.refreshToken });
     };
 }

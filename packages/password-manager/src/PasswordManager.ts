@@ -1,5 +1,5 @@
 import type {
-    ICompareResult,
+    ICompareResult_copy,
     IHasherStrategy, IPasswordManager,
     IPasswordManagerInput, THashParserFunction,
     TVerifyLastHashDateFunction
@@ -25,18 +25,18 @@ export class PasswordManager implements IPasswordManager {
         }
     };
 
-    hashPassword(input: { password: string }): Promise<string> {
+    async hashPassword(input: { password: string }): Promise<string> {
         const { password } = input;
         const strategy = this.registry[this.currentStrategyKey];
-        return strategy.hashPassword({ password: password });
+        return await strategy.hashPassword({ password: password });
     };
 
-    comparePassword(input: { password: string, hashedPassword: string }): Promise<ICompareResult> {
+    async comparePassword(input: { password: string, hashedPassword: string }): Promise<ICompareResult_copy> {
         const { password, hashedPassword } = input;
-        return this.verifyAndMaybeRehash({ password, hashedPassword});
+        return await this.verifyAndMaybeRehash({ password, hashedPassword});
     };
 
-    private async verifyAndMaybeRehash(input: { password: string, hashedPassword: string }): Promise<ICompareResult> {
+    private async verifyAndMaybeRehash(input: { password: string, hashedPassword: string }): Promise<ICompareResult_copy> {
         const { password, hashedPassword} = input;
 
         /**
@@ -45,17 +45,23 @@ export class PasswordManager implements IPasswordManager {
          */
         const parsed = this.hashParserFunction(hashedPassword);
         const key: string = `${parsed.algorithm}:${parsed.versionConfig}`;
+
         const strategy: IHasherStrategy = this.registry[key];
 
         if (!strategy) {
             throw new Error(`Unsupported hash strategy: ${key}`);
         }
 
-        const isValid: boolean = await strategy.comparePassword({ password, hashedPassword });
-        if (!isValid) return { isValid: false, wasRehashed: false };
+        const compareResult = await strategy.comparePassword({ password, hashedPassword });
+
+        if (!compareResult.isValid) {
+            return { isValid: false, wasRehashed: false };
+        }
 
         const needsRehash = (() => {
-            if (key !== this.currentStrategyKey) return true;
+            if (key !== this.currentStrategyKey) {
+                return true;
+            }
             if (this.rehashAfterDays && parsed.hashed_at) {
                 return this.verifyLastHashDateFunction(
                     {

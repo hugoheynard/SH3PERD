@@ -1,29 +1,30 @@
-import type {TRefreshToken, TRefreshTokenRecord} from "../../domain/models/refreshToken.types";
+import type {TRefreshTokenDomainModel} from "../../domain/models/refreshToken.types";
 import type {Collection} from "mongodb";
 import type {TmapMongoDocToDomainModelFunction} from "@sh3pherd/shared-utils";
 import type {
-    IRefreshTokenMongoRepositoryInput,
+    IRefreshTokenMongoRepositoryDeps,
     IRefreshTokenRepository
 } from "../../domain/models/IRefreshTokenRepository";
-import type {TRevokeRefreshTokenResult} from "../../domain/models/authResults.types";
+import type {TDeleteRefreshToken, TFindRefreshToken, TSaveRefreshToken} from "../../domain/authFunctions.types";
+
 
 export class RefreshTokenMongoRepository implements IRefreshTokenRepository {
-    private readonly refreshTokenCollection: Collection<TRefreshTokenRecord>;
+    private readonly refreshTokenCollection: Collection<TRefreshTokenDomainModel>;
     private readonly mapMongoDocToDomainModelFunction: TmapMongoDocToDomainModelFunction
 
 
-    constructor(input: IRefreshTokenMongoRepositoryInput) {
+    constructor(input: IRefreshTokenMongoRepositoryDeps) {
         this.refreshTokenCollection = input.refreshTokenCollection;
-        this.mapMongoDocToDomainModelFunction = input.mapMongoDocToDomainModelFunction;
+        this.mapMongoDocToDomainModelFunction = input.mapMongoDocToDomainModelFn;
     };
 
-    async saveRefreshToken(input: { refreshTokenRecord: TRefreshTokenRecord }): Promise<{ success: boolean }> {
+    saveRefreshToken: TSaveRefreshToken = async (input) => {
         const {
             refreshToken,
             user_id,
             expiresAt,
             createdAt
-        } = input.refreshTokenRecord;
+        } = input.refreshTokenDomainModel;
 
         const result = await this.refreshTokenCollection
             .insertOne({
@@ -40,7 +41,7 @@ export class RefreshTokenMongoRepository implements IRefreshTokenRepository {
         return { success: true };
     };
 
-    async findRefreshToken(input: { refreshToken: TRefreshToken }): Promise<TRefreshTokenRecord | null> {
+    findRefreshToken: TFindRefreshToken = async (input) => {
         const { refreshToken } = input;
         const result = await this.refreshTokenCollection.findOne({ refreshToken: refreshToken });
         if (!result) return null;
@@ -48,7 +49,7 @@ export class RefreshTokenMongoRepository implements IRefreshTokenRepository {
         return this.mapMongoDocToDomainModelFunction({ document: result });
     };
 
-    async revokeRefreshToken(input: { refreshToken: TRefreshToken }): Promise<TRevokeRefreshTokenResult> {
+    deleteRefreshToken: TDeleteRefreshToken = async (input) =>{
         const { refreshToken } = input;
 
         const result = await this.refreshTokenCollection.deleteOne({ refreshToken: refreshToken });

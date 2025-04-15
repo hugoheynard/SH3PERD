@@ -1,6 +1,6 @@
 import {jest} from '@jest/globals';
 import type {Collection, InsertOneResult, Document, ObjectId} from 'mongodb';
-import type {UserDomainModel} from "../../../../domain/types";
+import type {TUserDomainModel} from "../../../../domain/types";
 import { createMongoUserRepository } from '../createMongoUserRepository';
 
 
@@ -13,12 +13,12 @@ describe('MongoUserRepository', () => {
     const mockCollection = {
         insertOne,
         findOne,
-    } as unknown as Collection<UserDomainModel>;
+    } as unknown as Collection<TUserDomainModel>;
 
     const repository = createMongoUserRepository({ collection: mockCollection });
 
     const now: Date = new Date();
-    const fakeUser: UserDomainModel = {
+    const fakeUser: TUserDomainModel = {
         user_id: 'user_123',
         email: 'test@example.com',
         password: 'hashedPassword',
