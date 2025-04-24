@@ -13,8 +13,6 @@
     "create:package": "tsx dev-toolbox/scripts/create-package.ts",
     "updatePackagesRefs": "tsx dev-toolbox/scripts/update-packageRefs.ts",
     "lint:imports": "tsx dev-toolbox/scripts/scan-cross-package-imports.ts",
-    "check:dev-watch": "tsx dev-toolbox/scripts/find-missing-devWatch.ts",
-    "fix:js-extensions": "tsx dev-toolbox/scripts/fix-js-extensions.ts",
     "build": "turbo run build",
     "dev:watch": "turbo run dev:watch",
     "test": "jest --workspaces",
@@ -46,11 +44,13 @@
     "supertest": "^7.1.0",
     "ts-jest": "^29.3.0",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "tsc-alias": "^1.8.10",
+    "tsc-esm-fix": "^3.1.2",
     "tsup": "^8.4.0",
     "tsx": "^4.19.3",
     "turbo": "^2.4.4",
-    "typescript": "^5.6.3",
+    "typescript": "^5.8.2",
     "wait-on": "^8.0.3"
   },
   "dependencies": {

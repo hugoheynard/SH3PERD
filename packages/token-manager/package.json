@@ -9,9 +9,9 @@
   "types": "dist/index.d.ts",
   "private": true,
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -b tsconfig.json",
     "dev:watch": "concurrently \"tsc -b tsconfig.json --watch\" \"tsc-alias --watch\"",
     "test": "jest",
-    "clean": "find . -type d -name dist -o -name .turbo -o -name .cache -exec rm -rf {} + && find . -type f -name '*.tsbuildinfo' -delete"
+    "clean": "find . \\( -type d -name dist -o -name .turbo -o -name .cache \\) -exec rm -rf {} + && find . -type f -name '*.tsbuildinfo' -delete"
   }
 }

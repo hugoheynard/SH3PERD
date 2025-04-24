@@ -3,10 +3,15 @@
   "compilerOptions": {
     "types": ["jest", "node"],
     "noEmit": true,
+    "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@sh3pherd/*": ["packages/*/src/"]
+      "@sh3pherd/shared-types": ["../shared-types/dist/index"]
     }
   },
-  "include": ["src", "__tests__", "../../test/jest-globals.d.ts"]
+  "include": [
+    "src",
+    "src/__tests__",
+    "../../test/jest-globals.d.ts"
+  ]
 }

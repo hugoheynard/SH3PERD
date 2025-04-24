@@ -1,10 +1,10 @@
-import type {RouteDef} from "../../types/TRouteDef";
-import {validateRouteDef} from "../validateRouteDef";
+import { validateRouteDef } from "../validateRouteDef.js";
 import express from "express";
-
+import type { RouteDef } from "../../types/types.js";
 
 describe('validateRouteDef', () => {
-    const validFactory = () => express.Router();
+    // ✅ Factory must return a Promise
+    const validFactory = async () => express.Router();
 
     it('should not throw for a valid route def', () => {
         const route: RouteDef = {
@@ -26,7 +26,7 @@ describe('validateRouteDef', () => {
         const route: any = {
             path: '/missing-factory'
         };
-        expect(() => validateRouteDef({ routeDef: route })).toThrow(/Missing factory/);
+        expect(() => validateRouteDef({ routeDef: route })).toThrow(/Missing.*factory/);
     });
 
     it('should throw if middlewares is not an array', () => {

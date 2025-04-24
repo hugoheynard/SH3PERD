@@ -1,18 +1,18 @@
-import {createUser} from "../../index";
-import type {CreateUserInput} from "../types";
+import {createUserDomainModel} from "../../index";
+import type {TCreateUserInput} from "@sh3pherd/shared-types";
 
 
 describe('createUser', () => {
     const fakeId = 'user_fake-id-123' as const;
 
     it('should return a user with correct properties', () => {
-        const input: CreateUserInput = {
+        const input: TCreateUserInput = {
             email: 'user@example.com',
             password: 'hashedPassword123',
             user_id: fakeId,
         };
 
-        const result = createUser(input);
+        const result = createUserDomainModel(input);
 
         expect(result).toEqual({
             user_id: fakeId,
@@ -30,11 +30,11 @@ describe('createUser', () => {
             user_id: fakeId,
         };
 
-        const user1 = createUser(baseInput);
+        const user1 = createUserDomainModel(baseInput);
 
         await new Promise(res => setTimeout(res, 10));
 
-        const user2 = createUser(baseInput);
+        const user2 = createUserDomainModel(baseInput);
 
         expect(user1.created_at.getTime()).toBeLessThan(user2.created_at.getTime());
         expect(user1.updated_at.getTime()).toBeLessThan(user2.updated_at.getTime());

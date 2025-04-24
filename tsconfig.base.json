@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
     "types": ["node", "jest"],
     "lib": ["esnext"],
-    "moduleResolution": "node",
     "strict": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noUnusedLocals": false, //true
-    "noUnusedParameters": false, //true
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "declarationMap": true,
     "allowJs": false,
@@ -20,14 +20,14 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "noEmit": false, //added
     "emitDeclarationOnly": false, //added
-    "baseUrl": ".",
     "paths": {
-      "@sh3pherd/*": ["packages/*/src/index.ts"],
-      "@sh3pherd/shared-types/*": ["packages/shared-types/src/*"],
-      "@sh3pherd/shared-utils/*": ["packages/shared-utils/src/*"]
+      "@sh3pherd/*": ["packages/*/src"]
     }
   },
+  "references": [
+    { "path": "../shared-types"},
+    { "path": "../shared-utils"},
+  ]
 }
 

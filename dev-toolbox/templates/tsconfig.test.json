@@ -5,7 +5,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@sh3pherd/*": ["packages/*/src/"]
+      "@sh3pherd/shared-types": ["../shared-types/dist/index"],
     }
   },
   "include": ["src", "__tests__", "../../test/jest-globals.d.ts"]

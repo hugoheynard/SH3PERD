@@ -1,21 +1,13 @@
 import type {NextFunction, Request, Response} from "express";
 import {withErrorHandler} from "@sh3pherd/shared-utils";
-import type {TLoginUseCase} from "../../domain/useCase.types";
+import type {IAuthController, TAuthControllerDeps} from "@sh3pherd/shared-types";
 
-export type TAuthControllerDeps = {
-    loginUseCase: TLoginUseCase;
-}
 
-export interface IAuthController {
-    login: (req: Request, res: Response, next: NextFunction)=> Promise<void>;
-    logout: (req: Request, res: Response, next: NextFunction)=> Promise<void>;
-}
-
-export class AuthController {
-    private readonly loginUseCase: TLoginUseCase;
+export class AuthController implements IAuthController {
+    private readonly deps: TAuthControllerDeps
 
     constructor(deps: TAuthControllerDeps) {
-        this.loginUseCase = deps.loginUseCase;
+        this.deps = deps;
     };
 
     /**
@@ -31,8 +23,8 @@ export class AuthController {
      * @param _next
      */
     @withErrorHandler
-    public async login(req: Request, res: Response, _next: NextFunction): Promise<void> {
-        res.status(200).json(await this.loginUseCase({
+    public async login(req, res, _next) {
+        res.status(200).json(await this.deps.loginUseCase({
             email: req.body.email,
             password: req.body.password,
         }));

@@ -1,6 +1,7 @@
+import type { Express } from 'express';
+import {jest } from '@jest/globals';
+import {startServer} from "../src/startServer";
 
-import { Express } from 'express';
-import {startServer} from "../app/server";
 
 jest.mock('express', () => {
     return jest.fn().mockImplementation(() => ({
@@ -27,7 +28,7 @@ describe('startServer', () => {
         const logSpy = jest.spyOn(console, 'log').mockImplementation();
         const errorSpy = jest.spyOn(console, 'error').mockImplementation();
 
-        await startServer(app);
+        await startServer({ app: app, port: '3000' });
 
         expect(listenSpy).toHaveBeenCalledWith(
             expect.any(Number),
@@ -46,7 +47,7 @@ describe('startServer', () => {
         const logSpy = jest.spyOn(console, 'log').mockImplementation();
         const errorSpy = jest.spyOn(console, 'error').mockImplementation();
 
-        await startServer(app);
+        await startServer({ app: app, port: '3000' });
 
 
         expect(listenSpy).toHaveBeenCalledWith(

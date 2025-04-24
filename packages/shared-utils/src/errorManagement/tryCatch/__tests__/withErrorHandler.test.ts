@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import {withErrorHandler} from "../withErrorHandler";
+import {withErrorHandler} from "../withErrorHandler.js";
 import {jest } from '@jest/globals';
 
 describe('withErrorHandler decorator', () => {

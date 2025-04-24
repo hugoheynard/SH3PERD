@@ -46,7 +46,7 @@ describe('connectDb', () => {
     it('should throw an error if connection fails', async () => {
         await expect(
             connectToCoreDb({ uri: 'mongodb://fake', dbName: 'test' })
-        ).rejects.toThrow('Failed to connect to the database');
+        ).rejects.toThrow('Failed to connect to the core database');
     }, 40000);
 
 

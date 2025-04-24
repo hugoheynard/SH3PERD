@@ -1,7 +1,14 @@
-import type {IRefreshTokenRepository, TRefreshToken, TRefreshTokenDomainModel} from '@sh3pherd/auth'
-import type {TUserId } from '@sh3pherd/user'
-import {RefreshTokenManager} from "../RefreshTokenManager";
 import { jest } from '@jest/globals';
+import type {
+    TDeleteRefreshToken,
+    TRefreshToken,
+    TRefreshTokenDomainModel,
+    TRefreshTokenManagerDeps,
+    TSaveRefreshToken,
+    TUserId
+} from "@sh3pherd/shared-types";
+import {RefreshTokenManager} from "../RefreshTokenManager";
+
 
 describe('RefreshTokenManager', () => {
     const mockUserId: TUserId = 'user_123' as TUserId
@@ -14,37 +21,36 @@ describe('RefreshTokenManager', () => {
     }
     const ttlMs_ONEDAY: number = 1000 * 60 * 60 * 24;
 
-    const generatorFunction = jest.fn(
+    const generatorFnMock = jest.fn(
         async () => mockToken) as jest.MockedFunction<() => Promise<TRefreshToken>>
 
 
-/*
-    const validateRefreshTokenDateFunction = jest.fn(
-        (_input: { expirationDate: Date }): boolean => true
-    ) as jest.MockedFunction<(input: { expirationDate: Date }) => boolean>;
-*/
-    type ValidateFn = (input: { expirationDate: Date }) => boolean;
-    const validateRefreshTokenDateFunction = jest.fn<ValidateFn>();
-    validateRefreshTokenDateFunction.mockReturnValue(true);
 
-    const repositoryMock: IRefreshTokenRepository = {
-        saveRefreshToken: jest.fn(async () => ({ success: true })),
-        revokeRefreshToken: jest.fn(async (input: { refreshToken: TRefreshToken }) => ({ revokedToken: input.refreshToken })),
-        findRefreshToken: jest.fn(async (input: { refreshToken: TRefreshToken }): Promise<TRefreshTokenDomainModel | null> => ({
-            refreshToken: input.refreshToken,
-            user_id: mockUserId,
-            expiresAt: new Date(Date.now() + ttlMs_ONEDAY),
-            createdAt: new Date()
-        })),
-    };
+    type ValidateFn = (input: { date: Date }) => boolean;
+    const validateRefreshTokenDateFnMock = jest.fn<ValidateFn>();
+    validateRefreshTokenDateFnMock.mockReturnValue(true);
 
+    const saveRefreshTokenFnMock = jest.fn(async () => ({ success: true }));
+    const deleteRefreshTokenFnMock = jest.fn(async (input: { refreshToken: TRefreshToken }) => ({ revokedToken: input.refreshToken }));
 
-    const sut = new RefreshTokenManager({
-        refreshTokenRepository: repositoryMock,
-        generatorFunction,
-        validateRefreshTokenDateFn: validateRefreshTokenDateFunction,
+    //TODO FOR SERVICE
+    const findRefreshTokenMock = jest.fn(async (input: { refreshToken: TRefreshToken }): Promise<TRefreshTokenDomainModel | null> => ({
+        refreshToken: input.refreshToken,
+        user_id: mockUserId,
+        expiresAt: new Date(Date.now() + ttlMs_ONEDAY),
+        createdAt: new Date()
+    }));
+
+    const deps = {
+        generatorFn: generatorFnMock,
+        validateRefreshTokenDateFn: validateRefreshTokenDateFnMock,
+        saveRefreshTokenFn: saveRefreshTokenFnMock,
+        deleteRefreshTokenFn: deleteRefreshTokenFnMock,
         ttlMs: ttlMs_ONEDAY
-    });
+    } as TRefreshTokenManagerDeps;
+
+
+    const sut = new RefreshTokenManager(deps);
 
     beforeEach(() => {
         jest.clearAllMocks(); // 🔄
@@ -57,13 +63,13 @@ describe('RefreshTokenManager', () => {
         const token = await sut.generateRefreshToken({ user_id: mockUserId });
 
         expect(token).toBe(mockToken)
-        expect(repositoryMock.saveRefreshToken).toHaveBeenCalledWith({
-            refreshTokenRecord: expect.objectContaining({
-                refreshToken: mockToken,
-                user_id: mockUserId,
+        expect(saveRefreshTokenFnMock).toHaveBeenCalledWith({
+            refreshTokenDomainModel: expect.objectContaining({
+                refreshToken: 'refreshToken_abc123',
+                user_id: 'user_123',
+                createdAt: expect.any(Date),
                 expiresAt: expect.any(Date),
-                createdAt: expect.any(Date)
-            })
+            }),
         });
     });
 
@@ -77,18 +83,18 @@ describe('RefreshTokenManager', () => {
             expiresAt: new Date(Date.now() + ttlMs_ONEDAY)
         };
 
-        const result = sut.verifyRefreshToken({ refreshTokenRecord: validDateToken });
-        console.log('RESULT TYPE', typeof result, 'VALUE', result);
+        const result = sut.verifyRefreshToken({ refreshTokenDomainModel: validDateToken });
+
 
         expect(typeof result).toBe('boolean');
         expect(result).toBe(true);
-        expect(validateRefreshTokenDateFunction).toHaveBeenCalledWith({ expirationDate: validDateToken.expiresAt });
+        expect(validateRefreshTokenDateFnMock).toHaveBeenCalledWith({ date: validDateToken.expiresAt });
     });
 
     it('should return false if refresh token is invalid', () => {
-        validateRefreshTokenDateFunction.mockReturnValueOnce(false);
+        validateRefreshTokenDateFnMock.mockReturnValueOnce(false);
 
-        const result = sut.verifyRefreshToken({ refreshTokenRecord: mockTokenRecord });
+        const result = sut.verifyRefreshToken({ refreshTokenDomainModel: mockTokenRecord });
 
         expect(typeof result).toBe('boolean');
         expect(result).toBe(false);
@@ -98,18 +104,18 @@ describe('RefreshTokenManager', () => {
     it('should revoke a refresh token', async () => {
         const result = await sut.revokeRefreshToken({ refreshToken: mockToken })
         expect(result).toEqual({ revokedToken: mockToken })
-        expect(repositoryMock.revokeRefreshToken).toHaveBeenCalledWith({ refreshToken: mockToken })
+        expect(deleteRefreshTokenFnMock).toHaveBeenCalledWith({ refreshToken: mockToken })
     })
 
 
     it('should throw if token generation fails', async () => {
-        generatorFunction.mockResolvedValueOnce(undefined as unknown as TRefreshToken)
+        generatorFnMock.mockResolvedValueOnce(undefined as unknown as TRefreshToken)
         await expect(sut.generateRefreshToken({ user_id: mockUserId })).rejects.toThrow("Failed to generate refresh token")
     })
 
     //error catching from repository layer
     it('should throw if saveRefreshToken throws', async () => {
-        (repositoryMock.saveRefreshToken as jest.MockedFunction<IRefreshTokenRepository['saveRefreshToken']>)
+        (saveRefreshTokenFnMock as jest.MockedFunction<TSaveRefreshToken>)
             .mockImplementationOnce(async () => {
                 throw new Error('DB failure')
             });
@@ -120,7 +126,7 @@ describe('RefreshTokenManager', () => {
     });
 
     it('should throw if revokeRefreshToken throws', async () => {
-        (repositoryMock.revokeRefreshToken as jest.MockedFunction<IRefreshTokenRepository['revokeRefreshToken']>)
+        (deleteRefreshTokenFnMock as jest.MockedFunction<TDeleteRefreshToken>)
             .mockImplementationOnce(async () => {
                 throw new Error('Revoke error')
             })

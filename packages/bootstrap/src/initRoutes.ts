@@ -2,7 +2,7 @@ import type {Express} from "express";
 import express from "express"
 import cors from "cors";
 import {errorCatcherMw_simple, notFound_404_Handler} from "@sh3pherd/shared-utils";
-import {createAuthRouter, createRegisterRouter} from "@sh3pherd/auth";
+//import {createAuthRouter, createRegisterRouter} from "@sh3pherd/auth";
 
 
 
@@ -13,10 +13,10 @@ export const initRoutes = (app: Express, { controllers } : any): Express => {
         app.use(express.json());
 
         //Routers
-        app.use('/register', createRegisterRouter({registerController: controllers.registerController,
+        /*app.use('/register', createRegisterRouter({registerController: controllers.registerController,
         }));
 
-        app.use('/auth',createAuthRouter({ authController: controllers.authController }));
+        app.use('/auth',createAuthRouter({ authController: controllers.authController }));*/
 
 
 

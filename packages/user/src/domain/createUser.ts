@@ -1,7 +1,7 @@
-import type {CreateUserFunction} from "./types";
+import type {TCreateUserInput, TUserDomainModel} from "@sh3pherd/shared-types";
 
 
-export const createUser: CreateUserFunction = (input) => {
+export const createUser = (input: TCreateUserInput): TUserDomainModel => {
     const { email, password, user_id } = input;
     return {
         user_id,

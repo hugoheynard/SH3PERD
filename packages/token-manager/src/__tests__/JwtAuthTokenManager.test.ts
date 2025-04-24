@@ -1,5 +1,5 @@
-import type { TTokenManagerOptions, TAuthTokenPayload } from '@sh3pherd/auth'
 import {JwtAuthTokenManager} from "../JwtAuthTokenManager";
+import type {TAuthTokenManagerOptions, TAuthTokenPayload} from "@sh3pherd/shared-types";
 
 
 
@@ -52,11 +52,10 @@ xwIDAQAB
         user_id: 'user-123'
     }
 
-    const options: TTokenManagerOptions = {
+    const options: TAuthTokenManagerOptions = {
         privateKey: PRIVATE_KEY_TEST,
         publicKey: PUBLIC_KEY_TEST,
-        accessTokenExpiresIn: 15000000000,
-        refreshTokenExpiresIn: 15000000000
+        accessTokenExpiresIn: 1,
     }
 
     beforeAll(() => {
@@ -81,4 +80,14 @@ xwIDAQAB
             manager.verifyAuthToken({ token: 'invalid.token.here' })
         ).rejects.toThrow()
     })
+
+    //TODO: add test for expired token
+    test('token should be expired after TTL', async () => {
+        const token = await manager.generateAuthToken({ payload });
+
+        await new Promise(res => setTimeout(res, 2000)); // attendre 2s
+
+        await expect(manager.verifyAuthToken({ token })).rejects.toThrow('jwt expired');
+    });
+
 })

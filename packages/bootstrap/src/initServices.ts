@@ -1,15 +1,20 @@
-import {createRegisterService} from "./initServices/createRegisterService";
-import {createAuthTokenService} from "./initServices/createAuthTokenService";
+import type {TAuthConfig} from "@sh3pherd/shared-types";
+import {createAuthTokenService} from "@sh3pherd/auth";
 
 
 
-export const initServices = (input: { repositories: any, authConfig: any }): any => {
+export const initServices = (input: { repositories: any, authConfig: TAuthConfig }): any => {
     const { repositories, authConfig } = input;
+
+    const { refreshTokenRepository } = repositories;
 
     try {
         const services = {
-            registerService: createRegisterService({ userRepository: repositories.userRepo }),
-            authTokenService: createAuthTokenService({ refreshTokenRepository: repositories.refreshTokenRepo, authConfig: authConfig }),
+            authTokenService: createAuthTokenService({
+                saveRefreshTokenFn: refreshTokenRepository.saveRefreshToken,
+                deleteRefreshTokenFn: refreshTokenRepository.deleteRefreshToken,
+                authConfig: authConfig
+            }),
 
         };
         console.log('✅ initServices executed');

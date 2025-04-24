@@ -1,13 +1,12 @@
 import type {
     IAuthTokenService,
     TAuthTokenServiceDeps,
-} from "../../domain/models/IAuthTokenService";
-import type {
-    TCreateAuthSession,
+    TCreateAuthSession, TRefreshTokenDomainModel,
     TRevokeRefreshToken,
     TVerifyAuthToken,
     TVerifyRefreshToken
-} from "../../domain/authFunctions.types";
+} from "@sh3pherd/shared-types";
+
 
 /**
  * AuthTokenService orchestrates the creation and validation of both access and refresh tokens.
@@ -52,7 +51,7 @@ export class AuthTokenService implements IAuthTokenService {
      * @returns The decoded token payload if verification is successful
      * @throws If the token is invalid or expired
      */
-    verifyAuthToken: TVerifyAuthToken = async (input) => {
+    public verifyAuthToken: TVerifyAuthToken = async (input) => {
         return this.deps.verifyAuthTokenFn({ token: input.token });
     };
 
@@ -65,8 +64,8 @@ export class AuthTokenService implements IAuthTokenService {
      * @param input - Object containing the refresh token
      * @returns A boolean indicating whether the token is valid
      */
-    verifyRefreshToken: TVerifyRefreshToken = (input) => {
-        return this.deps.verifyRefreshTokenFn({ refreshTokenRecord: input.refreshTokenRecord });
+    public verifyRefreshToken: TVerifyRefreshToken = (input) => {
+        return this.deps.verifyRefreshTokenFn({ refreshTokenDomainModel: input.refreshTokenDomainModel });
     };
 
     /**
@@ -79,7 +78,29 @@ export class AuthTokenService implements IAuthTokenService {
      * @returns An object with the revoked token identifier
      * @throws If the revocation fails or token is not found
      */
-    revokeRefreshToken: TRevokeRefreshToken = async (input) => {
+    public revokeRefreshToken: TRevokeRefreshToken = async (input) => {
         return await this.deps.revokeRefreshTokenFn({ refreshToken: input.refreshToken });
+    };
+
+    /**
+     * Generates a new access token using a valid refresh token.
+     *
+     * This method assumes the refresh token has already been resolved to its record.
+     * It validates the refresh token and re-issues a new access token.
+     *
+     * @param input - Object containing the refresh token record
+     * @returns A new signed access token
+     * @throws If the refresh token is invalid or expired
+     */
+    public refreshSession = async (input: { refreshTokenDomainModel: TRefreshTokenDomainModel }): Promise<string> => {
+        const isValid = this.deps.verifyRefreshTokenFn({ refreshTokenDomainModel: input.refreshTokenDomainModel });
+
+        if (!isValid) {
+            throw new Error("Invalid or expired refresh token");
+        }
+
+        return this.deps.generateAuthTokenFn({
+            payload: { user_id: input.refreshTokenDomainModel.user_id }
+        });
     };
 }

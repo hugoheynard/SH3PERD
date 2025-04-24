@@ -28,15 +28,14 @@ export const connectToCoreDb = async (input: {uri: string | undefined; dbName: s
     const { uri, dbName } = input;
 
     try {
-        if (!uri) {
+        if (uri === undefined) {
             throw new Error("MongoDB URI is not defined");
         }
-        if (!dbName) {
+        if (dbName === undefined) {
             throw new Error("MongoDB DB_NAME is not defined");
         }
 
         let client;
-
 
         if (cachedDb) {
             return cachedDb;
@@ -46,12 +45,12 @@ export const connectToCoreDb = async (input: {uri: string | undefined; dbName: s
         await client.connect();
         cachedDb = client.db(dbName);
 
-        console.log("✅ Connected to db");
+        console.log("✅ Connected to core db");
         return cachedDb;
 
     } catch (error: any) {
         console.error("Error connecting to MongoDB:", error);
-        throw new Error('Failed to connect to the database');
+        throw new Error('Failed to connect to the core database', error);
     }
 };
 

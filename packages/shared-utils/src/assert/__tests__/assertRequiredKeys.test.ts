@@ -1,4 +1,4 @@
-import {assertRequiredKeys} from "../assertRequiredKeys";
+import {assertRequiredKeys} from "../assertRequiredKeys.js";
 
 
 describe('assertRequiredKeys', () => {

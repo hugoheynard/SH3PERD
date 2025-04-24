@@ -1,24 +1,25 @@
-import type {RouteDef} from "../../types/TRouteDef";
-import express from "express";
-import {createContext} from "../createContext";
+import type { RouteDef } from "../../types/types.js";
+import {createContext} from "../createContext.js";
 
-
-describe('createContext', () => {
-    it('should return an empty object if no inject is provided', () => {
-        const def: RouteDef = {
-            path: '/test',
-            factory: () => express.Router()
+describe("createContext", () => {
+    it("should return the inject context if present", () => {
+        const routeDef: RouteDef<{ config: { debug: true } }> = {
+            path: "/example",
+            inject: {
+                config: { debug: true }
+            }
         };
-        expect(createContext({ routeDef: def})).toEqual({});
+
+        const context = createContext<{ config: { debug: true } }>({ routeDef });
+        expect(context).toEqual({ config: { debug: true } });
     });
 
-    it('should return the inject object if provided', () => {
-        const context = { myService: { doSomething: () => 'ok' } };
-        const def: RouteDef = {
-            path: '/test',
-            inject: context,
-            factory: () => require('express').Router()
+    it("should return an empty object if no inject is present", () => {
+        const routeDef: RouteDef = {
+            path: "/no-inject"
         };
-        expect(createContext({ routeDef: def})).toBe(context);
+
+        const context = createContext({ routeDef });
+        expect(context).toEqual({});
     });
 });

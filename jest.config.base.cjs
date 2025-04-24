@@ -12,7 +12,9 @@ module.exports = {
 
     extensionsToTreatAsEsm: ['.ts', '.tsx', '.jsx'],
 
-    moduleNameMapper: {},
+    moduleNameMapper: {
+        '^(\\.{1,2}/.*)\\.js$': '$1'
+    },
 
     testMatch: ['**/*.test.ts', '**/*.test.tsx'],
     testPathIgnorePatterns: ['/node_modules/', '/dist/'],

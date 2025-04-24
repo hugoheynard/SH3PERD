@@ -1,9 +1,10 @@
 import type {
-    ICompareResult_copy,
     IHasherStrategy, IPasswordManager,
     IPasswordManagerInput, THashParserFunction,
     TVerifyLastHashDateFunction
 } from "./types/Interfaces";
+import type {TComparePasswordResult} from "@sh3pherd/shared-types";
+
 
 
 export class PasswordManager implements IPasswordManager {
@@ -31,12 +32,12 @@ export class PasswordManager implements IPasswordManager {
         return await strategy.hashPassword({ password: password });
     };
 
-    async comparePassword(input: { password: string, hashedPassword: string }): Promise<ICompareResult_copy> {
+    async comparePassword(input: { password: string, hashedPassword: string }): Promise<TComparePasswordResult> {
         const { password, hashedPassword } = input;
         return await this.verifyAndMaybeRehash({ password, hashedPassword});
     };
 
-    private async verifyAndMaybeRehash(input: { password: string, hashedPassword: string }): Promise<ICompareResult_copy> {
+    private async verifyAndMaybeRehash(input: { password: string, hashedPassword: string }): Promise<TComparePasswordResult> {
         const { password, hashedPassword} = input;
 
         /**

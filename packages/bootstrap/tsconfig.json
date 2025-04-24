@@ -4,30 +4,15 @@
     "rootDir": "src",
     "outDir": "dist",
     "composite": true,
-    "declaration": true
+    "declaration": true,
+    "baseUrl": "."
   },
   "include": ["src"],
   "references": [
-    {
-      "path": "../user"
-    },
-    {
-      "path": "../auth"
-    },
-    {
-      "path": "../shared-utils"
-    },
-    {
-      "path": "../backend"
-    },
-    {
-      "path": "../password-manager"
-    },
-    {
-      "path": "../token-manager"
-    },
-    {
-      "path": "../use-cases"
-    }
+    { "path": "../shared-types" },
+    { "path": "../shared-utils" },
+    { "path": "../password-manager" },
+    { "path": "../auth" },
+    { "path": "../user" }
   ]
 }

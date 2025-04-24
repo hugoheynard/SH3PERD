@@ -15,7 +15,9 @@ export const wrap_tryCatchNextErr = <T extends Record<string, AsyncHandler>>(con
             try {
                 await handler(req, res, next);
             } catch (err) {
-                next(err);
+                if (next) {
+                    next(err);
+                }
             }
         };
     }

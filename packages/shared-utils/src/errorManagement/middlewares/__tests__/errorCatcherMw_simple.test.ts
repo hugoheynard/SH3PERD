@@ -2,7 +2,7 @@ import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import request from 'supertest';
 import {jest} from '@jest/globals';
-import {errorCatcherMw_simple} from "../errorCatcherMw_simple";
+import {errorCatcherMw_simple} from "../errorCatcherMw_simple.js";
 
 
 describe('Basic errorCatcherMw_simple (500 only)', () => {

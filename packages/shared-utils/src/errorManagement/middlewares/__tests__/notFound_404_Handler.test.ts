@@ -1,6 +1,6 @@
 import express from 'express';
 import request from 'supertest';
-import {notFound_404_Handler} from "../notFound_404_Handler";
+import {notFound_404_Handler} from "../notFound_404_Handler.js";
 import {jest} from '@jest/globals';
 
 describe('notFoundHandler middleware', () => {

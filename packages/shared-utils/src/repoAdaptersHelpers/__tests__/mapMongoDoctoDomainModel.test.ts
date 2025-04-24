@@ -1,4 +1,4 @@
-import {mapMongoDocToDomainModel} from "../mapMongoDocToDomainModel";
+import {mapMongoDocToDomainModel} from "../mapMongoDocToDomainModel.js";
 import {ObjectId} from "mongodb";
 
 

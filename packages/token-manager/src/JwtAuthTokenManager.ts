@@ -1,11 +1,12 @@
-import type {
-    TTokenManagerOptions,
-    TAuthTokenPayload,
-    IAbstractAuthTokenManager,
-    TVerifyAuthToken,
-    TGenerateAuthToken
-} from "@sh3pherd/auth";
 import jwt from 'jsonwebtoken'
+import type { SignOptions, Secret } from 'jsonwebtoken';
+import type {
+    IAbstractAuthTokenManager,
+    TAuthTokenManagerOptions,
+    TAuthTokenPayload,
+    TGenerateAuthToken,
+    TVerifyAuthToken
+} from "@sh3pherd/shared-types";
 
 
 /**
@@ -19,14 +20,14 @@ import jwt from 'jsonwebtoken'
  * by a separate RefreshTokenManager.
  */
 export class JwtAuthTokenManager implements IAbstractAuthTokenManager{
-    private readonly options: TTokenManagerOptions;
+    private readonly options: TAuthTokenManagerOptions;
 
     /**
      * Initializes the JWT manager with required cryptographic options.
      *
      * @param input - Object containing configuration options for keys and expiration.
      */
-    constructor(input: { options: TTokenManagerOptions }) {
+    constructor(input: { options: TAuthTokenManagerOptions }) {
         this.options = input.options;
     };
 
@@ -40,9 +41,9 @@ export class JwtAuthTokenManager implements IAbstractAuthTokenManager{
         const { payload } = input;
 
         return Promise.resolve(
-            jwt.sign(payload, this.options.privateKey as string, {
+            jwt.sign(payload, this.options.privateKey as Secret, {
                 algorithm: 'RS256',
-                expiresIn: this.options.accessTokenExpiresIn,
+                expiresIn: this.options.accessTokenExpiresIn as SignOptions['expiresIn'],
             })
         );
     };

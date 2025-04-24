@@ -1,4 +1,6 @@
-export const authConfig: any = {
+import type {TAuthConfig} from "@sh3pherd/shared-types";
+
+export const authConfig: TAuthConfig = {
     privateKey:`-----BEGIN PRIVATE KEY-----
     MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvTDbagzedqPR+
 lS5AzQS1Oz1pPlLyI1szi2z75WmYPFUo8jDTA5EJdox2LknLfzyISRYvGTWCrjaz
@@ -39,6 +41,6 @@ BVNbCmiFjoCIh25ACaD3LgQWlKaHzpCCPHbrvDUr2vdywpiLSfLrnrP9+8M8DGJ1
 xwIDAQAB
 -----END PUBLIC KEY-----
 `,
-    authToken_TTL: 900000,
-    refreshTokenTTL: 604800000,
+    authToken_TTL_SECONDS: 1,
+    refreshTokenTTL_MS: 604800000,
 }

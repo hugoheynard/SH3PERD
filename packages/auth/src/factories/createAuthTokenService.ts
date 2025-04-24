@@ -1,0 +1,38 @@
+import type {TAuthTokenServiceFactory} from "@sh3pherd/shared-types";
+import {JwtAuthTokenManager, RefreshTokenManager} from "@sh3pherd/token-manager";
+import {dateIsNotPassed, generateTypedId} from "@sh3pherd/shared-utils";
+import {AuthTokenService} from "../core/index.js";
+
+
+export const createAuthTokenService: TAuthTokenServiceFactory = (deps) => {
+    const { saveRefreshTokenFn, deleteRefreshTokenFn, authConfig } = deps;
+
+    try {
+        const authTokenManager = new JwtAuthTokenManager({
+            options: {
+                privateKey: authConfig.privateKey,
+                publicKey: authConfig.publicKey,
+                accessTokenExpiresIn: authConfig.authToken_TTL_SECONDS,
+            },
+        });
+
+        const refreshTokenManager = new RefreshTokenManager({
+            generatorFn: ()=> Promise.resolve(generateTypedId('refreshToken')),
+            validateRefreshTokenDateFn: dateIsNotPassed,
+            saveRefreshTokenFn: (input) => saveRefreshTokenFn(input),
+            deleteRefreshTokenFn: (input) => deleteRefreshTokenFn(input),
+            ttlMs: authConfig.refreshTokenTTL_MS
+        });
+
+        return new AuthTokenService({
+            generateAuthTokenFn: authTokenManager.generateAuthToken,
+            generateRefreshTokenFn: refreshTokenManager.generateRefreshToken,
+            verifyAuthTokenFn: authTokenManager.verifyAuthToken,
+            verifyRefreshTokenFn: refreshTokenManager.verifyRefreshToken,
+            revokeRefreshTokenFn: refreshTokenManager.revokeRefreshToken
+        });
+    } catch (error) {
+        console.error("Error initializing AuthTokenService:", error);
+        throw error;
+    }
+}

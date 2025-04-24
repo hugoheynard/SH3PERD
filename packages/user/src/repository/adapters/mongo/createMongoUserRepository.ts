@@ -1,6 +1,5 @@
 import type { Collection, ObjectId } from 'mongodb';
-import type {IUserRepository, TSaveUserResult, TUserDomainModel} from "../../../domain/types";
-
+import type {IUserRepository, TSaveUserResult, TUserDomainModel} from "@sh3pherd/shared-types";
 export type MongoUser = TUserDomainModel & { _id: ObjectId};
 
 export const createMongoUserRepository = (input: { collection: Collection<TUserDomainModel> })  => {

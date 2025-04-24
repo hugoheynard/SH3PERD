@@ -1,15 +1,17 @@
-import type {RouteDef} from "./TRouteDef";
-import type {Router} from "express";
-import type {ResolveMiddlewaresFunction, RouteFactoryContext} from "./types";
+import type { Router } from 'express';
+import type {ResolveMiddlewaresFunction, RouteDef, RouteFactoryContext} from './types.js';
 
 export interface IAbstractRouterBuilder {
-    build: (input: { routeDefs: RouteDef[] }) => Promise<Router>
+    build: (input: { routeDefs: RouteDef[] }) => Promise<Router>;
 }
 
 export type TRouterBuilderDependencies = {
     validateRouteDefFunction: (input: { routeDef: RouteDef }) => void;
     createContextFunction: (input: { routeDef: RouteDef }) => RouteFactoryContext;
-    createRouterFromFactoryFunction: (input: { routeDef: RouteDef, routeContext: RouteFactoryContext })=> Router;
+    createRouterFromFactoryFunction: (input: {
+        routeDef: RouteDef;
+        routeContext: RouteFactoryContext;
+    }) => Router;
     resolveMiddlewaresFunction: ResolveMiddlewaresFunction;
-}
-
+    createRouterFromMapFunction: (routes: any) => Router;
+};

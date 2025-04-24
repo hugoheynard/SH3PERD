@@ -1,17 +1,18 @@
 import type {Router} from "express";
 import express from "express";
-import type {IRegisterRouterInput} from "../../types/types";
 
 
+export type IRegisterRouterDeps = {
+    registerUser: (req, res, next) => Promise<void>;
+    validateRegisterInput: (req, res, next) => Promise<void>;
+}
 
-export const createRegisterRouter = (input: IRegisterRouterInput): Router => {
-    const { registerController} = input;
+export const createRegisterRouter = (input: IRegisterRouterDeps): Router => {
+    const { registerUser, validateRegisterInput } = input;
 
     const registerRouter: Router = express.Router();
 
-    registerRouter.post('/',
-        registerController.registerUser
-    );
+    registerRouter.post('/', validateRegisterInput, registerUser);
 
     //router.post('/0Auth')
     return registerRouter;

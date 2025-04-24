@@ -1,11 +1,11 @@
 import express from "express";
 import request from "supertest";
 import type {Request, Response} from "express";
-import {RouterBuilder} from "../src/RouterBuilder";
+import {RouterBuilder} from "../src/RouterBuilder/RouterBuilder";
 import {validateRouteDef} from "../src/utils/validateRouteDef";
-import {createRouterFromFactory} from "../src/utils/createRouterFromFactory";
+import {createRouterFromFactory} from "../src/utils/fnOld/createRouterFromFactory";
 import {createContext} from "../src/utils/createContext";
-import {resolveMiddlewares} from "../src/utils/resolveMiddlewares";
+import {resolveMiddlewares} from "../src/utils/fnOld/resolveMiddlewares";
 
 
 describe('Integration - RouterBuilder', () => {

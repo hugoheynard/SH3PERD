@@ -1,5 +1,6 @@
 import {generateTypedId} from "../../src";
 
+
 describe('generateTypedId', () => {
     it('should return a string with the given prefix', () => {
         const result = generateTypedId('user');

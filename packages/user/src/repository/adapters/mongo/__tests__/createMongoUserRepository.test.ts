@@ -1,7 +1,7 @@
 import {jest} from '@jest/globals';
 import type {Collection, InsertOneResult, Document, ObjectId} from 'mongodb';
-import type {TUserDomainModel} from "../../../../domain/types";
 import { createMongoUserRepository } from '../createMongoUserRepository';
+import type {TUserDomainModel} from "@sh3pherd/shared-types";
 
 
 
@@ -41,7 +41,6 @@ describe('MongoUserRepository', () => {
 
             const result = await repository.saveUser({ user: fakeUser });
 
-            console.log('Returned from saveUser:', result);
             expect(result).toEqual({ success: true });
         });
 

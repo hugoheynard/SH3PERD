@@ -4,7 +4,11 @@
     "rootDir": "src",
     "outDir": "dist",
     "composite": true,
-    "declaration": true
+    "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@sh3pherd/shared-types": ["../shared-types/src/index"]
+    }
   },
   "include": [
     "src"

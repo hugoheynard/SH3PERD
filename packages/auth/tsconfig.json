@@ -4,32 +4,20 @@
     "rootDir": "src",
     "outDir": "dist",
     "composite": true,
-    "declaration": true
-  },
-  "include": [
-    "src"
-  ],
-  "references": [
-    {
-      "path": "../token-manager"
-    },
-    {
-      "path": "../shared-utils"
-    },
-    {
-      "path": "../shared-types"
-    },
-    {
-      "path": "../user"
-    },
-    {
-      "path": "../router-builder"
-    },
-    {
-      "path": "../backend"
-    },
-    {
-      "path": "../password-manager"
+    "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@sh3pherd/shared-types": ["../shared-types/src/index"],
+      "@sh3pherd/shared-utils": ["../shared-utils/src/index"],
+      "@sh3pherd/token-manager": ["../token-manager/src/index"],
+      "@sh3pherd/route-builder": ["../route-builder/src/index"]
     }
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../shared-types" },
+    { "path": "../shared-utils" },
+    { "path":  "../token-manager"},
+    { "path": "../router-builder"}
   ]
 }

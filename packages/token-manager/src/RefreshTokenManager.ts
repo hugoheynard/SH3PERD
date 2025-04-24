@@ -1,14 +1,11 @@
 import type {
-    TRefreshToken,
-    TRefreshTokenDomainModel,
-    IRefreshTokenRepository,
     IAbstractRefreshTokenManager,
     TGenerateRefreshToken,
-    TVerifyRefreshToken,
-    TRevokeRefreshToken,
+    TRefreshTokenDomainModel,
     TRefreshTokenManagerDeps,
-} from "@sh3pherd/auth";
-
+    TRevokeRefreshToken,
+    TVerifyRefreshToken
+} from "@sh3pherd/shared-types";
 
 /**
  * RefreshTokenManager handles the lifecycle of refresh tokens,
@@ -18,16 +15,10 @@ import type {
  * like token generation, persistence, and validation are injected.
  */
 export class RefreshTokenManager implements IAbstractRefreshTokenManager {
-    private readonly refreshTokenRepository: IRefreshTokenRepository;
-    private readonly generatorFunction: () => Promise<TRefreshToken>;
-    private readonly validateRefreshTokenDateFunction: TCheckExpirationDateFunction;
-    private readonly ttlMs: number;
+    private readonly deps: TRefreshTokenManagerDeps;
 
-    constructor(input: TRefreshTokenManagerDeps) {
-        this.refreshTokenRepository = input.refreshTokenRepository;
-        this.generatorFunction = input.generatorFunction;
-        this.validateRefreshTokenDateFunction = input.validateRefreshTokenDateFn;
-        this.ttlMs = input.ttlMs;
+    constructor(deps: TRefreshTokenManagerDeps) {
+        this.deps = deps;
     };
 
     /**
@@ -39,7 +30,7 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
      */
     generateRefreshToken: TGenerateRefreshToken = async (input)=> {
         try {
-            const newRefreshToken = await this.generatorFunction();
+            const newRefreshToken = await this.deps.generatorFn();
 
             if (!newRefreshToken) {
                 throw new Error("Failed to generate refresh token");
@@ -48,16 +39,15 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
             const record: TRefreshTokenDomainModel = {
                 refreshToken: newRefreshToken,
                 user_id: input.user_id,
-                expiresAt: new Date(Date.now() + this.ttlMs),
+                expiresAt: new Date(Date.now() + this.deps.ttlMs),
                 createdAt: new Date()
             };
 
-            await this.refreshTokenRepository.saveRefreshToken({ refreshTokenDomainModel: record });
+            await this.deps.saveRefreshTokenFn({ refreshTokenDomainModel: record });
 
             return newRefreshToken
         } catch (error){
-            throw new Error(`Unable to save refresh token for user ${input.user_id}: ${(error as Error).message}`)
-
+            throw new Error(`Unable to save refresh token for user ${input.user_id}: ${(error as Error).message}`);
         }
     };
 
@@ -68,9 +58,8 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
      * @returns A promise that resolves to a boolean indicating whether the token is valid.
      */
     verifyRefreshToken: TVerifyRefreshToken = (input) => {
-        const { refreshTokenRecord } = input;
-
-        return this.validateRefreshTokenDateFunction({ expirationDate: refreshTokenRecord.expiresAt });
+        const { refreshTokenDomainModel } = input;
+        return this.deps.validateRefreshTokenDateFn({ date: refreshTokenDomainModel.expiresAt });
     };
 
     /**
@@ -82,8 +71,7 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
      */
     revokeRefreshToken: TRevokeRefreshToken = async (input) => {
         try {
-            await this.refreshTokenRepository.revokeRefreshToken({ refreshToken: input.refreshToken});
-
+            await this.deps.deleteRefreshTokenFn({ refreshToken: input.refreshToken});
             return { revokedToken: input.refreshToken };
         } catch (error) {
             throw new Error(`Unable to revoke refresh token: ${(error as Error).message}`);

@@ -1,29 +1,34 @@
+import {AuthController, RegisterController} from "@sh3pherd/auth";
+import type {IAuthController, IRegisterController} from "@sh3pherd/shared-types";
 //import {settingsController} from "@sh3pherd/backend/controllers/settingsController";
 //import {calendarController} from "@sh3pherd/backend/controllers/calendarController";
 //import {planningBlocksController} from "@sh3pherd/backend/planningBlocks/planningBlocksController";
 //import {musicLibraryController} from "@sh3pherd/backend/controllers/musicLibraryController";
 //import {playlistController} from "@sh3pherd/backend/playlist/playlistController";
-import {AuthController, RegisterController} from "@sh3pherd/auth";
+
+
 
 
 
 export interface AppControllers {
-    register: any;
-    auth: any;
+    register: IRegisterController;
+    auth: IAuthController;
     [key: string]: any;
 }
 
 export const initControllers = (input: { useCases: any }): AppControllers => {
-    const { useCases } = input;
+    const { auth } = input.useCases;
 
     try {
+
         const controllers = {
             register: new RegisterController({
-                registerUserUseCase: useCases.register.registerUserUseCase,
+                registerUserUseCase: auth.registerUserUseCase,
             }),
             auth: new AuthController({
-                loginUseCase: useCases.auth.loginUseCase,
-            })
+                loginUseCase: auth.loginUseCase,
+                logoutUseCase: {}
+            }),
 
 /*
             authenticationController: authenticationController({ authenticationService: services.authenticationService }),
