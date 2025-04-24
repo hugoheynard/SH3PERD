@@ -52,6 +52,7 @@ export class RouterBuilder implements IAbstractRouterBuilder {
                 subRouter.use(routeRouter);
             }
 
+
             // 3. Or fallback to classic Router factory
             else if (result && typeof result.use === 'function') {
                 subRouter.use(result);
