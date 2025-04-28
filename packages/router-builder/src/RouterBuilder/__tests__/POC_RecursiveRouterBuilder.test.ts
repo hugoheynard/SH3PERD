@@ -1,6 +1,6 @@
 import request from 'supertest';
 import express, {type NextFunction, type Request, type RequestHandler, type Response, Router} from 'express';
-import { BaseRouterBuilder_Recursive } from "../BaseRouterBuilder_Recursive.js";
+import { POC_RecursiveRouterBuilder } from "../POC_RecursiveRouterBuilder.js";
 import { defineModule } from "../../infra/defineModule.js";
 import type {MethodAndPath} from "../../types/types.js";
 
@@ -17,7 +17,7 @@ describe('BaseRouterBuilder_Recursive - Basic integration', () => {
             })
         });
 
-        const builder = new BaseRouterBuilder_Recursive();
+        const builder = new POC_RecursiveRouterBuilder();
         const router = await builder.build({ routeDefs: [helloModule] });
 
         const app = express();
@@ -89,7 +89,7 @@ describe("BaseRouterBuilder_Recursive - Advanced integration", () => {
     };
 
     const buildApp = async (modules: any[]) => {
-        const builder = new BaseRouterBuilder_Recursive();
+        const builder = new POC_RecursiveRouterBuilder();
         const router = await builder.build({ routeDefs: modules });
         const app = express();
         app.use(router);
@@ -124,12 +124,12 @@ describe("BaseRouterBuilder_Recursive - Advanced integration", () => {
     });
 
     it("should throw on broken factory", async () => {
-        const builder = new BaseRouterBuilder_Recursive();
+        const builder = new POC_RecursiveRouterBuilder();
         await expect(builder.build({ routeDefs: [brokenFactoryModule as any] })).rejects.toThrow("Factory failed");
     });
 
     it("should throw on invalid handler array (raw type)", async () => {
-        const builder = new BaseRouterBuilder_Recursive() as any;
+        const builder = new POC_RecursiveRouterBuilder() as any;
 
         const fakeRouter = Router();
         const invalidRouteMap: Partial<Record<MethodAndPath, RequestHandler[]>> = {
@@ -153,7 +153,7 @@ describe("BaseRouterBuilder_Recursive - Advanced integration", () => {
             })
         });
 
-        const builder = new BaseRouterBuilder_Recursive();
+        const builder = new POC_RecursiveRouterBuilder();
         await expect(builder.build({ routeDefs: [badMethodModule] })).rejects.toThrow("Unsupported HTTP method");
     });
 });
