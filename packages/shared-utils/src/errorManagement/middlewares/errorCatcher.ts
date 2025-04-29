@@ -3,8 +3,7 @@ import {BusinessError, TechnicalError} from "../errorClasses/index.js";
 
 export const errorCatcher = (err: unknown, req: Request, res: Response, _next: NextFunction): void => {
     //business error
-    if (err instanceof Error && err.name === 'BusinessError') {
-
+    if (isBusinessError(err)) {
         res.status(err.statusCode).json({
             type: 'business_error',
             code: err.errorCode,
@@ -14,8 +13,7 @@ export const errorCatcher = (err: unknown, req: Request, res: Response, _next: N
     }
 
     //technical error
-    if (err instanceof Error && err.name === 'TechnicalError') {
-
+    if (isTechnicalError(err)) {
         console.error('[TechnicalError]', {
             path: req.path,
             method: req.method,
@@ -41,4 +39,23 @@ export const errorCatcher = (err: unknown, req: Request, res: Response, _next: N
         type: 'unknown_error',
         message: 'Unexpected server error'
     });
+}
+
+
+function isBusinessError(err: unknown): err is BusinessError {
+    return (
+        err instanceof Error &&
+        err.name === 'BusinessError' &&
+        'statusCode' in err &&
+        'errorCode' in err
+    );
+}
+
+function isTechnicalError(err: unknown): err is TechnicalError {
+    return (
+        err instanceof Error &&
+        err.name === 'TechnicalError' &&
+        'statusCode' in err &&
+        'errorCode' in err
+    );
 }

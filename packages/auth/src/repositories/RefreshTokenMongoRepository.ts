@@ -1,20 +1,26 @@
 import type {Collection} from "mongodb";
-import type {TmapMongoDocToDomainModelFunction} from "@sh3pherd/shared-utils";
 import type {
     IRefreshTokenMongoRepositoryDeps,
-    IRefreshTokenRepository, TDeleteRefreshToken, TFindRefreshToken,
-    TRefreshTokenDomainModel, TSaveRefreshToken
+    IRefreshTokenRepository,
+    TDeleteAllRefreshTokensForUser,
+    TDeleteRefreshToken,
+    TFindRefreshToken,
+    TRefreshTokenDomainModel,
+    TSaveRefreshToken
 } from "@sh3pherd/shared-types";
+import {autoBind, BaseMongoRepository, BusinessError, TechnicalError} from "@sh3pherd/shared-utils";
 
 
-export class RefreshTokenMongoRepository implements IRefreshTokenRepository {
+@autoBind
+export class RefreshTokenMongoRepository
+    extends BaseMongoRepository
+    implements IRefreshTokenRepository {
     private readonly refreshTokenCollection: Collection<TRefreshTokenDomainModel>;
-    private readonly mapMongoDocToDomainModelFunction: TmapMongoDocToDomainModelFunction
 
 
     constructor(input: IRefreshTokenMongoRepositoryDeps) {
+        super();
         this.refreshTokenCollection = input.refreshTokenCollection;
-        this.mapMongoDocToDomainModelFunction = input.mapMongoDocToDomainModelFn;
     };
 
     saveRefreshToken: TSaveRefreshToken = async (input) => {
@@ -34,7 +40,11 @@ export class RefreshTokenMongoRepository implements IRefreshTokenRepository {
             });
 
         if (!result.acknowledged || !result.insertedId) {
-            throw new Error('Failed to save refresh token')
+            throw new TechnicalError(
+                'Failed to save refresh token',
+                'REFRESH_TOKEN_SAVE_FAILED',
+                500
+            );
         }
 
         return { success: true };
@@ -45,7 +55,7 @@ export class RefreshTokenMongoRepository implements IRefreshTokenRepository {
         const result = await this.refreshTokenCollection.findOne({ refreshToken: refreshToken });
         if (!result) return null;
 
-        return this.mapMongoDocToDomainModelFunction({ document: result });
+        return this.mapMongoDocToDomainModel({ doc: result });
     };
 
     deleteRefreshToken: TDeleteRefreshToken = async (input) =>{
@@ -54,9 +64,21 @@ export class RefreshTokenMongoRepository implements IRefreshTokenRepository {
         const result = await this.refreshTokenCollection.deleteOne({ refreshToken: refreshToken });
 
         if (result.deletedCount === 0) {
-            throw new Error(`Refresh token ${refreshToken} not found or already revoked`)
+            throw new BusinessError(
+                `Refresh token ${refreshToken} not found or already revoked`,
+                'REFRESH_TOKEN_NOT_FOUND',
+                404
+            );
         }
 
         return { revokedToken: refreshToken};
+    };
+
+    deleteAllRefreshTokensForUser: TDeleteAllRefreshTokensForUser = async (input) => {
+        const { user_id } = input;
+
+        const result = await this.refreshTokenCollection.deleteMany({ user_id: user_id });
+
+        return { deletedCount: result.deletedCount };
     };
 }

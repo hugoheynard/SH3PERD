@@ -1,9 +1,8 @@
-import type {TLoginUseCaseFactory, TRegisterUserUseCaseFactory} from "@sh3pherd/shared-types";
 import {createRegisterUserUseCase} from "./createRegisterUserUseCase.js";
 import {createLoginUseCase} from "./createLoginUseCase.js";
 
 
-export const createAuthRegisterUseCases = (deps: any) => {
+export const createAuthUseCases = (deps: any) => {
     const {
         findUserByEmailFn,
         hashPasswordFn,
@@ -15,7 +14,7 @@ export const createAuthRegisterUseCases = (deps: any) => {
     } = deps;
 
     try {
-        const registerUserUseCase: TRegisterUserUseCaseFactory = createRegisterUserUseCase({
+        const registerUserUseCase = createRegisterUserUseCase({
             generateUserIdFn,
             createUserFn,
             findUserByEmailFn,
@@ -23,7 +22,7 @@ export const createAuthRegisterUseCases = (deps: any) => {
             saveUserFn,
         });
 
-        const loginUseCase: TLoginUseCaseFactory = createLoginUseCase({
+        const loginUseCase = createLoginUseCase({
             findUserByEmailFn,
             comparePasswordFn,
             createAuthSessionFn

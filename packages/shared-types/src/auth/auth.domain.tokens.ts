@@ -25,7 +25,22 @@ export type TAuthTokenManagerOptions = {
 export type TCreateAuthSessionResult = {
     authToken: string
     refreshToken: TRefreshToken
-    user_id: TUserId;
+    refreshTokenSecureCookie: TRefreshTokenSecureCookie;
 }
 
 export type TRevokeRefreshTokenResult = { revokedToken: TRefreshToken };
+
+export type TSecureCookieConfig = {
+    httpOnly: boolean;
+    secure: boolean;
+    sameSite: "strict" | "lax" | "none";
+    maxAge: number;
+}
+
+export type TRefreshTokenSecureCookie = {
+    name: 'sh3pherd_refreshToken';
+    value: TRefreshToken;
+    options: TSecureCookieConfig & {
+        path: string;
+    };
+};

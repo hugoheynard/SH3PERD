@@ -11,4 +11,4 @@ export const mapMongoDocToDomainModel = <T>(
 ): T => {
     const { _id, ...rest } = input.document;
     return rest as T
-}
+};

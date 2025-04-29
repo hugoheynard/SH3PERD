@@ -25,7 +25,7 @@ export const createRegisterUserUseCase: TRegisterUserUseCaseFactory = (deps) => 
             throw new TechnicalError('Failed to save user', 'USER_CREATION_FAILED', 500);
         }
 
-        return user;
+        return { user_id: user.user_id };
     };
 
 };

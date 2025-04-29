@@ -1,10 +1,10 @@
-import type {TAuthConfig} from "@sh3pherd/shared-types";
+import type {TAuthConfig, TSecureCookieConfig} from "@sh3pherd/shared-types";
 import {createAuthTokenService} from "@sh3pherd/auth";
 
 
 
-export const initServices = (input: { repositories: any, authConfig: TAuthConfig }): any => {
-    const { repositories, authConfig } = input;
+export const initServices = (input: { repositories: any, authConfig: TAuthConfig, secureCookieConfig: TSecureCookieConfig }): any => {
+    const { repositories, authConfig, secureCookieConfig } = input;
 
     const { refreshTokenRepository } = repositories;
 
@@ -13,7 +13,9 @@ export const initServices = (input: { repositories: any, authConfig: TAuthConfig
             authTokenService: createAuthTokenService({
                 saveRefreshTokenFn: refreshTokenRepository.saveRefreshToken,
                 deleteRefreshTokenFn: refreshTokenRepository.deleteRefreshToken,
-                authConfig: authConfig
+                deleteAllRefreshTokensForUserFn: refreshTokenRepository.deleteAllRefreshTokensForUser,
+                authConfig,
+                secureCookieConfig
             }),
 
         };

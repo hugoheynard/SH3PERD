@@ -24,10 +24,22 @@ export class AuthController implements IAuthController {
      */
     @withErrorHandler
     public async login(req: Request, res: Response, _next: NextFunction): Promise<void> {
-        res.status(200).json(await this.deps.loginUseCase({
+        const { authToken, refreshToken, user_id, refreshTokenSecureCookie } = await this.deps.loginUseCase({
             email: req.body.email,
             password: req.body.password,
-        }));
+        });
+
+        res.cookie(
+            refreshTokenSecureCookie.name,
+            refreshTokenSecureCookie.value,
+            refreshTokenSecureCookie.options
+        );
+
+        res.status(200).json({
+            authToken,
+            user_id,
+        });
+
         return;
     };
 

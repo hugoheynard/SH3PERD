@@ -1,4 +1,4 @@
-import type {TRefreshToken} from "./auth.domain.tokens.js";
+import type {TRefreshToken, TRefreshTokenSecureCookie} from "./auth.domain.tokens.js";
 import type {TComparePassword, TCreateAuthSession, THashPassword} from "./auth.core.contracts.js";
 import type {TCreateUser, TFindUserByEmail, TSaveUser, TUserId} from "../user/index.js";
 
@@ -14,6 +14,7 @@ export type TLoginResponseDTO = {
     authToken: string;
     refreshToken: TRefreshToken;
     user_id: TUserId;
+    refreshTokenSecureCookie: TRefreshTokenSecureCookie;
 }
 
 export type TLoginUseCase = (input: TLoginRequestDTO) => Promise<TLoginResponseDTO>;
@@ -39,8 +40,7 @@ export type RegisterRequestDTO = {
 }
 
 export type RegisterResponseDTO = {
-    email: string;
-    password: string;
+    user_id: TUserId;
 }
 
 export type TRegisterUserUseCaseDeps = {

@@ -5,7 +5,7 @@ import {AuthTokenService} from "../core/index.js";
 
 
 export const createAuthTokenService: TAuthTokenServiceFactory = (deps) => {
-    const { saveRefreshTokenFn, deleteRefreshTokenFn, authConfig } = deps;
+    const { saveRefreshTokenFn, deleteRefreshTokenFn, deleteAllRefreshTokensForUserFn,  authConfig, secureCookieConfig } = deps;
 
     try {
         const authTokenManager = new JwtAuthTokenManager({
@@ -21,7 +21,7 @@ export const createAuthTokenService: TAuthTokenServiceFactory = (deps) => {
             validateRefreshTokenDateFn: dateIsNotPassed,
             saveRefreshTokenFn: (input) => saveRefreshTokenFn(input),
             deleteRefreshTokenFn: (input) => deleteRefreshTokenFn(input),
-            ttlMs: authConfig.refreshTokenTTL_MS
+            ttlMs: secureCookieConfig.maxAge
         });
 
         return new AuthTokenService({
@@ -29,7 +29,9 @@ export const createAuthTokenService: TAuthTokenServiceFactory = (deps) => {
             generateRefreshTokenFn: refreshTokenManager.generateRefreshToken,
             verifyAuthTokenFn: authTokenManager.verifyAuthToken,
             verifyRefreshTokenFn: refreshTokenManager.verifyRefreshToken,
-            revokeRefreshTokenFn: refreshTokenManager.revokeRefreshToken
+            revokeRefreshTokenFn: refreshTokenManager.revokeRefreshToken,
+            deleteAllRefreshTokensForUserFn,
+            secureCookieConfig,
         });
     } catch (error) {
         console.error("Error initializing AuthTokenService:", error);

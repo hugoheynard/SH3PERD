@@ -1,8 +1,8 @@
-import type {TAuthConfig} from "@sh3pherd/shared-types";
+import type {TAuthConfig, TSecureCookieConfig} from "@sh3pherd/shared-types";
 
 export const authConfig: TAuthConfig = {
     privateKey:`-----BEGIN PRIVATE KEY-----
-    MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvTDbagzedqPR+
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvTDbagzedqPR+
 lS5AzQS1Oz1pPlLyI1szi2z75WmYPFUo8jDTA5EJdox2LknLfzyISRYvGTWCrjaz
 eNNmzTRlv/Qv7ESMmjstbr+pFVCpNQT1XAQO2AGHssjrAgrXPQNo6kVsqdbZICFP
 mh1Q0SOxqFAMxCNJMmRLnjlImTx9Z4lGmmjF1iQWsqYzbZ+jRaw2RaAXD3HvOUQo
@@ -28,19 +28,25 @@ TGiYzLTU3tQv+dp18xl0sf47K19AR94sd7amhIoBAoGARD0Klspad9zfYwYXqSku
 R1X4nWe2MTOEOrwTAZyOISIvivMCk4pH1/Nvc+x/CtWxpUMmYViZaf4u+MStMBmM
 q6sl1DR6JV5yTZk5HbrwArTjDCT9lxNAFz71aitovwj7uPXZV+zlfILfj7UmmOuu
 xwcegdqlxldcRBGQvX9f8Z0=
-    -----END PRIVATE KEY-----
-    `,
+-----END PRIVATE KEY-----`,
     publicKey: `
 -----BEGIN PUBLIC KEY-----
-    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr0w22oM3naj0fpUuQM0E
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr0w22oM3naj0fpUuQM0E
 tTs9aT5S8iNbM4ts++VpmDxVKPIw0wORCXaMdi5Jy388iEkWLxk1gq42s3jTZs00
 Zb/0L+xEjJo7LW6/qRVQqTUE9VwEDtgBh7LI6wIK1z0DaOpFbKnW2SAhT5odUNEj
 sahQDMQjSTJkS545SJk8fWeJRppoxdYkFrKmM22fo0WsNkWgFw9x7zlEKEUiOcJ+
 2JwhBFIMQqBlBz7Y9SH7T3ZeMDvKtebPJDGKc2DIN2GRtaJm/P9/WF+qFmbmYcey
 BVNbCmiFjoCIh25ACaD3LgQWlKaHzpCCPHbrvDUr2vdywpiLSfLrnrP9+8M8DGJ1
 xwIDAQAB
------END PUBLIC KEY-----
-`,
-    authToken_TTL_SECONDS: 1,
+-----END PUBLIC KEY-----`,
+    authToken_TTL_SECONDS: 900,
     refreshTokenTTL_MS: 604800000,
 }
+
+export const secureCookieConfig: TSecureCookieConfig =  {
+    httpOnly: true,
+    secure: false, // TODO: true in production
+    sameSite: 'strict',
+    maxAge: 604800000 // 7 days
+};
+

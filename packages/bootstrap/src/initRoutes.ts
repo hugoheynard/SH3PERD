@@ -8,7 +8,7 @@ import {createAuthRouter} from "@sh3pherd/auth";
 
 export const initRoutes = async (app: Express, { controllers } : any): Promise<Express> => {
     try {
-        const { register } = controllers;
+        const { register, auth } = controllers;
 
         // middlewares
         app.use(cors());
@@ -16,7 +16,8 @@ export const initRoutes = async (app: Express, { controllers } : any): Promise<E
 
         //Routers
         app.use('/api', await createAuthRouter({
-            registerUserCtrl: register.registerUser
+            registerUserCtrl: register.registerUser,
+            loginUserCtrl: auth.login
         }));
 
 

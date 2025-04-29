@@ -1,11 +1,14 @@
 import type {
     IAuthTokenService,
     TAuthTokenServiceDeps,
-    TCreateAuthSession, TRefreshTokenDomainModel,
+    TCreateAuthSession,
+    TGenerateRefreshTokenCookie,
+    TRefreshAuthSession,
     TRevokeRefreshToken,
     TVerifyAuthToken,
     TVerifyRefreshToken
 } from "@sh3pherd/shared-types";
+import {BusinessError} from "@sh3pherd/shared-utils";
 
 
 /**
@@ -28,17 +31,27 @@ export class AuthTokenService implements IAuthTokenService {
     /**
      * Creates a full authentication session for a given user.
      *
+     * deletes all previous refresh tokens for the user
+     *
      * This generates:
      * - a signed access token (JWT or otherwise)
      * - a persistent refresh token stored in the configured token manager
      *
      * @param input - Object containing the user's unique identifier
-     * @returns An object containing both access and refresh tokens
+     * @returns An object containing both access and refresh tokens as well as the secure cookie content
      */
     public createAuthSession: TCreateAuthSession = async (input) => {
-        const authToken = await this.deps.generateAuthTokenFn({ payload: { user_id: input.user_id } });
-        const refreshToken = await this.deps.generateRefreshTokenFn({ user_id: input.user_id });
-        return {authToken, refreshToken};
+        const { user_id } = input;
+
+        //clears the db of all previous refresh tokens for the user
+        await this.deps.deleteAllRefreshTokensForUserFn({ user_id });
+
+        //generate a new refresh and auth token
+        const authToken = await this.deps.generateAuthTokenFn({ payload: { user_id } });
+        const refreshToken = await this.deps.generateRefreshTokenFn({ user_id });
+        const refreshTokenSecureCookie = this.generateRefreshTokenCookie({ refreshToken });
+
+        return {authToken, refreshToken, refreshTokenSecureCookie};
     };
 
     /**
@@ -89,18 +102,36 @@ export class AuthTokenService implements IAuthTokenService {
      * It validates the refresh token and re-issues a new access token.
      *
      * @param input - Object containing the refresh token record
-     * @returns A new signed access token
+     * @returns A full auth session valid
      * @throws If the refresh token is invalid or expired
      */
-    public refreshSession = async (input: { refreshTokenDomainModel: TRefreshTokenDomainModel }): Promise<string> => {
+    public refreshAuthSession: TRefreshAuthSession = async (input) => {
         const isValid = this.deps.verifyRefreshTokenFn({ refreshTokenDomainModel: input.refreshTokenDomainModel });
 
         if (!isValid) {
-            throw new Error("Invalid or expired refresh token");
+            throw new BusinessError(
+                "Invalid or expired refresh token",
+                "INVALID_REFRESH_TOKEN",
+                401
+            );
         }
 
-        return this.deps.generateAuthTokenFn({
-            payload: { user_id: input.refreshTokenDomainModel.user_id }
-        });
+        return this.createAuthSession({ user_id: input.refreshTokenDomainModel.user_id });
+    };
+
+    generateRefreshTokenCookie: TGenerateRefreshTokenCookie = (input) => {
+        const { secure, sameSite, maxAge } = this.deps.secureCookieConfig;
+
+        return {
+            name: 'sh3pherd_refreshToken',
+            value: input.refreshToken,
+            options: {
+                httpOnly: true,
+                secure,
+                sameSite,
+                path: input.customPath ?? '/auth/refresh', // 🧠 fallback
+                maxAge
+            }
+        };
     };
 }

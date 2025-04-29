@@ -9,7 +9,7 @@ import {initUseCases} from "./initUseCases.js";
 import {initControllers, type AppControllers} from "./initControllers.js";
 import {initRoutes} from "./initRoutes.js";
 import {startServer} from "./startServer.js";
-import {authConfig} from "./config.js";
+import {authConfig, secureCookieConfig} from "./config.js";
 
 
 // Load environment variables from .env file
@@ -24,12 +24,12 @@ async function startApp(): Promise<void> {
         });
 
         const repositories: any = createRepositories({ db });
-        const services: any = initServices({ repositories, authConfig: authConfig });
+        const services: any = initServices({ repositories, authConfig, secureCookieConfig });
         const useCases: any = initUseCases({ services, repositories });
         const controllers: any = initControllers({ useCases });
         const app: Express = express();
         await initRoutes(app, { controllers });
-        await startServer({ app, port: process.env.PORT });
+        await startServer({ app, port: process.env.PORT })
 
 
     } catch (error: any) {

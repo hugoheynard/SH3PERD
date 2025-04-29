@@ -1,4 +1,5 @@
 import type { TLoginUseCaseFactory } from "@sh3pherd/shared-types";
+import {BusinessError} from "@sh3pherd/shared-utils";
 
 /**
  * loginUseCase - Handles user authentication using email and password.
@@ -24,18 +25,19 @@ import type { TLoginUseCaseFactory } from "@sh3pherd/shared-types";
 export const createLoginUseCase: TLoginUseCaseFactory = (deps) =>
 
     async (request) => {
+        const { email, password } = request;
 
-        const user = await deps.findUserByEmailFn({ email: request.email });
+        const user = await deps.findUserByEmailFn({ email });
         if (!user) {
-            throw new Error('Invalid credentials');
+            throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 401);
         }
 
-        const isPasswordValid = await deps.comparePasswordFn({
-            password: request.password,
+        const { isValid } = await deps.comparePasswordFn({
+            password,
             hashedPassword: user.password
         });
-        if (isPasswordValid.isValid === false) {
-            throw new Error('Invalid credentials');
+        if (!isValid) {
+            throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 401);
         }
 
         const session = await deps.createAuthSessionFn({ user_id: user.user_id });
@@ -43,6 +45,7 @@ export const createLoginUseCase: TLoginUseCaseFactory = (deps) =>
         return {
             authToken: session.authToken,
             refreshToken: session.refreshToken,
-            user_id: user.user_id
+            user_id: user.user_id,
+            refreshTokenSecureCookie: session.refreshTokenSecureCookie,
         };
 };

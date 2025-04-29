@@ -1,11 +1,12 @@
 import type {
     IAbstractRefreshTokenManager,
-    TGenerateRefreshToken,
+    TGenerateRefreshToken, TRefreshToken,
     TRefreshTokenDomainModel,
     TRefreshTokenManagerDeps,
     TRevokeRefreshToken,
     TVerifyRefreshToken
 } from "@sh3pherd/shared-types";
+import {autoBind, TechnicalError} from "@sh3pherd/shared-utils";
 
 /**
  * RefreshTokenManager handles the lifecycle of refresh tokens,
@@ -14,6 +15,7 @@ import type {
  * This class follows a clean architecture principle where responsibilities
  * like token generation, persistence, and validation are injected.
  */
+@autoBind
 export class RefreshTokenManager implements IAbstractRefreshTokenManager {
     private readonly deps: TRefreshTokenManagerDeps;
 
@@ -33,7 +35,7 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
             const newRefreshToken = await this.deps.generatorFn();
 
             if (!newRefreshToken) {
-                throw new Error("Failed to generate refresh token");
+                throw new Error("Failed to generate refresh token - generator function returned null");
             }
 
             const record: TRefreshTokenDomainModel = {
@@ -47,7 +49,11 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
 
             return newRefreshToken
         } catch (error){
-            throw new Error(`Unable to save refresh token for user ${input.user_id}: ${(error as Error).message}`);
+            throw new TechnicalError(
+                `Unable to save refresh token for user ${input.user_id}: ${(error as Error).message}`,
+                "REFRESH_TOKEN_SAVE_FAILED",
+                500
+            );
         }
     };
 

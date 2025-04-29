@@ -1,7 +1,7 @@
 import {passwordManager} from "@sh3pherd/password-manager";
 import {createUserDomainModel} from "@sh3pherd/user";
 import {generateTypedId} from "@sh3pherd/shared-utils";
-import {createAuthRegisterUseCases} from "@sh3pherd/auth";
+import {createAuthUseCases} from "@sh3pherd/auth";
 
 
 export const initUseCases = (input: { services: any; repositories: any }): any => {
@@ -10,7 +10,7 @@ export const initUseCases = (input: { services: any; repositories: any }): any =
 
   try {
       return {
-          auth: createAuthRegisterUseCases({
+          auth: createAuthUseCases({
               findUserByEmailFn: userRepository.findUserByEmail,
               hashPasswordFn: passwordManager.hashPassword,
               comparePasswordFn: passwordManager.comparePassword,

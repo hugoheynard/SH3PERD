@@ -8,41 +8,46 @@ export type TRegisterRouterDeps = {
     validateCredentialsInputMw: (req: Request, res: Response, next: NextFunction) => void;
 }
 
+export type TLoginRouterDeps = {
+    validateCredentialsInputMw: (req: Request, res: Response, next: NextFunction) => void;
+    loginUserCtrl: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+}
+
 
 export const createAuthRouter = async (deps: {
     registerUserCtrl: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    loginUserCtrl: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 }): Promise<Router> => {
+
+    const registerModule = Rider.def<TRegisterRouterDeps>({
+        path: "/register",
+        inject: {
+            registerUserCtrl: deps.registerUserCtrl,
+            validateCredentialsInputMw: validateCredentialsInput
+        },
+        routes: ({ registerUserCtrl, validateCredentialsInputMw }) => ({
+            "post:/": [validateCredentialsInputMw, registerUserCtrl],
+        })
+    });
+
+    const loginModule = Rider.def<TLoginRouterDeps>({
+        path: "/login",
+        inject: {
+            loginUserCtrl: deps.loginUserCtrl,
+            validateCredentialsInputMw: validateCredentialsInput
+        },
+        routes: ({ loginUserCtrl, validateCredentialsInputMw }) => ({
+            "post:/": [validateCredentialsInputMw, loginUserCtrl],
+        }),
+    });
+
 
     return await new Rider()
         .build({ routeDefs: [
                 Rider.def({
                     path: "/auth",
                     inject: {},
-                    children: [
-                        Rider.def<TRegisterRouterDeps>({
-                            path: "/register",
-                            inject: {
-                                registerUserCtrl: deps.registerUserCtrl,
-                                validateCredentialsInputMw: validateCredentialsInput
-                            },
-                            routes: ({ registerUserCtrl, validateCredentialsInputMw }) => ({
-                                "post:/": {
-                                    handler: registerUserCtrl,
-                                    mw: [validateCredentialsInputMw]
-                                }
-                            })
-
-
-                        }),
-                        /*
-                        Rider.def({
-                            path: "/login",
-                            routes: () => ({
-                                "post:/": (req, res) => res.send("Login")
-                            }),
-                        }),
-                         */
-                    ]
+                    children: [registerModule, loginModule]
                 })]
         });
 }

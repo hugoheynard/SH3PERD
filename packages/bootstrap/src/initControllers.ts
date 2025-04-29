@@ -25,16 +25,12 @@ export const initControllers = (input: { useCases: any }): any => {
             register: new RegisterController({
                 registerUserUseCase: auth.registerUserUseCase,
             }),
-            /*
             auth: new AuthController({
                 loginUseCase: auth.loginUseCase,
                 logoutUseCase: {}
             }),
 
-             */
-
 /*
-            authenticationController: authenticationController({ authenticationService: services.authenticationService }),
             settingsController: settingsController({ settingsService: services.settingsService}),
             planningBlocksController: planningBlocksController({ planningBlocksService: services.planningBlocksService}), //TODO: on en est là test API
             calendarController: calendarController({

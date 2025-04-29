@@ -1,15 +1,15 @@
 import type {
-    TCreateAuthSession,
+    TCreateAuthSession, TDeleteAllRefreshTokensForUser,
     TDeleteRefreshToken,
     TFindRefreshToken,
-    TGenerateAuthToken, TSaveRefreshToken,
+    TGenerateAuthToken, TGenerateRefreshTokenCookie, TRefreshAuthSession, TSaveRefreshToken,
     TVerifyAuthToken,
 } from "./auth.core.contracts.js";
 import type {IMongoRepoWithDocMapper, TDateIsNotPassed} from "@sh3pherd/shared-utils";
 import type {Collection} from "mongodb";
 import type {
     TRefreshToken,
-    TRefreshTokenDomainModel, TRevokeRefreshTokenResult
+    TRefreshTokenDomainModel, TRevokeRefreshTokenResult, TSecureCookieConfig
 } from "./auth.domain.tokens.js";
 import type {TAuthConfig} from "./auth.domain.config.js";
 import type {TUserId} from "../user/index.js";
@@ -19,9 +19,10 @@ export interface IRefreshTokenRepository {
     saveRefreshToken: TSaveRefreshToken;
     findRefreshToken: TFindRefreshToken;
     deleteRefreshToken: TDeleteRefreshToken;
+    deleteAllRefreshTokensForUser: TDeleteAllRefreshTokensForUser;
 }
 
-export interface IRefreshTokenMongoRepositoryDeps extends IMongoRepoWithDocMapper {
+export interface IRefreshTokenMongoRepositoryDeps {
     refreshTokenCollection: Collection<TRefreshTokenDomainModel>;
 }
 
@@ -66,7 +67,9 @@ export interface IAbstractAuthTokenManager {
 export type TAuthTokenServiceFactory = (deps: {
     saveRefreshTokenFn: TSaveRefreshToken;
     deleteRefreshTokenFn: TDeleteRefreshToken;
-    authConfig: TAuthConfig
+    deleteAllRefreshTokensForUserFn: TDeleteAllRefreshTokensForUser;
+    authConfig: TAuthConfig,
+    secureCookieConfig: TSecureCookieConfig;
 }) => IAuthTokenService;
 
 
@@ -76,6 +79,8 @@ export type TAuthTokenServiceDeps = {
     verifyAuthTokenFn: TVerifyAuthToken;
     verifyRefreshTokenFn: TVerifyRefreshToken;
     revokeRefreshTokenFn: TRevokeRefreshToken;
+    deleteAllRefreshTokensForUserFn: TDeleteAllRefreshTokensForUser;
+    secureCookieConfig: TSecureCookieConfig;
 }
 
 export interface IAuthTokenService {
@@ -83,6 +88,8 @@ export interface IAuthTokenService {
      * Creates a full auth session with access & refresh tokens
      */
     createAuthSession: TCreateAuthSession;
+
+    refreshAuthSession: TRefreshAuthSession;
 
     /**
      * Verifies access token and returns payload
@@ -98,4 +105,9 @@ export interface IAuthTokenService {
      * Revokes a refresh token
      */
     revokeRefreshToken: TRevokeRefreshToken;
+
+    /**
+     * Generates a secure cookie for the refresh token
+     */
+    generateRefreshTokenCookie: TGenerateRefreshTokenCookie;
 }

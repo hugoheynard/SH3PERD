@@ -2,8 +2,9 @@
 import type {TUserId} from "../user/index.js";
 import type {
     TAuthTokenPayload,
+    TCreateAuthSessionResult,
     TRefreshToken,
-    TRefreshTokenDomainModel,
+    TRefreshTokenDomainModel, TRefreshTokenSecureCookie,
     TRevokeRefreshTokenResult
 } from "./auth.domain.tokens.js";
 
@@ -26,11 +27,20 @@ export type TVerifyAuthToken = (input: { token: string }) => Promise<TAuthTokenP
 export type TSaveRefreshToken = (input: { refreshTokenDomainModel: TRefreshTokenDomainModel }) => Promise<{ success: boolean }>;
 export type TFindRefreshToken = (input: { refreshToken: TRefreshToken }) => Promise<TRefreshTokenDomainModel | null>;
 export type TDeleteRefreshToken = (input: { refreshToken: TRefreshToken }) => Promise<TRevokeRefreshTokenResult>;
+export type TDeleteAllRefreshTokensForUser = (input: { user_id: TUserId }) => Promise<{ deletedCount: number }>;
 
-export type TCreateAuthSession = (input: { user_id: TUserId }) => Promise<{
-    authToken: string;
-    refreshToken: TRefreshToken
-}>
+
+//AuthTokenService Functions
+
+
+export type TCreateAuthSession = (input: { user_id: TUserId }) => Promise<TCreateAuthSessionResult>
+
+export type TRefreshAuthSession = (input: { refreshTokenDomainModel: TRefreshTokenDomainModel }) => Promise<TCreateAuthSessionResult>;
+
+export type TGenerateRefreshTokenCookie = (input: {
+    refreshToken: TRefreshToken;
+    customPath?: string;
+})=> TRefreshTokenSecureCookie;
 
 
 
