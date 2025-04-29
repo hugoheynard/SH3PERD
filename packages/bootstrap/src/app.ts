@@ -28,7 +28,7 @@ async function startApp(): Promise<void> {
         const useCases: any = initUseCases({ services, repositories });
         const controllers: any = initControllers({ useCases });
         const app: Express = express();
-        initRoutes(app, { controllers });
+        await initRoutes(app, { controllers });
         await startServer({ app, port: process.env.PORT });
 
 

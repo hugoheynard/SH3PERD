@@ -16,7 +16,7 @@ export interface AppControllers {
     [key: string]: any;
 }
 
-export const initControllers = (input: { useCases: any }): AppControllers => {
+export const initControllers = (input: { useCases: any }): any => {
     const { auth } = input.useCases;
 
     try {
@@ -25,10 +25,13 @@ export const initControllers = (input: { useCases: any }): AppControllers => {
             register: new RegisterController({
                 registerUserUseCase: auth.registerUserUseCase,
             }),
+            /*
             auth: new AuthController({
                 loginUseCase: auth.loginUseCase,
                 logoutUseCase: {}
             }),
+
+             */
 
 /*
             authenticationController: authenticationController({ authenticationService: services.authenticationService }),

@@ -1,5 +1,5 @@
 // Entry point for @sh3pherd/token-manager
 
-export * from "./JwtAuthTokenManager";
-export * from "./RefreshTokenManager";
+export * from "./JwtAuthTokenManager.js";
+export * from "./RefreshTokenManager.js";
 

@@ -1,4 +1,4 @@
-import type {Bcrypt_Options, IHasherConfigObject} from "../../types/Interfaces";
+import type {Bcrypt_Options, IHasherConfigObject} from "../../types/Interfaces.js";
 
 export const bcryptHasher_config_v1: IHasherConfigObject<Bcrypt_Options> = {
     library: 'bcrypt',

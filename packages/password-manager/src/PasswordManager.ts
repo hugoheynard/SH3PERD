@@ -2,11 +2,12 @@ import type {
     IHasherStrategy, IPasswordManager,
     IPasswordManagerInput, THashParserFunction,
     TVerifyLastHashDateFunction
-} from "./types/Interfaces";
+} from "./types/Interfaces.js";
 import type {TComparePasswordResult} from "@sh3pherd/shared-types";
+import {autoBind} from "@sh3pherd/shared-utils";
 
 
-
+@autoBind
 export class PasswordManager implements IPasswordManager {
     private readonly registry: Record<string, IHasherStrategy>;
     private readonly currentStrategyKey: string;

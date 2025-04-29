@@ -1,4 +1,4 @@
-import {HashParser} from "../HashParser";
+import {HashParser} from "../HashParser.js";
 
 
 describe('HashParser', () => {

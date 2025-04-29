@@ -3,7 +3,7 @@ import {createRegisterUserUseCase} from "./createRegisterUserUseCase.js";
 import {createLoginUseCase} from "./createLoginUseCase.js";
 
 
-export const createAuthRegisterUseCases = (deps) => {
+export const createAuthRegisterUseCases = (deps: any) => {
     const {
         findUserByEmailFn,
         hashPasswordFn,

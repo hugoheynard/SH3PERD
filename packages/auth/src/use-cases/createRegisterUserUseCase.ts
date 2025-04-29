@@ -1,26 +1,31 @@
 import type {TRegisterUserUseCaseFactory} from "@sh3pherd/shared-types";
+import {BusinessError, TechnicalError} from "@sh3pherd/shared-utils";
 
 
-export const createRegisterUserUseCase: TRegisterUserUseCaseFactory = (deps) => async (request) => {
-    const { findUserByEmailFn, hashPasswordFn, createUserFn, saveUserFn, generateUserIdFn } = deps;
+export const createRegisterUserUseCase: TRegisterUserUseCaseFactory = (deps) => {
 
-    const existing = await findUserByEmailFn({ email: request.email });
+    return async (request) => {
+        const { findUserByEmailFn, hashPasswordFn, createUserFn, saveUserFn, generateUserIdFn } = deps;
 
-    if (existing) {
-        throw new Error('Email already in use');
-    }
+        const existing = await findUserByEmailFn({ email: request.email });
 
-    const user = createUserFn({
-        user_id: generateUserIdFn(),
-        email: request.email,
-        password: await hashPasswordFn({ password: request.password }),
-    });
+        if (existing) {
+            throw new BusinessError('Email already in use', 'USER_ALREADY_EXISTS', 409);
+        }
 
-    const saveResult = await saveUserFn({ user });
+        const user = createUserFn({
+            user_id: generateUserIdFn(),
+            email: request.email,
+            password: await hashPasswordFn({ password: request.password }),
+        });
 
-    if (!saveResult) {
-        throw new Error('Failed to save user');
-    }
+        const saveResult = await saveUserFn({ user });
 
-    return user;
+        if (!saveResult) {
+            throw new TechnicalError('Failed to save user', 'USER_CREATION_FAILED', 500);
+        }
+
+        return user;
+    };
+
 };

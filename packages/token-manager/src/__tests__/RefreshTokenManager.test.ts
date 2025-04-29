@@ -7,7 +7,7 @@ import type {
     TSaveRefreshToken,
     TUserId
 } from "@sh3pherd/shared-types";
-import {RefreshTokenManager} from "../RefreshTokenManager";
+import {RefreshTokenManager} from "../RefreshTokenManager.js";
 
 
 describe('RefreshTokenManager', () => {

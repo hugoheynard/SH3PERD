@@ -1,6 +1,6 @@
-import type {TCreateUser, TFindUserByEmail, TSaveUser, TUserId} from "../user";
 import type {TRefreshToken} from "./auth.domain.tokens.js";
 import type {TComparePassword, TCreateAuthSession, THashPassword} from "./auth.core.contracts.js";
+import type {TCreateUser, TFindUserByEmail, TSaveUser, TUserId} from "../user/index.js";
 
 /**
  * Login Use Case Types

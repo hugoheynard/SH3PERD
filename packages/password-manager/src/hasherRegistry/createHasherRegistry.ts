@@ -1,8 +1,8 @@
-import type {IHasherStrategy, IHashParser} from "../types/Interfaces";
-import {Argon2Hasher} from "../strategies/Argon2Hasher";
-import {argon2Hasher_config_v1} from "./configObjects/argon2Hasher_configObjects";
-import {BcryptHasher} from "../strategies/BcryptHasher";
-import {bcryptHasher_config_v1} from "./configObjects/bcrypt_configObjects";
+import type {IHasherStrategy, IHashParser} from "../types/Interfaces.js";
+import {Argon2Hasher} from "../strategies/Argon2Hasher.js";
+import {argon2Hasher_config_v1} from "./configObjects/argon2Hasher_configObjects.js";
+import {BcryptHasher} from "../strategies/BcryptHasher.js";
+import {bcryptHasher_config_v1} from "./configObjects/bcrypt_configObjects.js";
 
 
 /**

@@ -1,4 +1,4 @@
-import type {ICompareResult_copy, IHasherConfigObject, IHasherStrategy, IHashParser} from "../types/Interfaces";
+import type {ICompareResult_copy, IHasherConfigObject, IHasherStrategy, IHashParser} from "../types/Interfaces.js";
 
 
 export abstract class BaseHasherStrategy<TOptions> implements IHasherStrategy {

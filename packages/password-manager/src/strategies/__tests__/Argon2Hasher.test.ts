@@ -1,8 +1,8 @@
 import argon2 from 'argon2';
 
 
-import type {IArgon2_Options, IHasherConfigObject, IHashParser, TAlgoLibs, TAlgorithms} from '../../types/Interfaces';
-import { Argon2Hasher } from '../Argon2Hasher';
+import type {IArgon2_Options, IHasherConfigObject, IHashParser, TAlgoLibs, TAlgorithms} from '../../types/Interfaces.js';
+import { Argon2Hasher } from '../Argon2Hasher.js';
 
 // 🧪 Parser réel utilisé dans la stratégie
 const HashParser: IHashParser = {

@@ -9,7 +9,8 @@
   "types": "dist/index.d.ts",
   "private": true,
   "scripts": {
-    "dev:watch": "concurrently -k -n RUN,TYPECHECK -c green,blue \"tsx watch src/app.ts\" \"tsc --noEmit --watch\"",
+    "dev:watch": "concurrently -k -n BUILD,RUN,TYPECHECK -c yellow,green,blue \"tsc -b --watch\" \"tsx watch src/app.ts\" \"tsc --noEmit --watch --preserveWatchOutput\"",
+    "predev:watch": "find . -name '*.tsbuildinfo' -delete",
     "build": "tsc -b tsconfig.json",
     "test": "jest",
     "clean": "find . \\( -type d -name dist -o -name .turbo -o -name .cache \\) -exec rm -rf {} + && find . -type f -name '*.tsbuildinfo' -delete"

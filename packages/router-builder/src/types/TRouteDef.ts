@@ -1,5 +1,5 @@
-import type {TMiddlewareEntry} from './types.js';
-import type {RouteMap} from './defineRoutes.js';
+import type {RouteMap, TMiddlewareEntry} from './types.js';
+
 
 export type DeclarativeFactoryResult = {
     mw?: TMiddlewareEntry[];

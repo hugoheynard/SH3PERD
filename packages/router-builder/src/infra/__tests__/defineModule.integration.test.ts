@@ -27,8 +27,13 @@ describe("defineModule", () => {
             if (isDeclarativeFactoryResult(factoryResult)) {
                 const route = factoryResult.routes["get:/"];
                 expect(route).toBeDefined();
-                expect(route).toHaveLength(1);
-                expect(route?.[0]).toBe(handler);
+
+                if (Array.isArray(route)) {
+                    expect(route).toHaveLength(1);
+                    expect(route?.[0]).toBe(handler);
+                }
+
+
             }
         });
     });
@@ -60,9 +65,16 @@ describe("defineModule", () => {
             expect(isDeclarativeFactoryResult(factoryResult)).toBe(true);
 
             if (isDeclarativeFactoryResult(factoryResult)) {
-                expect(factoryResult.routes).toBeDefined();
-                expect(factoryResult.routes["get:/"]).toHaveLength(2);
-                expect(factoryResult.routes["get:/"][1]).toBe(injectedService.listUsers);
+                const routeEntry = factoryResult.routes["get:/"];
+
+                expect(routeEntry).toBeDefined();
+
+                if (Array.isArray(routeEntry)) {
+                    expect(routeEntry).toHaveLength(2);
+                    expect(routeEntry[1]).toBe(injectedService.listUsers);
+                } else {
+                    throw new Error("Expected array of middlewares+handler, got single handler instead.");
+                }
             }
         });
 

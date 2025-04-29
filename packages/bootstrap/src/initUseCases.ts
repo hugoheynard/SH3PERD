@@ -16,7 +16,7 @@ export const initUseCases = (input: { services: any; repositories: any }): any =
               comparePasswordFn: passwordManager.comparePassword,
               createUserFn: createUserDomainModel,
               saveUserFn: userRepository.saveUser,
-              generateUserIdFn: generateTypedId('user'),
+              generateUserIdFn: () => generateTypedId('user'),
               createAuthSessionFn: authTokenService.createAuthSession
           }),
       };

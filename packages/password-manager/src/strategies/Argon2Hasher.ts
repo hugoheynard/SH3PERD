@@ -1,6 +1,6 @@
 import argon2 from "argon2";
-import { BaseHasherStrategy } from "./BaseHasherStrategy";
-import type {IArgon2_Options, ICompareResult_copy, IHasherConfigObject, IHashParser} from "../types/Interfaces";
+import { BaseHasherStrategy } from "./BaseHasherStrategy.js";
+import type {IArgon2_Options, ICompareResult_copy, IHasherConfigObject, IHashParser} from "../types/Interfaces.js";
 
 /**
  * Argon2Hasher

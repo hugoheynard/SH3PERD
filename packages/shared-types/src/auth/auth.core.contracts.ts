@@ -1,10 +1,11 @@
+
+import type {TUserId} from "../user/index.js";
 import type {
     TAuthTokenPayload,
     TRefreshToken,
     TRefreshTokenDomainModel,
     TRevokeRefreshTokenResult
 } from "./auth.domain.tokens.js";
-import type {TUserId} from "../user.js";
 
 //Password
 export type TComparePasswordResult = {

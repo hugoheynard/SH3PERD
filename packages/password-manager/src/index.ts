@@ -1,7 +1,7 @@
-import {PasswordManager} from "./PasswordManager";
-import {HashParser} from "./utils/HashParser";
-import {createHasherRegistry} from "./hasherRegistry/createHasherRegistry";
-import {isRehashDueFromLastHashDate} from "./utils/isRehashDueFromLastHashDate";
+import {PasswordManager} from "./PasswordManager.js";
+import {HashParser} from "./utils/HashParser.js";
+import {createHasherRegistry} from "./hasherRegistry/createHasherRegistry.js";
+import {isRehashDueFromLastHashDate} from "./utils/isRehashDueFromLastHashDate.js";
 
 
 // @sh3pherd/password-manager

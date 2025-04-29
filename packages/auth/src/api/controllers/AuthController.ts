@@ -1,8 +1,8 @@
 import type {NextFunction, Request, Response} from "express";
-import {withErrorHandler} from "@sh3pherd/shared-utils";
+import {autoBind, withErrorHandler} from "@sh3pherd/shared-utils";
 import type {IAuthController, TAuthControllerDeps} from "@sh3pherd/shared-types";
 
-
+@autoBind
 export class AuthController implements IAuthController {
     private readonly deps: TAuthControllerDeps
 
@@ -23,7 +23,7 @@ export class AuthController implements IAuthController {
      * @param _next
      */
     @withErrorHandler
-    public async login(req, res, _next) {
+    public async login(req: Request, res: Response, _next: NextFunction): Promise<void> {
         res.status(200).json(await this.deps.loginUseCase({
             email: req.body.email,
             password: req.body.password,

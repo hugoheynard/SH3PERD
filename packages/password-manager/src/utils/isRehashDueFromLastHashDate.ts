@@ -1,4 +1,4 @@
-import type {TVerifyLastHashDateFunction} from "../types/Interfaces";
+import type {TVerifyLastHashDateFunction} from "../types/Interfaces.js";
 
 
 /**

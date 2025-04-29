@@ -13,6 +13,6 @@
     { "path": "../shared-utils" },
     { "path": "../password-manager" },
     { "path": "../auth" },
-    { "path": "../user" }
+    { "path": "../user" },
   ]
 }

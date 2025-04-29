@@ -1,5 +1,4 @@
 import type {RequestHandler, Router} from 'express';
-import type {MethodAndPath} from "../utils/declarative/defineRoutes.js";
 import type {DeclarativeFactoryResult} from "./TRouteDef.js";
 
 export type THttpMethod =

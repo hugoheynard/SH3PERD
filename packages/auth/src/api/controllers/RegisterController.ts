@@ -1,8 +1,8 @@
 import type {NextFunction, Request, Response} from "express";
 import type {IRegisterController, TRegisterControllerDeps} from "@sh3pherd/shared-types";
-import {withErrorHandler} from "@sh3pherd/shared-utils";
+import {autoBind, withErrorHandler} from "@sh3pherd/shared-utils";
 
-
+@autoBind
 export class RegisterController implements IRegisterController {
     private readonly deps: TRegisterControllerDeps;
 

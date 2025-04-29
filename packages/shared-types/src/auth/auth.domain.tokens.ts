@@ -1,5 +1,5 @@
 import type {KeyObject} from "crypto";
-import type {TUserId} from "../user";
+import type {TUserId} from "../user/index.js";
 
 
 export type TRefreshToken = `refreshToken_${string}`;

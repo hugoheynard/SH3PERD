@@ -1,4 +1,4 @@
-import {JwtAuthTokenManager} from "../JwtAuthTokenManager";
+import {JwtAuthTokenManager} from "../JwtAuthTokenManager.js";
 import type {TAuthTokenManagerOptions, TAuthTokenPayload} from "@sh3pherd/shared-types";
 
 

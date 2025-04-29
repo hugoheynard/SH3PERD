@@ -4,8 +4,8 @@ import type {
     IHashParser,
     TAlgoLibs,
     TAlgorithms
-} from "../../types/Interfaces";
-import {BaseHasherStrategy} from "../BaseHasherStrategy";
+} from "../../types/Interfaces.js";
+import {BaseHasherStrategy} from "../BaseHasherStrategy.js";
 
 
 describe("BaseHasherStrategy", () => {

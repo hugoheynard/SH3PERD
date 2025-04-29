@@ -1,22 +1,24 @@
-import type {Express} from "express";
+import type {Express, NextFunction, Request, Response} from "express";
 import express from "express"
 import cors from "cors";
 import {errorCatcherMw_simple, notFound_404_Handler} from "@sh3pherd/shared-utils";
-//import {createAuthRouter, createRegisterRouter} from "@sh3pherd/auth";
+import {createAuthRouter} from "@sh3pherd/auth";
 
 
 
-export const initRoutes = (app: Express, { controllers } : any): Express => {
+export const initRoutes = async (app: Express, { controllers } : any): Promise<Express> => {
     try {
+        const { register } = controllers;
+
         // middlewares
         app.use(cors());
         app.use(express.json());
 
         //Routers
-        /*app.use('/register', createRegisterRouter({registerController: controllers.registerController,
+        app.use('/api', await createAuthRouter({
+            registerUserCtrl: register.registerUser
         }));
 
-        app.use('/auth',createAuthRouter({ authController: controllers.authController }));*/
 
 
 

@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
-import {BaseHasherStrategy} from "./BaseHasherStrategy";
-import type {Bcrypt_Options, ICompareResult_copy, IHasherConfigObject, IHashParser} from "../types/Interfaces";
+import {BaseHasherStrategy} from "./BaseHasherStrategy.js";
+import type {Bcrypt_Options, ICompareResult_copy, IHasherConfigObject, IHashParser} from "../types/Interfaces.js";
 
 
 /**

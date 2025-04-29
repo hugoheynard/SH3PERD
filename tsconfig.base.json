@@ -25,6 +25,12 @@
       "@sh3pherd/*": ["packages/*/src"]
     }
   },
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__"
+  ],
   "references": [
     { "path": "../shared-types"},
     { "path": "../shared-utils"},

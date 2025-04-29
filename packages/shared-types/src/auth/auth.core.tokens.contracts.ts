@@ -11,8 +11,8 @@ import type {
     TRefreshToken,
     TRefreshTokenDomainModel, TRevokeRefreshTokenResult
 } from "./auth.domain.tokens.js";
-import type {TUserId} from "../user";
 import type {TAuthConfig} from "./auth.domain.config.js";
+import type {TUserId} from "../user/index.js";
 
 
 export interface IRefreshTokenRepository {

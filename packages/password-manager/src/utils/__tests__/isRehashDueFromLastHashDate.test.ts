@@ -1,4 +1,4 @@
-import {isRehashDueFromLastHashDate} from "../isRehashDueFromLastHashDate";
+import {isRehashDueFromLastHashDate} from "../isRehashDueFromLastHashDate.js";
 
 
 describe('isLastHashDateValid', () => {
