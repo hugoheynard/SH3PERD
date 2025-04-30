@@ -13,10 +13,15 @@ export type TLoginRouterDeps = {
     loginUserCtrl: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 }
 
+export type TRefreshRouterDeps = {
+    refreshAuthSessionCtrl: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+}
+
 
 export const createAuthRouter = async (deps: {
     registerUserCtrl: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     loginUserCtrl: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    refreshAuthSessionCtrl: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 }): Promise<Router> => {
 
     const registerModule = Rider.def<TRegisterRouterDeps>({
@@ -37,8 +42,16 @@ export const createAuthRouter = async (deps: {
             validateCredentialsInputMw: validateCredentialsInput
         },
         routes: ({ loginUserCtrl, validateCredentialsInputMw }) => ({
-            "post:/": [validateCredentialsInputMw, loginUserCtrl],
+            "post:/": [validateCredentialsInputMw, loginUserCtrl]
         }),
+    });
+
+    const refreshModule = Rider.def<TRefreshRouterDeps>({
+        path: "/refresh",
+        inject: { refreshAuthSessionCtrl: deps.refreshAuthSessionCtrl},
+        route: ({ refreshAuthSessionCtrl }) => ({
+            "post:/": refreshAuthSessionCtrl
+        })
     });
 
 
@@ -47,7 +60,7 @@ export const createAuthRouter = async (deps: {
                 Rider.def({
                     path: "/auth",
                     inject: {},
-                    children: [registerModule, loginModule]
+                    children: [registerModule, loginModule, refreshModule]
                 })]
         });
 }

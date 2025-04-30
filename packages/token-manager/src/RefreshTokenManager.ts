@@ -35,7 +35,11 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
             const newRefreshToken = await this.deps.generatorFn();
 
             if (!newRefreshToken) {
-                throw new Error("Failed to generate refresh token - generator function returned null");
+                throw new TechnicalError(
+                    "Failed to generate refresh token - generator function returned null",
+                    "REFRESH_TOKEN_GENERATION_FAILED",
+                    500
+                );
             }
 
             const record: TRefreshTokenDomainModel = {

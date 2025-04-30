@@ -2,4 +2,5 @@
 
 export * from './auth/index.js';
 export * from './user/index.js';
+export * from './express/extendExpress.js';
 

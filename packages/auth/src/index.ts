@@ -15,5 +15,6 @@ export * from './api/controllers/AuthController.js';
 export * from './use-cases/createAuthUseCases.js';
 
 export * from './api/routes/createAuthRouter.js';
+export * from './api/middlewares/verifyAuthToken.js';
 
 

@@ -13,7 +13,7 @@ export type TRefreshTokenDomainModel = {
 
 
 export type TAuthTokenPayload = {
-    user_id: string;
+    user_id: TUserId;
 }
 
 export type TAuthTokenManagerOptions = {

@@ -16,8 +16,8 @@ import type {TUserId} from "../user/index.js";
 
 
 export interface IRefreshTokenRepository {
-    saveRefreshToken: TSaveRefreshToken;
     findRefreshToken: TFindRefreshToken;
+    saveRefreshToken: TSaveRefreshToken;
     deleteRefreshToken: TDeleteRefreshToken;
     deleteAllRefreshTokensForUser: TDeleteAllRefreshTokensForUser;
 }
@@ -65,6 +65,7 @@ export interface IAbstractAuthTokenManager {
  * AuthTokenService is responsible for managing authentication tokens,
  */
 export type TAuthTokenServiceFactory = (deps: {
+    findRefreshTokenFn: TFindRefreshToken;
     saveRefreshTokenFn: TSaveRefreshToken;
     deleteRefreshTokenFn: TDeleteRefreshToken;
     deleteAllRefreshTokensForUserFn: TDeleteAllRefreshTokensForUser;
@@ -76,6 +77,7 @@ export type TAuthTokenServiceFactory = (deps: {
 export type TAuthTokenServiceDeps = {
     generateAuthTokenFn: TGenerateAuthToken;
     generateRefreshTokenFn: TGenerateRefreshToken;
+    findRefreshTokenFn: TFindRefreshToken;
     verifyAuthTokenFn: TVerifyAuthToken;
     verifyRefreshTokenFn: TVerifyRefreshToken;
     revokeRefreshTokenFn: TRevokeRefreshToken;
@@ -99,7 +101,7 @@ export interface IAuthTokenService {
     /**
      * Verifies refresh token and returns boolean validity
      */
-    verifyRefreshToken: TVerifyRefreshToken;
+    findAndVerifyRefreshToken: (input: { refreshToken: TRefreshToken }) => Promise<boolean>;
 
     /**
      * Revokes a refresh token

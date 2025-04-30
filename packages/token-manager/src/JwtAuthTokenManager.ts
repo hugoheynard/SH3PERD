@@ -54,13 +54,18 @@ export class JwtAuthTokenManager implements IAbstractAuthTokenManager{
      * @param input - Object containing the JWT string to verify.
      * @returns The decoded payload if valid, or throws if invalid/expired.
      */
-    verifyAuthToken: TVerifyAuthToken = async (input) =>{
-        const { token } = input;
+    verifyAuthToken: TVerifyAuthToken = async (input) => {
+        try {
+            const { authToken } = input;
 
-        const payload = jwt.verify(token, this.options.publicKey as string, {
-            algorithms: ['RS256'],
-        });
+            const payload = jwt.verify(authToken, this.options.publicKey as string, {
+                algorithms: ['RS256'],
+            });
 
-        return Promise.resolve(payload as TAuthTokenPayload);
+            return Promise.resolve(payload as TAuthTokenPayload);
+        } catch(error) {
+            console.error("Token verification failed:", error);
+            return null;
+        }
     };
 }

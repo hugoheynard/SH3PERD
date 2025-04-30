@@ -43,6 +43,49 @@ export class AuthController implements IAuthController {
         return;
     };
 
+    /**
+     * refreshSession - Refreshes the user's authentication session.
+     *
+     * This method checks the validity of the current access token and refresh token.
+     * If the access token is invalid or expired, it uses the refresh token to create a new session.
+     *
+     * @param req - The request object containing the current access token in headers and refresh token in cookies
+     * @param res - The response object to send the result
+     * @param _next
+     */
+    @withErrorHandler
+    public async refreshSession(req: Request, res: Response, _next: NextFunction): Promise<void> {
+        const currentAuthToken = req.headers["authorization"]?.split(" ")[1];
+        const currentRefreshToken = req.cookies["refreshToken"];
+
+        const { user_id, refreshTokenSecureCookie, authToken } = await this.deps.verifyAndRefreshUseCase({
+            authToken: currentAuthToken,
+            refreshToken: currentRefreshToken,
+        });
+
+        const isSameAuthToken: boolean = authToken === currentAuthToken;
+        const isSameRefreshToken: boolean = currentRefreshToken === refreshTokenSecureCookie.value;
+
+        if (isSameAuthToken && isSameRefreshToken) {
+            req.user = { user_id };
+            return res.status(200).json({ user_id });
+        }
+
+        res.cookie(
+            refreshTokenSecureCookie.name,
+            refreshTokenSecureCookie.value,
+            refreshTokenSecureCookie.options
+        );
+
+        res.status(200).json({
+            authToken,
+            user_id,
+        });
+
+        return;
+
+    };
+
     @withErrorHandler
     public async logout(req: Request, res: Response, _next: NextFunction): Promise<void> {
         return;

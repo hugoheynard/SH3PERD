@@ -10,6 +10,7 @@ import {initControllers, type AppControllers} from "./initControllers.js";
 import {initRoutes} from "./initRoutes.js";
 import {startServer} from "./startServer.js";
 import {authConfig, secureCookieConfig} from "./config.js";
+import {initGlobalMiddlewares} from "./initGlobalMiddlewares.js";
 
 
 // Load environment variables from .env file
@@ -27,8 +28,9 @@ async function startApp(): Promise<void> {
         const services: any = initServices({ repositories, authConfig, secureCookieConfig });
         const useCases: any = initUseCases({ services, repositories });
         const controllers: any = initControllers({ useCases });
+        const globalMiddlewares: any = initGlobalMiddlewares({ services });
         const app: Express = express();
-        await initRoutes(app, { controllers });
+        await initRoutes(app, { controllers }, { globalMiddlewares });
         await startServer({ app, port: process.env.PORT })
 
 

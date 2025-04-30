@@ -70,14 +70,14 @@ xwIDAQAB
 
     it('should verify and decode a JWT correctly', async () => {
         const token = await manager.generateAuthToken({ payload })
-        const decoded = await manager.verifyAuthToken({ token })
+        const decoded = await manager.verifyAuthToken({ authToken: token })
 
         expect(decoded.user_id).toBe(payload.user_id)
     })
 
     it('should throw error for invalid token', async () => {
         await expect(
-            manager.verifyAuthToken({ token: 'invalid.token.here' })
+            manager.verifyAuthToken({ authToken: 'invalid.token.here' })
         ).rejects.toThrow()
     })
 
@@ -87,7 +87,7 @@ xwIDAQAB
 
         await new Promise(res => setTimeout(res, 2000)); // attendre 2s
 
-        await expect(manager.verifyAuthToken({ token })).rejects.toThrow('jwt expired');
+        await expect(manager.verifyAuthToken({ authToken: token })).rejects.toThrow('jwt expired');
     });
 
 })

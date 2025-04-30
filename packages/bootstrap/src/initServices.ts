@@ -11,6 +11,7 @@ export const initServices = (input: { repositories: any, authConfig: TAuthConfig
     try {
         const services = {
             authTokenService: createAuthTokenService({
+                findRefreshTokenFn: refreshTokenRepository.findRefreshToken,
                 saveRefreshTokenFn: refreshTokenRepository.saveRefreshToken,
                 deleteRefreshTokenFn: refreshTokenRepository.deleteRefreshToken,
                 deleteAllRefreshTokensForUserFn: refreshTokenRepository.deleteAllRefreshTokensForUser,

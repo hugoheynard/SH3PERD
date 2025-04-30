@@ -1,9 +1,8 @@
 import {inject, Injectable, signal} from '@angular/core';
-import {UserLoginInfos} from '../interfaces/userLoginInfos';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {firstValueFrom} from 'rxjs';
+import {catchError, firstValueFrom, map, Observable, of, throwError} from 'rxjs';
 import {TokenService} from './token.service';
-import {LoginResponse} from '../interfaces/login-response';
+import { TLoginRequestDTO, TLoginResponseDTO} from '@sh3pherd/shared-types';
 
 @Injectable({
   providedIn: 'root'
@@ -14,68 +13,77 @@ export class AuthService {
 
   isAuthenticatedSignal = signal(false);
 
-  async autoLog_localStorageCheck() {
-    const token = this.tokenService.getToken();
 
-    if (!token) {
-      return false;
-    }
-
-    const validToken = await this.verifyAuthToken(token);
-
-    if (!validToken) {
-      return false;
-    }
-
-    this.isAuthenticatedSignal.set(true);
-    return true;
-  };
-
-  async verifyAuthToken(token: string){
-    try {
-      const response = await firstValueFrom(
-        this.http.post<Response>(
-          'http://localhost:3000/auth/autoLog',
-          { authToken: token },
-          {
-            headers:
-              new HttpHeaders({ 'Content-Type': 'application/json' }),
-              observe: 'response'
-          }
-        )
-      );
-      return response.ok;
-
-    } catch(e) {
-      console.error('Error in token connexion process', e);
-      return false;
-    }
-  };
-
-  async login(credentials: UserLoginInfos) {
-    try {
-      const response = await firstValueFrom (
-        this.http.post<LoginResponse>(
-          'http://localhost:3000/auth/login',
-          credentials,
-          { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
-        )
-      );
-
-      const { authToken } = response.body
-
-      if (!response.ok && !authToken) {
-        console.error('Connexion failure : invalid response');
-        return false;
+  login(credentials: TLoginRequestDTO): Observable<boolean> {
+    return this.http.post<any>(
+      'http://localhost:3000/api/auth/login',
+      credentials,
+      {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+        withCredentials: true,
+        observe: 'response'
       }
+    ).pipe(
+      map(response => {
+        const body = response.body;
 
-      this.tokenService.setToken(authToken)
-      this.isAuthenticatedSignal.set(true);
+        if (!response.ok || !body?.authToken) {
+          console.error('Connexion failure: invalid response');
+          this.isAuthenticatedSignal.set(false);
+          return false;
+        }
 
-      return true;
-    } catch(e) {
-      console.error('Error in connexion process', e);
-      return false;
+        this.tokenService.setToken(body.authToken);
+        this.isAuthenticatedSignal.set(true);
+        return true;
+      }),
+      catchError(error => {
+        console.error('Error in login process', error);
+        this.isAuthenticatedSignal.set(false);
+        return of(false);
+      })
+    );
+  };
+
+  autoLogin(): Observable<boolean> {
+    return this.refreshSession().pipe(
+      map(token => !!token),
+      catchError(() => of(false))
+    );
+  };
+
+  refreshSession(): Observable<string | null> {
+    console.log('been called')
+    try {
+      return this.http.get<any>(
+        'http://localhost:3000/api/auth/refresh',
+        {
+          headers: new HttpHeaders({'Content-Type': 'application/json'}),
+          withCredentials: true,
+          observe: 'response'
+        }
+      ).pipe(
+        map(response => {
+          const body = response.body;
+
+          if (!response.ok || !body?.authToken) {
+            console.warn('Session refresh failure: invalid response');
+            this.isAuthenticatedSignal.set(false);
+            return null;
+          }
+
+          this.tokenService.setToken(body.authToken);
+          this.isAuthenticatedSignal.set(true);
+          return body.authToken;
+        }),
+        catchError(error => {
+          console.error('Error in session refresh', error);
+          return of(null);
+        })
+      );
+    } catch (e) {
+      console.error('Sync error during refresh', e);
+      return of(null);
     }
   };
 

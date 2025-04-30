@@ -51,34 +51,70 @@ export class RefreshTokenMongoRepository
     };
 
     findRefreshToken: TFindRefreshToken = async (input) => {
-        const { refreshToken } = input;
-        const result = await this.refreshTokenCollection.findOne({ refreshToken: refreshToken });
-        if (!result) return null;
+        try {
+            const { refreshToken } = input;
+            const result = await this.refreshTokenCollection.findOne({ refreshToken: refreshToken });
 
-        return this.mapMongoDocToDomainModel({ doc: result });
+            if (!result) {
+                return null
+            }
+
+            return this.mapMongoDocToDomainModel({ doc: result });
+        } catch (e) {
+            throw new TechnicalError(
+                'Failed to find refresh token',
+                'FIND_REFRESH_TOKEN_FAILED',
+                500
+            )
+        }
     };
 
     deleteRefreshToken: TDeleteRefreshToken = async (input) =>{
-        const { refreshToken } = input;
+        try {
+            const { refreshToken } = input;
 
-        const result = await this.refreshTokenCollection.deleteOne({ refreshToken: refreshToken });
+            const result = await this.refreshTokenCollection.deleteOne({ refreshToken: refreshToken });
 
-        if (result.deletedCount === 0) {
-            throw new BusinessError(
-                `Refresh token ${refreshToken} not found or already revoked`,
-                'REFRESH_TOKEN_NOT_FOUND',
-                404
+            if (result.deletedCount === 0) {
+                throw new BusinessError(
+                    `Refresh token ${refreshToken} not found or already revoked`,
+                    'REFRESH_TOKEN_NOT_FOUND',
+                    404
+                );
+            }
+
+            return { revokedToken: refreshToken};
+        } catch (e) {
+            throw new TechnicalError(
+                'Failed to delete refresh token',
+                'DELETE_REFRESH_TOKEN_FAILED',
+                500
             );
         }
 
-        return { revokedToken: refreshToken};
     };
 
     deleteAllRefreshTokensForUser: TDeleteAllRefreshTokensForUser = async (input) => {
-        const { user_id } = input;
+        try {
+            const { user_id } = input;
 
-        const result = await this.refreshTokenCollection.deleteMany({ user_id: user_id });
+            const result = await this.refreshTokenCollection.deleteMany({ user_id: user_id });
 
-        return { deletedCount: result.deletedCount };
+            if (result.deletedCount === 0) {
+                throw new BusinessError(
+                    `No refresh tokens found for user ${user_id}`,
+                    'NO_REFRESH_TOKENS_FOUND',
+                    404
+                );
+            }
+
+            return { deletedCount: result.deletedCount };
+        } catch (e) {
+            throw new TechnicalError(
+                'Failed to delete refresh tokens for user',
+                'DELETE_REFRESH_TOKENS_FAILED',
+                500
+            );
+        }
     };
 }

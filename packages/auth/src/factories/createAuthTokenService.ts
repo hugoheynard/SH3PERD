@@ -5,7 +5,7 @@ import {AuthTokenService} from "../core/index.js";
 
 
 export const createAuthTokenService: TAuthTokenServiceFactory = (deps) => {
-    const { saveRefreshTokenFn, deleteRefreshTokenFn, deleteAllRefreshTokensForUserFn,  authConfig, secureCookieConfig } = deps;
+    const { findRefreshTokenFn, saveRefreshTokenFn, deleteRefreshTokenFn, deleteAllRefreshTokensForUserFn,  authConfig, secureCookieConfig } = deps;
 
     try {
         const authTokenManager = new JwtAuthTokenManager({
@@ -25,6 +25,7 @@ export const createAuthTokenService: TAuthTokenServiceFactory = (deps) => {
         });
 
         return new AuthTokenService({
+            findRefreshTokenFn: findRefreshTokenFn,
             generateAuthTokenFn: authTokenManager.generateAuthToken,
             generateRefreshTokenFn: refreshTokenManager.generateRefreshToken,
             verifyAuthTokenFn: authTokenManager.verifyAuthToken,

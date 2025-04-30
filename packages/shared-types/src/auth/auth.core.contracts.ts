@@ -20,7 +20,7 @@ export type TComparePassword = (input: { password: string; hashedPassword: strin
 
 //AuthTokenManager Functions
 export type TGenerateAuthToken = (input: { payload: TAuthTokenPayload }) => Promise<string>;
-export type TVerifyAuthToken = (input: { token: string }) => Promise<TAuthTokenPayload>;
+export type TVerifyAuthToken = (input: { authToken: string }) => Promise<TAuthTokenPayload | null>;
 
 
 //RefreshTokenRepository Functions

@@ -6,12 +6,17 @@ import {createAuthRouter} from "@sh3pherd/auth";
 
 
 
-export const initRoutes = async (app: Express, { controllers } : any): Promise<Express> => {
+export const initRoutes = async (app: Express, { controllers } : any, { globalMiddlewares } : any): Promise<Express> => {
     try {
         const { register, auth } = controllers;
+        const { verifyAuthToken } = globalMiddlewares;
+
 
         // middlewares
-        app.use(cors());
+        app.use(cors({
+            origin: 'http://localhost:4200',
+            credentials: true
+        }));
         app.use(express.json());
 
         //Routers

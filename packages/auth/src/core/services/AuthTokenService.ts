@@ -65,7 +65,7 @@ export class AuthTokenService implements IAuthTokenService {
      * @throws If the token is invalid or expired
      */
     public verifyAuthToken: TVerifyAuthToken = async (input) => {
-        return this.deps.verifyAuthTokenFn({ token: input.token });
+        return this.deps.verifyAuthTokenFn({ authToken: input.authToken });
     };
 
     /**
@@ -77,8 +77,10 @@ export class AuthTokenService implements IAuthTokenService {
      * @param input - Object containing the refresh token
      * @returns A boolean indicating whether the token is valid
      */
-    public verifyRefreshToken: TVerifyRefreshToken = (input) => {
-        return this.deps.verifyRefreshTokenFn({ refreshTokenDomainModel: input.refreshTokenDomainModel });
+    public findAndVerifyRefreshToken: TVerifyRefreshToken = async (input) => {
+        const refreshTokenDomainModel = await this.deps.findRefreshTokenFn({ refreshToken: input.refreshToken });
+
+        return this.deps.verifyRefreshTokenFn({ refreshTokenDomainModel });
     };
 
     /**

@@ -5,26 +5,37 @@ import { isPlatformBrowser } from '@angular/common';
   providedIn: 'root'
 })
 export class TokenService {
-  private tokenKey = 'auth_token';
+  private tokenKey: string = 'authToken';
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   setToken(token: string): void {
-    if (isPlatformBrowser(this.platformId)) {
+    try {
       localStorage.setItem(this.tokenKey, token);
+    } catch (e) {
+      console.error('[TokenService] - Failed to write token to localStorage', e);
     }
-  }
+  };
 
   getToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem(this.tokenKey);
+    try {
+      if (isPlatformBrowser(this.platformId)) {
+        return localStorage.getItem(this.tokenKey);
+      }
+      return null;
+    } catch (e) {
+      console.error('[TokenService] - Failed to get token from localStorage', e);
+      return null;
     }
-    return null; // Si on est sur le serveur, renvoyer `null`
-  }
+  };
 
   removeToken(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem(this.tokenKey);
+    try {
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.removeItem(this.tokenKey);
+      }
+    } catch (e) {
+      console.error('[TokenService] - Failed to delete token from localStorage', e);
     }
-  }
+  };
 }

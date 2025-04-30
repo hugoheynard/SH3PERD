@@ -1,24 +1,39 @@
 import {RouterModule, Routes} from '@angular/router';
 import {NgModule} from '@angular/core';
+import {LoginLayoutComponent} from '../../login/loginLayout/loginLayout.component';
+import {LoginComponent} from '../../login/login/login.component';
 import {CalendarComponent} from '../pages/calendar/calendarPage/calendar.component';
-import {LoginComponent} from '../pages/login/login/login.component';
-import {authGuard} from '../auth.guard';
+import {authGuard} from '../../guards/auth.guard';
 import {MusicLibraryComponent} from '../pages/musicLibrary/music-library/music-library.component';
 import {PlaylistManagerComponent} from '../pages/playlists/playlist-manager/playlist-manager.component';
+import {AppComponent} from '../components/app/app.component';
 
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'app/home', component: CalendarComponent, /*canActivate: [authGuard]*/ },
-  { path: 'app/calendar', component: CalendarComponent },
-  { path: 'app/musicLibrary', component: MusicLibraryComponent },
-  { path: 'app/playlistManager', component: PlaylistManagerComponent },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
-    path: 'app/settings',
+    path: 'login',
+    component: LoginLayoutComponent,
+    children: [
+      { path: '', component: LoginComponent }
+    ]
+  },
+  { path: 'app',
+    component: AppComponent,
     canActivate: [authGuard],
-    loadChildren: () => import('../routing/settingsModule')
-      .then(m => m.SettingsModule)},
-  { path: '', redirectTo: 'app/musicLibrary', pathMatch: 'full' }, // Default route
+    children: [
+      { path: 'home', component: CalendarComponent},
+      { path: 'calendar', component: CalendarComponent},
+      { path: 'musicLibrary', component: MusicLibraryComponent },
+      { path: 'playlistManager', component: PlaylistManagerComponent},
+      {
+        path: 'app/settings',
+        canActivate: [authGuard],
+        loadChildren: () => import('../routing/settingsModule')
+          .then(m => m.SettingsModule)},
+    ]
+  },
+  { path: '**', redirectTo: 'login' },
 ];
 
 @NgModule({

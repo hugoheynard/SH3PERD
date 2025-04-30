@@ -24,10 +24,7 @@ describe('RefreshTokenMongoRepository', () => {
     const mockMapDocToDomain = jest.fn((_input: any) => mockTokenRecord);
 
 
-    const repository = new RefreshTokenMongoRepository({
-        refreshTokenCollection: mockCollection,
-        mapMongoDocToDomainModelFn: mockMapDocToDomain as unknown as TmapMongoDocToDomainModelFunction,
-    });
+    const repository = new RefreshTokenMongoRepository({ refreshTokenCollection: mockCollection});
 
 
     beforeEach(() => {

@@ -39,6 +39,7 @@ import {NavlistSettingsComponent} from '../navlist-settings/navlist-settings.com
         NavlistSettingsComponent,
     ],
     templateUrl: './settings.component.html',
+    standalone: true,
     styleUrl: './settings.component.scss'
 })
 export class SettingsComponent {
