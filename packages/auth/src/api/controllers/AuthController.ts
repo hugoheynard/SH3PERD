@@ -24,7 +24,7 @@ export class AuthController implements IAuthController {
      */
     @withErrorHandler
     public async login(req: Request, res: Response, _next: NextFunction): Promise<void> {
-        const { authToken, refreshToken, user_id, refreshTokenSecureCookie } = await this.deps.loginUseCase({
+        const { authToken, user_id, refreshTokenSecureCookie } = await this.deps.loginUseCase({
             email: req.body.email,
             password: req.body.password,
         });
@@ -55,21 +55,13 @@ export class AuthController implements IAuthController {
      */
     @withErrorHandler
     public async refreshSession(req: Request, res: Response, _next: NextFunction): Promise<void> {
-        const currentAuthToken = req.headers["authorization"]?.split(" ")[1];
-        const currentRefreshToken = req.cookies["refreshToken"];
+        const currentRefreshToken = req.cookies['sh3pherd_refreshToken'];
 
-        const { user_id, refreshTokenSecureCookie, authToken } = await this.deps.verifyAndRefreshUseCase({
-            authToken: currentAuthToken,
-            refreshToken: currentRefreshToken,
-        });
-
-        const isSameAuthToken: boolean = authToken === currentAuthToken;
-        const isSameRefreshToken: boolean = currentRefreshToken === refreshTokenSecureCookie.value;
-
-        if (isSameAuthToken && isSameRefreshToken) {
-            req.user = { user_id };
-            return res.status(200).json({ user_id });
-        }
+        const {
+            user_id,
+            refreshTokenSecureCookie,
+            authToken
+        } = await this.deps.refreshSessionUseCase({ refreshToken: currentRefreshToken });
 
         res.cookie(
             refreshTokenSecureCookie.name,
@@ -83,11 +75,23 @@ export class AuthController implements IAuthController {
         });
 
         return;
-
     };
 
     @withErrorHandler
     public async logout(req: Request, res: Response, _next: NextFunction): Promise<void> {
+        // use case deletes the refresh token from the database
+        await this.deps.logoutUseCase({ refreshToken: req.cookies['sh3pherd_refreshToken'] });
+
+        // Clear the refresh token cookie
+        res.clearCookie('sh3pherd_refreshToken', {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax',
+            path: '/'
+        });
+
+        // Send a success response
+        res.status(200).json({ message: 'Logout successful' });
         return;
     };
 }

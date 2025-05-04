@@ -1,8 +1,8 @@
-import type {TRegisterUserUseCaseFactory} from "@sh3pherd/shared-types";
+import type {TRegisterUserUseCase, TRegisterUserUseCaseDeps} from "@sh3pherd/shared-types";
 import {BusinessError, TechnicalError} from "@sh3pherd/shared-utils";
 
 
-export const createRegisterUserUseCase: TRegisterUserUseCaseFactory = (deps) => {
+export const createRegisterUserUseCase = (deps: TRegisterUserUseCaseDeps): TRegisterUserUseCase => {
 
     return async (request) => {
         const { findUserByEmailFn, hashPasswordFn, createUserFn, saveUserFn, generateUserIdFn } = deps;

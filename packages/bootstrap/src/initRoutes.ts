@@ -1,14 +1,15 @@
 import type {Express, NextFunction, Request, Response} from "express";
 import express from "express"
 import cors from "cors";
-import {errorCatcherMw_simple, notFound_404_Handler} from "@sh3pherd/shared-utils";
+import {errorCatcher, errorCatcherMw_simple, notFound_404_Handler} from "@sh3pherd/shared-utils";
 import {createAuthRouter} from "@sh3pherd/auth";
+import cookieParser from "cookie-parser";
 
 
 
 export const initRoutes = async (app: Express, { controllers } : any, { globalMiddlewares } : any): Promise<Express> => {
     try {
-        const { register, auth } = controllers;
+        const { register, authCtrl } = controllers;
         const { verifyAuthToken } = globalMiddlewares;
 
 
@@ -17,12 +18,15 @@ export const initRoutes = async (app: Express, { controllers } : any, { globalMi
             origin: 'http://localhost:4200',
             credentials: true
         }));
+        app.use(cookieParser());
         app.use(express.json());
+
 
         //Routers
         app.use('/api', await createAuthRouter({
             registerUserCtrl: register.registerUser,
-            loginUserCtrl: auth.login
+            loginUserCtrl: authCtrl.login,
+            refreshAuthSessionCtrl: authCtrl.refreshSession
         }));
 
 
@@ -43,16 +47,10 @@ export const initRoutes = async (app: Express, { controllers } : any, { globalMi
 */
         // Error handling
         app.use(notFound_404_Handler);
-        app.use(errorCatcherMw_simple);
+        app.use(errorCatcher);
 
         console.log('✅ initRoutes executed');
-        app._router.stack.forEach((layer: any) => {
-            if (layer.route) {
-                const methods = Object.keys(layer.route.methods).join(', ').toUpperCase();
-                console.log(`📡 ${methods} ${layer.route.path}`);
-            }
-        });
-        console.log('✅ initRoutes executed');
+
         return app;
     } catch (e) {
         console.error('Error during controller routes:', e);

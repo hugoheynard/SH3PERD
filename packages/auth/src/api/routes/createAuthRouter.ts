@@ -18,6 +18,8 @@ export type TRefreshRouterDeps = {
 }
 
 
+
+
 export const createAuthRouter = async (deps: {
     registerUserCtrl: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     loginUserCtrl: (req: Request, res: Response, next: NextFunction) => Promise<void>;
@@ -49,8 +51,8 @@ export const createAuthRouter = async (deps: {
     const refreshModule = Rider.def<TRefreshRouterDeps>({
         path: "/refresh",
         inject: { refreshAuthSessionCtrl: deps.refreshAuthSessionCtrl},
-        route: ({ refreshAuthSessionCtrl }) => ({
-            "post:/": refreshAuthSessionCtrl
+        routes: ({ refreshAuthSessionCtrl }) => ({
+            "post:/": [refreshAuthSessionCtrl]
         })
     });
 

@@ -1,15 +1,23 @@
 import type {
-    TCreateAuthSession, TDeleteAllRefreshTokensForUser,
+    TCreateAuthSession,
+    TDeleteAllRefreshTokensForUser,
     TDeleteRefreshToken,
+    TFindAndVerifyRefreshToken,
     TFindRefreshToken,
-    TGenerateAuthToken, TGenerateRefreshTokenCookie, TRefreshAuthSession, TSaveRefreshToken,
+    TGenerateAuthToken,
+    TGenerateRefreshTokenCookie,
+    TRefreshAuthSession,
+    TSaveRefreshToken,
     TVerifyAuthToken,
 } from "./auth.core.contracts.js";
-import type {IMongoRepoWithDocMapper, TDateIsNotPassed} from "@sh3pherd/shared-utils";
+import type {TDateIsNotPassed} from "@sh3pherd/shared-utils";
 import type {Collection} from "mongodb";
 import type {
     TRefreshToken,
-    TRefreshTokenDomainModel, TRevokeRefreshTokenResult, TSecureCookieConfig
+    TRefreshTokenDomainModel,
+    TRefreshTokenSecureCookie,
+    TRevokeRefreshTokenResult,
+    TSecureCookieConfig
 } from "./auth.domain.tokens.js";
 import type {TAuthConfig} from "./auth.domain.config.js";
 import type {TUserId} from "../user/index.js";
@@ -53,9 +61,8 @@ export type TRefreshTokenManagerDeps = {
 };
 
 /**
-    * AuthTokenManager handles the lifecycle of auth tokens,
+ * AuthTokenManager handles the lifecycle of auth tokens,
  */
-
 export interface IAbstractAuthTokenManager {
     generateAuthToken: TGenerateAuthToken;
     verifyAuthToken: TVerifyAuthToken;
@@ -64,6 +71,12 @@ export interface IAbstractAuthTokenManager {
 /**
  * AuthTokenService is responsible for managing authentication tokens,
  */
+export type TAuthSessionResult = {
+    authToken: string;
+    user_id: TUserId;
+    refreshTokenSecureCookie: TRefreshTokenSecureCookie;
+}
+
 export type TAuthTokenServiceFactory = (deps: {
     findRefreshTokenFn: TFindRefreshToken;
     saveRefreshTokenFn: TSaveRefreshToken;
@@ -86,30 +99,8 @@ export type TAuthTokenServiceDeps = {
 }
 
 export interface IAuthTokenService {
-    /**
-     * Creates a full auth session with access & refresh tokens
-     */
     createAuthSession: TCreateAuthSession;
-
-    refreshAuthSession: TRefreshAuthSession;
-
-    /**
-     * Verifies access token and returns payload
-     */
     verifyAuthToken: TVerifyAuthToken;
-
-    /**
-     * Verifies refresh token and returns boolean validity
-     */
-    findAndVerifyRefreshToken: (input: { refreshToken: TRefreshToken }) => Promise<boolean>;
-
-    /**
-     * Revokes a refresh token
-     */
     revokeRefreshToken: TRevokeRefreshToken;
-
-    /**
-     * Generates a secure cookie for the refresh token
-     */
     generateRefreshTokenCookie: TGenerateRefreshTokenCookie;
 }

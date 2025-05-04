@@ -1,4 +1,4 @@
-import type { TLoginUseCaseFactory } from "@sh3pherd/shared-types";
+import type {TLoginUseCase, TLoginUseCaseDeps } from "@sh3pherd/shared-types";
 import {BusinessError} from "@sh3pherd/shared-utils";
 
 /**
@@ -22,14 +22,14 @@ import {BusinessError} from "@sh3pherd/shared-utils";
  * const useCase = loginUseCase({ findUserByEmailFn, comparePasswordFn, createAuthSessionFn });
  * const result = await useCase({ email: 'a@test.com', password: 'secret' });
  */
-export const createLoginUseCase: TLoginUseCaseFactory = (deps) =>
+export const createLoginUseCase = (deps: TLoginUseCaseDeps): TLoginUseCase =>
 
     async (request) => {
         const { email, password } = request;
 
         const user = await deps.findUserByEmailFn({ email });
         if (!user) {
-            throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 401);
+            throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 400);
         }
 
         const { isValid } = await deps.comparePasswordFn({
@@ -37,14 +37,13 @@ export const createLoginUseCase: TLoginUseCaseFactory = (deps) =>
             hashedPassword: user.password
         });
         if (!isValid) {
-            throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 401);
+            throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 400);
         }
 
         const session = await deps.createAuthSessionFn({ user_id: user.user_id });
 
         return {
             authToken: session.authToken,
-            refreshToken: session.refreshToken,
             user_id: user.user_id,
             refreshTokenSecureCookie: session.refreshTokenSecureCookie,
         };

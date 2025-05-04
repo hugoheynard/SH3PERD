@@ -24,10 +24,10 @@ export type TVerifyAuthToken = (input: { authToken: string }) => Promise<TAuthTo
 
 
 //RefreshTokenRepository Functions
-export type TSaveRefreshToken = (input: { refreshTokenDomainModel: TRefreshTokenDomainModel }) => Promise<{ success: boolean }>;
+export type TSaveRefreshToken = (input: { refreshTokenDomainModel: TRefreshTokenDomainModel }) => Promise<boolean>;
 export type TFindRefreshToken = (input: { refreshToken: TRefreshToken }) => Promise<TRefreshTokenDomainModel | null>;
 export type TDeleteRefreshToken = (input: { refreshToken: TRefreshToken }) => Promise<TRevokeRefreshTokenResult>;
-export type TDeleteAllRefreshTokensForUser = (input: { user_id: TUserId }) => Promise<{ deletedCount: number }>;
+export type TDeleteAllRefreshTokensForUser = (input: { user_id: TUserId }) => Promise<boolean>;
 
 
 //AuthTokenService Functions
@@ -43,5 +43,5 @@ export type TGenerateRefreshTokenCookie = (input: {
 })=> TRefreshTokenSecureCookie;
 
 
-
+export type TFindAndVerifyRefreshToken = (input: { refreshToken: TRefreshToken }) => Promise<{  isValid: boolean, user_id: TUserId | null }>;
 

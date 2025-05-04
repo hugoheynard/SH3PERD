@@ -2,7 +2,7 @@ import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, firstValueFrom, map, Observable, of, throwError} from 'rxjs';
 import {TokenService} from './token.service';
-import { TLoginRequestDTO, TLoginResponseDTO} from '@sh3pherd/shared-types';
+import { TLoginRequestDTO, TAuthSessionResult} from '@sh3pherd/shared-types';
 
 @Injectable({
   providedIn: 'root'
@@ -53,7 +53,7 @@ export class AuthService {
   };
 
   refreshSession(): Observable<string | null> {
-    console.log('been called')
+    console.log('authService: refreshSession have been called');
     try {
       return this.http.get<any>(
         'http://localhost:3000/api/auth/refresh',
@@ -90,6 +90,18 @@ export class AuthService {
   logout(): void {
     this.tokenService.removeToken();
     this.isAuthenticatedSignal.set(false);
-  };
 
+    this.http.post<any>(
+      'http://localhost:3000/api/auth/logout',
+      {},
+      { withCredentials: true}
+    ).pipe(
+      catchError(error => {
+        console.error('Error during logout', error);
+        return of(null);
+      })
+    ).subscribe(() => {
+      console.log('Logout successful');
+    });
+  };
 }

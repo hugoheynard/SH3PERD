@@ -1,87 +1,86 @@
 import {jest} from '@jest/globals';
 import type {Collection, DeleteResult, Document, InsertOneResult} from "mongodb";
 import {RefreshTokenMongoRepository} from "../RefreshTokenMongoRepository.js";
-import type {TmapMongoDocToDomainModelFunction} from "@sh3pherd/shared-utils";
 import {ObjectId} from "mongodb";
 import type {TRefreshToken, TRefreshTokenDomainModel} from "@sh3pherd/shared-types";
 
 
-
+/**
+ * No need to test throws in this test file. Decorator tested in utils package.
+ */
 describe('RefreshTokenMongoRepository', () => {
     const mockCollection = {
         insertOne: jest.fn(),
         findOne: jest.fn(),
         deleteOne: jest.fn(),
+        deleteMany: jest.fn()
     } as unknown as jest.Mocked<Collection<TRefreshTokenDomainModel>>;
 
-    const mockTokenRecord: TRefreshTokenDomainModel = {
-        refreshToken: 'refresh_abc123' as TRefreshToken,
-        user_id: 'user_001',
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60),
+    const mockToken: TRefreshTokenDomainModel = {
+        refreshToken: 'refresh_abc' as TRefreshToken,
+        user_id: 'user_1',
         createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 10000)
     };
 
-    const mockMapDocToDomain = jest.fn((_input: any) => mockTokenRecord);
-
-
-    const repository = new RefreshTokenMongoRepository({ refreshTokenCollection: mockCollection});
-
-
-    beforeEach(() => {
-        jest.clearAllMocks();
+    const repository = new RefreshTokenMongoRepository({
+        refreshTokenCollection: mockCollection
     });
 
-    it('should save refresh token successfully', async () => {
-        mockCollection.insertOne.mockResolvedValueOnce({ acknowledged: true, insertedId: new ObjectId() } as InsertOneResult<Document>);
+    beforeEach(() => jest.clearAllMocks());
 
-        const result = await repository.saveRefreshToken({ refreshTokenDomainModel: mockTokenRecord });
+    it('should return true when saving a refresh token succeeds', async () => {
+        mockCollection.insertOne.mockResolvedValueOnce({
+            acknowledged: true,
+            insertedId: new ObjectId()
+        } as InsertOneResult<Document>);
 
-        expect(result).toEqual({ success: true });
-        expect(mockCollection.insertOne).toHaveBeenCalledWith(mockTokenRecord);
+        const result = await repository.saveRefreshToken({ refreshTokenDomainModel: mockToken });
+        expect(result).toBe(true);
     });
 
-    it('should throw if save fails', async () => {
-        mockCollection.insertOne.mockResolvedValueOnce({ acknowledged: false } as InsertOneResult<Document>);
+    it('should return false when saving fails (not acknowledged)', async () => {
+        mockCollection.insertOne.mockResolvedValueOnce({
+            acknowledged: false
+        } as InsertOneResult<Document>);
 
-        await expect(repository.saveRefreshToken({ refreshTokenDomainModel: mockTokenRecord }))
-            .rejects
-            .toThrow('Failed to save refresh token');
+        const result = await repository.saveRefreshToken({ refreshTokenDomainModel: mockToken });
+        expect(result).toBe(false);
     });
 
-    it('should find and map a refresh token', async () => {
-        const fakeMongoDoc = { ...mockTokenRecord, _id: 'mongoId' };
-        mockCollection.findOne.mockResolvedValueOnce(fakeMongoDoc);
-        mockMapDocToDomain.mockReturnValueOnce(mockTokenRecord);
-
-        const result = await repository.findRefreshToken({ refreshToken: mockTokenRecord.refreshToken });
-
-        expect(result).toEqual(mockTokenRecord);
-        expect(mockCollection.findOne).toHaveBeenCalledWith({ refreshToken: mockTokenRecord.refreshToken });
-        expect(mockMapDocToDomain).toHaveBeenCalledWith({ document: fakeMongoDoc });
+    it('should return the domain model when finding an existing refresh token', async () => {
+        mockCollection.findOne.mockResolvedValueOnce(mockToken);
+        const result = await repository.findRefreshToken({ refreshToken: mockToken.refreshToken });
+        expect(result).toEqual(mockToken);
     });
 
-    it('should return null if refresh token not found', async () => {
+    it('should return null when no refresh token is found', async () => {
         mockCollection.findOne.mockResolvedValueOnce(null);
-
-        const result = await repository.findRefreshToken({ refreshToken: mockTokenRecord.refreshToken });
-
+        const result = await repository.findRefreshToken({ refreshToken: mockToken.refreshToken });
         expect(result).toBeNull();
     });
 
-    it('should revoke refresh token', async () => {
+    it('should return {revokedToken} when deletion succeeds', async () => {
         mockCollection.deleteOne.mockResolvedValueOnce({ deletedCount: 1 } as DeleteResult);
-
-        const result = await repository.deleteRefreshToken({ refreshToken: mockTokenRecord.refreshToken });
-
-        expect(result).toEqual({ revokedToken: mockTokenRecord.refreshToken });
-        expect(mockCollection.deleteOne).toHaveBeenCalledWith({ refreshToken: mockTokenRecord.refreshToken });
+        const result = await repository.deleteRefreshToken({ refreshToken: mockToken.refreshToken });
+        expect(result).toEqual({ revokedToken: mockToken.refreshToken });
     });
 
-    it('should throw if token not found when revoking', async () => {
+    it('should return false when refresh token deletion fails (not found)', async () => {
         mockCollection.deleteOne.mockResolvedValueOnce({ deletedCount: 0 } as DeleteResult);
+        const result = await repository.deleteRefreshToken({ refreshToken: mockToken.refreshToken });
+        expect(result).toBe(false);
+    });
 
-        await expect(repository.deleteRefreshToken({ refreshToken: mockTokenRecord.refreshToken }))
-            .rejects
-            .toThrow(`Refresh token ${mockTokenRecord.refreshToken} not found or already revoked`);
+    it('should return true when user tokens are deleted', async () => {
+        mockCollection.deleteMany.mockResolvedValueOnce({ deletedCount: 2 } as DeleteResult);
+        const result = await repository.deleteAllRefreshTokensForUser({ user_id: mockToken.user_id });
+        expect(result).toBe(true);
+    });
+
+    it('should return false when no tokens are deleted for user', async () => {
+        mockCollection.deleteMany.mockResolvedValueOnce({ deletedCount: 0 } as DeleteResult);
+        const result = await repository.deleteAllRefreshTokensForUser({ user_id: mockToken.user_id });
+        expect(result).toBe(false);
     });
 });

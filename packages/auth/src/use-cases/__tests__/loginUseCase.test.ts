@@ -4,7 +4,7 @@ import type {
     TCreateAuthSession,
     TFindUserByEmail,
     TLoginRequestDTO,
-    TLoginResponseDTO,
+    TAuthSessionResult,
     TLoginUseCaseDeps,
     TUserDomainModel
 } from "@sh3pherd/shared-types";
@@ -40,7 +40,7 @@ describe('loginUseCase', () => {
             password: 'my-password',
         };
 
-        const result: TLoginResponseDTO = await useCase(request);
+        const result: TAuthSessionResult = await useCase(request);
 
         expect(result).toEqual({
             authToken: 'jwt-token',

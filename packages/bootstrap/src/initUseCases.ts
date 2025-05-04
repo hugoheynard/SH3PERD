@@ -1,24 +1,11 @@
-import {passwordManager} from "@sh3pherd/password-manager";
-import {createUserDomainModel} from "@sh3pherd/user";
-import {generateTypedId} from "@sh3pherd/shared-utils";
-import {createAuthUseCases} from "@sh3pherd/auth";
+import {createAuthUseCases} from "./initUsesCases/createAuthUseCases.js";
 
 
-export const initUseCases = (input: { services: any; repositories: any }): any => {
-    const { authTokenService } = input.services;
-    const { userRepository } = input.repositories;
+export const initUseCases = (deps: { services: any; repositories: any }): any => {
 
   try {
       return {
-          auth: createAuthUseCases({
-              findUserByEmailFn: userRepository.findUserByEmail,
-              hashPasswordFn: passwordManager.hashPassword,
-              comparePasswordFn: passwordManager.comparePassword,
-              createUserFn: createUserDomainModel,
-              saveUserFn: userRepository.saveUser,
-              generateUserIdFn: () => generateTypedId('user'),
-              createAuthSessionFn: authTokenService.createAuthSession
-          }),
+          auth: createAuthUseCases(deps),
       };
   } catch (err) {
       throw new Error(`Error initializing use cases: ${err}`);

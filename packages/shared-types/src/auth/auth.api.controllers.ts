@@ -1,4 +1,4 @@
-import type {TLoginUseCase, TRegisterUserUseCase} from "./auth.core.useCase.js";
+import type {TLoginUseCase, TRefreshSessionUseCase, TRegisterUserUseCase} from "./auth.core.useCase.js";
 import type {NextFunction, Request, Response} from "express";
 
 /**
@@ -7,11 +7,13 @@ import type {NextFunction, Request, Response} from "express";
 export type TAuthControllerDeps = {
     loginUseCase: TLoginUseCase;
     logoutUseCase: any;
+    refreshSessionUseCase: TRefreshSessionUseCase;
 }
 
 export interface IAuthController {
     login: (req: Request, res: Response, _next: NextFunction) => Promise<void>;
     logout: (req: Request, res: Response, _next: NextFunction) => Promise<void>;
+    refreshSession: (req: Request, res: Response, _next: NextFunction) => Promise<void>;
 }
 
 /**

@@ -28,7 +28,7 @@ export type TCreateAuthSessionResult = {
     refreshTokenSecureCookie: TRefreshTokenSecureCookie;
 }
 
-export type TRevokeRefreshTokenResult = { revokedToken: TRefreshToken };
+export type TRevokeRefreshTokenResult = { revokedToken: TRefreshToken } | false;
 
 export type TSecureCookieConfig = {
     httpOnly: boolean;

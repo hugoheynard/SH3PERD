@@ -29,7 +29,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const shouldIgnore = req.url.includes('/auth');
+  const shouldIgnore: boolean = req.url.includes('/auth');
 
   // Don't intercept auth-related routes
   if (shouldIgnore) {

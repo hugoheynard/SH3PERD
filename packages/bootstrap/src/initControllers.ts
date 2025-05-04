@@ -25,9 +25,10 @@ export const initControllers = (input: { useCases: any }): any => {
             register: new RegisterController({
                 registerUserUseCase: auth.registerUserUseCase,
             }),
-            auth: new AuthController({
+            authCtrl: new AuthController({
                 loginUseCase: auth.loginUseCase,
-                logoutUseCase: {}
+                logoutUseCase: {},
+                refreshSessionUseCase: auth.refreshSessionUseCase,
             }),
 
 /*

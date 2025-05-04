@@ -3,12 +3,9 @@ import type {
     TAuthTokenServiceDeps,
     TCreateAuthSession,
     TGenerateRefreshTokenCookie,
-    TRefreshAuthSession,
     TRevokeRefreshToken,
-    TVerifyAuthToken,
-    TVerifyRefreshToken
+    TVerifyAuthToken
 } from "@sh3pherd/shared-types";
-import {BusinessError} from "@sh3pherd/shared-utils";
 
 
 /**
@@ -69,21 +66,6 @@ export class AuthTokenService implements IAuthTokenService {
     };
 
     /**
-     * Verifies the validity of a refresh token.
-     *
-     * Delegates the logic to the refresh token manager, which may implement
-     * expiration, revocation, or blacklist logic.
-     *
-     * @param input - Object containing the refresh token
-     * @returns A boolean indicating whether the token is valid
-     */
-    public findAndVerifyRefreshToken: TVerifyRefreshToken = async (input) => {
-        const refreshTokenDomainModel = await this.deps.findRefreshTokenFn({ refreshToken: input.refreshToken });
-
-        return this.deps.verifyRefreshTokenFn({ refreshTokenDomainModel });
-    };
-
-    /**
      * Revokes the given refresh token.
      *
      * Typically used during logout or token rotation flows.
@@ -97,31 +79,7 @@ export class AuthTokenService implements IAuthTokenService {
         return await this.deps.revokeRefreshTokenFn({ refreshToken: input.refreshToken });
     };
 
-    /**
-     * Generates a new access token using a valid refresh token.
-     *
-     * This method assumes the refresh token has already been resolved to its record.
-     * It validates the refresh token and re-issues a new access token.
-     *
-     * @param input - Object containing the refresh token record
-     * @returns A full auth session valid
-     * @throws If the refresh token is invalid or expired
-     */
-    public refreshAuthSession: TRefreshAuthSession = async (input) => {
-        const isValid = this.deps.verifyRefreshTokenFn({ refreshTokenDomainModel: input.refreshTokenDomainModel });
-
-        if (!isValid) {
-            throw new BusinessError(
-                "Invalid or expired refresh token",
-                "INVALID_REFRESH_TOKEN",
-                401
-            );
-        }
-
-        return this.createAuthSession({ user_id: input.refreshTokenDomainModel.user_id });
-    };
-
-    generateRefreshTokenCookie: TGenerateRefreshTokenCookie = (input) => {
+    public generateRefreshTokenCookie: TGenerateRefreshTokenCookie = (input) => {
         const { secure, sameSite, maxAge } = this.deps.secureCookieConfig;
 
         return {
@@ -131,7 +89,7 @@ export class AuthTokenService implements IAuthTokenService {
                 httpOnly: true,
                 secure,
                 sameSite,
-                path: input.customPath ?? '/auth/refresh', // 🧠 fallback
+                path: input.customPath ?? '/', // 🧠 fallback
                 maxAge
             }
         };

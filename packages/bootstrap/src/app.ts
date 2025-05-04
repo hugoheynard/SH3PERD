@@ -31,7 +31,7 @@ async function startApp(): Promise<void> {
         const globalMiddlewares: any = initGlobalMiddlewares({ services });
         const app: Express = express();
         await initRoutes(app, { controllers }, { globalMiddlewares });
-        await startServer({ app, port: process.env.PORT })
+        await startServer({ app, port: process.env.PORT });
 
 
     } catch (error: any) {
