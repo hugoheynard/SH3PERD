@@ -13,8 +13,6 @@
   },
   "include": ["src"],
   "references": [
-    {
-      "path": "../shared-utils"
-    }
+    {"path": "../shared-utils"}
   ]
 }

@@ -1,10 +1,13 @@
 import type {TUserDomainModel} from "./user.domain.types.js";
+import type {Collection} from "mongodb";
 
-export type TSaveUserResult = { success: boolean; reason?: string; }
-export type TSaveUser = (input: { user: TUserDomainModel }) => Promise<TSaveUserResult>;
-export type TFindUserByEmail = (input: { email: string }) => Promise<TUserDomainModel | null>;
+export type TSaveUserFn = (input: { user: TUserDomainModel }) => Promise<boolean>;
+export type TFindUserByEmailFn = (filter: { email: string }) => Promise<TUserDomainModel | null>;
+
+
+export type TUserMongoRepositoryDeps = { userCollection: Collection<TUserDomainModel> };
 
 export interface IUserRepository {
-    saveUser: TSaveUser;
-    findUserByEmail: TFindUserByEmail;
+    saveUser: TSaveUserFn;
+    findUserByEmail: TFindUserByEmailFn;
 }

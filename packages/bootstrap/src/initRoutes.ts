@@ -9,7 +9,7 @@ import cookieParser from "cookie-parser";
 
 export const initRoutes = async (app: Express, { controllers } : any, { globalMiddlewares } : any): Promise<Express> => {
     try {
-        const { register, authCtrl } = controllers;
+        const { register, auth } = controllers;
         const { verifyAuthToken } = globalMiddlewares;
 
 
@@ -25,8 +25,9 @@ export const initRoutes = async (app: Express, { controllers } : any, { globalMi
         //Routers
         app.use('/api', await createAuthRouter({
             registerUserCtrl: register.registerUser,
-            loginUserCtrl: authCtrl.login,
-            refreshAuthSessionCtrl: authCtrl.refreshSession
+            loginUserCtrl: auth.login,
+            //logoutUserCtrl: auth.logout,
+            refreshAuthSessionCtrl: auth.refreshSession
         }));
 
 

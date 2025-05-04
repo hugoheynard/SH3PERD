@@ -23,12 +23,12 @@ export const initControllers = (input: { useCases: any }): any => {
 
         const controllers = {
             register: new RegisterController({
-                registerUserUseCase: auth.registerUserUseCase,
+                registerUserUseCase: auth.register,
             }),
-            authCtrl: new AuthController({
-                loginUseCase: auth.loginUseCase,
-                logoutUseCase: {},
-                refreshSessionUseCase: auth.refreshSessionUseCase,
+            auth: new AuthController({
+                loginUseCase: auth.login,
+                logoutUseCase: auth.logout,
+                refreshSessionUseCase: auth.refresh,
             }),
 
 /*

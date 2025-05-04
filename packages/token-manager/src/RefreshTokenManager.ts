@@ -1,10 +1,10 @@
 import type {
     IAbstractRefreshTokenManager,
-    TGenerateRefreshToken, TRefreshToken,
+    TGenerateRefreshTokenFn, TRefreshToken,
     TRefreshTokenDomainModel,
     TRefreshTokenManagerDeps,
-    TRevokeRefreshToken,
-    TVerifyRefreshToken
+    TRevokeRefreshTokenFn,
+    TVerifyRefreshTokenFn
 } from "@sh3pherd/shared-types";
 import {autoBind, TechnicalError} from "@sh3pherd/shared-utils";
 
@@ -30,7 +30,7 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
      * @returns A promise that resolves to a new refresh token string.
      * @throws If token generation or saving fails.
      */
-    generateRefreshToken: TGenerateRefreshToken = async (input)=> {
+    generateRefreshToken: TGenerateRefreshTokenFn = async (input)=> {
         try {
             const newRefreshToken = await this.deps.generatorFn();
 
@@ -67,7 +67,7 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
      * @param input - The refresh token to validate.
      * @returns A promise that resolves to a boolean indicating whether the token is valid.
      */
-    verifyRefreshToken: TVerifyRefreshToken = (input) => {
+    verifyRefreshToken: TVerifyRefreshTokenFn = (input) => {
         const { refreshTokenDomainModel } = input;
         return this.deps.validateRefreshTokenDateFn({ date: refreshTokenDomainModel.expiresAt });
     };
@@ -79,7 +79,7 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
      * @returns A promise that resolves to an object containing the revoked token.
      * @throws If the revocation fails or the token does not exist.
      */
-    revokeRefreshToken: TRevokeRefreshToken = async (input) => {
+    revokeRefreshToken: TRevokeRefreshTokenFn = async (input) => {
         try {
             await this.deps.deleteRefreshTokenFn({ refreshToken: input.refreshToken});
             return { revokedToken: input.refreshToken };

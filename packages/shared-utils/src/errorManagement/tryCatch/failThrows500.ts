@@ -1,4 +1,4 @@
-import { TechnicalError } from '@sh3pherd/shared-utils';
+import {TechnicalError} from "../errorClasses/index.js";
 
 
 /**

@@ -2,6 +2,7 @@ import type {NextFunction, Request, Response} from "express";
 import {autoBind, withErrorHandler} from "@sh3pherd/shared-utils";
 import type {IAuthController, TAuthControllerDeps} from "@sh3pherd/shared-types";
 
+
 @autoBind
 export class AuthController implements IAuthController {
     private readonly deps: TAuthControllerDeps
@@ -56,6 +57,7 @@ export class AuthController implements IAuthController {
     @withErrorHandler
     public async refreshSession(req: Request, res: Response, _next: NextFunction): Promise<void> {
         const currentRefreshToken = req.cookies['sh3pherd_refreshToken'];
+        console.log('currentRefreshToken', currentRefreshToken);
 
         const {
             user_id,
@@ -77,6 +79,19 @@ export class AuthController implements IAuthController {
         return;
     };
 
+    /**
+     * logout - Terminates the user session securely.
+     *
+     * This method handles logout by:
+     * - Revoking the refresh token from the database (via the logout use case)
+     * - Clearing the secure refresh token cookie from the user's browser
+     *
+     * @param req - The request object containing the refresh token in cookies
+     * @param res - The response object to confirm logout
+     * @param _next - Unused next function for middleware chaining
+     *
+     * @returns A JSON response confirming the logout
+     */
     @withErrorHandler
     public async logout(req: Request, res: Response, _next: NextFunction): Promise<void> {
         // use case deletes the refresh token from the database

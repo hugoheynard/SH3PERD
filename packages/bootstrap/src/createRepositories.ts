@@ -1,12 +1,14 @@
 import type {Db} from "mongodb";
-import {createMongoUserRepository} from "@sh3pherd/user";
+import type {IRefreshTokenRepository, IUserRepository} from "@sh3pherd/shared-types";
 import {RefreshTokenMongoRepository} from "@sh3pherd/auth";
-import type {IRefreshTokenRepository} from "@sh3pherd/shared-types";
+import {UserMongoRepository} from "@sh3pherd/user";
+
+
 
 
 export type Repositories = {
     refreshTokenRepository: IRefreshTokenRepository;
-    userRepository: ReturnType<typeof createMongoUserRepository>;
+    userRepository: IUserRepository;
 }
 
 export const createRepositories = (input: { db : Db}): Repositories => {
@@ -14,6 +16,6 @@ export const createRepositories = (input: { db : Db}): Repositories => {
 
     return {
         refreshTokenRepository: new RefreshTokenMongoRepository({ refreshTokenCollection: db.collection("refreshTokens") }),
-        userRepository: createMongoUserRepository({ collection: db.collection("users") }),
+        userRepository: new UserMongoRepository({ userCollection: db.collection("users") }),
     }
 }

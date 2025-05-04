@@ -1,12 +1,33 @@
-import type {ObjectId} from "mongodb";
+import type {Collection, Filter, Document, WithId} from "mongodb";
 
-/**
- * Base class for all Mongo Repositories.
- * Provides utility to map MongoDB documents to domain models.
- */
-export abstract class BaseMongoRepository {
-    protected mapMongoDocToDomainModel<T>(input: { doc: T & { _id?: ObjectId } }): T {
+
+export abstract class BaseMongoRepository<TDomainModel extends Document> {
+    protected readonly collection: Collection<TDomainModel>;
+
+    protected constructor(collection: Collection<TDomainModel>) {
+        this.collection = collection;
+    }
+
+    /**
+     * Maps a MongoDB document (WithId<T>) to a domain model by stripping _id
+     */
+    protected mapMongoDocToDomainModel(input: {
+        doc: WithId<TDomainModel>;
+    }): TDomainModel {
         const { _id, ...rest } = input.doc;
-        return rest as T;
+        return rest as unknown as TDomainModel;
+    };
+
+    /**
+     * Generic find method that can be reused by specific child implementations.
+     */
+    protected async findDocBy(filter: Filter<TDomainModel>): Promise <TDomainModel | null> {
+        const result = await this.collection.findOne(filter);
+
+        if (!result) {
+            return null;
+        }
+
+        return this.mapMongoDocToDomainModel({ doc: result });
     };
 }

@@ -1,10 +1,10 @@
 import type {
     IAuthTokenService,
     TAuthTokenServiceDeps,
-    TCreateAuthSession,
+    TCreateAuthSessionFn,
     TGenerateRefreshTokenCookie,
-    TRevokeRefreshToken,
-    TVerifyAuthToken
+    TRevokeRefreshTokenFn,
+    TVerifyAuthTokenFn, TVerifyRefreshTokenFn
 } from "@sh3pherd/shared-types";
 
 
@@ -37,7 +37,7 @@ export class AuthTokenService implements IAuthTokenService {
      * @param input - Object containing the user's unique identifier
      * @returns An object containing both access and refresh tokens as well as the secure cookie content
      */
-    public createAuthSession: TCreateAuthSession = async (input) => {
+    public createAuthSession: TCreateAuthSessionFn = async (input) => {
         const { user_id } = input;
 
         //clears the db of all previous refresh tokens for the user
@@ -61,8 +61,12 @@ export class AuthTokenService implements IAuthTokenService {
      * @returns The decoded token payload if verification is successful
      * @throws If the token is invalid or expired
      */
-    public verifyAuthToken: TVerifyAuthToken = async (input) => {
+    public verifyAuthToken: TVerifyAuthTokenFn = async (input) => {
         return this.deps.verifyAuthTokenFn({ authToken: input.authToken });
+    };
+
+    public verifyRefreshToken: TVerifyRefreshTokenFn = (input) => {
+        return this.deps.verifyRefreshTokenFn(input);
     };
 
     /**
@@ -75,7 +79,7 @@ export class AuthTokenService implements IAuthTokenService {
      * @returns An object with the revoked token identifier
      * @throws If the revocation fails or token is not found
      */
-    public revokeRefreshToken: TRevokeRefreshToken = async (input) => {
+    public revokeRefreshToken: TRevokeRefreshTokenFn = async (input) => {
         return await this.deps.revokeRefreshTokenFn({ refreshToken: input.refreshToken });
     };
 

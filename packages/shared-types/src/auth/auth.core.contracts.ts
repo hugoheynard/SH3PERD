@@ -1,4 +1,3 @@
-
 import type {TUserId} from "../user/index.js";
 import type {
     TAuthTokenPayload,
@@ -15,25 +14,25 @@ export type TComparePasswordResult = {
     newHash?: string;
 }
 
-export type THashPassword = (input: { password: string }) => Promise<string>;
+export type THashPasswordFn = (input: { password: string }) => Promise<string>;
 export type TComparePassword = (input: { password: string; hashedPassword: string }) => Promise<TComparePasswordResult>;
 
 //AuthTokenManager Functions
-export type TGenerateAuthToken = (input: { payload: TAuthTokenPayload }) => Promise<string>;
-export type TVerifyAuthToken = (input: { authToken: string }) => Promise<TAuthTokenPayload | null>;
+export type TGenerateAuthTokenFn = (input: { payload: TAuthTokenPayload }) => Promise<string>;
+export type TVerifyAuthTokenFn = (input: { authToken: string }) => Promise<TAuthTokenPayload | null>;
 
 
 //RefreshTokenRepository Functions
-export type TSaveRefreshToken = (input: { refreshTokenDomainModel: TRefreshTokenDomainModel }) => Promise<boolean>;
-export type TFindRefreshToken = (input: { refreshToken: TRefreshToken }) => Promise<TRefreshTokenDomainModel | null>;
-export type TDeleteRefreshToken = (input: { refreshToken: TRefreshToken }) => Promise<TRevokeRefreshTokenResult>;
-export type TDeleteAllRefreshTokensForUser = (input: { user_id: TUserId }) => Promise<boolean>;
+export type TSaveRefreshTokenFn = (input: { refreshTokenDomainModel: TRefreshTokenDomainModel }) => Promise<boolean>;
+export type TFindRefreshTokenFn = (input: { refreshToken: TRefreshToken }) => Promise<TRefreshTokenDomainModel | null>;
+export type TDeleteRefreshTokenFn = (input: { refreshToken: TRefreshToken }) => Promise<TRevokeRefreshTokenResult>;
+export type TDeleteAllRefreshTokensForUserFn = (input: { user_id: TUserId }) => Promise<boolean>;
 
 
 //AuthTokenService Functions
 
 
-export type TCreateAuthSession = (input: { user_id: TUserId }) => Promise<TCreateAuthSessionResult>
+export type TCreateAuthSessionFn = (input: { user_id: TUserId }) => Promise<TCreateAuthSessionResult>
 
 export type TRefreshAuthSession = (input: { refreshTokenDomainModel: TRefreshTokenDomainModel }) => Promise<TCreateAuthSessionResult>;
 

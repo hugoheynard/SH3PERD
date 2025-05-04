@@ -45,9 +45,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       const isUnauthorized = error.status === 401;
+      const isRefreshingRequest = req.url.includes('/auth/refresh');
 
-      // Skip refresh on /auth/refresh or if not a 401
-      if (!isUnauthorized || req.url.includes('/auth/refresh')) {
+      if (!isUnauthorized || req.url.includes('/auth/refresh') || !authService.canAttemptRefresh()) {
         return throwError(() => error);
       }
 

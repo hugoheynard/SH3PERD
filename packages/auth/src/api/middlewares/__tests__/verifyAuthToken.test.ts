@@ -2,13 +2,13 @@ import {verifyAuthToken} from "../verifyAuthToken.js";
 import request from 'supertest';
 import express, { type Request, type Response } from 'express';
 import { jest } from '@jest/globals';
-import {type TVerifyAuthToken} from "@sh3pherd/shared-types";
+import {type TVerifyAuthTokenFn} from "@sh3pherd/shared-types";
 import {errorCatcher} from "@sh3pherd/shared-utils";
 
 
 
 describe('verifyAuthToken middleware', () => {
-    const mockVerifyAuthTokenFn = jest.fn<TVerifyAuthToken>();
+    const mockVerifyAuthTokenFn = jest.fn<TVerifyAuthTokenFn>();
 
     const app = express();
     app.use(express.json());

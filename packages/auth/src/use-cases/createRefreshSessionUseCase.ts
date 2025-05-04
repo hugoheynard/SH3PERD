@@ -1,43 +1,58 @@
 import type {
-    IAuthTokenService,
-    TRefreshSessionUseCase,
+    TRefreshSessionUseCase, TRefreshSessionUseCaseDeps,
 } from "@sh3pherd/shared-types";
-import {BusinessError, TechnicalError} from "@sh3pherd/shared-utils";
+import {BusinessError} from "@sh3pherd/shared-utils";
 
 
-export const createRefreshSessionUseCase = (deps: { authTokenService: IAuthTokenService, }) => {
+/**
+ * RefreshSessionUseCase - Re-issues a new authentication session using a valid refresh token.
+ *
+ * This use case is triggered when a client attempts to refresh their access token.
+ * It performs the following logic:
+ * 1. Looks up the refresh token in the repository
+ * 2. Verifies its validity (expiration, user match, etc.)
+ * 3. If valid, issues a new session (access + refresh token)
+ * 4. If invalid, revokes the token and throws a BusinessError
+ *
+ * @param deps - Injected dependencies:
+ *   - `findRefreshTokenFn`: Retrieves the refresh token domain object from storage
+ *   - `verifyRefreshTokenFn`: Checks the integrity and expiration of the token
+ *   - `createAuthSessionFn`: Creates a new authentication session
+ *   - `revokeRefreshTokenFn`: Deletes the token if invalid
+ *
+ * @returns A new session with `authToken`, `refreshToken`, and `user_id`
+ * @throws BusinessError:
+ *   - `TOKEN_NOT_FOUND` (401): if the token is not found
+ *   - `INVALID_TOKENS` (401): if the token is invalid or revoked
+ *
+ * @example
+ * const useCase = createRefreshSessionUseCase(deps);
+ * const result = await useCase({ refreshToken: 'refreshToken_xyz' });
+ */
+export const createRefreshSessionUseCase = (
+    deps: TRefreshSessionUseCaseDeps
+): TRefreshSessionUseCase => {
+    const { findRefreshTokenFn, verifyRefreshTokenFn, createAuthSessionFn, revokeRefreshTokenFn } = deps;
 
-    const refreshSessionUseCase: TRefreshSessionUseCase = async (input) => {
-        try {
-            const { verifyRefreshToken, createAuthSession } = deps.authTokenService;
-            const { refreshToken } = input;
-            console.log('[refreshSessionUseCase] - refreshToken', refreshToken);
+    return async ({ refreshToken }) => {
+        const token = await findRefreshTokenFn({ refreshToken });
 
-            // Find and verify the refresh token
-            const {
-                isValid,
-                user_id
-            } = await verifyRefreshToken({ refreshToken });
-
-            // If refresh token is valid, generate a new authSession
-            if (!isValid || !user_id) {
-                throw new BusinessError('Invalid tokens', 'INVALID_TOKENS',  401);
-            }
-
-            return {
-                ...await createAuthSession({ user_id }),
-                user_id,
-            };
-        } catch (e) {
-            if (e instanceof BusinessError) {
-                throw e;
-            }
-            throw new TechnicalError(
-                '[refreshSessionUseCase] - Error creating refresh session',
-                'CREATE_REFRESH_SESSION_ERROR',
-                500);
+        if (!token) {
+            throw new BusinessError('Refresh token not found', 'TOKEN_NOT_FOUND', 401);
         }
-    };
 
-    return refreshSessionUseCase;
-}
+        const isValid = verifyRefreshTokenFn({ refreshTokenDomainModel: token });
+
+        if (!isValid) {
+            await revokeRefreshTokenFn({ refreshToken });
+            throw new BusinessError('Invalid tokens', 'INVALID_TOKENS', 401);
+        }
+
+        const session = await createAuthSessionFn({ user_id: token.user_id });
+
+        return {
+            ...session,
+            user_id: token.user_id,
+        };
+    };
+};

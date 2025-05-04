@@ -1,6 +1,6 @@
 import {jest} from '@jest/globals';
 import type {Collection, InsertOneResult, Document, ObjectId} from 'mongodb';
-import { createMongoUserRepository } from '../createMongoUserRepository';
+import { mongoUserRepository } from '../MongoUserRepository';
 import type {TUserDomainModel} from "@sh3pherd/shared-types";
 
 
@@ -15,7 +15,7 @@ describe('MongoUserRepository', () => {
         findOne,
     } as unknown as Collection<TUserDomainModel>;
 
-    const repository = createMongoUserRepository({ collection: mockCollection });
+    const repository = mongoUserRepository({ collection: mockCollection });
 
     const now: Date = new Date();
     const fakeUser: TUserDomainModel = {

@@ -1,75 +1,95 @@
 import { jest } from '@jest/globals';
 import type {
     TComparePassword,
-    TCreateAuthSession,
-    TFindUserByEmail,
-    TLoginRequestDTO,
-    TAuthSessionResult,
+    TCreateAuthSessionFn,
+    TFindUserByEmailFn,
     TLoginUseCaseDeps,
-    TUserDomainModel
-} from "@sh3pherd/shared-types";
-import {createLoginUseCase} from "../createLoginUseCase.js";
+    TLoginRequestDTO,
+    TUserDomainModel,
+    TCreateAuthSessionResult
+} from '@sh3pherd/shared-types';
+import { createLoginUseCase } from '../createLoginUseCase.js';
+import { BusinessError } from '@sh3pherd/shared-utils';
 
-describe('loginUseCase', () => {
+describe('createLoginUseCase', () => {
     const mockUser: TUserDomainModel = {
-        user_id: 'user_user123',
+        user_id: 'user_123',
         email: 'test@example.com',
         password: 'hashed-password',
         created_at: new Date(),
-        updated_at: new Date(),
+        updated_at: new Date()
     };
 
-    const findUserByEmailFn = jest.fn<TFindUserByEmail>().mockResolvedValue(mockUser);
-    const comparePasswordFn= jest.fn<TComparePassword>().mockResolvedValue({ isValid: true, wasRehashed: false });
-    const createAuthSessionFn = jest.fn<TCreateAuthSession>().mockResolvedValue({
+    const mockSession: TCreateAuthSessionResult = {
         authToken: 'jwt-token',
-        refreshToken: 'refreshToken_test',
-    });
+        refreshToken: 'refreshToken_refresh-token',
+        refreshTokenSecureCookie: {
+            name: 'sh3pherd_refreshToken',
+            value: 'refreshToken_refresh-token',
+            options: {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+                path: '/',
+                maxAge: 604800
+            }
+        }
+    };
+
+    const request: TLoginRequestDTO = {
+        email: 'test@example.com',
+        password: 'clear-password'
+    };
+
+    const findUserByEmailFn = jest.fn<TFindUserByEmailFn>();
+    const comparePasswordFn = jest.fn<TComparePassword>();
+    const createAuthSessionFn = jest.fn<TCreateAuthSessionFn>();
 
     const deps: TLoginUseCaseDeps = {
         findUserByEmailFn,
         comparePasswordFn,
-        createAuthSessionFn,
+        createAuthSessionFn
     };
 
     const useCase = createLoginUseCase(deps);
 
-    it('should return tokens and user_id if credentials are valid', async () => {
-        const request: TLoginRequestDTO = {
-            email: 'test@example.com',
-            password: 'my-password',
-        };
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
-        const result: TAuthSessionResult = await useCase(request);
+    it('should return auth session if user and password are valid', async () => {
+        findUserByEmailFn.mockResolvedValueOnce(mockUser);
+        comparePasswordFn.mockResolvedValueOnce({ isValid: true, wasRehashed: false });
+        createAuthSessionFn.mockResolvedValueOnce(mockSession);
+
+        const result = await useCase(request);
 
         expect(result).toEqual({
             authToken: 'jwt-token',
-            refreshToken: 'refreshToken_test',
-            user_id: 'user_user123'
+            user_id: 'user_123',
+            refreshTokenSecureCookie: mockSession.refreshTokenSecureCookie
         });
 
-        expect(deps.findUserByEmailFn).toHaveBeenCalledWith({ email: 'test@example.com' });
-        expect(deps.comparePasswordFn).toHaveBeenCalledWith({
-            password: 'my-password',
-            hashedPassword: 'hashed-password'
+        expect(findUserByEmailFn).toHaveBeenCalledWith({ email: request.email });
+        expect(comparePasswordFn).toHaveBeenCalledWith({
+            password: request.password,
+            hashedPassword: mockUser.password
         });
-        expect(deps.createAuthSessionFn).toHaveBeenCalledWith({ user_id: 'user_user123' });
+        expect(createAuthSessionFn).toHaveBeenCalledWith({ user_id: mockUser.user_id });
     });
 
-    it('should throw if user is not found', async () => {
-        deps.findUserByEmailFn = jest.fn<TFindUserByEmail>().mockResolvedValue(null);
+    it('should throw BusinessError if user is not found', async () => {
+        findUserByEmailFn.mockResolvedValueOnce(null);
 
-        await expect(useCase({ email: 'not@found.com', password: 'x' }))
-            .rejects
-            .toThrow('Invalid credentials');
+        await expect(useCase(request)).rejects.toThrow(BusinessError);
+        await expect(useCase(request)).rejects.toThrow('Invalid credentials');
     });
 
-    it('should throw if password is invalid', async () => {
-        deps.findUserByEmailFn = jest.fn<TFindUserByEmail>().mockResolvedValue(mockUser);
-        deps.comparePasswordFn = jest.fn<TComparePassword>().mockResolvedValue({ isValid: false, wasRehashed: false });
+    it('should throw BusinessError if password is invalid', async () => {
+        findUserByEmailFn.mockResolvedValueOnce(mockUser);
+        comparePasswordFn.mockResolvedValueOnce({ isValid: false, wasRehashed: false });
 
-        await expect(useCase({ email: 'test@example.com', password: 'wrong' }))
-            .rejects
-            .toThrow('Invalid credentials');
+        await expect(useCase(request)).rejects.toThrow(BusinessError);
+        await expect(useCase(request)).rejects.toThrow('Invalid credentials');
     });
 });

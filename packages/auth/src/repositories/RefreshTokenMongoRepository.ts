@@ -1,12 +1,11 @@
-import type {Collection} from "mongodb";
 import type {
     IRefreshTokenMongoRepositoryDeps,
     IRefreshTokenRepository,
-    TDeleteAllRefreshTokensForUser,
-    TDeleteRefreshToken,
-    TFindRefreshToken,
+    TDeleteAllRefreshTokensForUserFn,
+    TDeleteRefreshTokenFn,
+    TFindRefreshTokenFn,
     TRefreshTokenDomainModel,
-    TSaveRefreshToken
+    TSaveRefreshTokenFn
 } from "@sh3pherd/shared-types";
 import {autoBind, BaseMongoRepository, failThrows500} from "@sh3pherd/shared-utils";
 
@@ -35,18 +34,15 @@ import {autoBind, BaseMongoRepository, failThrows500} from "@sh3pherd/shared-uti
  */
 @autoBind
 export class RefreshTokenMongoRepository
-    extends BaseMongoRepository
+    extends BaseMongoRepository<TRefreshTokenDomainModel>
     implements IRefreshTokenRepository {
-    private readonly collection: Collection<TRefreshTokenDomainModel>
-
 
     constructor(input: IRefreshTokenMongoRepositoryDeps) {
-        super();
-        this.collection = input.refreshTokenCollection;
+        super(input.refreshTokenCollection);
     };
 
     @failThrows500('REFRESH_TOKEN_SAVE_FAILED')
-    public async saveRefreshToken(input: Parameters<TSaveRefreshToken>[0]): ReturnType<TSaveRefreshToken>  {
+    public async saveRefreshToken(input: Parameters<TSaveRefreshTokenFn>[0]): ReturnType<TSaveRefreshTokenFn>  {
         const {
             refreshToken,
             user_id,
@@ -70,19 +66,12 @@ export class RefreshTokenMongoRepository
     };
 
     @failThrows500('REFRESH_TOKEN_FIND_FAILED')
-    public async findRefreshToken(input: Parameters<TFindRefreshToken>[0]): ReturnType<TFindRefreshToken> {
-        const { refreshToken } = input;
-        const result = await this.collection.findOne({ refreshToken: refreshToken });
-
-        if (!result) {
-            return null
-        }
-
-        return this.mapMongoDocToDomainModel({ doc: result });
+    public async findRefreshToken(input: Parameters<TFindRefreshTokenFn>[0]): ReturnType<TFindRefreshTokenFn> {
+        return await this.findDocBy(input);
     };
 
     @failThrows500('REFRESH_TOKEN_DELETE_FAILED')
-    public async deleteRefreshToken(input :Parameters<TDeleteRefreshToken>[0]): ReturnType<TDeleteRefreshToken> {
+    public async deleteRefreshToken(input :Parameters<TDeleteRefreshTokenFn>[0]): ReturnType<TDeleteRefreshTokenFn> {
         const { refreshToken } = input;
 
         const result = await this.collection.deleteOne({ refreshToken: refreshToken });
@@ -95,7 +84,7 @@ export class RefreshTokenMongoRepository
     };
 
     @failThrows500('REFRESH_TOKEN_DELETE_ALL_FOR_USER_FAILED')
-    public async deleteAllRefreshTokensForUser(input: Parameters<TDeleteAllRefreshTokensForUser>[0]): ReturnType<TDeleteAllRefreshTokensForUser> {
+    public async deleteAllRefreshTokensForUser(input: Parameters<TDeleteAllRefreshTokensForUserFn>[0]): ReturnType<TDeleteAllRefreshTokensForUserFn> {
         const { user_id } = input;
 
         const result = await this.collection.deleteMany({ user_id: user_id });

@@ -1,5 +1,5 @@
 import type {NextFunction, Request, Response} from "express";
-import type {TAuthTokenPayload, TVerifyAuthToken} from "@sh3pherd/shared-types";
+import type {TAuthTokenPayload, TVerifyAuthTokenFn} from "@sh3pherd/shared-types";
 import {BusinessError} from "@sh3pherd/shared-utils";
 
 
@@ -22,7 +22,7 @@ import {BusinessError} from "@sh3pherd/shared-utils";
  * @example
  * app.use('/protected', verifyAuthToken({ verifyAuthTokenFn }));
  */
-export const verifyAuthToken = (deps: { verifyAuthTokenFn: TVerifyAuthToken }) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const verifyAuthToken = (deps: { verifyAuthTokenFn: TVerifyAuthTokenFn }) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const authToken: string | undefined = req.headers["authorization"]?.split(" ")[1];
 
     if (!authToken) {

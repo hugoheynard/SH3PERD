@@ -1,10 +1,10 @@
 import { jest } from '@jest/globals';
 import type {
-    TDeleteRefreshToken,
+    TDeleteRefreshTokenFn,
     TRefreshToken,
     TRefreshTokenDomainModel,
     TRefreshTokenManagerDeps,
-    TSaveRefreshToken,
+    TSaveRefreshTokenFn,
     TUserId
 } from "@sh3pherd/shared-types";
 import {RefreshTokenManager} from "../RefreshTokenManager.js";
@@ -115,7 +115,7 @@ describe('RefreshTokenManager', () => {
 
     //error catching from repository layer
     it('should throw if saveRefreshToken throws', async () => {
-        (saveRefreshTokenFnMock as jest.MockedFunction<TSaveRefreshToken>)
+        (saveRefreshTokenFnMock as jest.MockedFunction<TSaveRefreshTokenFn>)
             .mockImplementationOnce(async () => {
                 throw new Error('DB failure')
             });
@@ -126,7 +126,7 @@ describe('RefreshTokenManager', () => {
     });
 
     it('should throw if revokeRefreshToken throws', async () => {
-        (deleteRefreshTokenFnMock as jest.MockedFunction<TDeleteRefreshToken>)
+        (deleteRefreshTokenFnMock as jest.MockedFunction<TDeleteRefreshTokenFn>)
             .mockImplementationOnce(async () => {
                 throw new Error('Revoke error')
             })

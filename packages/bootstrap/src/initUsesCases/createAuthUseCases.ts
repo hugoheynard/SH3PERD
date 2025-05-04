@@ -33,8 +33,9 @@ export const createAuthUseCases = (deps: { services: any; repositories: any }): 
             }),
             refresh: createRefreshSessionUseCase({
                 findRefreshTokenFn: refreshTokenRepository.findRefreshToken,
-                deleteAllRefreshTokensFromUserFn: authTokenService.deleteAllRefreshTokensForUser,
+                verifyRefreshTokenFn: authTokenService.verifyRefreshToken,
                 createAuthSessionFn: authTokenService.createAuthSession,
+                revokeRefreshTokenFn: authTokenService.revokeRefreshToken,
             })
         };
     } catch (err) {

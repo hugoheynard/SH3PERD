@@ -1,14 +1,12 @@
 import type {
-    TCreateAuthSession,
-    TDeleteAllRefreshTokensForUser,
-    TDeleteRefreshToken,
-    TFindAndVerifyRefreshToken,
-    TFindRefreshToken,
-    TGenerateAuthToken,
+    TCreateAuthSessionFn,
+    TDeleteAllRefreshTokensForUserFn,
+    TDeleteRefreshTokenFn,
+    TFindRefreshTokenFn,
+    TGenerateAuthTokenFn,
     TGenerateRefreshTokenCookie,
-    TRefreshAuthSession,
-    TSaveRefreshToken,
-    TVerifyAuthToken,
+    TSaveRefreshTokenFn,
+    TVerifyAuthTokenFn,
 } from "./auth.core.contracts.js";
 import type {TDateIsNotPassed} from "@sh3pherd/shared-utils";
 import type {Collection} from "mongodb";
@@ -24,10 +22,10 @@ import type {TUserId} from "../user/index.js";
 
 
 export interface IRefreshTokenRepository {
-    findRefreshToken: TFindRefreshToken;
-    saveRefreshToken: TSaveRefreshToken;
-    deleteRefreshToken: TDeleteRefreshToken;
-    deleteAllRefreshTokensForUser: TDeleteAllRefreshTokensForUser;
+    findRefreshToken: TFindRefreshTokenFn;
+    saveRefreshToken: TSaveRefreshTokenFn;
+    deleteRefreshToken: TDeleteRefreshTokenFn;
+    deleteAllRefreshTokensForUser: TDeleteAllRefreshTokensForUserFn;
 }
 
 export interface IRefreshTokenMongoRepositoryDeps {
@@ -41,22 +39,22 @@ export interface IRefreshTokenMongoRepositoryDeps {
  * including generation, validation, and revocation.
  */
 //RefreshTokenManager Functions
-export type TGenerateRefreshToken = (input: { user_id: TUserId}) => Promise<TRefreshToken>;
-export type TVerifyRefreshToken = (input: { refreshTokenDomainModel: TRefreshTokenDomainModel }) => boolean;
-export type TRevokeRefreshToken = (input: { refreshToken: TRefreshToken }) => Promise<TRevokeRefreshTokenResult>;
+export type TGenerateRefreshTokenFn = (input: { user_id: TUserId}) => Promise<TRefreshToken>;
+export type TVerifyRefreshTokenFn = (input: { refreshTokenDomainModel: TRefreshTokenDomainModel }) => boolean;
+export type TRevokeRefreshTokenFn = (input: { refreshToken: TRefreshToken }) => Promise<TRevokeRefreshTokenResult>;
 
 
 export interface IAbstractRefreshTokenManager {
-    generateRefreshToken: TGenerateRefreshToken;
-    verifyRefreshToken: TVerifyRefreshToken;
-    revokeRefreshToken: TRevokeRefreshToken;
+    generateRefreshToken: TGenerateRefreshTokenFn;
+    verifyRefreshToken: TVerifyRefreshTokenFn;
+    revokeRefreshToken: TRevokeRefreshTokenFn;
 }
 
 export type TRefreshTokenManagerDeps = {
     generatorFn: () => Promise<TRefreshToken>;
     validateRefreshTokenDateFn: TDateIsNotPassed;
-    saveRefreshTokenFn: TSaveRefreshToken;
-    deleteRefreshTokenFn: TDeleteRefreshToken;
+    saveRefreshTokenFn: TSaveRefreshTokenFn;
+    deleteRefreshTokenFn: TDeleteRefreshTokenFn;
     ttlMs: number;
 };
 
@@ -64,8 +62,8 @@ export type TRefreshTokenManagerDeps = {
  * AuthTokenManager handles the lifecycle of auth tokens,
  */
 export interface IAbstractAuthTokenManager {
-    generateAuthToken: TGenerateAuthToken;
-    verifyAuthToken: TVerifyAuthToken;
+    generateAuthToken: TGenerateAuthTokenFn;
+    verifyAuthToken: TVerifyAuthTokenFn;
 }
 
 /**
@@ -78,29 +76,29 @@ export type TAuthSessionResult = {
 }
 
 export type TAuthTokenServiceFactory = (deps: {
-    findRefreshTokenFn: TFindRefreshToken;
-    saveRefreshTokenFn: TSaveRefreshToken;
-    deleteRefreshTokenFn: TDeleteRefreshToken;
-    deleteAllRefreshTokensForUserFn: TDeleteAllRefreshTokensForUser;
+    findRefreshTokenFn: TFindRefreshTokenFn;
+    saveRefreshTokenFn: TSaveRefreshTokenFn;
+    deleteRefreshTokenFn: TDeleteRefreshTokenFn;
+    deleteAllRefreshTokensForUserFn: TDeleteAllRefreshTokensForUserFn;
     authConfig: TAuthConfig,
     secureCookieConfig: TSecureCookieConfig;
 }) => IAuthTokenService;
 
 
 export type TAuthTokenServiceDeps = {
-    generateAuthTokenFn: TGenerateAuthToken;
-    generateRefreshTokenFn: TGenerateRefreshToken;
-    findRefreshTokenFn: TFindRefreshToken;
-    verifyAuthTokenFn: TVerifyAuthToken;
-    verifyRefreshTokenFn: TVerifyRefreshToken;
-    revokeRefreshTokenFn: TRevokeRefreshToken;
-    deleteAllRefreshTokensForUserFn: TDeleteAllRefreshTokensForUser;
+    generateAuthTokenFn: TGenerateAuthTokenFn;
+    generateRefreshTokenFn: TGenerateRefreshTokenFn;
+    findRefreshTokenFn: TFindRefreshTokenFn;
+    verifyAuthTokenFn: TVerifyAuthTokenFn;
+    verifyRefreshTokenFn: TVerifyRefreshTokenFn;
+    revokeRefreshTokenFn: TRevokeRefreshTokenFn;
+    deleteAllRefreshTokensForUserFn: TDeleteAllRefreshTokensForUserFn;
     secureCookieConfig: TSecureCookieConfig;
 }
 
 export interface IAuthTokenService {
-    createAuthSession: TCreateAuthSession;
-    verifyAuthToken: TVerifyAuthToken;
-    revokeRefreshToken: TRevokeRefreshToken;
+    createAuthSession: TCreateAuthSessionFn;
+    verifyAuthToken: TVerifyAuthTokenFn;
+    revokeRefreshToken: TRevokeRefreshTokenFn;
     generateRefreshTokenCookie: TGenerateRefreshTokenCookie;
 }

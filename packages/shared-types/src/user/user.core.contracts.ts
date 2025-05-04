@@ -6,5 +6,5 @@ export type TCreateUserInput = {
     user_id: TUserId;
 };
 
-export type TCreateUser = (input: TCreateUserInput) => TUserDomainModel;
+export type TCreateUserFn = (input: TCreateUserInput) => TUserDomainModel;
 

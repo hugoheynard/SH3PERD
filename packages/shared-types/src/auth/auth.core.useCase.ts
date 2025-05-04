@@ -1,7 +1,7 @@
 import type {TRefreshToken, TRefreshTokenSecureCookie} from "./auth.domain.tokens.js";
-import type {TComparePassword, TCreateAuthSession, THashPassword} from "./auth.core.contracts.js";
-import type {TCreateUser, TFindUserByEmail, TSaveUser, TUserId} from "../user/index.js";
-import type {TRevokeRefreshToken} from "./auth.core.tokens.contracts.js";
+import type {TComparePassword, TCreateAuthSessionFn, TFindRefreshTokenFn, THashPasswordFn} from "./auth.core.contracts.js";
+import type {TCreateUserFn, TFindUserByEmailFn, TSaveUserFn, TUserId} from "../user/index.js";
+import type {TRevokeRefreshTokenFn, TVerifyRefreshTokenFn} from "./auth.core.tokens.contracts.js";
 
 
 /**
@@ -11,9 +11,9 @@ export type TLoginRequestDTO = { email: string; password: string; }
 export type TLoginResponseDTO = { authToken: string; user_id: TUserId; }
 
 export type TLoginUseCaseDeps = {
-    findUserByEmailFn: TFindUserByEmail;
+    findUserByEmailFn: TFindUserByEmailFn;
     comparePasswordFn: TComparePassword;
-    createAuthSessionFn: TCreateAuthSession;
+    createAuthSessionFn: TCreateAuthSessionFn;
 }
 export type TLoginUseCase = (input: TLoginRequestDTO) => Promise<TLoginResponseDTO & { refreshTokenSecureCookie: TRefreshTokenSecureCookie }>;
 
@@ -21,30 +21,36 @@ export type TLoginUseCase = (input: TLoginRequestDTO) => Promise<TLoginResponseD
  * Refresh Session Use Case Types
  */
 export type TRefreshSessionRequestDTO = { refreshToken: TRefreshToken };
+export type TRefreshSessionUseCaseDeps = {
+    findRefreshTokenFn: TFindRefreshTokenFn;
+    verifyRefreshTokenFn: TVerifyRefreshTokenFn;
+    createAuthSessionFn: TCreateAuthSessionFn;
+    revokeRefreshTokenFn: TRevokeRefreshTokenFn;
+}
 export type TRefreshSessionUseCase = (input: TRefreshSessionRequestDTO) => Promise<TLoginResponseDTO & { refreshTokenSecureCookie: TRefreshTokenSecureCookie }>;
 
 /**
  * Logout Use Case Types
  */
 export type TLogoutRequestDTO = { refreshToken: TRefreshToken };
-export type TLogoutResult = { revokedToken: TRefreshToken };
-export type TLogoutUseCaseDeps = { revokeRefreshTokenFn: TRevokeRefreshToken };
+export type TLogoutResult = boolean;
+export type TLogoutUseCaseDeps = { revokeRefreshTokenFn: TRevokeRefreshTokenFn };
 export type TLogoutUseCase = (input: TLogoutRequestDTO) => Promise<TLogoutResult>;
 
 
 /**
  * Register Use Case Types
  */
-export type RegisterRequestDTO = { email: string; password: string; }
-export type RegisterResponseDTO = { user_id: TUserId; }
+export type TRegisterRequestDTO = { email: string; password: string; }
+export type TRegisterResponseDTO = { user_id: TUserId; }
 export type TRegisterUserUseCaseDeps = {
-    findUserByEmailFn: TFindUserByEmail;
-    hashPasswordFn: THashPassword;
-    createUserFn: TCreateUser;
-    saveUserFn: TSaveUser;
+    findUserByEmailFn: TFindUserByEmailFn;
+    hashPasswordFn: THashPasswordFn;
+    createUserFn: TCreateUserFn;
+    saveUserFn: TSaveUserFn;
     generateUserIdFn: () => TUserId;
 };
-export type TRegisterUserUseCase = (input: RegisterRequestDTO) => Promise<RegisterResponseDTO>;
+export type TRegisterUserUseCase = (input: TRegisterRequestDTO) => Promise<TRegisterResponseDTO>;
 
 
 /**
