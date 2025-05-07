@@ -25,6 +25,9 @@ dev-toolbox/.fix-cache.json
 coverage/
 packages/*/coverage/
 
+# Turbo cache
+.turbo/
+
 # Cookies / test outputs
 *.cookies
 *.token
