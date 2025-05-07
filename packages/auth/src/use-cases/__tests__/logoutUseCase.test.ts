@@ -1,5 +1,5 @@
 import { BusinessError } from '@sh3pherd/shared-utils';
-import {createLogoutUseCase} from "../createLogoutUseCase";
+import {createLogoutUseCase} from "../createLogoutUseCase.js";
 import { jest } from '@jest/globals';
 import type {TRevokeRefreshTokenFn} from "@sh3pherd/shared-types";
 

@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import type {TRegisterControllerDeps, TRegisterResponseDTO} from '@sh3pherd/shared-types';
 import { jest } from '@jest/globals';
-import {RegisterController} from "../RegisterController";
+import {RegisterController} from "../RegisterController.js";
 
 describe('RegisterController', () => {
     let controller: RegisterController;

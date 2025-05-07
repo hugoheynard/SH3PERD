@@ -1,17 +1,6 @@
-<!--
-<ng-container *ngIf="!authService.isAuthenticatedSignal()">
-  <section class="content">
-    <router-outlet />
-  </section>
-</ng-container>-->
-
-
-<ng-container> <!--*ngIf="authService.isAuthenticatedSignal()"-->
-  <app-header />
-  <mat-sidenav-container>
-    <mat-sidenav #leftMenuSidenav mode="side" opened>
-      <app-appMenu
-        [menuItems]="[
+<div class="app-layout">
+  <appMenu class="menu-left"
+    [menuItems]="[
           { iconName: 'home', action:  routeService.navigateToHome.bind(routeService) },
           { iconName: 'calendar_clock', action: routeService.navigateToCalendar.bind(routeService) },
           { iconName: 'library_music', action: routeService.navigateToMusicLibrary.bind(routeService) },
@@ -19,17 +8,27 @@
           { iconName: 'settings', action: routeService.navigateToSettings.bind(routeService) },
           { iconName: 'logout', action: authService.logout.bind(authService) }
         ]"/>
-    </mat-sidenav>
 
-    <section class="content">
-      <router-outlet />
-    </section>
+  <div class="layout-body">
+    <!--<app-header />-->
 
-    <!--SHARED RIGHT SIDE SIDENAV-->
-    <mat-sidenav #sidenavRight position="end" mode="side" id="rightSidenav">
-      <ng-template #sidenavContainer></ng-template>
-    </mat-sidenav>
+    <div class="layout-main">
+      <div class="leftPanel" [ngClass]="{ 'hidden': !hasLeftPanel() }">
+        <ng-template #leftPanelContainer />
+      </div>
 
-  </mat-sidenav-container>
-  <app-footer />
-</ng-container>
+
+      <div class="content">
+        <router-outlet />
+      </div>
+
+      <div class="rightPanel" [ngClass]="{ 'hidden': !hasRightPanel() }">
+        <ng-template #rightPanelContainer />
+      </div>
+
+      <div class="context-menu" [ngClass]="{ 'hidden': !hasContextMenu() }">
+        <ng-template #contextMenuContainer />
+      </div>
+    </div>
+  </div>
+</div>

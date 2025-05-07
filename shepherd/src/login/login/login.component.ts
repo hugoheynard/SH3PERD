@@ -20,7 +20,7 @@ export class LoginComponent {
   private authService = inject(AuthService);
 
   async onLogin(credentials: TLoginRequestDTO): Promise<void> {
-    const success = await firstValueFrom(this.authService.loginAndRefresh(credentials));
+    const success = await firstValueFrom(this.authService.login(credentials));
 
     if (!success) {
       this.snackbarService.show('Login failed', 'Close', 3000);

@@ -1,0 +1,20 @@
+{
+  "name": "@sh3pherd/contracts",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "private": true,
+  "scripts": {
+    "build": "tsc -b tsconfig.json",
+    "dev:watch": "tsc -b tsconfig.json --watch",
+    "test": "jest",
+    "clean": "../../dev-toolbox/scripts/clean:package.sh"
+  }
+}

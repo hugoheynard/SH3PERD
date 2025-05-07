@@ -2,19 +2,17 @@
   "name": "@sh3pherd/shared-types",
   "version": "1.0.0",
   "type": "module",
+  "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/types/index.d.ts"
     }
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "private": true,
   "scripts": {
+    "dev:watch": "tsc -b tsconfig.json --watch",
     "build": "tsc -b tsconfig.json",
-    "dev:watch": "concurrently \"tsc -b tsconfig.json --watch\" \"tsc-alias --watch\"",
     "test": "jest",
-    "clean": "find . \\( -type d -name dist -o -name .turbo -o -name .cache \\) -exec rm -rf {} + && find . -type f -name '*.tsbuildinfo' -delete"
+    "clean": "../../dev-toolbox/scripts/clean:package.sh"
   }
 }

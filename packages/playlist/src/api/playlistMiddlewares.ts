@@ -1,4 +1,4 @@
-import {checkPlaylistTemplate} from "./middlewares/checkPlaylistTemplate";
+import {checkPlaylistTemplate} from "./middlewares/checkPlaylistTemplate.js";
 
 export const playlistMiddlewares = (input: { playlistTemplateService: any}): any => {
     try {

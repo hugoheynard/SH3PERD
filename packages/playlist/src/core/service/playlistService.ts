@@ -1,9 +1,6 @@
-import type {IPlaylist} from "@sh3pherd/backend/playlist/classes/playlistBuilder/PlaylistBuilder";
-import type {IDataInformation} from "@sh3pherd/backend/playlist/classes/DataInformationManager";
-import type {IPlaylistService} from "../interfaces/IPlaylistService";
-import type {IPlaylistDocument} from "../interfaces/IPlaylistDocument";
-import type {InsertOneResult, UpdateResult, DeleteResult} from "mongodb";
+import type {DeleteResult, InsertOneResult, UpdateResult} from "mongodb";
 import {ObjectId} from "mongodb";
+import type {IPlaylistService, TDataInformation, TPlaylistDomainModel} from "@sh3pherd/shared-types";
 
 
 export const playlistService = (input: IPlaylistService['input']) => {
@@ -12,16 +9,16 @@ export const playlistService = (input: IPlaylistService['input']) => {
     const service: IPlaylistService['output'] = {
         /**
          * used to send a valid playlist object to the front end to feed the form
-         * @returns {Promise<IPlaylist>}
+         * @returns {Promise<TPlaylistDomainModel>}
          */
-        getDefaultPlaylist: async (): Promise<IPlaylist> => {
+        getDefaultPlaylist: async (): Promise<TPlaylistDomainModel> => {
             return new PlaylistModule().generateDefaultEmptyPlaylist();
         },
 
         /**
          * used to send a valid playlist object made from a template,
          * updated with template values before sending to the front end to feed the form
-         * @returns {Promise<IPlaylist>}
+         * @returns {Promise<TPlaylistDomainModel>}
          */
         getNewPlaylistFromTemplate: async (input: { playlistTemplate: Partial<IPlaylist> }): Promise<IPlaylist> =>{
             return new PlaylistModule().generateNewPlaylistFromTemplate({ playlistTemplate: input});
@@ -30,7 +27,7 @@ export const playlistService = (input: IPlaylistService['input']) => {
         /**
          * regular getPlaylist method to return all playlists
          */
-        getPlaylist: async (): Promise<IPlaylistDocument[]> => {
+        getPlaylist: async (): Promise<TPlaylistDomainModel[]> => {
             try {
                 return await playlistCollection.find().toArray();
             } catch(error) {
@@ -42,7 +39,7 @@ export const playlistService = (input: IPlaylistService['input']) => {
         /**
          * regular postPlaylist method to insert a new playlist
          */
-        postPlaylist: async (input: { playlistData: IPlaylist; user_id: string}): Promise<InsertOneResult> => {
+        postPlaylist: async (input: { playlistData: TPlaylistDomainModel; user_id: string}): Promise<InsertOneResult> => {
             try {
                 const plMod = new PlaylistModule();
                 const validatedPlaylist: IPlaylist = plMod.updatePlaylist({ update: input.playlistData });
@@ -50,7 +47,7 @@ export const playlistService = (input: IPlaylistService['input']) => {
                 /**
                  * As it is a creation, we need to create a new default dataInformation object
                  */
-                const dataInformation: IDataInformation = plMod.createDataInformationFunction({ creator_id: input.user_id });
+                const dataInformation: TDataInformation = plMod.createDataInformationFunction({ creator_id: input.user_id });
 
                 return await playlistCollection.insertOne({
                     _id: new ObjectId(),
@@ -63,7 +60,7 @@ export const playlistService = (input: IPlaylistService['input']) => {
             }
         },
 
-        updatePlaylist: async (input: { playlistData: IPlaylist, playlist_id: string; user_id: string }): Promise<UpdateResult> =>{
+        updatePlaylist: async (input: { playlistData: TPlaylistDomainModel, playlist_id: string; user_id: string }): Promise<UpdateResult> =>{
             try {
                 const plMod = new PlaylistModule();
                 const validatedPlaylist: IPlaylist = plMod.updatePlaylist({ update: input.playlistData });

@@ -9,14 +9,12 @@ interface MenuItem {
 }
 
 @Component({
-    selector: 'app-appMenu',
+    selector: 'appMenu',
     templateUrl: './app-menu.component.html',
     styleUrl: './app-menu.component.scss',
     standalone: true,
     imports: [CommonModule, RouterModule, IconFlatButtonComponent]
 })
 export class AppMenuComponent {
-
    @Input() menuItems: MenuItem[] = [];
-
 }

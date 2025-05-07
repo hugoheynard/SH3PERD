@@ -1,6 +1,8 @@
-import {ObjectValidator} from "./ObjectValidator";
-import type {IMusicianConfig} from "../playlistBuilder/MUSICIAN_CONFIG_DEFAULT";
+
+import {ObjectValidator} from "./ObjectValidator.js";
+import type {TMusicianConfig} from "@sh3pherd/shared-types";
+
 
 export class MusiciansConfigValidator extends ObjectValidator {
-    protected checkProps<T extends IMusicianConfig>(propsToValidate: Partial<T>): void {};
+    protected checkProps<T extends TMusicianConfig>(propsToValidate: Partial<T>): void {};
 }

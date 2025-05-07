@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import type { TAuthControllerDeps } from '@sh3pherd/shared-types';
-import {AuthController} from "../AuthController";
+import {AuthController} from "../AuthController.js";
 import {jest} from "@jest/globals";
 
 

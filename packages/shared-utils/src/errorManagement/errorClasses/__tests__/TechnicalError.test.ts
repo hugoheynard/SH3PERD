@@ -1,4 +1,4 @@
-import {TechnicalError} from "../TechnicalError";
+import {TechnicalError} from "../TechnicalError.js";
 
 describe('TechnicalError', () => {
     it('should correctly assign message, errorCode and statusCode', () => {

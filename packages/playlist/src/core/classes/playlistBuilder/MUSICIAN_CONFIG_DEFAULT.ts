@@ -1,7 +1,6 @@
-export interface IMusicianConfig {
-    role: "solo" | "duo" | null;
-}
+import type {TMusicianConfig} from "@sh3pherd/shared-types";
 
-export const MUSICIAN_CONFIG_DEFAULT: Readonly<IMusicianConfig> = Object.freeze({
+
+export const MUSICIAN_CONFIG_DEFAULT: Readonly<TMusicianConfig> = Object.freeze({
     role: null,
 });

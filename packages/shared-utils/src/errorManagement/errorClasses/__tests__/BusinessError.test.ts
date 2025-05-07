@@ -1,4 +1,4 @@
-import {BusinessError} from "../BusinessError";
+import {BusinessError} from "../BusinessError.js";
 
 describe('BusinessError', () => {
     it('should correctly assign message, errorCode and statusCode', () => {

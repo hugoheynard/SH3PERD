@@ -1,5 +1,5 @@
 import { TechnicalError } from '@sh3pherd/shared-utils';
-import {failThrows500} from "../failThrows500";
+import {failThrows500} from "../failThrows500.js";
 
 describe('failThrows500', () => {
     class TestService {

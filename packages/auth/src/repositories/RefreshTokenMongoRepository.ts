@@ -1,5 +1,5 @@
 import type {
-    IRefreshTokenMongoRepositoryDeps,
+    TRefreshTokenMongoRepositoryDeps,
     IRefreshTokenRepository,
     TDeleteAllRefreshTokensForUserFn,
     TDeleteRefreshTokenFn,
@@ -37,8 +37,8 @@ export class RefreshTokenMongoRepository
     extends BaseMongoRepository<TRefreshTokenDomainModel>
     implements IRefreshTokenRepository {
 
-    constructor(input: IRefreshTokenMongoRepositoryDeps) {
-        super(input.refreshTokenCollection);
+    constructor(input: TRefreshTokenMongoRepositoryDeps) {
+        super(input);
     };
 
     @failThrows500('REFRESH_TOKEN_SAVE_FAILED')

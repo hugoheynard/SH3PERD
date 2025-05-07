@@ -12,7 +12,7 @@ export class UserMongoRepository
     implements IUserRepository {
 
     constructor(input: TUserMongoRepositoryDeps) {
-        super(input.userCollection);
+        super(input);
     };
 
     @failThrows500('USER_SAVE_FAILED')

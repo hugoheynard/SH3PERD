@@ -3,22 +3,22 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
+    "declarationDir": "dist/types",
     "composite": true,
     "declaration": true,
-    "baseUrl": ".",
-    "paths": {
-      "@sh3pherd/shared-types": ["../shared-types/src/index"]
-    }
+    "baseUrl": "."
   },
-  "include": [
-    "src"
+  "include": ["src"],
+  "exclude": [
+    "dist",
+    "dist/types",
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**"
   ],
   "references": [
-    {
-      "path": "../shared-utils"
-    },
-    {
-      "path": "../backend"
-    }
+    { "path": "../shared-types" },
+    { "path": "../shared-utils" }
   ]
 }

@@ -1,8 +1,9 @@
-import {ObjectValidator} from "./ObjectValidator";
-import type {IAerialConfig} from "../playlistBuilder/AERIAL_CONFIG_DEFAULT";
+import {ObjectValidator} from "./ObjectValidator.js";
+import type {TAerialConfig} from "@sh3pherd/shared-types";
+
 
 export class AerialConfigValidator extends ObjectValidator{
-    protected checkProps<T extends IAerialConfig>(propsToValidate: Partial<T>): void {
+    protected checkProps<T extends TAerialConfig>(propsToValidate: Partial<T>): void {
         this.validatePerformancePosition(propsToValidate.performancePosition);
 
     };

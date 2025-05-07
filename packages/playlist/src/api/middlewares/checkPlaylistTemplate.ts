@@ -1,7 +1,4 @@
 import type { Request, Response, NextFunction } from 'express';
-import type {
-    PlaylistTemplateDocument
-} from "../../core/interfaces/IPlaylistTemplate";
 
 /**
  * checks if a playlist template exists

@@ -1,5 +1,5 @@
-import type {IPlaylist} from "../playlistBuilder/PlaylistBuilder";
-import type {ISubTagCreatorsReturns} from "./PlaylistTagGenerator";
+import type {ISubTagCreatorsReturns} from "./PlaylistTagGenerator.js";
+import type {TPlaylistDomainModel} from "@sh3pherd/shared-types";
 
 
 export class TagCreator {
@@ -13,7 +13,7 @@ export class TagCreator {
         this.tagMerger = input.tagMerger;
     }
 
-    tag(input: { playlistToTag: IPlaylist }): IPlaylist {
+    tag(input: { playlistToTag: TPlaylistDomainModel }): TPlaylistDomainModel {
         const { playlistToTag } = input;
 
         const tags = this.generateTags({ playlistToTag });
@@ -21,7 +21,7 @@ export class TagCreator {
         return this.applyTags({ playlistToUpdate: playlistToTag, tags });
     };
 
-    generateTags(input: { playlistToTag: IPlaylist }): ISubTagCreatorsReturns {
+    generateTags(input: { playlistToTag: TPlaylistDomainModel }): ISubTagCreatorsReturns {
         try {
             const { playlistToTag } = input;
             const { numberOfSongs } = playlistToTag.settings;
@@ -45,11 +45,11 @@ export class TagCreator {
         }
     };
 
-    applyTags(input: { playlistToUpdate: IPlaylist, tags: ISubTagCreatorsReturns }): IPlaylist {
+    applyTags(input: { playlistToUpdate: TPlaylistDomainModel, tags: ISubTagCreatorsReturns }): TPlaylistDomainModel {
         try{
             const { playlistToUpdate, tags } = input;
 
-            const updatedPlaylist: IPlaylist = {
+            const updatedPlaylist: TPlaylistDomainModel = {
                 settings: playlistToUpdate.settings,
                 tags: tags.playlistTags,
                 songList: playlistToUpdate.songList.map((song, index) => {

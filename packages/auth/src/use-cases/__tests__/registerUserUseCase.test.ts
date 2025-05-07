@@ -1,4 +1,3 @@
-import { createRegisterUserUseCase } from '../createRegisterUserUseCase';
 import type {
     TRegisterUserUseCaseDeps,
     TUserDomainModel,
@@ -6,6 +5,7 @@ import type {
 } from '@sh3pherd/shared-types';
 import { BusinessError } from '@sh3pherd/shared-utils';
 import { jest } from '@jest/globals';
+import {createRegisterUserUseCase} from "../createRegisterUserUseCase.js";
 
 describe('createRegisterUserUseCase', () => {
     const email = 'new@example.com';

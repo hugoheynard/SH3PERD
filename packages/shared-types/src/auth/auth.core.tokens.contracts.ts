@@ -8,8 +8,6 @@ import type {
     TSaveRefreshTokenFn,
     TVerifyAuthTokenFn,
 } from "./auth.core.contracts.js";
-import type {TDateIsNotPassed} from "@sh3pherd/shared-utils";
-import type {Collection} from "mongodb";
 import type {
     TRefreshToken,
     TRefreshTokenDomainModel,
@@ -19,7 +17,10 @@ import type {
 } from "./auth.domain.tokens.js";
 import type {TAuthConfig} from "./auth.domain.config.js";
 import type {TUserId} from "../user/index.js";
+import type {TBaseMongoRepoDeps} from "../mongo/mongo.types.js";
 
+
+export type TDateIsNotPassed = (input: { date: Date }) => boolean;
 
 export interface IRefreshTokenRepository {
     findRefreshToken: TFindRefreshTokenFn;
@@ -28,9 +29,7 @@ export interface IRefreshTokenRepository {
     deleteAllRefreshTokensForUser: TDeleteAllRefreshTokensForUserFn;
 }
 
-export interface IRefreshTokenMongoRepositoryDeps {
-    refreshTokenCollection: Collection<TRefreshTokenDomainModel>;
-}
+export type TRefreshTokenMongoRepositoryDeps = TBaseMongoRepoDeps
 
 
 

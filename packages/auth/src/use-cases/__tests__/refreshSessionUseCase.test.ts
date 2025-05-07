@@ -1,4 +1,4 @@
-import { createRefreshSessionUseCase } from '../createRefreshSessionUseCase';
+import { createRefreshSessionUseCase } from '../createRefreshSessionUseCase.js';
 import { BusinessError } from '@sh3pherd/shared-utils';
 import type {
     TRefreshToken,

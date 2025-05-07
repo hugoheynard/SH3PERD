@@ -1,9 +1,9 @@
-import { ObjectValidator } from "./ObjectValidator";
-import type { IPlaylistSong } from "../playlistBuilder/PLAYLIST_SONG_DEFAULT";
+import {ObjectValidator} from "./ObjectValidator.js";
+import type {TPlaylistSong} from "@sh3pherd/shared-types";
 
 export class SongValidator extends ObjectValidator {
 
-    protected checkProps<T extends IPlaylistSong>(propsToValidate: Partial<T>): void {
+    protected checkProps<T extends TPlaylistSong>(propsToValidate: Partial<T>): void {
         this.validateTitle(propsToValidate.title);
         this.validateDuration(propsToValidate.duration);
         this.validateTags(propsToValidate.tags);

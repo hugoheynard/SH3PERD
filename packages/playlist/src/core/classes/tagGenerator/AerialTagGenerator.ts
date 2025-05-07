@@ -1,5 +1,5 @@
-import {type ISubTagCreatorsReturns, PlaylistTagGenerator} from "./PlaylistTagGenerator";
-import type {IAerialConfig} from "../playlistBuilder/AERIAL_CONFIG_DEFAULT";
+import {ISubTagCreatorsReturns, PlaylistTagGenerator} from "./PlaylistTagGenerator.js";
+import type {TAerialConfig} from "@sh3pherd/shared-types";
 
 
 /**
@@ -10,7 +10,7 @@ export class AerialTagGenerator extends PlaylistTagGenerator<{ aerialConfig: IAe
     /**
      * Aerial configuration used to generate tags.
      */
-    private aerialConfig: IAerialConfig = {} as IAerialConfig;
+    private aerialConfig: IAerialConfig = {} as TAerialConfig;
     /**
      * Total number of songs in the playlist.
      */
@@ -24,7 +24,7 @@ export class AerialTagGenerator extends PlaylistTagGenerator<{ aerialConfig: IAe
      * @param {number} input.numberOfSongs - The number of songs in the playlist.
      * @returns {ISubTagCreatorsReturns} - The generated tag results.
      */
-    public generate(input: { aerialConfig: IAerialConfig; numberOfSongs: number }): ISubTagCreatorsReturns {
+    public generate(input: { aerialConfig: TAerialConfig; numberOfSongs: number }): ISubTagCreatorsReturns {
         return super.generate(input);
     };
 
@@ -35,7 +35,7 @@ export class AerialTagGenerator extends PlaylistTagGenerator<{ aerialConfig: IAe
      * @param {IAerialConfig} input.aerialConfig - The aerial configuration.
      * @param {number} input.numberOfSongs - The number of songs to tag.
      */
-    protected execute(input: { aerialConfig: IAerialConfig; numberOfSongs: number }): void {
+    protected execute(input: { aerialConfig: TAerialConfig; numberOfSongs: number }): void {
         try {
             this.initData(input);
             this.managePlaylistTags();
@@ -54,7 +54,7 @@ export class AerialTagGenerator extends PlaylistTagGenerator<{ aerialConfig: IAe
      * @param {number} input.numberOfSongs - The number of songs in the playlist.
      * @throws {Error} Throws an error if `aerialConfig` or `numberOfSongs` is missing.
      */
-    initData(input: { aerialConfig: IAerialConfig; numberOfSongs: number }): void {
+    initData(input: { aerialConfig: TAerialConfig; numberOfSongs: number }): void {
 
             if (!input.aerialConfig) {
                 throw new Error("[AerialTagGenerator - initData]: No aerial configuration provided.");

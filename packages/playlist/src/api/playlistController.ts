@@ -1,5 +1,4 @@
-import {wrap_TryCatchNextErr} from "@sh3pherd/shared-utils/tryCatchs/wrap_tryCatchNextErr";
-import type {IPlaylistController} from "../core/interfaces/IPlaylistController";
+import type {IPlaylistController} from "../core/interfaces/IPlaylistController.js";
 import type {NextFunction, Request, Response} from "express";
 
 
@@ -78,5 +77,5 @@ export const playlistController = (input: IPlaylistController['input']): IPlayli
         }
     };
 
-    return wrap_TryCatchNextErr(controller);
+    return controller;
 };

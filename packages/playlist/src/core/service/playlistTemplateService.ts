@@ -1,13 +1,14 @@
-import type {IPlaylistTemplateService} from "../interfaces/IPlaylistTemplateService";
+
 import {ObjectId} from "mongodb";
-import {wrapServiceWithTryCatch} from "@sh3pherd/shared-utils/tryCatchs/tryCatchServiceWrapper";
-import type {PlaylistTemplateDocument} from "../interfaces/IPlaylistTemplate";
+import {wrapServiceWithTryCatch} from "@sh3pherd/shared-utils";
+import type {IPlaylistTemplateService} from "@sh3pherd/shared-types";
+
 
 export const playlistTemplateService = (input: IPlaylistTemplateService["input"]) => {
     const { playlistTemplateCollection } = input;
 
     const service: IPlaylistTemplateService["output"] = {
-        getPlaylistTemplates: async (): Promise<PlaylistTemplateDocument[]> => {
+        getPlaylistTemplates: async (): Promise<TPlaylistTemplateDocument[]> => {
             return await playlistTemplateCollection.find().toArray();
         },
         postPlaylistTemplate: async (input)=>{

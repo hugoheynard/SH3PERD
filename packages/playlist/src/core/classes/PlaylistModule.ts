@@ -1,31 +1,33 @@
-import {type IPlaylist, PlaylistBuilder} from "./playlistBuilder/PlaylistBuilder";
-import {PlaylistUpdater} from "./PlaylistUpdater";
-import {TagCreator} from "./tagGenerator/TagCreator";
-import {ObjectUpdater} from "./ObjectUpdater";
-import {PlaylistSettingsValidator} from "./playlistValidators/PlaylistSettingsValidator";
-import {AerialConfigValidator} from "./playlistValidators/AerialConfigValidator";
-import {SingersConfigValidator} from "./playlistValidators/SingersConfigValidator";
-import {MusiciansConfigValidator} from "./playlistValidators/MusiciansConfigValidator";
-import {type ISingersConfig, SINGERS_CONFIG_DEFAULT} from "./playlistBuilder/SINGERS_CONFIG_DEFAULT";
-import {AERIAL_CONFIG_DEFAULT, type IAerialConfig} from "./playlistBuilder/AERIAL_CONFIG_DEFAULT";
-import {MUSICIAN_CONFIG_DEFAULT} from "./playlistBuilder/MUSICIAN_CONFIG_DEFAULT";
-import {PLAYLIST_SETTINGS_DEFAULT} from "./playlistBuilder/PLAYLIST_SETTINGS_DEFAULT";
-import {PLAYLIST_SONG_DEFAULT} from "./playlistBuilder/PLAYLIST_SONG_DEFAULT";
-import {SingersTagGenerator} from "./tagGenerator/SingersTagGenerator";
-import {AerialTagGenerator} from "./tagGenerator/AerialTagGenerator";
-import {PlaylistTagMerger} from "./tagGenerator/PlaylistTagMerger";
-import {SongValidator} from "./playlistValidators/SongValidator";
-import {DataInformationManager, type IDataInformation} from "./DataInformationManager";
-import {ObjectId} from "mongodb";
-import type {ISubTagCreatorsReturns} from "./tagGenerator/PlaylistTagGenerator";
+import {IPlaylist, PlaylistBuilder} from "./playlistBuilder/PlaylistBuilder.js";
+import type {ObjectId} from "mongodb";
+import type {IDataInformation} from "./DataInformationManager.js";
+import {PLAYLIST_SETTINGS_DEFAULT} from "./playlistBuilder/PLAYLIST_SETTINGS_DEFAULT.js";
+import {ISingersConfig, SINGERS_CONFIG_DEFAULT} from "./playlistBuilder/SINGERS_CONFIG_DEFAULT.js";
+import {MUSICIAN_CONFIG_DEFAULT} from "./playlistBuilder/MUSICIAN_CONFIG_DEFAULT.js";
+import {AERIAL_CONFIG_DEFAULT} from "./playlistBuilder/AERIAL_CONFIG_DEFAULT.js";
+import {PLAYLIST_SONG_DEFAULT} from "./playlistBuilder/PLAYLIST_SONG_DEFAULT.js";
+import {PlaylistUpdater} from "./PlaylistUpdater.js";
+import {ObjectUpdater} from "./ObjectUpdater.js";
+import {PlaylistSettingsValidator} from "./playlistValidators/PlaylistSettingsValidator.js";
+import {SongValidator} from "./playlistValidators/SongValidator.js";
+import {SingersConfigValidator} from "./playlistValidators/SingersConfigValidator.js";
+import {MusiciansConfigValidator} from "./playlistValidators/MusiciansConfigValidator.js";
+import {AerialConfigValidator} from "./playlistValidators/AerialConfigValidator.js";
+import {TagCreator} from "./tagGenerator/TagCreator.js";
+import {SingersTagGenerator} from "./tagGenerator/SingersTagGenerator.js";
+import {AerialTagGenerator} from "./tagGenerator/AerialTagGenerator.js";
+import type {ISubTagCreatorsReturns} from "./tagGenerator/PlaylistTagGenerator.js";
+import {PlaylistTagMerger} from "./tagGenerator/PlaylistTagMerger.js";
+import {DataInformationManager} from "./DataInformationManager.js";
+import type {TAerialConfig, TDataInformation, TPlaylistDomainModel, TSingersConfig} from "@sh3pherd/shared-types";
 
 
 export class PlaylistModule {
-    private readonly playlistBuilderFunction: () => IPlaylist;
-    private readonly playlistUpdaterFunction: (input: { playlistToUpdate: IPlaylist, update: Partial<IPlaylist> }) => IPlaylist;
-    private readonly tagCreatorFunction:(input: { playlistToTag: IPlaylist }) => IPlaylist;
-    private readonly createDataInformationFunction: (input: { creator_id: ObjectId | string }) => IDataInformation;
-    private readonly updateDataInformationFunction: (input: { dataInformationObject: IDataInformation; creator_id: ObjectId | string }) => IDataInformation;
+    private readonly playlistBuilderFunction: () => TPlaylistDomainModel;
+    private readonly playlistUpdaterFunction: (input: { playlistToUpdate: IPlaylist, update: Partial<IPlaylist> }) => TPlaylistDomainModel;
+    private readonly tagCreatorFunction:(input: { playlistToTag: IPlaylist }) => TPlaylistDomainModel;
+    private readonly createDataInformationFunction: (input: { creator_id: ObjectId | string }) => TDataInformation;
+    private readonly updateDataInformationFunction: (input: { dataInformationObject: TDataInformation; creator_id: ObjectId | string }) => TDataInformation;
 
     constructor() {
         this.playlistBuilderFunction = () => new PlaylistBuilder({
@@ -48,19 +50,19 @@ export class PlaylistModule {
                 },
             }).update(input);
         this.tagCreatorFunction = (input) => new TagCreator({
-                generateSingersTags: (input: { singersConfig: ISingersConfig; numberOfSongs: number }) => new SingersTagGenerator().generate(input),
-                generateAerialTags: (input: { aerialConfig: IAerialConfig; numberOfSongs: number }) => new AerialTagGenerator().generate(input),
+                generateSingersTags: (input: { singersConfig: TSingersConfig; numberOfSongs: number }) => new SingersTagGenerator().generate(input),
+                generateAerialTags: (input: { aerialConfig: TAerialConfig; numberOfSongs: number }) => new AerialTagGenerator().generate(input),
                 tagMerger: (input: { objectsToMerge: ISubTagCreatorsReturns[] }) => new PlaylistTagMerger().merge(input),
             }).tag(input);
         this.createDataInformationFunction = (input) => new DataInformationManager().createDataInformationObject(input);
         this.updateDataInformationFunction = (input) => new DataInformationManager().updateDataInformation(input);
     };
 
-    generateDefaultEmptyPlaylist(): IPlaylist {
+    generateDefaultEmptyPlaylist(): TPlaylistDomainModel {
         return this.playlistBuilderFunction();
     };
 
-    generateNewPlaylistFromTemplate(input: { playlistTemplate: Partial<IPlaylist> }): IPlaylist {
+    generateNewPlaylistFromTemplate(input: { playlistTemplate: Partial<TPlaylistDomainModel> }): TPlaylistDomainModel {
         const emptyPlaylist: IPlaylist = this.generateDefaultEmptyPlaylist();
         const updatedPlaylist: IPlaylist =  this.playlistUpdaterFunction(
             {
@@ -73,7 +75,7 @@ export class PlaylistModule {
         return taggedPlaylist;
     };
 
-    updatePlaylist(input: { update: Partial<IPlaylist> }): IPlaylist {
+    updatePlaylist(input: { update: Partial<TPlaylistDomainModel> }): TPlaylistDomainModel {
         return this.playlistUpdaterFunction(
             {
                 playlistToUpdate: this.generateDefaultEmptyPlaylist(),

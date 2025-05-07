@@ -1,9 +1,10 @@
-import {ObjectValidator} from "./ObjectValidator";
-import type {ISingersConfig} from "../playlistBuilder/SINGERS_CONFIG_DEFAULT";
+import {ObjectValidator} from "./ObjectValidator.js";
+import type {TSingersConfig} from "@sh3pherd/shared-types";
+
 
 export class SingersConfigValidator extends ObjectValidator{
 
-    protected checkProps<T extends ISingersConfig>(propsToValidate: Partial<T>): void {
+    protected checkProps<T extends TSingersConfig>(propsToValidate: Partial<T>): void {
         this.validateNumberOfSingers(propsToValidate.numberOfSingers);
         this.validateContainsDuo(propsToValidate.containsDuo);
         this.validateSplitMode(propsToValidate.splitMode);

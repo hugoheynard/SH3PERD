@@ -6,11 +6,13 @@
       "outputs": ["dist/**"]
     },
     "clean": {
-      "dependsOn": ["^clean"]
+      "cache": false,
+      "dependsOn": ["^clean"],
+      "outputs": ["dist/**", "dist/types/**", "tsconfig.tsbuildinfo"]
     },
     "dev:watch": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": []
     },
     "lint": {
       "outputs": []

@@ -1,9 +1,9 @@
-import {PlaylistBuilder} from "../PlaylistBuilder";
-import {PLAYLIST_SETTINGS_DEFAULT} from "../PLAYLIST_SETTINGS_DEFAULT";
+import {PLAYLIST_SETTINGS_DEFAULT} from "../PLAYLIST_SETTINGS_DEFAULT.js";
+import {PlaylistBuilder} from "../PlaylistBuilder.js";
 import {SINGERS_CONFIG_DEFAULT} from "../SINGERS_CONFIG_DEFAULT";
-import {MUSICIAN_CONFIG_DEFAULT} from "../MUSICIAN_CONFIG_DEFAULT";
-import {AERIAL_CONFIG_DEFAULT} from "../AERIAL_CONFIG_DEFAULT";
-import {PLAYLIST_SONG_DEFAULT} from "../PLAYLIST_SONG_DEFAULT";
+import {MUSICIAN_CONFIG_DEFAULT} from "../MUSICIAN_CONFIG_DEFAULT.js";
+import {AERIAL_CONFIG_DEFAULT} from "../AERIAL_CONFIG_DEFAULT.js";
+import {PLAYLIST_SONG_DEFAULT} from "../PLAYLIST_SONG_DEFAULT.js";
 
 
 describe("PlaylistBuilder", () => {

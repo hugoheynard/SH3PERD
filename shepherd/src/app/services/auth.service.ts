@@ -23,7 +23,7 @@ export class AuthService {
   }
 
   login(credentials: TLoginRequestDTO): Observable<boolean> {
-    return this.http.post<any>(
+    return this.http.post<{ authToken: string; user_id: any }>(
       'http://localhost:3000/api/auth/login',
       credentials,
       {
@@ -32,17 +32,18 @@ export class AuthService {
         observe: 'response'
       }
     ).pipe(
+      delay(1000),
       map(response => {
         const body = response.body;
 
         if (!response.ok || !body?.authToken) {
           console.error('Connexion failure: invalid response');
-          this.isAuthenticatedSignal.set(false);
+          //this.isAuthenticatedSignal.set(false);
           return false;
         }
 
         this.tokenService.setToken(body.authToken);
-        this.isAuthenticatedSignal.set(true);
+        //this.isAuthenticatedSignal.set(true);
         return true;
       }),
       catchError(error => {
@@ -72,18 +73,18 @@ export class AuthService {
           observe: 'response'
         }
       ).pipe(
-        delay(200),
+        delay(1000),
         map(response => {
           const body = response.body;
 
           if (!response.ok || !body?.authToken) {
             console.warn('Session refresh failure: invalid response');
-            this.isAuthenticatedSignal.set(false);
+            //this.isAuthenticatedSignal.set(false);
             return null;
           }
 
           this.tokenService.setToken(body.authToken);
-          this.isAuthenticatedSignal.set(true);
+          //this.isAuthenticatedSignal.set(true);
           return body.authToken;
         }),
         catchError(error => {
@@ -99,7 +100,7 @@ export class AuthService {
 
   logout(): void {
     this.tokenService.removeToken();
-    this.isAuthenticatedSignal.set(false);
+    //this.isAuthenticatedSignal.set(false);
 
     this.http.post<any>(
       'http://localhost:3000/api/auth/logout',

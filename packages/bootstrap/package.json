@@ -2,17 +2,19 @@
   "name": "@sh3pherd/bootstrap",
   "version": "1.0.0",
   "type": "module",
-  "exports": {
-    ".": "./dist/index.js"
-  },
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
   "private": true,
   "scripts": {
-    "dev:watch": "concurrently -k -n BUILD,RUN,TYPECHECK -c yellow,green,blue \"tsc -b --watch\" \"tsx watch src/app.ts\" \"tsc --noEmit --watch --preserveWatchOutput\"",
-    "predev:watch": "find . -name '*.tsbuildinfo' -delete",
+    "dev:watch": "../../dev-toolbox/scripts/dev:watch-Bootstrap.sh",
     "build": "tsc -b tsconfig.json",
     "test": "jest",
-    "clean": "find . \\( -type d -name dist -o -name .turbo -o -name .cache \\) -exec rm -rf {} + && find . -type f -name '*.tsbuildinfo' -delete"
+    "clean": "../../dev-toolbox/scripts/clean:package.sh"
   }
 }

@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { jest } from '@jest/globals';
-import {validateCredentialsInput} from "../validateCredentialsInput";
+import {validateCredentialsInput} from "../validateCredentialsInput.js";
 
 
 describe('validManualRegisterInput middleware', () => {

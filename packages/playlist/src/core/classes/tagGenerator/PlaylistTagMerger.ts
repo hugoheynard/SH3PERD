@@ -1,4 +1,4 @@
-import type { ISubTagCreatorsReturns } from "./PlaylistTagGenerator";
+import type { ISubTagCreatorsReturns } from "./PlaylistTagGenerator.js";
 
 /**
  * Class responsible for merging multiple playlist tag objects into a single one.

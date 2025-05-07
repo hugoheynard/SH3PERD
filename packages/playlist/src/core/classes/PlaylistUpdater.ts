@@ -1,5 +1,6 @@
-import type {IPlaylist} from "./playlistBuilder/PlaylistBuilder";
-import type {ObjectUpdaterFunction} from "./ObjectUpdater";
+import type {IPlaylist} from "./playlistBuilder/PlaylistBuilder.js";
+import type {ObjectUpdaterFunction} from "./ObjectUpdater.js";
+import type {TPlaylistDomainModel} from "@sh3pherd/shared-types";
 
 export interface IPlaylistUpdaterInput {
     objectUpdater: ObjectUpdaterFunction<T>;
@@ -31,7 +32,7 @@ export class PlaylistUpdater {
         this.validators = input.validators;
     };
 
-    update(input: { playlistToUpdate: IPlaylist, update: Partial<IPlaylist> }): IPlaylist {
+    update(input: { playlistToUpdate: TPlaylistDomainModel, update: Partial<TPlaylistDomainModel> }): TPlaylistDomainModel {
         const { playlistToUpdate, update } = {...input};
 
         return {

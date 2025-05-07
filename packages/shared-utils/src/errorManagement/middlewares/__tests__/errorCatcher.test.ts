@@ -1,7 +1,7 @@
 import express, { type Request, type Response, type NextFunction } from 'express';
 import request from 'supertest';
-import {BusinessError, TechnicalError} from "../../errorClasses";
-import {errorCatcher} from "../../../../dist";
+import {errorCatcher} from "../errorCatcher.js";
+import {BusinessError, TechnicalError} from "../../errorClasses/index.js";
 
 describe('errorCatcher', () => {
     let app: express.Express;

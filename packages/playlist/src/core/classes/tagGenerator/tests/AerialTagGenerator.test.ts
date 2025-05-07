@@ -1,5 +1,4 @@
 import {AerialTagGenerator} from "../AerialTagGenerator";
-import {IAerialConfig} from "../../playlistBuilder/AERIAL_CONFIG_DEFAULT";
 
 describe("AerialTagGenerator", () => {
     let aerialTagGenerator: AerialTagGenerator;

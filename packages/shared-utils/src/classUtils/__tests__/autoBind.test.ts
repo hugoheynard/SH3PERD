@@ -1,4 +1,4 @@
-import {autoBind} from "../autoBind";
+import {autoBind} from "../autoBind.js";
 
 describe('autoBind', () => {
     it('should automatically bind all public methods to the instance', () => {

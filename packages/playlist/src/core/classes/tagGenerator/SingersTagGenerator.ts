@@ -1,5 +1,5 @@
-import type {ISingersConfig} from "../playlistBuilder/SINGERS_CONFIG_DEFAULT";
-import {type ISubTagCreatorsReturns, PlaylistTagGenerator} from "./PlaylistTagGenerator";
+import {type ISubTagCreatorsReturns, PlaylistTagGenerator} from "./PlaylistTagGenerator.js";
+import type {TSingersConfig} from "@sh3pherd/shared-types";
 
 
 export class SingersTagGenerator extends PlaylistTagGenerator<{ singersConfig: ISingersConfig; numberOfSongs: number }> {
@@ -11,11 +11,11 @@ export class SingersTagGenerator extends PlaylistTagGenerator<{ singersConfig: I
      * @param input - Object containing the singers' configuration and the number of songs.
      * @returns Generated tags for the playlist and the song list.
      */
-    public generate(input: { singersConfig: ISingersConfig; numberOfSongs: number }): ISubTagCreatorsReturns {
+    public generate(input: { singersConfig: TSingersConfig; numberOfSongs: number }): ISubTagCreatorsReturns {
         return super.generate(input);
     };
 
-    protected execute(input: { singersConfig: ISingersConfig; numberOfSongs: number }): void {
+    protected execute(input: { singersConfig: TSingersConfig; numberOfSongs: number }): void {
         try {
             this.initData(input);
             this.managePlaylistTags({ singersConfig: this.singersConfig });
@@ -33,7 +33,7 @@ export class SingersTagGenerator extends PlaylistTagGenerator<{ singersConfig: I
      * Initializes class properties with the provided input values.
      * @param input - Object containing the singers' configuration and the number of songs.
      */
-    private initData(input: { singersConfig: ISingersConfig ; numberOfSongs: number}): void {
+    private initData(input: { singersConfig: TSingersConfig ; numberOfSongs: number}): void {
         try {
             if(!input.singersConfig) {
                 throw new Error("No singers' configuration provided.");
@@ -53,7 +53,7 @@ export class SingersTagGenerator extends PlaylistTagGenerator<{ singersConfig: I
      * Generates general playlist tags based on the singers' configuration.
      * @param input singerConfig object containing the singers' configuration.
      */
-    private managePlaylistTags(input: { singersConfig: ISingersConfig }): void {
+    private managePlaylistTags(input: { singersConfig: TSingersConfig }): void {
         try{
             const { numberOfSingers , containsDuo, splitMode } = input.singersConfig;
 

@@ -1,4 +1,4 @@
-import {HttpErrorResponse, HttpInterceptorFn} from '@angular/common/http';
+import {HttpErrorResponse, HttpHandlerFn, HttpInterceptorFn, HttpRequest} from '@angular/common/http';
 import {TokenService} from '../app/services/token.service';
 import {Router} from '@angular/router';
 import {inject} from '@angular/core';
@@ -24,7 +24,8 @@ import {AuthService} from '../app/services/auth.service';
 * @param next - The next handler in the chain
 * @returns An observable of the HTTP event
 */
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
+export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>,
+                                                   next: HttpHandlerFn): any => {
   const tokenService = inject(TokenService);
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -47,7 +48,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       const isUnauthorized = error.status === 401;
       const isRefreshingRequest = req.url.includes('/auth/refresh');
 
-      if (!isUnauthorized || req.url.includes('/auth/refresh') || !authService.canAttemptRefresh()) {
+      if (!isUnauthorized || req.url.includes('/auth/refresh')) {
         return throwError(() => error);
       }
 

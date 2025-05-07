@@ -20,14 +20,16 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "emitDeclarationOnly": false, //added
-    "typeRoots": ["./node_modules/@types", "./packages/shared-types/dist/express/extendExpress.d.ts"],
+    "emitDeclarationOnly": false,
+    "typeRoots": ["./node_modules/@types"],
     "paths": {
-      "@sh3pherd/*": ["packages/*/src"]
+      "@sh3pherd/shared-types": ["packages/*/src"],
     }
   },
   "exclude": [
     "node_modules",
+    "dist",
+    "dist-types",
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/__tests__"

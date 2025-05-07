@@ -1,16 +1,6 @@
-export interface IPlaylistSettings {
-    name: string;
-    description: string;
-    usage: 'daily' | 'event';
-    energy: 1 | 2 | 3 | 4;
-    requiredLength: number;
-    numberOfSongs: number;
-    singers: boolean;
-    musicians: boolean;
-    aerial: boolean;
-}
+import type {TPlaylistSettings} from "@sh3pherd/shared-types";
 
-export const PLAYLIST_SETTINGS_DEFAULT: Readonly<IPlaylistSettings> = Object.freeze({
+export const PLAYLIST_SETTINGS_DEFAULT: Readonly<TPlaylistSettings> = Object.freeze({
     name: `New Playlist ${new Date().toLocaleDateString()}` as string,
     description: '',
     usage: 'daily',

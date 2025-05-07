@@ -1,83 +1,83 @@
 import {
   AfterViewInit,
-  ChangeDetectorRef,
   Component,
-  ComponentRef,
-  inject,
-  Type,
+  computed, effect,
+  inject, Injector, runInInjectionContext,
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {RouteService} from '../../services/route.service';
-import {SidenavRightService} from '../sidenav-right.service';
-import {MatSidenav} from '@angular/material/sidenav';
+import {MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
+import {HeaderComponent} from '../header/header.component';
+import {AppMenuComponent} from '../menus/appMenu/app-menu.component';
+import {RouterOutlet} from '@angular/router';
+import {FooterComponent} from '../footer/footer.component';
+import {NgClass, NgIf} from '@angular/common';
+import {LayoutService} from '../../../core/services/layout.service';
+
 
 @Component({
   selector: 'app-main-layout',
-  imports: [],
+  imports: [
+    HeaderComponent,
+    MatSidenavContainer,
+    AppMenuComponent,
+    RouterOutlet,
+    FooterComponent,
+    MatSidenav,
+    NgIf,
+    NgClass
+  ],
   templateUrl: './main-layout.component.html',
   standalone: true,
   styleUrl: './main-layout.component.scss'
 })
 export class MainLayoutComponent implements AfterViewInit{
+  private injector: Injector = inject(Injector);
   public authService: AuthService = inject(AuthService);
   public routeService: RouteService = inject(RouteService);
-  public sidenavRightService: SidenavRightService = inject(SidenavRightService);
+  private layoutService: LayoutService = inject(LayoutService);
+
   public title: string = 'shepherd';
 
-  public cdr = inject(ChangeDetectorRef) //TODO a virer si non utilisé
+  @ViewChild('leftPanelContainer', { read: ViewContainerRef }) leftPanel!: ViewContainerRef;
+  @ViewChild('rightPanelContainer', { read: ViewContainerRef }) rightPanel!: ViewContainerRef;
+  @ViewChild('contextMenuContainer', { read: ViewContainerRef }) contextMenu!: ViewContainerRef;
 
-  @ViewChild('sidenavRight') sidenavRight!: MatSidenav;
-  @ViewChild('sidenavContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
-  private componentRef!: ComponentRef<any>;
-  openComponent(component: Type<any>, inputs?: any): void {
+  public hasContextMenu = computed(() => this.layoutService.contextMenuComponent() !== null);
+  public hasLeftPanel = computed(() => this.layoutService.leftPanelComponent() !== null);
+  public hasRightPanel = computed(() => this.layoutService.rightPanelComponent() !== null);
 
-    if (!component) {
-      console.error("🚨 ERREUR : Le composant injecté est `undefined` !");
-      return;
-    }
+  ngAfterViewInit() {
+    /**
+     * injects components in layout parts
+     */
+    runInInjectionContext(this.injector, () => {
+      effect(() => {
+        this.leftPanel.clear();
+        const comp = this.layoutService.leftPanelComponent();
+        if (comp) {
+          this.leftPanel.createComponent(comp, {injector: this.injector});
+        }
+      });
 
-    this.container.clear();
+      effect(() => {
+        this.rightPanel.clear();
+        const comp = this.layoutService.rightPanelComponent();
+        if (comp) {
+          this.rightPanel.createComponent(comp, {injector: this.injector});
+        }
+      });
 
-    try {
-      this.componentRef = this.container.createComponent(component);
-    } catch (error) {
-      console.error('🚨 ERREUR lors de la création du composant :', error);
-      return;
-    }
-
-    if (inputs) {
-      try {
-        Object.assign(this.componentRef.instance, inputs);
-      } catch (error) {
-        console.error('🚨 ERREUR lors de l’assignation des inputs :', error);
-      }
-    }
-  };
-
-  closeSidenav() {
-    this.container.clear();
-  };
-
-  ngAfterViewInit(): void {
-    if (!this.sidenavRight) {
-      console.warn('🚨 Warning: `sidenavRight` is not defined in the ViewChild.');
-      return;
-    }
-    this.sidenavRightService.setSidenav(this.sidenavRight);
-    this.sidenavRightService.setOpenComponentFunction((component: Type<any>, inputs): void => {
-      this.openComponent(component, inputs);
+      effect(() => {
+        this.contextMenu.clear();
+        const comp = this.layoutService.contextMenuComponent();
+        if (comp) {
+          this.contextMenu.createComponent(comp, {injector: this.injector});
+        }
+      });
     });
-    return;
-  };
-
-
-  constructor() {
-    /*effect(async () => {
-      if (!this.authService.isAuthenticatedSignal()) {
-        await this.routeService.navigateToLogin();
-      }
-    });*/
   }
+
 }

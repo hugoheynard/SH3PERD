@@ -4,6 +4,5 @@ export * from './date/index.js';
 export * from './errorManagement/index.js';
 export * from './ids/index.js';
 export * from './repoAdaptersHelpers/index.js';
-export * from './types/index.js';
 export * from './classUtils/index.js';
 

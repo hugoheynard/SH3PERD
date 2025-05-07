@@ -1,11 +1,7 @@
 import {ObjectId} from "mongodb";
+import type {TDataInformation} from "@sh3pherd/shared-types";
 
-export interface IDataInformation {
-    creation_date: Date;
-    creator_id: ObjectId;
-    last_modified: Date;
-    updateNumber: number;
-}
+
 
 /**
  * DataInformation class
@@ -25,7 +21,7 @@ export class DataInformationManager {
      * Creates a DataInformation object.
      * @returns IDataInformation
      */
-    createDataInformationObject(input: { creator_id: ObjectId | string}): IDataInformation {
+    createDataInformationObject(input: { creator_id: ObjectId | string}): TDataInformation {
         if (!input || input.creator_id == null) {
             throw new Error('[DataInformationManager -createDataInformationObject]:creator_id is required');
         }
@@ -43,7 +39,7 @@ export class DataInformationManager {
      * @param input dataInformationObject
      * @returns DataInformation updated
      */
-    updateDataInformation(input: { dataInformationObject: IDataInformation }): IDataInformation {
+    updateDataInformation(input: { dataInformationObject: TDataInformation }): TDataInformation {
         if (input === undefined || input.dataInformationObject === undefined) {
             throw new Error('[DataInformationManager -updateDataInformation]:dataInformationObject is required');
         }

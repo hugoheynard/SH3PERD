@@ -5,7 +5,7 @@ import type {
     TGenerateAuthTokenFn, TGenerateRefreshTokenFn, TRefreshToken, TRevokeRefreshTokenFn, TVerifyAuthTokenFn
 } from '@sh3pherd/shared-types';
 import { jest } from '@jest/globals';
-import {AuthTokenService} from "../AuthTokenService";
+import {AuthTokenService} from "../AuthTokenService.js";
 
 describe('AuthTokenService', () => {
     let service: AuthTokenService;
