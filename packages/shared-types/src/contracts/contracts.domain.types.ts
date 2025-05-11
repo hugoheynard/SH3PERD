@@ -1,6 +1,10 @@
 import type {TUserId} from "../user/index.js";
 
 export type TContractId = `contract_${string}`;
+export type TContractAddendumId = `contractAddendum_${string}`;
+export type TAddendumId = `addendum_${string}`;
+export type TContractSignatureId = `contractSignature_${string}`;
+export type TCompanyId = `company_${string}`;
 
 export type TContractDomainModel = {
     contract_id: TContractId;
@@ -8,12 +12,53 @@ export type TContractDomainModel = {
     company_id: string;
     status: 'active' | 'terminated';
     favorite: boolean; // will allow to connect straight to the contract, only one per user
-    trialPeriod: boolean;
-    trialPeriodDuration: number; // in days
+    trial?: {
+        endDate: Date;
+        status: 'pending' | 'accepted' | 'rejected' | 'expired';
+        validatedAt?: Date;
+        rejectedAt?: Date;
+    };
     startDate: Date;
     endDate: Date;
-    signed: boolean;
+    signedBy?: {
+        user: TContractSignature;
+        company: TContractSignature;
+    };
+    addenda?: TContractAddendumDomainModel[];
     createdAt: Date;
     lastModifiedAt: Date;
-    createdBy: TUserId;
-}
+    createdBy: TCompanyId;
+};
+
+
+//TODO LATER
+export type TContractAddendumDomainModel = {
+    addendum_id: TAddendumId;
+    contract_id: TContractId;
+    reason: string;
+    effectiveDate: Date;
+    changes: {
+        field: keyof TContractDomainModel;
+        oldValue: unknown;
+        newValue: unknown;
+    }[];
+    signedBy: {
+        user: TContractSignatureId;
+        company: TContractSignatureId;
+    };
+    createdAt: Date;
+    createdBy: TCompanyId;
+};
+
+export type TSignedItem =
+    | { type: 'contract'; id: TContractId }
+    | { type: 'addendum'; id: TContractAddendumId };
+
+export type TContractSignature = {
+    signatureId: string;
+    signedItem: TSignedItem;
+    signerType: 'user' | 'company';
+    signerId: TUserId | TCompanyId;
+    signedAt: Date;
+    signedBy: TUserId;
+};

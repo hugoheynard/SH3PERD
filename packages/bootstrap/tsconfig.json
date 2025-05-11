@@ -15,6 +15,7 @@
     { "path": "../password-manager" },
     { "path": "../auth" },
     { "path": "../user" },
-    { "path": "../contracts" }
+    { "path": "../contracts" },
+    { "path": "../calendar" }
   ]
 }

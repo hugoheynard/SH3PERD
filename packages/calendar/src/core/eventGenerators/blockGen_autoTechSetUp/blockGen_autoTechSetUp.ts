@@ -2,8 +2,8 @@ import {
     STANDARD_TECH_SETUP_DURATION,
     STANDARD_TECH_SETUP_HOUR,
     STANDARD_TECH_SETUP_MINUTES
-} from "../../../../utilities/MAGIC NUMBERS";
-import {substractMinutes} from "../../../../utilities/dateFunctions/date_functions";
+} from "../../../../../../exclude/backend/src/utilities/MAGIC NUMBERS.js";
+import {substractMinutes} from "../../../../../../exclude/backend/src/utilities/dateFunctions/date_functions.js";
 
 
 export class Auto_TechSetup{

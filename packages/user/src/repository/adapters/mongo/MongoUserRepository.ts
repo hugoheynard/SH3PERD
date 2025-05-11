@@ -28,7 +28,7 @@ export class UserMongoRepository
 
     @failThrows500('USER_FIND_BY_EMAIL_FAILED')
     public async findUserByEmail(filter: Parameters<TFindUserByEmailFn>[0]): ReturnType<TFindUserByEmailFn>{
-        return this.findDocBy(filter);
+        return await this.findDocBy(filter);
     };
 
 }

@@ -1,4 +1,4 @@
-import type {ClientSession, Collection, Document, Filter, MongoClient, WithId} from "mongodb";
+import type {ClientSession, Collection, Document, Filter, MongoClient, WithId, UpdateFilter, FindOneAndUpdateOptions} from "mongodb";
 import type {TBaseMongoRepoDeps} from "@sh3pherd/shared-types";
 
 
@@ -14,10 +14,8 @@ export abstract class BaseMongoRepository<TDomainModel extends Document> {
     /**
      * Maps a MongoDB document (WithId<T>) to a domain model by stripping _id
      */
-    protected mapMongoDocToDomainModel(input: {
-        doc: WithId<TDomainModel>;
-    }): TDomainModel {
-        const { _id, ...rest } = input.doc;
+    protected mapMongoDocToDomainModel(doc: WithId<TDomainModel>): TDomainModel {
+        const { _id, ...rest } = doc
         return rest as unknown as TDomainModel;
     };
 
@@ -31,30 +29,26 @@ export abstract class BaseMongoRepository<TDomainModel extends Document> {
             return null;
         }
 
-        return this.mapMongoDocToDomainModel({ doc: result });
+        return this.mapMongoDocToDomainModel(result);
     };
 
     protected async findOneAndUpdateDoc(input: {
         filter: Filter<TDomainModel>,
-        update: Partial<TDomainModel>,
-        options?: {
-            projection?: Record<string, 0 | 1>;
-            session?: ClientSession;
-        }
+        update: UpdateFilter<TDomainModel>,
+        options?: FindOneAndUpdateOptions
     }): Promise<TDomainModel | null> {
         const { filter, update, options } = input;
 
         const result = await this.collection.findOneAndUpdate(
             filter,
-            {$set: update},
+            update,
             {
-                returnDocument: 'after',
                 projection: options?.projection ?? {_id: 0},
-                session: options?.session,
+                ...options
             }
         );
 
-        return result ? this.mapMongoDocToDomainModel({ doc: result }) : null;
+        return result ? this.mapMongoDocToDomainModel(result) : null;
     };
 
     protected startSession(): ClientSession {
