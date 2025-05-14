@@ -1,4 +1,4 @@
-import {sortEventsArrayPerAscendingTime} from "../sortEventsArrayPerAscendingTime";
+import {sortEventsArrayPerAscendingTime} from "../../../../../packages/calendar/src/utils/sortEventsArrayPerAscendingTime";
 
 describe('sortEventsArrayPerAscendingTime', () => {
     it('should return an empty array if the input is empty', () => {

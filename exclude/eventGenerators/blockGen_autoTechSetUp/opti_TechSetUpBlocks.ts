@@ -1,11 +1,12 @@
 
 
 //TODO : refaire l'opti de tech set up pour la gestion du temps
-import {addMinutes} from "../../../../../../exclude/backend/src/utilities/dateFunctions/date_functions.js";
-import type {CalendarEvent} from "../../../../../../exclude/backend/src/planningBlocks/interfaces_events/CalendarEventsObject.js";
-import {sortEventsArrayPerAscendingTime} from "../../../../../../exclude/backend/src/utilities/sortEventsArrayPerAscendingTime.js";
 
-export const optimiseTechSetupBlocks = (blockList: CalendarEvent[]): CalendarEvent => {
+import {sortEventsArrayPerAscendingTime} from "../../../packages/calendar/src/utils/sortEventsArrayPerAscendingTime.js";
+import type {TEventUnitDomainModel} from "@sh3pherd/shared-types";
+import {addMinutes} from "../../../packages/calendar/src/utils/dateFunctions/date_functions.js";
+
+export const optimiseTechSetupBlocks = (blockList: TEventUnitDomainModel[]): TEventUnitDomainModel => {
     /*
     * Reorganises the blocks to merge the tasks
     * 1 -> sort array per ascending Time
@@ -13,7 +14,7 @@ export const optimiseTechSetupBlocks = (blockList: CalendarEvent[]): CalendarEve
     * 3 -> concat all descriptions by ascending timing order (most urgent first)
     */
 
-    const ascendingArray: CalendarEvent[] = sortEventsArrayPerAscendingTime(blockList);
+    const ascendingArray: TEventUnitDomainModel[] = sortEventsArrayPerAscendingTime(blockList);
 
     const earliestBlockStartTime: Date = ascendingArray[0].startDate;
     let totalDuration: number = 0;

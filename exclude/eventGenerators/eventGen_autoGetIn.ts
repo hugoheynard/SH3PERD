@@ -1,7 +1,5 @@
-import {addMinutes, substractMinutes} from "../../../../../exclude/backend/src/utilities/dateFunctions/date_functions.js";
-import {sortEventsArrayPerAscendingTime} from "../../../../../exclude/backend/src/utilities/sortEventsArrayPerAscendingTime.js";
-import {type CalendarEvent} from "../../../../../exclude/backend/src/planningBlocks/interfaces_events/CalendarEventsObject.js";
 import pkg from 'lodash';
+import {substractMinutes} from "../../packages/calendar/src/utils/dateFunctions/date_functions.js";
 const { isEqual } = pkg;
 
 /**

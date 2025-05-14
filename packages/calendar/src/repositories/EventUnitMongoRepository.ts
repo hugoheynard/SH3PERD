@@ -1,10 +1,11 @@
 import {BaseMongoRepository, failThrows500} from "@sh3pherd/shared-utils";
-import type {TEventUnitDomainModel, TUserId} from "@sh3pherd/shared-types";
+import type {TBaseMongoRepoDeps, TEventUnitDomainModel, TUserId} from "@sh3pherd/shared-types";
+
 
 export class EventUnitMongoRepository
     extends BaseMongoRepository<TEventUnitDomainModel> {
 
-    constructor(input) {
+    constructor(input: TBaseMongoRepoDeps) {
         super(input);
     };
 
@@ -12,7 +13,7 @@ export class EventUnitMongoRepository
     async getEventUnits(input: { user_ids: TUserId[], startDate: Date, endDate: Date }): Promise<TEventUnitDomainModel[]> {
         const { user_ids, startDate, endDate } = input;
 
-        return await this.collection.findMany({
+        return await this.collection.find({
             participants: { $in: user_ids },
             start: { $lt: endDate },
             end: { $gt: startDate }

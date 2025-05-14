@@ -1,5 +1,5 @@
-import type {TUserId, TEventUnitId, TEventUnitDomainModel} from '@sh3pherd/shared-types';
-import {CalendarBuilder} from "./CalendarBuilder";
+import type { TUserId, TEventUnitId, TEventUnitDomainModel } from '@sh3pherd/shared-types';
+import {buildCalendar} from "./buildCalendar";
 
 const createMockEvent = (eventUnitId: TEventUnitId, participants: TUserId[]): TEventUnitDomainModel => ({
     eventUnit_id: eventUnitId,
@@ -22,7 +22,7 @@ const createMockEvent = (eventUnitId: TEventUnitId, participants: TUserId[]): TE
     updatedAt: new Date(),
 });
 
-describe('CalendarBuilder - Integration', () => {
+describe('buildCalendar', () => {
     const userAlice: TUserId = 'user_alice';
     const userBob: TUserId = 'user_bob';
     const userEve: TUserId = 'user_eve';
@@ -30,32 +30,31 @@ describe('CalendarBuilder - Integration', () => {
     const events = [
         createMockEvent('eventUnit_e1', [userAlice, userBob]),
         createMockEvent('eventUnit_e2', [userBob]),
-        createMockEvent('eventUnit_e3', [userEve]), // out scope
+        createMockEvent('eventUnit_e3', [userEve]), // out of scope
         createMockEvent('eventUnit_e4', [userAlice]),
         createMockEvent('eventUnit_e5', []), // no participant
     ];
 
     it('should correctly map events and users in calendarMap and eventMap', () => {
-        const builder = new CalendarBuilder();
-
-        const { eventUnits, calendars } = builder.build({
+        const { eventUnits, calendars } = buildCalendar({
             eventUnits: events,
-            user_ids: [userAlice, userBob]
+            user_ids: [userAlice, userBob],
         });
 
-        // 🧭 check size
-        expect(eventUnits.size).toBe(5); // all event valid
-        expect(calendars.size).toBe(2); // only alice and bob
+        // ✅ Check event units preserved
+        expect(eventUnits.size).toBe(5);
 
-        // 🧪 watch event projection for each user
+        // ✅ Only Alice and Bob calendars created
+        expect(calendars.size).toBe(2);
+
         expect(calendars.get(userAlice)?.participatesIn.sort()).toEqual(['eventUnit_e1', 'eventUnit_e4']);
         expect(calendars.get(userBob)?.participatesIn.sort()).toEqual(['eventUnit_e1', 'eventUnit_e2']);
 
-        // ❌ Eve must be absent
+        // ❌ Eve not included
         expect(calendars.has(userEve)).toBe(false);
 
-        // 🕳️ event without participants
-        for (const [userId, { participatesIn }] of calendars.entries()) {
+        // 🕳️ No one should have eventUnit_e5
+        for (const { participatesIn } of calendars.values()) {
             expect(participatesIn.includes('eventUnit_e5')).toBe(false);
         }
     });

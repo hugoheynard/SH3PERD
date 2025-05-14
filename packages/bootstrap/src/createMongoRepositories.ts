@@ -12,6 +12,7 @@ export type Repositories = {
     refreshTokenRepository: IRefreshTokenRepository;
     userRepository: IUserRepository;
     contractRepository: IContractRepository;
+    eventUnitsRepository: any;
 }
 
 export const createMongoRepositories = (input: {

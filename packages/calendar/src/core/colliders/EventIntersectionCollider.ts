@@ -1,7 +1,14 @@
-import type {TEventPairs, TEventUnitDomainModel} from "@sh3pherd/shared-types";
+import type {IEventCollider, TEventPairs, TEventUnitDomainModel, TEventUnitId, TUserId} from "@sh3pherd/shared-types";
 
+type TEventIntersectionColliderContext = {
+    target_id: TUserId;
+    intersectsWith: TUserId[];
+};
 
-export class EventIntersectionCollider {
+type TEventIntersectionResult = Map<TEventUnitId, TEventUnitDomainModel>
+
+export class EventIntersectionCollider implements IEventCollider<TEventIntersectionColliderContext, TEventIntersectionResult>{
+    private context: TEventIntersectionColliderContext = {} as TEventIntersectionColliderContext;
     private readonly eventsToCollide: TEventUnitDomainModel[];
     private readonly pairExclusionSet: Set<TEventPairs>;
     private checkedPairs: Set<TEventPairs>;
@@ -15,13 +22,18 @@ export class EventIntersectionCollider {
     /**
      * Calculates all collisions between planningBlocks.
      */
-    execute(): TEventUnitDomainModel[] {
+    execute() {
         try {
+            // Safeguard: skip if context not provided
+            if (!this.context?.target_id && !this.context?.intersectsWith?.length) {
+                return;
+            }
+
             this.validateInput({ events: this.eventsToCollide });
             this.insertPairExclusionSet();
 
             const events: TEventUnitDomainModel[] = this.eventsToCollide;
-            const eventCollisionList: TEventUnitDomainModel[] = [];
+            const eventCollisionMap: Map<TEventUnitId, TEventUnitDomainModel> = new Map();
 
             for (let i: number = 0; i < events.length; i++) {
                 for (let j: number = 0 ; j < events.length; j++) {
@@ -44,17 +56,42 @@ export class EventIntersectionCollider {
                         continue;
                     }
 
-                    eventCollisionList.push(this.createCollisionEvent({ referenceEvent: refEvent, comparedEvent: compEvent }));
+                    const collidedEvent: TEventUnitDomainModel = this.createCollisionEvent({ referenceEvent: refEvent, comparedEvent: compEvent });
                     // Mark the pair as checked
                     this.checkedPairs.add(eventPairToCheck);
+                    eventCollisionMap.set(collidedEvent.eventUnit_id, collidedEvent);
                 }
             }
-            return eventCollisionList;
+            return eventCollisionMap;
+
         } catch(err) {
             throw err;
         }
     };
 
+    setContext(context: TEventIntersectionColliderContext): void {
+        this.context = context?.eventIntersection ?? {};
+    };
+
+    addEvent(event: TEventUnitDomainModel): void {
+        if (this.shouldIncludeEvent(event)) {
+            this.eventsToCollide.push(event);
+        }
+    };
+
+    private shouldIncludeEvent(event: TEventUnitDomainModel): boolean {
+        const { target_id, intersectsWith } = this.context;
+        return (
+            (target_id && event.participants.includes(target_id)) ||
+            (intersectsWith?.some(user => event.participants.includes(user)))
+        );
+    };
+
+    /**
+     * Checks if the event should be included for collision.
+     * @param input The event to check.
+     * @returns true if the event should be included, false otherwise.
+     */
     notCollide(input: { referenceEvent: TEventUnitDomainModel, comparedEvent: TEventUnitDomainModel }): boolean {
         const {referenceEvent, comparedEvent} = input;
 
@@ -67,6 +104,11 @@ export class EventIntersectionCollider {
         return refEnd <= compStart || compEnd <= refStart;
     };
 
+    /**
+     * Creates a collision event based on the reference and compared events.
+     * @param input The input containing the reference and compared events.
+     * @returns The collision event with overlap timestamps
+     */
     createCollisionEvent(input: { referenceEvent: TEventUnitDomainModel, comparedEvent: TEventUnitDomainModel }): TEventUnitDomainModel {
         const {referenceEvent, comparedEvent} = input;
 
@@ -98,16 +140,16 @@ export class EventIntersectionCollider {
         }
     };
 
+    /**
+     * Checks if the event has valid properties.
+     * @param input The input containing the events to check.
+     */
     checkEventValidProperties(input: { events: TEventUnitDomainModel[]}): void {
         input.events.forEach((event: TEventUnitDomainModel): void => {
             if (!event.eventUnit_id || !event.startDate || !event.endDate) {
-                throw new Error(`Event with id ${event.eventUnit_id} is missing required fields (startDate, endDate)`);
+                throw new Error(`Event with id ${event.eventUnit_id} is missing required fields (eventUnit_id, startDate, endDate)`);
             }
         });
-    };
-
-    addEvent(event: TEventUnitDomainModel): void {
-        this.eventsToCollide.push(event);
     };
 
     /**
