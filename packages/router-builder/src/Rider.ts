@@ -1,9 +1,11 @@
 import {type HookCallback, RouterLifecycleHooks} from "./core/RouterBuilder/RouterLifecycleHooks.js";
-import {type RequestHandler, Router} from "express";
+import {Router} from "express";
 import type {RouteDef} from "./types/types.js";
 import {HookableRouterBuilder} from "./core/RouterBuilder/HookableRouterBuilder.js";
 import {defineModule} from "./infra/defineModule.js";
 import type {TModuleInput} from "./core/defineModule/defineModuleFactory.js";
+import {createTypedHandler, type TCreateTypedHandlerOptions} from "./core/addController/createTypedHandler.js";
+
 
 
 export class Rider {
@@ -11,7 +13,6 @@ export class Rider {
 
     private lifecycle = new RouterLifecycleHooks();
     //private middlewares: RequestHandler[] = [];
-
 
     // ✅ Builder
     async build(input: { routeDefs: RouteDef[] }): Promise<Router> {
@@ -49,5 +50,17 @@ export class Rider {
     useBeforeMount(hook: HookCallback | HookCallback[]): this {
         this.lifecycle.useBeforeMount(hook);
         return this;
+    };
+
+
+    /**
+     * Static methode to generate a controller to host a useCase
+     */
+
+    static control<Fn extends (...args: any[]) => Promise<any>>(
+        status: number,
+        options: TCreateTypedHandlerOptions<Fn>
+    ) {
+        return createTypedHandler<Fn>(status, options)
     };
 }

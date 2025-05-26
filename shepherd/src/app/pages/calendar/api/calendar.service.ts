@@ -4,7 +4,7 @@ import {catchError, firstValueFrom, of} from 'rxjs';
 
 export interface CalendarDataRequest {
   users: string[],
-  date: Date[],
+  date: Date,
   calendarOptions: {
     viewMode: string
     crossPath: boolean
@@ -21,9 +21,12 @@ export class CalendarService {
     timestamps: {}});
 
   private calendarDataQueryParamSignal = signal<CalendarDataRequest>({
-    date: Date.now(),
-    viewMode: 'singlePersonDay',
-    crossPath: false
+    users: [],
+    date: new Date(Date.now()),
+    calendarOptions: {
+      viewMode: 'singlePersonDay',
+      crossPath: false
+    }
   });
 
   public setDateQueryParam(date: Date): void {

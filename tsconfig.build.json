@@ -3,37 +3,10 @@
   "files": [],
   "references": [
     {
-      "path": "packages/shared-utils"
-    },
-    {
       "path": "packages/shared-types"
     },
     {
-      "path": "packages/user"
-    },
-    {
-      "path": "packages/auth"
-    },
-    {
-      "path": "packages/contracts"
-    },
-    {
-      "path": "packages/calendar"
-    },
-    {
-      "path": "packages/backend"
-    },
-    {
-      "path": "packages/password-manager"
-    },
-    {
-      "path": "packages/bootstrap"
-    },
-    {
-      "path": "packages/playlist"
-    },
-    {
-      "path": "packages/token-manager"
+      "path": "packages/shepherd-backend"
     },
     {
       "path": "packages/router-builder"

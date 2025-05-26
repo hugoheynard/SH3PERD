@@ -3,22 +3,23 @@ import {MatTab, MatTabGroup} from "@angular/material/tabs";
 import {DayTemplateComponent} from '../day-template/day-template.component';
 import {NgForOf} from '@angular/common';
 import {EditSaveIconComponent} from '../edit-save-icon/edit-save-icon.component';
-import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatButton, MatIconButton} from '@angular/material/button';
+import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {MatIconButton} from '@angular/material/button';
 import {SettingsService} from '../../../services/settings.service';
 import {WeekTemplate} from '../../../interfaces/week-template-interface';
 
 @Component({
-    selector: 'app-week-template',
-    imports: [
-        MatTabGroup, MatTab, MatButton,
-        DayTemplateComponent,
-        NgForOf,
-        EditSaveIconComponent,
-        ReactiveFormsModule, MatIconButton,
-    ],
-    templateUrl: './week-template.component.html',
-    styleUrl: './week-template.component.scss'
+  selector: 'app-week-template',
+  imports: [
+    MatTabGroup, MatTab,
+    DayTemplateComponent,
+    NgForOf,
+    EditSaveIconComponent,
+    ReactiveFormsModule, MatIconButton,
+  ],
+  templateUrl: './week-template.component.html',
+  standalone: true,
+  styleUrl: './week-template.component.scss'
 })
 export class WeekTemplateComponent implements OnInit, AfterViewInit{
   private fb = inject(FormBuilder);

@@ -23,7 +23,9 @@
     "emitDeclarationOnly": false,
     "typeRoots": ["./node_modules/@types"],
     "paths": {
-      "@sh3pherd/shared-types": ["packages/*/src"],
+      "@sh3pherd/calendar": ["packages/calendar/src/index.ts"],
+      "@sh3pherd/shared-types": ["packages/shared-types/src/index.ts"],
+        "@sh3pherd/playlist": ["packages/playlist/src/index.ts"]
     }
   },
   "exclude": [

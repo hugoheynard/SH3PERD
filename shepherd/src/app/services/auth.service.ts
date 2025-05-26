@@ -12,18 +12,11 @@ export class AuthService {
   private tokenService =  inject(TokenService);
 
   isAuthenticatedSignal = signal(false);
-  private refreshCooldownUntil: number | null = null;
 
-  setRefreshCooldown(ms: number = 200): void {
-    this.refreshCooldownUntil = Date.now() + ms;
-  }
 
-  canAttemptRefresh(): boolean {
-    return !this.refreshCooldownUntil || Date.now() > this.refreshCooldownUntil;
-  }
 
-  login(credentials: TLoginRequestDTO): Observable<boolean> {
-    return this.http.post<{ authToken: string; user_id: any }>(
+  login(credentials: { email: string; password: string }): Observable<boolean> {
+    return this.http.post<{ authToken: string; }>(
       'http://localhost:3000/api/auth/login',
       credentials,
       {
@@ -38,12 +31,12 @@ export class AuthService {
 
         if (!response.ok || !body?.authToken) {
           console.error('Connexion failure: invalid response');
-          //this.isAuthenticatedSignal.set(false);
+          this.isAuthenticatedSignal.set(false);
           return false;
         }
 
         this.tokenService.setToken(body.authToken);
-        //this.isAuthenticatedSignal.set(true);
+        this.isAuthenticatedSignal.set(true);
         return true;
       }),
       catchError(error => {
@@ -100,7 +93,7 @@ export class AuthService {
 
   logout(): void {
     this.tokenService.removeToken();
-    //this.isAuthenticatedSignal.set(false);
+    this.isAuthenticatedSignal.set(false);
 
     this.http.post<any>(
       'http://localhost:3000/api/auth/logout',
@@ -115,42 +108,4 @@ export class AuthService {
       console.log('Logout successful');
     });
   };
-
-  loginAndRefresh(credentials: TLoginRequestDTO): Observable<boolean> {
-    return this.http.post<any>(
-      'http://localhost:3000/api/auth/login',
-      credentials,
-      {
-        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-        withCredentials: true,
-        observe: 'response'
-      }
-    ).pipe(
-      // Petite pause pour que le cookie soit utilisable
-      // Si besoin on peut utiliser delay(100) de RxJS aussi
-      delay(200),
-      switchMap(() =>
-        of(null).pipe(
-          delay(100),
-          switchMap(() => this.refreshSession())
-        )
-      ),
-      map((token) => {
-        if (!token) {
-          console.warn('Login + Refresh failed: no token received');
-          this.isAuthenticatedSignal.set(false);
-          return false;
-        }
-
-        this.tokenService.setToken(token);
-        this.isAuthenticatedSignal.set(true);
-        return true;
-      }),
-      catchError(error => {
-        console.error('Error during loginAndRefresh', error);
-        this.isAuthenticatedSignal.set(false);
-        return of(false);
-      })
-    );
-  }
 }

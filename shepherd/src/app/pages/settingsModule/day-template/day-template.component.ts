@@ -32,6 +32,7 @@ import {WeeklyEventAssignFormComponent} from '../weekly-event-assign-form/weekly
         WeeklyEventAssignFormComponent
     ],
     templateUrl: './day-template.component.html',
+    standalone: true,
     styleUrl: './day-template.component.scss'
 })
 export class DayTemplateComponent {

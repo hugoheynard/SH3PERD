@@ -14,13 +14,12 @@ import {
 } from '@angular/material/core';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {SelectCheckboxComponent} from '../select-checkbox/select-checkbox.component';
-import {HierarchySelectComponent} from '../specificSubForms/hierarchy-select/hierarchy-select.component';
 import {SelectParticipantsComponent} from '../specificSubForms/select-participants/select-participants.component';
 
 @Component({
   selector: 'app-event-reactform',
   imports: [ReactiveFormsModule, MatFormField, MatLabel, MatHint, MatIcon, MatInputModule, MatSelect, MatOption,
-    MatDatepicker, MatDatepickerToggle, MatDatepickerInput, MatNativeDateModule, MatCheckbox, SelectCheckboxComponent, HierarchySelectComponent, SelectParticipantsComponent
+    MatDatepicker, MatDatepickerToggle, MatDatepickerInput, MatNativeDateModule, MatCheckbox, SelectCheckboxComponent, SelectParticipantsComponent
   ],
   providers: [
     // Fournir l'adaptateur natif de la date
@@ -32,7 +31,7 @@ import {SelectParticipantsComponent} from '../specificSubForms/select-participan
   standalone: true,
   styleUrl: './event-reactform.component.scss'
 })
-export class EventReactformComponent implements OnInit{
+export class EventReactformComponent{
   @Input() formGroup: any;
 
   duration: any= new FormControl('', [
@@ -43,10 +42,4 @@ export class EventReactformComponent implements OnInit{
   date: any= new FormControl('')
 
   type: any= new FormControl('')
-
-  ngOnInit() {
-
-  }
-
-
 }

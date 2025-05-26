@@ -7,6 +7,7 @@ import {MatIcon} from "@angular/material/icon";
         MatIcon
     ],
     templateUrl: './edit-save-icon.component.html',
+    standalone: true,
     styleUrl: './edit-save-icon.component.scss'
 })
 export class EditSaveIconComponent {

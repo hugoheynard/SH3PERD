@@ -17,8 +17,5 @@
     "**/*.spec.ts",
     "**/__tests__/**"
   ],
-  "references": [
-    { "path": "../shared-types" },
-    { "path": "../shared-utils" }
-  ]
+  "references": []
 }
