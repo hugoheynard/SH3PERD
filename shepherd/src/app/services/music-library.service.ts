@@ -12,8 +12,8 @@ export class MusicLibraryService {
   async getMusic(): Promise<any> {
     try {
       const response: HttpResponse<any> = await firstValueFrom(
-        this.http.get(
-          `${this.baseURL}/musicLibrary/`,
+        this.http.post(
+          `${this.baseURL}/api/protected/musicRepertoire/me`, {},
           {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
             observe: 'response'

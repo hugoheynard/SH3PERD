@@ -7,7 +7,7 @@ import {RefreshTokenMongoRepository} from "../auth/repositories/RefreshTokenMong
 import {UserMongoRepository} from "../user/repository/adapters/mongo/MongoUserRepository.js";
 import {ContractMongoRepository} from "../contracts/core/ContractMongoRepository.js";
 import {EventUnitMongoRepository} from "../calendar/repositories/EventUnitMongoRepository.js";
-import {UserRepertoireMongoRepository} from "../music/repositories/UserRepertoireRepository.js";
+import {MusicRepertoireMongoRepository} from "../music/repositories/UserRepertoireRepository.js";
 
 
 export type Repositories = {
@@ -35,7 +35,7 @@ export const createMongoRepositories = (input: {
             contractRepository: new ContractMongoRepository({ client, dbName, collectionName: "contracts" }),
             eventUnitsRepository: new EventUnitMongoRepository({ client, dbName, collectionName: "eventUnits" }),
             //music and playlists
-            userRepertoireRepository: new UserRepertoireMongoRepository({ client, dbName, collectionName: "userRepertoire" }),
+            userRepertoireRepository: new MusicRepertoireMongoRepository({ client, dbName, collectionName: "userRepertoire" }),
         }
     } catch (error) {
         if (error instanceof TechnicalError) {

@@ -48,6 +48,5 @@ export const verifyAuthToken = (deps: { verifyAuthTokenFn: TVerifyAuthTokenFn })
     }
 
     req.user_id = payload.user_id
-    console.log(`Verify Auth Token : Auth token verified for user_id: ${req.user_id}`);
     return next();
 };

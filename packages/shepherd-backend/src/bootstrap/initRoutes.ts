@@ -8,10 +8,11 @@ import {createAuthRouter} from "../auth/api/routes/createAuthRouter.js";
 import {createMusicLibraryRouter} from "../music/api/createMusicLibraryRouter.js";
 
 
-export const initRoutes = async (app: Express, { controllers } : any, { globalMiddlewares } : any): Promise<Express> => {
+export const initRoutes = async (app: Express, { controllers } : any, { globalMiddlewares } : any, { useCases }: any): Promise<Express> => {
     try {
-        const { register, auth, userRepertoire } = controllers;
+        const { register, auth } = controllers;
         const { verifyAuthToken } = globalMiddlewares;
+        const { musicRepertoire } = useCases;
 
 
         // middlewares
@@ -33,8 +34,8 @@ export const initRoutes = async (app: Express, { controllers } : any, { globalMi
         }));
 
 
-        app.use('/api/protected/musicLibrary', await createMusicLibraryRouter({
-            userRepertoireCtrl: userRepertoire
+        app.use('/api/protected', await createMusicLibraryRouter({
+            useCases: musicRepertoire,
         }));
 
 

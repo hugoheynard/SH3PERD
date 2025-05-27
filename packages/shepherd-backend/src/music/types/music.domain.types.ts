@@ -38,7 +38,7 @@ export type TMusicVersionDomainModel = {
     created_by: TUserId;
 }
 
-export type TUserRepertoireEntryDomainModel = {
+export type TMusicRepertoireEntryDomainModel = {
     musicVersion_id: TMusicVersionId;
     performer_id: TUserId;
     effort: TEffortLevel;

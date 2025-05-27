@@ -25,7 +25,7 @@ async function startApp(): Promise<void> {
         const controllers: any = initControllers({ useCases });
         const globalMiddlewares: any = initGlobalMiddlewares({ services });
         const app: Express = express();
-        await initRoutes(app, { controllers }, { globalMiddlewares });
+        await initRoutes(app, { controllers }, { globalMiddlewares }, { useCases });
         await startServer({ app, port: process.env.PORT });
 
 
