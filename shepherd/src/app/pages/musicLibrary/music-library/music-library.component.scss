@@ -17,3 +17,140 @@
   line-height: 1;
 }
 
+//tab system
+.tab-header {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  .add-tab {
+    font-size: 1.2rem;
+    color: var(--primaryTextColor);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    padding: 8px 14px;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+    }
+  }
+
+
+  .tab {
+    padding: 8px 18px;
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px 6px 0 0;
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+    }
+
+    &.active {
+      background: rgba(255, 255, 255, 0.20);
+      font-weight: 400;
+      color: var(--primaryTextColor);
+      border-bottom: 2px solid transparent;
+    }
+
+    .close {
+      margin-left: 10px;
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.4);
+      transition: color 0.2s;
+      cursor: pointer;
+
+      &:hover {
+        color: rgba(255, 255, 255, 0.7);
+      }
+    }
+  }
+}
+
+.tab input {
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: inherit;
+  padding: 2px;
+  width: 100px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  outline: none;
+}
+
+
+.tab-content {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.015);
+  backdrop-filter: blur(2px);
+  border-radius: 0 6px 6px 6px;
+  color: white;
+}
+
+
+.search-bar {
+  position: relative;
+  margin: 0 auto 24px auto;
+  width: 50%;
+  min-width: 300px;
+  max-width: 600px;
+  display: flex;
+
+  input {
+    width: 100%;
+    padding: 10px 36px 10px 12px;
+    font-size: 0.9rem;
+    font-weight: lighter;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--primaryTextColor);
+    outline: none;
+    backdrop-filter: blur(6px);
+    transition: border 0.3s ease;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:focus {
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.1rem;
+    pointer-events: none;
+  }
+}
+
+.search-bar {
+  opacity: 0;
+  animation: searchFadeIn 0.6s ease-out 0.2s forwards;
+}
+
+@keyframes searchFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

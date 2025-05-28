@@ -1,8 +1,9 @@
+<!--
 <div class="search-bar">
   <input type="text" placeholder="Search..." [(ngModel)]="filter" />
   <span class="search-icon">🔍</span>
 </div>
-
+-->
 <table cdk-table [dataSource]="pagedData" class="transparent-table">
 
   <ng-container *ngFor="let column of displayedColumns" [cdkColumnDef]="column.key">
@@ -24,9 +25,12 @@
       class="table-row-animate"></tr>
 </table>
 
+
+
+
 <div class="custom-paginator">
   <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 0">◀</button>
-  <span>Page {{ currentPage + 1 }} / {{ totalPages }}</span>
+  <span>{{ currentPage + 1 }} / {{ totalPages }}</span>
   <button (click)="setPage(currentPage + 1)" [disabled]="currentPage + 1 >= totalPages">▶</button>
 </div>
 

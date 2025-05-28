@@ -15,6 +15,19 @@ import {SidenavRightService} from '../../../components/sidenav-right.service';
 import {MusicRepertoireTableComponent} from '../music-repertoire-table/music-repertoire-table.component';
 import {LayoutService} from '../../../../core/services/layout.service';
 
+
+interface Tab {
+  id: string;
+  title: string;
+  component: string;
+  data?: any;
+  isActive?: boolean;
+  isEditing?: boolean;
+  isDeletable?: boolean;
+  isEditable?: boolean;
+  search?: string;
+}
+
 @Component({
     selector: 'app-music-library',
     imports: [
@@ -47,10 +60,89 @@ export class MusicLibraryComponent {
   private sidenavRightService: SidenavRightService = inject(SidenavRightService);
   public addSongTableWindowService: MlDisplayService = inject(MlDisplayService);
 
+  public filter: string = '';
 
+  tabs: Tab[] = [
+    { id: 'my-repertoire', title: 'My Repertoire', component: 'repertoire', isDeletable: false, isActive: true, search: '' },
+    { id: 'cross-search', title: 'crossSearch', component: 'cross', isDeletable: true, search: '' },
+  ];
 
-  getUserMusicRepertoire(): void {
+  private tabCount = this.tabs.length; // Compteur pour les nouveaux onglets
 
+  activeTabId = 'my-repertoire';
+
+  public searchValue = '';
+
+  closeTab(id: string): void {
+    const tab = this.tabs.find(t => t.id === id);
+
+    if (!tab || !tab.isDeletable) {
+      return
+    }
+
+    this.tabs = this.tabs.filter(t => t.id !== id);
+
+    if (this.activeTabId === id && this.tabs.length > 0) {
+      this.activeTabId = this.tabs[0].id;
+    }
   };
+
+
+
+  enableTabNameEdit(tab: Tab): void {
+    tab.isEditing = true;
+  };
+
+  disableEdit(tab: Tab, newTitle: string): void {
+    tab.isEditing = false;
+    tab.title = newTitle.trim() || tab.title;
+  };
+
+
+  /**
+   * TAB MANAGEMENT
+   */
+  addNewTab(): void {
+    const newTab: Tab = {
+      id: `tab-${this.tabCount}`,
+      title: `Tab #${this.tabCount}`,
+      component: 'custom' // ou 'search', 'playlist', selon le besoin
+    };
+
+    this.tabs.push(newTab);
+    this.activeTabId = newTab.id;
+    this.tabCount++;
+  }
+
+  activateTab(tabId: string): void {
+    this.tabs.forEach(t => t.isActive = t.id === tabId);
+    const tab = this.getActiveTab();
+    this.searchValue = tab?.search ?? '';
+  };
+
+  getActiveTab(): Tab | undefined {
+    return this.tabs.find(t => t.isActive);
+  };
+
+  //SEARCH BAR
+
+  applyFilter(searchValue: string): void {
+
+      const tab = this.getActiveTab();
+
+      if (!tab) {
+        return
+      }
+
+      tab.search = searchValue;
+
+      // Transmet le filtre au composant enfant s’il existe
+      //const ref = this.getTabComponentRef(tab.id);
+      //ref?.applyFilter(searchValue);
+
+    }
+
+
+
 
 }
