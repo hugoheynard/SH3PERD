@@ -12,6 +12,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
         }
     ],
     templateUrl: './toggle-button.component.html',
+    standalone: true,
     styleUrl: './toggle-button.component.scss'
 })
 export class ToggleButtonComponent implements ControlValueAccessor{

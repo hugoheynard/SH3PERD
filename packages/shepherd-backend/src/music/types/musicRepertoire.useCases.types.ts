@@ -7,6 +7,6 @@ export type TMusicRepertoireUseCases = {
 
 
 export type TGetMusicRepertoireUseCaseFn = (requestDTO: {
-    asker_user_id: TUserId;
-    target_user_id: TUserId | TUserId[]
+    asker_user_id: TUserId | undefined;
+    target_user_id: TUserId | TUserId[] | undefined;
 }) => Promise<Map<TUserId, TUserRepertoireTableRow[]>>;

@@ -1,32 +1,64 @@
-import {inject, Injectable} from '@angular/core';
+import {inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
+import {ApiURLService} from './api-url.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class MusicLibraryService {
+export class MusicRepertoireService {
   private http: HttpClient = inject(HttpClient);
-  private baseURL: string = 'http://localhost:3000';
+  private apiURLService: ApiURLService = inject(ApiURLService);
+  private baseURL: string = this.apiURLService.api().protected().build();
 
-  async getMusic(): Promise<any> {
+  public musicRepertoire: WritableSignal<any[]> = signal<any[]>([]);
+  public userToQuery: WritableSignal<string[] | null> = signal<string[] | null>(null);
+
+
+  /**
+   * Fetches the user's music repertoire - default on the page initialization.
+   */
+  async getMusicRepertoire_Me(): Promise<any> {
     try {
       const response: HttpResponse<any> = await firstValueFrom(
         this.http.post(
-          `${this.baseURL}/api/protected/musicRepertoire/me`, {},
+          `${this.baseURL}/musicRepertoire/me`, {},
           {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
             observe: 'response'
           }))
 
-      if (!response.ok) return false;
-      console.log(response.body.musicLibraryData)
-      return response.body.musicLibraryData;
+      if (!response.ok) {
+        return false;
+      }
+      const result: any = Object.values(response.body)[0];
+      this.musicRepertoire.set(result);
+      return result;
+
     } catch(e) {
       console.log('error while getting music library', e);
       return false;
     }
   };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   async postMusic(input: { formData: Record<'title' | 'artist', string> }): Promise<any> {
     try {

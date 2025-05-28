@@ -8,41 +8,49 @@ import {VersionTableComponent} from '../versionTable/version-table/version-table
 import {FormsModule} from '@angular/forms';
 import {ToggleButtonComponent} from '../../settingsModule/toggle-button/toggle-button.component';
 import {AddSongFormComponent} from '../add-song-table/add-song-form.component';
-import {MusicLibraryService} from '../../../services/music-library.service';
+import {MusicRepertoireService} from '../../../services/music-repertoire.service';
 import {MusicTableComponent} from '../music-table/music-table.component';
 import {MlDisplayService} from '../mlDisplayService';
 import {SidenavRightService} from '../../../components/sidenav-right.service';
+import {MusicRepertoireTableComponent} from '../music-repertoire-table/music-repertoire-table.component';
+import {LayoutService} from '../../../../core/services/layout.service';
 
 @Component({
     selector: 'app-music-library',
     imports: [
-        NgForOf,
-        NgStyle,
-        MatIcon,
-        MatMenuTrigger,
-        MatIconButton,
-        MatMenu,
-        MatMenuItem,
-        CdkAccordionItem,
-        CdkAccordion,
-        VersionTableComponent,
-        NgIf,
-        FormsModule,
-        ToggleButtonComponent,
-        AddSongFormComponent,
-        MusicTableComponent
-    ],
+    NgForOf,
+    NgStyle,
+    MatIcon,
+    MatMenuTrigger,
+    MatIconButton,
+    MatMenu,
+    MatMenuItem,
+    CdkAccordionItem,
+    CdkAccordion,
+    VersionTableComponent,
+    NgIf,
+    FormsModule,
+    ToggleButtonComponent,
+    AddSongFormComponent,
+    MusicTableComponent,
+    MusicRepertoireTableComponent
+  ],
     templateUrl: './music-library.component.html',
     standalone: true,
     styleUrl: './music-library.component.scss'
 })
 
-export class MusicLibraryComponent implements OnInit{
+export class MusicLibraryComponent {
+  public musicRepertoireService: MusicRepertoireService = inject(MusicRepertoireService);
+  public layoutService = inject(LayoutService);
+
   private sidenavRightService: SidenavRightService = inject(SidenavRightService);
   public addSongTableWindowService: MlDisplayService = inject(MlDisplayService);
 
-  ngOnInit(): void {
-    //this.sidenavRightService.setSidenavContent();
+
+
+  getUserMusicRepertoire(): void {
+
   };
 
 }

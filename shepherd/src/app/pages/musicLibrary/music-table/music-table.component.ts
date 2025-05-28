@@ -5,7 +5,7 @@ import {MatIconButton} from "@angular/material/button";
 import {NgForOf, NgIf} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {VersionTableComponent} from "../versionTable/version-table/version-table.component";
-import {MusicLibraryService} from '../../../services/music-library.service';
+import {MusicRepertoireService} from '../../../services/music-repertoire.service';
 import {MlDisplayService} from '../mlDisplayService';
 import {AddVersionTableComponent} from '../versionTable/add-version-table/add-version-table.component';
 
@@ -27,7 +27,7 @@ import {AddVersionTableComponent} from '../versionTable/add-version-table/add-ve
     styleUrl: './music-table.component.scss'
 })
 export class MusicTableComponent implements OnInit{
-  public mlServ: any = inject(MusicLibraryService);
+  public mlServ: any = inject(MusicRepertoireService);
   public addSongTableWindowService: any = inject(MlDisplayService);
 
   public songs: any[] = [];
@@ -44,7 +44,7 @@ export class MusicTableComponent implements OnInit{
   };
 
   async refreshSongs(): Promise<void> {
-    this.songs = [...await this.mlServ.getMusic()];
+    this.songs = [...await this.mlServ.getMusicRepertoire_Me()];
     this.filteredSongs = [...this.songs];
     //TODO faire une websocket pour la modif de morceaux
   };

@@ -6,7 +6,7 @@ import {MatIconButton} from '@angular/material/button';
 import {FileManagementComponent} from '../file-management/file-management.component';
 import {CdkDrag} from '@angular/cdk/drag-drop';
 import {SelectComponent} from '../select/select.component';
-import {MusicLibraryService} from '../../../../services/music-library.service';
+import {MusicRepertoireService} from '../../../../services/music-repertoire.service';
 
 @Component({
     selector: 'app-version-table',
@@ -22,10 +22,11 @@ import {MusicLibraryService} from '../../../../services/music-library.service';
         NgTemplateOutlet
     ],
     templateUrl: './version-table.component.html',
+    standalone: true,
     styleUrl: './version-table.component.scss'
 })
 export class VersionTableComponent implements OnInit, OnChanges{
-  private mlServ = inject(MusicLibraryService);
+  private mlServ = inject(MusicRepertoireService);
   private fb: FormBuilder = inject(FormBuilder);
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef)
   public expandedIndex: number | null = null; // Index de la ligne en cours d'édition

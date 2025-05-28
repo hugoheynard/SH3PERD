@@ -61,6 +61,11 @@ $colorDarkMenus: #191c1e;
 }
 
 :root {
+  --pageTitleColor: rgba(239, 240, 243, 0.05);
+  --pageBackgroundColor: rgba(40, 42, 42, 100);
+}
+
+:root {
   --GreyLevel1: #5e5e5e;
   --GreyLevel2: #7f7f7f;
   --ContrastOnGreyLevel1: #ccc;
@@ -139,3 +144,5 @@ app-root {
   border: 2px dashed #666;
   background: rgba(0, 0, 0, 0.05);
 }
+
+

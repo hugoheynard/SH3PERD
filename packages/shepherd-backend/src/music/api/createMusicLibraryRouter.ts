@@ -1,5 +1,6 @@
 import {Rider} from "@sh3pherd/router-builder";
 import type {TGetMusicRepertoireUseCaseFn, TMusicRepertoireUseCases} from "../types/musicRepertoire.useCases.types.js";
+import type {TFindMusicRepertoireByUserIdFn} from "../types/musicRepertoire.core.types.js";
 
 
 
@@ -14,7 +15,7 @@ export const createMusicLibraryRouter = (deps: {
                 inject: { getMusicRepertoireByUserId },
                 routes: ({ getMusicRepertoireByUserId }) => ({
                     "post:/": {
-                        handler: Rider.control<any>(201, {
+                        handler: Rider.control<any>(200, {
                             fn: getMusicRepertoireByUserId,
                             inputMapper: (req) => ({
                                 asker_user_id: req.user_id,
@@ -29,7 +30,7 @@ export const createMusicLibraryRouter = (deps: {
                         inject: { getMusicRepertoireByUserId },
                         routes: ({ getMusicRepertoireByUserId }) => ({
                             "post:/": {
-                                handler: Rider.control<any>(201, {
+                                handler: Rider.control<TGetMusicRepertoireUseCaseFn>(200, {
                                     fn: getMusicRepertoireByUserId,
                                     inputMapper: (req) => ({
                                         asker_user_id: req.user_id,

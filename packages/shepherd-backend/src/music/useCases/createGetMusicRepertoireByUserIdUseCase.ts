@@ -10,7 +10,11 @@ export const createGetMusicRepertoireByUserIdUseCase = (deps: {
         const { asker_user_id, target_user_id } = requestDTO;
 
         if (!asker_user_id) {
-            throw new BusinessError('GET_USER_REPERTOIRE_FAILED', 'No asker user_id in request', 401);
+            throw new BusinessError('GET_USER_REPERTOIRE_FAILED', 'No asker user_id in request', 400);
+        }
+
+        if (!target_user_id) {
+            throw new BusinessError('GET_USER_REPERTOIRE_FAILED', 'No target user_id in request', 400);
         }
 
         //TODO: permissions on asker_user_id

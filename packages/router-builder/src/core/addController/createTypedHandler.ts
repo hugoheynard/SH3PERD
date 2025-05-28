@@ -52,6 +52,17 @@ export type TCreateTypedHandlerOptions<Fn extends (...args: any[]) => Promise<an
  * });
  */
 //TODO manage no input cases
+function serializeForJson(result: unknown): any {
+    if (result instanceof Map) {
+        return Object.fromEntries(result);
+    }
+
+    if (result instanceof Set) {
+        return [...result];
+    }
+
+    return result;
+};
 
 export function createTypedHandler<Fn extends (...args: any[]) => Promise<any>>(
     status: number,
@@ -65,7 +76,7 @@ export function createTypedHandler<Fn extends (...args: any[]) => Promise<any>>(
                 ? rawInput // fn expects multiple args
                 : [rawInput]; // fn expects one arg
 
-            const result = await options.fn(...args as ExtractArgs<Fn>);
+            const result: ExtractOutput<Fn> = serializeForJson(await options.fn(...args as ExtractArgs<Fn>));
 
             if (!options.onSuccess) {
                 res.status(status).json(result);

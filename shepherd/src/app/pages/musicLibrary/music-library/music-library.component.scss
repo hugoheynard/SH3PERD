@@ -1,1 +1,19 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: var(--pageBackgroundColor);
+}
+
+.page-banner {
+  font-size: 8rem;
+  font-weight: 30;
+  color: var(--pageTitleColor);
+  text-align: center;
+  letter-spacing: 1.5rem;
+  margin-bottom: 30px;
+  padding-top: 10px;
+  user-select: none;
+  line-height: 1;
+}
 
