@@ -1,0 +1,116 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="tab-configurator-form-grid">
+
+  <!-- SECTION 1: Configuration -->
+  <div class="form-block stagger" [style.animation-delay]="'0ms'">
+    <h2>Data Configuration</h2>
+
+    <!-- Title & Auto title toggle -->
+    <div class="title-row">
+      <label for="title">Tab title:</label>
+      <label class="auto-title">
+        Auto
+        <input type="checkbox" formControlName="autoTitle" (change)="onToggleAutoTitle()" />
+      </label>
+    </div>
+    <div class="title-input">
+        <input id="title" type="text" formControlName="title" placeholder="New Tab" />
+      </div>
+
+    <div class="form-row">
+      <!-- Component type selection -->
+      <div>
+        <select id="componentType" formControlName="componentType" label="search mode">
+          <option value="" disabled>Select a search mode</option>
+          <option *ngFor="let type of tabTypes" [value]="type.value">{{ type.label }}</option>
+        </select>
+      </div>
+
+
+      <!-- Conditional user selection me / single user / multiple users-->
+      <div>
+        <select id="targetMode" formControlName="targetMode" label="target mode">
+          <option value="" disabled>Select a target mode</option>
+          <option *ngFor="let mode of targetModes" [value]="mode.value">{{ mode.label }}</option>
+        </select>
+      </div>
+    </div>
+
+
+
+    <!-- User selection for repertoire type -->
+    <ng-container [ngSwitch]="targetMode">
+      <ng-container *ngSwitchCase="'single-user'">
+        <select id="user" formControlName="userId" label="User">
+          <option value="" disabled>Select a user</option>
+          <option *ngFor="let user of userList" [value]="user.id">{{ user.name }}</option>
+        </select>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'multiple-users'">
+        <!-- Multi-select dropdown for multiple users -->
+        <app-multi-select-dropdown [options]="userList"
+                                   labelKey="name"
+                                   valueKey="id"
+                                   [selectedIds]="form.get('userIds')?.value"
+                                   (selectionChange)="form.get('userIds')?.setValue($event)"/>
+
+        <input type="checkbox" formControlName="expoitationFilter" label="display all as a single tab" />
+      </ng-container>
+      <!-- ngSwitchDefault optionnel : nothing on 'me' -->
+    </ng-container>
+
+
+    <div class="form-row">
+      <input type="checkbox"
+             label="activate Data Filter"
+             formControlName="dataFilter" />
+
+      <input type="checkbox"
+             label="activate Exploitation Filter"
+             formControlName="expoitationFilter" />
+    </div>
+
+
+  </div>
+
+  <!-- SECTION 2: Filters -->
+  <div class="form-block stagger"
+       [style.animation-delay]="'120ms'"
+       [class.disabled-block]="!shouldShowDataFilterOverlay()"
+       formGroupName="repertoireOptions">
+
+    <!--Disabled overlay-->
+    <div class="overlay" *ngIf="!shouldShowDataFilterOverlay()">
+      <span class="icon">
+        <mat-icon>block</mat-icon>
+      </span>
+    </div>
+
+
+    <!-- Block content-->
+    <h2>Data Filters</h2>
+
+
+  </div>
+
+  <!-- SECTION 3: EXPLOITATION -->
+  <div class="form-block stagger"
+       [style.animation-delay]="'240ms'"
+       [class.disabled-block]="!shouldShowDataFilterOverlay()">
+    <!--Disabled overlay-->
+    <div class="overlay" *ngIf="!shouldShowDataFilterOverlay()">
+      <span class="icon">
+        <mat-icon>block</mat-icon>
+      </span>
+    </div>
+
+    <h2>Exploitation FILTERS</h2>
+    <!-- Résumé ou actions -->
+
+  </div>
+
+  <div class="form-block stagger button-block" [style.animation-delay]="'360ms'" >
+    <button type="submit" [disabled]="form.invalid">GO</button>
+  </div>
+
+</form>

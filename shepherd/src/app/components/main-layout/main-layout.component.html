@@ -1,3 +1,22 @@
+<div class="app-header">
+  <div class="left">
+    <!-- Logo ou nom d'application -->
+    <span class="app-name">SH3PHERD</span>
+  </div>
+
+  <div class="right">
+    <button class="theme-toggle" (click)="toggleTheme()">
+      {{ isDark ? '🌞' : '🌙' }}
+    </button>
+
+    <!-- Cercle avec initiale -->
+    <div class="profile-circle">
+      T
+    </div>
+  </div>
+
+</div>
+
 <div class="app-layout">
   <appMenu class="menu-left"
     [menuItems]="[
@@ -10,13 +29,10 @@
         ]"/>
 
   <div class="layout-body">
-    <!--<app-header />-->
-
     <div class="layout-main">
       <div class="leftPanel" [ngClass]="{ 'hidden': !hasLeftPanel() }">
         <ng-template #leftPanelContainer />
       </div>
-
 
       <div class="content">
         <router-outlet />
@@ -32,3 +48,5 @@
     </div>
   </div>
 </div>
+
+<!--<div class="app-footer"></div>-->

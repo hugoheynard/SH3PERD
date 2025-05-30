@@ -5,8 +5,6 @@ import {TrackLineComponent} from '../playlistView/track-line/track-line.componen
 import {NgForOf, NgIf} from '@angular/common';
 import {PlaylistTableComponent} from '../playlist-table/playlist-table.component';
 import {PlaylistViewComponent} from '../playlistView/playlist-view/playlist-view.component';
-import {MusicLibraryComponent} from '../../musicLibrary/music-library/music-library.component';
-import {MusicTableComponent} from '../../musicLibrary/music-table/music-table.component';
 import {PlaylistDisplayService} from '../playlist-display.service';
 import {Playlist} from '../playlist_interfaces';
 import {SongListDndComponent} from '../playlistView/song-list-dnd/song-list-dnd.component';
@@ -26,8 +24,6 @@ import {PlaylistService} from '../../../services/playlistService/playlist.servic
     PlaylistTableComponent,
     PlaylistViewComponent,
     NgIf,
-    MusicLibraryComponent,
-    MusicTableComponent,
     SongListDndComponent,
     PlvSectionContainerComponent,
     MatTabGroup, MatTab,

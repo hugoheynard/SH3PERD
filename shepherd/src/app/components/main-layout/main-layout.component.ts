@@ -15,6 +15,7 @@ import {RouterOutlet} from '@angular/router';
 import {FooterComponent} from '../footer/footer.component';
 import {NgClass, NgIf} from '@angular/common';
 import {LayoutService} from '../../../core/services/layout.service';
+import {ThemeService} from '../../../core/services/theme.service';
 
 
 @Component({
@@ -40,6 +41,7 @@ export class MainLayoutComponent implements AfterViewInit{
   private layoutService: LayoutService = inject(LayoutService);
 
   public title: string = 'shepherd';
+  public isDark = true;
 
   @ViewChild('leftPanelContainer', { read: ViewContainerRef }) leftPanel!: ViewContainerRef;
   @ViewChild('rightPanelContainer', { read: ViewContainerRef }) rightPanel!: ViewContainerRef;
@@ -49,7 +51,11 @@ export class MainLayoutComponent implements AfterViewInit{
   public hasLeftPanel = computed(() => this.layoutService.leftPanelComponent() !== null);
   public hasRightPanel = computed(() => this.layoutService.rightPanelComponent() !== null);
 
+
+  constructor(private themeService: ThemeService) {}
   ngAfterViewInit() {
+    this.isDark = this.themeService.getTheme() === 'dark';
+
     /**
      * injects components in layout parts
      */
@@ -78,6 +84,11 @@ export class MainLayoutComponent implements AfterViewInit{
         }
       });
     });
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+    this.isDark = !this.isDark;
   }
 
 }

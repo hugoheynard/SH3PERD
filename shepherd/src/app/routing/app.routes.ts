@@ -4,10 +4,10 @@ import {LoginLayoutComponent} from '../pages/login/loginLayout/loginLayout.compo
 import {LoginComponent} from '../pages/login/login/login.component';
 import {CalendarComponent} from '../pages/calendar/components/calendarPage/calendar.component';
 import {authGuard} from '../../guards/auth.guard';
-import {MusicLibraryComponent} from '../pages/musicLibrary/music-library/music-library.component';
 import {PlaylistManagerComponent} from '../pages/playlists/playlist-manager/playlist-manager.component';
 import {MainLayoutComponent} from '../components/main-layout/main-layout.component';
 import {HomeComponent} from '../pages/home-dashboard/home/home.component';
+import {MusicLibraryComponent} from '../pages/musicLibrary/components/music-library/music-library.component';
 
 
 export const routes: Routes = [
