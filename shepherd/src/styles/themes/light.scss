@@ -1,8 +1,13 @@
+@import 'tokens';
+
 [data-theme='light'] {
-  --pageTitleColor: rgb(25, 26, 26);
-  --pageBackgroundColor: rgb(242, 245, 245);
-  --primaryTextColor: #191a1a;
+  --pageTitleColor: #616161;
+  --pageBgColor: #E5E5E5;
+  --primaryTextColor: #333333;
 
 
-  --colorPrimaryMenus: #dae0e5;
+  --colorPrimaryMenus: rgba(112,128,144, 0.2);
+
+  //----------Form ------------//
+  --form-field-bgColor: #{$form-field-bgColor-light};
 }

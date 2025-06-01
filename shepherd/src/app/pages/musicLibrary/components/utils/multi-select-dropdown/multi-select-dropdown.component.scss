@@ -1,37 +1,59 @@
+@import 'tokens';
+
 .custom-select {
   position: relative;
   width: 100%;
+  background: var(--form-field-bgColor);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: $form-field-radius;
+  padding: $form-field-padding;
+  font-size: 0.9rem;
+  color: var(--primaryTextColor);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  &.open {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 
   .select-label {
-    position: relative;
-    z-index: 2;
-    background: rgba(0, 0, 0, 0.7); // semi-transparent ou opaque selon design
-    padding: 10px 14px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 6px;
-    cursor: pointer;
-    color: white;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .dropdown {
     position: absolute;
     top: 100%;
     left: 0;
-    width: 100%;
-    background: rgba(0, 0, 0, 1); // opaque
-    border-radius: 4px;
-    margin-top: 4px;
-    padding: 8px;
-    z-index: 1;
+    right: 0;
+    margin-top: -1px; // seamless border
+    background-color: var(--form-field-bgColor);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    z-index: 1000;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    padding: 8px 12px;
+    max-height: 200px;
+    overflow-y: auto;
 
     label {
       display: flex;
       align-items: center;
-      padding: 6px;
-      color: white;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      color: var(--primaryTextColor);
 
       input[type="checkbox"] {
-        margin-right: 8px;
+        accent-color: var(--primaryTextColor);
       }
     }
   }

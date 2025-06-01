@@ -16,6 +16,7 @@ import {FooterComponent} from '../footer/footer.component';
 import {NgClass, NgIf} from '@angular/common';
 import {LayoutService} from '../../../core/services/layout.service';
 import {ThemeService} from '../../../core/services/theme.service';
+import {MatIcon} from '@angular/material/icon';
 
 
 @Component({
@@ -28,7 +29,8 @@ import {ThemeService} from '../../../core/services/theme.service';
     FooterComponent,
     MatSidenav,
     NgIf,
-    NgClass
+    NgClass,
+    MatIcon,
   ],
   templateUrl: './main-layout.component.html',
   standalone: true,
@@ -91,4 +93,7 @@ export class MainLayoutComponent implements AfterViewInit{
     this.isDark = !this.isDark;
   }
 
+  onMenuClick(): void {
+    console.log('Menu clicked');
+  };
 }

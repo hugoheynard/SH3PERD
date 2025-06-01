@@ -1,31 +1,33 @@
+@import 'tokens';
+
 @mixin form-field-base {
   width: 100%;
-  height: 2.5rem;
-  padding: 10px 14px;
-  font-size: 0.9rem;
+  height: $form-field-height;
+  padding: $form-field-padding;
+  box-sizing: border-box;
+  font-size: $form-field-fontSize;
   margin-top: 6px;
   border: 1px solid rgba(253, 255, 255, 0.15);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  border-radius: $form-field-radius;
+  background: var(--form-field-bgColor);
   color: var(--primaryTextColor);
   outline: none;
-  transition: border-color 0.4s ease;
   backdrop-filter: blur(4px);
-  box-sizing: border-box;
+  transition: border-color 0.4s ease;
+
 
   &::placeholder {
     color: rgba(253, 255, 255, 0.4);
   }
 
   &:focus {
-    border-color: rgba(253, 255, 255, 0.4);
+    border-color: var(--form-field-focus-outlineColor);
   }
 };
 
 @mixin form-field-label {
-  font-size: 0.8rem;
+  font-size: $form-field-label-fontSize;
   text-transform: capitalize;
-  border-color: rgba(253, 255, 255, 0.2);
 }
 
 @mixin form-section-title {

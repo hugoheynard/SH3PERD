@@ -6,11 +6,10 @@
   <div class="dropdown" *ngIf="dropdownOpen" (click)="$event.stopPropagation()">
     <label *ngFor="let option of options">
       <input type="checkbox"
-             [checked]="isSelected(getOptionValue(option))"
+             [checked]="isSelected(option?.[valueKey])"
              (click)="$event.stopPropagation()"
-             (change)="onToggle(getOptionValue(option), checkbox.checked)"
-             #checkbox />
-      {{ getOptionLabel(option) }}
+             (change)="onCheckboxChange($event, option?.[valueKey])" />
+      {{ option[labelKey] }}
     </label>
   </div>
 </div>

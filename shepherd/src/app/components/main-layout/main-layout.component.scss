@@ -1,3 +1,5 @@
+@import "tokens";
+
 :host {
   display: block;
   height: 100vh;
@@ -9,8 +11,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 8vh;
-  padding: 0 32px;
+  height: $app-header-height;
+  padding: 0 14px;
   background-color: var(--headAndfootBgColor);
   color: var(--primaryTextColor);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -19,6 +21,10 @@
   position: sticky;
   top: 0;
   z-index: 10;
+
+  @media (max-width: $small-width-trigger) {
+    padding: 0 8px;
+  }
 
   .left {
     display: flex;
@@ -42,12 +48,12 @@
     .profile-circle {
       width: 40px;
       height: 40px;
-      border-radius: 50%;
-      background-color: var(--primaryTextColor);
-      color: var(--pageBackgroundColor);
       display: flex;
       align-items: center;
       justify-content: center;
+      border-radius: 50%;
+      background-color: var(--primaryTextColor);
+      color: var(--pageBgColor);
       font-weight: bold;
       font-size: 1rem;
       text-transform: uppercase;
@@ -58,6 +64,26 @@
       &:hover {
         transform: scale(1.05);
       }
+    }
+  }
+
+  .mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--primaryTextColor);
+    font-size: 1.6rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    @media (max-width: $small-width-trigger) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 }
@@ -76,29 +102,34 @@ app-footer {
 
 //----------main layout - application content----------//
 .menu-left {
-  width: 4vw;
-  height: 100%;
+  width: $main-menus-width;
+  height: $app-layout-children-height;
 }
 
 .layout-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: $app-layout-children-height;
   overflow: hidden;
 }
 
 .layout-main {
+  width: 100%;
+  height: $app-layout-children-height;
   display: flex;               // permet un layout horizontal
   flex-direction: row;         // place les enfants côte à côte
-  height: 100vh;
-  width: 100vw;
   overflow: hidden;
+
+  @media (max-width: $small-width-trigger) {
+    flex-direction: column;
+  };
 }
 
-.leftPanel{
-  background-color: #4f74ec;
-  width: 21vw;
+.panel{
+  width: $app-sidePanel-width;
+  height: $app-layout-children-height;
+  background-color: var(--sidePanelsPrimaryBgColor);
 }
 
 .content {
@@ -108,17 +139,14 @@ app-footer {
   min-width: 0;                // évite le débordement de flex
 }
 
-.rightPanel{
-  background-color: #4fe7ec;
-  width: 21vw;
-}
 
 .context-menu {
-  width: 4vw;
+  width: $main-menus-width;
+  height: $app-layout-children-height;
   box-shadow: -2px 0 6px rgba(0, 0, 0, 0.05);
   background-color: var(--colorPrimaryMenus);
   flex-shrink: 0;
-  height: 100%;
+  z-index: 20;
 }
 
 .hidden {
@@ -126,16 +154,38 @@ app-footer {
 }
 
 //---------Temp Header Design----------//
-.theme-toggle {
-  background: none;
-  border: none;
-  font-size: 1.4rem;
-  color: var(--primaryTextColor);
+.theme-switch {
   cursor: pointer;
-  transition: transform 0.2s ease;
+  .switch-track {
+    width: 48px;
+    height: 24px;
+    background-color: #666;
+    border-radius: 12px;
+    position: relative;
+    transition: background-color 0.3s ease;
+  }
 
-  &:hover {
-    transform: scale(1.1);
+  .switch-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translateX(0);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+
+    &.dark {
+      transform: translateX(24px);
+      background: #333;
+      color: #fff;
+    }
   }
 }
 
@@ -147,10 +197,6 @@ app-footer {
   }
 
   .menu-left {
-
-  }
-
-  .layout-body {
-    font-size: 14px;
+    display: none;
   }
 }

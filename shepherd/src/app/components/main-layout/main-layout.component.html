@@ -1,17 +1,24 @@
 <div class="app-header">
   <div class="left">
+    <button class="mobile-menu-btn" (click)="onMenuClick()" aria-label="Open menu">
+      <mat-icon>menu</mat-icon>
+    </button>
     <!-- Logo ou nom d'application -->
     <span class="app-name">SH3PHERD</span>
   </div>
 
   <div class="right">
-    <button class="theme-toggle" (click)="toggleTheme()">
-      {{ isDark ? '🌞' : '🌙' }}
-    </button>
+    <div class="theme-switch" (click)="toggleTheme()">
+      <div class="switch-track">
+        <div class="switch-thumb" [class.dark]="isDark">
+          {{ isDark ? '🌙' : '🌞' }}
+        </div>
+      </div>
+    </div>
 
     <!-- Cercle avec initiale -->
     <div class="profile-circle">
-      T
+      H
     </div>
   </div>
 
@@ -30,7 +37,7 @@
 
   <div class="layout-body">
     <div class="layout-main">
-      <div class="leftPanel" [ngClass]="{ 'hidden': !hasLeftPanel() }">
+      <div class="panel" [ngClass]="{ 'hidden': !hasLeftPanel() }">
         <ng-template #leftPanelContainer />
       </div>
 
@@ -38,7 +45,7 @@
         <router-outlet />
       </div>
 
-      <div class="rightPanel" [ngClass]="{ 'hidden': !hasRightPanel() }">
+      <div class="panel" [ngClass]="{ 'hidden': !hasRightPanel() }">
         <ng-template #rightPanelContainer />
       </div>
 
@@ -46,6 +53,7 @@
         <ng-template #contextMenuContainer />
       </div>
     </div>
+
   </div>
 </div>
 
