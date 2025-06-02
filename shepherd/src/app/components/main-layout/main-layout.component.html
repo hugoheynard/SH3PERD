@@ -41,6 +41,18 @@
         <ng-template #leftPanelContainer />
       </div>
 
+      <app-circular-menu #circularMenu
+        [menuItems]="[
+        { label: 'Home', iconName: 'home', route: '/home' },
+        { label: 'Calendar', iconName: 'calendar_today', route: '/profile' },
+        { label: 'Music', iconName: 'library_music', route: '/musicLibrary' },
+        { label: 'Playlists', iconName: 'queue_music', route: '/settings' },
+        { label: 'Settings', iconName: 'settings', route: '/settings' },
+        { label: 'Logout', iconName: 'logout', route: '/settings' },
+
+        ]"
+      />
+
       <div class="content">
         <router-outlet />
       </div>

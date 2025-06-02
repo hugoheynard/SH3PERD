@@ -28,7 +28,9 @@ interface Tab {
   isEditing?: boolean;
   isDeletable?: boolean;
   isEditable?: boolean;
-  search?: string;
+  isSearchable?: boolean;
+  isSearchVisible?: boolean;
+  search: string;
   default: boolean;
 }
 
@@ -69,6 +71,7 @@ export class MusicLibraryComponent implements AfterViewInit{
       component: 'music-tab-configurator',
       isDeletable: false,
       isEditable: false,
+      isSearchable: false,
       isActive: true,
       search: '',
       default: true,
@@ -78,6 +81,7 @@ export class MusicLibraryComponent implements AfterViewInit{
       component: 'repertoire-me',
       isDeletable: false,
       isEditable: false,
+      isSearchable: true,
       isActive: true,
       search: '',
       default: false,
@@ -88,7 +92,7 @@ export class MusicLibraryComponent implements AfterViewInit{
   private tabRefs: Map<string, any> = new Map<string, any>();
   public searchValue: string = '';
   public filter: string = '';
-  public isCompact: boolean = false;
+  public isCompact: boolean = true;
 
 
   // ──────────── COMPONENT MAP ────────────
@@ -210,4 +214,8 @@ export class MusicLibraryComponent implements AfterViewInit{
     tab.title = newTitle || 'Untitled Tab';
     tab.isEditing = false;
   };
+
+  toggleSearch(tab: Tab): void {
+    tab.isSearchVisible = !tab.isSearchVisible;
+  }
 }

@@ -6,6 +6,38 @@
   background-color: var(--pageBgColor);
 }
 
+.tab-search-below {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(4px);
+  padding: 10px 16px;
+  border-radius: 0 0 6px 6px;
+  margin-top: -4px; // effet de continuité avec l'onglet
+  animation: slideDown 0.25s ease-out;
+  width: 100%;
+}
+
+.tab-search-below input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-weight: 300;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--primaryTextColor);
+  outline: none;
+  backdrop-filter: blur(6px);
+  transition: border-color 0.3s ease;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  &:focus {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
 //header
 .music-lib-header {
   display: flex;
@@ -218,3 +250,70 @@
   overflow-y: auto;
   position: relative;
 }
+
+
+
+
+
+.modern-search-bar {
+  height: 2.5rem;
+  background: rgba(253, 255, 255, 0.15); // même intensité que .tab.active
+  backdrop-filter: blur(8px);
+  padding: 0 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: expandDown 0.3s ease-out;
+}
+
+@keyframes expandDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 150px; // hauteur attendue du bloc
+    opacity: 1;
+  }
+}
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+}
+
+.input-wrapper input {
+  width: 100%;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 300;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--primaryTextColor);
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+    font-weight: 200;
+  }
+}
+
+.input-wrapper .underline {
+  position: absolute;
+  bottom: 0;
+  left: 100%;
+  width: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.6);
+  transition: width 0.3s ease, left 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.input-wrapper input:focus + .underline {
+  width: 100%;
+  left: 0;
+}
+

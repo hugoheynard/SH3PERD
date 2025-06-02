@@ -1,9 +1,21 @@
+
 <div class="custom-select">
   <div class="select-label" (click)="toggleDropdown()">
-    {{ selectedLabels.length ? selectedLabels.join(', ') : 'Select items' }}
+    {{ selectedLabels.length ? selectedLabels.join(', ') : placeholder }}
   </div>
 
-  <div class="dropdown" *ngIf="dropdownOpen" (click)="$event.stopPropagation()">
+  <div class="dropdown" [class.open]="dropdownOpen" *ngIf="dropdownOpen" (click)="$event.stopPropagation()">
+    <label class="dropdown-placeholder">{{ placeholder }}</label>
+    <label class="dropdown-select-all">
+      <input
+        type="checkbox"
+        [checked]="isAllSelected()"
+        (click)="$event.stopPropagation()"
+        (change)="onSelectAllCheckboxChange($event)"
+      />
+      {{ isAllSelected() ? 'Unselect all' : 'Select all' }}
+    </label>
+
     <label *ngFor="let option of options">
       <input type="checkbox"
              [checked]="isSelected(option?.[valueKey])"
@@ -11,5 +23,11 @@
              (change)="onCheckboxChange($event, option?.[valueKey])" />
       {{ option[labelKey] }}
     </label>
+
+    <div class="dropdown-actions">
+      <button type="button" (click)="closeDropdown()" class="button-primary">
+        Validate
+      </button>
+    </div>
   </div>
 </div>

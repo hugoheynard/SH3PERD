@@ -1,11 +1,7 @@
-import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import {Component, ElementRef, forwardRef, HostListener, inject, Input} from '@angular/core';
 import { NgForOf, NgIf } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-export interface SelectOption {
-  value: any;
-  label: any;
-}
 
 @Component({
   selector: 'app-multi-select-dropdown',
@@ -20,13 +16,28 @@ export interface SelectOption {
   }]
 })
 export class MultiSelectDropdownComponent implements ControlValueAccessor {
+  private _elementRef: ElementRef = inject(ElementRef);
+
+  @Input() placeholder: string = 'Select options';
   @Input() options: any[] = [];
   @Input() labelKey: string = '';
   @Input() valueKey: string = '';
-  //@Output() selectionChange = new EventEmitter<string[]>();
 
   selectedIds: string[] = [];
   dropdownOpen: boolean = false;
+
+  @HostListener('document:click', ['$event.target'])
+  onDocumentClick(target: HTMLElement): void {
+    const clickedInside = this._elementRef.nativeElement.contains(target);
+    if (!clickedInside && this.dropdownOpen) {
+      this.closeDropdown();
+    }
+  };
+
+  closeDropdown(): void {
+    this.dropdownOpen = false;
+    this.onTouched();
+  }
 
   private onChange: (_: any) => void = () => {};
   private onTouched: () => void = () => {};
@@ -94,5 +105,27 @@ export class MultiSelectDropdownComponent implements ControlValueAccessor {
 
     this.onTouched();
     this.onToggle(value, input.checked);
+  }
+
+  isAllSelected(): boolean {
+    return this.options.every(opt => this.selectedIds.includes(opt[this.valueKey]));
+  }
+
+  toggleSelectAll(checked: boolean): void {
+    if (checked) {
+      const allValues = this.options.map(opt => opt[this.valueKey]);
+      this.selectedIds = [...allValues];
+      this.onChange([...allValues]);
+    } else {
+      this.selectedIds = [];
+      this.onChange([]);
+    }
+  }
+
+  onSelectAllCheckboxChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input) return;
+
+    this.toggleSelectAll(input.checked);
   }
 }

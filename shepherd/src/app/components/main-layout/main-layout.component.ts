@@ -17,6 +17,7 @@ import {NgClass, NgIf} from '@angular/common';
 import {LayoutService} from '../../../core/services/layout.service';
 import {ThemeService} from '../../../core/services/theme.service';
 import {MatIcon} from '@angular/material/icon';
+import {CircularMenuComponent} from '../circular-menu/circular-menu.component';
 
 
 @Component({
@@ -31,6 +32,7 @@ import {MatIcon} from '@angular/material/icon';
     NgIf,
     NgClass,
     MatIcon,
+    CircularMenuComponent,
   ],
   templateUrl: './main-layout.component.html',
   standalone: true,
@@ -48,6 +50,8 @@ export class MainLayoutComponent implements AfterViewInit{
   @ViewChild('leftPanelContainer', { read: ViewContainerRef }) leftPanel!: ViewContainerRef;
   @ViewChild('rightPanelContainer', { read: ViewContainerRef }) rightPanel!: ViewContainerRef;
   @ViewChild('contextMenuContainer', { read: ViewContainerRef }) contextMenu!: ViewContainerRef;
+  @ViewChild('circularMenu') circularMenu!: CircularMenuComponent;
+
 
   public hasContextMenu = computed(() => this.layoutService.contextMenuComponent() !== null);
   public hasLeftPanel = computed(() => this.layoutService.leftPanelComponent() !== null);
@@ -95,5 +99,6 @@ export class MainLayoutComponent implements AfterViewInit{
 
   onMenuClick(): void {
     console.log('Menu clicked');
+    this.circularMenu.open()
   };
 }

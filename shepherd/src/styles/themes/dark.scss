@@ -5,6 +5,10 @@
   --pageTitleColor: rgba(239, 240, 243, 0.05);
   --primaryTextColor: #ccc;
 
+  //----------button elements color------------//
+  --buttonPrimaryBgColor: #{$button-primary-bgColor-dark};
+  --buttonPrimaryTextColor: #{$button-primary-textColor};
+
   //----------Structural elements color------------//
   --colorPrimaryMenus: #191c1e;
   --pageBgColor: rgba(40, 42, 42, 100);
@@ -12,8 +16,10 @@
   --sidePanelsPrimaryBgColor: #4f74ec;
 
   //----------Form ------------//
+  --form-field-borderColor: #{$form-field-borderColor-dark};
   --form-field-bgColor: #{$form-field-bgColor-dark};
   --form-field-focus-outlineColor: #{$form-field-focus-outlineColor};
+  --form-block-bgColor: #{$form-block-bgColor-dark};
 }
 
 

@@ -1,0 +1,72 @@
+@import 'tokens';
+
+@mixin form-field-base {
+  width: 100%;
+  height: $form-field-height;
+  padding: $form-field-padding;
+  box-sizing: border-box;
+  font-size: $form-field-fontSize;
+  margin-top: 0.25rem;
+  border: 1px solid var(--form-field-borderColor);
+  border-radius: $form-field-radius;
+  background: var(--form-field-bgColor);
+  color: var(--primaryTextColor);
+  outline: none;
+  backdrop-filter: blur(4px);
+  transition: border-color 0.4s ease;
+
+
+  &::placeholder {
+    color: rgba(253, 255, 255, 0.4);
+  }
+
+  &:hover {
+    border-color: var(--form-field-focus-outlineColor);
+  }
+
+  &:focus {
+    border-color: var(--form-field-focus-outlineColor);
+  }
+};
+
+@mixin form-field-label {
+  font-size: $form-field-label-fontSize;
+  text-transform: capitalize;
+}
+
+@mixin form-section-title {
+  margin-bottom: 3rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--primaryTextColor);
+};
+
+@mixin form-container($display) {
+  display: $display;
+  background: $form-bgColor;
+  margin: 0 auto;
+  backdrop-filter: blur(8px);
+
+  @if $display == flex {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  @else if $display == grid {
+    @media (max-width: $small-width-trigger) {
+      grid-template-columns: 1fr;
+    };
+  };
+}
+
+@mixin form-block($display) {
+  display: $display;
+  padding: $form-block-padding;
+  border-radius: $form-block-radius;
+  color: var(--primaryTextColor);
+  background: var(--headAndfootBgColor);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}

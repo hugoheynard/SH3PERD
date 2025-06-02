@@ -109,9 +109,41 @@ export class MusicTabConfiguratorComponent implements OnInit{
 
   // ──────────── AUTO TITLE ────────────
   setAutoTitle(type: string): void {
-    const label = this.tabTypes.find(t => t.value === type)?.label ?? type;
+    const targetMode = this.form.get('targetMode')?.value;
+    const title = this.generateAutoTitle(type, targetMode);
+    this.form.get('title')?.setValue(title, { emitEvent: false });
+  }
 
-    this.form.get('title')?.setValue(`${label}`);
+  private generateAutoTitle(type: string, mode: string): string {
+    const title = {
+      target: '',
+      searchType: '',
+      energy: '',
+      genre: '',
+    };
+
+    switch (type) {
+      case 'repertoire':
+        title.searchType = 'rep';
+
+        if (mode === 'me') {
+          title.target = 'my';
+        }
+
+        if (mode === 'single-user') {
+          title.target = 'user’s';
+        }
+
+        if (mode === 'multiple-users') return 'Shared Repertoire';
+        return 'Repertoire';
+
+      case 'crossSearch':
+        title.searchType = 'rep';
+
+
+    }
+
+    return `${title.target} ${title.energy} ${title.genre} ${title.searchType} `.trim();
   }
 
   onToggleAutoTitle(): void {

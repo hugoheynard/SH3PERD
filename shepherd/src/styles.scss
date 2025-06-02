@@ -1,13 +1,12 @@
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
-// Plus imports for other components in your app.
 
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
 @include mat.elevation-classes();
 @include mat.app-background();
+
+@import 'themes/dark';
+@import 'themes/light';
+@import 'mixins/forms';
+
 
 // Define the theme object.
 $shepherd-theme: mat.define-theme((
@@ -21,93 +20,34 @@ $shepherd-theme: mat.define-theme((
   )
 ));
 
-@import 'themes/dark';
-@import 'themes/light';
-
-
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
+
 :root {
   @include mat.all-component-themes($shepherd-theme);
-}
-
-// Comment out the line below if you want to use the pre-defined typography utility classes.
-// For more information: https://material.angular.io/guide/typography#using-typography-styles-in-your-application.
-// @include mat.typography-hierarchy($shepherd-theme);
-
-// Comment out the line below if you want to use the deprecated `color` inputs.
-// @include mat.color-variants-backwards-compatibility($shepherd-theme);
-/* You can add global styles to this file, and also import other style files */
-$appBackgroundColor: #c5c5c5;
-$colorDarkMenus: #191c1e;
-
-:root {
   --darkCharcoal: #333333;
   --greyMid: #555555;
   --granite: #616161;
   --platinium: #E5E5E5;
   --slateBlueGrey: #708090;
   --culturedWhite: #F5F5F5;
-
-
-  --appBackgroundColor: #F7F7F7;
-  --tableTopBackgroundColor: rgb(29, 29, 30);
-  --tableHeaderBackgroundColor: #f5f7f8;
-  --tableBackgroundColor: rgb(61, 66, 70);
-  --fontColorNightMode: #e2e5e8;
-
   --colorMidDarkGrey: #34343a;
   --colorMidGrey:#414344;
   --colorFadedGrey: #8a8d8d;
   --colorLightGrey: #f5f7f8;
-}
-
-
-
-:root {
   --GreyLevel1: #5e5e5e;
   --GreyLevel2: #7f7f7f;
   --ContrastOnGreyLevel1: #ccc;
   --ContrastOnGreyLevel2: #e1dfdf;
-  @include mat.tabs-overrides((
-  ));
 }
-
-.mat-tab-group {
-  .mat-tab-label {
-    background-color: var(--GreyLevel2); // Couleur de fond des onglets inactifs
-    color: var(--ContrastOnGreyLevel1);
-    transition: background-color 0.3s ease-in-out, color 0.3s;
-  }
-
-  .mat-tab-label-active {
-    background-color: var(--PrimaryColor); // Couleur de fond de l'onglet actif
-    color: white; // Couleur du texte pour l'onglet actif
-    font-weight: bold;
-    border-radius: 5px 5px 0 0;
-  }
-
-  .mat-ink-bar {
-    background-color: #4fe7ec !important; // Barre sous l'onglet actif
-  }
-}
-
-
 
 html, body { height: 100vh; }
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-  //font-family: Roboto, "Helvetica Neue", sans-serif;
   box-sizing: border-box;background-color: var(--culturedWhite);
 };
-
-app-root {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
 
 .flexRowSpaceBetween {
   display: flex;
@@ -143,5 +83,30 @@ app-root {
   border: 2px dashed #666;
   background: rgba(0, 0, 0, 0.05);
 }
+
+
+// Forms
+form {
+  h2 {
+    @include form-section-title;
+  }
+
+  label {
+    @include form-field-label;
+  }
+
+  input[type="text"],
+  select {
+    @include form-field-base;
+  }
+
+  input[type="checkbox"] {
+    margin-right: 6px;
+    accent-color: var(--primaryTextColor);
+  }
+}
+
+
+
 
 

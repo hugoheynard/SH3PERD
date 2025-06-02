@@ -55,9 +55,7 @@
 
         <input type="checkbox" formControlName="displayAsSingleSearch" label="display all as a single tab" />
       </ng-container>
-      <!-- ngSwitchDefault optionnel : nothing on 'me' -->
     </ng-container>
-
 
     <div class="form-row">
       <input type="checkbox"
@@ -66,14 +64,12 @@
 
       <input type="checkbox"
              label="activate Exploitation Filter"
-             formControlName="expoitationFilter" />
+             formControlName="exploitationFilter" />
     </div>
-
-
   </div>
 
   <!-- SECTION 2: Filters -->
-  <div class="form-block stagger dataFilter"
+  <div class="form-block stagger"
        [style.animation-delay]="'120ms'"
        [class.disabled-block]="!shouldShowDataFilterOverlay()"
        formGroupName="dataFilterOptions">
@@ -88,23 +84,39 @@
 
     <!-- Block content-->
     <h2>Data Filters</h2>
-    <app-multi-select-dropdown
-      label="genre"
-      formControlName = "genre"
-      [options]="[{ label: 'jazz', value: 'jazz' }, { label: 'rock', value: 'rock' }, { label: 'pop', value: 'pop' }]"
-      labelKey="label"
-      valueKey="value"
-      class="halfRow"
-    />
+    <div class="dataFilter">
+      <div class="halfRow">
+        <app-multi-select-dropdown
+          label="genre"
+          formControlName = "genre"
+          [options]="[{ label: 'jazz', value: 'jazz' }, { label: 'rock', value: 'rock' }, { label: 'pop', value: 'pop' }]"
+          labelKey="label"
+          valueKey="value"
+        />
+      </div>
 
-    <app-multi-select-dropdown
-      label="energy"
-      formControlName = "genre"
-      [options]="[{ label: 1, value: 1 }, { label: 2, value: 2 }, { label: 3, value: 3 }]"
-      labelKey="label"
-      valueKey="value"
-      class="halfRow"
-    />
+      <div class="halfRow">
+        <app-multi-select-dropdown
+          label="energy"
+          formControlName = "genre"
+          [options]="[{ label: 1, value: 1 }, { label: 2, value: 2 }, { label: 3, value: 3 }]"
+          labelKey="label"
+          valueKey="value"
+        />
+      </div>
+
+      <div class="halfRow">
+        <app-multi-select-dropdown
+          label="effort"
+          formControlName = "effort"
+          [options]="[{ label: 1, value: 1 }, { label: 2, value: 2 }, { label: 3, value: 3 }]"
+          labelKey="label"
+          valueKey="value"
+        />
+      </div>
+
+    </div>
+
 
   </div>
 

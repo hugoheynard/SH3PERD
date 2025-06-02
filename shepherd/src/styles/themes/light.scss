@@ -1,5 +1,6 @@
 @import 'tokens';
 
+
 [data-theme='light'] {
   --pageTitleColor: #616161;
   --pageBgColor: #E5E5E5;
@@ -8,6 +9,16 @@
 
   --colorPrimaryMenus: rgba(112,128,144, 0.2);
 
+  //----------button elements color------------//
+  --buttonPrimaryBgColor: #{$button-primary-bgColor-light};
+  --buttonPrimaryTextColor: #{$button-primary-textColor};
+
+
+  --headAndfootBgColor: #FFFFFF;
+
   //----------Form ------------//
+
   --form-field-bgColor: #{$form-field-bgColor-light};
+  --form-block-bgColor: #{$form-block-bgColor-light};
+
 }

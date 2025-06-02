@@ -1,17 +1,5 @@
 <div class="music-lib-header" [class.compact]="isCompact">
   <div class="page-banner">MUSIC</div>
-
-  <!--Dynamic tab search bar-->
-  <ng-container *ngIf="getActiveTab() as tab">
-    <div class="search-bar" [attr.data-tab]="tab.id">
-      <input
-        [(ngModel)]="tab.search"
-        (ngModelChange)="applyFilter($event)"
-        [placeholder]="tab.search ? '' : 'Search...'"
-      />
-      <span class="search-icon">🔍</span>
-    </div>
-  </ng-container>
 </div>
 
 
@@ -24,6 +12,7 @@
     *ngFor="let tab of tabs"
     class="tab"
     [class.active]="tab.isActive"
+    [class.with-search]="tab.isActive && tab.isSearchVisible"
     (click)="activateTab(tab.id)"
     (dblclick)="tab.isEditable !== false && enableTabNameEdit(tab)"
   >
@@ -41,10 +30,27 @@
       />
     </ng-template>
 
+    <span *ngIf="tab.isSearchable" class="search-toggle" (click)="toggleSearch(tab)">
+  🔍
+</span>
+
     <!-- 🔥 close button -->
     <span *ngIf="tab.isDeletable" class="close" (click)="closeTab(tab.id)">✕</span>
   </div>
 </div>
+
+<ng-container *ngIf="getActiveTab() as tab">
+  <div *ngIf="tab.isSearchVisible" class="modern-search-bar">
+    <div class="input-wrapper">
+      <input
+        [(ngModel)]="tab.search"
+        (ngModelChange)="applyFilter($event)"
+        placeholder="Search..."
+      />
+      <div class="underline"></div>
+    </div>
+  </div>
+</ng-container>
 
 <div class="tab-content">
   <!-- 🔥 active tab content -->

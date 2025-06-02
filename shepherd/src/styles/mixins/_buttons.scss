@@ -1,0 +1,34 @@
+@import 'tokens';
+
+
+@mixin button-primary {
+  text-align: center;
+  background: var(--buttonPrimaryBgColor);
+  color: var(--buttonPrimaryTextColor);
+  border: none;
+  border-radius: $button-primary-radius;
+  padding: $button-primary-padding;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition:
+    background 0.25s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+
+  &:hover {
+    filter: brightness(1.1) saturate(1.1);
+    transform: translateY(-1px) scale(1.01);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    filter: brightness(0.95);
+    transform: translateY(0) scale(0.99);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+  }
+}
+
+

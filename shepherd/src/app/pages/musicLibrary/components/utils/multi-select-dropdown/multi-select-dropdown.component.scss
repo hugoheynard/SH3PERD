@@ -1,21 +1,12 @@
 @import 'tokens';
+@import 'mixins/buttons';
+@import 'mixins/forms';
+
 
 .custom-select {
+  @include form-field-base;
   position: relative;
-  width: 100%;
-  background: var(--form-field-bgColor);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: $form-field-radius;
-  padding: $form-field-padding;
-  font-size: 0.9rem;
-  color: var(--primaryTextColor);
   cursor: pointer;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease;
-
-  &:hover {
-    border-color: rgba(255, 255, 255, 0.4);
-  }
 
   &.open {
     border-bottom-left-radius: 0;
@@ -33,28 +24,59 @@
     top: 100%;
     left: 0;
     right: 0;
-    margin-top: -1px; // seamless border
-    background-color: var(--form-field-bgColor);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    margin-top: -1px;
+    border: 1px solid var(--form-field-borderColor);
     border-top: none;
     border-radius: 0 0 6px 6px;
     z-index: 1000;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
-    padding: 8px 12px;
+    padding: $form-field-padding;
     max-height: 200px;
     overflow-y: auto;
+    animation: dropdownEnter 200ms ease-out;
+    transform-origin: top center;
 
     label {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 6px;
-      font-size: 0.85rem;
-      color: var(--primaryTextColor);
-
-      input[type="checkbox"] {
-        accent-color: var(--primaryTextColor);
-      }
+      font-size: $form-field-fontSize;
     }
+
+    .dropdown-placeholder {
+      font-style: italic;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+
+    .dropdown-select-all {
+      font-weight: normal;
+      margin-bottom: 0.25rem;
+    }
+
+    @keyframes dropdownEnter {
+      from {
+        opacity: 0;
+        transform: translateY(-5px) scale(0.80);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    };
+  };
+};
+
+.dropdown-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--form-field-borderColor);
+  padding-top: 0.5rem;
+
+  .button-primary {
+    @include button-primary;
+    width: 100%;
   }
 }
