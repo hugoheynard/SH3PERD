@@ -1,0 +1,14 @@
+@import 'tokens';
+
+@mixin baseTab{
+  display: flex;
+  padding: $tab-padding;
+  border-radius: $tab-border-radius;
+  color: var(--primaryTextColor);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(4px);
+  font-size: $tab-fontSize;
+  font-weight: $tab-fontWeight;
+  flex-shrink: 0;
+  cursor: pointer;
+}

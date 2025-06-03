@@ -1,0 +1,4 @@
+@mixin baseScrollBar {
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  -webkit-overflow-scrolling: touch;
+}
