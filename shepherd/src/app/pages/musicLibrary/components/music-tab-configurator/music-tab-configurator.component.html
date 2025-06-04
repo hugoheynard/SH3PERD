@@ -19,7 +19,7 @@
     <div class="form-row">
       <!-- Component type selection -->
       <div>
-        <select id="componentType" formControlName="componentType" label="search mode">
+        <select id="componentType" formControlName="searchMode" label="search mode">
           <option value="" disabled>Select a search mode</option>
           <option *ngFor="let type of tabTypes" [value]="type.value">{{ type.label }}</option>
         </select>
@@ -27,8 +27,8 @@
 
 
       <!-- Conditional user selection me / single user / multiple users-->
-      <div>
-        <select id="targetMode" formControlName="targetMode" label="target mode">
+      <div [formGroupName]="'target'">
+        <select id="targetMode" formControlName="mode" label="target mode">
           <option value="" disabled>Select a target mode</option>
           <option *ngFor="let mode of targetModes" [value]="mode.value">{{ mode.label }}</option>
         </select>
@@ -60,11 +60,11 @@
     <div class="form-row">
       <input type="checkbox"
              label="activate Data Filter"
-             formControlName="dataFilter" />
+             formControlName="dataFilterActive" />
 
       <input type="checkbox"
              label="activate Exploitation Filter"
-             formControlName="exploitationFilter" />
+             formControlName="exploitationFilterActive" />
     </div>
   </div>
 

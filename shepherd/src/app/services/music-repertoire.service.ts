@@ -15,6 +15,37 @@ export class MusicRepertoireService {
   public userToQuery: WritableSignal<string[] | null> = signal<string[] | null>(null);
 
 
+  async executeConfigStrategy(input: { config: any }): Promise<any[]> {
+    const { searchMode, targetMode, user_id, userIds } = input.config;
+
+    if (searchMode === 'repertoire') {
+      switch (targetMode) {
+        case 'me':
+          return await this.getMusicRepertoire_Me();
+
+        case 'singleUser':
+          if (user_id) {
+            return await this.getMusicRepertoire_SingleUser(user_id);
+          }
+          console.warn('Missing userId for singleUser targetMode');
+          return [];
+
+        case 'multipleUsers':
+          if (!userIds || userIds.length === 0) {
+            console.warn('Missing userIds for multipleUsers targetMode');
+            return [];
+          }
+          return await this.getMusicRepertoire_MultipleUsers(userIds);
+      }
+    }
+
+    console.warn('Unsupported searchMode or targetMode');
+    return [];
+  };
+
+
+
+
   /**
    * Fetches the user's music repertoire - default on the page initialization.
    */
@@ -23,6 +54,58 @@ export class MusicRepertoireService {
       const response: HttpResponse<any> = await firstValueFrom(
         this.http.post(
           `${this.baseURL}/musicRepertoire/me`, {},
+          {
+            headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+            observe: 'response'
+          }))
+
+      if (!response.ok) {
+        return false;
+      }
+      const result: any = Object.values(response.body)[0];
+      this.musicRepertoire.set(result);
+      return result;
+
+    } catch(e) {
+      console.log('error while getting music library', e);
+      return false;
+    }
+  };
+
+  async getMusicRepertoire_SingleUser(user_id: any): Promise<any> {
+    try {
+      const response: HttpResponse<any> = await firstValueFrom(
+        this.http.post(
+          `${this.baseURL}/musicRepertoire/`,
+          {
+            target_id: user_id
+          },
+          {
+            headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+            observe: 'response'
+          }))
+
+      if (!response.ok) {
+        return false;
+      }
+      const result: any = Object.values(response.body)[0];
+      this.musicRepertoire.set(result);
+      return result;
+
+    } catch(e) {
+      console.log('error while getting music library', e);
+      return false;
+    }
+  };
+
+  async getMusicRepertoire_MultipleUsers(user_ids: any[]): Promise<any> {
+    try {
+      const response: HttpResponse<any> = await firstValueFrom(
+        this.http.post(
+          `${this.baseURL}/musicRepertoire/`,
+          {
+            target_ids: [...user_ids]
+          },
           {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
             observe: 'response'

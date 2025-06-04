@@ -1,7 +1,7 @@
-import {Component, EventEmitter, inject, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {NgForOf, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {MusicTabConfiguratorFormService, TabConfigForm} from '../../services/music-tab-configurator-form.service';
+import {MusicTabConfiguratorFormService} from '../../services/music-tab-configurator-form.service';
 import {MatIcon} from '@angular/material/icon';
 import {MultiSelectDropdownComponent} from '../utils/multi-select-dropdown/multi-select-dropdown.component';
 import {LabelWrapperDirective} from '../../../../../Directives/forms/label.directive';
@@ -23,8 +23,9 @@ import {LabelWrapperDirective} from '../../../../../Directives/forms/label.direc
   standalone: true,
   styleUrl: './music-tab-configurator.component.scss'
 })
-export class MusicTabConfiguratorComponent implements OnInit{
+export class MusicTabConfiguratorComponent implements OnInit, OnChanges{
   @Output() tabReady = new EventEmitter<any>();
+  @Input() configData: any = {};
   public userList: any = [
     { id: 'user_1', name: 'Paul' },
     { id: 'user_2', name: 'Martin' },
@@ -36,7 +37,7 @@ export class MusicTabConfiguratorComponent implements OnInit{
 
   tabTypes = [
     { value: 'repertoire', label: 'Repertoire' },
-    { value: 'crossSearch', label: 'Cross Search' },
+    { value: 'crossRepertoire', label: 'Cross Repertoire' },
   ];
 
   public formService = inject(MusicTabConfiguratorFormService)
@@ -66,17 +67,19 @@ export class MusicTabConfiguratorComponent implements OnInit{
 
   // ──────────── LIFECYCLE ────────────
   ngOnInit(): void {
-    this.form.valueChanges.subscribe((values: any) => {
-      if (this.autoTitle && values.componentType) {
-        this.setAutoTitle(values.componentType);
-      }
-      const repertoireOptionsGroup = this.form.get('repertoireOptions');
+    console.log('does the input go through?', this.configData)
 
-      if (values.componentType === 'repertoire') {
-        repertoireOptionsGroup?.enable({ emitEvent: false });
-      } else {
-        repertoireOptionsGroup?.disable({ emitEvent: false });
+    //if dataConfig is provided, patch the form with it
+    if (this.configData) {
+      this.formService.patchForm(this.form, this.configData);
+    }
+
+    this.form.valueChanges.subscribe((values: any) => {
+      //manage auto title
+      if (this.autoTitle && values.searchMode) {
+        this.setAutoTitle(values.searchMode);
       }
+
     });
 
 // Initialise le comportement au chargement
@@ -92,15 +95,21 @@ export class MusicTabConfiguratorComponent implements OnInit{
     }
   };
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['configData']) {
+      console.log('Music Tab Config:  Received configData:', changes['configData'].currentValue);
+    }
+  }
+
   // ──────────── UI ────────────
   shouldShowDataFilterOverlay(): boolean {
-    const isComponentTouched = this.form.get('componentType')?.value ?? false;
-    const isDataFilterEnabled = this.form.get('dataFilter')?.value === true;
+    const isComponentTouched = this.form.get('searchMode')?.value ?? false;
+    const isDataFilterEnabled = this.form.get('dataFilterActive')?.value === true;
     return isComponentTouched && isDataFilterEnabled;
   };
 
   get targetMode(): string {
-    return this.form.get('targetMode')?.value;
+    return this.form.get('target.mode')?.value;
   };
 
 

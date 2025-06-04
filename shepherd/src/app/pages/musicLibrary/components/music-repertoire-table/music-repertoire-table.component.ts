@@ -1,5 +1,5 @@
 import {
-  Component, inject, OnInit
+  Component, inject, Input, OnInit
 } from '@angular/core';
 import { CdkTableModule } from '@angular/cdk/table';
 import {NgForOf, NgIf, NgStyle} from '@angular/common';
@@ -17,15 +17,27 @@ import {MusicRepertoireService} from '../../../../services/music-repertoire.serv
 export class MusicRepertoireTableComponent implements OnInit {
   private musicRepertoireService: MusicRepertoireService = inject(MusicRepertoireService);
 
+  @Input() config: any = {
+    searchMode: 'repertoire',
+    targetMode: 'me',
+    user_id: '',
+    userIds: [] // This should be an array of user IDs if needed
+  }
+
   public entries: any[] = [];
   public displayedColumns: { key: string; order: number }[] = [];
   public columnKeys: string[] = [];
 
   private excludedColumns = ['music_id', 'musicVersion_id', 'updatedAt', 'userId', 'versions'];
 
+
+
   public filter: string = '';
+
+  //---------- Pagination properties----------//
   public pageSize = 10;
   public currentPage = 0;
+
 
   get filteredData(): any[] {
     const filterValue = this.filter.toLowerCase().trim();
@@ -46,19 +58,32 @@ export class MusicRepertoireTableComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    const entries = await this.musicRepertoireService.getMusicRepertoire_Me();
-    this.entries = entries;
 
-    if (entries.length > 0) {
-      this.displayedColumns = Object.keys(entries[0])
-        .filter(key => !this.excludedColumns.includes(key))
-        .map((key, index) => ({ key, order: index }));
-
-      this.columnKeys = this.displayedColumns.map(col => col.key);
+    if (!this.config) {
+      await this.musicRepertoireFallBack();
     }
+
+    this.entries = await this.musicRepertoireService.executeConfigStrategy({ config: this.config });
+
+
+      // Filter out excluded columns and set displayedColumns
+      if (this.entries.length > 0) {
+        this.displayedColumns = Object.keys(this.entries[0])
+          .filter(key => !this.excludedColumns.includes(key))
+          .map((key, index) => ({key, order: index}));
+
+        this.columnKeys = this.displayedColumns.map(col => col.key);
+      }
+  }
+
+
+
+  async musicRepertoireFallBack(): Promise<void> {
+    console.log('No config provided, falling back to default music repertoire fetch');
+    this.entries = await this.musicRepertoireService.getMusicRepertoire_Me();
   }
 
   setPage(page: number): void {
     this.currentPage = Math.max(0, Math.min(page, this.totalPages - 1));
-  }
+  };
 }

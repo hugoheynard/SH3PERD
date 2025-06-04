@@ -1,56 +1,25 @@
 import {
   AfterViewInit,
-  Component,
-  inject,
+  Component, computed,
+  inject, OnInit,
   Type,
-  ViewChild,
-  ViewContainerRef,
 } from '@angular/core';
 import {NgForOf, NgIf, NgStyle} from '@angular/common';
-import {MatIcon} from '@angular/material/icon';
-import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
-import {MatIconButton} from '@angular/material/button';
-import {CdkAccordion, CdkAccordionItem} from '@angular/cdk/accordion';
-import {FormsModule} from '@angular/forms';
 import {MusicRepertoireTableComponent} from '../music-repertoire-table/music-repertoire-table.component';
 import {MusicTabConfiguratorComponent} from '../music-tab-configurator/music-tab-configurator.component';
 import {MusicLibContextMenuComponent} from '../music-lib-context-menu/music-lib-context-menu.component';
 import {LayoutService} from '../../../../../core/services/layout.service';
-import {ToggleButtonComponent} from '../../../settingsModule/toggle-button/toggle-button.component';
 import {TabSystemComponent} from '../../../../components/tab-system/tab-system.component';
-import {TabDefinition} from '../../../../components/tab-system/ITabDefinition';
+import {ITabDefinition} from '../../../../components/tab-system/ITabDefinition';
+import {MusicLibNavDataService} from '../../services/music-lib-nav-data.service';
 
-
-interface Tab {
-  id: string;
-  title: string;
-  component: string;
-  data?: any;
-  isActive?: boolean;
-  isEditing?: boolean;
-  isDeletable?: boolean;
-  isEditable?: boolean;
-  isSearchable?: boolean;
-  isSearchVisible?: boolean;
-  search: string;
-  default: boolean;
-}
 
 @Component({
     selector: 'app-music-library',
   imports: [
     NgForOf,
     NgStyle,
-    MatIcon,
-    MatMenuTrigger,
-    MatIconButton,
-    MatMenu,
-    MatMenuItem,
-    CdkAccordionItem,
-    CdkAccordion,
     NgIf,
-    FormsModule,
-    ToggleButtonComponent,
     MusicRepertoireTableComponent,
     MusicTabConfiguratorComponent,
     MusicLibContextMenuComponent,
@@ -61,58 +30,94 @@ interface Tab {
     styleUrl: './music-library.component.scss',
 })
 
-export class MusicLibraryComponent implements AfterViewInit{
+export class MusicLibraryComponent implements AfterViewInit, OnInit{
   private layoutService: LayoutService = inject(LayoutService);
+  private navDataService: MusicLibNavDataService = inject(MusicLibNavDataService);
 
-  // ──────────── CHILDREN ACCESS ────────────
-
-
-  // ──────────── STATE ────────────
-  public tabs: TabDefinition[] = [
+  /**
+   * This is the list of mandatory tabs that should always be present in the music library.
+   * must at least include a tab for the configurator.
+   */
+  private mandatoryTabs: ITabDefinition[] = [
     {
-      id: 'music-tab-configurator', title: 'new Tab',
+      id: 'music-tab-configurator',
+      title: 'new Tab',
       component: 'music-tab-configurator',
       isDeletable: false,
       isEditable: false,
       isSearchable: false,
-      isActive: true,
-      search: '',
+      isActive: false,
       default: true,
-    },
-    {
-      id: 'repertoire-me', title: 'My Repertoire',
-      component: 'repertoire-me',
-      isDeletable: false,
-      isEditable: false,
-      isSearchable: true,
-      isActive: true,
-      search: '',
-      default: false,
-    },
-    //{ id: 'cross-search', title: 'crossSearch with long name', component: 'cross', isDeletable: true, search: '', default: false },
+    }
   ];
 
-  public filter: string = '';
-  public isCompact: boolean = true;
-
-
   // ──────────── COMPONENT MAP ────────────
+  /**
+   * This map is used to dynamically load components based on the tab configuration.
+   */
   public componentMap: Record<string, Type<any>> = {
-    ['repertoire-me']: MusicRepertoireTableComponent,
     ['music-tab-configurator']: MusicTabConfiguratorComponent,
+    ['repertoire']: MusicRepertoireTableComponent,
   };
 
+  // ──────────── CHILDREN ACCESS ────────────
+
+  // ──────────── STATE ────────────
+  public readonly tabs = computed(() => this.navDataService.getTabConfig());
+  public isCompact: boolean = true;
+
   // ──────────── LIFECYCLE ────────────
+  ngOnInit(): void {
+    // fake call to db, but if singer mandatory repertoire-me
+    const navData: ITabDefinition[] = [
+      {
+        id: 'music-tab-testInput',
+        title: 'test input',
+        component: 'music-tab-configurator',
+        isDeletable: false,
+        isEditable: false,
+        isSearchable: false,
+        isActive: true,
+        default: false,
+        configData: {
+          searchMode: 'repertoire',
+          target: {
+            mode: 'single-user'
+          },
+          dataFilterActive: true,
+          exploitationFilterActive: false
+        }
+      },
+      {
+        id: 'repertoire',
+        title: 'My Repertoire',
+        component: 'repertoire',
+        isDeletable: false,
+        isEditable: false,
+        isSearchable: true,
+        isConfigPending: false,
+        isActive: false,
+        searchValue: '',
+        default: false,
+        configData: {
+          searchMode: 'repertoire',
+          targetMode: 'me',
+          dataFilterActive: false,
+          exploitationFilterActive: false
+        }
+      },
+    ];
+
+    // Set the initial tab configuration with mandatory tabs and the repertoire tab.
+    this.navDataService.setTabConfig([...this.mandatoryTabs, ...navData]);
+  };
+
   ngAfterViewInit(): void {
     this.layoutService.setContextMenu(MusicLibContextMenuComponent);
     return;
   };
 
-
   // ──────────── SEARCH ────────────
 
   // ──────────── UI HELPERS ────────────
-
-
-
 }

@@ -2,13 +2,18 @@
 
 @mixin baseTab{
   display: flex;
+  height: 1.3rem;
   padding: $tab-padding;
   border-radius: $tab-border-radius;
   color: var(--primaryTextColor);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--tab-bgColor);
   backdrop-filter: blur(4px);
   font-size: $tab-fontSize;
   font-weight: $tab-fontWeight;
   flex-shrink: 0;
   cursor: pointer;
+}
+
+@mixin searchBar-tabSystem {
+
 }
