@@ -1,0 +1,52 @@
+name: Deploy Angular Frontend to S3
+
+on:
+  push:
+    branches:
+      - main_frontend
+    paths:
+      - 'shepherd/**'  # Ce workflow se déclenche uniquement si des fichiers dans "front/" changent
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: shepherd  # Toutes les commandes suivantes s'exécutent dans le dossier "front"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        # Télécharge le code source de ton repo dans l’environnement GitHub Actions
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+        # Prépare un environnement Node.js compatible avec Angular
+
+      - name: Install dependencies
+        run: npm install
+        # Installe les dépendances NPM du projet Angular (comme en local)
+
+      #- name: Run tests
+        #run: npm run test -- --watch=false --browsers=ChromeHeadless
+        # Lance les tests unitaires Angular dans un navigateur headless
+
+      - name: Build Angular app
+        run: npm run build -- --configuration production
+        # Compile l’application Angular pour production
+
+      - name: Deploy to S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: dist/$(node -p "require('./angular.json').defaultProject")
+        # Envoie le contenu compilé (dans dist/...) vers ton bucket S3
+        # Le `--delete` efface les anciens fichiers sur S3 qui ne sont plus dans ton build

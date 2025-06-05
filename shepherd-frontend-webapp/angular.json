@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "shepherd": {
+    "shepherd-frontend-webapp": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/shepherd",
+            "outputPath": "dist/shepherd-frontend-webapp",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -85,10 +85,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "shepherd:build:production"
+              "buildTarget": "shepherd-frontend-webapp:build:production"
             },
             "development": {
-              "buildTarget": "shepherd:build:development"
+              "buildTarget": "shepherd-frontend-webapp:build:development"
             }
           },
           "defaultConfiguration": "development"
