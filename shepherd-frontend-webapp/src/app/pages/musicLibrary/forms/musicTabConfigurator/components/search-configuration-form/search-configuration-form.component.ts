@@ -25,7 +25,7 @@ import {NgForOf, NgSwitch, NgSwitchCase} from '@angular/common';
   }
 })
 export class SearchConfigurationFormComponent {
-  @Input() formGroup!: FormGroup;
+  @Input({ required: true }) formGroup!: FormGroup;
   @Input() disabled: boolean = false;
   @Input() title: string = 'Search Configuration';
 

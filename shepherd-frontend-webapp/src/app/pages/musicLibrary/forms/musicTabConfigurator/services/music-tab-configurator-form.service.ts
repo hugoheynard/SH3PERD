@@ -13,13 +13,7 @@ export class MusicTabConfiguratorFormService {
 
   createForm(): FormGroup<Record<string, AbstractControl>> {
     const form = new FormGroup<Record<string, AbstractControl>>({
-      autoTitle: new FormControl(true),
-      title: new FormControl('New Search', Validators.required),
-      searchMode: new FormControl('repertoire', [
-        Validators.required,
-        valueInList(['repertoire', 'crossRepertoire']),
-      ]),
-      dataFilterActive: new FormControl(true),
+      searchConfiguration: this.createSearchConfigurationGroup(),
       dataFilterOptions: this.createDataFilterGroup(),
       exploitationFilterActive: new FormControl(false),
     });
@@ -57,6 +51,27 @@ export class MusicTabConfiguratorFormService {
     }
   };
 
+  /**
+   * Creates the search configuration group with predefined validators.
+   * @returns {FormGroup}
+   */
+  private createSearchConfigurationGroup(): FormGroup {
+    return this.fb.group({
+      autoTitle: this.fb.control(true),
+      title: this.fb.control('New Search', Validators.required),
+      searchMode: this.fb.control('repertoire', [
+        Validators.required,
+        valueInList(['repertoire', 'crossRepertoire']),
+      ]),
+      dataFilterActive: this.fb.control(true),
+      exploitationFilterActive: this.fb.control(false),
+    });
+  };
+
+  /**
+   * Creates the data filter group with predefined validators.
+   * @returns {FormGroup}
+   */
   private createDataFilterGroup(): any {
     return this.fb.group({
       genre:  this.fb.control(['jazz', 'rock', 'pop'], [
@@ -78,11 +93,18 @@ export class MusicTabConfiguratorFormService {
   }
 
   patchForm(form: FormGroup, config: IMusicTabConfig): void {
+    const { searchConfiguration } = config;
+
     form.patchValue({
-      searchMode: config.searchMode ?? '',
-      target: config.target ?? { mode: 'me', singleUser: '', multipleUsers: [] },
-      dataFilterActive: config.dataFilterActive ?? false,
-      exploitationFilterActive: config.exploitationFilterActive ?? false,
+      searchConfiguration: {
+        autoTitle: searchConfiguration.autoTitle ?? true,
+        title: searchConfiguration.title ?? 'New Tab',
+        searchMode: searchConfiguration.searchMode ?? 'repertoire',
+        target: searchConfiguration.target ?? { mode: 'me', singleUser: '', multipleUsers: [] },
+        dataFilterActive: searchConfiguration.dataFilterActive ?? false,
+        exploitationFilterActive: searchConfiguration.exploitationFilterActive ?? false,
+      }
+
 
     }, { emitEvent: false });
   }

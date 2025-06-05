@@ -1,17 +1,17 @@
 <!-- Title & Auto title toggle -->
-<div class="fullRow">
-  <div class="title-row">
-    <label for="title">Tab title:</label>
-    <label class="auto-title">
-      Auto
-      <input type="checkbox" formControlName="autoTitle" />
-    </label>
+<ng-container [formGroup]="formGroup">
+  <div class="fullRow">
+    <div class="title-row">
+      <label for="title">Tab title:</label>
+      <label class="auto-title">
+        Auto
+        <input type="checkbox" formControlName="autoTitle" />
+      </label>
+    </div>
+    <div class="title-input">
+      <input id="title" type="text" formControlName="title" placeholder="New Tab" />
+    </div>
   </div>
-  <div class="title-input">
-    <input id="title" type="text" formControlName="title" placeholder="New Tab" />
-  </div>
-</div>
-
 
 
 <!-- Component type selection -->
@@ -66,4 +66,4 @@
   label="activate Exploitation Filter"
   formControlName="exploitationFilterActive"
 />
-
+</ng-container>

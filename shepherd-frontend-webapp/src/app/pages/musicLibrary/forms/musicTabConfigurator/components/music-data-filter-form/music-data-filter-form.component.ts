@@ -22,6 +22,6 @@ import {MatIcon} from '@angular/material/icon';
   styleUrl: './music-data-filter-form.component.scss'
 })
 export class MusicDataFilterFormComponent {
-  @Input() formGroup!: FormGroup;
+  @Input({ required: true }) formGroup!: FormGroup;
 
 }

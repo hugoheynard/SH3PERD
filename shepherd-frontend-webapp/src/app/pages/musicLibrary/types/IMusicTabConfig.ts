@@ -4,15 +4,18 @@ import {TNumberRange_1to4} from '../../../../types/genericNumbers.types';
 
 
 export interface IMusicTabConfig {
-  autoTitle: boolean;
-  title: string;
-  searchMode: TSearchMode;
-  target: {
-    mode: TTargetMode;
-    singleUser?: TUserId;
-    multipleUsers?: TUserId[];
-  };
-  dataFilterActive: boolean;
+  searchConfiguration: {
+    autoTitle: boolean;
+    title: string;
+    searchMode: TSearchMode;
+    target: {
+      mode: TTargetMode;
+      singleUser?: TUserId;
+      multipleUsers?: TUserId[];
+    };
+    dataFilterActive: boolean;
+    exploitationFilterActive: boolean;
+  },
   dataFilterOptions?: {
     repertoire: {
       genre: string[];
@@ -21,6 +24,5 @@ export interface IMusicTabConfig {
       mastery: TNumberRange_1to4[];
     }
   };
-  exploitationFilterActive: boolean;
   exploitationFilterOptions?: {}
 }
