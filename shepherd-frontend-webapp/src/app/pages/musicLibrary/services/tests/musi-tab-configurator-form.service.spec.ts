@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { MusiTabConfiguratorFormService } from '../music-tab-configurator-form.service';
+import { MusiTabConfiguratorFormService } from '../../forms/musicTabConfigurator/services/music-tab-configurator-form.service';
 
 describe('MusiTabConfiguratorFormService', () => {
   let service: MusiTabConfiguratorFormService;

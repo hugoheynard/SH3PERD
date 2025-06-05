@@ -1,0 +1,8 @@
+@import 'mixins/forms';
+
+
+:host {
+  @include form-grid(2);
+}
+
+

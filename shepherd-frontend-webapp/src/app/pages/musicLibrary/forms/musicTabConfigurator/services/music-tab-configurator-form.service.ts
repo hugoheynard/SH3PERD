@@ -1,8 +1,8 @@
 import {inject, Injectable} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, NonNullableFormBuilder, Validators} from '@angular/forms';
-import {valueInList} from '../../../forms/validators/valueInList';
-import {allArrayNumbersInRange} from '../../../forms/validators/allArrayNumbersInRange';
-import {IMusicTabConfig} from '../types/IMusicTabConfig';
+import {valueInList} from '../../../../../forms/validators/valueInList';
+import {allArrayNumbersInRange} from '../../../../../forms/validators/allArrayNumbersInRange';
+import {IMusicTabConfig} from '../../../types/IMusicTabConfig';
 
 
 @Injectable({

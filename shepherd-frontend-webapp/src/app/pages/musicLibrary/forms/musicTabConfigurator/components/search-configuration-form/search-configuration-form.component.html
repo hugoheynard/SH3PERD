@@ -1,0 +1,69 @@
+<!-- Title & Auto title toggle -->
+<div class="fullRow">
+  <div class="title-row">
+    <label for="title">Tab title:</label>
+    <label class="auto-title">
+      Auto
+      <input type="checkbox" formControlName="autoTitle" />
+    </label>
+  </div>
+  <div class="title-input">
+    <input id="title" type="text" formControlName="title" placeholder="New Tab" />
+  </div>
+</div>
+
+
+
+<!-- Component type selection -->
+<select class="oneCol" id="componentType" formControlName="searchMode" label="search mode">
+  <option value="" disabled>Select a search mode</option>
+  <option *ngFor="let type of tabTypes" [value]="type.value">{{ type.label }}</option>
+</select>
+
+
+<!-- Conditional user selection me / single user / multiple users-->
+<ng-container [formGroupName]="'target'">
+  <select class="oneCol" id="targetMode" formControlName="mode" label="target mode">
+    <option value="" disabled>Select a target mode</option>
+    <option *ngFor="let mode of targetModes" [value]="mode.value">{{ mode.label }}</option>
+  </select>
+</ng-container>
+
+
+<!-- User selection for repertoire type -->
+<ng-container [ngSwitch]="targetMode">
+  <ng-container *ngSwitchCase="'single-user'">
+    <select id="user" formControlName="userId" label="User">
+      <option value="" disabled>Select a user</option>
+      <option *ngFor="let user of userList" [value]="user.id">{{ user.name }}</option>
+    </select>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'multiple-users'">
+    <!-- Multi-select dropdown for multiple users -->
+    <app-multi-select-dropdown
+      formControlName="userIds"
+      [options]="userList"
+      labelKey="name"
+      valueKey="id"
+    />
+
+    <input type="checkbox" formControlName="displayAsSingleSearch" label="display all as a single tab" />
+  </ng-container>
+</ng-container>
+
+
+<input
+  class="oneCol"
+  type="checkbox"
+  label="activate Data Filter"
+  formControlName="dataFilterActive"
+/>
+
+<input
+  class="oneCol"
+  type="checkbox"
+  label="activate Exploitation Filter"
+  formControlName="exploitationFilterActive"
+/>
+

@@ -3,8 +3,12 @@ import {NgForOf, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {MusicTabConfiguratorFormService} from '../../services/music-tab-configurator-form.service';
 import {MatIcon} from '@angular/material/icon';
-import {MultiSelectDropdownComponent} from '../utils/multi-select-dropdown/multi-select-dropdown.component';
-import {LabelWrapperDirective} from '../../../../../Directives/forms/label.directive';
+import {MultiSelectDropdownComponent} from '../../../../components/utils/multi-select-dropdown/multi-select-dropdown.component';
+import {LabelWrapperDirective} from '../../../../../../../Directives/forms/label.directive';
+import {ExploitationFilterFormComponent} from '../exploitation-filter-form/exploitation-filter-form.component';
+import {MusicDataFilterFormComponent} from '../music-data-filter-form/music-data-filter-form.component';
+import {FormBlockComponent} from '../form-block/form-block.component';
+import {SearchConfigurationFormComponent} from '../search-configuration-form/search-configuration-form.component';
 
 @Component({
   selector: 'app-music-tab-configurator',
@@ -18,6 +22,10 @@ import {LabelWrapperDirective} from '../../../../../Directives/forms/label.direc
     NgSwitchCase,
     MultiSelectDropdownComponent,
     LabelWrapperDirective,
+    ExploitationFilterFormComponent,
+    MusicDataFilterFormComponent,
+    FormBlockComponent,
+    SearchConfigurationFormComponent,
   ],
   templateUrl: './music-tab-configurator.component.html',
   standalone: true,
@@ -26,29 +34,12 @@ import {LabelWrapperDirective} from '../../../../../Directives/forms/label.direc
 export class MusicTabConfiguratorComponent implements OnInit, OnChanges{
   @Output() tabReady = new EventEmitter<any>();
   @Input() configData: any = {};
-  public userList: any = [
-    { id: 'user_1', name: 'Paul' },
-    { id: 'user_2', name: 'Martin' },
-    { id: 'user_3', name: 'Sophie' },
-  ]
+  public formService = inject(MusicTabConfiguratorFormService);
 
   private autoTitle: boolean = true;
-  public targetModes: any[] = [{ label: 'me', value: 'me' }, { label: 'single user', value: 'single-user' }, { label: 'multiple users', value: 'multiple-users' }];
-
-  tabTypes = [
-    { value: 'repertoire', label: 'Repertoire' },
-    { value: 'crossRepertoire', label: 'Cross Repertoire' },
-  ];
-
-  public formService = inject(MusicTabConfiguratorFormService)
   public form: any = this.formService.createForm();
 
   // ──────────── FORM LOGIC ────────────
-  repertoireHasFilter(): boolean {
-    return this.form.get('repertoireOptions.filter')?.value ?? false;
-  };
-
-
   submit(): void {
     if (this.form.invalid) return;
 
@@ -62,8 +53,6 @@ export class MusicTabConfiguratorComponent implements OnInit, OnChanges{
       search: ''
     });
   };
-
-
 
   // ──────────── LIFECYCLE ────────────
   ngOnInit(): void {
@@ -108,13 +97,6 @@ export class MusicTabConfiguratorComponent implements OnInit, OnChanges{
     return isComponentTouched && isDataFilterEnabled;
   };
 
-  get targetMode(): string {
-    return this.form.get('target.mode')?.value;
-  };
-
-
-
-
 
   // ──────────── AUTO TITLE ────────────
   setAutoTitle(type: string): void {
@@ -155,6 +137,7 @@ export class MusicTabConfiguratorComponent implements OnInit, OnChanges{
     return `${title.target} ${title.energy} ${title.genre} ${title.searchType} `.trim();
   }
 
+  //à checker
   onToggleAutoTitle(): void {
     this.autoTitle = !this.autoTitle;
 

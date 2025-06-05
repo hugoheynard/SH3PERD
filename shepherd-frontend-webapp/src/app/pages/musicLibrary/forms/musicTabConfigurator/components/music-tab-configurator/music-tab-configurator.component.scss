@@ -1,0 +1,88 @@
+@import "../../../../../../../styles/mixins/forms";
+@import '../../../../../../../styles/tokens/index';
+
+
+.tab-configurator-form-grid {
+  @include form-container(grid);
+  width: 100%;
+  height: 100%;
+  grid-template-columns: 30% 30% 30% 7%;
+  gap: 0 1%;
+
+  .checkboxInRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  button {
+    margin-top: auto;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--primaryTextColor);
+    }
+  }
+
+  .stagger {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98) rotateX(3deg);
+    animation: dropInCard 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes dropInCard {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.98) rotateX(3deg);
+    }
+    60% {
+      opacity: 0.6;
+      transform: translateY(4px) scale(1.02) rotateX(0);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1) rotateX(0);
+    }
+  }
+
+  .button-block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0; // enlève les paddings internes inutiles
+    height: 100%;
+
+    button {
+      width: 100%;
+      height: 100%;
+      font-size: 1rem;
+      border-radius: 0 6px 6px 0; // coins uniquement à droite si besoin
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      cursor: pointer;
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      &:hover:not(:disabled) {
+        background: var(--primaryTextColor);
+      }
+    }
+  }
+}
+

@@ -61,12 +61,33 @@
   };
 }
 
-@mixin form-block($display) {
-  display: $display;
+@mixin form-block() {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
   padding: $form-block-padding;
   border-radius: $form-block-radius;
   color: var(--primaryTextColor);
   background: var(--headAndfootBgColor);
   backdrop-filter: blur(8px);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+@mixin form-grid($columns: 1) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: 1rem;
+
+  .oneCol {
+    grid-column: span 1;
+  }
+
+  .fullRow {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: $small-width-trigger) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }

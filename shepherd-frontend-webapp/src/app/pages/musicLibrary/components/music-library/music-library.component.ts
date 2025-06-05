@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import {NgForOf, NgIf, NgStyle} from '@angular/common';
 import {MusicRepertoireTableComponent} from '../music-repertoire-table/music-repertoire-table.component';
-import {MusicTabConfiguratorComponent} from '../music-tab-configurator/music-tab-configurator.component';
+import {MusicTabConfiguratorComponent} from '../../forms/musicTabConfigurator/components/music-tab-configurator/music-tab-configurator.component';
 import {MusicLibContextMenuComponent} from '../music-lib-context-menu/music-lib-context-menu.component';
 import {LayoutService} from '../../../../../core/services/layout.service';
 import {TabSystemComponent} from '../../../../components/tab-system/tab-system.component';
