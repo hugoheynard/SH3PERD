@@ -9,6 +9,8 @@ import {ExploitationFilterFormComponent} from '../exploitation-filter-form/explo
 import {MusicDataFilterFormComponent} from '../music-data-filter-form/music-data-filter-form.component';
 import {FormBlockComponent} from '../form-block/form-block.component';
 import {SearchConfigurationFormComponent} from '../search-configuration-form/search-configuration-form.component';
+import {ITabDefinition} from '../../../../../../components/tab-system/ITabDefinition';
+import {IMusicTabConfig} from '../../../../types/IMusicTabConfig';
 
 @Component({
   selector: 'app-music-tab-configurator',
@@ -31,128 +33,63 @@ import {SearchConfigurationFormComponent} from '../search-configuration-form/sea
   standalone: true,
   styleUrl: './music-tab-configurator.component.scss'
 })
-export class MusicTabConfiguratorComponent implements OnInit, OnChanges{
-  @Output() tabReady = new EventEmitter<any>();
-  @Input() configData: any = {};
-  public formService = inject(MusicTabConfiguratorFormService);
-
-  private autoTitle: boolean = true;
+export class MusicTabConfiguratorComponent implements OnInit{
+  private configuratorName: string = 'music-tab-configurator';
+  public formService: MusicTabConfiguratorFormService = inject(MusicTabConfiguratorFormService);
   public form: any = this.formService.createForm();
+  // ──────────── I/O ────────────
+  @Output() tabReady: EventEmitter<ITabDefinition> = new EventEmitter<ITabDefinition>();
+  @Input() configData: IMusicTabConfig | null = null;
 
-  // ──────────── FORM LOGIC ────────────
-  submit(): void {
-    if (this.form.invalid) return;
-
-    const { componentType, title } = this.form.value;
-    this.tabReady.emit({
-      id: `tab-${Date.now()}`,
-      title,
-      component: componentType,
-      isEditable: true,
-      isDeletable: true,
-      search: ''
-    });
-  };
 
   // ──────────── LIFECYCLE ────────────
   ngOnInit(): void {
-    console.log('does the input go through?', this.configData)
-
     //if dataConfig is provided, patch the form with it
     if (this.configData) {
       this.formService.patchForm(this.form, this.configData);
     }
 
-    this.form.valueChanges.subscribe((values: any) => {
-      //manage auto title
-      if (this.autoTitle && values.searchMode) {
-        this.setAutoTitle(values.searchMode);
+    // Initialise le comportement au chargement
+
+    this.form.valueChanges.subscribe((formValue: any) => {
+      const autoTitle = formValue.searchConfiguration?.autoTitle;
+      if (autoTitle) {
+        const title = this.formService.generateAutoTitleFromForm(formValue);
+        this.form.get('title')?.setValue(title, { emitEvent: false });
       }
-
     });
-
-// Initialise le comportement au chargement
-    this.updateRepertoireBlockState(this.form.get('componentType')?.value);
   };
 
-  private updateRepertoireBlockState(type: string | null): void {
-    const group = this.form.get('repertoireOptions');
-    if (type === 'repertoire') {
-      group?.enable({ emitEvent: false });
-    } else {
-      group?.disable({ emitEvent: false });
+  // ──────────── FORM LOGIC ────────────
+  submit(): void {
+    if (this.form.invalid) {
+      return
     }
+
+    const { searchMode, title } = this.form.value.searchConfiguration;
+
+    this.tabReady.emit({
+      id: `tab-${Date.now()}`,
+      title,
+      hasConfigurator: true,
+      configComponentKey: this.configuratorName,
+      displayComponentKey: searchMode,
+      configMode: false,
+      isActive: false,
+      isTitleEditable: true,
+      isDeletable: true,
+      isSearchable: true,
+      searchValue: '',
+      default: false,
+      configData: this.form.value,
+    });
   };
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['configData']) {
-      console.log('Music Tab Config:  Received configData:', changes['configData'].currentValue);
-    }
-  }
 
   // ──────────── UI ────────────
   shouldShowDataFilterOverlay(): boolean {
-    const isComponentTouched = this.form.get('searchMode')?.value ?? false;
+    const isComponentTouched = this.form.get('searchConfiguration.searchMode')?.value ?? false;
     const isDataFilterEnabled = this.form.get('dataFilterActive')?.value === true;
     return isComponentTouched && isDataFilterEnabled;
   };
-
-
-  // ──────────── AUTO TITLE ────────────
-  setAutoTitle(type: string): void {
-    const targetMode = this.form.get('targetMode')?.value;
-    const title = this.generateAutoTitle(type, targetMode);
-    this.form.get('title')?.setValue(title, { emitEvent: false });
-  }
-
-  private generateAutoTitle(type: string, mode: string): string {
-    const title = {
-      target: '',
-      searchType: '',
-      energy: '',
-      genre: '',
-    };
-
-    switch (type) {
-      case 'repertoire':
-        title.searchType = 'rep';
-
-        if (mode === 'me') {
-          title.target = 'my';
-        }
-
-        if (mode === 'single-user') {
-          title.target = 'user’s';
-        }
-
-        if (mode === 'multiple-users') return 'Shared Repertoire';
-        return 'Repertoire';
-
-      case 'crossSearch':
-        title.searchType = 'rep';
-
-
-    }
-
-    return `${title.target} ${title.energy} ${title.genre} ${title.searchType} `.trim();
-  }
-
-  //à checker
-  onToggleAutoTitle(): void {
-    this.autoTitle = !this.autoTitle;
-
-    const titleCtrl = this.form.get('title');
-
-    if (this.autoTitle) {
-      const type = this.form.get('componentType')?.value;
-
-      if (type) {
-        this.setAutoTitle(type)
-      }
-
-      titleCtrl?.disable();
-    } else {
-      titleCtrl?.enable();
-    }
-  }
 }

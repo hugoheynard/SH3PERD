@@ -18,4 +18,32 @@ export class MusicLibNavDataService {
   clearConfig(): void {
     this.tabConfigSignal.set(null);
   };
+
+  saveTabConfig(tabConfig: ITabDefinition[]): void {
+
+  };
+
+
+
+
+
+
+  //-----------DB Interaction Methods-----------
+  async loadMusicTabConfigFromDB(): Promise<void> {
+    // Placeholder for actual DB interaction logic
+    //return [];
+  };
+
+  async saveMusicTabConfigFromDB(): Promise<void> {
+    // Placeholder for actual DB interaction logic
+    //return [];
+  }
+
+
+  //-----------TabConfig Utils-----------
+  getTabConfigMap(tabConfig: ITabDefinition[]): Map<string, ITabDefinition> {
+    return new Map<string, ITabDefinition>(
+      tabConfig.map(tab => [tab.id, tab])
+    );
+  };
 }

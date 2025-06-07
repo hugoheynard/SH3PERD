@@ -14,9 +14,13 @@
   </ng-container>
 
   <tr cdk-header-row *cdkHeaderRowDef="columnKeys"></tr>
-  <tr cdk-row *cdkRowDef="let row; columns: columnKeys; let i = index"
-      [ngStyle]="{ animationDelay: i * 100 + 'ms' }"
-      class="table-row-animate"></tr>
+  <tr
+    cdk-row
+    *cdkRowDef="let row; columns: columnKeys; let i = index"
+    [ngStyle]="{ animationDelay: i * 100 + 'ms' }"
+    class="table-row-animate"
+    (dblclick)="openDetails(row)"
+  ></tr>
 </table>
 
 <div class="custom-paginator">

@@ -3,6 +3,8 @@ import {AbstractControl, FormControl, FormGroup, NonNullableFormBuilder, Validat
 import {valueInList} from '../../../../../forms/validators/valueInList';
 import {allArrayNumbersInRange} from '../../../../../forms/validators/allArrayNumbersInRange';
 import {IMusicTabConfig} from '../../../types/IMusicTabConfig';
+import {deepPatchForm} from '../../../../../forms/validators/deepPatchForm';
+import {MusicLibraryTextContentService} from '../../../services/music-library-text-content.service';
 
 
 @Injectable({
@@ -10,45 +12,14 @@ import {IMusicTabConfig} from '../../../types/IMusicTabConfig';
 })
 export class MusicTabConfiguratorFormService {
   private fb: NonNullableFormBuilder = inject(NonNullableFormBuilder);
+  private TextContentService: MusicLibraryTextContentService = inject(MusicLibraryTextContentService);
 
   createForm(): FormGroup<Record<string, AbstractControl>> {
-    const form = new FormGroup<Record<string, AbstractControl>>({
+    return new FormGroup<Record<string, AbstractControl>>({
       searchConfiguration: this.createSearchConfigurationGroup(),
       dataFilterOptions: this.createDataFilterGroup(),
       exploitationFilterActive: new FormControl(false),
     });
-
-    // Extension dynamique permise
-    const searchModeValue = form.get('searchMode')?.value ?? 'repertoire';
-    form.addControl('target', this.buildTargetGroup(searchModeValue));
-
-    return form;
-  };
-
-  /**
-   * Builds the target group based on the search mode.
-   * @param mode
-   * @private
-   */
-  private buildTargetGroup(mode: string): FormGroup {
-    switch (mode) {
-      case 'repertoire':
-        return this.fb.group({
-          mode: this.fb.control('me', [
-            Validators.required,
-            valueInList(['me', 'single-user', 'multiple-users']),
-          ]),
-          singleUser: this.fb.control(''),
-          multipleUsers: this.fb.control([]),
-        });
-      case 'crossRepertoire':
-        return this.fb.group({
-          clusterIds: this.fb.control([]),
-          focusUser: this.fb.control(''),
-        });
-      default:
-        return this.fb.group({});
-    }
   };
 
   /**
@@ -63,10 +34,29 @@ export class MusicTabConfiguratorFormService {
         Validators.required,
         valueInList(['repertoire', 'crossRepertoire']),
       ]),
+      target: this.buildTargetGroup(),
       dataFilterActive: this.fb.control(true),
       exploitationFilterActive: this.fb.control(false),
+      displaySearchAsFolder: this.fb.control(null),
     });
   };
+
+  /**
+   * Builds the target group.
+   * @private
+   */
+  private buildTargetGroup(): FormGroup {
+    return this.fb.group({
+      mode: this.fb.control('me', [
+        Validators.required,
+        valueInList(['me', 'single-user', 'multiple-users']),
+      ]),
+      singleUser_id: this.fb.control(''),
+      multipleUsers_id: this.fb.control([]),
+    });
+  };
+
+
 
   /**
    * Creates the data filter group with predefined validators.
@@ -93,19 +83,47 @@ export class MusicTabConfiguratorFormService {
   }
 
   patchForm(form: FormGroup, config: IMusicTabConfig): void {
-    const { searchConfiguration } = config;
+    deepPatchForm(form, config, true);
+  };
 
-    form.patchValue({
-      searchConfiguration: {
-        autoTitle: searchConfiguration.autoTitle ?? true,
-        title: searchConfiguration.title ?? 'New Tab',
-        searchMode: searchConfiguration.searchMode ?? 'repertoire',
-        target: searchConfiguration.target ?? { mode: 'me', singleUser: '', multipleUsers: [] },
-        dataFilterActive: searchConfiguration.dataFilterActive ?? false,
-        exploitationFilterActive: searchConfiguration.exploitationFilterActive ?? false,
+
+  // ──────────── AUTO TITLE ────────────
+  generateAutoTitleFromForm(formValue: any): string {
+    const parts: string[] = [];
+
+    // Target (my, user's, etc.)
+    switch (formValue.targetMode) {
+      case 'me':
+        parts.push('my');
+        break;
+      case 'single-user':
+        parts.push("user’s");
+        break;
+      case 'multiple-users':
+        parts.push('shared');
+        break;
+    }
+
+    // Filters
+    if (formValue.dataFilters) {
+      if (formValue.dataFilters.energy) {
+        parts.push(formValue.dataFilters.energy); // e.g. "low"
       }
+      if (formValue.dataFilters.genre) {
+        parts.push(formValue.dataFilters.genre); // e.g. "jazz"
+      }
+    }
 
+    // Type
+    switch (formValue.componentType) {
+      case 'repertoire':
+        parts.push('repertoire');
+        break;
+      case 'crossSearch':
+        parts.push('cross search');
+        break;
+    }
 
-    }, { emitEvent: false });
+    return parts.join(' ').trim();
   }
 }

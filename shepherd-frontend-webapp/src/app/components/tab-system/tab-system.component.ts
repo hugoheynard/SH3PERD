@@ -1,9 +1,9 @@
 import {
   AfterViewInit,
-  Component,
+  Component, ComponentRef,
   ElementRef,
   EventEmitter,
-  Input,
+  Input, OnDestroy,
   Output,
   Type,
   ViewChild,
@@ -30,62 +30,88 @@ import {MatIcon} from '@angular/material/icon';
   standalone: true,
   styleUrl: './tab-system.component.scss'
 })
-export class TabSystemComponent implements AfterViewInit {
+export class TabSystemComponent implements AfterViewInit, OnDestroy {
+  @Input() allowDynamicTabs: boolean = false;
   @Input() tabs: ITabDefinition[] = [];
   @Input() componentMap: Record<string, Type<any>> = {};
-  @Output() tabUpdated: EventEmitter<ITabDefinition> = new EventEmitter<ITabDefinition>();
   @ViewChild('tabHeaderRef', { static: true }) tabHeaderRef!: ElementRef<HTMLDivElement>;
   @ViewChild('tabContentHost', { read: ViewContainerRef }) tabContentHost!: ViewContainerRef;
 
-  private tabRefs: Map<string, any> = new Map<string, any>();
+  private tabRefs: Map<string, ComponentRef<any>> = new Map();
+  public activeTab: ITabDefinition | undefined;
   public searchValue: string = '';
   public tabCount: number = 0;
 
   // ──────────── LIFECYCLE ────────────
   ngAfterViewInit(): void {
-    const initialTab = this.getFirstValidTab();
+    const defaultTab = this.getDefaultTab();
 
-    if (initialTab) {
-      this.activateTab(initialTab.id);
+    if (defaultTab) {
+      this.activateTab(defaultTab.id);
     }
   };
 
+  ngOnDestroy(): void {
+    this.tabRefs.forEach(ref => ref.destroy?.());
+    this.tabRefs.clear();
+  };
+
+
   // ──────────── TAB MANAGEMENT ────────────
+  /**
+   * Returns the default tab if defined and valid,
+   * otherwise the first tab with a registered component.
+   */
+  getDefaultTab(): ITabDefinition | undefined {
+    if (!this.tabs?.length) {
+      return undefined;
+    }
 
-  getFirstValidTab(): ITabDefinition | undefined {
-    return this.tabs.find((t: ITabDefinition) => t.default && this.componentMap[t.component]);
-  };
+    return (
+      this.tabs.find(tab => tab.default && !!tab.configComponentKey && tab.configComponentKey in this.componentMap) ??
+      this.tabs.find(tab => !!tab.configComponentKey && tab.configComponentKey in this.componentMap)
+    );
+  }
 
-  getActiveTab(): ITabDefinition | undefined {
-    return this.tabs.find((t: ITabDefinition) => t.isActive);
-  };
 
+  /**
+   * Activates a tab by its ID.
+   * params id: string - The ID of the tab to activate.
+   * Will ensure that one tab is always active, the rest will be inactive.
+   */
   activateTab(id: string): void {
-    this.tabs.forEach((t: ITabDefinition): boolean => t.isActive = t.id === id);
-    const activeTab = this.tabs.find((t: ITabDefinition): boolean => t.id === id);
-    this.searchValue = activeTab?.searchValue || '';
+    // Will ensure that one tab is always active, the rest will be inactive
+    this.tabs.forEach(t => {
+      t.isActive = t.id === id;
 
-    // Animation de soulignement
-    setTimeout(() => {
-      const header = this.tabHeaderRef.nativeElement;
-      // deleteEffect on tabs
-      header.querySelectorAll('.tab').forEach(el => el.classList.remove('tab-activated'));
-      // addEffect on active tab
-      const active = header.querySelector('.tab.active');
-      if (active) {
-        active.classList.add('tab-activated');
+      if (t.isActive) {
+        this.activeTab = t;
+        this.searchValue = t.searchValue || '';
       }
     });
-    this.loadTabComponent(activeTab);
+
+    this.loadTabComponent(this.activeTab);
   };
 
+  /**
+   * Loads the component for the active tab.
+   * If the tab has no component defined, it will not load anything.
+   */
   loadTabComponent(tab?: ITabDefinition): void {
     if (!tab) {
       return;
     }
 
-    const newComponent = this.componentMap[tab.component];
+    const key = tab.configMode ? tab.configComponentKey : tab.displayComponentKey;
+
+    if (!key) {
+      console.warn('No component key for tab', tab);
+      return;
+    }
+
+    const newComponent = this.componentMap[key];
     if (!newComponent) {
+      console.warn('Component not found in map for key:', key);
       return;
     }
 
@@ -97,23 +123,40 @@ export class TabSystemComponent implements AfterViewInit {
       ref.instance.configData = tab.configData;
     }
 
-
     this.tabRefs.set(tab.id, ref.instance);
 
-    // Gestion d’événement tabReady (ex : pour configurateur)
+    // event management for tabReady from configurators, if the component has a tabReady EventEmitter
     if (ref.instance?.tabReady) {
       ref.instance.tabReady.subscribe((newTab: ITabDefinition): void => {
         this.replaceTab(tab.id, newTab);
-        this.tabUpdated.emit(newTab);
+      });
+    }
+
+    if (ref.instance?.openTab) {
+      ref.instance.openTab.subscribe((newTab: ITabDefinition) => {
+        this.handleOpenTabFromChild(newTab);
       });
     }
   };
+
+  handleOpenTabFromChild(tab: ITabDefinition): void {
+    const allowedComponents = Object.keys(this.componentMap);
+
+    if (!tab.displayComponentKey || !allowedComponents.includes(tab.displayComponentKey)) {
+      console.warn('Rejected tab from child:', tab);
+      return;
+    }
+
+    this.loadTabComponent(tab);
+  }
 
   addNewTab(): void {
     const newDefaultTab: ITabDefinition = {
       id: `tab-${this.tabCount + 1}`,
       title: `Tab #${this.tabCount + 1}`,
-      component: 'music-tab-configurator',
+      hasConfigurator: false,
+      configComponentKey: 'music-tab-configurator', //TODO: Change to a default component
+      configMode: true,
       isDeletable: true,
       isActive: true,
       searchValue: '',
@@ -134,25 +177,37 @@ export class TabSystemComponent implements AfterViewInit {
     }
   };
 
+
+
+  //TODO: Implement this method to apply the filter to the active tab
   applyFilter(value: string): void {
-    const tab = this.tabs.find(t => t.isActive);
-    if (!tab) {
+    if (!this.activeTab) {
       return;
     }
-    tab.searchValue = value;
-    this.tabRefs.get(tab.id)?.applyFilter?.(value);
+    this.activeTab.searchValue = value;
+    //this.tabRefs.get(this.activeTab.id)?.applyFilter?.(value);
   }
+
+
+
+
+
+
+
+
+
+
 
 
   // ──────────── UI HELPERS ────────────
   enableTabNameEdit(tab: ITabDefinition): void {
-    tab.isEditing = true;
+    tab.isEditingTitle = true;
   };
 
   disableTabNameEdit(tab: ITabDefinition): void {
     const newTitle: string = tab.title?.trim();
     tab.title = newTitle || 'Untitled Tab';
-    tab.isEditing = false;
+    tab.isEditingTitle = false;
   };
 
   toggleSearch(tab: ITabDefinition): void {
@@ -195,6 +250,16 @@ export class TabSystemComponent implements AfterViewInit {
   trackByTabId(index: number, tab: ITabDefinition): string {
     return tab.id;
   }
+
+  // ──────────── TAB SEARCH UTILS ────────────
+  findInTabMap(predicate: (tab: ITabDefinition) => boolean): ITabDefinition | undefined {
+    for (const tab of this.tabs.values()) {
+      if (predicate(tab)) {
+        return tab
+      }
+    }
+    return undefined;
+  };
 }
 
 

@@ -2,6 +2,8 @@ import {inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
 import {ApiURLService} from './api-url.service';
+import {IMusicTabConfig} from '../pages/musicLibrary/types/IMusicTabConfig';
+import {TUserId} from '../../types/user.types';
 
 @Injectable({
   providedIn: 'root'
@@ -12,25 +14,28 @@ export class MusicRepertoireService {
   private baseURL: string = this.apiURLService.api().protected().build();
 
   public musicRepertoire: WritableSignal<any[]> = signal<any[]>([]);
-  public userToQuery: WritableSignal<string[] | null> = signal<string[] | null>(null);
 
 
-  async executeConfigStrategy(input: { config: any }): Promise<any[]> {
-    const { searchMode, targetMode, user_id, userIds } = input.config;
+  async executeConfigStrategy(input: { config: IMusicTabConfig }): Promise<any[]> {
+    const { searchMode, target } = input.config.searchConfiguration;
 
     if (searchMode === 'repertoire') {
-      switch (targetMode) {
+      switch (target.mode) {
         case 'me':
           return await this.getMusicRepertoire_Me();
 
-        case 'singleUser':
+        case 'single-user':
+          const user_id = target.singleUser_id;
+
           if (user_id) {
             return await this.getMusicRepertoire_SingleUser(user_id);
           }
           console.warn('Missing userId for singleUser targetMode');
           return [];
 
-        case 'multipleUsers':
+        case 'multiple-users':
+          const userIds = target.multipleUsers_id;
+
           if (!userIds || userIds.length === 0) {
             console.warn('Missing userIds for multipleUsers targetMode');
             return [];
@@ -49,11 +54,13 @@ export class MusicRepertoireService {
   /**
    * Fetches the user's music repertoire - default on the page initialization.
    */
-  async getMusicRepertoire_Me(): Promise<any> {
+  async getMusicRepertoire_Me(filter?: any): Promise<any> {
     try {
       const response: HttpResponse<any> = await firstValueFrom(
         this.http.post(
-          `${this.baseURL}/musicRepertoire/me`, {},
+          `${this.baseURL}/musicRepertoire/me`, {
+            filter: filter || {}
+          },
           {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
             observe: 'response'
@@ -72,7 +79,7 @@ export class MusicRepertoireService {
     }
   };
 
-  async getMusicRepertoire_SingleUser(user_id: any): Promise<any> {
+  async getMusicRepertoire_SingleUser(user_id: TUserId): Promise<any> {
     try {
       const response: HttpResponse<any> = await firstValueFrom(
         this.http.post(
@@ -98,7 +105,7 @@ export class MusicRepertoireService {
     }
   };
 
-  async getMusicRepertoire_MultipleUsers(user_ids: any[]): Promise<any> {
+  async getMusicRepertoire_MultipleUsers(user_ids: TUserId[]): Promise<any> {
     try {
       const response: HttpResponse<any> = await firstValueFrom(
         this.http.post(

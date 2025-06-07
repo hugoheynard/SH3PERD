@@ -4,7 +4,7 @@ import {LabelWrapperDirective} from '../../../../../../../Directives/forms/label
 import {
   MultiSelectDropdownComponent
 } from '../../../../components/utils/multi-select-dropdown/multi-select-dropdown.component';
-import {NgForOf, NgSwitch, NgSwitchCase} from '@angular/common';
+import {NgForOf, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 
 @Component({
   selector: 'search-configuration-form',
@@ -15,7 +15,8 @@ import {NgForOf, NgSwitch, NgSwitchCase} from '@angular/common';
     NgForOf,
     NgSwitchCase,
     ReactiveFormsModule,
-    NgSwitch
+    NgSwitch,
+    NgIf
   ],
   templateUrl: './search-configuration-form.component.html',
   standalone: true,
@@ -37,13 +38,9 @@ export class SearchConfigurationFormComponent {
   targetModes: any[] = [{ label: 'me', value: 'me' }, { label: 'single user', value: 'single-user' }, { label: 'multiple users', value: 'multiple-users' }];
 
 
-  get targetMode(): string {
-    return this.formGroup.get('target.mode')?.value;
-  };
-
   public userList: any = [
-    { id: 'user_1', name: 'Paul' },
-    { id: 'user_2', name: 'Martin' },
-    { id: 'user_3', name: 'Sophie' },
+    { id: 'user_Paul', name: 'Paul' },
+    { id: 'user_Martin', name: 'Martin' },
+    { id: 'user_Sophie', name: 'Sophie' },
   ]
 }

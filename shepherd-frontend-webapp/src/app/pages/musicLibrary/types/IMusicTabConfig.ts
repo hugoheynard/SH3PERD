@@ -10,8 +10,8 @@ export interface IMusicTabConfig {
     searchMode: TSearchMode;
     target: {
       mode: TTargetMode;
-      singleUser?: TUserId;
-      multipleUsers?: TUserId[];
+      singleUser_id?: TUserId;
+      multipleUsers_id?: TUserId[];
     };
     dataFilterActive: boolean;
     exploitationFilterActive: boolean;

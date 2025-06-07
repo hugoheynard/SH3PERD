@@ -58,28 +58,28 @@
       color: white;
     }
 
+    // ← underline visuel présent pour tous, masqué par défaut
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      width: 100%;
+      background: var(--primaryTextColor);
+      transform: scaleX(0); // état initial invisible
+      transform-origin: left;
+      transition: transform 0.2s ease-out;
+    }
+
     &.active {
       height: 2.3rem;
       background: var(--tab-bgColor-active);
       font-weight: 400;
       color: var(--primaryTextColor);
 
-      // animated underline on active tab
       &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 2px;
-        width: 100%;
-        background: var(--primaryTextColor);
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 0.2s ease-out;
-      }
-
-      &.tab-activated::after {
-        transform: scaleX(1);
+        transform: scaleX(1); // effet déclenché uniquement si .active
       }
     }
 
@@ -95,6 +95,7 @@
       }
     }
   }
+
 
 
   @media (max-width: $small-width-trigger) {

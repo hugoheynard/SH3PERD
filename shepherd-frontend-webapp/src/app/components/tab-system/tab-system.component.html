@@ -1,6 +1,11 @@
 <div class="tab-header">
   <!-- 🔥 tab control and navigation -->
-  <div class="add-tab" (click)="addNewTab()" cdkDrag [cdkDragDisabled]="true">＋</div>
+  <div class="add-tab"
+       *ngIf="allowDynamicTabs"
+       (click)="addNewTab()"
+       cdkDrag [cdkDragDisabled]="true">
+    ＋
+  </div>
 
     <div
       #tabHeaderRef
@@ -17,16 +22,16 @@
       *ngFor="let tab of tabs ; let i = index; trackBy: trackByTabId"
       class="tab"
       [class.active]="tab.isActive"
-      [class.tab-editing]="tab.isEditing"
+      [class.tab-editing]="tab.isEditingTitle"
       [class.with-search]="tab.isActive && tab.isSearchVisible"
       cdkDrag
       [cdkDragLockAxis]="'x'"
       [cdkDragBoundary]="'.tab-header-scroll-container'"
       (click)="activateTab(tab.id)"
-      (dblclick)="tab.isEditable !== false && enableTabNameEdit(tab)"
+      (dblclick)="tab.isTitleEditable !== false && enableTabNameEdit(tab)"
     >
       <!-- Nom normal ou édition -->
-      <ng-container *ngIf="!tab.isEditing; else editTemplate">
+      <ng-container *ngIf="!tab.isEditingTitle; else editTemplate">
         {{ tab.title }}
       </ng-container>
 
@@ -45,7 +50,7 @@
   </div>
 </div>
 
-<ng-container *ngIf="getActiveTab() as tab">
+<ng-container *ngIf="activeTab as tab">
   <div *ngIf="tab.isSearchVisible" class="modern-search-bar">
     <div class="input-wrapper">
       <input

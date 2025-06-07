@@ -40,12 +40,14 @@ export class MusicLibraryComponent implements AfterViewInit, OnInit{
    */
   private mandatoryTabs: ITabDefinition[] = [
     {
-      id: 'music-tab-configurator',
-      title: 'new Tab',
-      component: 'music-tab-configurator',
+      id: 'repertoire_me',
+      title: 'my repertoire',
+      hasConfigurator: false,
+      displayComponentKey: 'repertoire',
+      configMode: false,
       isDeletable: false,
-      isEditable: false,
-      isSearchable: false,
+      isTitleEditable: false,
+      isSearchable: true,
       isActive: false,
       default: true,
     }
@@ -58,6 +60,7 @@ export class MusicLibraryComponent implements AfterViewInit, OnInit{
   public componentMap: Record<string, Type<any>> = {
     ['music-tab-configurator']: MusicTabConfiguratorComponent,
     ['repertoire']: MusicRepertoireTableComponent,
+    ['music-version-details']: MusicRepertoireTableComponent,
   };
 
   // ──────────── CHILDREN ACCESS ────────────
@@ -73,39 +76,27 @@ export class MusicLibraryComponent implements AfterViewInit, OnInit{
       {
         id: 'music-tab-testInput',
         title: 'test input',
-        component: 'music-tab-configurator',
+        hasConfigurator: false,
+        configComponentKey: 'music-tab-configurator',
+        configMode: true,
         isDeletable: false,
-        isEditable: false,
+        isTitleEditable: false,
         isSearchable: false,
         isActive: true,
         default: false,
         configData: {
-          searchMode: 'repertoire',
-          target: {
-            mode: 'single-user'
-          },
-          dataFilterActive: true,
-          exploitationFilterActive: false
+          searchConfiguration: {
+            autoTitle: false,
+            title: 'Test Input',
+            searchMode: 'repertoire',
+            target: {
+              mode: 'me'
+            },
+            dataFilterActive: false,
+            exploitationFilterActive: false
+          }
         }
-      },
-      {
-        id: 'repertoire',
-        title: 'My Repertoire',
-        component: 'repertoire',
-        isDeletable: false,
-        isEditable: false,
-        isSearchable: true,
-        isConfigPending: false,
-        isActive: false,
-        searchValue: '',
-        default: false,
-        configData: {
-          searchMode: 'repertoire',
-          targetMode: 'me',
-          dataFilterActive: false,
-          exploitationFilterActive: false
-        }
-      },
+      }
     ];
 
     // Set the initial tab configuration with mandatory tabs and the repertoire tab.

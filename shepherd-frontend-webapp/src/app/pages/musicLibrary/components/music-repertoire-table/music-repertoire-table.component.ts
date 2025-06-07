@@ -1,11 +1,12 @@
 import {
-  Component, inject, Input, OnInit
+  Component, EventEmitter, inject, Input, OnInit, Output
 } from '@angular/core';
 import { CdkTableModule } from '@angular/cdk/table';
 import {NgForOf, NgIf, NgStyle} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {DurationPipe} from '../../../../../pipes/duration.pipe';
 import {MusicRepertoireService} from '../../../../services/music-repertoire.service';
+import {ITabDefinition} from '../../../../components/tab-system/ITabDefinition';
 
 @Component({
   selector: 'music-repertoire-table',
@@ -16,13 +17,8 @@ import {MusicRepertoireService} from '../../../../services/music-repertoire.serv
 })
 export class MusicRepertoireTableComponent implements OnInit {
   private musicRepertoireService: MusicRepertoireService = inject(MusicRepertoireService);
-
-  @Input() config: any = {
-    searchMode: 'repertoire',
-    targetMode: 'me',
-    user_id: '',
-    userIds: [] // This should be an array of user IDs if needed
-  }
+  @Output() openTab: EventEmitter<ITabDefinition> = new EventEmitter<ITabDefinition>();
+  @Input() configData: any = {};
 
   public entries: any[] = [];
   public displayedColumns: { key: string; order: number }[] = [];
@@ -59,11 +55,11 @@ export class MusicRepertoireTableComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
 
-    if (!this.config) {
+    if (!this.configData) {
       await this.musicRepertoireFallBack();
     }
 
-    this.entries = await this.musicRepertoireService.executeConfigStrategy({ config: this.config });
+    this.entries = await this.musicRepertoireService.executeConfigStrategy({ config: this.configData });
 
 
       // Filter out excluded columns and set displayedColumns
@@ -74,9 +70,7 @@ export class MusicRepertoireTableComponent implements OnInit {
 
         this.columnKeys = this.displayedColumns.map(col => col.key);
       }
-  }
-
-
+  };
 
   async musicRepertoireFallBack(): Promise<void> {
     console.log('No config provided, falling back to default music repertoire fetch');
@@ -86,4 +80,25 @@ export class MusicRepertoireTableComponent implements OnInit {
   setPage(page: number): void {
     this.currentPage = Math.max(0, Math.min(page, this.totalPages - 1));
   };
+
+  /**
+   * Opens the details of a track entry in a new tab.
+   * @param row
+   */
+  openDetails(row: any): void {
+    // This method should be implemented to handle opening details of the entry
+    this.openTab.emit({
+      id: `track-${row.id}`,
+      title: `Track #${row.title}`,
+      hasConfigurator: false,
+      configComponentKey: 'music-version-details',
+      displayComponentKey: 'music-version-details',
+      configMode: false,
+      configData: row,
+      isActive: true,
+      isDeletable: true,
+      isSearchable: false,
+      default: false,
+    });
+  }
 }
