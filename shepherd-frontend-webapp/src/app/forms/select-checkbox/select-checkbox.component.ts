@@ -8,7 +8,6 @@ import {NgForOf} from '@angular/common';
 @Component({
     selector: 'app-select-checkbox',
     imports: [
-        MatCheckbox,
         MatFormField,
         MatLabel,
         MatOption,

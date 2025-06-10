@@ -1,4 +1,6 @@
-@import "tokens";
+@use "tokens" as t;
+@use "mixins" as m;
+
 
 :host {
   display: block;
@@ -11,7 +13,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: $app-header-height;
+  height: t.$app-header-height;
   padding: 0 14px;
   background-color: var(--headAndfootBgColor);
   color: var(--primaryTextColor);
@@ -22,7 +24,7 @@
   top: 0;
   z-index: 10;
 
-  @media (max-width: $small-width-trigger) {
+  @media (max-width: t.$small-width-trigger) {
     padding: 0 8px;
   }
 
@@ -80,7 +82,7 @@
       transform: scale(1.1);
     }
 
-    @media (max-width: $small-width-trigger) {
+    @media (max-width: t.$small-width-trigger) {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -102,47 +104,58 @@ app-footer {
 
 //----------main layout - application content----------//
 .menu-left {
-  width: $main-menus-width;
-  height: $app-layout-children-height;
+  width: t.$main-menus-width;
+  min-width: t.$main-menus-width;
+  height: t.$app-layout-children-height;
 }
 
 .layout-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: $app-layout-children-height;
+  height: t.$app-layout-children-height;
   overflow: hidden;
 }
 
 .layout-main {
+  position: relative;
   width: 100%;
-  height: $app-layout-children-height;
+  height: t.$app-layout-children-height;
   display: flex;               // permet un layout horizontal
   flex-direction: row;         // place les enfants côte à côte
   overflow: hidden;
 
-  @media (max-width: $small-width-trigger) {
+  @media (max-width: t.$small-width-trigger) {
     flex-direction: column;
   };
 }
 
+
+
+//for left and right panels
 .panel{
-  width: $app-sidePanel-width;
-  height: $app-layout-children-height;
-  background-color: var(--sidePanelsPrimaryBgColor);
+  width: t.$app-sidePanel-width;
+  height: t.$app-layout-children-height;
+  @include m.sidePanels;
 }
+
+
+
+
+
 
 .content {
   flex: 1;                     // prend toute la largeur dispo
   overflow-y: auto;
-  background-color: #fafafa;
+  background-color: var(--pageBgColor);
   min-width: 0;                // évite le débordement de flex
+  z-index: 2000;
 }
 
 
 .context-menu {
-  width: $main-menus-width;
-  height: $app-layout-children-height;
+  width: t.$main-menus-width;
+  height: t.$app-layout-children-height;
   box-shadow: -2px 0 6px rgba(0, 0, 0, 0.05);
   background-color: var(--colorPrimaryMenus);
   flex-shrink: 0;

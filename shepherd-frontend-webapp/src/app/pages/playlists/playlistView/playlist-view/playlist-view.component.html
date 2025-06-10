@@ -4,34 +4,29 @@
 </div>
 
 <form [formGroup]="playlistForm">
-  <!--SETTINGS-->
-  <plv-section-container [title]="'settings'" [isExpanded]="false" [nestingLevel]="1">
+  <app-form-block
+    [title]="'Search Configuration'"
+    [disabled]="false"
+  >
     <ng-container section formGroupName="settings">
-      <div style="display: flex; flex-direction: column; gap: 0.75rem; padding: 0.25rem;">
-        <input type="text" formControlName="name" StyledInput label="name">
-        <input type="text" formControlName="description" StyledInput label="description">
+      <input type="text" formControlName="name" StyledInput label="name">
+      <input type="text" formControlName="description" StyledInput label="description">
 
-        <div style="display: flex; flex-direction: row; justify-content: space-around;">
-          <select formControlName="usage" StyledInput label="usage">
-            <option value="daily">Daily</option>
-            <option value="event">Event</option>
-          </select>
+      <select formControlName="usage" StyledInput label="usage">
+        <option value="daily">Daily</option>
+        <option value="event">Event</option>
+      </select>
 
-          <input type="number" min="5" step="5" formControlName="requiredLength" StyledInput label="duration">
-          <input type="number" min="1" step="1" formControlName="numberOfSongs" StyledInput label="songs">
-          <input type="number" min="1" max='4' step="1" formControlName="energy" StyledInput label="energy">
+      <input type="number" min="5" step="5" formControlName="requiredLength" label="duration">
+      <input type="number" min="1" step="1" formControlName="numberOfSongs" label="songs">
+      <input type="number" min="1" max='4' step="1" formControlName="energy" label="energy">
 
-        </div>
-
-        <div style="display: flex; flex-direction: column;">
-          <input type="checkbox" formControlName="singers" StyledCheckbox label="singers">
-          <input type="checkbox" formControlName="musicians" StyledCheckbox label="musicians">
-          <input type="checkbox" formControlName="aerial" StyledCheckbox label="aerial">
-        </div>
-      </div>
+      <app-multi-select-dropdown [options]="[{ label: 'singers', value: 'singers' }, { label: 'musicians', value: 'musicians' }, { label: 'performance', value: 'performance' }]" />
 
     </ng-container>
-  </plv-section-container>
+
+  </app-form-block>
+
 
   <plv-section-container [title]="'Performers'" [isExpanded]="true">
     <ng-container section formGroupName="performers">

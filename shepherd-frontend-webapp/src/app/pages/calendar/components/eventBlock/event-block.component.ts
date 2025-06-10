@@ -24,7 +24,6 @@ export interface EventBlock {
   styleUrl: './event-block.component.scss',
   standalone: true,
   imports: [
-    NgStyle,
     DatePipe,
     NgIf
   ]

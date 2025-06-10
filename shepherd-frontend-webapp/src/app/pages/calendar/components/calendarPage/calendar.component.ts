@@ -28,13 +28,6 @@ import {AutoScrollToNowDirective} from '../../core/directives/cal-auto-scroll-to
   imports: [
     PlanningGridComponent,
     CalendarHoursGridComponent,
-    MatSidenavContainer,
-    MatSidenav,
-    MatButton,
-    AppMenuComponent,
-    MatCalendar,
-    DatePickerCalendarComponent,
-    EventReactformComponent,
     NgForOf,
     AutoScrollToNowDirective
   ]
@@ -42,7 +35,7 @@ import {AutoScrollToNowDirective} from '../../core/directives/cal-auto-scroll-to
 export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy{
   private injector: Injector = inject(Injector);
   private layoutService: LayoutService = inject(LayoutService);
-  public calendarService: CalendarService = inject(CalendarService);
+  public calendarService: CalendarService = inject(CalendarService)
 
   public calendarOptions: any  = {
     viewMode: 'singlePersonDay',

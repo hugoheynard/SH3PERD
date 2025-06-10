@@ -1,0 +1,34 @@
+<form>
+  <h1>ADD MUSIC</h1>
+
+  <ng-container *ngIf="currentStep === 1">
+    <app-form-block [title]="'Music details'" [disabled]="false">
+      <input type="text" placeholder="Enter music title" [formControl]="musicFormGroup.get('title')">
+      <input type="text" placeholder="Enter artist name" [formControl]="musicFormGroup.get('artist')">
+    </app-form-block>
+  </ng-container>
+
+  <ng-container *ngIf="currentStep === 2">
+    <app-form-block [title]="'Version details'" [disabled]="false">
+      <select [formControl]="versionFormGroup.get('versionType')">
+        <option value="" disabled>Select a version type</option>
+        <option value="original">Original</option>
+        <option value="cover">Cover</option>
+        <option value="remix">Remix</option>
+      </select>
+
+      <select [formControl]="versionFormGroup.get('genre')">
+        <option value="" disabled>Select a genre</option>
+        <option>Jazz</option>
+      </select>
+
+      <input type="text" placeholder="Enter version name" [formControl]="versionFormGroup.get('versionName')">
+    </app-form-block>
+  </ng-container>
+
+  <div class="form-navigation">
+    <button type="button" (click)="goToPreviousStep()" *ngIf="currentStep > 1">Previous</button>
+    <button type="button" (click)="goToNextStep()" *ngIf="currentStep === 1">Next</button>
+    <button type="submit" (click)="submit()" *ngIf="currentStep === 2">Submit</button>
+  </div>
+</form>

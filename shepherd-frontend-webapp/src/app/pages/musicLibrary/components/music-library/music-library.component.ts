@@ -1,28 +1,22 @@
 import {
-  AfterViewInit,
   Component, computed,
   inject, OnInit,
   Type,
 } from '@angular/core';
-import {NgForOf, NgIf, NgStyle} from '@angular/common';
 import {MusicRepertoireTableComponent} from '../music-repertoire-table/music-repertoire-table.component';
 import {MusicTabConfiguratorComponent} from '../../forms/musicTabConfigurator/components/music-tab-configurator/music-tab-configurator.component';
 import {MusicLibContextMenuComponent} from '../music-lib-context-menu/music-lib-context-menu.component';
 import {LayoutService} from '../../../../../core/services/layout.service';
-import {TabSystemComponent} from '../../../../components/tab-system/tab-system.component';
-import {ITabDefinition} from '../../../../components/tab-system/ITabDefinition';
+import {TabSystemComponent} from '../../../../components/tabSystem/tab-system/tab-system.component';
+import {ITabDefinition} from '../../../../components/tabSystem/tab-system/ITabDefinition';
 import {MusicLibNavDataService} from '../../services/music-lib-nav-data.service';
+import {IDynamicTabHost} from '../../../../components/tabSystem/tab-system/IDynamicTabHost';
+import {AddMusicPanelComponent} from '../add-music-panel/add-music-panel.component';
 
 
 @Component({
     selector: 'app-music-library',
   imports: [
-    NgForOf,
-    NgStyle,
-    NgIf,
-    MusicRepertoireTableComponent,
-    MusicTabConfiguratorComponent,
-    MusicLibContextMenuComponent,
     TabSystemComponent,
   ],
     templateUrl: './music-library.component.html',
@@ -30,9 +24,9 @@ import {MusicLibNavDataService} from '../../services/music-lib-nav-data.service'
     styleUrl: './music-library.component.scss',
 })
 
-export class MusicLibraryComponent implements AfterViewInit, OnInit{
+export class MusicLibraryComponent implements OnInit, IDynamicTabHost{
   private layoutService: LayoutService = inject(LayoutService);
-  private navDataService: MusicLibNavDataService = inject(MusicLibNavDataService);
+  private navDataService: MusicLibNavDataService = inject(MusicLibNavDataService)
 
   /**
    * This is the list of mandatory tabs that should always be present in the music library.
@@ -44,7 +38,6 @@ export class MusicLibraryComponent implements AfterViewInit, OnInit{
       title: 'my repertoire',
       hasConfigurator: false,
       displayComponentKey: 'repertoire',
-      configMode: false,
       isDeletable: false,
       isTitleEditable: false,
       isSearchable: true,
@@ -63,6 +56,22 @@ export class MusicLibraryComponent implements AfterViewInit, OnInit{
     ['music-version-details']: MusicRepertoireTableComponent,
   };
 
+  public generateDefaultTab(id: string): ITabDefinition {
+    return {
+      id,
+      title: 'Default Tab',
+      hasConfigurator: true,
+      configComponentKey: 'music-tab-configurator',
+      displayComponentKey: 'repertoire',
+      configMode: true,
+      isDeletable: true,
+      isTitleEditable: true,
+      isSearchable: true,
+      isActive: false,
+      default: false,
+    }
+  }
+
   // ──────────── CHILDREN ACCESS ────────────
 
   // ──────────── STATE ────────────
@@ -71,20 +80,24 @@ export class MusicLibraryComponent implements AfterViewInit, OnInit{
 
   // ──────────── LIFECYCLE ────────────
   ngOnInit(): void {
+    this.layoutService.setContextMenu(MusicLibContextMenuComponent);
+    this.openAddVersionPanel();
+
     // fake call to db, but if singer mandatory repertoire-me
     const navData: ITabDefinition[] = [
       {
         id: 'music-tab-testInput',
         title: 'test input',
-        hasConfigurator: false,
+        hasConfigurator: true,
         configComponentKey: 'music-tab-configurator',
+        displayComponentKey: 'repertoire',
         configMode: true,
         isDeletable: false,
         isTitleEditable: false,
         isSearchable: false,
         isActive: true,
         default: false,
-        configData: {
+        configuratorData: {
           searchConfiguration: {
             autoTitle: false,
             title: 'Test Input',
@@ -103,12 +116,11 @@ export class MusicLibraryComponent implements AfterViewInit, OnInit{
     this.navDataService.setTabConfig([...this.mandatoryTabs, ...navData]);
   };
 
-  ngAfterViewInit(): void {
-    this.layoutService.setContextMenu(MusicLibContextMenuComponent);
-    return;
-  };
-
   // ──────────── SEARCH ────────────
 
+
   // ──────────── UI HELPERS ────────────
+  openAddVersionPanel(): void {
+    this.layoutService.setRightPanel(AddMusicPanelComponent);
+  };
 }

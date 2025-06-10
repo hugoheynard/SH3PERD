@@ -1,11 +1,13 @@
 @use '@angular/material' as mat;
+@use 'themes/dark';
+@use 'themes/light';
+@use 'mixins' as m;
 
 @include mat.elevation-classes();
 @include mat.app-background();
 
-@import 'themes/dark';
-@import 'themes/light';
-@import 'mixins/forms';
+
+
 
 
 // Define the theme object.
@@ -22,25 +24,9 @@ $shepherd-theme: mat.define-theme((
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
+// that you are using
 
-:root {
-  @include mat.all-component-themes($shepherd-theme);
-  --darkCharcoal: #333333;
-  --greyMid: #555555;
-  --granite: #616161;
-  --platinium: #E5E5E5;
-  --slateBlueGrey: #708090;
-  --culturedWhite: #F5F5F5;
-  --colorMidDarkGrey: #34343a;
-  --colorMidGrey:#414344;
-  --colorFadedGrey: #8a8d8d;
-  --colorLightGrey: #f5f7f8;
-  --GreyLevel1: #5e5e5e;
-  --GreyLevel2: #7f7f7f;
-  --ContrastOnGreyLevel1: #ccc;
-  --ContrastOnGreyLevel2: #e1dfdf;
-}
+
 
 html, body { height: 100vh; }
 body {
@@ -88,16 +74,17 @@ body {
 // Forms
 form {
   h2 {
-    @include form-section-title;
+    @include m.form-section-title;
   }
 
   label {
-    @include form-field-label;
+    @include m.form-field-label;
   }
 
   input[type="text"],
+  input[type="number"],
   select {
-    @include form-field-base;
+    @include m.form-field-base;
   }
 
   input[type="checkbox"] {

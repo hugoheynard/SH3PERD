@@ -1,8 +1,8 @@
-@import 'mixins/forms';
+@use 'mixins' as m;
 
 
 :host {
-  @include form-grid(2);
+  @include m.form-grid(2);
 }
 
 .title-row {

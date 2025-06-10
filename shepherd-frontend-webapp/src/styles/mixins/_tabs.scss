@@ -1,15 +1,15 @@
-@import 'tokens';
+@use 'tokens' as t;
 
 @mixin baseTab{
   display: flex;
   height: 1.3rem;
-  padding: $tab-padding;
-  border-radius: $tab-border-radius;
+  padding: t.$tab-padding;
+  border-radius: t.$tab-border-radius;
   color: var(--primaryTextColor);
   background: var(--tab-bgColor);
   backdrop-filter: blur(4px);
-  font-size: $tab-fontSize;
-  font-weight: $tab-fontWeight;
+  font-size: t.$tab-fontSize;
+  font-weight: t.$tab-fontWeight;
   flex-shrink: 0;
   cursor: pointer;
 }

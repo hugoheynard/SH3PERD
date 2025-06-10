@@ -17,6 +17,11 @@ export class MusicRepertoireService {
 
 
   async executeConfigStrategy(input: { config: IMusicTabConfig }): Promise<any[]> {
+    if (!input || !input.config || !input.config.searchConfiguration) {
+      console.warn('Invalid input or missing searchConfiguration');
+      return [];
+    }
+
     const { searchMode, target } = input.config.searchConfiguration;
 
     if (searchMode === 'repertoire') {

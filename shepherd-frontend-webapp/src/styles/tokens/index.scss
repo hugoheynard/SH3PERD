@@ -1,6 +1,6 @@
-@import './layout';
-@import './colors';
-@import './forms';
-@import './buttons';
-@import './menus';
-@import './tabs';
+@forward './layout';
+@forward './colors';
+@forward './forms';
+@forward './buttons';
+@forward './menus';
+@forward './tabs';

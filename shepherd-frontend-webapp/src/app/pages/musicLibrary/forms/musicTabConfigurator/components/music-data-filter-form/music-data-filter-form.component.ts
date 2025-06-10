@@ -4,8 +4,7 @@ import {LabelWrapperDirective} from '../../../../../../../Directives/forms/label
 import {
   MultiSelectDropdownComponent
 } from '../../../../components/utils/multi-select-dropdown/multi-select-dropdown.component';
-import {NgIf} from '@angular/common';
-import {MatIcon} from '@angular/material/icon';
+
 
 @Component({
   selector: 'music-data-filter-form',
@@ -14,8 +13,6 @@ import {MatIcon} from '@angular/material/icon';
     LabelWrapperDirective,
     MultiSelectDropdownComponent,
     ReactiveFormsModule,
-    MatIcon,
-    NgIf
   ],
   templateUrl: './music-data-filter-form.component.html',
   standalone: true,

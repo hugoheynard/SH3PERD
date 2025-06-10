@@ -9,9 +9,7 @@ import {NgClass, NgForOf, NgIf, NgStyle} from '@angular/common';
     selector: 'app-planningGrid',
     imports: [
         EventBlockComponent,
-        NgStyle,
         NgForOf,
-        NgIf,
         NgClass,
     ],
     templateUrl: './planning-grid.component.html',

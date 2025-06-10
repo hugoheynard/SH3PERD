@@ -3,11 +3,13 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, delay, firstValueFrom, map, Observable, of, switchMap, throwError} from 'rxjs';
 import {TokenService} from './token.service';
 import { TLoginRequestDTO, TAuthSessionResult} from '@sh3pherd/shared-types';
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private router = inject(Router);
   private http = inject(HttpClient);
   private tokenService =  inject(TokenService);
 
@@ -47,6 +49,7 @@ export class AuthService {
     );
   };
 
+  /*
   autoLogin(): Observable<boolean> {
     return this.refreshSession().pipe(
       delay(200),
@@ -54,6 +57,14 @@ export class AuthService {
       catchError(() => of(false))
     );
   };
+
+   */
+  autoLogin(): Observable<void> {
+    return this.refreshSession().pipe(
+      map(() => void 0), // on retourne juste void
+      catchError(() => of(void 0)) // on ignore les erreurs ici
+    );
+  }
 
   refreshSession(): Observable<string | null> {
     try {
@@ -81,12 +92,12 @@ export class AuthService {
           return body.authToken;
         }),
         catchError(error => {
-          console.error('Error in session refresh', error);
+          //console.error('Error in session refresh', error); //TODO manage error
           return of(null);
         })
       );
     } catch (e) {
-      console.error('Sync error during refresh', e);
+      //console.error('Sync error during refresh', e);
       return of(null);
     }
   };
@@ -95,17 +106,25 @@ export class AuthService {
     this.tokenService.removeToken();
     this.isAuthenticatedSignal.set(false);
 
-    this.http.post<any>(
-      'http://localhost:3000/api/auth/logout',
-      {},
-      { withCredentials: true}
-    ).pipe(
-      catchError(error => {
-        console.error('Error during logout', error);
-        return of(null);
-      })
-    ).subscribe(() => {
-      console.log('Logout successful');
-    });
+    this.http.post('/api/auth/logout', {}, { withCredentials: true })
+      .pipe(
+        catchError(error => {
+          if (error.status === 404) {
+            console.warn('[AuthService] Logout endpoint not found, ignoring.', error);
+          } else {
+            console.error('[AuthService] Error during logout', error);
+          }
+          return of(null);
+        })
+      )
+      .subscribe(() => {
+        console.log('[AuthService] Logout flow finished');
+        this.router.navigate(['/login']);
+      });
   };
+
+
+  shouldHaveSession(): boolean {
+    return this.isAuthenticatedSignal(); // ou true si tu veux tester de façon plus naïve
+  }
 }

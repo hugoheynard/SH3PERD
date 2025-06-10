@@ -4,48 +4,35 @@ import {
   Input,
   OnInit,
 } from '@angular/core';
-import {CdkDrag, CdkDropList} from "@angular/cdk/drag-drop";
-import {NgForOf, NgIf} from "@angular/common";
-import {TrackLineComponent} from "../track-line/track-line.component";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {MatInput} from '@angular/material/input';
-import {MatButton, MatFabButton, MatIconButton, MatMiniFabButton} from '@angular/material/button';
+
 import {MatIcon} from '@angular/material/icon';
 import {PlaylistDisplayService} from '../../playlist-display.service';
-import {PlaylistShortInfosComponent} from '../../playlist-short-infos/playlist-short-infos.component';
 import {SongListDndComponent} from '../song-list-dnd/song-list-dnd.component';
 import {PlvSectionContainerComponent} from '../plv-section-container/plv-section-container.component';
-import {AvailableTagsComponent} from '../available-tags/available-tags.component';
 import {PlaylistService} from '../../../../services/playlistService/playlist.service';
 import {PlaylistFormService} from '../../formsServices/playlist-form.service';
 import {StyledInputDirective} from '../../../../../Directives/styled-input.directive';
-import {CdkAccordion, CdkAccordionItem} from '@angular/cdk/accordion';
-import {StyledCheckboxDirective} from '../../../../../Directives/styled-checkbox.directive';
 import {SnackbarService} from '../../../../services/snackbar.service';
+import {
+  FormBlockComponent
+} from '../../../musicLibrary/forms/musicTabConfigurator/components/form-block/form-block.component';
+import {
+  MultiSelectDropdownComponent
+} from '../../../musicLibrary/components/utils/multi-select-dropdown/multi-select-dropdown.component';
+import {LabelWrapperDirective} from '../../../../../Directives/forms/label.directive';
 
 @Component({
     selector: 'playlist-view',
   imports: [
-    CdkDrag,
-    CdkDropList,
-    NgForOf,
-    TrackLineComponent,
     ReactiveFormsModule,
-    MatInput,
-    MatButton,
-    MatFabButton,
     MatIcon,
-    MatMiniFabButton,
-    PlaylistShortInfosComponent,
     SongListDndComponent,
     PlvSectionContainerComponent,
-    NgIf,
-    AvailableTagsComponent,
-    MatIconButton,
-    CdkAccordion,
-    CdkAccordionItem,
     StyledInputDirective,
-    StyledCheckboxDirective
+    FormBlockComponent,
+    MultiSelectDropdownComponent,
+    LabelWrapperDirective
   ],
     templateUrl: './playlist-view.component.html',
     standalone: true,

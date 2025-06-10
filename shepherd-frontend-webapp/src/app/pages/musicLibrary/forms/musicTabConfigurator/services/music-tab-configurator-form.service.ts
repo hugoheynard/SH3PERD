@@ -18,8 +18,7 @@ export class MusicTabConfiguratorFormService {
     return new FormGroup<Record<string, AbstractControl>>({
       searchConfiguration: this.createSearchConfigurationGroup(),
       dataFilterOptions: this.createDataFilterGroup(),
-      exploitationFilterActive: new FormControl(false),
-    });
+    }) as FormGroup;
   };
 
   /**
@@ -62,7 +61,7 @@ export class MusicTabConfiguratorFormService {
    * Creates the data filter group with predefined validators.
    * @returns {FormGroup}
    */
-  private createDataFilterGroup(): any {
+  private createDataFilterGroup(): FormGroup {
     return this.fb.group({
       genre:  this.fb.control(['jazz', 'rock', 'pop'], [
         valueInList(['jazz', 'rock', 'pop', 'classical', 'metal', 'blues', 'country', 'hip-hop', 'electronic']),
@@ -126,4 +125,14 @@ export class MusicTabConfiguratorFormService {
 
     return parts.join(' ').trim();
   }
+
+  //SUBFORM GETTERS
+  getSearchConfigurationGroup(form: FormGroup): FormGroup {
+    return form.get('searchConfiguration') as FormGroup;
+  };
+
+  getDataFilterOptionsGroup(form: FormGroup): FormGroup {
+    return form.get('dataFilterOptions') as FormGroup;
+  };
+
 }

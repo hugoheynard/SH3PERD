@@ -13,12 +13,19 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import {PlaylistDisplayService} from './pages/playlists/playlist-display.service';
 import {authInterceptor} from '../interceptors/auth.interceptor';
 import {AuthService} from './services/auth.service';
-import {firstValueFrom} from 'rxjs';
+import {catchError, firstValueFrom, of} from 'rxjs';
 
 export const provideAuthEnvironmentInitializer = () =>
   provideEnvironmentInitializer(() => {
     const authService = inject(AuthService);
-    return firstValueFrom(authService.autoLogin());
+    return firstValueFrom(
+      authService.autoLogin().pipe(
+        catchError((err) => {
+          console.warn('[Auth Init] Failed during autoLogin', err);
+          return of(void 0);
+        })
+      )
+    );
   });
 
 export const appConfig: ApplicationConfig = {

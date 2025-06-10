@@ -11,7 +11,6 @@ import {
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from '@angular/material/button';
 import {NgForOf, NgIf} from '@angular/common';
-import {MatInput} from '@angular/material/input';
 import {MatChip, MatChipsModule, MatChipSet} from '@angular/material/chips';
 import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {PlaylistDisplayService} from '../../playlist-display.service';
@@ -25,7 +24,6 @@ import {DragStyleDirective} from '../../../../../Directives/drag-style.directive
         MatIcon,
         MatIconButton,
         NgIf,
-        MatInput,
         MatChipSet,
         MatChipsModule,
         CdkDropList,

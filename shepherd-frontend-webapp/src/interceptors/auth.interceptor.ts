@@ -24,8 +24,7 @@ import {AuthService} from '../app/services/auth.service';
 * @param next - The next handler in the chain
 * @returns An observable of the HTTP event
 */
-export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>,
-                                                   next: HttpHandlerFn): any => {
+export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): any => {
   const tokenService = inject(TokenService);
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -48,30 +47,37 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>,
       const isUnauthorized = error.status === 401;
       const isRefreshingRequest = req.url.includes('/auth/refresh');
 
-      if (!isUnauthorized || req.url.includes('/auth/refresh')) {
+      // Ne pas traiter si ce n'est pas une 401 ou si c'est déjà un appel à /refresh
+      if (!isUnauthorized || isRefreshingRequest) {
         return throwError(() => error);
       }
 
-      // Attempt to refresh session
+      // 🚫 Cas 1 : L'utilisateur n'est pas encore authentifié → pas besoin de refresh
+      if (!authService.shouldHaveSession()) {
+        console.info('[AuthInterceptor] User not authenticated yet, no refresh expected.');
+        return throwError(() => error);
+      }
+
+      // 🔁 Cas 2 : Tentative de refresh
       return authService.refreshSession().pipe(
-        switchMap((newToken) => {
+        switchMap((newToken: string | null) => {
           if (!newToken) {
-            authService.logout(); // No token → force logout
-            return throwError(() => error);
+            router.navigate(['/login']);
+            return throwError(() => new Error('Session refresh failed'));
           }
 
-          // Retry the original request with the new token
-          const clonedReq = req.clone({
-            setHeaders: { Authorization: `Bearer ${newToken}` },
+          const retriedReq = req.clone({
+            setHeaders: { Authorization: `Bearer ${newToken}` }
           });
 
-          return next(clonedReq);
+          return next(retriedReq);
         }),
         catchError(refreshError => {
-          authService.logout(); // Refresh itself failed
+          router.navigate(['/login']);
           return throwError(() => refreshError);
         })
       );
     })
-  );
+
+);
 };

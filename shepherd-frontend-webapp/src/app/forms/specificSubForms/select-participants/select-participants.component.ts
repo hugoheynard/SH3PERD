@@ -8,14 +8,10 @@ import {NgForOf} from '@angular/common';
 @Component({
     selector: 'app-select-participants',
     imports: [
-        MatChip,
         MatChipListbox,
         MatChipOption,
-        MatFormField,
-        MatChipGrid,
         MatLabel,
         ReactiveFormsModule,
-        MatInput,
         NgForOf
     ],
     templateUrl: './select-participants.component.html',

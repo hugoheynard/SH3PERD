@@ -1,5 +1,6 @@
 <div class="music-lib-header" [class.compact]="isCompact">
   <div class="page-banner">MUSIC</div>
+  <span (click)="openAddVersionPanel()">+</span>
 </div>
 
 
@@ -7,4 +8,5 @@
   [allowDynamicTabs]="true"
   [componentMap]="componentMap"
   [tabs]="tabs()"
+  [generateDefaultTab]="generateDefaultTab"
 />

@@ -12,14 +12,12 @@ import {
   MatNativeDateModule,
   provideNativeDateAdapter
 } from '@angular/material/core';
-import {MatCheckbox} from '@angular/material/checkbox';
-import {SelectCheckboxComponent} from '../select-checkbox/select-checkbox.component';
 import {SelectParticipantsComponent} from '../specificSubForms/select-participants/select-participants.component';
 
 @Component({
   selector: 'app-event-reactform',
-  imports: [ReactiveFormsModule, MatFormField, MatLabel, MatHint, MatIcon, MatInputModule, MatSelect, MatOption,
-    MatDatepicker, MatDatepickerToggle, MatDatepickerInput, MatNativeDateModule, MatCheckbox, SelectCheckboxComponent, SelectParticipantsComponent
+  imports: [ReactiveFormsModule, MatFormField, MatLabel, MatHint, MatInputModule, MatSelect, MatOption,
+    MatDatepicker, MatDatepickerToggle, MatDatepickerInput, MatNativeDateModule, SelectParticipantsComponent
   ],
   providers: [
     // Fournir l'adaptateur natif de la date

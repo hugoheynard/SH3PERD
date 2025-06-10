@@ -23,13 +23,8 @@ import {CircularMenuComponent} from '../circular-menu/circular-menu.component';
 @Component({
   selector: 'app-main-layout',
   imports: [
-    HeaderComponent,
-    MatSidenavContainer,
     AppMenuComponent,
     RouterOutlet,
-    FooterComponent,
-    MatSidenav,
-    NgIf,
     NgClass,
     MatIcon,
     CircularMenuComponent,
@@ -46,6 +41,9 @@ export class MainLayoutComponent implements AfterViewInit{
 
   public title: string = 'shepherd';
   public isDark = true;
+
+  public leftPanelMode: 'over' | 'push' = 'over';
+  public rightPanelMode: 'over' | 'push' = 'over';
 
   @ViewChild('leftPanelContainer', { read: ViewContainerRef }) leftPanel!: ViewContainerRef;
   @ViewChild('rightPanelContainer', { read: ViewContainerRef }) rightPanel!: ViewContainerRef;

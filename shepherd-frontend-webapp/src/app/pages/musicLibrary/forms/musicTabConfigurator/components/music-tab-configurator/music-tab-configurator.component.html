@@ -8,7 +8,7 @@
     [disabled]="false"
     [style.animation-delay]="'0ms'"
   >
-    <search-configuration-form [formGroup]="form.get('searchConfiguration')"/>
+    <search-configuration-form [formGroup]="formService.getSearchConfigurationGroup(form)"/>
   </app-form-block>
 
   <!-- SECTION 2: Filters -->
@@ -17,7 +17,7 @@
     [disabled]="!shouldShowDataFilterOverlay()"
     [style.animation-delay]="'120ms'"
   >
-    <music-data-filter-form [formGroup]="form.get('dataFilterOptions')"/>
+    <music-data-filter-form [formGroup]="formService.getDataFilterOptionsGroup(form)"/>
   </app-form-block>
 
 

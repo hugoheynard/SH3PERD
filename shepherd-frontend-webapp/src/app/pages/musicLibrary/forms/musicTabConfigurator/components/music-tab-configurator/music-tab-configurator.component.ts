@@ -1,29 +1,18 @@
-import {Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {NgForOf, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
+import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MusicTabConfiguratorFormService} from '../../services/music-tab-configurator-form.service';
-import {MatIcon} from '@angular/material/icon';
-import {MultiSelectDropdownComponent} from '../../../../components/utils/multi-select-dropdown/multi-select-dropdown.component';
-import {LabelWrapperDirective} from '../../../../../../../Directives/forms/label.directive';
 import {ExploitationFilterFormComponent} from '../exploitation-filter-form/exploitation-filter-form.component';
 import {MusicDataFilterFormComponent} from '../music-data-filter-form/music-data-filter-form.component';
 import {FormBlockComponent} from '../form-block/form-block.component';
 import {SearchConfigurationFormComponent} from '../search-configuration-form/search-configuration-form.component';
-import {ITabDefinition} from '../../../../../../components/tab-system/ITabDefinition';
+import {ITabDefinition} from '../../../../../../components/tabSystem/tab-system/ITabDefinition';
 import {IMusicTabConfig} from '../../../../types/IMusicTabConfig';
 
 @Component({
   selector: 'app-music-tab-configurator',
   imports: [
-    NgForOf,
     FormsModule,
     ReactiveFormsModule,
-    NgIf,
-    MatIcon,
-    NgSwitch,
-    NgSwitchCase,
-    MultiSelectDropdownComponent,
-    LabelWrapperDirective,
     ExploitationFilterFormComponent,
     MusicDataFilterFormComponent,
     FormBlockComponent,
@@ -57,7 +46,7 @@ export class MusicTabConfiguratorComponent implements OnInit{
         const title = this.formService.generateAutoTitleFromForm(formValue);
         this.form.get('title')?.setValue(title, { emitEvent: false });
       }
-    });
+    })
   };
 
   // ──────────── FORM LOGIC ────────────
@@ -81,7 +70,7 @@ export class MusicTabConfiguratorComponent implements OnInit{
       isSearchable: true,
       searchValue: '',
       default: false,
-      configData: this.form.value,
+      configuratorData: this.form.value,
     });
   };
 
@@ -92,4 +81,6 @@ export class MusicTabConfiguratorComponent implements OnInit{
     const isDataFilterEnabled = this.form.get('dataFilterActive')?.value === true;
     return isComponentTouched && isDataFilterEnabled;
   };
+
+  protected readonly FormGroup = FormGroup;
 }

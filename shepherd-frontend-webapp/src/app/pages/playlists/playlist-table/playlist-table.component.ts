@@ -1,8 +1,7 @@
 import {Component, inject, Input} from '@angular/core';
-import {DatePipe, NgForOf, NgIf, NgStyle} from '@angular/common';
+import {DatePipe, NgForOf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
-import {MatButton, MatIconButton} from '@angular/material/button';
-import {FavoriteDynamicIconComponent} from '../favorite-dynamic-icon/favorite-dynamic-icon.component';
+import {MatIconButton} from '@angular/material/button';
 import {PlaylistDisplayService} from '../playlist-display.service';
 import {Playlist} from '../playlist_interfaces';
 import {TagStyleDirective} from '../../../../Directives/tag-style.directive';
@@ -15,15 +14,11 @@ import {PlaylistService} from '../../../services/playlistService/playlist.servic
     NgForOf,
     MatIcon,
     MatIconButton,
-    NgIf,
-    NgStyle,
-    FavoriteDynamicIconComponent,
     TagStyleDirective,
     DatePipe,
     MatMenu,
     MatMenuItem,
-    MatMenuTrigger,
-    MatButton
+    MatMenuTrigger
   ],
     templateUrl: './playlist-table.component.html',
     standalone: true,

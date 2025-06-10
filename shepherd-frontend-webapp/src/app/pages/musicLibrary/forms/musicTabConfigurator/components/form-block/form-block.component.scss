@@ -1,7 +1,7 @@
-@import "mixins/forms";
+@use "mixins" as m;
 
 :host {
-  @include form-block();
+  @include m.form-block();
   position: relative;
 }
 

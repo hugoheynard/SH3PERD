@@ -1,4 +1,4 @@
-@import 'tokens';
+@use 'tokens' as t;
 
 
 @mixin button-primary {
@@ -6,8 +6,8 @@
   background: var(--buttonPrimaryBgColor);
   color: var(--buttonPrimaryTextColor);
   border: none;
-  border-radius: $button-primary-radius;
-  padding: $button-primary-padding;
+  border-radius: t.$button-primary-radius;
+  padding: t.$button-primary-padding;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;

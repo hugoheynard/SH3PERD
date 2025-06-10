@@ -6,7 +6,8 @@ import {NgForOf, NgIf, NgStyle} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {DurationPipe} from '../../../../../pipes/duration.pipe';
 import {MusicRepertoireService} from '../../../../services/music-repertoire.service';
-import {ITabDefinition} from '../../../../components/tab-system/ITabDefinition';
+import {ITabDefinition} from '../../../../components/tabSystem/tab-system/ITabDefinition';
+import {IMusicTabConfig} from '../../types/IMusicTabConfig';
 
 @Component({
   selector: 'music-repertoire-table',
@@ -18,7 +19,7 @@ import {ITabDefinition} from '../../../../components/tab-system/ITabDefinition';
 export class MusicRepertoireTableComponent implements OnInit {
   private musicRepertoireService: MusicRepertoireService = inject(MusicRepertoireService);
   @Output() openTab: EventEmitter<ITabDefinition> = new EventEmitter<ITabDefinition>();
-  @Input() configData: any = {};
+  @Input() configuratorData: IMusicTabConfig | undefined;
 
   public entries: any[] = [];
   public displayedColumns: { key: string; order: number }[] = [];
@@ -26,7 +27,28 @@ export class MusicRepertoireTableComponent implements OnInit {
 
   private excludedColumns = ['music_id', 'musicVersion_id', 'updatedAt', 'userId', 'versions'];
 
+  // ──────────── LIFECYCLE ────────────
+  async ngOnInit(): Promise<void> {
 
+    if (!this.configuratorData || Object.keys(this.configuratorData).length === 0) {
+      await this.musicRepertoireFallBack();
+    } else {
+      console.log('Config provided, executing config strategy');
+      this.entries = await this.musicRepertoireService.executeConfigStrategy({ config: this.configuratorData });
+    }
+
+
+
+
+    // Filter out excluded columns and set displayedColumns
+    if (this.entries.length > 0) {
+      this.displayedColumns = Object.keys(this.entries[0])
+        .filter(key => !this.excludedColumns.includes(key))
+        .map((key, index) => ({key, order: index}));
+
+      this.columnKeys = this.displayedColumns.map(col => col.key);
+    }
+  };
 
   public filter: string = '';
 
@@ -53,24 +75,7 @@ export class MusicRepertoireTableComponent implements OnInit {
     return Math.ceil(this.filteredData.length / this.pageSize);
   }
 
-  async ngOnInit(): Promise<void> {
 
-    if (!this.configData) {
-      await this.musicRepertoireFallBack();
-    }
-
-    this.entries = await this.musicRepertoireService.executeConfigStrategy({ config: this.configData });
-
-
-      // Filter out excluded columns and set displayedColumns
-      if (this.entries.length > 0) {
-        this.displayedColumns = Object.keys(this.entries[0])
-          .filter(key => !this.excludedColumns.includes(key))
-          .map((key, index) => ({key, order: index}));
-
-        this.columnKeys = this.displayedColumns.map(col => col.key);
-      }
-  };
 
   async musicRepertoireFallBack(): Promise<void> {
     console.log('No config provided, falling back to default music repertoire fetch');
@@ -90,11 +95,11 @@ export class MusicRepertoireTableComponent implements OnInit {
     this.openTab.emit({
       id: `track-${row.id}`,
       title: `Track #${row.title}`,
-      hasConfigurator: false,
+      hasConfigurator: true,
       configComponentKey: 'music-version-details',
       displayComponentKey: 'music-version-details',
       configMode: false,
-      configData: row,
+      configuratorData: row,
       isActive: true,
       isDeletable: true,
       isSearchable: false,

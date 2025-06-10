@@ -1,8 +1,7 @@
 import {Component, inject, Input} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
-import {MatChip} from '@angular/material/chips';
-import {NgForOf, NgStyle} from '@angular/common';
+import {NgForOf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {PlaylistDisplayService} from '../../playlist-display.service';
 import {TagStyleDirective} from '../../../../../Directives/tag-style.directive';
@@ -12,11 +11,9 @@ import {TagStyleDirective} from '../../../../../Directives/tag-style.directive';
     imports: [
         MatIcon,
         CdkDropList,
-        MatChip,
         CdkDrag,
         NgForOf,
         FormsModule,
-        NgStyle,
         TagStyleDirective
     ],
     standalone: true,

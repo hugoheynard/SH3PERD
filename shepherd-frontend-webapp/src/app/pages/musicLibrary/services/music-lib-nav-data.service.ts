@@ -1,5 +1,5 @@
 import {Injectable, signal} from '@angular/core';
-import {ITabDefinition} from '../../../components/tab-system/ITabDefinition';
+import {ITabDefinition} from '../../../components/tabSystem/tab-system/ITabDefinition';
 
 @Injectable({
   providedIn: 'root'
