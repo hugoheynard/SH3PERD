@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "noEmit": true,
+    "isolatedModules": true,
+    "moduleResolution": "nodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@sh3pherd/shared-types": ["../shared-types/dist/index"],
+    }
+  },
+  "include": ["src", "__tests__", "../../test/jest-globals.d.ts"]
+}
