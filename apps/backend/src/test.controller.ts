@@ -4,7 +4,7 @@ import { Controller, Get } from '@nestjs/common';
 @Controller('test')
 export class TestController {
   @Get()
-  getStatus(): void {
+  getStatus(): string {
     return 'API ok';
   }
 }
