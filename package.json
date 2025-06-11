@@ -4,12 +4,13 @@
   "author": "Hugo Heynard",
   "license": "ISC",
   "private": true,
-  "packageManager": "npm@10.8.2",
   "type": "module",
+  "packageManager": "pnpm@10.12.1",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
+    "dev:backend": "turbo run start --filter=@sh3pherd/backend",
     "create:package": "tsx dev-toolbox/scripts/create-package.ts",
     "updatePackagesRefs": "tsx dev-toolbox/scripts/update-packageRefs.ts",
     "lint:imports": "tsx dev-toolbox/scripts/scan-cross-package-imports.ts",

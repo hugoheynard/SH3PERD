@@ -2,7 +2,11 @@ import { Component } from '@angular/core';
 import {FormBlockComponent} from '../../forms/musicTabConfigurator/components/form-block/form-block.component';
 import {LabelWrapperDirective} from '../../../../../Directives/forms/label.directive';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {NgIf} from '@angular/common';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
+import {
+  WizardContainerComponent
+} from '../../../../components/wizardContainer/wizard-container/wizard-container.component';
+import {WizardStepComponent} from '../../../../components/wizardContainer/wizard-step/wizard-step.component';
 
 @Component({
   selector: 'app-add-music-panel',
@@ -10,25 +14,27 @@ import {NgIf} from '@angular/common';
     FormBlockComponent,
     LabelWrapperDirective,
     ReactiveFormsModule,
-    NgIf
+    NgIf,
+    WizardContainerComponent,
+    WizardStepComponent,
+    NgForOf,
+    NgClass
   ],
   templateUrl: './add-music-panel.component.html',
   standalone: true,
   styleUrl: './add-music-panel.component.scss'
 })
 export class AddMusicPanelComponent {
-  currentStep = 1;
+  matchedTracks: any[] = [{id: 1, title: 'Somebody to love', artist: 'queen'}, {id: 2, title: 'Love in an elevator', artist: 'Aerosmith'}, {id: 3, title: 'Somebody to love', artist: 'queen'}, {id: 3, title: 'Somebody to love', artist: 'queen'}];
+  selectedTrackId: string | null = null;
 
-  goToNextStep() {
-    if (this.currentStep === 1 && this.musicFormGroup.valid) {
-      this.currentStep++;
-    }
+  selectTrack(track: any): void {
+    this.selectedTrackId = track.id;
+    console.log('Track selected:', track.id);
   }
 
-  goToPreviousStep() {
-    if (this.currentStep > 1) {
-      this.currentStep--;
-    }
+  addNewTrack() {
+
   }
 
   // Groupes de formulaire

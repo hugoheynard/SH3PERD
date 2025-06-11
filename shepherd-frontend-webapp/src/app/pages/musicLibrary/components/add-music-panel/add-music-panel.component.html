@@ -1,34 +1,121 @@
 <form>
-  <h1>ADD MUSIC</h1>
+  <app-wizard-container [dotNavigation]="false">
+    <app-wizard-step>
+      <app-form-block [title]="'SELECT OR ADD MUSIC'" [disabled]="false">
+        <input
+          type="text"
+          label="title"
+          placeholder="Enter music title"
+          [formControl]="musicFormGroup.get('title')">
+        <input
+          type="text"
+          label="artist"
+          placeholder="Enter artist name"
+          [formControl]="musicFormGroup.get('artist')">
 
-  <ng-container *ngIf="currentStep === 1">
-    <app-form-block [title]="'Music details'" [disabled]="false">
-      <input type="text" placeholder="Enter music title" [formControl]="musicFormGroup.get('title')">
-      <input type="text" placeholder="Enter artist name" [formControl]="musicFormGroup.get('artist')">
-    </app-form-block>
-  </ng-container>
 
-  <ng-container *ngIf="currentStep === 2">
-    <app-form-block [title]="'Version details'" [disabled]="false">
-      <select [formControl]="versionFormGroup.get('versionType')">
-        <option value="" disabled>Select a version type</option>
-        <option value="original">Original</option>
-        <option value="cover">Cover</option>
-        <option value="remix">Remix</option>
-      </select>
 
-      <select [formControl]="versionFormGroup.get('genre')">
-        <option value="" disabled>Select a genre</option>
-        <option>Jazz</option>
-      </select>
 
-      <input type="text" placeholder="Enter version name" [formControl]="versionFormGroup.get('versionName')">
-    </app-form-block>
-  </ng-container>
+        <div class="musicMatchTable" label="Select a matching song">
+          <ng-container *ngIf="matchedTracks.length !== 0 ; else noTracksFound">
+            <div
+              *ngFor="let track of matchedTracks"
+              class="entry"
+              [ngClass]="{ 'selected': track.id === selectedTrackId }"
+              (click)="selectTrack(track)"
+            >
+              {{ track.title }} - {{ track.artist }}
+            </div>
+          </ng-container>
 
+          <ng-template #noTracksFound>
+            <p>No matching tracks found. Please add a track.</p>
+
+            <div class="addNewTrack" (click)="addNewTrack()">
+              <span class="material-icons">add</span>
+              Add new track
+            </div>
+          </ng-template>
+        </div>
+
+      </app-form-block>
+
+
+    </app-wizard-step>
+
+    <app-wizard-step>
+      <app-form-block [title]="'Version details'" [disabled]="false">
+        <div class="versionDetails">
+          <select [formControl]="versionFormGroup.get('versionType')">
+            <option value="" disabled>Select Type</option>
+            <option value="original">Original</option>
+            <option value="cover">Cover</option>
+            <option value="remix">Remix</option>
+          </select>
+
+          <select [formControl]="versionFormGroup.get('genre')">
+            <option value="" disabled>Select a genre</option>
+            <option>Jazz</option>
+          </select>
+
+          <input
+            type="text"
+            class="fullRow"
+            placeholder="Enter version name"
+            [formControl]="versionFormGroup.get('versionName')"
+          >
+
+          <input
+            type="text"
+            class="fullRow"
+            placeholder="Enter version artist"
+            [formControl]="versionFormGroup.get('versionName')"
+          >
+        </div>
+
+
+
+      </app-form-block>
+
+      <app-form-block [title]="'Version details'" [disabled]="false">
+        <div class="versionDetails">
+          <select [formControl]="versionFormGroup.get('versionType')">
+            <option value="" disabled>Select Type</option>
+            <option value="original">Original</option>
+            <option value="cover">Cover</option>
+            <option value="remix">Remix</option>
+          </select>
+
+          <select [formControl]="versionFormGroup.get('genre')">
+            <option value="" disabled>Select a genre</option>
+            <option>Jazz</option>
+          </select>
+
+          <input
+            type="text"
+            class="fullRow"
+            placeholder="Enter version name"
+            [formControl]="versionFormGroup.get('versionName')"
+          >
+
+          <input
+            type="text"
+            class="fullRow"
+            placeholder="Enter version artist"
+            [formControl]="versionFormGroup.get('versionName')"
+          >
+        </div>
+
+
+
+      </app-form-block>
+
+    </app-wizard-step>
+  </app-wizard-container>
+
+  <!--
   <div class="form-navigation">
-    <button type="button" (click)="goToPreviousStep()" *ngIf="currentStep > 1">Previous</button>
-    <button type="button" (click)="goToNextStep()" *ngIf="currentStep === 1">Next</button>
     <button type="submit" (click)="submit()" *ngIf="currentStep === 2">Submit</button>
   </div>
+  -->
 </form>
