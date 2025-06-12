@@ -2,7 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { getMongoClient } from './getMongoClient.js';
 import { ConfigService } from '@nestjs/config';
 import { MongoClient } from 'mongodb';
-import { MONGO_CLIENT } from '../appBootstrap/nestTokens.js';
+import { MONGO_CLIENT } from '../nestTokens.js';
 
 
 /**

@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { MONGO_CLIENT } from '../appBootstrap/nestTokens';
+import { MONGO_CLIENT } from '../nestTokens';
 import { jest } from '@jest/globals';
 
 
 
 
-jest.mock('./getMongoClient.js', () => ({
+jest.mock('./getMongoClient', () => ({
   getMongoClient: jest.fn(() => ({ mocked: true })), // mock simple
 }));
 

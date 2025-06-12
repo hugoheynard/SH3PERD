@@ -8,6 +8,7 @@ import type {
     TGenerateRefreshTokenCookie,
     TVerifyAuthTokenFn
 } from "../../types/auth.core.contracts.js";
+import { autoBind } from '../../../utils/classUtils/autoBind.js';
 
 
 /**
@@ -21,6 +22,7 @@ import type {
  * - Verifying access and refresh tokens
  * - Revoking refresh tokens
  */
+@autoBind()
 export class AuthTokenService implements IAuthTokenService {
 
     constructor(private readonly deps: TAuthTokenServiceDeps) {

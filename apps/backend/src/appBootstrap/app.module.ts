@@ -4,7 +4,7 @@ import { AppService } from './app.service.js';
 import { TestController } from '../test.controller.js';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../config/configuration.js';
-import { MongoModule } from '../database/MongoModule.js';
+import { MongoModule } from './database/MongoModule.js';
 import { ProtectedModule } from './protected.module.js';
 import { RouterModule } from '@nestjs/core';
 import { AuthModule } from '../auth/api/auth.module.js';

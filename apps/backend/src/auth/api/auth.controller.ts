@@ -12,9 +12,7 @@ import type { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    @Inject(AUTH_USECASES) private readonly authUseCases: TAuthUseCases,
-  ) {};
+  constructor(@Inject(AUTH_USECASES) private readonly authUseCases: TAuthUseCases) {};
 
   @Post('register')
   register(@Body() requestDTO:  TRegisterRequestDTO): Promise<TRegisterResponseDTO> {
