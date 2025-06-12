@@ -1,5 +1,5 @@
 import {failThrows500} from "../failThrows500.js";
-import {TechnicalError} from "../../errorClasses/TechnicalError";
+import {TechnicalError} from "../../errorClasses/TechnicalError.js";
 
 describe('failThrows500', () => {
     class TestService {

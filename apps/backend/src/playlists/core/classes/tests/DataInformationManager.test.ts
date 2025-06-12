@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { DataInformationManager, type IDataInformation } from "../DataInformationManager";
+import { DataInformationManager } from "../DataInformationManager.js";
 
 describe("DataInformationManager", () => {
     let manager: DataInformationManager;

@@ -1,4 +1,4 @@
-import {AerialTagGenerator} from "../AerialTagGenerator";
+import {AerialTagGenerator} from "../AerialTagGenerator.js";
 
 describe("AerialTagGenerator", () => {
     let aerialTagGenerator: AerialTagGenerator;

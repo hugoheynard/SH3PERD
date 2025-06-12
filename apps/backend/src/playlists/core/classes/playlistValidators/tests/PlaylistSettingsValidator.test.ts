@@ -1,5 +1,5 @@
-import { PlaylistSettingsValidator } from "../PlaylistSettingsValidator";
-import {IPlaylistSettings} from "../../playlistBuilder/PLAYLIST_SETTINGS_DEFAULT";
+import { PlaylistSettingsValidator } from "../PlaylistSettingsValidator.js";
+import { TPlaylistSettings } from '../../../../types/playlist.domain.types';
 
 describe("PlaylistSettingsValidator", () => {
     let validator: PlaylistSettingsValidator;
@@ -9,7 +9,7 @@ describe("PlaylistSettingsValidator", () => {
     });
 
     test("should return errors when settings are invalid", () => {
-        const invalidSettings: Partial<IPlaylistSettings> = {
+        const invalidSettings: Partial<TPlaylistSettings> = {
             name: "" as any, // ❌ Doit être non vide
             description: 123 as any, // ❌ Doit être une string
             usage: "weekly" as unknown as IPlaylistSettings["usage"], // ❌ Doit être 'daily' ou 'event'
@@ -40,7 +40,7 @@ describe("PlaylistSettingsValidator", () => {
     });
 
     test("should return valid settings when all inputs are correct", () => {
-        const validSettings: Partial<IPlaylistSettings> = {
+        const validSettings: Partial<TPlaylistSettings> = {
             name: "My Playlist",
             description: "A cool playlist",
             usage: "daily",
@@ -70,12 +70,12 @@ describe("PlaylistSettingsValidator", () => {
     });
 
     test("should return partial errors when some settings are correct and others incorrect", () => {
-        const mixedSettings: Partial<IPlaylistSettings> = {
+        const mixedSettings: Partial<TPlaylistSettings> = {
 
             description: 123 as any, // ❌ Doit être une string
-            usage: "event" as unknown as IPlaylistSettings["usage"], // ✅ Valide
+            usage: "event" as unknown as TPlaylistSettings["usage"], // ✅ Valide
             tags: ["rock", "pop"], // ✅ Valide
-            energy: 5 as unknown as IPlaylistSettings["energy"], // ❌ Doit être entre 1 et 4
+            energy: 5 as unknown as TPlaylistSettings["energy"], // ❌ Doit être entre 1 et 4
             requiredLength: 20, // ✅ Valide
             numberOfSongs: -5, // ❌ Doit être positif
             singers: true, // ✅ Valide

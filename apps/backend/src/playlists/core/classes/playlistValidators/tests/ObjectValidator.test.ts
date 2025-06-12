@@ -1,4 +1,4 @@
-import {ObjectValidator} from "../ObjectValidator";
+import {ObjectValidator} from "../ObjectValidator.js";
 
 describe("ObjectValidator", () => {
     let validator: ObjectValidator;

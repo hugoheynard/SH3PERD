@@ -1,14 +1,13 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["jest", "node"],
-    "noEmit": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "esModuleInterop": true,
     "isolatedModules": true,
-    "moduleResolution": "nodeNext",
-    "baseUrl": ".",
-    "paths": {
-      "@sh3pherd/shared-types": ["../shared-types/dist/index"],
-    }
+    "verbatimModuleSyntax": true,
+    "types": ["jest"]
   },
   "include": ["src", "__tests__", "../../test/jest-globals.d.ts"]
 }

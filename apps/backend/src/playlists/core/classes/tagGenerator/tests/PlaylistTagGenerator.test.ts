@@ -1,4 +1,4 @@
-import {PlaylistTagGenerator} from "../PlaylistTagGenerator";
+import {PlaylistTagGenerator} from "../PlaylistTagGenerator.js";
 
 class TestablePlaylistTagGenerator extends PlaylistTagGenerator<{ testKey: string }> {
     private shouldThrowError = false;

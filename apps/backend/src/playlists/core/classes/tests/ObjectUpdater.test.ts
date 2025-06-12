@@ -1,4 +1,4 @@
-import { ObjectUpdater } from "../ObjectUpdater";
+import { ObjectUpdater } from "../ObjectUpdater.js";
 
 
 //exemple interface for test

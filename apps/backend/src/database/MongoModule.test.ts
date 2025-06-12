@@ -1,11 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoClient } from 'mongodb';
-import { MongoModule } from './MongoModule.js';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MONGO_CLIENT } from '../libs/repositories/tokens';
+import { ConfigModule } from '@nestjs/config';
+import { MONGO_CLIENT } from '../appBootstrap/nestTokens';
 import { jest } from '@jest/globals';
-import { TestAppModule } from '../../test/utils/TestAppModule.js';
-import { getMongoClient } from './getMongoClient';
+
 
 
 

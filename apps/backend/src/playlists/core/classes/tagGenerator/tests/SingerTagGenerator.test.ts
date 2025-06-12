@@ -1,6 +1,6 @@
-import {SingersTagGenerator} from "../SingersTagGenerator";
-import {ISingersConfig} from "../../playlistBuilder/SINGERS_CONFIG_DEFAULT";
-import {type ISubTagCreatorsReturns} from "../PlaylistTagGenerator";
+import {SingersTagGenerator} from "../SingersTagGenerator.js";
+import {ISingersConfig} from "../../playlistBuilder/SINGERS_CONFIG_DEFAULT.js";
+import {type ISubTagCreatorsReturns} from "../PlaylistTagGenerator.js";
 
 
 describe("SingersTagGenerator", () => {
