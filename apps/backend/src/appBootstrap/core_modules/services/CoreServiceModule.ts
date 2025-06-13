@@ -21,4 +21,7 @@ import type { TCoreRepositories } from '../repositories/createCoreRepositories.j
 export class CoreServicesModule {
   // This module initializes core services using the provided repositories.
   // It can be extended with additional providers or exports as needed.
+  constructor() {
+    console.log('[NEST]: CoreServicesModule initialized');
+  }
 }

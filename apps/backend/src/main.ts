@@ -1,12 +1,14 @@
+import process from "process";
+import { loadEnv } from './appBootstrap/config/loadEnv.js';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './appBootstrap/app.module.js';
 import cookieParser from 'cookie-parser';
-import { loadEnv } from './config/loadEnv.js';
-import process from "process";
+
 
 loadEnv(process.env.NODE_ENV || 'dev');
 
 async function bootstrap() {
+
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({

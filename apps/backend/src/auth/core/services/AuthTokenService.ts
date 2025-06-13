@@ -22,7 +22,6 @@ import { autoBind } from '../../../utils/classUtils/autoBind.js';
  * - Verifying access and refresh tokens
  * - Revoking refresh tokens
  */
-@autoBind()
 export class AuthTokenService implements IAuthTokenService {
 
     constructor(private readonly deps: TAuthTokenServiceDeps) {

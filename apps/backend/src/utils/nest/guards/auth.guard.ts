@@ -1,6 +1,7 @@
 import { type CanActivate, type ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import type { TVerifyAuthTokenFn } from '../../../auth/types/auth.core.contracts.js';
 import type { Request } from 'express';
+import { VERIFY_AUTH_TOKEN_FN } from '../../../appBootstrap/nestTokens.js';
 
 
 /**
@@ -22,13 +23,14 @@ import type { Request } from 'express';
  *   useClass: AuthGuard
  * }
  *
+ * @throws {UnauthorizedException} If the Authorization header is missing or token is invalid
  * // Access the user ID later in controllers or services:
  * const userId = request.user_id;
  */
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    @Inject('VERIFY_AUTH_TOKEN_FN') private readonly verifyAuthTokenFn: TVerifyAuthTokenFn
+    @Inject(VERIFY_AUTH_TOKEN_FN) private readonly verifyAuthTokenFn: TVerifyAuthTokenFn,
   ) {};
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

@@ -94,6 +94,7 @@ export type TAuthTokenServiceDeps = {
 export interface IAuthTokenService {
     createAuthSession: TCreateAuthSessionFn;
     verifyAuthToken: TVerifyAuthTokenFn;
+    verifyRefreshToken: TVerifyRefreshTokenFn;
     revokeRefreshToken: TRevokeRefreshTokenFn;
     generateRefreshTokenCookie: TGenerateRefreshTokenCookie;
 }

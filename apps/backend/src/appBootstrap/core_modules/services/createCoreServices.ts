@@ -28,7 +28,7 @@ export const createCoreServices = (input: { repositories: any }): any => {
             })
 
         };
-        console.log('✅ initServices executed');
+        console.log('✅ [SH3PHERD]: Core Services ready');
         return services;
 
     } catch (e: any) {
