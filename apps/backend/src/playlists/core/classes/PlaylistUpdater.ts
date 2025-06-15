@@ -1,7 +1,7 @@
 import type {ObjectUpdaterFunction} from "./ObjectUpdater.js";
 import type {TPlaylistDomainModel} from "../../types/playlist.domain.types.js";
 
-export interface IPlaylistUpdaterInput {
+export interface IPlaylistUpdaterInput<T> {
     objectUpdater: ObjectUpdaterFunction<T>;
     validators: {
         settings: any;

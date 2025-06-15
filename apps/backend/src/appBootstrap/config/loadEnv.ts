@@ -25,7 +25,6 @@ export const loadEnv = (envName: string = process.env.NODE_ENV || 'dev'): void =
         if (fs.existsSync(envPath)) {
             // Load the environment file and override existing variables
             dotenv.config({ path: envPath, override: true });
-            console.log(`[ENV] Loaded: ${envPath}`);
         } else {
             throw new Error(`[ENV] Missing environment file: ${envPath}`);
         }
@@ -38,5 +37,5 @@ export const loadEnv = (envName: string = process.env.NODE_ENV || 'dev'): void =
         throw new Error(`[ENV] Missing required environment variables: ${missing.join(', ')}`);
     }
 
-    console.log(`[ENV] Environment loaded for '${envName}'`);
+    console.log(`✅ [ENV] Environment loaded for '${envName}'`);
 };

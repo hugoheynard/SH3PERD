@@ -1,7 +1,6 @@
 import { Body, Controller, Inject, Post, Req, Res } from '@nestjs/common';
-import { AUTH_USECASES } from '../../appBootstrap/nestTokens.js';
+import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import type {
-  TAuthUseCases,
   TLoginRequestDTO,
   TLoginResponseDTO,
   TRegisterRequestDTO,
@@ -12,7 +11,10 @@ import type { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(@Inject(AUTH_USECASES) private readonly authUseCases: TAuthUseCases) {};
+  constructor(
+    @Inject(USE_CASES_TOKENS.auth)
+    private readonly authUseCases: TCoreUseCasesTypeMap['auth'])
+  {};
 
   @Post('register')
   register(@Body() requestDTO:  TRegisterRequestDTO): Promise<TRegisterResponseDTO> {

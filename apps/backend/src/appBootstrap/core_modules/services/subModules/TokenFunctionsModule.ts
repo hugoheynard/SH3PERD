@@ -12,19 +12,13 @@ import { CORE_SERVICES, VERIFY_AUTH_TOKEN_FN, VERIFY_REFRESH_TOKEN_FN } from '..
     },
     {
       provide: VERIFY_REFRESH_TOKEN_FN,
-      useFactory: (coreServices) => {
-        console.log('[INIT] VERIFY_REFRESH_TOKEN_FN: ', coreServices);
-        return coreServices.authTokenService.verifyRefreshToken;
-      },
+      useFactory: (coreServices: any) => coreServices.authTokenService.verifyRefreshToken.bind(coreServices.authTokenService),
       inject: [CORE_SERVICES],
-    },
+    }
   ],
   exports: [VERIFY_AUTH_TOKEN_FN, VERIFY_REFRESH_TOKEN_FN]
 })
 export class TokenFunctionsModule {
-  constructor() {
-    console.log('[NEST]: TokenFunctionsModule initialized');
-    // This module provides functions for verifying authentication and refresh tokens.
-    // It can be extended with additional token-related functionalities as needed.
-  }
+  // This module provides functions for verifying authentication and refresh tokens.
+  // It can be extended with additional token-related functionalities as needed.
 }

@@ -1,18 +1,16 @@
 import { type INestApplication } from '@nestjs/common';
-import request from 'supertest';
 import { bootstrapTestApp } from './utils/bootstrapTestApp.js';
+import { routesToTest, runE2EDynamicRoutesTest } from './e2e_tests/runE2EDynamicRoutes.test.js';
+
+
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
     app = await bootstrapTestApp();
-  });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
   });
 });
+
+runE2EDynamicRoutesTest(routesToTest);

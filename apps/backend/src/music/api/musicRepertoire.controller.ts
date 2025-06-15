@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 
 
 @Controller('musicRepertoire')
@@ -7,7 +8,10 @@ export class MusicRepertoireController {
   // You can define methods here to handle specific requests, such as getting repertoire data,
   // adding new repertoire, updating existing ones, etc.
 
-  constructor(){};
+  constructor(
+    @Inject(USE_CASES_TOKENS.musicRepertoire)
+    private readonly uc: TCoreUseCasesTypeMap['musicRepertoire']
+  ){};
 
   @Get('/me')
   async me(@Body() requestDTO: any): Promise<void> {};

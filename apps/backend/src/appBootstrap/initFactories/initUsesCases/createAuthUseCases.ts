@@ -1,14 +1,14 @@
-import type {TAuthUseCases} from "../../../../auth/types/auth.core.useCase.js";
+import type {TAuthUseCases} from "../../../auth/types/auth.core.useCase.js";
 import {
     createLoginUseCase,
     createLogoutUseCase,
     createRefreshSessionUseCase,
     createRegisterUserUseCase
-} from "../../../../auth/use-cases/index.js";
-import {generateTypedId} from "../../../../utils/ids/generateTypedId.js";
-import {passwordManager} from "../../../../auth/core/password-manager/index.js";
-import {TechnicalError} from "../../../../utils/errorManagement/errorClasses/TechnicalError.js";
-import {createUser} from "../../../../user/domain/createUser.js";
+} from "../../../auth/use-cases/index.js";
+import {generateTypedId} from "../../../utils/ids/generateTypedId.js";
+import {passwordManager} from "../../../auth/core/password-manager/index.js";
+import {TechnicalError} from "../../../utils/errorManagement/errorClasses/TechnicalError.js";
+import {createUser} from "../../../user/domain/createUser.js";
 
 
 export const createAuthUseCases = (deps: { services: any; repositories: any }): TAuthUseCases => {

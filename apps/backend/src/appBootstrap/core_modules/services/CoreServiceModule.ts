@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { CORE_REPOSITORIES, CORE_SERVICES } from '../../nestTokens.js';
-import { createCoreServices } from './createCoreServices.js';
+import { createCoreServices } from '../../initFactories/createCoreServices.js';
 import { CoreRepositoriesModule } from '../repositories/CoreRepositoriesModule.js';
-import type { TCoreRepositories } from '../repositories/createCoreRepositories.js';
+import type { TCoreRepositories } from '../../initFactories/createCoreRepositories.js';
 
 
 @Module({
@@ -21,7 +21,4 @@ import type { TCoreRepositories } from '../repositories/createCoreRepositories.j
 export class CoreServicesModule {
   // This module initializes core services using the provided repositories.
   // It can be extended with additional providers or exports as needed.
-  constructor() {
-    console.log('[NEST]: CoreServicesModule initialized');
-  }
 }

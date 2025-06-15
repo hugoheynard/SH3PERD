@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { CoreRepositoriesModule } from '../repositories/CoreRepositoriesModule.js';
 import { CoreServicesModule } from '../services/CoreServiceModule.js';
 import { CORE_REPOSITORIES, CORE_SERVICES, CORE_USECASES } from '../../nestTokens.js';
-import { createCoreUseCases } from './createCoreUseCases.js';
-import type { TCoreRepositories } from '../repositories/createCoreRepositories.js';
+import { createCoreUseCases } from '../../initFactories/createCoreUseCases.js';
+import type { TCoreRepositories } from '../../initFactories/createCoreRepositories.js';
 
 
 @Module({

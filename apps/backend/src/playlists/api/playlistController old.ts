@@ -2,7 +2,7 @@ import type {NextFunction, Request, Response} from "express";
 import type {IPlaylistController} from "../types/playlist.api.types.js";
 
 
-export const playlistController = (input: IPlaylistController['input']): IPlaylistController['output'] => {
+export const playlistControllerOld = (input: IPlaylistController['input']): IPlaylistController['output'] => {
     const { playlistService, playlistTemplateService } = input;
 
     const controller: IPlaylistController['output'] = {

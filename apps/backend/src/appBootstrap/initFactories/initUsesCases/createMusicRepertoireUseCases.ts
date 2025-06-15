@@ -1,6 +1,6 @@
-import {TechnicalError} from "../../../../utils/errorManagement/errorClasses/TechnicalError.js";
-import {createGetMusicRepertoireByUserIdUseCase} from "../../../../music/useCases/createGetMusicRepertoireByUserIdUseCase.js";
-import type {TMusicRepertoireUseCases} from "../../../../music/types/musicRepertoire.useCases.types.js";
+import {TechnicalError} from "../../../utils/errorManagement/errorClasses/TechnicalError.js";
+import {createGetMusicRepertoireByUserIdUseCase} from "../../../music/useCases/createGetMusicRepertoireByUserIdUseCase.js";
+import type {TMusicRepertoireUseCases} from "../../../music/types/musicRepertoire.useCases.types.js";
 
 export const createMusicRepertoireUseCases = (deps: { services: any; repositories: any }): TMusicRepertoireUseCases => {
     try {

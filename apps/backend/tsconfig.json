@@ -7,6 +7,9 @@
     "baseUrl": "./",
   },
   "exclude": [
+    //custom exclusions
+    "src/playlists",
+    // exclude directories
     "dist",
     "dist/types",
     "node_modules",

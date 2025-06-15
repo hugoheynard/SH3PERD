@@ -26,8 +26,6 @@ import { MONGO_CLIENT } from '../nestTokens.js';
       useFactory: async (config: ConfigService): Promise<MongoClient> => {
         const uri = config.get<string>('ATLAS_URI');
 
-        console.log(config)
-
         if (!uri) {
           throw new Error('MONGO_URI is not defined in the configuration');
         }

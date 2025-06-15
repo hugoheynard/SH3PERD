@@ -1,8 +1,8 @@
-import {createAuthTokenService} from "../../../auth/factories/createAuthTokenService.js";
-import {CalendarService} from "../../../calendar/core/services/CalendarService.js";
-import {buildCalendar} from "../../../calendar/core/builders/buildCalendar.js";
-import {computeEventIntersections} from "../../../calendar/core/colliders/computeEventIntersection.js";
-import { authConfig, secureCookieConfig } from '../../config.js';
+import {createAuthTokenService} from "../../auth/factories/createAuthTokenService.js";
+import {CalendarService} from "../../calendar/core/services/CalendarService.js";
+import {buildCalendar} from "../../calendar/core/builders/buildCalendar.js";
+import {computeEventIntersections} from "../../calendar/core/colliders/computeEventIntersection.js";
+import { authConfig, secureCookieConfig } from '../config.js';
 
 
 export const createCoreServices = (input: { repositories: any }): any => {
@@ -26,7 +26,6 @@ export const createCoreServices = (input: { repositories: any }): any => {
                     eventIntersection: computeEventIntersections,
                 }
             })
-
         };
         console.log('✅ [SH3PHERD]: Core Services ready');
         return services;
