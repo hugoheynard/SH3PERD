@@ -7,15 +7,16 @@ import {RefreshTokenMongoRepository} from "../../auth/repositories/RefreshTokenM
 import {UserMongoRepository} from "../../user/repository/adapters/mongo/MongoUserRepository.js";
 import {ContractMongoRepository} from "../../contracts/core/ContractMongoRepository.js";
 import {EventUnitMongoRepository} from "../../calendar/repositories/EventUnitMongoRepository.js";
-import {MusicRepertoireMongoRepository} from "../../music/repositories/UserRepertoireRepository.js";
+import {MusicRepertoireMongoRepository} from "../../music/repositories/MusicRepertoireRepository.js";
+import type { IMusicRepertoireRepository } from '../../music/types/musicRepertoire.core.types.js';
 
 
 export type TCoreRepositories = {
     refreshTokenRepository: IRefreshTokenRepository;
-    userRepository: IUserRepository;
+    userCredentialsRepository: IUserRepository;
     contractRepository: IContractRepository;
     eventUnitsRepository: any;
-    userRepertoireRepository: any;
+    musicRepertoireRepository: IMusicRepertoireRepository;
 }
 
 export const createCoreRepositories = (input: {
@@ -31,11 +32,11 @@ export const createCoreRepositories = (input: {
 
         return {
             refreshTokenRepository: new RefreshTokenMongoRepository({ client, dbName, collectionName: "refreshToken" }),
-            userRepository: new UserMongoRepository({ client, dbName, collectionName: "users" }),
+            userCredentialsRepository: new UserMongoRepository({ client, dbName, collectionName: "user_credentials" }),
             contractRepository: new ContractMongoRepository({ client, dbName, collectionName: "contracts" }),
             eventUnitsRepository: new EventUnitMongoRepository({ client, dbName, collectionName: "eventUnits" }),
             //music and playlists
-            userRepertoireRepository: new MusicRepertoireMongoRepository({ client, dbName, collectionName: "userRepertoire" }),
+            musicRepertoireRepository: new MusicRepertoireMongoRepository({ client, dbName, collectionName: "musicRepertoireEntries" }),
         }
     } catch (error) {
         if (error instanceof TechnicalError) {

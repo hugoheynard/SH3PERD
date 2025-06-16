@@ -20,7 +20,6 @@ export class UserMongoRepository
         if (!result.acknowledged || !result.insertedId) {
             return false;
         }
-
         return true;
     };
 

@@ -1,15 +1,5 @@
-import type {TUserId} from "../../user/types/user.domain.types.js";
-
-export type TMusicId = `music_${string}`;
-
-export type TMusicDomainModel = {
-    music_id: TMusicId,
-    title: string;
-    artist: string;
-    created_at: Date;
-    updated_at: Date;
-    created_by: TUserId;
-}
+import type { TUserId } from '../../user/types/user.domain.types.js';
+import type { TMusicReferenceId } from './musicReferences.types.js';
 
 export type TMusicGenres = "jazz" | "pop" | "rock" | "soul" | "EDM" ;
 export type TMusicKeys = "C" | "C#" | "D" | "D#" | "E" | "F" | "F#" | "G" | "G#" | "A" | "A#" | "B" | "Cm" | "C#m" | "Dm" | "D#m" | "Em" | "Fm" | "F#m" | "Gm" | "G#m" | "Am" | "A#m" | "Bm";
@@ -23,7 +13,7 @@ export type TMusicVersionId = `musicVersion_${string}`;
 
 export type TMusicVersionDomainModel = {
     musicVersion_id: TMusicVersionId;
-    music_id: TMusicId;
+    music_id: TMusicReferenceId;
     title_override?: string;
     artist_override?: string;
     genre: TMusicGenres;

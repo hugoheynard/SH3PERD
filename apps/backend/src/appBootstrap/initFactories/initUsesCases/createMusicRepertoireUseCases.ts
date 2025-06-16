@@ -1,13 +1,14 @@
 import {TechnicalError} from "../../../utils/errorManagement/errorClasses/TechnicalError.js";
 import {createGetMusicRepertoireByUserIdUseCase} from "../../../music/useCases/createGetMusicRepertoireByUserIdUseCase.js";
 import type {TMusicRepertoireUseCases} from "../../../music/types/musicRepertoire.useCases.types.js";
+import type { TCoreRepositories } from '../createCoreRepositories.js';
 
-export const createMusicRepertoireUseCases = (deps: { services: any; repositories: any }): TMusicRepertoireUseCases => {
+export const createMusicRepertoireUseCases = (deps: { services: any; repositories: TCoreRepositories }): TMusicRepertoireUseCases => {
     try {
-        const { userRepertoireRepository } = deps.repositories;
+        const { musicRepertoireRepository } = deps.repositories;
 
         const getMusicRepertoireByUserId = createGetMusicRepertoireByUserIdUseCase({
-            findMusicRepertoireByUserIdFn: userRepertoireRepository.findRepertoireByUserId
+            findMusicRepertoireByUserIdFn: musicRepertoireRepository.findRepertoireByUserId
         });
 
         return {

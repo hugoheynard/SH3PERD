@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, HttpCode, Inject, Post, Req, Res } from '@nestjs/common';
 import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import type {
   TLoginRequestDTO,
@@ -9,7 +9,7 @@ import type {
 import type { Request, Response } from 'express';
 
 
-@Controller('auth')
+@Controller('')
 export class AuthController {
   constructor(
     @Inject(USE_CASES_TOKENS.auth)
@@ -33,6 +33,7 @@ export class AuthController {
    * @param res - The response object to send the result
    */
   @Post('login')
+  @HttpCode(200)
   async login(
     @Body() requestDTO: TLoginRequestDTO,
     @Res({ passthrough: true }) res: Response

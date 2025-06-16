@@ -6,10 +6,11 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration.js';
 import { MongoModule } from './database/MongoModule.js';
 import { ProtectedModule } from './protected.module.js';
-import { RouterModule } from '@nestjs/core';
+import { APP_GUARD, RouterModule } from '@nestjs/core';
 import { AuthModule } from '../auth/api/auth.module.js';
 import { CoreServicesModule } from './core_modules/services/CoreServiceModule.js';
-
+import { AuthGuard } from '../utils/nest/guards/auth.guard.js';
+import { TokenFunctionsModule } from './core_modules/services/subModules/TokenFunctionsModule.js';
 
 
 @Module({
@@ -22,9 +23,10 @@ import { CoreServicesModule } from './core_modules/services/CoreServiceModule.js
     }),
     // Database module, returns MongoClient instance
     MongoModule,
+    // Token verification for AuthGuard
+    TokenFunctionsModule,
     //Services
     CoreServicesModule,
-
     // Modules
     AuthModule,
     ProtectedModule,
@@ -35,6 +37,9 @@ import { CoreServicesModule } from './core_modules/services/CoreServiceModule.js
     ])
   ],
   controllers: [AppController, TestController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: AuthGuard },
+  ],
 })
 export class AppModule {}

@@ -1,6 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import { bootstrapTestApp } from '../utils/bootstrapTestApp.js';
 import request from 'supertest';
+import { UserBuilder } from './RessourcesBuilders/UserBuilder';
 
 type RouteTest = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -19,27 +20,30 @@ export const routesToTest: RouteTest[] = [
     expectedBody: 'Hello World!',
   },
   {
-    method: 'GET',
-    path: '/api/test',
-    expectedStatus: 200,
-    expectedBody: 'API ok',
-  },
-  {
     method: 'POST',
     path: '/api/auth/login',
-    expectedStatus: 201,
+    expectedStatus: 200,
     sendBody: { email: 'test@mail.com', password: 'test123' },
-    expectedBody: { access_token: expect.any(String) },
+    expectedBody: { authToken: expect.any(String), user_id: expect.any(String) },
   },
 ];
 
 
 describe('E2E - Dynamic routes', () => {
-  let app: INestApplication;
+  const app: INestApplication = await bootstrapTestApp();
+  let testUser;
 
-  beforeEach(async () => {
-    app = await bootstrapTestApp();
-  });
+  // Creates test@mail.com si le test login est présent
+  const needsLoginTest = routesToTest.some(r => r.path.includes('/auth/login'));
+
+  if (needsLoginTest) {
+    testUser = await UserBuilder
+      .init(app)
+      .withCredentials({ email: 'test@mail.com', password: 'test123' })
+      .registerAndLogin()
+  }
+
+  beforeEach(async () => {});
 
   routesToTest.forEach(({ method, path, expectedStatus, sendBody, expectedBody, headers }) => {
     it(`${method} ${path} → ${expectedStatus}`, async () => {

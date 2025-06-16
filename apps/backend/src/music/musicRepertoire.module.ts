@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { MusicRepertoireController } from './api/musicRepertoire.controller.js';
-import { UseCasesModule } from '../appBootstrap/core_modules/useCases/UseCaseModule.js';
 
 
 @Module({
-  imports: [UseCasesModule.for('musicRepertoire')],
-  controllers: [MusicRepertoireController]
+  imports: [],
+  controllers: []
 })
 export class MusicRepertoireModule {
   // This module is responsible for handling music repertoire-related functionality.

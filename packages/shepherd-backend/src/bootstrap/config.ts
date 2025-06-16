@@ -48,7 +48,7 @@ xwIDAQAB
 export const secureCookieConfig: TSecureCookieConfig =  {
     httpOnly: true,
     secure: false, // TODO: true in production
-    sameSite: 'lax',
+    sameSite: 'Lax',
     maxAge: 604800000 // 7 days
 };
 

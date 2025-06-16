@@ -5,9 +5,9 @@ import { Module } from '@nestjs/common';
 
 
 @Module({})
-export class UseCasesModule {
+export class CoreUseCasesAccessModule {
   static for(feature: keyof typeof USE_CASES_TOKENS): DynamicModule {
-    return UseCasesModule.forMany([feature]);
+    return CoreUseCasesAccessModule.forMany([feature]);
   };
 
   static forMany(features: (keyof typeof USE_CASES_TOKENS)[]): DynamicModule {
@@ -18,7 +18,7 @@ export class UseCasesModule {
     }));
 
     return {
-      module: UseCasesModule,
+      module: CoreUseCasesAccessModule,
       imports: [CoreUseCasesModule],
       providers,
       exports: providers.map((p) => p.provide),

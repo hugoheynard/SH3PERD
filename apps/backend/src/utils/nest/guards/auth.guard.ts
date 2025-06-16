@@ -35,6 +35,11 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
+
+    if (!request.url.startsWith('/protected')) {
+      return true; // 🔓 not used on public routes
+    }
+
     const authToken: string | undefined = request.headers["authorization"]?.split(" ")[1];
 
     if (!authToken) {

@@ -1,6 +1,6 @@
 import { type INestApplication } from '@nestjs/common';
 import { bootstrapTestApp } from './utils/bootstrapTestApp.js';
-import { routesToTest, runE2EDynamicRoutesTest } from './e2e_tests/runE2EDynamicRoutes.test.js';
+import { routesToTest, runE2EDynamicRoutesTest } from './E2E/runE2EDynamicRoutes.test.js';
 
 
 

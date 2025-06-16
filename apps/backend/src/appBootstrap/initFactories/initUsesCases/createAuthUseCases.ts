@@ -9,23 +9,24 @@ import {generateTypedId} from "../../../utils/ids/generateTypedId.js";
 import {passwordManager} from "../../../auth/core/password-manager/index.js";
 import {TechnicalError} from "../../../utils/errorManagement/errorClasses/TechnicalError.js";
 import {createUser} from "../../../user/domain/createUser.js";
+import type { TCoreRepositories } from '../createCoreRepositories.js';
 
 
-export const createAuthUseCases = (deps: { services: any; repositories: any }): TAuthUseCases => {
+export const createAuthUseCases = (deps: { services: any; repositories: TCoreRepositories }): TAuthUseCases => {
     const { authTokenService } = deps.services;
-    const { userRepository, refreshTokenRepository } = deps.repositories;
+    const { userCredentialsRepository, refreshTokenRepository } = deps.repositories;
 
     try {
         return {
             register: createRegisterUserUseCase({
                 generateUserIdFn: () => generateTypedId('user'),
                 createUserFn: createUser,
-                findUserByEmailFn: userRepository.findUserByEmail,
+                findUserByEmailFn: userCredentialsRepository.findUserByEmail,
                 hashPasswordFn: passwordManager.hashPassword,
-                saveUserFn: userRepository.saveUser,
+                saveUserFn: userCredentialsRepository.saveUser,
             }),
             login: createLoginUseCase({
-                findUserByEmailFn: userRepository.findUserByEmail,
+                findUserByEmailFn: userCredentialsRepository.findUserByEmail,
                 comparePasswordFn: passwordManager.comparePassword,
                 createAuthSessionFn: authTokenService.createAuthSession,
             }),

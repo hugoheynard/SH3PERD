@@ -13,7 +13,11 @@ export async function bootstrapTestApp(): Promise<INestApplication> {
     imports: [AppModule],
   }).compile();
 
+
   const app = moduleRef.createNestApplication();
+  app.setGlobalPrefix('api');
+
+
   await app.init();
   return app;
-};
+}

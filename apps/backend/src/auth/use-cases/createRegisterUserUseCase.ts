@@ -35,7 +35,7 @@ export const createRegisterUserUseCase = (deps: TRegisterUserUseCaseDeps): TRegi
         const existing = await findUserByEmailFn({ email: request.email });
 
         if (existing) {
-            throw new BusinessError('Email already in use', 'USER_ALREADY_EXISTS', 409);
+            throw new BusinessError('email already in use', 'USER_ALREADY_EXISTS', 409);
         }
 
         const user = createUserFn({
