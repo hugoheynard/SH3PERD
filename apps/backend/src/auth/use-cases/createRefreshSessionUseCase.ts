@@ -30,7 +30,7 @@ import {BusinessError} from "../../utils/errorManagement/errorClasses/BusinessEr
 export const createRefreshSessionUseCase = (
     deps: TRefreshSessionUseCaseDeps
 ): TRefreshSessionUseCase => {
-    const { findRefreshTokenFn, verifyRefreshTokenFn, createAuthSessionFn, revokeRefreshTokenFn } = deps;
+    const { findRefreshTokenFn, verifyRefreshTokenFn, createAuthSessionFn, deleteRefreshTokenFn } = deps;
 
     return async ({ refreshToken }) => {
         const token = await findRefreshTokenFn({ refreshToken });
@@ -42,7 +42,7 @@ export const createRefreshSessionUseCase = (
         const isValid = verifyRefreshTokenFn({ refreshTokenDomainModel: token });
 
         if (!isValid) {
-            await revokeRefreshTokenFn({ refreshToken });
+            await deleteRefreshTokenFn({ refreshToken });
             throw new BusinessError('Invalid tokens', 'INVALID_TOKENS', 401);
         }
 

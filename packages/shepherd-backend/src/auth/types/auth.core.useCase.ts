@@ -48,7 +48,6 @@ export type TLogoutUseCase = (input: TLogoutRequestDTO) => Promise<TLogoutResult
 /**
  * Register Use Case Types
  */
-export type TRegisterRequestDTO = { email: string; password: string; }
 export type TRegisterResponseDTO = { user_id: TUserId; }
 export type TRegisterUserUseCaseDeps = {
     findUserByEmailFn: TFindUserByEmailFn;
@@ -57,7 +56,7 @@ export type TRegisterUserUseCaseDeps = {
     saveUserFn: TSaveUserFn;
     generateUserIdFn: () => TUserId;
 };
-export type TRegisterUserUseCase = (input: TRegisterRequestDTO) => Promise<TRegisterResponseDTO>;
+export type TRegisterUserUseCase = (input: TUserCredentialsDTO) => Promise<TRegisterResponseDTO>;
 
 
 /**

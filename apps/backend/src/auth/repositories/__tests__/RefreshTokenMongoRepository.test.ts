@@ -2,30 +2,42 @@ import {jest} from '@jest/globals';
 import type {Collection, DeleteResult, Document, InsertOneResult} from "mongodb";
 import {RefreshTokenMongoRepository} from "../RefreshTokenMongoRepository.js";
 import {ObjectId} from "mongodb";
-import type {TRefreshToken, TRefreshTokenDomainModel} from "@sh3pherd/shared-types";
+import type { TRefreshToken, TRefreshTokenDomainModel } from '../../types/auth.domain.tokens';
 
 
 /**
  * No need to test throws in this test file. Decorator tested in utils package.
  */
+// Mock collection
+const mockCollection = {
+    insertOne: jest.fn(),
+    findOne: jest.fn(),
+    deleteOne: jest.fn(),
+    deleteMany: jest.fn()
+} as unknown as jest.Mocked<Collection<TRefreshTokenDomainModel>>;
+
+// Mock client
+const mockClient = {
+    db: jest.fn().mockReturnValue({
+        collection: jest.fn().mockReturnValue(mockCollection)
+    })
+} as unknown as MongoClient;
+
+const mockDeps = {
+    client: mockClient,
+    dbName: 'testDb',
+    collectionName: 'refresh_tokens'
+};
+
+const mockToken: TRefreshTokenDomainModel = {
+    refreshToken: 'refresh_abc' as TRefreshToken,
+    user_id: 'user_1',
+    createdAt: new Date(),
+    expiresAt: new Date(Date.now() + 10000)
+};
+
 describe('RefreshTokenMongoRepository', () => {
-    const mockCollection = {
-        insertOne: jest.fn(),
-        findOne: jest.fn(),
-        deleteOne: jest.fn(),
-        deleteMany: jest.fn()
-    } as unknown as jest.Mocked<Collection<TRefreshTokenDomainModel>>;
-
-    const mockToken: TRefreshTokenDomainModel = {
-        refreshToken: 'refresh_abc' as TRefreshToken,
-        user_id: 'user_1',
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 10000)
-    };
-
-    const repository = new RefreshTokenMongoRepository({
-        refreshTokenCollection: mockCollection
-    });
+    const repository = new RefreshTokenMongoRepository(mockDeps);
 
     beforeEach(() => jest.clearAllMocks());
 

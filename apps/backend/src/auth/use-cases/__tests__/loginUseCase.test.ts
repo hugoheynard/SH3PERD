@@ -1,15 +1,13 @@
 import { jest } from '@jest/globals';
-import type {
-    TComparePassword,
-    TCreateAuthSessionFn,
-    TFindUserByEmailFn,
-    TLoginUseCaseDeps,
-    TLoginRequestDTO,
-    TUserDomainModel,
-    TCreateAuthSessionResult
-} from '@sh3pherd/shared-types';
+
 import { createLoginUseCase } from '../createLoginUseCase.js';
-import { BusinessError } from '@sh3pherd/shared-utils';
+import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
+import type { TUserDomainModel } from '../../../user/types/user.domain.types';
+import type { TCreateAuthSessionResult } from '../../types/auth.domain.tokens';
+import type { TLoginRequestDTO } from '../../../../dist/auth/zodSchemas/loginRequestDTOSchema';
+import type { TFindUserByEmailFn } from '../../../user/types/user.core.repo';
+import type { TComparePassword, TCreateAuthSessionFn } from '../../types/auth.core.contracts';
+import type { TLoginUseCaseDeps } from '../../types/auth.core.useCase';
 
 describe('createLoginUseCase', () => {
     const mockUser: TUserDomainModel = {

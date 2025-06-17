@@ -30,15 +30,16 @@ export const createAuthUseCases = (deps: { services: any; repositories: TCoreRep
                 comparePasswordFn: passwordManager.comparePassword,
                 createAuthSessionFn: authTokenService.createAuthSession,
             }),
-            logout: createLogoutUseCase({
-                revokeRefreshTokenFn: authTokenService.revokeRefreshToken,
-            }),
             refresh: createRefreshSessionUseCase({
                 findRefreshTokenFn: refreshTokenRepository.findRefreshToken,
                 verifyRefreshTokenFn: authTokenService.verifyRefreshToken,
                 createAuthSessionFn: authTokenService.createAuthSession,
-                revokeRefreshTokenFn: authTokenService.revokeRefreshToken,
-            })
+                deleteRefreshTokenFn: refreshTokenRepository.deleteRefreshToken,
+            }),
+            logout: createLogoutUseCase({
+                deleteRefreshTokenFn: refreshTokenRepository.deleteRefreshToken,
+                deleteAllRefreshTokensForUserFn: refreshTokenRepository.deleteAllRefreshTokensForUser,
+            }),
         };
     } catch (err) {
         throw new TechnicalError(

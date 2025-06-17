@@ -1,12 +1,13 @@
-import { Body, Controller, HttpCode, Inject, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, HttpCode, Inject, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import type {
-  TLoginRequestDTO,
+  TUserCredentialsDTO,
   TLoginResponseDTO,
-  TRegisterRequestDTO,
   TRegisterResponseDTO,
 } from '../types/auth.core.useCase.js';
 import type { Request, Response } from 'express';
+import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
+import { userCredentialsDTOSchema } from '../zodSchemas/userCredentialsDTOSchema.js';
 
 
 @Controller('')
@@ -17,7 +18,7 @@ export class AuthController {
   {};
 
   @Post('register')
-  register(@Body() requestDTO:  TRegisterRequestDTO): Promise<TRegisterResponseDTO> {
+  register(@Body(new ZodValidationPipe(userCredentialsDTOSchema)) requestDTO:  TUserCredentialsDTO): Promise<TRegisterResponseDTO> {
     return this.authUseCases.register(requestDTO);
   };
 
@@ -35,7 +36,7 @@ export class AuthController {
   @Post('login')
   @HttpCode(200)
   async login(
-    @Body() requestDTO: TLoginRequestDTO,
+    @Body(new ZodValidationPipe(userCredentialsDTOSchema)) requestDTO: TUserCredentialsDTO,
     @Res({ passthrough: true }) res: Response
   ): Promise<TLoginResponseDTO> {
 
@@ -103,11 +104,16 @@ export class AuthController {
    *
    * @returns A JSON response confirming the logout
    */
+  @Post()
+  @HttpCode(200)
   async logout(
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<{ message: 'Logout successful' }> {
-    await this.authUseCases.logout({ refreshToken: req.cookies['sh3pherd_refreshToken'] });
+    const refreshToken= req.cookies['sh3pherd_refreshToken'];
+    const user_id = req.user_id;
+
+    await this.authUseCases.logout({ user_id, refreshToken });
 
     // Clear the refresh token cookie
     res.clearCookie('sh3pherd_refreshToken', {

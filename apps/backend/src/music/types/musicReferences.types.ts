@@ -14,13 +14,14 @@ export type TMusicReferenceDomainModel = {
 
 
 //REPOSITORY TYPES
-export type TSaveMusicReferenceFn = (input: { musicRefDomainModel: TMusicReferenceDomainModel }) => Promise<boolean>;
-export type TFindMusicReferenceByFilterFn<T> = (filter: T) => Promise<TMusicReferenceDomainModel[] | null>;
+export type TSaveOneMusicReferenceFn = (document: TMusicReferenceDomainModel) => Promise<boolean>;
+export type TFindOneMusicReferenceByFilterFn = (filter: any) => Promise<TMusicReferenceDomainModel | null>;
+export type TFindManyMusicReferenceByFilterFn = (filter: any) => Promise<TMusicReferenceDomainModel[] | null>;
 
 
-export interface IMusicReferenceRepository<T> {
-  save: TSaveMusicReferenceFn;
-  findOne: TFindMusicReferenceByFilterFn<T>;
-  findMany: TFindMusicReferenceByFilterFn<T>;
+export interface IMusicReferenceRepository {
+  saveOne: TSaveOneMusicReferenceFn;
+  findOne: TFindOneMusicReferenceByFilterFn;
+  findMany: TFindManyMusicReferenceByFilterFn;
   findAll: () => Promise<TMusicReferenceDomainModel[]>;
 }

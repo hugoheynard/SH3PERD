@@ -1,12 +1,11 @@
-import { createRefreshSessionUseCase } from '../createRefreshSessionUseCase.js';
-import { BusinessError } from '@sh3pherd/shared-utils';
-import type {
-    TRefreshToken,
-    TRefreshSessionUseCaseDeps,
-    TRefreshTokenDomainModel,
-    TCreateAuthSessionResult, TFindRefreshTokenFn, TVerifyRefreshTokenFn, TCreateAuthSessionFn, TRevokeRefreshTokenFn
-} from '@sh3pherd/shared-types';
+
 import { jest } from '@jest/globals';
+import type { TCreateAuthSessionResult, TRefreshToken, TRefreshTokenDomainModel } from '../../types/auth.domain.tokens';
+import type { TRefreshSessionUseCaseDeps } from '../../types/auth.core.useCase';
+import type { TCreateAuthSessionFn, TFindRefreshTokenFn } from '../../types/auth.core.contracts';
+import type { TRevokeRefreshTokenFn, TVerifyRefreshTokenFn } from '../../types/auth.core.tokens.contracts';
+import { createRefreshSessionUseCase } from '../createRefreshSessionUseCase';
+import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
 
 describe('createRefreshSessionUseCase', () => {
     const refreshToken: TRefreshToken = 'refreshToken_test';
@@ -37,7 +36,7 @@ describe('createRefreshSessionUseCase', () => {
         findRefreshTokenFn: jest.fn<TFindRefreshTokenFn>().mockResolvedValue(tokenRecord),
         verifyRefreshTokenFn: jest.fn<TVerifyRefreshTokenFn>().mockReturnValue(true),
         createAuthSessionFn: jest.fn<TCreateAuthSessionFn>().mockResolvedValue(session),
-        revokeRefreshTokenFn: jest.fn<TRevokeRefreshTokenFn>().mockResolvedValue({ revokedToken: refreshToken }),
+        deleteRefreshTokenFn: jest.fn<TRevokeRefreshTokenFn>().mockResolvedValue({ revokedToken: refreshToken }),
     };
 
     const useCase = createRefreshSessionUseCase(deps);
@@ -69,6 +68,6 @@ describe('createRefreshSessionUseCase', () => {
         const invalidUseCase = createRefreshSessionUseCase(deps);
 
         await expect(invalidUseCase({ refreshToken })).rejects.toThrow(BusinessError);
-        await expect(deps.revokeRefreshTokenFn).toHaveBeenCalledWith({ refreshToken });
+        await expect(deps.deleteRefreshTokenFn).toHaveBeenCalledWith({ refreshToken });
     });
 });

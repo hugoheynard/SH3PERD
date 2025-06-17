@@ -1,6 +1,6 @@
 import {autoBind} from "../../utils/classUtils/autoBind.js";
 import {BaseMongoRepository} from "../../utils/repoAdaptersHelpers/BaseMongoRepository.js";
-import type {TRefreshTokenDomainModel} from "../types/auth.domain.tokens.js";
+import type { TRefreshToken, TRefreshTokenDomainModel } from '../types/auth.domain.tokens.js';
 import type {IRefreshTokenRepository, TRefreshTokenMongoRepositoryDeps} from "../types/auth.core.tokens.contracts.js";
 import {failThrows500} from "../../utils/errorManagement/tryCatch/failThrows500.js";
 import type {
@@ -9,6 +9,7 @@ import type {
     TFindRefreshTokenFn,
     TSaveRefreshTokenFn
 } from "../types/auth.core.contracts.js";
+import type { TUserId } from '../../user/types/user.domain.types.js';
 
 
 /**
@@ -72,7 +73,7 @@ export class RefreshTokenMongoRepository
     };
 
     @failThrows500('REFRESH_TOKEN_DELETE_FAILED')
-    public async deleteRefreshToken(input :Parameters<TDeleteRefreshTokenFn>[0]): ReturnType<TDeleteRefreshTokenFn> {
+    public async deleteRefreshToken(input : { refreshToken: TRefreshToken }): ReturnType<TDeleteRefreshTokenFn> {
         const { refreshToken } = input;
 
         const result = await this.collection.deleteOne({ refreshToken: refreshToken });
@@ -85,7 +86,7 @@ export class RefreshTokenMongoRepository
     };
 
     @failThrows500('REFRESH_TOKEN_DELETE_ALL_FOR_USER_FAILED')
-    public async deleteAllRefreshTokensForUser(input: Parameters<TDeleteAllRefreshTokensForUserFn>[0]): ReturnType<TDeleteAllRefreshTokensForUserFn> {
+    public async deleteAllRefreshTokensForUser(input: { user_id: TUserId }): Promise<boolean> {
         const { user_id } = input;
 
         const result = await this.collection.deleteMany({ user_id: user_id });

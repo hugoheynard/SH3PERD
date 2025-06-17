@@ -9,6 +9,8 @@ import {ContractMongoRepository} from "../../contracts/core/ContractMongoReposit
 import {EventUnitMongoRepository} from "../../calendar/repositories/EventUnitMongoRepository.js";
 import {MusicRepertoireMongoRepository} from "../../music/repositories/MusicRepertoireRepository.js";
 import type { IMusicRepertoireRepository } from '../../music/types/musicRepertoire.core.types.js';
+import type { IMusicReferenceRepository } from '../../music/types/musicReferences.types.js';
+import { MusicReferenceMongoRepository } from '../../music/repositories/MusicReferenceRepository.js';
 
 
 export type TCoreRepositories = {
@@ -16,6 +18,9 @@ export type TCoreRepositories = {
     userCredentialsRepository: IUserRepository;
     contractRepository: IContractRepository;
     eventUnitsRepository: any;
+    //MUSIC
+    musicReferenceRepository: IMusicReferenceRepository;
+    musicVersionRepository?: any;
     musicRepertoireRepository: IMusicRepertoireRepository;
 }
 
@@ -36,6 +41,7 @@ export const createCoreRepositories = (input: {
             contractRepository: new ContractMongoRepository({ client, dbName, collectionName: "contracts" }),
             eventUnitsRepository: new EventUnitMongoRepository({ client, dbName, collectionName: "eventUnits" }),
             //music and playlists
+            musicReferenceRepository: new MusicReferenceMongoRepository({ client, dbName, collectionName: "musicReferences" }),
             musicRepertoireRepository: new MusicRepertoireMongoRepository({ client, dbName, collectionName: "musicRepertoireEntries" }),
         }
     } catch (error) {

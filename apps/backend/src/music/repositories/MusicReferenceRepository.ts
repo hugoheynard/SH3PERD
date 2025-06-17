@@ -2,23 +2,22 @@ import {BaseMongoRepository} from "../../utils/repoAdaptersHelpers/BaseMongoRepo
 import type {TBaseMongoRepoDeps} from "../../types/mongo/mongo.types.js";
 
 import type {
-    IMusicReferenceRepository, TFindMusicReferenceByFilterFn,
-    TMusicReferenceDomainModel, TMusicReferenceId,
-    TSaveMusicReferenceFn,
+    IMusicReferenceRepository,
+    TMusicReferenceDomainModel,
 } from '../types/musicReferences.types.js';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
 import type { Filter } from 'mongodb';
 
 export class MusicReferenceMongoRepository
   extends BaseMongoRepository<TMusicReferenceDomainModel>
-  implements IMusicReferenceRepository<TMusicReferenceDomainModel> {
+  implements IMusicReferenceRepository {
     constructor(input: TBaseMongoRepoDeps) {
         super(input);
     };
 
     @failThrows500('MUSIC_REFERENCE_SAVE_ERROR', 'Error while saving music reference')
-    async save(input: { musicRefDomainModel: TMusicReferenceDomainModel }): Promise<boolean> {
-        const result = await this.collection.insertOne(input.musicRefDomainModel);
+    async saveOne(document: TMusicReferenceDomainModel): Promise<boolean> {
+        const result = await this.collection.insertOne(document);
 
         if (!result.acknowledged) {
             return false;
@@ -33,7 +32,7 @@ export class MusicReferenceMongoRepository
         return await this.findDocBy(filter);
     };
 
-    @failThrows500('FIND_ERROR', 'Error while finding music reference by filter')
+    @failThrows500('MUSIC_REFERENCE_FIND_MANY_ERROR', 'Error while finding music reference by filter')
     async findMany(filter: Filter<TMusicReferenceDomainModel>): Promise<TMusicReferenceDomainModel[] | null> {
         return await this.collection.find(filter).toArray();
     }

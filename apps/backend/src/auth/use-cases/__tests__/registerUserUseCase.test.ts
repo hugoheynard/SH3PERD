@@ -1,11 +1,11 @@
-import type {
-    TRegisterUserUseCaseDeps,
-    TUserDomainModel,
-    TUserId, TFindUserByEmailFn, THashPasswordFn, TSaveUserFn, TCreateUserFn, TRegisterRequestDTO
-} from '@sh3pherd/shared-types';
-import { BusinessError } from '@sh3pherd/shared-utils';
 import { jest } from '@jest/globals';
-import {createRegisterUserUseCase} from "../createRegisterUserUseCase.js";
+import type { TUserDomainModel, TUserId } from '../../../user/types/user.domain.types';
+import type { TRegisterUserUseCaseDeps } from '../../types/auth.core.useCase';
+import type { TFindUserByEmailFn, TSaveUserFn } from '../../../user/types/user.core.repo';
+import type { THashPasswordFn } from '../../types/auth.core.contracts';
+import type { TCreateUserFn } from '../../../user/types/user.core.contracts';
+import { createRegisterUserUseCase } from '../createRegisterUserUseCase';
+import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
 
 describe('createRegisterUserUseCase', () => {
     const email = 'new@example.com';
@@ -53,6 +53,6 @@ describe('createRegisterUserUseCase', () => {
 
         await expect(useCaseWithTakenEmail({ email, password }))
             .rejects
-            .toThrow(new BusinessError('Email already in use', 'USER_ALREADY_EXISTS', 409));
+            .toThrow(new BusinessError('email already in use', 'USER_ALREADY_EXISTS', 409));
     });
 });

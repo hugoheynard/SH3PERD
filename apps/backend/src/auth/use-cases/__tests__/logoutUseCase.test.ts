@@ -1,53 +1,64 @@
-import { BusinessError } from '@sh3pherd/shared-utils';
-import {createLogoutUseCase} from "../createLogoutUseCase.js";
 import { jest } from '@jest/globals';
-import type {TRevokeRefreshTokenFn} from "@sh3pherd/shared-types";
+import { createLogoutUseCase } from '../createLogoutUseCase';
+import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
 
 describe('createLogoutUseCase', () => {
-    const mockRevokeRefreshTokenFn: jest.MockedFunction<TRevokeRefreshTokenFn> = jest.fn();
+    const deleteRefreshTokenFn = jest.fn();
+    const deleteAllRefreshTokensForUserFn = jest.fn();
 
-
-    const logoutUseCase = createLogoutUseCase({
-        revokeRefreshTokenFn: mockRevokeRefreshTokenFn,
+    const logout = createLogoutUseCase({
+        deleteRefreshTokenFn,
+        deleteAllRefreshTokensForUserFn,
     });
+
+    const validRefreshToken = 'refreshToken_valid';
+    const invalidRefreshToken = 'refreshToken_invalid';
+    const userId = 'user_123';
 
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    it('should revoke refresh token and return true on success', async () => {
-        const VALID_TOKEN = 'refreshToken_valid123' as const;
-        mockRevokeRefreshTokenFn.mockResolvedValueOnce({ revokedToken: VALID_TOKEN });
+    it('should revoke a valid refresh token', async () => {
+        deleteRefreshTokenFn.mockResolvedValueOnce(true);
 
+        await expect(logout({ refreshToken: validRefreshToken })).resolves.toBe(true);
 
-
-        const result = await logoutUseCase({ refreshToken: VALID_TOKEN });
-
-        expect(result).toBe(true);
-        expect(mockRevokeRefreshTokenFn).toHaveBeenCalledWith({ refreshToken: 'refreshToken_valid123' });
+        expect(deleteRefreshTokenFn).toHaveBeenCalledWith({ refreshToken: validRefreshToken });
+        expect(deleteAllRefreshTokensForUserFn).not.toHaveBeenCalled();
     });
 
-    it('should throw BusinessError if refresh token is missing', async () => {
-        await expect(logoutUseCase({ refreshToken: undefined as any }))
-            .rejects.toThrow(BusinessError);
+    it('should fallback to delete all tokens if refresh token is invalid but user_id is provided', async () => {
+        deleteRefreshTokenFn.mockResolvedValueOnce(false);
+        deleteAllRefreshTokensForUserFn.mockResolvedValueOnce(true);
 
-        await expect(logoutUseCase({ refreshToken: undefined as any }))
-            .rejects.toMatchObject({
-                errorCode: 'MISSING_REFRESH_TOKEN',
-                statusCode: 400,
-            });
+        await expect(logout({ refreshToken: invalidRefreshToken, user_id: userId })).resolves.toBe(true);
+
+        expect(deleteRefreshTokenFn).toHaveBeenCalledWith({ refreshToken: invalidRefreshToken });
+        expect(deleteAllRefreshTokensForUserFn).toHaveBeenCalledWith({ user_id: userId });
     });
 
-    it('should throw BusinessError if revocation fails', async () => {
-        mockRevokeRefreshTokenFn.mockResolvedValueOnce(false);
+    it('should throw if refresh token is invalid and user_id is missing', async () => {
+        deleteRefreshTokenFn.mockResolvedValueOnce(false);
 
-        await expect(logoutUseCase({ refreshToken: 'refreshToken_invalid_token' }))
-            .rejects.toThrow(BusinessError);
+        await expect(logout({ refreshToken: invalidRefreshToken })).rejects.toThrow(BusinessError);
 
-        await expect(logoutUseCase({ refreshToken: 'refreshToken_invalid_token' }))
-            .rejects.toMatchObject({
-                errorCode: 'INVALID_REFRESH_TOKEN',
-                statusCode: 401,
-            });
+        expect(deleteAllRefreshTokensForUserFn).not.toHaveBeenCalled();
+    });
+
+    it('should delete all refresh tokens for a user if only user_id is provided', async () => {
+        deleteAllRefreshTokensForUserFn.mockResolvedValueOnce(true);
+
+        await expect(logout({ user_id: userId })).resolves.toBe(true);
+
+        expect(deleteRefreshTokenFn).not.toHaveBeenCalled();
+        expect(deleteAllRefreshTokensForUserFn).toHaveBeenCalledWith({ user_id: userId });
+    });
+
+    it('should throw if neither refreshToken nor user_id is provided', async () => {
+        await expect(logout({} as any)).rejects.toThrow(BusinessError);
+
+        expect(deleteRefreshTokenFn).not.toHaveBeenCalled();
+        expect(deleteAllRefreshTokensForUserFn).not.toHaveBeenCalled();
     });
 });

@@ -1,6 +1,5 @@
 import { MongoClient } from "mongodb";
-import { Logger } from '@nestjs/common';
-//import {TechnicalError} from "../utils/errorManagement/errorClasses/TechnicalError.js";
+import { TechnicalError } from '../../utils/errorManagement/errorClasses/TechnicalError.js';
 
 
 let cachedClient: MongoClient | null = null;
@@ -21,13 +20,9 @@ export const getMongoClient = async (input: { uri: string }): Promise<MongoClien
     try {
         const client = new MongoClient(uri);
         cachedClient = await client.connect();
-        Logger.log('✅ Connected to MongoDB', 'MongoClient');
         return cachedClient;
     } catch (error: any) {
-        Logger.error('❌ Failed to connect to MongoDB', error, 'MongoClient');
-        throw new Error('[MONGO] Initialization failed');
-
-        //throw new TechnicalError("MONGO_CLIENT_INIT_FAILED", error.message, 500);
+        throw new TechnicalError("MONGO_CLIENT_INIT_FAILED", error.message, 500);
     }
 };
 
