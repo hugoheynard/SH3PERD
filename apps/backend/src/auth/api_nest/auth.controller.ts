@@ -1,4 +1,15 @@
-import { Body, Controller, HttpCode, Inject, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Inject,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import type {
   TUserCredentialsDTO,
@@ -8,15 +19,18 @@ import type {
 import type { Request, Response } from 'express';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
 import { userCredentialsDTOSchema } from '../zodSchemas/userCredentialsDTOSchema.js';
+import { AuthGuard } from './auth.guard.js';
+import { Public } from '../../utils/nest/decorators/IsPublic.js';
+import { LogoutInterceptor } from './logout.interceptor.js';
 
-
+@UseInterceptors(LogoutInterceptor)
 @Controller('')
 export class AuthController {
   constructor(
     @Inject(USE_CASES_TOKENS.auth)
     private readonly authUseCases: TCoreUseCasesTypeMap['auth'])
   {};
-
+  @Public()
   @Post('register')
   register(@Body(new ZodValidationPipe(userCredentialsDTOSchema)) requestDTO:  TUserCredentialsDTO): Promise<TRegisterResponseDTO> {
     return this.authUseCases.register(requestDTO);
@@ -33,6 +47,7 @@ export class AuthController {
    * @param requestDTO - The request object containing email and password in the body
    * @param res - The response object to send the result
    */
+  @Public()
   @Post('login')
   @HttpCode(200)
   async login(
@@ -66,13 +81,13 @@ export class AuthController {
    * @param req - The request object containing the current access token in headers and refresh token in cookies
    * @param res - The response object to send the result
    */
+  @Public()
   @Post('refresh')
   async refreshSession(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   )  {
     const currentRefreshToken = req.cookies['sh3pherd_refreshToken'];
-
 
     const {
       user_id,
@@ -85,6 +100,7 @@ export class AuthController {
       refreshTokenSecureCookie.value,
       refreshTokenSecureCookie.options
     );
+    console.log('✅ cookie cleared');
 
     return {
       authToken,
@@ -104,24 +120,15 @@ export class AuthController {
    *
    * @returns A JSON response confirming the logout
    */
-  @Post()
+  @Post('logout')
   @HttpCode(200)
   async logout(
     @Req() req: Request,
-    @Res() res: Response,
   ): Promise<{ message: 'Logout successful' }> {
     const refreshToken= req.cookies['sh3pherd_refreshToken'];
     const user_id = req.user_id;
 
     await this.authUseCases.logout({ user_id, refreshToken });
-
-    // Clear the refresh token cookie
-    res.clearCookie('sh3pherd_refreshToken', {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      path: '/'
-    });
 
     return { message: 'Logout successful' };
   }

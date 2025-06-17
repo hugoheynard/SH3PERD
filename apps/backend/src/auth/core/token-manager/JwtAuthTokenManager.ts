@@ -61,7 +61,6 @@ export class JwtAuthTokenManager implements IAbstractAuthTokenManager{
 
             return Promise.resolve(payload as TAuthTokenPayload);
         } catch(error) {
-            console.error("Token verification failed:", error);
             return null;
         }
     };

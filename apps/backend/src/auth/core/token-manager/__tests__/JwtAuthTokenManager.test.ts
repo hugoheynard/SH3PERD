@@ -75,19 +75,19 @@ xwIDAQAB
         expect(decoded.user_id).toBe(payload.user_id)
     })
 
-    it('should throw error for invalid token', async () => {
-        await expect(
-            manager.verifyAuthToken({ authToken: 'invalid.token.here' })
-        ).rejects.toThrow()
-    })
+    it('should return null for an invalid token', async () => {
+        const result = await manager.verifyAuthToken({ authToken: 'invalid.token.here' });
+        expect(result).toBeNull();
+    });
 
     //TODO: add test for expired token
-    test('token should be expired after TTL', async () => {
+    test('should return null if token is expired', async () => {
         const token = await manager.generateAuthToken({ payload });
 
         await new Promise(res => setTimeout(res, 2000)); // attendre 2s
 
-        await expect(manager.verifyAuthToken({ authToken: token })).rejects.toThrow('jwt expired');
+        const result = await manager.verifyAuthToken({ authToken: token });
+        expect(result).toBeNull();
     });
 
 })

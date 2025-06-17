@@ -2,7 +2,8 @@ import {createAuthTokenService} from "../../auth/factories/createAuthTokenServic
 import {CalendarService} from "../../calendar/core/services/CalendarService.js";
 import {buildCalendar} from "../../calendar/core/builders/buildCalendar.js";
 import {computeEventIntersections} from "../../calendar/core/colliders/computeEventIntersection.js";
-import { authConfig, secureCookieConfig } from '../config.js';
+import { getAuthConfig } from '../config/getAuthConfig.js';
+import { secureCookieConfig } from '../config/secureCookieConfig.js';
 
 
 export const createCoreServices = (input: { repositories: any }): any => {
@@ -17,7 +18,7 @@ export const createCoreServices = (input: { repositories: any }): any => {
                 saveRefreshTokenFn: refreshTokenRepository.saveRefreshToken,
                 deleteRefreshTokenFn: refreshTokenRepository.deleteRefreshToken,
                 deleteAllRefreshTokensForUserFn: refreshTokenRepository.deleteAllRefreshTokensForUser,
-                authConfig,
+                authConfig: getAuthConfig(),
                 secureCookieConfig
             }),
             calendarService: new CalendarService({

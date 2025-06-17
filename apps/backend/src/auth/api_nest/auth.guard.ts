@@ -1,7 +1,9 @@
 import { type CanActivate, type ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import type { TVerifyAuthTokenFn } from '../../../auth/types/auth.core.contracts.js';
+import type { TVerifyAuthTokenFn } from '../types/auth.core.contracts.js';
 import type { Request } from 'express';
-import { VERIFY_AUTH_TOKEN_FN } from '../../../appBootstrap/nestTokens.js';
+import { VERIFY_AUTH_TOKEN_FN } from '../../appBootstrap/nestTokens.js';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from '../../utils/nest/decorators/IsPublic.js';
 
 
 /**
@@ -30,17 +32,22 @@ import { VERIFY_AUTH_TOKEN_FN } from '../../../appBootstrap/nestTokens.js';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
+    private readonly reflector: Reflector,
     @Inject(VERIFY_AUTH_TOKEN_FN) private readonly verifyAuthTokenFn: TVerifyAuthTokenFn,
   ) {};
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
-    if (!request.url.startsWith('/protected')) {
-      return true; // 🔓 not used on public routes
+    if (isPublic) {
+      return true;
     }
 
-    const authToken: string | undefined = request.headers["authorization"]?.split(" ")[1];
+    const request = context.switchToHttp().getRequest<Request>();
+    const authToken = request.headers["authorization"]?.split(" ")[1];
 
     if (!authToken) {
       throw new UnauthorizedException('Missing auth token');
@@ -52,8 +59,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Invalid auth token');
     }
 
-    // Attach user_id to the request for later use
     request.user_id = payload.user_id;
     return true;
-  };
+  }
 }

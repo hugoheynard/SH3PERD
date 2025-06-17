@@ -8,6 +8,7 @@ export class UserBuilder {
   private credentials: { email: string; password: string } | null;
   private authToken: string | null = null;
   private refreshCookie: string | null = null;
+  private loginResponse: request.Response | null = null;
 
   constructor(app) {
     this.app = app;
@@ -56,6 +57,8 @@ export class UserBuilder {
       throw new Error(`[UserBuilder.login] Expected status ${expectedStatus}, got ${res.status}`);
     }
 
+    this.loginResponse = res;
+
     const token = res.body.authToken;
     if (!token || typeof token !== 'string') {
       throw new Error('[TEST UserBuilder] No authToken found in response body');
@@ -84,6 +87,16 @@ export class UserBuilder {
     return this;
   };
 
+  async logout(expectedStatus = 200): Promise<request.Response> {
+    const logoutResponse = await request(this.app.getHttpServer())
+      .post('/api/auth/logout')
+      .set('Cookie', this.getRefreshCookie())
+      .set('Authorization', this.getAuthHeader())
+      .expect(expectedStatus);
+
+    return logoutResponse;
+  };
+
   //Checks secure cookie
   private assertRefreshCookieIsSecure(cookie: string): void {
     if (!cookie.includes('HttpOnly')) {
@@ -97,6 +110,7 @@ export class UserBuilder {
     }
   };
 
+  //Getters
   getUserId(): TUserId {
     if (!this.userId) {
       throw new Error('[TEST UserBuilder] - User not registered');
@@ -109,6 +123,20 @@ export class UserBuilder {
       throw new Error('[TEST UserBuilder] - User not logged in');
     }
     return this.authToken;
+  };
+
+  getAuthHeader(): string {
+    if (!this.authToken) {
+      throw new Error('[UserBuilder] No authToken available, did you call login()?');
+    }
+    return `Bearer ${this.authToken}`;
+  };
+
+  getRefreshCookie(): string {
+    if (!this.refreshCookie) {
+      throw new Error('[UserBuilder] - No refreshToken cookie stored');
+    }
+    return this.refreshCookie;
   };
 
   getPayload(): { email: string; password: string } {

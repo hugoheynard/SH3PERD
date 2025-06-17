@@ -2,6 +2,7 @@ import { AppModule } from '../../src/appBootstrap/app.module.js';
 import { loadEnv } from '../../src/appBootstrap/config/loadEnv.js';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import cookieParser from 'cookie-parser';
 
 /**
  * Bootstraps a test NestJS application instance for end-to-end testing.
@@ -16,6 +17,7 @@ export async function bootstrapTestApp(): Promise<INestApplication> {
 
   const app = moduleRef.createNestApplication();
   app.setGlobalPrefix('api');
+  app.use(cookieParser());
 
 
   await app.init();

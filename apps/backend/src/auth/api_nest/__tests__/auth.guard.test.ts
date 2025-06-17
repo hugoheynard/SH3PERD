@@ -1,16 +1,23 @@
-import { AuthGuard } from './auth.guard';
-import type { TVerifyAuthTokenFn } from '../../../auth/types/auth.core.contracts';
+import { AuthGuard } from '../auth.guard';
+import type { TVerifyAuthTokenFn } from '../../types/auth.core.contracts';
 import  { type ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import type { TAuthTokenPayload } from '../../../auth/types/auth.domain.tokens';
+import type { TAuthTokenPayload } from '../../types/auth.domain.tokens';
 import { jest } from '@jest/globals';
+import { type Reflector } from '@nestjs/core';
 
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;
-  let verifyAuthTokenFn: jest.MockedFunction<TVerifyAuthTokenFn>;
+  let mockVerifyAuthTokenFn: jest.MockedFunction<TVerifyAuthTokenFn>;
 
-  const mockContext = (authHeader?: string) => {
-    return {
+  // 🧪 Faux Reflector qui simule une route non publique
+  const mockReflector = {
+    getAllAndOverride: jest.fn().mockReturnValue(false),
+  } as unknown as Reflector;
+
+  // 🧪 Construit un contexte avec en-tête Authorization
+  const mockContext = (authHeader?: string): ExecutionContext =>
+    ({
       switchToHttp: () => ({
         getRequest: () => ({
           headers: {
@@ -18,12 +25,13 @@ describe('AuthGuard', () => {
           },
         }),
       }),
-    } as unknown as ExecutionContext;
-  };
+      getHandler: () => jest.fn(), // Requis pour Reflector
+      getClass: () => jest.fn(),
+    }) as unknown as ExecutionContext;
 
   beforeEach(() => {
-    verifyAuthTokenFn = jest.fn();
-    guard = new AuthGuard(verifyAuthTokenFn);
+    mockVerifyAuthTokenFn = jest.fn();
+    guard = new AuthGuard(mockReflector, mockVerifyAuthTokenFn);
   });
 
   it('should throw if no auth token is present', async () => {
@@ -31,7 +39,7 @@ describe('AuthGuard', () => {
   });
 
   it('should throw if the token is invalid', async () => {
-    verifyAuthTokenFn.mockResolvedValue(null); // simulate invalid token
+    mockVerifyAuthTokenFn.mockResolvedValue(null);
     const ctx = mockContext('Bearer invalidToken');
 
     await expect(guard.canActivate(ctx)).rejects.toThrow(UnauthorizedException);
@@ -39,13 +47,15 @@ describe('AuthGuard', () => {
 
   it('should return true and attach user_id if token is valid', async () => {
     const payload: TAuthTokenPayload = { user_id: 'user123' };
-    verifyAuthTokenFn.mockResolvedValue(payload);
+    mockVerifyAuthTokenFn.mockResolvedValue(payload);
 
     const req = { headers: { authorization: 'Bearer validToken' } };
     const ctx = {
       switchToHttp: () => ({
         getRequest: () => req,
       }),
+      getHandler: () => jest.fn(),
+      getClass: () => jest.fn(),
     } as unknown as ExecutionContext;
 
     const result = await guard.canActivate(ctx);
@@ -54,3 +64,4 @@ describe('AuthGuard', () => {
     expect(req.user_id).toBe(payload.user_id);
   });
 });
+

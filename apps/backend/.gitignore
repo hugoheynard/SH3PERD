@@ -3,6 +3,14 @@
 /node_modules
 /build
 
+# Never commit private keys
+/keys
+/keys/private.pem
+/keys/public.pem
+
+
+
+
 # Logs
 logs
 *.log

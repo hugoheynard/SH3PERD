@@ -1,10 +1,10 @@
 import { afterEach, beforeEach } from '@jest/globals';
 import type { INestApplication } from '@nestjs/common';
-import { bootstrapTestApp } from '../../utils/bootstrapTestApp';
+import { bootstrapTestApp } from '../../../../__tests__/utils/bootstrapTestApp';
 import request from 'supertest';
-import { getTestDb } from '../../utils/getTestDb';
-import { UserBuilder } from '../RessourcesBuilders/UserBuilder';
-import { resetDbMongo } from '../../utils/resetDbMongo';
+import { getTestDb } from '../../../../__tests__/utils/getTestDb';
+import { UserBuilder } from '../../../../__tests__/E2E/RessourcesBuilders/UserBuilder';
+import { resetDbMongo } from '../../../../__tests__/utils/resetDbMongo';
 
 describe ('E2E - Auth', () => {
   let app: INestApplication;
@@ -61,24 +61,40 @@ describe ('E2E - Auth', () => {
 
   //LOGIN
   it('should login an existing user, add token in res.body', async () => {
-    const newUser = await UserBuilder.init(app)
+    await UserBuilder.init(app)
       .withCredentials({
         email: 'user1Pass@example.com',
         password: 'securePassword123',
       })
-      .registerAndLogin();
+      .register();
 
-    // userId should be defined and a string
-    expect(newUser.getUserId()).toEqual(expect.any(String));
+    const loginResponse = await request(app.getHttpServer())
+      .post('/api/auth/login')
+      .send({
+        email: 'user1Pass@example.com',
+        password: 'securePassword123',
+      })
+      .expect(200);
 
-    // token should be present and in valid JWT format
-    expect(newUser.getToken()).toMatch(/^ey[\w-]+\.[\w-]+\.[\w-]+$/);
+    expect(loginResponse.body.authToken).toMatch(/^ey[\w-]+\.[\w-]+\.[\w-]+$/);
+    expect(loginResponse.body.user_id).toEqual(expect.any(String));
 
-    expect(res.headers['set-cookie']).toContainEqual(expect.stringMatching(/sh3pherd_refreshToken=/));
-
+    expect(loginResponse.headers['set-cookie']).toContainEqual(
+      expect.stringMatching(/sh3pherd_refreshToken=/)
+    );
   });
 
+  it('should logout an existing user and revoke his refreshToken', async () => {
+    console.log('Step 1: register');
+    const user = await UserBuilder.init(app)
+      .withCredentials({ email: 'logout@test.com', password: 'secure1234' })
+      .registerAndLogin();
 
+    expect(user.getRefreshCookie()).toMatch(/sh3pherd_refreshToken=/);
+    console.log('Step 2: before logout');
+    const res = await user.logout();
+    expect(res.body).toEqual({ message: 'Logout successful' });
+  });
 
 
   it ('should mark the user as inactive [SOFT DELETE] as a suppression', async () => {});
