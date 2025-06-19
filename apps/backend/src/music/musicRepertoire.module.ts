@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 
-
 @Module({
   imports: [],
-  controllers: []
+  controllers: [],
 })
 export class MusicRepertoireModule {
   // This module is responsible for handling music repertoire-related functionality.

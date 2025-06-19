@@ -1,6 +1,5 @@
-import type {TLoginUseCase, TLoginUseCaseDeps} from "../types/auth.core.useCase.js";
-import {BusinessError} from "../../utils/errorManagement/errorClasses/BusinessError.js";
-
+import type { TLoginUseCase, TLoginUseCaseDeps } from '../types/auth.core.useCase.js';
+import { BusinessError } from '../../utils/errorManagement/errorClasses/BusinessError.js';
 
 /**
  * loginUseCase - Handles user authentication using email and password.
@@ -23,29 +22,33 @@ import {BusinessError} from "../../utils/errorManagement/errorClasses/BusinessEr
  * const useCase = loginUseCase({ findUserByEmailFn, comparePasswordFn, createAuthSessionFn });
  * const result = await useCase({ email: 'a@test.com', password: 'secret' });
  */
-export const createLoginUseCase = (deps: TLoginUseCaseDeps): TLoginUseCase =>
+export const createLoginUseCase =
+  (deps: TLoginUseCaseDeps): TLoginUseCase =>
+  async (request) => {
+    const { email, password } = request;
 
-    async (request) => {
-        const { email, password } = request;
+    const user = await deps.findUserByEmailFn({ email });
+    if (!user) {
+      throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 400);
+    }
 
-        const user = await deps.findUserByEmailFn({ email });
-        if (!user) {
-            throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 400);
-        }
+    if (!user.active) {
+      throw new BusinessError('User account is deactivated.', 'USER_DEACTIVATED', 403);
+    }
 
-        const { isValid } = await deps.comparePasswordFn({
-            password,
-            hashedPassword: user.password
-        });
-        if (!isValid) {
-            throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 400);
-        }
+    const { isValid } = await deps.comparePasswordFn({
+      password,
+      hashedPassword: user.password,
+    });
+    if (!isValid) {
+      throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 400);
+    }
 
-        const session = await deps.createAuthSessionFn({ user_id: user.user_id });
+    const session = await deps.createAuthSessionFn({ user_id: user.user_id });
 
-        return {
-            authToken: session.authToken,
-            user_id: user.user_id,
-            refreshTokenSecureCookie: session.refreshTokenSecureCookie,
-        };
-};
+    return {
+      authToken: session.authToken,
+      user_id: user.user_id,
+      refreshTokenSecureCookie: session.refreshTokenSecureCookie,
+    };
+  };

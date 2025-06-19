@@ -1,10 +1,15 @@
-import { type CanActivate, type ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  type CanActivate,
+  type ExecutionContext,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import type { TVerifyAuthTokenFn } from '../types/auth.core.contracts.js';
 import type { Request } from 'express';
 import { VERIFY_AUTH_TOKEN_FN } from '../../appBootstrap/nestTokens.js';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../../utils/nest/decorators/IsPublic.js';
-
 
 /**
  * `AuthGuard` is a NestJS guard that protects routes by validating the presence and validity of an access token.
@@ -34,7 +39,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     @Inject(VERIFY_AUTH_TOKEN_FN) private readonly verifyAuthTokenFn: TVerifyAuthTokenFn,
-  ) {};
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -47,7 +52,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
-    const authToken = request.headers["authorization"]?.split(" ")[1];
+    const authToken = request.headers['authorization']?.split(' ')[1];
 
     if (!authToken) {
       throw new UnauthorizedException('Missing auth token');

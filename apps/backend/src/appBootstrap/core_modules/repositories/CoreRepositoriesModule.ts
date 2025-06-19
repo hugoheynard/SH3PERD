@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { CORE_REPOSITORIES, MONGO_CLIENT } from '../../nestTokens.js';
 import { ConfigService } from '@nestjs/config';
 import type { MongoClient } from 'mongodb';
-import { createCoreRepositories, type TCoreRepositories } from '../../initFactories/createCoreRepositories.js';
-
+import {
+  createCoreRepositories,
+  type TCoreRepositories,
+} from '../../initFactories/createCoreRepositories.js';
 
 @Module({
   providers: [
@@ -12,13 +14,12 @@ import { createCoreRepositories, type TCoreRepositories } from '../../initFactor
       useFactory: (client: MongoClient, config: ConfigService): TCoreRepositories => {
         return createCoreRepositories({
           client,
-          dbName: config.get<string>('CORE_DB_NAME')
+          dbName: config.get<string>('CORE_DB_NAME'),
         });
       },
-      inject: [MONGO_CLIENT, ConfigService]
-    }
-
+      inject: [MONGO_CLIENT, ConfigService],
+    },
   ],
-  exports: [CORE_REPOSITORIES]
+  exports: [CORE_REPOSITORIES],
 })
 export class CoreRepositoriesModule {}

@@ -1,28 +1,32 @@
-import type {TLoginUseCase, TRefreshSessionUseCase, TRegisterUserUseCase} from "./auth.core.useCase.js";
-import type {NextFunction, Request, Response} from "express";
+import type {
+  TLoginUseCase,
+  TRefreshSessionUseCase,
+  TRegisterUserUseCase,
+} from './auth.core.useCase.js';
+import type { NextFunction, Request, Response } from 'express';
 
 /**
  * Auth Controller Types
  */
 export type TAuthControllerDeps = {
-    loginUseCase: TLoginUseCase;
-    logoutUseCase: any;
-    refreshSessionUseCase: TRefreshSessionUseCase;
-}
+  loginUseCase: TLoginUseCase;
+  logoutUseCase: any;
+  refreshSessionUseCase: TRefreshSessionUseCase;
+};
 
-export interface IAuthController {
-    login: (req: Request, res: Response, _next: NextFunction) => Promise<void>;
-    logout: (req: Request, res: Response, _next: NextFunction) => Promise<void>;
-    refreshSession: (req: Request, res: Response, _next: NextFunction) => Promise<void>;
-}
+export type IAuthController = {
+  login: (req: Request, res: Response, _next: NextFunction) => Promise<void>;
+  logout: (req: Request, res: Response, _next: NextFunction) => Promise<void>;
+  refreshSession: (req: Request, res: Response, _next: NextFunction) => Promise<void>;
+};
 
 /**
  * Register Controller Types
  */
-export interface IRegisterController {
-    registerUser: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-}
+export type IRegisterController = {
+  registerUser: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+};
 
 export type TRegisterControllerDeps = {
-    registerUserUseCase: TRegisterUserUseCase;
-}
+  registerUserUseCase: TRegisterUserUseCase;
+};

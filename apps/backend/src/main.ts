@@ -1,16 +1,13 @@
-import process from "process";
+import process from 'process';
 import { loadEnv } from './appBootstrap/config/loadEnv.js';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './appBootstrap/app.module.js';
 import cookieParser from 'cookie-parser';
 
-
 loadEnv(process.env.NODE_ENV || 'dev');
 
-async function bootstrap() {
-
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
-
 
   app.enableCors({
     origin: 'http://localhost:4200', //TODO manager CORS avec env
@@ -21,7 +18,6 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+await bootstrap();

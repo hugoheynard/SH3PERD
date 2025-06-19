@@ -26,11 +26,17 @@ coverage/
 packages/*/coverage/
 
 # Turbo cache
+# Turbo/Nx/Lerna cache
 .turbo/
+.nx/
+.cache/
+lerna-debug.log
 
 # Cookies / test outputs
 *.cookies
 *.token
 *.session
+
+.eslintcache
 
 

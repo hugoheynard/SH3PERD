@@ -1,5 +1,4 @@
-import type {TVerifyLastHashDateFunction} from "../types/Interfaces.js";
-
+import type { TVerifyLastHashDateFunction } from '../types/Interfaces.js';
 
 /**
  * Determines whether a password should be rehashed based on the age of the last hash.
@@ -14,18 +13,17 @@ import type {TVerifyLastHashDateFunction} from "../types/Interfaces.js";
  * @returns `true` if the hash is old enough to require rehashing, otherwise `false`.
  */
 export const isRehashDueFromLastHashDate: TVerifyLastHashDateFunction = (input) => {
-    const { lastHashDate, rehashAfterDays } = input;
+  const { lastHashDate, rehashAfterDays } = input;
 
-    const parsedDate = new Date(lastHashDate);
-    const now = new Date();
+  const parsedDate = new Date(lastHashDate);
+  const now = new Date();
 
-    // On force les dates à minuit (précision jour)
-    parsedDate.setHours(0, 0, 0, 0);
-    now.setHours(0, 0, 0, 0);
+  // On force les dates à minuit (précision jour)
+  parsedDate.setHours(0, 0, 0, 0);
+  now.setHours(0, 0, 0, 0);
 
-    const diffTime = now.getTime() - parsedDate.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // important: floor
+  const diffTime = now.getTime() - parsedDate.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // important: floor
 
-    return diffDays >= rehashAfterDays;
+  return diffDays >= rehashAfterDays;
 };
-

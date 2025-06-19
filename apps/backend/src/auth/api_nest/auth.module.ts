@@ -4,10 +4,7 @@ import { CoreUseCasesAccessModule } from '../../appBootstrap/core_modules/useCas
 import { TokenFunctionsModule } from '../../appBootstrap/core_modules/services/subModules/TokenFunctionsModule.js';
 
 @Module({
-  imports: [
-    CoreUseCasesAccessModule.for('auth'),
-    TokenFunctionsModule
-  ],
+  imports: [CoreUseCasesAccessModule.for('auth'), TokenFunctionsModule],
   controllers: [AuthController],
 })
 export class AuthModule {}

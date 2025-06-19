@@ -1,6 +1,6 @@
 import { type PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
-import type { ZodTypeAny, ZodError } from 'zod';
-
+import type { ZodTypeDef, infer as zInfer } from 'zod';
+import { ZodType } from 'zod';
 
 /**
  * ZodValidationPipe
@@ -30,14 +30,14 @@ import type { ZodTypeAny, ZodError } from 'zod';
  * @returns A pipe that transforms and validates incoming data
  */
 @Injectable()
-export class ZodValidationPipe implements PipeTransform {
-  constructor(private readonly schema: ZodTypeAny) {}
+export class ZodValidationPipe<T extends ZodType<any, ZodTypeDef, any>> implements PipeTransform {
+  constructor(private readonly schema: T) {}
 
-  transform(value: unknown) {
+  transform(value: unknown): zInfer<T> {
     const result = this.schema.safeParse(value);
 
     if (!result.success) {
-      const formattedErrors = result.error.errors.map(err => ({
+      const formattedErrors = result.error.errors.map((err) => ({
         path: err.path.join('.'),
         message: err.message,
       }));
@@ -49,5 +49,5 @@ export class ZodValidationPipe implements PipeTransform {
     }
 
     return result.data;
-  };
+  }
 }

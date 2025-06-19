@@ -6,15 +6,10 @@
     "outDir": "./dist",
     "baseUrl": "./",
   },
+  "include": ["src"],
   "exclude": [
-    //custom exclusions
-    "src/playlists",
-    // exclude directories
     "dist",
     "dist/types",
-    "node_modules",
-    "**/*.test.ts",
-    "**/*.spec.ts",
-    "**/__tests__/**"
+    "node_modules"
   ]
 }

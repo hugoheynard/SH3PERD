@@ -6,7 +6,7 @@ import { getTestDb } from '../../../../__tests__/utils/getTestDb';
 import { UserBuilder } from '../../../../__tests__/E2E/RessourcesBuilders/UserBuilder';
 import { resetDbMongo } from '../../../../__tests__/utils/resetDbMongo';
 
-describe ('E2E - Auth', () => {
+describe('E2E - Auth', () => {
   let app: INestApplication;
   let testDb;
 
@@ -80,7 +80,7 @@ describe ('E2E - Auth', () => {
     expect(loginResponse.body.user_id).toEqual(expect.any(String));
 
     expect(loginResponse.headers['set-cookie']).toContainEqual(
-      expect.stringMatching(/sh3pherd_refreshToken=/)
+      expect.stringMatching(/sh3pherd_refreshToken=/),
     );
   });
 
@@ -96,6 +96,5 @@ describe ('E2E - Auth', () => {
     expect(res.body).toEqual({ message: 'Logout successful' });
   });
 
-
-  it ('should mark the user as inactive [SOFT DELETE] as a suppression', async () => {});
+  it('should mark the user as inactive [SOFT DELETE] as a suppression', async () => {});
 });

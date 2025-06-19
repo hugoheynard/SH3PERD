@@ -1,5 +1,4 @@
-import {randomUUID} from 'crypto';
+import { randomUUID } from 'crypto';
 
 export const generateTypedId = <T extends string>(prefix: T): `${T}_${string}` =>
-    `${prefix}_${randomUUID()}` as const;
-
+  `${prefix}_${randomUUID()}` as const;

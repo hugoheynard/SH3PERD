@@ -12,7 +12,6 @@ import { CoreServicesModule } from './core_modules/services/CoreServiceModule.js
 import { AuthGuard } from '../auth/api_nest/auth.guard.js';
 import { TokenFunctionsModule } from './core_modules/services/subModules/TokenFunctionsModule.js';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -34,12 +33,9 @@ import { TokenFunctionsModule } from './core_modules/services/subModules/TokenFu
     RouterModule.register([
       { path: 'auth', module: AuthModule },
       { path: 'protected', module: ProtectedModule },
-    ])
+    ]),
   ],
   controllers: [AppController, TestController],
-  providers: [
-    AppService,
-    { provide: APP_GUARD, useClass: AuthGuard },
-  ],
+  providers: [AppService, { provide: APP_GUARD, useClass: AuthGuard }],
 })
 export class AppModule {}

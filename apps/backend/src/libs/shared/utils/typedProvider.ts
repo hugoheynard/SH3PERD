@@ -7,10 +7,10 @@ import type { Provider } from '@nestjs/common';
  */
 export function typedProvider<T>(
   token: symbol | string,
-  useClass: new (...args: any[]) => T
+  useClass: new (...args: any[]) => T,
 ): Provider<T> {
   return {
     provide: token,
-    useClass
+    useClass,
   };
 }

@@ -1,10 +1,8 @@
-import {JwtAuthTokenManager} from "../JwtAuthTokenManager";
-import type {TAuthTokenManagerOptions, TAuthTokenPayload} from "@sh3pherd/shared-types";
-
-
+import { JwtAuthTokenManager } from '../JwtAuthTokenManager';
+import type { TAuthTokenManagerOptions, TAuthTokenPayload } from '@sh3pherd/shared-types';
 
 describe('JwtAuthTokenManager', () => {
-    const PRIVATE_KEY_TEST = `
+  const PRIVATE_KEY_TEST = `
 -----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvTDbagzedqPR+
 lS5AzQS1Oz1pPlLyI1szi2z75WmYPFUo8jDTA5EJdox2LknLfzyISRYvGTWCrjaz
@@ -34,7 +32,7 @@ q6sl1DR6JV5yTZk5HbrwArTjDCT9lxNAFz71aitovwj7uPXZV+zlfILfj7UmmOuu
 xwcegdqlxldcRBGQvX9f8Z0=
 -----END PRIVATE KEY-----
 `;
-    const PUBLIC_KEY_TEST = `
+  const PUBLIC_KEY_TEST = `
 -----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr0w22oM3naj0fpUuQM0E
 tTs9aT5S8iNbM4ts++VpmDxVKPIw0wORCXaMdi5Jy388iEkWLxk1gq42s3jTZs00
@@ -44,50 +42,49 @@ sahQDMQjSTJkS545SJk8fWeJRppoxdYkFrKmM22fo0WsNkWgFw9x7zlEKEUiOcJ+
 BVNbCmiFjoCIh25ACaD3LgQWlKaHzpCCPHbrvDUr2vdywpiLSfLrnrP9+8M8DGJ1
 xwIDAQAB
 -----END PUBLIC KEY-----
-`
+`;
 
-    let manager: JwtAuthTokenManager
+  let manager: JwtAuthTokenManager;
 
-    const payload: TAuthTokenPayload = {
-        user_id: 'user-123'
-    }
+  const payload: TAuthTokenPayload = {
+    user_id: 'user-123',
+  };
 
-    const options: TAuthTokenManagerOptions = {
-        privateKey: PRIVATE_KEY_TEST,
-        publicKey: PUBLIC_KEY_TEST,
-        accessTokenExpiresIn: 1,
-    }
+  const options: TAuthTokenManagerOptions = {
+    privateKey: PRIVATE_KEY_TEST,
+    publicKey: PUBLIC_KEY_TEST,
+    accessTokenExpiresIn: 1,
+  };
 
-    beforeAll(() => {
-        manager = new JwtAuthTokenManager({ options })
-    })
+  beforeAll(() => {
+    manager = new JwtAuthTokenManager({ options });
+  });
 
-    it('should generate a valid JWT', async () => {
-        const token = await manager.generateAuthToken({ payload })
-        expect(typeof token).toBe('string')
-        expect(token.split('.')).toHaveLength(3) // format JWT
-    })
+  it('should generate a valid JWT', async () => {
+    const token = await manager.generateAuthToken({ payload });
+    expect(typeof token).toBe('string');
+    expect(token.split('.')).toHaveLength(3); // format JWT
+  });
 
-    it('should verify and decode a JWT correctly', async () => {
-        const token = await manager.generateAuthToken({ payload })
-        const decoded = await manager.verifyAuthToken({ authToken: token })
+  it('should verify and decode a JWT correctly', async () => {
+    const token = await manager.generateAuthToken({ payload });
+    const decoded = await manager.verifyAuthToken({ authToken: token });
 
-        expect(decoded.user_id).toBe(payload.user_id)
-    })
+    expect(decoded.user_id).toBe(payload.user_id);
+  });
 
-    it('should return null for an invalid token', async () => {
-        const result = await manager.verifyAuthToken({ authToken: 'invalid.token.here' });
-        expect(result).toBeNull();
-    });
+  it('should return null for an invalid token', async () => {
+    const result = await manager.verifyAuthToken({ authToken: 'invalid.token.here' });
+    expect(result).toBeNull();
+  });
 
-    //TODO: add test for expired token
-    test('should return null if token is expired', async () => {
-        const token = await manager.generateAuthToken({ payload });
+  //TODO: add test for expired token
+  test('should return null if token is expired', async () => {
+    const token = await manager.generateAuthToken({ payload });
 
-        await new Promise(res => setTimeout(res, 2000)); // attendre 2s
+    await new Promise((res) => setTimeout(res, 2000)); // attendre 2s
 
-        const result = await manager.verifyAuthToken({ authToken: token });
-        expect(result).toBeNull();
-    });
-
-})
+    const result = await manager.verifyAuthToken({ authToken: token });
+    expect(result).toBeNull();
+  });
+});

@@ -1,10 +1,9 @@
 import { AuthGuard } from '../auth.guard';
 import type { TVerifyAuthTokenFn } from '../../types/auth.core.contracts';
-import  { type ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { type ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import type { TAuthTokenPayload } from '../../types/auth.domain.tokens';
 import { jest } from '@jest/globals';
 import { type Reflector } from '@nestjs/core';
-
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;
@@ -64,4 +63,3 @@ describe('AuthGuard', () => {
     expect(req.user_id).toBe(payload.user_id);
   });
 });
-

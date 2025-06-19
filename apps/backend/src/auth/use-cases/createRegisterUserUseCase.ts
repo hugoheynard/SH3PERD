@@ -1,6 +1,5 @@
-import type {TRegisterUserUseCase, TRegisterUserUseCaseDeps} from "../types/auth.core.useCase.js";
-import {BusinessError} from "../../utils/errorManagement/errorClasses/BusinessError.js";
-
+import type { TRegisterUserUseCase, TRegisterUserUseCaseDeps } from '../types/auth.core.useCase.js';
+import { BusinessError } from '../../utils/errorManagement/errorClasses/BusinessError.js';
 
 /**
  * createRegisterUserUseCase - Handles user registration logic.
@@ -27,24 +26,24 @@ import {BusinessError} from "../../utils/errorManagement/errorClasses/BusinessEr
  * const useCase = createRegisterUserUseCase(deps);
  * const { user_id } = await useCase({ email: 'a@test.com', password: 'secure' });
  */
-export const createRegisterUserUseCase = (deps: TRegisterUserUseCaseDeps): TRegisterUserUseCase =>
+export const createRegisterUserUseCase =
+  (deps: TRegisterUserUseCaseDeps): TRegisterUserUseCase =>
+  async (request) => {
+    const { findUserByEmailFn, hashPasswordFn, createUserFn, saveUserFn, generateUserIdFn } = deps;
 
-    async (request) => {
-        const { findUserByEmailFn, hashPasswordFn, createUserFn, saveUserFn, generateUserIdFn } = deps;
+    const existing = await findUserByEmailFn({ email: request.email });
 
-        const existing = await findUserByEmailFn({ email: request.email });
+    if (existing) {
+      throw new BusinessError('email already in use', 'USER_ALREADY_EXISTS', 409);
+    }
 
-        if (existing) {
-            throw new BusinessError('email already in use', 'USER_ALREADY_EXISTS', 409);
-        }
+    const user = createUserFn({
+      user_id: generateUserIdFn(),
+      email: request.email,
+      password: await hashPasswordFn({ password: request.password }),
+    });
 
-        const user = createUserFn({
-            user_id: generateUserIdFn(),
-            email: request.email,
-            password: await hashPasswordFn({ password: request.password }),
-        });
+    await saveUserFn({ user });
 
-        await saveUserFn({ user });
-
-        return { user_id: user.user_id };
-};
+    return { user_id: user.user_id };
+  };

@@ -4,20 +4,19 @@ import { ConfigService } from '@nestjs/config';
 import { MongoClient } from 'mongodb';
 import { MONGO_CLIENT } from '../nestTokens.js';
 
-
 /**
-* @module MongoModule
-* @description
-* Global NestJS module responsible for providing a singleton instance of `MongoClient`.
-* It uses a factory to create the client based on the `ATLAS_URI` defined in the application's configuration.
-*
-* This module is marked as `@Global()`, making the `MongoClient` injectable across all other modules
-* without needing to explicitly import `MongoModule`.
-*
-* @example
-* // Inject the MongoClient elsewhere:
-* constructor(@Inject(MONGO_CLIENT) private readonly client: MongoClient) {}
-*/
+ * @module MongoModule
+ * @description
+ * Global NestJS module responsible for providing a singleton instance of `MongoClient`.
+ * It uses a factory to create the client based on the `ATLAS_URI` defined in the application's configuration.
+ *
+ * This module is marked as `@Global()`, making the `MongoClient` injectable across all other modules
+ * without needing to explicitly import `MongoModule`.
+ *
+ * @example
+ * // Inject the MongoClient elsewhere:
+ * constructor(@Inject(MONGO_CLIENT) private readonly client: MongoClient) {}
+ */
 @Global()
 @Module({
   providers: [
@@ -33,8 +32,8 @@ import { MONGO_CLIENT } from '../nestTokens.js';
         return getMongoClient({ uri });
       },
       inject: [ConfigService],
-    }
+    },
   ],
-  exports: [MONGO_CLIENT]
+  exports: [MONGO_CLIENT],
 })
 export class MongoModule {}

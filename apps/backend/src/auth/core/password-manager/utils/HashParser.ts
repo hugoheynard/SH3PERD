@@ -1,5 +1,4 @@
-import type {IHashParser, TAlgoLibs, TAlgorithms} from "../types/Interfaces.js";
-
+import type { IHashParser, TAlgoLibs, TAlgorithms } from '../types/Interfaces.js';
 
 /**
  * HashParser is a utility that extracts metadata from a versioned password hash string.
@@ -16,21 +15,21 @@ import type {IHashParser, TAlgoLibs, TAlgorithms} from "../types/Interfaces.js";
  * @throws {Error} If the hash string does not contain exactly 5 parts separated by ":::"
  */
 export const HashParser: IHashParser = {
-    extract:(versionedHash) => {
-        const parts: string[] = versionedHash.split(":::");
+  extract: (versionedHash) => {
+    const parts: string[] = versionedHash.split(':::');
 
-        if (parts.length !== 5) {
-            throw new Error(`Invalid hash format: expected 5 parts, got ${parts.length}`);
-        }
+    if (parts.length !== 5) {
+      throw new Error(`Invalid hash format: expected 5 parts, got ${parts.length}`);
+    }
 
-        const [library, algorithm, versionConfig, hashed_at, rawHash] = parts;
+    const [library, algorithm, versionConfig, hashed_at, rawHash] = parts;
 
-        return {
-            library: library as TAlgoLibs,
-            algorithm: algorithm as TAlgorithms,
-            versionConfig,
-            hashed_at,
-            rawHash,
-        };
-    },
+    return {
+      library: library as TAlgoLibs,
+      algorithm: algorithm as TAlgorithms,
+      versionConfig,
+      hashed_at,
+      rawHash,
+    };
+  },
 };

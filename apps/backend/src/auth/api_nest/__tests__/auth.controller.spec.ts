@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { AuthController } from '../auth.controller';
 import { USE_CASES_TOKENS } from '../../../appBootstrap/nestTokens';
 import type { TCoreUseCasesTypeMap } from '../../../appBootstrap/nestTokens';
-import { UnauthorizedException } from '@nestjs/common';
 import { jest } from '@jest/globals';
 
-import express from 'express';
+import type express from 'express';
 
 type Request = express.Request;
 type Response = express.Response;
@@ -43,7 +43,6 @@ describe('AuthController', () => {
     expect(mockAuthUseCases.register).toHaveBeenCalledWith(dto);
   });
 
-
   it('should login and set cookie', async () => {
     const dto = { email: 'test@example.com', password: '1234' };
     const res = {
@@ -66,7 +65,7 @@ describe('AuthController', () => {
     expect(res.cookie).toHaveBeenCalledWith(
       expected.refreshTokenSecureCookie.name,
       expected.refreshTokenSecureCookie.value,
-      expected.refreshTokenSecureCookie.options
+      expected.refreshTokenSecureCookie.options,
     );
     expect(result).toEqual({
       authToken: expected.authToken,

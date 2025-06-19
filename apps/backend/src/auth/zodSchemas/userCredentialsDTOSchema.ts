@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-
 /**
  * Validates login credentials with strong constraints:
  * - Email must exist and be valid
@@ -16,8 +15,7 @@ export const userCredentialsDTOSchema = z.object({
   password: z
     .string({ required_error: 'Password is required and must be a string.' })
     .min(8, 'Password should be at least 8 characters long.')
-    .refine(pwd => !pwd.includes(' '), {
+    .refine((pwd) => !pwd.includes(' '), {
       message: 'Password should not contain spaces.',
     }),
 });
-

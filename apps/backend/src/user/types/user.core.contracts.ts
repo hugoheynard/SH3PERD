@@ -1,10 +1,9 @@
-import type {TUserDomainModel, TUserId} from "./user.domain.types.js";
+import type { TUserDomainModel, TUserId } from './user.domain.types.js';
 
 export type TCreateUserInput = {
-    email: string;
-    password: string; // hashed
-    user_id: TUserId;
+  email: string;
+  password: string; // hashed
+  user_id: TUserId;
 };
 
 export type TCreateUserFn = (input: TCreateUserInput) => TUserDomainModel;
-

@@ -1,51 +1,59 @@
-import type {TAuthUseCases} from "../../../auth/types/auth.core.useCase.js";
+import type { TAuthUseCases } from '../../../auth/types/auth.core.useCase.js';
 import {
-    createLoginUseCase,
-    createLogoutUseCase,
-    createRefreshSessionUseCase,
-    createRegisterUserUseCase
-} from "../../../auth/use-cases/index.js";
-import {generateTypedId} from "../../../utils/ids/generateTypedId.js";
-import {passwordManager} from "../../../auth/core/password-manager/index.js";
-import {TechnicalError} from "../../../utils/errorManagement/errorClasses/TechnicalError.js";
-import {createUser} from "../../../user/domain/createUser.js";
+  createLoginUseCase,
+  createLogoutUseCase,
+  createRefreshSessionUseCase,
+  createRegisterUserUseCase,
+} from '../../../auth/use-cases/index.js';
+import { generateTypedId } from '../../../utils/ids/generateTypedId.js';
+import { passwordManager } from '../../../auth/core/password-manager/index.js';
+import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
+import { createUserCredentials } from '../../../user/domain/createUserCredentials.js';
 import type { TCoreRepositories } from '../createCoreRepositories.js';
+import type { TCoreServices } from '../createCoreServices.js';
 
+export const createAuthUseCases = (deps: {
+  services: TCoreServices;
+  repositories: TCoreRepositories;
+}): TAuthUseCases => {
+  const { authTokenService } = deps.services;
+  const { userCredentialsRepository, refreshTokenRepository } = deps.repositories;
 
-export const createAuthUseCases = (deps: { services: any; repositories: TCoreRepositories }): TAuthUseCases => {
-    const { authTokenService } = deps.services;
-    const { userCredentialsRepository, refreshTokenRepository } = deps.repositories;
-
-    try {
-        return {
-            register: createRegisterUserUseCase({
-                generateUserIdFn: () => generateTypedId('user'),
-                createUserFn: createUser,
-                findUserByEmailFn: userCredentialsRepository.findUserByEmail,
-                hashPasswordFn: passwordManager.hashPassword,
-                saveUserFn: userCredentialsRepository.saveUser,
-            }),
-            login: createLoginUseCase({
-                findUserByEmailFn: userCredentialsRepository.findUserByEmail,
-                comparePasswordFn: passwordManager.comparePassword,
-                createAuthSessionFn: authTokenService.createAuthSession,
-            }),
-            refresh: createRefreshSessionUseCase({
-                findRefreshTokenFn: refreshTokenRepository.findRefreshToken,
-                verifyRefreshTokenFn: authTokenService.verifyRefreshToken,
-                createAuthSessionFn: authTokenService.createAuthSession,
-                deleteRefreshTokenFn: refreshTokenRepository.deleteRefreshToken,
-            }),
-            logout: createLogoutUseCase({
-                deleteRefreshTokenFn: refreshTokenRepository.deleteRefreshToken,
-                deleteAllRefreshTokensForUserFn: refreshTokenRepository.deleteAllRefreshTokensForUser,
-            }),
-        };
-    } catch (err) {
-        throw new TechnicalError(
-            `Error creating auth use cases: ${err}`,
-            'AUTH_USE_CASES_CREATION_FAILED',
-            500
-        );
-    }
-}
+  try {
+    return {
+      register: createRegisterUserUseCase({
+        generateUserIdFn: () => generateTypedId('user'),
+        createUserFn: createUserCredentials,
+        findUserByEmailFn:
+          userCredentialsRepository.findUserByEmail.bind(userCredentialsRepository),
+        hashPasswordFn: passwordManager.hashPassword.bind(passwordManager),
+        saveUserFn: userCredentialsRepository.saveUser.bind(userCredentialsRepository),
+      }),
+      login: createLoginUseCase({
+        findUserByEmailFn:
+          userCredentialsRepository.findUserByEmail.bind(userCredentialsRepository),
+        comparePasswordFn: passwordManager.comparePassword.bind(passwordManager),
+        createAuthSessionFn: authTokenService.createAuthSession.bind(authTokenService),
+      }),
+      refresh: createRefreshSessionUseCase({
+        findRefreshTokenFn: refreshTokenRepository.findRefreshToken.bind(refreshTokenRepository),
+        verifyRefreshTokenFn: authTokenService.verifyRefreshToken.bind(authTokenService),
+        createAuthSessionFn: authTokenService.createAuthSession.bind(authTokenService),
+        deleteRefreshTokenFn:
+          refreshTokenRepository.deleteRefreshToken.bind(refreshTokenRepository),
+      }),
+      logout: createLogoutUseCase({
+        deleteRefreshTokenFn:
+          refreshTokenRepository.deleteRefreshToken.bind(refreshTokenRepository),
+        deleteAllRefreshTokensForUserFn:
+          refreshTokenRepository.deleteAllRefreshTokensForUser.bind(refreshTokenRepository),
+      }),
+    };
+  } catch (err) {
+    throw new TechnicalError(
+      `Error creating auth use cases: ${err}`,
+      'AUTH_USE_CASES_CREATION_FAILED',
+      500,
+    );
+  }
+};

@@ -1,66 +1,61 @@
 import type {
-    ClientSession,
-    Collection,
-    Document,
-    Filter,
-    FindOneAndUpdateOptions,
-    MongoClient,
-    UpdateFilter,
-    WithId
-} from "mongodb";
-import type {TBaseMongoRepoDeps} from "../../types/mongo/mongo.types.js";
-
+  ClientSession,
+  Collection,
+  Document,
+  Filter,
+  FindOneAndUpdateOptions,
+  MongoClient,
+  UpdateFilter,
+  WithId,
+} from 'mongodb';
+import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
 
 export abstract class BaseMongoRepository<TDomainModel extends Document> {
-    protected readonly client: MongoClient;
-    protected readonly collection: Collection<TDomainModel>;
+  protected readonly client: MongoClient;
+  protected readonly collection: Collection<TDomainModel>;
 
-    protected constructor(protected readonly input: TBaseMongoRepoDeps) {
-        this.client = input.client;
-        this.collection = this.client.db(input.dbName).collection<TDomainModel>(input.collectionName);
+  protected constructor(protected readonly input: TBaseMongoRepoDeps) {
+    this.client = input.client;
+    this.collection = this.client.db(input.dbName).collection<TDomainModel>(input.collectionName);
+  }
+
+  /**
+   * Maps a MongoDB document (WithId<T>) to a domain model by stripping _id
+   */
+  protected mapMongoDocToDomainModel(doc: WithId<TDomainModel>): TDomainModel {
+    const { _id: _, ...rest } = doc;
+    return rest as unknown as TDomainModel;
+  }
+
+  /**
+   * Generic find method that can be reused by specific child implementations.
+   */
+  protected async findDocBy(filter: Filter<TDomainModel>): Promise<TDomainModel | null> {
+    const result = await this.collection.findOne(filter);
+
+    if (!result) {
+      return null;
     }
 
-    /**
-     * Maps a MongoDB document (WithId<T>) to a domain model by stripping _id
-     */
-    protected mapMongoDocToDomainModel(doc: WithId<TDomainModel>): TDomainModel {
-        const { _id, ...rest } = doc
-        return rest as unknown as TDomainModel;
-    };
+    return this.mapMongoDocToDomainModel(result);
+  }
 
-    /**
-     * Generic find method that can be reused by specific child implementations.
-     */
-    protected async findDocBy(filter: Filter<TDomainModel>): Promise <TDomainModel | null> {
-        const result = await this.collection.findOne(filter);
+  protected async findOneAndUpdateDoc(input: {
+    filter: Filter<TDomainModel>;
+    update: UpdateFilter<TDomainModel>;
+    options?: FindOneAndUpdateOptions;
+  }): Promise<TDomainModel | null> {
+    const { filter, update, options } = input;
 
-        if (!result) {
-            return null;
-        }
+    const result = await this.collection.findOneAndUpdate(filter, update, {
+      projection: options?.projection ?? { _id: 0 },
+      ...options,
+    });
 
-        return this.mapMongoDocToDomainModel(result);
-    };
+    return result ? this.mapMongoDocToDomainModel(result) : null;
+  }
 
-    protected async findOneAndUpdateDoc(input: {
-        filter: Filter<TDomainModel>,
-        update: UpdateFilter<TDomainModel>,
-        options?: FindOneAndUpdateOptions
-    }): Promise<TDomainModel | null> {
-        const { filter, update, options } = input;
-
-        const result = await this.collection.findOneAndUpdate(
-            filter,
-            update,
-            {
-                projection: options?.projection ?? {_id: 0},
-                ...options
-            }
-        );
-
-        return result ? this.mapMongoDocToDomainModel(result) : null;
-    };
-
-    protected startSession(): ClientSession {
-        return this.client.startSession();
-    }
+  protected startSession(): ClientSession {
+    return this.client.startSession();
+  }
 }

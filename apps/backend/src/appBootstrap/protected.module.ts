@@ -3,14 +3,10 @@ import { MusicRepertoireController } from '../music/api/musicRepertoire.controll
 import { MusicRepertoireModule } from '../music/musicRepertoire.module.js';
 import { CoreUseCasesAccessModule } from './core_modules/useCases/CoreUseCasesAccessModule.js';
 
-
 @Module({
-  imports: [
-    MusicRepertoireModule,
-    CoreUseCasesAccessModule.forMany(['musicRepertoire']),
-  ],
+  imports: [MusicRepertoireModule, CoreUseCasesAccessModule.forMany(['musicRepertoire'])],
   controllers: [MusicRepertoireController],
-  exports: []
+  exports: [],
 })
 export class ProtectedModule {
   // This module is intended for protected routes and services.

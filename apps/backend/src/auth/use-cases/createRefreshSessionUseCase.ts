@@ -1,6 +1,8 @@
-import type {TRefreshSessionUseCase, TRefreshSessionUseCaseDeps} from "../types/auth.core.useCase.js";
-import {BusinessError} from "../../utils/errorManagement/errorClasses/BusinessError.js";
-
+import type {
+  TRefreshSessionUseCase,
+  TRefreshSessionUseCaseDeps,
+} from '../types/auth.core.useCase.js';
+import { BusinessError } from '../../utils/errorManagement/errorClasses/BusinessError.js';
 
 /**
  * RefreshSessionUseCase - Re-issues a new authentication session using a valid refresh token.
@@ -28,29 +30,30 @@ import {BusinessError} from "../../utils/errorManagement/errorClasses/BusinessEr
  * const result = await useCase({ refreshToken: 'refreshToken_xyz' });
  */
 export const createRefreshSessionUseCase = (
-    deps: TRefreshSessionUseCaseDeps
+  deps: TRefreshSessionUseCaseDeps,
 ): TRefreshSessionUseCase => {
-    const { findRefreshTokenFn, verifyRefreshTokenFn, createAuthSessionFn, deleteRefreshTokenFn } = deps;
+  const { findRefreshTokenFn, verifyRefreshTokenFn, createAuthSessionFn, deleteRefreshTokenFn } =
+    deps;
 
-    return async ({ refreshToken }) => {
-        const token = await findRefreshTokenFn({ refreshToken });
+  return async ({ refreshToken }) => {
+    const token = await findRefreshTokenFn({ refreshToken });
 
-        if (!token) {
-            throw new BusinessError('Refresh token not found', 'TOKEN_NOT_FOUND', 401);
-        }
+    if (!token) {
+      throw new BusinessError('Refresh token not found', 'TOKEN_NOT_FOUND', 401);
+    }
 
-        const isValid = verifyRefreshTokenFn({ refreshTokenDomainModel: token });
+    const isValid = verifyRefreshTokenFn({ refreshTokenDomainModel: token });
 
-        if (!isValid) {
-            await deleteRefreshTokenFn({ refreshToken });
-            throw new BusinessError('Invalid tokens', 'INVALID_TOKENS', 401);
-        }
+    if (!isValid) {
+      await deleteRefreshTokenFn({ refreshToken });
+      throw new BusinessError('Invalid tokens', 'INVALID_TOKENS', 401);
+    }
 
-        const session = await createAuthSessionFn({ user_id: token.user_id });
+    const session = await createAuthSessionFn({ user_id: token.user_id });
 
-        return {
-            ...session,
-            user_id: token.user_id,
-        };
+    return {
+      ...session,
+      user_id: token.user_id,
     };
+  };
 };
