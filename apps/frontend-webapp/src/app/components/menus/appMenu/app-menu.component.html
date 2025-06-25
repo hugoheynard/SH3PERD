@@ -1,0 +1,6 @@
+<app-icon-flat-button
+  *ngFor="let item of menuItems"
+  [iconName]="item.iconName"
+  [action]="item.action"
+  [ngClass]="{ 'active': isActive(item.route) }"
+/>

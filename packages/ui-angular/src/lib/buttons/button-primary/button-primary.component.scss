@@ -1,0 +1,9 @@
+@use '../../../styles/tokens' as t;
+@use '../../../styles/mixins' as m;
+
+button {
+  @include m.eraseDefault;
+  @include m.buttonPrimary('md');
+  //background-color: t.$appBgColor_dark;
+  color: t.$buttonPrimaryTextColor;
+}

@@ -1,0 +1,25 @@
+<label [attr.for]="inputId" >{{ label }}</label>
+
+<input
+  [id]="inputId"
+  [attr.type]="type"
+  [attr.min]="min"
+  [attr.max]="max"
+  [attr.disabled]="disabled || null"
+
+  *ngIf="control; else internalInput"
+  [formControl]="control"
+/>
+
+<ng-template #internalInput>
+  <input
+    [id]="inputId"
+    [attr.type]="type"
+    [attr.min]="min"
+    [attr.max]="max"
+    [value]="value"
+    [attr.disabled]="disabled || null"
+    (input)="onInputChange($event)"
+    (blur)="onTouched()"
+  />
+</ng-template>

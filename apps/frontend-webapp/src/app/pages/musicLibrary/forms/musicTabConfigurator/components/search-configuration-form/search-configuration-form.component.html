@@ -1,0 +1,82 @@
+<ng-container [formGroup]="formGroup">
+  <!-- Title & Auto title toggle -->
+  <div class="fullRow">
+    <div class="title-row">
+      <label for="title">Tab title:</label>
+      <label class="auto-title">
+        <input type="checkbox" formControlName="autoTitle" labelText="auto" />
+      </label>
+    </div>
+    <div class="title-input">
+      <sh3-input id="title"
+                 type="text"
+                 formControlName="title"
+                 placeholder="New Tab" />
+    </div>
+  </div>
+
+
+<!-- Component type selection -->
+<sh3-select class="oneCol"
+            id="componentType"
+            formControlName="searchMode"
+            label="search mode"
+            placeholder="Select a search mode"
+            [options]="tabTypes" />
+
+
+<!-- Conditional user selection me / single user / multiple users-->
+<ng-container [formGroupName]="'target'">
+  <sh3-select class="oneCol"
+              id="targetMode"
+              formControlName="mode"
+              label="target mode"
+              [options]="targetModes" />
+
+  <!-- User selection for repertoire type -->
+  <ng-container [ngSwitch]="formGroup.get('target.mode')?.value">
+    <ng-container *ngSwitchCase="'single-user'">
+      <div class="fullRow">
+        <sh3-select id="user"
+                    formControlName="singleUser_id"
+                    label="user"
+                    placeholder="Select a user"
+                    [options]="userList"/>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'multiple-users'">
+      <!-- Multi-select dropdown for multiple users -->
+      <div class="fullRow">
+      <sh3-multi-select-dropdown
+        label="Users"
+        formControlName="multipleUsers_id"
+        [options]="userList"
+        labelKey="name"
+        valueKey="id"
+        />
+      </div>
+    </ng-container>
+  </ng-container>
+</ng-container>
+
+  <ng-container *ngIf="formGroup.get('target.mode')?.value === 'multiple-users'">
+    <div class="fullRow">
+      <input class="fullWidth" type="checkbox" formControlName="displaySearchAsFolder" labelText="display search as a tab folder" />
+    </div>
+  </ng-container>
+
+  <input
+    class="oneCol"
+    type="checkbox"
+    labelText="activate Data Filter"
+    formControlName="dataFilterActive"
+  />
+
+  <input
+    class="oneCol"
+    type="checkbox"
+    labelText="activate Exploitation Filter"
+    formControlName="exploitationFilterActive"
+/>
+</ng-container>

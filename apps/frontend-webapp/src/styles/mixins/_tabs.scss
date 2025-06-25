@@ -1,0 +1,20 @@
+@use 'tokens' as t;
+
+
+@mixin baseTab{
+  display: flex;
+  height: t.$tab-height;
+  padding: t.$tab-padding;
+  border-radius: t.$tab-border-radius;
+  color: var(--baseTextColor);
+  background: var(--tab-bgColor);
+  backdrop-filter: blur(4px);
+  font-size: t.$tab-fontSize;
+  font-weight: t.$tab-fontWeight;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+@mixin searchBar-tabSystem {
+
+}

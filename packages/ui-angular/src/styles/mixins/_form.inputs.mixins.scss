@@ -1,0 +1,37 @@
+@use '../../styles/tokens' as t;
+
+
+@mixin form-field-base {
+  width: 100%;
+  height: t.$form-field-height;
+  padding: t.$form-field-padding;
+  box-sizing: border-box;
+  font-size: t.$form-field-fontSize;
+  margin-top: 0.25rem;
+  border: 1px solid var(--form-field-borderColor);
+  border-radius: t.$form-field-radius;
+  background: var(--form-field-bgColor);
+  color: var(--baseTextColor);
+  outline: none;
+  backdrop-filter: blur(4px);
+  transition: border-color 0.4s ease;
+
+
+  &::placeholder {
+    color: rgba(253, 255, 255, 0.4);
+  }
+
+  &:hover {
+    border-color: rgba(var(--colorPrimary-rawRGB), 0.5);
+  }
+
+  &:focus {
+    border-color: rgb(var(--colorPrimary-rawRGB));
+  }
+};
+
+@mixin form-field-label {
+  color: var(--baseTextColor);
+  font-size: t.$form-field-label-fontSize;
+  text-transform: capitalize;
+}

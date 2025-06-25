@@ -1,0 +1,38 @@
+<form class="tab-configurator-form-grid"
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+>
+  <!-- SECTION 1: Configuration -->
+  <app-form-block
+    [title]="'Search Configuration'"
+    [disabled]="false"
+    [style.animation-delay]="'0ms'"
+  >
+    <search-configuration-form [formGroup]="formService.getSearchConfigurationGroup(form)"/>
+  </app-form-block>
+
+  <!-- SECTION 2: Filters -->
+  <app-form-block
+    [title]="'Music Data Filter'"
+    [disabled]="!shouldShowDataFilterOverlay()"
+    [style.animation-delay]="'120ms'"
+  >
+    <music-data-filter-form [formGroup]="formService.getDataFilterOptionsGroup(form)"/>
+  </app-form-block>
+
+
+  <!-- SECTION 3: EXPLOITATION -->
+  <app-form-block
+    [title]="'exploitation filter'"
+    [disabled]="!shouldShowDataFilterOverlay()"
+    [style.animation-delay]="'240ms'"
+  >
+    <exploitation-filter-form />
+  </app-form-block>
+
+  <div class="form-block  button-block"  >
+    <sh3-button-primary buttonLabel="Search" class="stagger" [style.animation-delay]="'360ms'" type="submit" [disabled]="form.invalid">SEARCH</sh3-button-primary>
+  </div>
+</form>
+
+

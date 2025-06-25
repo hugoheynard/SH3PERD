@@ -1,0 +1,80 @@
+@use '../../../styles/index' as sh3;
+
+
+.custom-select {
+  @include sh3.m-form-field-base;
+  position: relative;
+  cursor: pointer;
+
+  &.open {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .select-label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: -1px;
+    border: 1px solid var(--form-field-borderColor);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    z-index: 1000;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    padding: sh3.$form-field-padding;
+    max-height: 200px;
+    overflow-y: auto;
+    animation: dropdownEnter 200ms ease-out;
+    transform-origin: top center;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: sh3.$form-field-fontSize;
+    }
+
+    .dropdown-placeholder {
+      font-style: italic;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+
+    .dropdown-select-all {
+      font-weight: normal;
+      margin-bottom: 0.25rem;
+    }
+
+    @keyframes dropdownEnter {
+      from {
+        opacity: 0;
+        transform: translateY(-5px) scale(0.80);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    };
+  };
+};
+
+.dropdown-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--form-field-borderColor);
+  padding-top: 0.5rem;
+
+  .button-primary {
+    @include sh3.m-buttonPrimary;
+    width: 100%;
+  }
+}

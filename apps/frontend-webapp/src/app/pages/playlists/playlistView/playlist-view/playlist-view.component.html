@@ -1,0 +1,94 @@
+<div id="playlistViewHeader">
+  <h3>EDIT {{ playlist.settings.name }}</h3>
+  <button id="closePlaylistView_button" class="button-16" (click)="playlistDisplayService.closePlaylistInSidenav()"><mat-icon>close</mat-icon></button>
+</div>
+
+<form [formGroup]="playlistForm">
+  <app-form-block
+    [title]="'Search Configuration'"
+    [disabled]="false"
+  >
+    <ng-container section formGroupName="settings">
+      <input type="text" formControlName="name" StyledInput labelText="name">
+      <input type="text" formControlName="description" StyledInput labelText="description">
+
+      <select formControlName="usage" StyledInput labelText="usage">
+        <option value="daily">Daily</option>
+        <option value="event">Event</option>
+      </select>
+
+      <input type="number" min="5" step="5" formControlName="requiredLength" labelText="duration">
+      <input type="number" min="1" step="1" formControlName="numberOfSongs" labelText="songs">
+      <input type="number" min="1" max='4' step="1" formControlName="energy" labelText="energy">
+
+      <sh3-multi-select-dropdown [options]="[{ label: 'singers', value: 'singers' }, { label: 'musicians', value: 'musicians' }, { label: 'performance', value: 'performance' }]" />
+
+    </ng-container>
+
+  </app-form-block>
+
+
+  <plv-section-container [title]="'Performers'" [isExpanded]="true">
+    <ng-container section formGroupName="performers">
+
+      <plv-section-container [title]="'Singer configuration'" [isExpanded]="true" [nestingLevel]="2">
+        <ng-container section formGroupName="singersConfig">
+          <div style="display: flex; flex-direction: row; justify-content: space-around;">
+            <input type="number" min="1" step="1" formControlName="numberOfSingers" StyledInput labelText="Quantity">
+            <select formControlName="splitMode" StyledInput labelText="split mode">
+              <option value="alternate">Alternate</option>
+              <option value="equal_split">Divide Equally</option>
+            </select>
+            <input type="checkbox" formControlName="containsDuo">
+          </div>
+        </ng-container>
+      </plv-section-container>
+
+      <plv-section-container [title]="'Musicians configuration'" [isExpanded]="false" [nestingLevel]="2">
+        <ng-container section formGroupName="singersConfig">
+
+
+        </ng-container>
+      </plv-section-container>
+
+      <plv-section-container [title]="'Aerial configuration'" [isExpanded]="false" [nestingLevel]="2">
+        <ng-container section formGroupName="aerialConfig">
+          <select formControlName="performancePosition" StyledInput labelText="position">
+            <option value="start">start</option>
+            <option value="end">end</option>
+            <option value="manual">manual</option>
+          </select>
+
+        </ng-container>
+      </plv-section-container>
+
+
+
+
+
+
+    </ng-container>
+  </plv-section-container>
+
+
+
+  <plv-section-container [title]="'Song List'" [isExpanded]="true">
+      <song-list-dnd section/>
+  </plv-section-container>
+
+
+
+
+
+
+
+
+  <button class="button-16"
+          type="submit"
+          (click)="submitAction()">{{ submitButtonLabel }}</button>
+</form>
+
+
+
+
+

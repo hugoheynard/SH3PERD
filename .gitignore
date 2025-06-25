@@ -40,3 +40,6 @@ lerna-debug.log
 .eslintcache
 
 
+
+*storybook.log
+storybook-static

@@ -1,0 +1,48 @@
+<app-header />
+
+<div class="app-layout">
+  <appMenu class="menu-left"
+    [menuItems]="[
+          { route: 'home' ,iconName: 'home', action:  routeService.navigateToHome.bind(routeService) },
+          { route: 'calendar', iconName: 'calendar_clock', action: routeService.navigateToCalendar.bind(routeService) },
+          { route: 'musicLibrary', iconName: 'library_music', action: routeService.navigateToMusicLibrary.bind(routeService) },
+          { route: 'playlists', iconName: 'queue_music', action: routeService.navigateToPlaylist.bind(routeService) },
+          { route: 'settings', iconName: 'settings', action: routeService.navigateToSettings.bind(routeService) },
+          { route: 'logout', iconName: 'logout', action: authService.logout.bind(authService) }
+        ]"/>
+
+  <div class="layout-body">
+    <div class="layout-main">
+      <div class="panel" [ngClass]="{ 'hidden': !hasLeftPanel() }">
+        <ng-template #leftPanelContainer />
+      </div>
+
+      <app-circular-menu #circularMenu
+        [menuItems]="[
+        { label: 'Home', iconName: 'home', route: '/home' },
+        { label: 'Calendar', iconName: 'calendar_today', route: '/profile' },
+        { label: 'Music', iconName: 'library_music', route: '/musicLibrary' },
+        { label: 'Playlists', iconName: 'queue_music', route: '/settings' },
+        { label: 'Settings', iconName: 'settings', route: '/settings' },
+        { label: 'Logout', iconName: 'logout', route: '/settings' },
+
+        ]"
+      />
+
+      <div class="content">
+        <router-outlet />
+      </div>
+
+      <div class="panel" [ngClass]="{ 'hidden': !hasRightPanel() }">
+        <ng-template #rightPanelContainer />
+      </div>
+
+      <div class="context-menu" [ngClass]="{ 'hidden': !hasContextMenu() }">
+        <ng-template #contextMenuContainer />
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!--<div class="app-footer"></div>-->

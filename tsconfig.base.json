@@ -25,11 +25,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "emitDeclarationOnly": false,
-    "paths": {
-      "@sh3pherd/calendar": ["packages/calendar/src/index.ts"],
-      "@sh3pherd/shared-types": ["packages/shared-types/src/index.ts"],
-        "@sh3pherd/playlist": ["packages/playlist/src/index.ts"]
-    }
   },
   "include": ["src"],
   "exclude": [
@@ -42,7 +37,7 @@
   ],
   "references": [
     { "path": "../shared-types"},
-    { "path": "../shared-utils"}
+    { "path": "../ui-angular" }
   ]
 }
 

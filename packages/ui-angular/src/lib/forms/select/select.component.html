@@ -1,0 +1,27 @@
+<div class="custom-select">
+  <label class="form-field-label">{{ label }}</label>
+
+  <div class="custom-select-wrapper" [class.open]="isOpen">
+    <select class="native-select" [value]="value" (change)="onNativeChange($event)">
+      <option [value]="null" disabled hidden *ngIf="placeholder">
+        {{ placeholder }}
+      </option>
+      <option *ngFor="let opt of options" [value]="opt.value">
+        {{ opt.label }}
+      </option>
+    </select>
+
+    <div class="custom-select-display" tabindex="0" (click)="toggleDropdown()">
+      <span class="display-label">{{ selectedLabel }}</span>
+    </div>
+
+    <ul class="custom-select-options" *ngIf="isOpen">
+      <li *ngIf="placeholder" (click)="selectOption(null)">
+        {{ placeholder }}
+      </li>
+      <li *ngFor="let opt of options" (click)="selectOption(opt.value)">
+        {{ opt.label }}
+      </li>
+    </ul>
+  </div>
+</div>

@@ -17,8 +17,7 @@
     "build": "turbo run build",
     "dev:watch": "turbo run dev:watch",
     "test": "jest --workspaces",
-    "clean": "turbo run clean",
-    "prepare": "husky"
+    "clean": "turbo run clean"
   },
   "tsc-alias": {
     "resolveFullPaths": true,
@@ -28,7 +27,14 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.9.0"
   },
+  "pnpm": {
+    "overrides": {
+      "@angular/forms": "19.2.14"
+    }
+  },
   "devDependencies": {
+    "@angular/cli": "^19.2.10",
+    "@angular/forms": "19.2.14",
     "@eslint/js": "^9.28.0",
     "@jest/globals": "^29.7.0",
     "@types/bcrypt": "^5.0.2",

@@ -1,0 +1,26 @@
+<div class="left">
+  <button class="mobile-menu-btn" (click)="onMenuClick()" aria-label="Open menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <!-- Logo ou nom d'application -->
+  <div>
+    <span class="app-name">SH3PHERD</span>
+    <span class="page-name">MUSIC</span>
+  </div>
+
+</div>
+
+<div class="right">
+  <div class="theme-switch" (click)="toggleTheme()">
+    <div class="switch-track">
+      <div class="switch-thumb" [class.dark]="isDark">
+        {{ isDark ? '🌙' : '🌞' }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Cercle avec initiale -->
+  <div class="profile-circle">
+    H
+  </div>
+</div>

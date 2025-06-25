@@ -1,0 +1,34 @@
+<form #credentials="ngForm" (ngSubmit)="onSubmit(credentials)">
+  <h2>Login</h2>
+
+  <div class="login-form">
+    <div class="form-group">
+      <sh3-input
+        id="email"
+        label="email"
+        type="email"
+        name="email"
+        placeholder="Enter your email"
+        ngModel
+        required />
+    </div>
+
+    <div class="form-group">
+      <sh3-input
+        id="password"
+        label="Password"
+        type="password"
+        name="password"
+        placeholder="Enter your password"
+        ngModel
+        required />
+    </div>
+  </div>
+
+
+  <sh3-button-primary
+    [buttonLabel]="'Sign in'"
+    [disabled]="!credentials.valid"
+    type="submit">
+  </sh3-button-primary>
+</form>

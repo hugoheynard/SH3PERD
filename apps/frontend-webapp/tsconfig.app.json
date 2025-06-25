@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": [
+      "node"
+    ],
+    "paths": {
+      "@shepherd/shared-types/*": ["../../packages/shared-types/src/*"],
+      "@sh3pherd/ui-angular": ["../../packages/ui-angular/src/public-api.ts"]
+    }
+  },
+  "files": [
+    "src/main.ts",
+    "src/main.server.ts",
+    "server.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts"
+  ]
+}

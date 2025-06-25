@@ -1,0 +1,69 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+@forward "./mixins" as m-*;
+@forward "./tokens";
+
+
+:root,
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  box-sizing: border-box;
+  background-color: var(--pageBgColor);
+  --colorPrimary: rgb(6, 164, 164);
+  --colorPrimary-rawRGB: 6, 164, 164;
+  --colorSecondary: rgb(78, 141, 141);
+}
+
+
+
+//THEMES
+[data-theme='dark'] {
+  --baseTextColor: #ccc;
+  --accentTextColor: white;
+
+  //----------Structural elements color------------//
+  /*
+  These vars are used to set the background color of the principal elements of the app,
+  main menu, header, footer, and side panels.
+   */
+  --colorPrimaryMenus: #191c1e;
+  --pageBgColor: #282A2A;
+  --headAndfootBgColor: #2d3131;
+  --sidePanelsPrimaryBgColor: #363a3a;
+  --snackbarBgColor: #2d3131;
+
+  //----------Form ------------//
+  --form-field-borderColor: rgba(253, 255, 255, 0.15);
+  --form-field-bgColor: #3d4242;
+  --form-field-focus-outlineColor: var;
+  --form-block-bgColor:  rgb(51, 56, 56);
+
+
+  //----------Tabs ------------//
+  --tab-bgColor: rgba(253, 255, 255, 0.03);
+  --tab-bgColor-active: rgba(253, 255, 255, 0.20);
+}
+
+[data-theme='light'] {
+  --pageTitleColor: rgba(239, 240, 243, 0.05);
+  --baseTextColor: #2a2a2a;
+
+  //----------Structural elements color------------//
+  --colorPrimaryMenus: #F5F7FA;
+  --pageBgColor: white;
+  --headAndfootBgColor: #E9EDF2;
+  --sidePanelsPrimaryBgColor: #DDE3EB;
+
+  //----------Form ------------//
+  --form-field-borderColor: rgba(60, 60, 60, 0.3);
+  --form-field-bgColor: rgba(125, 139, 141, 0.07);;
+  --form-field-focus-outlineColor: #{t.$primaryColor-rgb};
+  --form-block-bgColor:  rgb(51, 56, 56);
+
+
+  //----------Tabs ------------//
+  --tab-bgColor: rgba(253, 255, 255, 0.03);
+  --tab-bgColor-active: rgba(253, 255, 255, 0.20);
+
+}
+

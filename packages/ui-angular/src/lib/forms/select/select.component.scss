@@ -1,0 +1,88 @@
+@use '../../../styles/index' as sh3;
+
+.custom-select {
+  width: 100%;
+  max-width: 100%;
+
+  .form-field-label {
+    @include sh3.m-form-field-label;
+  }
+
+  .custom-select-wrapper {
+    position: relative;
+    width: 100%;
+
+    .native-select {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      z-index: 1; // en dessous du display
+      cursor: pointer;
+    }
+
+    .custom-select-display {
+      @include sh3.m-form-field-base;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+      padding-right: 2rem;
+      overflow: hidden; // important pour ellipsis
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
+      &::after {
+        content: '▼';
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        font-size: 0.8rem;
+      }
+
+      .display-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+      }
+    }
+
+    .custom-select-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      background: var(--form-field-bgColor);
+      border: 1px solid var(--form-field-borderColor);
+      border-radius: sh3.$form-field-radius;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+
+      li {
+        padding: sh3.$form-field-padding;
+        cursor: pointer;
+        color: var(--baseTextColor);
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover {
+          background-color: rgba(var(--colorPrimary-rawRGB), 0.1);
+        }
+      }
+    }
+
+    &.open .custom-select-options {
+      display: block;
+    }
+  }
+}
