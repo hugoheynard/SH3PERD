@@ -7,19 +7,24 @@ import {FormsModule} from '@angular/forms';
 import {DurationPipe} from '../../../../../pipes/duration.pipe';
 import {MusicRepertoireService} from '../../../../services/music-repertoire.service';
 import {ITabDefinition} from '../../../../components/tabSystem/tab-system/ITabDefinition';
-import {IMusicTabConfig} from '../../types/IMusicTabConfig';
+import {TMusicTabConfiguration} from '../../types/TMusicTabConfiguration';
+import { ButtonPrimaryComponent } from '@sh3pherd/ui-angular';
 
 @Component({
   selector: 'music-repertoire-table',
   standalone: true,
-  imports: [CdkTableModule, NgForOf, NgIf, FormsModule, NgStyle, DurationPipe],
+  imports: [CdkTableModule, NgForOf, NgIf, FormsModule, NgStyle, DurationPipe, ButtonPrimaryComponent],
   templateUrl: './music-repertoire-table.component.html',
   styleUrl: './music-repertoire-table.component.scss'
 })
 export class MusicRepertoireTableComponent implements OnInit {
+  public hasError404 = false;
+  public hasNoMatch = false;
+
   private musicRepertoireService: MusicRepertoireService = inject(MusicRepertoireService);
   @Output() openTab: EventEmitter<ITabDefinition> = new EventEmitter<ITabDefinition>();
-  @Input() configuratorData: IMusicTabConfig | undefined;
+  @Output() backToConfig: EventEmitter<void> = new EventEmitter<void>();
+  @Input() configuratorData: TMusicTabConfiguration | undefined;
 
   public entries: any[] = [];
   public displayedColumns: { key: string; order: number }[] = [];
@@ -29,26 +34,32 @@ export class MusicRepertoireTableComponent implements OnInit {
 
   // ──────────── LIFECYCLE ────────────
   async ngOnInit(): Promise<void> {
+    try {
+      if (!this.configuratorData || Object.keys(this.configuratorData).length === 0) {
+        await this.musicRepertoireFallBack();
+      } else {
+        this.entries = await this.musicRepertoireService
+          .executeConfigStrategy({ config: this.configuratorData }) ?? [];
+      }
 
-    if (!this.configuratorData || Object.keys(this.configuratorData).length === 0) {
-      await this.musicRepertoireFallBack();
-    } else {
-      console.log('Config provided, executing config strategy');
-      this.entries = await this.musicRepertoireService.executeConfigStrategy({ config: this.configuratorData });
+      if (!Array.isArray(this.entries) || this.entries.length === 0) {
+        this.entries = [];
+        this.hasNoMatch = true;
+      } else {
+        this.displayedColumns = Object.keys(this.entries[0])
+          .filter(key => !this.excludedColumns.includes(key))
+          .map((key, index) => ({key, order: index}));
+        this.columnKeys = this.displayedColumns.map(col => col.key);
+      }
+
+    } catch (error: any) {
+      if (error.status === 404) {
+        this.hasError404 = true;
+      } else {
+        console.error('Unhandled error:', error);
+      }
     }
-
-
-
-
-    // Filter out excluded columns and set displayedColumns
-    if (this.entries.length > 0) {
-      this.displayedColumns = Object.keys(this.entries[0])
-        .filter(key => !this.excludedColumns.includes(key))
-        .map((key, index) => ({key, order: index}));
-
-      this.columnKeys = this.displayedColumns.map(col => col.key);
-    }
-  };
+  }
 
   public filter: string = '';
 
@@ -58,6 +69,9 @@ export class MusicRepertoireTableComponent implements OnInit {
 
 
   get filteredData(): any[] {
+    if (!Array.isArray(this.entries)) {
+      return [];
+    }
     const filterValue = this.filter.toLowerCase().trim();
     return this.entries.filter(row =>
       this.columnKeys.some(key =>
@@ -106,4 +120,8 @@ export class MusicRepertoireTableComponent implements OnInit {
       default: false,
     });
   }
+
+  readonly handleBackToConfig = (): void => {
+    this.backToConfig.emit();
+  };
 }

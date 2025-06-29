@@ -1,8 +1,8 @@
 import {inject, Injectable} from '@angular/core';
-import {AbstractControl, FormControl, FormGroup, NonNullableFormBuilder, Validators} from '@angular/forms';
+import {AbstractControl, FormGroup, NonNullableFormBuilder, Validators} from '@angular/forms';
 import {valueInList} from '../../../../../forms/validators/valueInList';
 import {allArrayNumbersInRange} from '../../../../../forms/validators/allArrayNumbersInRange';
-import {IMusicTabConfig} from '../../../types/IMusicTabConfig';
+import {TMusicTabConfiguration} from '../../../types/TMusicTabConfiguration';
 import {deepPatchForm} from '../../../../../forms/validators/deepPatchForm';
 import {MusicLibraryTextContentService} from '../../../services/music-library-text-content.service';
 
@@ -16,6 +16,8 @@ export class MusicTabConfiguratorFormService {
 
   createForm(): FormGroup<Record<string, AbstractControl>> {
     return new FormGroup<Record<string, AbstractControl>>({
+      autoTitle: this.fb.control(true),
+      title: this.fb.control('New Search', Validators.required),
       searchConfiguration: this.createSearchConfigurationGroup(),
       dataFilterOptions: this.createDataFilterGroup(),
     }) as FormGroup;
@@ -27,8 +29,6 @@ export class MusicTabConfiguratorFormService {
    */
   private createSearchConfigurationGroup(): FormGroup {
     return this.fb.group({
-      autoTitle: this.fb.control(true),
-      title: this.fb.control('New Search', Validators.required),
       searchMode: this.fb.control('repertoire', [
         Validators.required,
         valueInList(['repertoire', 'crossRepertoire']),
@@ -81,7 +81,7 @@ export class MusicTabConfiguratorFormService {
     })
   }
 
-  patchForm(form: FormGroup, config: IMusicTabConfig): void {
+  patchForm(form: FormGroup, config: TMusicTabConfiguration): void {
     deepPatchForm(form, config, true);
   };
 

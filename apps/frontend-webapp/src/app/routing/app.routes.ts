@@ -21,7 +21,7 @@ export const routes: Routes = [
   },
   { path: 'app',
     component: MainLayoutComponent,
-    canActivate: [authGuard],
+    //canActivate: [authGuard],
     children: [
       { path: 'home', component: HomeComponent},
       { path: 'calendar', component: CalendarComponent},

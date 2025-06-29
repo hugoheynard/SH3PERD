@@ -1,13 +1,13 @@
 import {inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {Playlist} from './playlist_interfaces';
-import {SidenavRightService} from '../../components/sidenav-right.service';
 import {PlaylistViewComponent} from './playlistView/playlist-view/playlist-view.component';
+import { LayoutService } from '../../../core/services/layout.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlaylistDisplayService {
-  private sidenavRightService: SidenavRightService = inject(SidenavRightService);
+  private layoutService: LayoutService = inject(LayoutService);
   public playlistSidenavSignal: WritableSignal<boolean> = signal(false);
   public currentPlaylistSignal: WritableSignal<Playlist | null> = signal(null);
   public playlistViewModeSignal: WritableSignal<'create' | 'edit'> = signal('create');
@@ -63,12 +63,12 @@ export class PlaylistDisplayService {
     this.currentPlaylistSignal.set(playlist);
     this.playlistViewModeSignal.set(viewMode);
 
-    this.sidenavRightService.openComponent(PlaylistViewComponent, { playlist: this.currentPlaylistSignal() });
-    this.sidenavRightService.openRightSidenav();
+    //this.sidenavRightService.openComponent(PlaylistViewComponent, { playlist: this.currentPlaylistSignal() });
+    //this.sidenavRightService.openRightSidenav();
   };
 
   closePlaylistInSidenav(): void {
     this.currentPlaylistSignal.set(null);
-    this.sidenavRightService.closeRightSidenav();
+    //this.sidenavRightService.closeRightSidenav();
   };
 }

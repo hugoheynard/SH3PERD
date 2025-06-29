@@ -63,12 +63,12 @@ export const createCoreRepositories = (input: {
       musicReferenceRepository: new MusicReferenceMongoRepository({
         client,
         dbName,
-        collectionName: 'musicReferences',
+        collectionName: 'music_references',
       }),
       musicRepertoireRepository: new MusicRepertoireMongoRepository({
         client,
         dbName,
-        collectionName: 'musicRepertoireEntries',
+        collectionName: 'music_repertoireEntries',
       }),
     };
   } catch (error) {

@@ -7,7 +7,7 @@ import {
   WizardContainerComponent
 } from '../../../../components/wizardContainer/wizard-container/wizard-container.component';
 import {WizardStepComponent} from '../../../../components/wizardContainer/wizard-step/wizard-step.component';
-import { InputComponent } from '@sh3pherd/ui-angular';
+import { InputComponent, SelectComponent } from '@sh3pherd/ui-angular';
 
 @Component({
   selector: 'app-add-music-panel',
@@ -21,6 +21,7 @@ import { InputComponent } from '@sh3pherd/ui-angular';
     NgForOf,
     NgClass,
     InputComponent,
+    SelectComponent,
   ],
   templateUrl: './add-music-panel.component.html',
   standalone: true,

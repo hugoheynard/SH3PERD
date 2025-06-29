@@ -5,13 +5,9 @@ import {Router} from '@angular/router';
   providedIn: 'root'
 })
 export class NavigationService {
-  constructor(private router: Router) {}
+  private navigationData = {};
 
-  async goToHome(): Promise<boolean> {
-    return await this.router.navigateByUrl('/app/home');
+  getNavigationData(): void{
+
   };
-
-  goToLogin(): Promise<boolean> {
-    return this.router.navigate(['/login']);
-  }
 }

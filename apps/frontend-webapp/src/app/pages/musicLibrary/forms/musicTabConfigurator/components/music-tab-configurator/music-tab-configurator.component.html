@@ -1,13 +1,27 @@
 <form class="tab-configurator-form-grid"
   [formGroup]="form"
-  (ngSubmit)="submit()"
->
+  (ngSubmit)="submit()">
   <!-- SECTION 1: Configuration -->
   <app-form-block
     [title]="'Search Configuration'"
     [disabled]="false"
-    [style.animation-delay]="'0ms'"
-  >
+    [style.animation-delay]="'0ms'">
+
+    <!-- Title & Auto title toggle -->
+    <div class="fullRow">
+      <div class="title-row">
+        <label for="title">Tab title:</label>
+        <label class="auto-title">
+          <sh3-checkbox label="auto" formControlName="autoTitle" />
+        </label>
+      </div>
+      <div class="title-input">
+        <sh3-input id="title"
+                   type="text"
+                   formControlName="title"
+                   placeholder="New Tab" />
+      </div>
+    </div>
     <search-configuration-form [formGroup]="formService.getSearchConfigurationGroup(form)"/>
   </app-form-block>
 

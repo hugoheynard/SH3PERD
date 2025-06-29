@@ -6,8 +6,9 @@ import {MusicDataFilterFormComponent} from '../music-data-filter-form/music-data
 import {FormBlockComponent} from '../form-block/form-block.component';
 import {SearchConfigurationFormComponent} from '../search-configuration-form/search-configuration-form.component';
 import {ITabDefinition} from '../../../../../../components/tabSystem/tab-system/ITabDefinition';
-import {IMusicTabConfig} from '../../../../types/IMusicTabConfig';
-import { ButtonPrimaryComponent } from '@sh3pherd/ui-angular';
+import {TMusicTabConfiguration} from '../../../../types/TMusicTabConfiguration';
+import { ButtonPrimaryComponent, CheckboxComponent, InputComponent } from '@sh3pherd/ui-angular';
+import { LabelWrapperDirective } from '../../../../../../../Directives/forms/label.directive';
 
 @Component({
   selector: 'app-music-tab-configurator',
@@ -19,6 +20,9 @@ import { ButtonPrimaryComponent } from '@sh3pherd/ui-angular';
     FormBlockComponent,
     SearchConfigurationFormComponent,
     ButtonPrimaryComponent,
+    CheckboxComponent,
+    InputComponent,
+    LabelWrapperDirective,
   ],
   templateUrl: './music-tab-configurator.component.html',
   standalone: true,
@@ -30,7 +34,7 @@ export class MusicTabConfiguratorComponent implements OnInit{
   public form: any = this.formService.createForm();
   // ──────────── I/O ────────────
   @Output() tabReady: EventEmitter<ITabDefinition> = new EventEmitter<ITabDefinition>();
-  @Input() configData: IMusicTabConfig | null = null;
+  @Input() configData: TMusicTabConfiguration | null = null;
 
 
   // ──────────── LIFECYCLE ────────────
@@ -52,6 +56,9 @@ export class MusicTabConfiguratorComponent implements OnInit{
   };
 
   // ──────────── FORM LOGIC ────────────
+  /**
+   * this will trigger the replacement by the display component
+   */
   submit(): void {
     if (this.form.invalid) {
       return
@@ -74,6 +81,8 @@ export class MusicTabConfiguratorComponent implements OnInit{
       default: false,
       configuratorData: this.form.value,
     });
+
+    console.log(this.form.value)
   };
 
 

@@ -1,70 +1,66 @@
-import {HttpErrorResponse, HttpHandlerFn, HttpInterceptorFn, HttpRequest} from '@angular/common/http';
-import {TokenService} from '../app/services/token.service';
-import {Router} from '@angular/router';
-import {inject} from '@angular/core';
-import {catchError, switchMap, throwError} from 'rxjs';
-import {AuthService} from '../app/services/auth.service';
+import {
+  HttpErrorResponse, HttpEvent, HttpHandler,
+  HttpHandlerFn, HttpInterceptor,
+  HttpInterceptorFn,
+  HttpRequest,
+} from '@angular/common/http';
+import { TokenService } from '../app/services/token.service';
+import { Router } from '@angular/router';
+import { inject, Injectable } from '@angular/core';
+import { catchError, switchMap, throwError, from, tap, Observable } from 'rxjs';
+import { AuthService } from '../app/services/auth.service';
 
 /**
-* Http interceptor to attach access tokens to outgoing requests,
-* and automatically attempt to refresh the session on 401 errors.
-*
-* 🔒 Behavior:
-  * - Skips requests to /auth endpoints (e.g., /auth/login, /auth/refresh)
-* - Adds Authorization header with Bearer token if available
-  * - On 401 error, triggers token refresh
-* - If refresh fails or returns no token, logs the user out
-* - If refresh succeeds, retries the original request with the new token
-*
-* 🚨 Warning:
-  * - This interceptor assumes `refreshSession()` returns an Observable<string | null>
-* - Do not trigger refresh on /auth/refresh to avoid infinite loops
-*
-* @param req - The outgoing HTTP request
-* @param next - The next handler in the chain
-* @returns An observable of the HTTP event
-*/
-export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): any => {
+ * Http interceptor to attach access tokens to outgoing requests,
+ * and automatically attempt to refresh the session on 401 errors.
+ *
+ * @returns An observable of the HTTP event
+ */
+export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn) => {
   const tokenService = inject(TokenService);
   const authService = inject(AuthService);
-  const router = inject(Router);
 
-  const shouldIgnore: boolean = req.url.includes('/auth');
+  const shouldIgnore = req.url.includes('/auth');
 
-  // Don't intercept auth-related routes
   if (shouldIgnore) {
+    console.log('[AuthInterceptor] Ignoring auth URL:', req.url);
     return next(req);
   }
 
-  // Attach token if available
-  const authToken = tokenService.getToken();
-  const authReq = authToken
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${authToken}` } })
+  const accessToken = tokenService.getToken();
+
+  if (accessToken) {
+    console.log('[AuthInterceptor] Attaching access token to request:', req.url);
+  } else {
+    console.warn('[AuthInterceptor] No access token found for request:', req.url);
+  }
+
+  const authReq = accessToken
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${accessToken}` } })
     : req;
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      const isUnauthorized = error.status === 401;
+      const is401 = error.status === 401;
       const isRefreshingRequest = req.url.includes('/auth/refresh');
 
-      // Ne pas traiter si ce n'est pas une 401 ou si c'est déjà un appel à /refresh
-      if (!isUnauthorized || isRefreshingRequest) {
+      if (!is401 || isRefreshingRequest || !authService.shouldHaveSession()) {
+        console.error('[AuthInterceptor] Request failed (not handled):', error.status, req.url);
         return throwError(() => error);
       }
 
-      // 🚫 Cas 1 : L'utilisateur n'est pas encore authentifié → pas besoin de refresh
-      if (!authService.shouldHaveSession()) {
-        console.info('[AuthInterceptor] User not authenticated yet, no refresh expected.');
-        return throwError(() => error);
-      }
+      console.warn('[AuthInterceptor] 401 received, attempting refresh:', req.url);
 
-      // 🔁 Cas 2 : Tentative de refresh
       return authService.refreshSession().pipe(
         switchMap((newToken: string | null) => {
           if (!newToken) {
-            router.navigate(['/login']);
+            console.error('[AuthInterceptor] Refresh failed — no new token');
             return throwError(() => new Error('Session refresh failed'));
           }
+
+          console.log('[AuthInterceptor] Refresh succeeded, retrying original request with new token:', req.url);
+
+          tokenService.setToken(newToken);
 
           const retriedReq = req.clone({
             setHeaders: { Authorization: `Bearer ${newToken}` }
@@ -73,11 +69,10 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
           return next(retriedReq);
         }),
         catchError(refreshError => {
-          router.navigate(['/login']);
+          console.error('[AuthInterceptor] Refresh request failed:', refreshError);
           return throwError(() => refreshError);
         })
       );
     })
-
-);
+  );
 };

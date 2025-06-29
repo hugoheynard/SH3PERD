@@ -1,0 +1,31 @@
+form {
+  display: grid;
+  grid-template-rows: 4fr 4fr 1fr;
+  gap: 1rem;
+  height: 100%;
+}
+
+.topRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 2fr 2fr;
+  gap: 1rem;
+}
+
+.bottomRow {
+  display: grid;
+  grid-template-columns: 2fr 6fr;
+  gap: 1rem;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.buttonRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}

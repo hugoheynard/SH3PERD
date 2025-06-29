@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
 import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
+import type { Request } from 'express';
 
 @Controller('musicRepertoire')
 export class MusicRepertoireController {
@@ -12,9 +13,13 @@ export class MusicRepertoireController {
     private readonly uc: TCoreUseCasesTypeMap['musicRepertoire'],
   ) {}
 
-  @Get('/me')
-  async me(@Body() requestDTO: any): Promise<unknown> {
-    return this.uc.getMusicRepertoireByUserId(requestDTO);
+  @Post('/me')
+  async me(@Body() requestDTO: any, @Req() req: Request): Promise<any> {
+    return this.uc.getMusicRepertoireByUserId({
+      asker_user_id: req.user_id,
+      target_user_id: req.user_id,
+      filter: requestDTO.filter
+    });
   }
 
   @Post('/')

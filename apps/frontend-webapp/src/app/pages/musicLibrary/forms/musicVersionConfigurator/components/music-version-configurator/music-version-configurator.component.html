@@ -1,0 +1,74 @@
+<form [formGroup]="form">
+  <div class="topRow">
+    <app-form-block title="Version Details" [disabled]="false" formGroupName="details">
+      <sh3-input type="text" label="title" formControlName="title"/>
+      <sh3-input type="text" label="artist" formControlName="artist"/>
+
+      <div class="grid2">
+        <sh3-select label=genre [options]="textServ.getGenreOptions()"/>
+        <sh3-select label=type [options]="textServ.getTypeOptions()"/>
+      </div>
+
+    </app-form-block>
+
+    <app-form-block title="Music data" [disabled]="false">
+      <sh3-input type="number" label="bpm"/>
+
+    </app-form-block>
+
+    <app-form-block title="Options" formGroupName="options" [disabled]="false">
+      <sh3-checkbox label="map to reference" formControlName="trackMapEnabled" />
+      <sh3-checkbox label="add to my repertoire" formControlName="addToUserRepertoire_me"/>
+    </app-form-block>
+
+    <!-- Track Map allows user to connect the version to a music reference,
+    it will be used to detect possible interactions on tracks between team mates-->
+    <app-form-block title="Track Reference" [disabled]="trackMapDisabled()">
+      <sh3-select-list
+        [items]="musicRefs"
+        [trackByFn]="trackByMusicRef"
+        [labelFn]="labelForMusicRef"
+        [maxSelection]="1"
+        [selectedIds]="[]"
+      />
+    </app-form-block>
+
+    <app-form-block title="My repertoire entry" [disabled]="repertoireEntryDisabled()">
+      <div class="grid2">
+        <sh3-select
+          class="oneCol"
+          label='energy'
+          [options]="textServ.get1_4Array()"/>
+        <sh3-select
+          label='effort'
+          [options]="textServ.get1_4Array()"/>
+        <sh3-select
+          label='mastery'
+          [options]="textServ.get1_4Array()"/>
+        <sh3-select
+          label='affinity'
+          [options]="textServ.get1_4Array()"/>
+      </div>
+
+    </app-form-block>
+  </div>
+
+  <div class="bottomRow">
+    <app-form-block title="Upload file" [disabled]="false">
+      <sh3-file-uploader />
+    </app-form-block>
+
+    <!--FILE LIST IS A TABLE OF MUSIC FILES RELATED TO THE VERSION-->
+    <app-form-block title="File list" [disabled]="fileListDisabled()">
+      <div>
+
+      </div>
+    </app-form-block>
+  </div>
+
+  <div class="buttonRow">
+    <sh3-button-primary buttonLabel="uploadTrack" />
+  </div>
+
+</form>
+

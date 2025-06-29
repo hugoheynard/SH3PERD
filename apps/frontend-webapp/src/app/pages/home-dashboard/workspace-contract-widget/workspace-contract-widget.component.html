@@ -1,0 +1,8 @@
+<div class="widget">
+  <div class="workspace-title">{{ contractName }}</div>
+  <div *ngIf="clientName" class="workspace-client">{{ clientName }}</div>
+  <div class="workspace-dates">{{ startDate }} → {{ endDate }}</div>
+  <div class="workspace-status" [ngClass]="status.toLowerCase()">
+    {{ status }}
+  </div>
+</div>

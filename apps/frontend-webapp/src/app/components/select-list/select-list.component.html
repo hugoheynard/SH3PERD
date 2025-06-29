@@ -1,0 +1,21 @@
+<div
+  class="selectList"
+  tabindex="0"
+  aria-label="Selectable list"
+>
+  <ng-container *ngIf="items.length; else empty">
+    <div
+      *ngFor="let item of items"
+      class="entry"
+      [class.selected]="isSelected(item)"
+      [class.disabled]="isDisabled(item)"
+      (click)="!isDisabled(item) && onSelect(item)"
+    >
+      {{ labelFn(item) }}
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #empty>
+  <div class="empty-state">No items found.</div>
+</ng-template>

@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ButtonPrimaryComponent, InputComponent } from '@sh3pherd/ui-angular';
+import { TUserCredentialsDTO } from '@sh3pherd/shared-types';
 
 @Component({
   selector: 'app-login-form',
@@ -15,7 +16,7 @@ export class LoginFormComponent {
   @Output() validityChanged = new EventEmitter<boolean>();
   @Output() login = new EventEmitter<{ email: string; password: string }>();
 
-  onSubmit(credentials: any) {
+  onSubmit(credentials: any): void {
     if (!credentials.valid) {
       console.log('Invalid form');
     }

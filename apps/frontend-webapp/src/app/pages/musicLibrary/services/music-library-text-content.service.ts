@@ -4,9 +4,10 @@ import {Injectable, WritableSignal} from '@angular/core';
   providedIn: 'root'
 })
 export class MusicLibraryTextContentService {
-  public static readonly TEXT_CONTENT: any = {
+  public readonly TEXT_CONTENT: any = {
     musicAttributes: {
-      genres: ['pop', 'rock', 'soul', 'edm', 'ethnic', 'jazz'],
+      genres: [{ label: 'pop', value: 'pop' }, { label: 'rock', value: 'rock' }, { label: 'soul/disco', value: 'soul/disco' }, { label: 'edm', value: 'edm' }, { label: 'ethnic', value: 'ethnic' }, { label: 'jazz', value: 'jazz' }, { label: 'various', value: 'various' }],
+      types: [{ label: 'original', value: 'original' }, { label: 'cover', value: 'cover' }, { label: 'remix', value: 'remix' }, { label: 'acoustic', value: 'acoustic' }],
       keys: [
         {
           key: 'C',
@@ -52,4 +53,20 @@ export class MusicLibraryTextContentService {
     return Array.from({length: max - min + 1}, (_, i) => i + min);
   };
 
+  arrayToSelectObjArray(array: (string | number)[]): any[] {
+    return array.map(a => ({ label: a.toString(), value: a }))
+  };
+
+  get1_4Array() {
+    const base: any[] = this.getArrayFromRange(1, 4);
+    return this.arrayToSelectObjArray(base);
+  };
+
+  getGenreOptions(): { label: string; value: string | number | null }[] {
+    return this.TEXT_CONTENT.musicAttributes.genres
+  }
+
+  getTypeOptions(): { label: string; value: string | number | null }[] {
+    return this.TEXT_CONTENT.musicAttributes.types;
+  }
 }

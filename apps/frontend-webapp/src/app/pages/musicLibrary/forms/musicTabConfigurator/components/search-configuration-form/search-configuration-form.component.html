@@ -1,19 +1,5 @@
 <ng-container [formGroup]="formGroup">
-  <!-- Title & Auto title toggle -->
-  <div class="fullRow">
-    <div class="title-row">
-      <label for="title">Tab title:</label>
-      <label class="auto-title">
-        <input type="checkbox" formControlName="autoTitle" labelText="auto" />
-      </label>
-    </div>
-    <div class="title-input">
-      <sh3-input id="title"
-                 type="text"
-                 formControlName="title"
-                 placeholder="New Tab" />
-    </div>
-  </div>
+
 
 
 <!-- Component type selection -->
@@ -62,21 +48,20 @@
 
   <ng-container *ngIf="formGroup.get('target.mode')?.value === 'multiple-users'">
     <div class="fullRow">
-      <input class="fullWidth" type="checkbox" formControlName="displaySearchAsFolder" labelText="display search as a tab folder" />
+      <sh3-checkbox
+        class="fullWidth"
+        label="display search as a tab folder"
+        formControlName="displaySearchAsFolder" />
     </div>
   </ng-container>
 
-  <input
+  <sh3-checkbox
     class="oneCol"
-    type="checkbox"
-    labelText="activate Data Filter"
-    formControlName="dataFilterActive"
-  />
+    label="activate data filter"
+    formControlName="dataFilterActive" />
 
-  <input
+  <sh3-checkbox
     class="oneCol"
-    type="checkbox"
-    labelText="activate Exploitation Filter"
-    formControlName="exploitationFilterActive"
-/>
+    label="activate exploitation filter"
+    formControlName="exploitationFilterActive" />
 </ng-container>

@@ -26,6 +26,8 @@ app-footer {
   width: t.$main-menus-width;
   min-width: t.$main-menus-width;
   height: t.$app-layout-children-height;
+  flex-shrink: 0;
+  flex-grow: 0;
 }
 
 .layout-body {

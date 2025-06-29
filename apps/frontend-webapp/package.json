@@ -25,6 +25,7 @@
     "@angular/ssr": "^19.2.10",
     "@sh3pherd/shared-types": "workspace:*",
     "@sh3pherd/ui-angular": "workspace:*",
+    "angular-gridster2": "^20.0.0",
     "avj": "^0.0.0",
     "express": "^4.18.2",
     "rxjs": "~7.8.0",

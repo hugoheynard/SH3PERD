@@ -1,7 +1,8 @@
 import {
+  ChangeDetectorRef,
   Component, computed,
   inject, OnInit,
-  Type,
+  Type, ViewChild,
 } from '@angular/core';
 import {MusicRepertoireTableComponent} from '../music-repertoire-table/music-repertoire-table.component';
 import {MusicTabConfiguratorComponent} from '../../forms/musicTabConfigurator/components/music-tab-configurator/music-tab-configurator.component';
@@ -12,21 +13,23 @@ import {ITabDefinition} from '../../../../components/tabSystem/tab-system/ITabDe
 import {MusicLibNavDataService} from '../../services/music-lib-nav-data.service';
 import {IDynamicTabHost} from '../../../../components/tabSystem/tab-system/IDynamicTabHost';
 import {AddMusicPanelComponent} from '../add-music-panel/add-music-panel.component';
+import {
+  MusicVersionConfiguratorComponent
+} from '../../forms/musicVersionConfigurator/components/music-version-configurator/music-version-configurator.component';
 
 
 @Component({
     selector: 'app-music-library',
-  imports: [
-    TabSystemComponent,
-  ],
+  imports: [TabSystemComponent],
     templateUrl: './music-library.component.html',
     standalone: true,
     styleUrl: './music-library.component.scss',
 })
-
 export class MusicLibraryComponent implements OnInit, IDynamicTabHost{
   private layoutService: LayoutService = inject(LayoutService);
-  private navDataService: MusicLibNavDataService = inject(MusicLibNavDataService)
+  private navDataService: MusicLibNavDataService = inject(MusicLibNavDataService);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  @ViewChild('musicLibraryTabSystem', { static: true }) tabSystem!: TabSystemComponent;
 
   /**
    * This is the list of mandatory tabs that should always be present in the music library.
@@ -42,7 +45,7 @@ export class MusicLibraryComponent implements OnInit, IDynamicTabHost{
       isTitleEditable: false,
       isSearchable: true,
       isActive: false,
-      default: true,
+      default: false,
     }
   ];
 
@@ -51,9 +54,16 @@ export class MusicLibraryComponent implements OnInit, IDynamicTabHost{
    * This map is used to dynamically load components based on the tab configuration.
    */
   public componentMap: Record<string, Type<any>> = {
+    /**
+     * SEARCH AND RESULTS TABS
+     */
     ['music-tab-configurator']: MusicTabConfiguratorComponent,
     ['repertoire']: MusicRepertoireTableComponent,
-    ['music-version-details']: MusicRepertoireTableComponent,
+    /**
+     * MUSIC VERSION TABS
+     */
+    ['music-version-configurator']: MusicVersionConfiguratorComponent,
+    ['music-version-element']: MusicRepertoireTableComponent,
   };
 
   public generateDefaultTab(id: string): ITabDefinition {
@@ -70,18 +80,36 @@ export class MusicLibraryComponent implements OnInit, IDynamicTabHost{
       isActive: false,
       default: false,
     }
-  }
+  };
 
-  // ──────────── CHILDREN ACCESS ────────────
+  public addMusicTab(configuratorData?: any): void {
+    const musicVersionTab: ITabDefinition = {
+      id: 'music-tab-testInput',
+      title: `Add Music`,
+      hasConfigurator: true,
+      configComponentKey: 'music-version-configurator',
+      displayComponentKey: 'music-version-element',
+      configMode: true,
+      isDeletable: true,
+      isTitleEditable: false,
+      isSearchable: false,
+      isActive: false,
+      default: false,
+      configuratorData: configuratorData? configuratorData: {},
+    };
+
+    this.tabSystem.addNewTab(musicVersionTab);
+    return;
+  };
+
 
   // ──────────── STATE ────────────
   public readonly tabs = computed(() => this.navDataService.getTabConfig());
-  public isCompact: boolean = true;
 
   // ──────────── LIFECYCLE ────────────
   ngOnInit(): void {
     this.layoutService.setContextMenu(MusicLibContextMenuComponent);
-    //this.openAddVersionPanel();
+    this.cdr.detectChanges();
 
     // fake call to db, but if singer mandatory repertoire-me
     const navData: ITabDefinition[] = [
@@ -89,18 +117,18 @@ export class MusicLibraryComponent implements OnInit, IDynamicTabHost{
         id: 'music-tab-testInput',
         title: 'test input',
         hasConfigurator: true,
-        configComponentKey: 'music-tab-configurator',
+        configComponentKey: 'music-version-configurator',//'music-tab-configurator',
         displayComponentKey: 'repertoire',
         configMode: true,
         isDeletable: false,
         isTitleEditable: false,
         isSearchable: false,
         isActive: true,
-        default: false,
+        default: true,
         configuratorData: {
+          autoTitle: false,
+          title: 'Test Input',
           searchConfiguration: {
-            autoTitle: false,
-            title: 'Test Input',
             searchMode: 'repertoire',
             target: {
               mode: 'me'
@@ -120,7 +148,4 @@ export class MusicLibraryComponent implements OnInit, IDynamicTabHost{
 
 
   // ──────────── UI HELPERS ────────────
-  openAddVersionPanel(): void {
-    this.layoutService.setRightPanel(AddMusicPanelComponent);
-  };
 }

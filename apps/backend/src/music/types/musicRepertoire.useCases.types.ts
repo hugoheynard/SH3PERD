@@ -8,4 +8,5 @@ export type TMusicRepertoireUseCases = {
 export type TGetMusicRepertoireUseCaseFn = (requestDTO: {
   asker_user_id: TUserId | undefined;
   target_user_id: TUserId | TUserId[] | undefined;
+  filter: any;
 }) => Promise<Map<TUserId, TUserRepertoireTableRow[]>>;

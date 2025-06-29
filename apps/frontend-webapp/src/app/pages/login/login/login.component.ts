@@ -6,6 +6,7 @@ import {SnackbarService} from '../../../services/snackbar.service';
 import {AuthService} from '../../../services/auth.service';
 import {firstValueFrom} from 'rxjs';
 import type { TUserCredentialsDTO } from '@sh3pherd/shared-types';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'login',
@@ -21,6 +22,8 @@ export class LoginComponent {
 
   public isFormValid: boolean = false;
 
+  constructor(private router: Router) {}
+
   onValidityChange(valid: boolean): void {
     this.isFormValid = valid;
   };
@@ -33,7 +36,7 @@ export class LoginComponent {
       return;
     }
 
-    await this.navigationService.goToHome();
+    await this.router.navigateByUrl('/app/home');
     this.snackbarService.show('Welcome to SH3PHERD', 'Close', 3000);
   };
 }

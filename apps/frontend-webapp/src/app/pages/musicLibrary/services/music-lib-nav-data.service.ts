@@ -23,6 +23,9 @@ export class MusicLibNavDataService {
 
   };
 
+  openMusicTab(mode: 'add'| 'edit', tab?: ITabDefinition): void {
+
+  };
 
 
 

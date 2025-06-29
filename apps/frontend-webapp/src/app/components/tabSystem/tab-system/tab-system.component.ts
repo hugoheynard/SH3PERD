@@ -154,13 +154,33 @@ export class TabSystemComponent implements AfterViewInit{
         this.handleOpenTabFromChild(newTab)
       );
     }
+
+    if (ref.instance?.backToConfig) {
+      ref.instance.backToConfig.subscribe(() => {
+        this.handleBackToConfig(tabId);
+      });
+    }
   };
+
+  private handleBackToConfig(tabId: string): void {
+    const tab = this.tabs.find(t => t.id === tabId);
+    if (!tab || !tab.hasConfigurator) return;
+
+    tab.configMode = true;
+    this.loadTabComponent(tab); // recharger le composant configurateur
+  }
 
   // ──────────── TAB CREATION ────────────
   /**
    * Adds a new tab to the tab system.
    */
-  addNewTab(): void {
+  addNewTab(newTab?: ITabDefinition): void {
+    if (newTab) {
+      this.tabs.push(newTab);
+      this.activateTab(newTab.id);
+      return;
+    }
+
     if (!this.generateDefaultTab) {
       console.error('[TabSystem] Cannot add new tab: no `generateDefaultTab` function provided.');
       return;
@@ -170,6 +190,7 @@ export class TabSystemComponent implements AfterViewInit{
     const tab = this.generateDefaultTab?.(id) ?? this.createFallbackTab(id);
     this.tabs.push(tab);
     this.activateTab(tab.id);
+    return;
   };
 
   private createFallbackTab(id: string): ITabDefinition {

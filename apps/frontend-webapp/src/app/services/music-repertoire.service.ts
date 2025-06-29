@@ -2,7 +2,7 @@ import {inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
 import {ApiURLService} from './api-url.service';
-import {IMusicTabConfig} from '../pages/musicLibrary/types/IMusicTabConfig';
+import {TMusicTabConfiguration} from '../pages/musicLibrary/types/TMusicTabConfiguration';
 import {TUserId} from '../../types/user.types';
 
 @Injectable({
@@ -16,7 +16,7 @@ export class MusicRepertoireService {
   public musicRepertoire: WritableSignal<any[]> = signal<any[]>([]);
 
 
-  async executeConfigStrategy(input: { config: IMusicTabConfig }): Promise<any[]> {
+  async executeConfigStrategy(input: { config: TMusicTabConfiguration }): Promise<any[]> {
     if (!input || !input.config || !input.config.searchConfiguration) {
       console.warn('Invalid input or missing searchConfiguration');
       return [];

@@ -1,0 +1,18 @@
+.widget-grid {
+  background: transparent;
+  padding: 1rem;
+}
+
+.widget-wrapper {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  background: transparent;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+  }
+}

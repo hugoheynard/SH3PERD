@@ -1,6 +1,17 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {catchError, delay, map, Observable, of} from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  delay, delayWhen,
+  filter,
+  finalize,
+  first, interval,
+  map,
+  Observable,
+  of,
+  timeout,
+} from 'rxjs';
 import {TokenService} from './token.service';
 import {Router} from '@angular/router';
 import type { TUserCredentialsDTO } from '@sh3pherd/shared-types';
@@ -14,6 +25,22 @@ export class AuthService {
   private tokenService: TokenService =  inject(TokenService);
   isAuthenticatedSignal: WritableSignal<boolean> = signal(false);
 
+  private authState$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  /** Public observable for authentication state */
+  isAuthenticated$(): Observable<boolean> {
+    return this.authState$.asObservable();
+  };
+
+  /** Marks the session as authenticated */
+  private setAuthenticated(value: boolean): void {
+    this.authState$.next(value);
+  };
+
+  /**
+   *LOGIN
+   * @param credentials
+   */
   login(credentials: TUserCredentialsDTO): Observable<boolean> {
     return this.http.post<{ authToken: string; }>(
       'http://localhost:3000/api/auth/login',
@@ -24,84 +51,114 @@ export class AuthService {
         observe: 'response'
       }
     ).pipe(
-      delay(1000),
+      delay(200),
       map(response => {
         const body = response.body;
 
         if (!response.ok || !body?.authToken) {
           console.error('Connexion failure: invalid response');
-          this.isAuthenticatedSignal.set(false);
+          this.setAuthenticated(false);
           return false;
         }
 
         this.tokenService.setToken(body.authToken);
-        this.isAuthenticatedSignal.set(true);
+        this.setAuthenticated(true);
         return true;
       }),
       catchError(error => {
         console.error('Error in login process', error);
-        this.isAuthenticatedSignal.set(false);
+        this.setAuthenticated(false);
         return of(false);
       })
     );
   };
 
-  /*
-  autoLogin(): Observable<boolean> {
-    return this.refreshSession().pipe(
-      delay(200),
-      map(token => !!token),
-      catchError(() => of(false))
-    );
-  };
+  private autoLoginInProgress = false;
 
-   */
   autoLogin(): Observable<void> {
+    if (this.autoLoginInProgress) {
+      return of(void 0);
+    }
+
+    this.autoLoginInProgress = true;
+    console.log('[AuthService] Auto-login initiated');
+
     return this.refreshSession().pipe(
-      map(() => void 0), // on retourne juste void
-      catchError(() => of(void 0)) // on ignore les erreurs ici
+      map((token) => {
+        if (token) {
+          this.isAuthenticatedSignal.set(true); // 🔐
+        } else {
+          this.isAuthenticatedSignal.set(false);
+        }
+      }),
+      finalize(() => {
+        this.autoLoginInProgress = false;
+      }),
+      catchError(() => {
+        this.isAuthenticatedSignal.set(false);
+        return of(void 0);
+      })
     );
   }
 
+
+
+  private isRefreshing = false;
+  private refreshQueue: ((token: string | null) => void)[] = [];
+
   refreshSession(): Observable<string | null> {
-    try {
-      return this.http.post<any>(
-        'http://localhost:3000/api/auth/refresh',
-        {},
-        {
-          headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-          withCredentials: true,
-          observe: 'response'
-        }
-      ).pipe(
-        delay(1000),
-        map(response => {
-          const body = response.body;
 
-          if (!response.ok || !body?.authToken) {
-            console.warn('Session refresh failure: invalid response');
-            //this.isAuthenticatedSignal.set(false);
-            return null;
-          }
-
-          this.tokenService.setToken(body.authToken);
-          //this.isAuthenticatedSignal.set(true);
-          return body.authToken;
-        }),
-        catchError(error => {
-          //console.error('Error in session refresh', error); //TODO manage error
-          return of(null);
-        })
-      );
-    } catch (e) {
-      //console.error('Sync error during refresh', e);
-      return of(null);
+    if (this.isRefreshing) {
+      return new Observable(observer => {
+        this.refreshQueue.push(token => {
+          observer.next(token);
+          observer.complete();
+        });
+      });
     }
-  };
 
+    this.isRefreshing = true;
+
+    return this.http.post<any>(
+      'http://localhost:3000/api/auth/refresh',
+      {},
+      {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+        withCredentials: true,
+        observe: 'response'
+      }
+    ).pipe(
+      delay(200),
+      map(response => {
+        const body = response.body;
+
+        const token = body?.authToken || null;
+        if (token) {
+          this.tokenService.setToken(token);
+          this.setAuthenticated(true);
+        } else {
+          this.setAuthenticated(false);
+        }
+
+        this.refreshQueue.forEach(cb => cb(token));
+        this.refreshQueue = [];
+
+        return token;
+      }),
+      catchError(err => {
+        this.setAuthenticated(false);
+        this.refreshQueue.forEach(cb => cb(null));
+        this.refreshQueue = [];
+        return of(null);
+      }),
+      finalize(() => {
+        this.isRefreshing = false;
+      })
+    );
+  }
   logout(): void {
     this.tokenService.removeToken();
-    this.isAuthenticatedSignal.set(false);
+    this.setAuthenticated(false);
 
     this.http.post('/api/auth/logout', {}, { withCredentials: true })
       .pipe(
@@ -121,7 +178,18 @@ export class AuthService {
   };
 
 
+  /** Helper to check if frontend "believes" the session is active */
   shouldHaveSession(): boolean {
-    return this.isAuthenticatedSignal(); // ou true si tu veux tester de façon plus naïve
+    return this.authState$.value;
+  }
+
+  private waitForCookie(name: string, ms = 1500): Observable<boolean> {
+    return interval(50).pipe(
+      map(() => document.cookie.includes(name)),
+      filter(Boolean),
+      first(),
+      timeout({ first: ms }),
+      catchError(() => of(false))
+    );
   }
 }
