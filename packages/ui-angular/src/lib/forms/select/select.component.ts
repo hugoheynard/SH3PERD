@@ -39,7 +39,7 @@ export class SelectComponent extends BaseControlValueAccessor<string | number | 
   };
 
   get selectedLabel(): string {
-    return this.options.find(opt => opt.value === this.value)?.label || 'Sélectionner';
+    return this.options.find(opt => opt.value === this.value)?.label || this.placeholder;
   };
 
   @HostListener('document:click', ['$event'])

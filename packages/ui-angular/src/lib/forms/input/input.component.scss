@@ -1,5 +1,8 @@
 @use '../../../styles/index' as sh3;
 
+.input-wrapper {
+  position: relative;
+}
 
 input {
   @include sh3.m-form-field-base;
@@ -8,3 +11,37 @@ input {
 label {
   @include sh3.m-form-field-label;
 }
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; // Firefox
+}
+
+.number-controls {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 1rem;
+  top: 0.35rem;
+
+  button {
+    border: none;
+    background: transparent;
+    color: var(--baseTextColor);
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+}
+

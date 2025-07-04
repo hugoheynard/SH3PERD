@@ -5,7 +5,7 @@ import { CdkTableModule } from '@angular/cdk/table';
 import {NgForOf, NgIf, NgStyle} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {DurationPipe} from '../../../../../pipes/duration.pipe';
-import {MusicRepertoireService} from '../../../../services/music-repertoire.service';
+import {MusicRepertoireService} from '../../services/music-repertoire.service';
 import {ITabDefinition} from '../../../../components/tabSystem/tab-system/ITabDefinition';
 import {TMusicTabConfiguration} from '../../types/TMusicTabConfiguration';
 import { ButtonPrimaryComponent } from '@sh3pherd/ui-angular';

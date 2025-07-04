@@ -52,4 +52,35 @@ export class InputComponent
     this.onChange(val);
     this.onTouched();
   }
+
+  increment(): void {
+    const current = this.getValueAsNumber();
+    const max = this.max ?? Infinity;
+    const next = Math.min(current + 1, max);
+    this.setValue(next);
+  }
+
+  decrement(): void {
+    const current = this.getValueAsNumber();
+    const min = this.min ?? -Infinity;
+    const next = Math.max(current - 1, min);
+    this.setValue(next);
+  }
+
+  private getValueAsNumber(): number {
+    if (this.control) {
+      return Number(this.control.value) || 0;
+    }
+    return Number(this.value) || 0;
+  }
+
+  private setValue(val: number): void {
+    if (this.control) {
+      this.control.setValue(val);
+    } else {
+      this.value = val;
+      this.valueChange.emit(val);
+    }
+  }
+
 }

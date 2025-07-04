@@ -1,25 +1,36 @@
 <label [attr.for]="inputId" >{{ label }}</label>
-
-<input
-  [id]="inputId"
-  [attr.type]="type"
-  [attr.min]="min"
-  [attr.max]="max"
-  [attr.disabled]="disabled || null"
-
-  *ngIf="control; else internalInput"
-  [formControl]="control"
-/>
-
-<ng-template #internalInput>
+<div class="input-wrapper" *ngIf="control; else internalInput">
   <input
     [id]="inputId"
     [attr.type]="type"
     [attr.min]="min"
     [attr.max]="max"
-    [value]="value"
     [attr.disabled]="disabled || null"
-    (input)="onInputChange($event)"
-    (blur)="onTouched()"
-  />
+
+    *ngIf="control; else internalInput"
+    [formControl]="control" />
+
+  <div class="number-controls" *ngIf="type === 'number'">
+    <button type="button" class="btn-inc" (click)="increment()" [disabled]="disabled">+</button>
+    <button type="button" class="btn-dec" (click)="decrement()" [disabled]="disabled">−</button>
+  </div>
+</div>
+
+<ng-template #internalInput>
+  <div class="input-wrapper">
+    <input
+      [id]="inputId"
+      [attr.type]="type"
+      [attr.min]="min"
+      [attr.max]="max"
+      [value]="value"
+      [attr.disabled]="disabled || null"
+      (input)="onInputChange($event)"
+      (blur)="onTouched()" />
+
+    <div class="number-controls" *ngIf="type === 'number'">
+      <button type="button" class="btn-inc" (click)="increment()" [disabled]="disabled">+</button>
+      <button type="button" class="btn-dec" (click)="decrement()" [disabled]="disabled">−</button>
+    </div>
+  </div>
 </ng-template>

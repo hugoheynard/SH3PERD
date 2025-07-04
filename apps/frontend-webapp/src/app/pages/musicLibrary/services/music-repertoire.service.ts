@@ -1,9 +1,9 @@
 import {inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
-import {ApiURLService} from './api-url.service';
-import {TMusicTabConfiguration} from '../pages/musicLibrary/types/TMusicTabConfiguration';
-import {TUserId} from '../../types/user.types';
+import {ApiURLService} from '../../../services/api-url.service';
+import {TMusicTabConfiguration} from '../types/TMusicTabConfiguration';
+import {TUserId} from '../../../../types/user.types';
 
 @Injectable({
   providedIn: 'root'

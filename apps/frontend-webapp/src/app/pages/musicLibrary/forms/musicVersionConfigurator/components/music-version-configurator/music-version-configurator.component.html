@@ -1,74 +1,77 @@
 <form [formGroup]="form">
   <div class="topRow">
+    <!-- details-->
     <app-form-block title="Version Details" [disabled]="false" formGroupName="details">
       <sh3-input type="text" label="title" formControlName="title"/>
       <sh3-input type="text" label="artist" formControlName="artist"/>
-
-      <div class="grid2">
-        <sh3-select label=genre [options]="textServ.getGenreOptions()"/>
-        <sh3-select label=type [options]="textServ.getTypeOptions()"/>
-      </div>
-
     </app-form-block>
 
-    <app-form-block title="Music data" [disabled]="false">
-      <sh3-input type="number" label="bpm"/>
+    <!-- Music Data-->
+    <app-form-block title="Music data" [disabled]="false" formGroupName="musicData">
+      <div class="grid3">
+        <sh3-select label=genre [options]="textServ.getGenreOptions()" formControlName="genre"/>
+        <sh3-select label=type [options]="textServ.getTypeOptions()" formControlName="type"/>
+        <sh3-input type="number" label="bpm" formControlName="bpm"/>
+        <sh3-input type="number" label="pitch" [min]="-12" [max]="12" formControlName="pitch"/>
 
+        <div class="keySelectorContainer">
+          <label>Key selection</label>
+          <div class="key" formGroupName="key">
+            <sh3-select placeholder="Root" [options]="textServ.getKeysNote()" formControlName="root"/>
+            <sh3-select placeholder=alt [options]="textServ.getKeysAlterations('D')" formControlName="alteration"/>
+            <sh3-select placeholder=tone [options]="textServ.getKeysTone()" formControlName="tone"/>
+          </div>
+        </div>
+      </div>
     </app-form-block>
 
     <app-form-block title="Options" formGroupName="options" [disabled]="false">
       <sh3-checkbox label="map to reference" formControlName="trackMapEnabled" />
       <sh3-checkbox label="add to my repertoire" formControlName="addToUserRepertoire_me"/>
     </app-form-block>
+  </div>
 
+  <div class="bottomRow">
     <!-- Track Map allows user to connect the version to a music reference,
-    it will be used to detect possible interactions on tracks between team mates-->
+    it will be used to detect possible interactions on tracks between team mates,
+    it should be on by default-->
     <app-form-block title="Track Reference" [disabled]="trackMapDisabled()">
       <sh3-select-list
         [items]="musicRefs"
         [trackByFn]="trackByMusicRef"
         [labelFn]="labelForMusicRef"
         [maxSelection]="1"
-        [selectedIds]="[]"
-      />
+        [selectedIds]="[]" />
     </app-form-block>
 
-    <app-form-block title="My repertoire entry" [disabled]="repertoireEntryDisabled()">
+    <app-form-block title="My repertoire entry" [disabled]="repertoireEntryDisabled()" formGroupName="repertoireEntryData">
       <div class="grid2">
-        <sh3-select
-          class="oneCol"
-          label='energy'
-          [options]="textServ.get1_4Array()"/>
-        <sh3-select
-          label='effort'
-          [options]="textServ.get1_4Array()"/>
-        <sh3-select
-          label='mastery'
-          [options]="textServ.get1_4Array()"/>
-        <sh3-select
-          label='affinity'
-          [options]="textServ.get1_4Array()"/>
-      </div>
-
-    </app-form-block>
-  </div>
-
-  <div class="bottomRow">
-    <app-form-block title="Upload file" [disabled]="false">
-      <sh3-file-uploader />
-    </app-form-block>
-
-    <!--FILE LIST IS A TABLE OF MUSIC FILES RELATED TO THE VERSION-->
-    <app-form-block title="File list" [disabled]="fileListDisabled()">
-      <div>
-
+        <sh3-select label='energy' [options]="textServ.getMusicGradeArray()" formControlName="effort"/>
+        <sh3-select label='effort' [options]="textServ.getMusicGradeArray()" formControlName="energy"/>
+        <sh3-select label='mastery' [options]="textServ.getMusicGradeArray()" formControlName="mastery"/>
+        <sh3-select label='affinity' [options]="textServ.getMusicGradeArray()" formControlName="affinity"/>
       </div>
     </app-form-block>
   </div>
 
   <div class="buttonRow">
-    <sh3-button-primary buttonLabel="uploadTrack" />
+    <sh3-button-primary buttonLabel="Save music version" />
   </div>
-
 </form>
+
+
+<!--<div class="bottomRow">
+    <app-form-block title="Upload file" [disabled]="false">
+      <sh3-file-uploader />
+    </app-form-block>
+
+    FILE LIST IS A TABLE OF MUSIC FILES RELATED TO THE VERSION
+    user should be able to add a file for this version, assign a file for usage,
+    it is related to the repertoire entry
+    <app-form-block title="File list" [disabled]="fileListDisabled()">
+      <div>
+
+      </div>
+    </app-form-block>
+  </div>-->
 

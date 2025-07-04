@@ -1,19 +1,30 @@
+@use 'index' as sh3;
+
+
+
 form {
   display: grid;
-  grid-template-rows: 4fr 4fr 1fr;
+  grid-template-rows:  4fr 4fr  1fr;
   gap: 1rem;
   height: 100%;
 }
 
 .topRow {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 2fr 2fr;
-  gap: 1rem;
+  grid-template-columns: 2fr 2fr 2fr;
+  gap: 0.5rem;
+  z-index: 10;
 }
 
 .bottomRow {
   display: grid;
-  grid-template-columns: 2fr 6fr;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
@@ -28,4 +39,27 @@ form {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+}
+
+.keySelectorContainer {
+  grid-column: span 2;
+}
+
+.key {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  flex: 1 1 auto;
+  gap: 1rem;
+}
+
+label {
+  @include sh3.m-form-field-label;
+}
+
+@media (max-width: 768px) {
+  .topRow, .bottomRow {
+    grid-template-columns: 1fr;
+  }
 }

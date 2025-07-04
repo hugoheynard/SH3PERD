@@ -11,6 +11,7 @@ import { MusicLibraryTextContentService } from '../../../../services/music-libra
 import { MusicVersionFormService } from '../../services/music-version-form.service';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SelectListComponent } from '../../../../../../components/select-list/select-list.component';
+import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-music-version-configurator',
@@ -23,6 +24,7 @@ import { SelectListComponent } from '../../../../../../components/select-list/se
     ReactiveFormsModule,
     FileUploaderComponent,
     SelectListComponent,
+    NgStyle,
   ],
   templateUrl: './music-version-configurator.component.html',
   standalone: true,

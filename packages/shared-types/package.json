@@ -5,6 +5,7 @@
   "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
+      "import": "./src/index.js",
       "types": "./dist/types/index.d.ts"
     }
   },
@@ -14,5 +15,8 @@
     "build": "tsc -b tsconfig.json",
     "test": "jest",
     "clean": "../../dev-toolbox/scripts/clean:package.sh"
+  },
+  "peerDependencies": {
+    "zod": "^3.23.0"
   }
 }
