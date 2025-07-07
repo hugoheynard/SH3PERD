@@ -3,7 +3,7 @@
   tabindex="0"
   aria-label="Selectable list"
 >
-  <ng-container *ngIf="items.length; else empty">
+  <ng-container *ngIf="items.length; else customEmpty">
     <div
       *ngFor="let item of items"
       class="entry"
@@ -16,6 +16,10 @@
   </ng-container>
 </div>
 
-<ng-template #empty>
-  <div class="empty-state">No items found.</div>
+<ng-template #customEmpty>
+  <ng-container *ngTemplateOutlet="emptyTemplate || defaultEmpty" />
+</ng-template>
+
+<ng-template #defaultEmpty>
+  <div class="empty-state">No Match found.</div>
 </ng-template>

@@ -9,8 +9,8 @@ export class MusicRepertoireController {
   // adding new repertoire, updating existing ones, etc.
 
   constructor(
-    @Inject(USE_CASES_TOKENS.musicRepertoire)
-    private readonly uc: TCoreUseCasesTypeMap['musicRepertoire'],
+    @Inject(USE_CASES_TOKENS.musicRepertoireEntries)
+    private readonly uc: TCoreUseCasesTypeMap['musicRepertoireEntries'],
   ) {}
 
   @Post('/me')

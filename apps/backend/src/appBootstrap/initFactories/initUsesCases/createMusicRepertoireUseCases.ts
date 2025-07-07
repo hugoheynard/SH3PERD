@@ -2,9 +2,10 @@ import { TechnicalError } from '../../../utils/errorManagement/errorClasses/Tech
 import { createGetMusicRepertoireByUserIdUseCase } from '../../../music/useCases/createGetMusicRepertoireByUserIdUseCase.js';
 import type { TMusicRepertoireUseCases } from '../../../music/types/musicRepertoire.useCases.types.js';
 import type { TCoreRepositories } from '../createCoreRepositories.js';
+import type { TCoreServices } from '../createCoreServices.js';
 
 export const createMusicRepertoireUseCases = (deps: {
-  services: any;
+  services: TCoreServices;
   repositories: TCoreRepositories;
 }): TMusicRepertoireUseCases => {
   try {

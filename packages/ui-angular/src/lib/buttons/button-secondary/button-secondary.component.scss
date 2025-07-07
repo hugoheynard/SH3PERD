@@ -1,0 +1,33 @@
+@use '../../../styles/index' as sh3;
+
+
+
+button {
+  @include sh3.m-eraseDefault;
+  font-size: sh3.$form-field-label-fontSize;
+  padding: 0.5rem 1rem;
+  text-transform: capitalize;
+  color: var(--colorSecondary);
+  background-color: transparent;
+  border: 1px solid var(--colorSecondary);
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(var(--colorSecondaryRGB, 100, 100, 255), 0.1); // légère teinte
+    color: var(--colorPrimary);
+    border-color: var(--colorPrimary);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    border-color: var(--baseTextColor);
+    color: var(--baseTextColor);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}

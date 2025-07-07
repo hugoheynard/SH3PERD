@@ -58,7 +58,7 @@ export const SMusicGrade = z
   ])
   .nullable();
 
-
+export type TMusicGrade = z.infer<typeof SMusicGrade>;
 
 
 
@@ -88,3 +88,6 @@ export const MusicVersionPayloadSchema = z.object({
     affinity: SMusicGrade
   })
 });
+
+
+export type TCreateMusicReferencePayload = { title: string; artist: string };

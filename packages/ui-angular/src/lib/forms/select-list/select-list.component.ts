@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { NgForOf, NgIf } from '@angular/common';
+import { Component, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
+import { NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
 
 
 /**
@@ -11,6 +11,7 @@ import { NgForOf, NgIf } from '@angular/common';
   imports: [
     NgForOf,
     NgIf,
+    NgTemplateOutlet,
   ],
   templateUrl: './select-list.component.html',
   standalone: true,
@@ -61,13 +62,16 @@ export class SelectListComponent<T> {
    */
   @Output() selectionChange = new EventEmitter<T[]>();
 
+  @Input() emptyTemplate?: TemplateRef<unknown>;
+
+
   /**
    * Handles user selection of an item.
    * In multi-select mode, toggles the item and enforces max selection limit.
    * In single-select mode, emits the selected item.
    * @param item The item that was selected or deselected.
    */
-  onSelect(item: T) {
+  onSelect(item: T): void {
     const id = this.trackByFn(item);
     if (this.maxSelection) {
       const exists = this.selectedIds.includes(id);

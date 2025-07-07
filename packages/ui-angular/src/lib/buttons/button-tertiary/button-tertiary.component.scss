@@ -1,0 +1,46 @@
+@use '../../../styles/index' as sh3;
+
+:host {
+  position: relative;
+}
+
+button {
+  @include sh3.m-eraseDefault;
+  font-size: sh3.$form-field-label-fontSize;
+  text-transform: capitalize;
+  //background-color: t.$appBgColor_dark;
+  color: var(--colorSecondary);
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background-color: var(--colorPrimary);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.17s ease-in-out;
+  }
+
+  &:hover {
+    color: var(--colorPrimary);
+
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+
+  &:disabled {
+    color:var(--baseTextColor);
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  &:active {
+    transform: scale(0.92);
+    transition: transform 0.1s ease;
+  }
+}

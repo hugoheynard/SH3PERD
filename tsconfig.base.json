@@ -4,27 +4,38 @@
     "moduleResolution": "NodeNext",
     "target": "ES2023",
     "lib": ["esnext"],
-    "allowSyntheticDefaultImports": true,
-    "incremental": true,
-    "removeComments": true,
-    "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "strictPropertyInitialization": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "removeComments": true,
+    "forceConsistentCasingInFileNames": true,
     "declarationMap": true,
     "allowJs": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
-    "sourceMap": true,
-    "experimentalDecorators": true,
+    "sourceMap": true, //OK base
+    "experimentalDecorators": true, //OK base
     "emitDecoratorMetadata": true,
     "emitDeclarationOnly": false,
+    "allowUnreachableCode": false, //OK base
+    "noImplicitOverride": true, //OK base
+    "allowUnusedLabels": false, //OK,
+    "incremental": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "useUnknownInCatchVariables": true,
+    //"noUncheckedIndexedAccess": true, // va être pénible
+
+
   },
   "include": ["src"],
   "exclude": [

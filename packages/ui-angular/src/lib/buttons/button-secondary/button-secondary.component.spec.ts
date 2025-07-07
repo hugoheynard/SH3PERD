@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SelectListComponent } from './select-list.component';
+import { ButtonSecondaryComponent } from './button-secondary.component';
 
-describe('SelectListComponent', () => {
-  let component: SelectListComponent;
-  let fixture: ComponentFixture<SelectListComponent>;
+describe('ButtonSecondaryComponent', () => {
+  let component: ButtonSecondaryComponent;
+  let fixture: ComponentFixture<ButtonSecondaryComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SelectListComponent]
+      imports: [ButtonSecondaryComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SelectListComponent);
+    fixture = TestBed.createComponent(ButtonSecondaryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

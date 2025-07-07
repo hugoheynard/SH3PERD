@@ -16,7 +16,7 @@ console.log('[ENV] loadEnv file loaded');
  * Loads environment variables from `.env.app` + `.env.{env}`
  * @param envName - Environment name (e.g. 'dev', 'prod')
  */
-export const loadEnv = (envName: string = process.env.NODE_ENV || 'dev'): void => {
+export const loadEnv = (envName: string = process.env['NODE_ENV'] || 'dev'): void => {
   const baseEnvPath = path.resolve(process.cwd(), '.env.app');
   const envSpecificPath = path.resolve(process.cwd(), `.env.${envName}`);
 

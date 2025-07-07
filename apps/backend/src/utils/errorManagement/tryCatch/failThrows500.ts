@@ -45,6 +45,7 @@ export function failThrows500(code: string, message?: string): MethodDecorator {
       try {
         return await originalMethod.apply(this, args);
       } catch (err) {
+        console.error(err)
         throw new TechnicalError(
           message ?? `Failure in ${target.constructor.name}.${String(propertyKey)}`,
           code,

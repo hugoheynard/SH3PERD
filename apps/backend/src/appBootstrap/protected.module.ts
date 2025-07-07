@@ -1,11 +1,17 @@
 import { Module } from '@nestjs/common';
 import { MusicRepertoireController } from '../music/api/musicRepertoire.controller.js';
-import { MusicRepertoireModule } from '../music/musicRepertoire.module.js';
+import { MusicModule } from '../music/music.module.js';
 import { CoreUseCasesAccessModule } from './core_modules/useCases/CoreUseCasesAccessModule.js';
+import { MusicReferenceController } from '../music/api/music-reference.controller.js';
 
 @Module({
-  imports: [MusicRepertoireModule, CoreUseCasesAccessModule.forMany(['musicRepertoire'])],
-  controllers: [MusicRepertoireController],
+  imports: [
+    MusicModule, CoreUseCasesAccessModule.forMany([
+      'musicRepertoireEntries',
+      'musicReferences'
+    ])
+  ],
+  controllers: [MusicRepertoireController, MusicReferenceController],
   exports: [],
 })
 export class ProtectedModule {

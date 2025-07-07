@@ -9,4 +9,7 @@ export * from './music.domain.schemas.js';
 export * from './music.domain.types.js';
 
 
+export * from './user.domain.js';
+
+
 

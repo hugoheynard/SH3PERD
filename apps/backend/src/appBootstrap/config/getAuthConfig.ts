@@ -22,15 +22,15 @@ export const loadKeysFromFiles = (): { privateKey: string; publicKey: string } =
 };
 
 export const getAuthConfig = (): TAuthConfig => {
-  const isProd = process.env.NODE_ENV === 'production';
+  const isProd = process.env['NODE_ENV'] === 'production';
 
-  if (isProd && (!process.env.JWT_PRIVATE_KEY || !process.env.JWT_PUBLIC_KEY)) {
+  if (isProd && (!process.env['JWT_PRIVATE_KEY'] || !process.env['JWT_PUBLIC_KEY'])) {
     throw new Error('[authConfig] JWT keys are missing in environment variables for production');
   }
 
   return {
-    privateKey: isProd ? (process.env.JWT_PRIVATE_KEY as string) : loadKeysFromFiles().privateKey,
-    publicKey: isProd ? (process.env.JWT_PUBLIC_KEY as string) : loadKeysFromFiles().publicKey,
+    privateKey: isProd ? (process.env['JWT_PRIVATE_KEY'] as string) : loadKeysFromFiles().privateKey,
+    publicKey: isProd ? (process.env['JWT_PUBLIC_KEY'] as string) : loadKeysFromFiles().publicKey,
     authToken_TTL_SECONDS: 900,
     refreshTokenTTL_MS: 604800000,
   };

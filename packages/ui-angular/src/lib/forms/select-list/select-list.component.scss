@@ -1,6 +1,6 @@
-@use 'tokens' as t;
-@use 'mixins' as m;
-@use 'index' as sh3;
+@use '../../../../../../apps/frontend-webapp/src/styles/tokens/index' as t;
+@use '../../../../../../apps/frontend-webapp/src/styles/mixins/index' as m;
+@use '../../../styles/index' as sh3;
 
 :host {
   width: 100%;

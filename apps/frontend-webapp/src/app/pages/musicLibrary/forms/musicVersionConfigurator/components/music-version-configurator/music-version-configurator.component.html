@@ -1,63 +1,83 @@
 <form [formGroup]="form">
-  <div class="topRow">
-    <!-- details-->
-    <app-form-block title="Version Details" [disabled]="false" formGroupName="details">
-      <sh3-input type="text" label="title" formControlName="title"/>
-      <sh3-input type="text" label="artist" formControlName="artist"/>
-    </app-form-block>
+  <!-- details-->
+  <app-form-block title="Version Details" [disabled]="false" formGroupName="details">
+    <sh3-input type="text" label="title" formControlName="title"/>
+    <sh3-input type="text" label="artist" formControlName="artist"/>
+  </app-form-block>
 
-    <!-- Music Data-->
-    <app-form-block title="Music data" [disabled]="false" formGroupName="musicData">
-      <div class="grid3">
-        <sh3-select label=genre [options]="textServ.getGenreOptions()" formControlName="genre"/>
-        <sh3-select label=type [options]="textServ.getTypeOptions()" formControlName="type"/>
-        <sh3-input type="number" label="bpm" formControlName="bpm"/>
-        <sh3-input type="number" label="pitch" [min]="-12" [max]="12" formControlName="pitch"/>
+  <!-- Music Data-->
+  <app-form-block title="Music data" [disabled]="false" formGroupName="musicData">
+    <div class="grid2">
+      <sh3-select label=genre [options]="textServ.getGenreOptions()" formControlName="genre"/>
+      <sh3-select label=type [options]="textServ.getTypeOptions()" formControlName="type"/>
+      <sh3-input type="number" label="bpm" formControlName="bpm"/>
+      <sh3-input type="number" label="pitch" [min]="-12" [max]="12" formControlName="pitch"/>
+    </div>
+  </app-form-block>
 
-        <div class="keySelectorContainer">
-          <label>Key selection</label>
-          <div class="key" formGroupName="key">
-            <sh3-select placeholder="Root" [options]="textServ.getKeysNote()" formControlName="root"/>
-            <sh3-select placeholder=alt [options]="textServ.getKeysAlterations('D')" formControlName="alteration"/>
-            <sh3-select placeholder=tone [options]="textServ.getKeysTone()" formControlName="tone"/>
-          </div>
-        </div>
-      </div>
-    </app-form-block>
-
-    <app-form-block title="Options" formGroupName="options" [disabled]="false">
-      <sh3-checkbox label="map to reference" formControlName="trackMapEnabled" />
-      <sh3-checkbox label="add to my repertoire" formControlName="addToUserRepertoire_me"/>
-    </app-form-block>
-  </div>
-
-  <div class="bottomRow">
-    <!-- Track Map allows user to connect the version to a music reference,
+  <!-- Track Map allows user to connect the version to a music reference,
     it will be used to detect possible interactions on tracks between team mates,
     it should be on by default-->
-    <app-form-block title="Track Reference" [disabled]="trackMapDisabled()">
-      <sh3-select-list
-        [items]="musicRefs"
+  <app-form-block [ngStyle]="{ gridColumn: 'span 2' }" title="Track Reference" [disabled]="false">
+      <div class="grid2">
+        <sh3-select-list [ngStyle]="{ gridColumn: musicRefFormOpen() ? 'span 1' : 'span 2'}"
+        [items]="musicRefsSuggestions()"
         [trackByFn]="trackByMusicRef"
         [labelFn]="labelForMusicRef"
         [maxSelection]="1"
-        [selectedIds]="[]" />
-    </app-form-block>
+        [selectedIds]="[]"
+        [emptyTemplate]="customEmptyTpl" />
 
-    <app-form-block title="My repertoire entry" [disabled]="repertoireEntryDisabled()" formGroupName="repertoireEntryData">
-      <div class="grid2">
-        <sh3-select label='energy' [options]="textServ.getMusicGradeArray()" formControlName="effort"/>
-        <sh3-select label='effort' [options]="textServ.getMusicGradeArray()" formControlName="energy"/>
-        <sh3-select label='mastery' [options]="textServ.getMusicGradeArray()" formControlName="mastery"/>
-        <sh3-select label='affinity' [options]="textServ.getMusicGradeArray()" formControlName="affinity"/>
-      </div>
-    </app-form-block>
-  </div>
+        <ng-template #customEmptyTpl>
+          <ng-container *ngIf="artistSig() && titleSig(); else noInput">
+            <div class="emptyCase">
+              <span>NO MATCH</span>
+              <sh3-button-secondary buttonLabel="Create reference" [onClick]="openMusicRefForm"/>
+            </div>
 
-  <div class="buttonRow">
+          </ng-container>
+        <ng-template #noInput>
+          <div class="emptyCase">
+            <span>NO MATCH</span>
+            <div>Please type artist and title to search.</div>
+          </div>
+        </ng-template>
+      </ng-template>
+
+      <ng-container *ngIf="musicRefFormOpen()" formGroupName="musicReferenceDetails">
+        <div id="addRefForm">
+          <sh3-input label="Reference music title" formControlName="title"/>
+          <sh3-input label="Reference music artist" formControlName="artist"/>
+          <div [ngStyle]="{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}">
+            <sh3-checkbox label="Use version details" formControlName="useVersionDetails"/>
+            <sh3-button-tertiary buttonLabel="reset"  [onClick]="resetAddReferenceProcess"/>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+  </app-form-block>
+
+  <div [ngStyle]="{ gridColumn: 'span 2'}" class="buttonRow">
     <sh3-button-primary buttonLabel="Save music version" />
   </div>
 </form>
+
+<!--
+  <app-form-block title="My repertoire entry" [disabled]="repertoireEntryDisabled()" formGroupName="repertoireEntryData">
+    <div class="grid2">
+      <sh3-select label='energy' [options]="textServ.getMusicGradeArray()" formControlName="effort"/>
+      <sh3-select label='effort' [options]="textServ.getMusicGradeArray()" formControlName="energy"/>
+      <sh3-select label='mastery' [options]="textServ.getMusicGradeArray()" formControlName="mastery"/>
+      <sh3-select label='affinity' [options]="textServ.getMusicGradeArray()" formControlName="affinity"/>
+    </div>
+  </app-form-block>-->
+
+<!--
+<app-form-block title="Options" formGroupName="options" [disabled]="false">
+  <sh3-checkbox label="map to reference" formControlName="trackMapEnabled" />
+  <sh3-checkbox label="add to my repertoire" formControlName="addToUserRepertoire_me"/>
+</app-form-block>-->
 
 
 <!--<div class="bottomRow">
@@ -75,3 +95,12 @@
     </app-form-block>
   </div>-->
 
+<!-- <div class="keySelectorContainer">
+        <label>Key selection</label>
+        <div class="key" formGroupName="key">
+          <sh3-select placeholder="Root" [options]="textServ.getKeysNote()" formControlName="root"/>
+          <sh3-select placeholder=alt [options]="textServ.getKeysAlterations('D')" formControlName="alteration"/>
+          <sh3-select placeholder=tone [options]="textServ.getKeysTone()" formControlName="tone"/>
+          <sh3-button-primary buttonLabel="clear selection" />
+        </div>
+      </div>-->

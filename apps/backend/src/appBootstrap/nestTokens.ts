@@ -6,12 +6,16 @@ export const CORE_REPOSITORIES: symbol = Symbol('CORE_REPOSITORY');
 
 export const CORE_SERVICES: symbol = Symbol('CORE_SERVICES');
 
-//USE CASES TOKENS
+/**USE CASES TOKENS
+ * This is a collection of symbols used to identify the core use cases in the application.
+ */
 export const CORE_USECASES: symbol = Symbol('CORE_USECASES');
 
 export const USE_CASES_TOKENS = {
   auth: Symbol('AUTH_USE_CASES'),
-  musicRepertoire: Symbol('MUSIC_REPERTOIRE_USE_CASES'),
+  musicReferences: Symbol('MUSIC_REFERENCES_USE_CASES'),
+  musicVersions: Symbol('MUSIC_VERSIONS_USE_CASES'),
+  musicRepertoireEntries: Symbol('MUSIC_REPERTOIRE_USE_CASES'),
 } as const;
 
 export type TCoreUseCasesTypeMap = {

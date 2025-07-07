@@ -4,10 +4,15 @@ import type { TCoreRepositories } from './createCoreRepositories.js';
 import type { TAuthUseCases } from '../../auth/types/auth.core.useCase.js';
 import type { TMusicRepertoireUseCases } from '../../music/types/musicRepertoire.useCases.types.js';
 import type { TCoreServices } from './createCoreServices.js';
+import type { MongoClient } from 'mongodb';
+import type { TMusicReferencesUseCases } from './initUsesCases/createMusicReferencesUseCases.js';
+import { createMusicReferencesUseCases } from './initUsesCases/createMusicReferencesUseCases.js';
 
 export type TCoreUseCases = {
   auth: TAuthUseCases;
-  musicRepertoire: TMusicRepertoireUseCases;
+  musicReferences: TMusicReferencesUseCases;
+  musicVersions: any;
+  musicRepertoireEntries: TMusicRepertoireUseCases;
 };
 
 /**
@@ -17,11 +22,16 @@ export type TCoreUseCases = {
 export const createCoreUseCases = (deps: {
   services: TCoreServices;
   repositories: TCoreRepositories;
+  tools?: any;
+  mongoClient?: MongoClient;
 }): TCoreUseCases => {
   try {
     return {
       auth: createAuthUseCases(deps),
-      musicRepertoire: createMusicRepertoireUseCases(deps),
+      musicReferences: createMusicReferencesUseCases(deps),
+      musicVersions: {},
+      musicRepertoireEntries: createMusicRepertoireUseCases(deps),
+
     };
   } catch (err: unknown) {
     if (err instanceof Error) {

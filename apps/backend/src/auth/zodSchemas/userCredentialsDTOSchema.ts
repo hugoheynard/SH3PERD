@@ -19,3 +19,4 @@ export const userCredentialsDTOSchema = z.object({
       message: 'Password should not contain spaces.',
     }),
 });
+
