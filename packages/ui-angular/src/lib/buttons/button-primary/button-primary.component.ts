@@ -14,19 +14,12 @@ export class ButtonPrimaryComponent {
   @Input() buttonLabel: string = 'Click Me';
   @Input() disabled: boolean = false;
   @Input() onClick?: () => void;
-  @Output() clicked: EventEmitter<void> = new EventEmitter<void>();
+  @Output() click = new EventEmitter<void>();
 
   handleClick(): void {
     if (this.disabled) {
       return;
     }
-    this.clicked.emit();
-
-    if (!this.onClick) {
-      return;
-    }
-
-    this.onClick();
-    return;
+    this.click.emit();
   };
 }

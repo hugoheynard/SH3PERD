@@ -1,12 +1,13 @@
-import {Component, Input} from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
-import {NgIf} from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-form-block',
   imports: [
     MatIcon,
-    NgIf
+    NgIf,
+    NgClass,
   ],
   standalone: true,
   styleUrl: './form-block.component.scss',
@@ -20,5 +21,10 @@ import {NgIf} from '@angular/common';
 export class FormBlockComponent {
   @Input() title: string = 'block title';
   @Input() disabled: boolean = true;
+  @Input() asDialog: boolean = false;
   @Input() animationDelay: number = 0;
+
+  @HostBinding('class.dialog') get isDialog(): boolean {
+    return this.asDialog;
+  }
 }

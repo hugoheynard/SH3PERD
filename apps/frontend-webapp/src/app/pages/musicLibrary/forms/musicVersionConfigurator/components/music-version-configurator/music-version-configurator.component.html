@@ -1,12 +1,12 @@
 <form [formGroup]="form">
   <!-- details-->
-  <app-form-block title="Version Details" [disabled]="false" formGroupName="details">
+  <app-form-block title="Version Details" [disabled]="false">
     <sh3-input type="text" label="title" formControlName="title"/>
     <sh3-input type="text" label="artist" formControlName="artist"/>
   </app-form-block>
 
   <!-- Music Data-->
-  <app-form-block title="Music data" [disabled]="false" formGroupName="musicData">
+  <app-form-block title="Music data" [disabled]="false">
     <div class="grid2">
       <sh3-select label=genre [options]="textServ.getGenreOptions()" formControlName="genre"/>
       <sh3-select label=type [options]="textServ.getTypeOptions()" formControlName="type"/>
@@ -20,19 +20,21 @@
     it should be on by default-->
   <app-form-block [ngStyle]="{ gridColumn: 'span 2' }" title="Track Reference" [disabled]="false">
       <div class="grid2">
-        <sh3-select-list [ngStyle]="{ gridColumn: musicRefFormOpen() ? 'span 1' : 'span 2'}"
-        [items]="musicRefsSuggestions()"
-        [trackByFn]="trackByMusicRef"
-        [labelFn]="labelForMusicRef"
-        [maxSelection]="1"
-        [selectedIds]="[]"
-        [emptyTemplate]="customEmptyTpl" />
+        <sh3-select-list
+          formControlName="musicReference_id"
+          [ngStyle]="{ gridColumn: musicRefFormOpen() ? 'span 1' : 'span 2'}"
+          [items]="musicRefsSuggestions()"
+          [trackByFn]="trackByMusicRef"
+          [labelFn]="labelForMusicRef"
+          [valueFn]="trackByMusicRef"
+          [maxSelection]="1"
+          [emptyTemplate]="customEmptyTpl" />
 
         <ng-template #customEmptyTpl>
           <ng-container *ngIf="artistSig() && titleSig(); else noInput">
             <div class="emptyCase">
               <span>NO MATCH</span>
-              <sh3-button-secondary buttonLabel="Create reference" [onClick]="openMusicRefForm"/>
+              <sh3-button-secondary buttonLabel="Create reference" (click)="openMusicRefForm()"/>
             </div>
 
           </ng-container>
@@ -43,23 +45,12 @@
           </div>
         </ng-template>
       </ng-template>
-
-      <ng-container *ngIf="musicRefFormOpen()" formGroupName="musicReferenceDetails">
-        <div id="addRefForm">
-          <sh3-input label="Reference music title" formControlName="title"/>
-          <sh3-input label="Reference music artist" formControlName="artist"/>
-          <div [ngStyle]="{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}">
-            <sh3-checkbox label="Use version details" formControlName="useVersionDetails"/>
-            <sh3-button-tertiary buttonLabel="reset"  [onClick]="resetAddReferenceProcess"/>
-          </div>
-        </div>
-      </ng-container>
     </div>
 
   </app-form-block>
 
   <div [ngStyle]="{ gridColumn: 'span 2'}" class="buttonRow">
-    <sh3-button-primary buttonLabel="Save music version" />
+    <sh3-button-primary buttonLabel="Save music version" (click)="onSubmit()"/>
   </div>
 </form>
 

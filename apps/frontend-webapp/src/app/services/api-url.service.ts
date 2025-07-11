@@ -33,4 +33,11 @@ export class ApiURLService {
     this.reset(); // important to allow reuse
     return full;
   };
+
+  getProtectedBaseUrl(prefix: string): string {
+    this.api();
+    this.protected();
+    this.route(prefix);
+    return this.build();
+  };
 }

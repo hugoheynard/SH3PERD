@@ -1,7 +1,7 @@
 
 import type { TUserId } from '@sh3pherd/shared-types';
 import {jest } from '@jest/globals';
-import { createPostMusicReferenceUseCase } from '../createPostMusicReferenceUseCase.js';
+import { createCreateOneMusicReferenceUseCase } from '../createCreateOneMusicReferenceUseCase.js';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
 import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
 
@@ -12,7 +12,7 @@ describe('createPostMusicReferenceUseCase', () => {
   it('should create a music reference successfully', async () => {
     const mockSave = jest.fn().mockResolvedValue(true);
 
-    const useCase = createPostMusicReferenceUseCase({
+    const useCase = createCreateOneMusicReferenceUseCase({
       saveOneMusicReferenceFn: mockSave,
     });
 
@@ -26,7 +26,7 @@ describe('createPostMusicReferenceUseCase', () => {
   });
 
   it('should throw BusinessError if title or artist is missing', async () => {
-    const useCase = createPostMusicReferenceUseCase({
+    const useCase = createCreateOneMusicReferenceUseCase({
       saveOneMusicReferenceFn: jest.fn(),
     });
 
@@ -35,14 +35,14 @@ describe('createPostMusicReferenceUseCase', () => {
 
   it('should throw TechnicalError if saveOne returns false', async () => {
     const mockSave = jest.fn().mockResolvedValue(false);
-    const useCase = createPostMusicReferenceUseCase({ saveOneMusicReferenceFn: mockSave });
+    const useCase = createCreateOneMusicReferenceUseCase({ saveOneMusicReferenceFn: mockSave });
 
     await expect(useCase(asker_id, payload)).rejects.toThrow(TechnicalError);
   });
 
   it('should wrap unknown errors as generic Error', async () => {
     const mockSave = jest.fn().mockRejectedValue('weird failure');
-    const useCase = createPostMusicReferenceUseCase({ saveOneMusicReferenceFn: mockSave });
+    const useCase = createCreateOneMusicReferenceUseCase({ saveOneMusicReferenceFn: mockSave });
 
     await expect(useCase(asker_id, payload)).rejects.toThrow('Unknown error while creating music reference');
   });

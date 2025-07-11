@@ -1,10 +1,38 @@
-import { Component, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, forwardRef, Input, Output, TemplateRef } from '@angular/core';
 import { NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
+import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 
 /**
- * Generic selection list component.
- * Supports single or multiple selection with a maximum limit.
+ * Example usage of the <sh3-select-list> component in a reactive form.
+ *
+ * This component supports both single and multi-selection modes.
+ * It integrates with Angular forms using ControlValueAccessor.
+ *
+ * @example
+ * <sh3-select-list
+ *   formControlName="musicReference_id"
+ *   [ngStyle]="{ gridColumn: musicRefFormOpen() ? 'span 1' : 'span 2' }"
+ *   [items]="musicRefsSuggestions()"
+ *   [trackByFn]="trackByMusicRef"
+ *   [labelFn]="labelForMusicRef"
+ *   [valueFn]="trackByMusicRef"
+ *   [maxSelection]="1"
+ *   [emptyTemplate]="customEmptyTpl"
+ * />
+ *
+ * @description
+ * - `items`: Array of selectable items.
+ * - `trackByFn`: Function to extract a unique identifier from each item (used for selection tracking).
+ * - `labelFn`: Function to display a label for each item.
+ * - `valueFn`: Function to transform the selected item(s) into the form control value.
+ * - `maxSelection`: Set to `1` for single selection (the returned value will still be an array).
+ *
+ * @note
+ * Even in single-selection mode, the `ControlValueAccessor` returns an array of values.
+ * For example: `['music_ref_123']` instead of `'music_ref_123'`.
+ * Consumers should handle this consistently within the form model.
  */
 @Component({
   selector: 'sh3-select-list',
@@ -16,8 +44,15 @@ import { NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
   templateUrl: './select-list.component.html',
   standalone: true,
   styleUrl: './select-list.component.scss',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => SelectListComponent),
+      multi: true,
+    },
+  ],
 })
-export class SelectListComponent<T> {
+export class SelectListComponent<T> extends BaseControlValueAccessor<any> {
   /**
    * Array of items to display in the list.
    */
@@ -36,26 +71,22 @@ export class SelectListComponent<T> {
   @Input() maxSelection?: number;
 
   /**
-   * List of selected item IDs (used in multi-select mode).
-   */
-  @Input() selectedIds: (string | number)[] = [];
-
-  /**
-   * Currently selected item ID (used in single-select mode).
-   */
-  @Input() selectedId: string | number | null = null;
-
-  /**
    * Function used to extract a unique identifier from each item.
    * Defaults to `(item) => item.id`.
    */
-  @Input({ required: true }) trackByFn: (item: T) => string | number = (item: any) => item?.id;
+  @Input({ required: true }) trackByFn!: (item: T) => any;
 
   /**
    * Function used to generate a display label for each item.
-   * Defaults to `(item) => item.toString()`.
+   * Should look like  `(item) => item.toString()`.
    */
-  @Input({ required: true }) labelFn: (item: T) => string = (item: any) => item?.toString();
+  @Input({ required: true }) labelFn!: (item: T) => string;
+
+  /**
+   * Function used to extract a value from each item.
+   * Defaults to `(item) => item`.
+   */
+  @Input() valueFn: (item: T) => unknown = item => item;
 
   /**
    * Emits the list of currently selected items whenever selection changes.
@@ -64,6 +95,8 @@ export class SelectListComponent<T> {
 
   @Input() emptyTemplate?: TemplateRef<unknown>;
 
+  // Valeur interne utilisée pour tracking visuel
+  private internalSelection: T[] = [];
 
   /**
    * Handles user selection of an item.
@@ -73,19 +106,26 @@ export class SelectListComponent<T> {
    */
   onSelect(item: T): void {
     const id = this.trackByFn(item);
-    if (this.maxSelection) {
-      const exists = this.selectedIds.includes(id);
-      const newSelection = exists
-        ? this.selectedIds.filter(i => i !== id)
-        : this.selectedIds.length < this.maxSelection
-          ? [...this.selectedIds, id]
-          : this.selectedIds;
+    const exists = this.internalSelection.some(i => this.trackByFn(i) === id);
 
-      this.selectionChange.emit(this.items.filter(i => newSelection.includes(this.trackByFn(i))));
-    } else {
-      this.selectionChange.emit([item]);
+    if (!this.maxSelection) {
+      this.internalSelection = [item];
+      this.value = this.valueFn(item);
+      this.onChange(this.value);
+      return;
     }
-  }
+
+    const updated = exists
+      ? this.internalSelection.filter(i => this.trackByFn(i) !== id)
+      : this.internalSelection.length < this.maxSelection
+        ? [...this.internalSelection, item]
+        : this.internalSelection;
+
+    this.internalSelection = updated;
+    this.value = updated.map(this.valueFn); // seul moment où on transforme
+    this.onChange(this.value);
+    return;
+  };
 
   /**
    * Determines if a given item is currently selected.
@@ -94,8 +134,10 @@ export class SelectListComponent<T> {
    */
   isSelected(item: T): boolean {
     const id = this.trackByFn(item);
-    return this.maxSelection ? this.selectedIds.includes(id) : id === this.selectedId;
-  };
+    return this.maxSelection
+      ? (this.value as unknown[] ?? []).includes(id)
+      : this.value === id;
+  }
 
   /**
    * Determines if an item is disabled due to max selection being reached.
@@ -103,11 +145,10 @@ export class SelectListComponent<T> {
    * @returns True if the item cannot be selected.
    */
   isDisabled(item: T): boolean {
+    if (!this.maxSelection) return false;
+
     const id = this.trackByFn(item);
-    return !! (
-      this.maxSelection &&
-      !this.selectedIds.includes(id) &&
-      this.selectedIds.length >= this.maxSelection
-    );
-  };
+    const selected = (this.value as unknown[] ?? []);
+    return !selected.includes(id) && selected.length >= this.maxSelection;
+  }
 }

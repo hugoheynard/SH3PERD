@@ -1,26 +1,7 @@
 import type { TUserId } from './user.domain.js';
 import type { TMusicGrade } from './music.domain.schemas.js';
+import type { TMusicVersionId } from './music.versions.schemas.js';
 
-/**
- * Domain types for music references.
- */
-
-export type TMusicReferenceId = `musicReference_${string}`;
-export type TMusicReferenceDomainModel = {
-  music_id: TMusicReferenceId;
-  title: string;
-  artist: string;
-  created_at: Date;
-  updated_at: Date;
-  created_by: TUserId;
-  active: boolean;
-};
-
-
-
-
-
-export type TMusicVersionId = `musicVersion_${string}`;
 
 export type TMusicRepertoireEntry_id = `musicRepertoireEntry_${string}`;
 export type TMusicRepertoireEntryDomainModel = {

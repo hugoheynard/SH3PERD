@@ -1,4 +1,4 @@
-<div class="overlay" *ngIf="disabled">
+<div class="overlay" *ngIf="disabled" [ngClass]="{ 'dialog': asDialog }">
   <span class="icon"><mat-icon>block</mat-icon></span>
 </div>
 

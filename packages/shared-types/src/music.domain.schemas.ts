@@ -60,34 +60,23 @@ export const SMusicGrade = z
 
 export type TMusicGrade = z.infer<typeof SMusicGrade>;
 
+export const SMusicReference_id = z.string().regex(
+  /^musicReference_[a-zA-Z0-9_-]+$/,
+  { message: 'Invalid musicReference_id format' }
+);
 
 
 
-/** 🎛️ Payload complete */
-export const MusicVersionPayloadSchema = z.object({
-  details: z.object({
-    title: z.string().min(1),
-    artist: z.string().min(1),
-  }),
-  musicData: z.object({
-    genre: SGenreEnum,
-    type: STypeEnum,
-    bpm: z.number().nullable(),
-    pitch: z.number().nullable(),
-    key: SKeySchema,
-  }),
-  options: z.object({
-    trackMapEnabled: z.boolean(),
-    addToUserRepertoire_me: z.boolean(),
-  }),
-  musicReference_id: z.string().nullable(),
+
+
+export const MusicRepertoireEntryPayloadSchema = z.object({
+  musicVersion_id: z.string().min(1),
   repertoireEntryData: z.object({
     effort: SMusicGrade,
     energy: SMusicGrade,
     mastery: SMusicGrade,
     affinity: SMusicGrade
   })
-});
+})
 
 
-export type TCreateMusicReferencePayload = { title: string; artist: string };

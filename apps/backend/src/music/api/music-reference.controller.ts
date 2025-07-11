@@ -1,6 +1,12 @@
-import { Controller, Get, Inject, Query } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query, Req } from '@nestjs/common';
 import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
-import type { TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
+import type {
+  TCreateMusicReferenceRequestDTO,
+  TMusicReferenceCreationResponseDTO,
+  TMusicReferenceDomainModel,
+} from '@sh3pherd/shared-types';
+import { apiCodes, buildApiResponse } from '../codes.js';
+import type { Request } from 'express';
 
 
 @Controller('music-reference')
@@ -20,11 +26,20 @@ export class MusicReferenceController {
     @Query('title') title: string,
     @Query('artist') artist: string,
   ): Promise<TMusicReferenceDomainModel[]> {
-
-    if (!title && !artist) {
-      return [];
-    }
-
     return this.uc.dynamicSearchMusicReferences({ artist, title});
   };
+
+
+  @Post()
+  async createOne(
+    @Req() req: Request,
+    @Body('payload') payload: TCreateMusicReferenceRequestDTO,
+  ): Promise<TMusicReferenceCreationResponseDTO> {
+    const result = await this.uc.createOne(req.user_id, payload);
+
+    return buildApiResponse<TMusicReferenceDomainModel>(
+      apiCodes.music.MUSIC_REFERENCE_CREATED,
+      result
+    );
+  }
 }

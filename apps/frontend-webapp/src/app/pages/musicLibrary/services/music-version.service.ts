@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ApiURLService } from '../../../services/api-url.service';
+import { TMusicVersionCreationFormPayload } from '@shepherd/shared-types/music.versions.schemas';
 
 
 @Injectable({
@@ -15,12 +16,12 @@ export class MusicVersionService {
   /**
    * This service is responsible for posting a new music versions.
    */
-  postMusicVersion(musicVersionPayload: any): Promise<any> {
+  async postMusicVersion(musicVersionFormDataPayload: TMusicVersionCreationFormPayload): Promise<any> {
     try {
       const response: HttpResponse<any> = await firstValueFrom(
         this.http.post(
           `${this.baseURL}/musicVersion`,
-          musicVersionPayload,
+          musicVersionFormDataPayload,
           {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
             observe: 'response'
@@ -29,7 +30,7 @@ export class MusicVersionService {
       if (!response.ok) {
         return false;
       }
-      return result;
+      return response.body;
 
     } catch(e) {
       console.log('error while creating music version', e);

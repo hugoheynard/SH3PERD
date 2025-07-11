@@ -5,6 +5,10 @@
   position: relative;
 }
 
+:host(.dialog) {
+  background-color: var(--dialogBgColor);
+}
+
 .overlay {
   position: absolute;
   inset: 0;
