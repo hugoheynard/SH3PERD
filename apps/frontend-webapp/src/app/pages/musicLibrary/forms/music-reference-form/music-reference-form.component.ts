@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
   ButtonPrimaryComponent, ButtonSecondaryComponent,
@@ -9,6 +9,7 @@ import {
 import { NgStyle } from '@angular/common';
 import { FormBlockComponent } from '../musicTabConfigurator/components/form-block/form-block.component';
 import { MusicReferenceService } from '../../services/music-reference.service';
+import { TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
 
 @Component({
   selector: 'app-music-reference-form',
@@ -31,6 +32,7 @@ export class MusicReferenceFormComponent {
   private fb: NonNullableFormBuilder = inject(NonNullableFormBuilder);
   private musRefService: MusicReferenceService = inject(MusicReferenceService);
   public form: FormGroup = this.createForm();
+  @Output() created = new EventEmitter<TMusicReferenceDomainModel>();
 
   createForm(): FormGroup {
     return this.fb.group({
@@ -39,13 +41,18 @@ export class MusicReferenceFormComponent {
     });
   };
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void>{
     if (!this.form.valid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.musRefService.createOne(this.form.value);
+    const result = await this.musRefService.createOne(this.form.value);
+
+    if (!result) {
+      return;
+    }
+    this.created.emit(result);
     return;
   };
 }
