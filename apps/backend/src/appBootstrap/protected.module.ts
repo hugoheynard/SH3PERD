@@ -3,15 +3,17 @@ import { MusicRepertoireController } from '../music/api/musicRepertoire.controll
 import { MusicModule } from '../music/music.module.js';
 import { CoreUseCasesAccessModule } from './core_modules/useCases/CoreUseCasesAccessModule.js';
 import { MusicReferenceController } from '../music/api/music-reference.controller.js';
+import { MusicVersionsController } from '../music/api/music-versions.controller.js';
 
 @Module({
   imports: [
     MusicModule, CoreUseCasesAccessModule.forMany([
+      'musicReferences',
+      'musicVersions',
       'musicRepertoireEntries',
-      'musicReferences'
     ])
   ],
-  controllers: [MusicRepertoireController, MusicReferenceController],
+  controllers: [MusicRepertoireController, MusicReferenceController, MusicVersionsController],
   exports: [],
 })
 export class ProtectedModule {

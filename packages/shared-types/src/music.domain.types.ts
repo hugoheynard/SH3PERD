@@ -1,6 +1,6 @@
 import type { TUserId } from './user.domain.js';
 import type { TMusicGrade } from './music.domain.schemas.js';
-import type { TMusicVersionId } from './music.versions.schemas.js';
+import type { TMusicVersionId } from './music.versions.js';
 
 
 export type TMusicRepertoireEntry_id = `musicRepertoireEntry_${string}`;

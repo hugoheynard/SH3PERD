@@ -6,7 +6,7 @@
     "declarationDir": "dist/types",
     "composite": true,
     "declaration": true,
-    "emitDeclarationOnly": true,
+    "emitDeclarationOnly": false,
     "noEmit": false,
     "baseUrl": "."
   },

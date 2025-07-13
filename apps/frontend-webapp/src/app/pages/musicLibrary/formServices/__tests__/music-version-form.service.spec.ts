@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { MusicVersionFormService } from './music-version-form.service';
+import { MusicVersionFormService } from '../music-version-form.service';
 
 describe('MusicVersionFormService', () => {
   let service: MusicVersionFormService;

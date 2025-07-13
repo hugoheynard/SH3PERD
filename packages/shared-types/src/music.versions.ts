@@ -20,7 +20,7 @@ export const SMusicVersionDomainModel = z.object({
   bpm: z.number().nullable(),
   pitch: z.number().nullable(),
   musicReference_id: SMusicReference_id.nullable(),
-  metaData: SRecordMetadata,
+  metadata: SRecordMetadata,
 });
 
 export type TMusicVersionDomainModel = z.infer<typeof SMusicVersionDomainModel>;
@@ -30,15 +30,7 @@ export type TMusicVersionDomainModel = z.infer<typeof SMusicVersionDomainModel>;
 export const SMusicVersionCreationFormPayloadSchema = SMusicVersionDomainModel
   .omit({
     owner_id: true,
-    metaData: true,
-  })
-  .extend({
-    createMusicReference: z.boolean(),
-    musicReferenceDetails: z.object({
-      title: z.string().min(1).nullable(),
-      artist: z.string().min(1).nullable(),
-      useVersionDetails: z.boolean(),
-    }),
+    metadata: true,
   });
 
 export type TMusicVersionCreationFormPayload = z.infer<typeof SMusicVersionCreationFormPayloadSchema>;

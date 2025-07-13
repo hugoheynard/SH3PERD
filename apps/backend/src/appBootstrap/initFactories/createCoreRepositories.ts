@@ -11,6 +11,8 @@ import { MusicRepertoireMongoRepository } from '../../music/repositories/MusicRe
 import type { IMusicRepertoireRepository } from '../../music/types/musicRepertoire.core.types.js';
 import type { IMusicReferenceRepository } from '../../music/types/musicReferences.types.js';
 import { MusicReferenceMongoRepository } from '../../music/repositories/MusicReferenceRepository.js';
+import type { IMusicVersionRepository } from '../../music/repositories/MusicVersionRepository.js';
+import { MusicVersionRepository } from '../../music/repositories/MusicVersionRepository.js';
 
 export type TCoreRepositories = {
   refreshTokenRepository: IRefreshTokenRepository;
@@ -19,7 +21,7 @@ export type TCoreRepositories = {
   eventUnitsRepository: any;
   //MUSIC
   musicReferenceRepository: IMusicReferenceRepository;
-  musicVersionRepository?: any;
+  musicVersionRepository: IMusicVersionRepository;
   musicRepertoireRepository: IMusicRepertoireRepository;
 };
 
@@ -64,6 +66,11 @@ export const createCoreRepositories = (input: {
         client,
         dbName,
         collectionName: 'music_references',
+      }),
+      musicVersionRepository: new MusicVersionRepository({
+        client,
+        dbName,
+        collectionName: 'music_versions',
       }),
       musicRepertoireRepository: new MusicRepertoireMongoRepository({
         client,

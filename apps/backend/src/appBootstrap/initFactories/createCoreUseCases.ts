@@ -7,11 +7,12 @@ import type { TCoreServices } from './createCoreServices.js';
 import type { MongoClient } from 'mongodb';
 import type { TMusicReferencesUseCases } from './initUsesCases/createMusicReferencesUseCases.js';
 import { createMusicReferencesUseCases } from './initUsesCases/createMusicReferencesUseCases.js';
+import { createMusicVersionsUseCases, type TMusicVersionsUseCases } from './initUsesCases/createMusicVersionsUseCases.js';
 
 export type TCoreUseCases = {
   auth: TAuthUseCases;
   musicReferences: TMusicReferencesUseCases;
-  musicVersions: any;
+  musicVersions: TMusicVersionsUseCases;
   musicRepertoireEntries: TMusicRepertoireUseCases;
 };
 
@@ -29,7 +30,7 @@ export const createCoreUseCases = (deps: {
     return {
       auth: createAuthUseCases(deps),
       musicReferences: createMusicReferencesUseCases(deps),
-      musicVersions: {},
+      musicVersions: createMusicVersionsUseCases(deps),
       musicRepertoireEntries: createMusicRepertoireUseCases(deps),
 
     };

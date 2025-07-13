@@ -7,16 +7,28 @@ export type ApiMessage = {
 
 export const MusicApiCodes = {
   MUSIC_REFERENCE_CREATED: {
-    code: 'MUSIC_001',
+    code: 'MUSIC_101_S',
     message: 'Music reference created successfully',
   },
   DUPLICATE: {
-    code: 'MUSIC_002',
+    code: 'MUSIC_102_F',
     message: 'This music reference already exists',
   },
   NOT_FOUND: {
-    code: 'MUSIC_003',
+    code: 'MUSIC_103_F',
     message: 'Music reference not found',
+  },
+  MUSIC_VERSION_CREATED: {
+    code: 'MUSIC_201_S',
+    message: 'Music version created successfully',
+  },
+  MUSIC_VERSION_CREATION_REPO_FAIL: {
+    code: 'MUSIC_201_F',
+    message: 'Music version creation failed, repository technical error',
+  },
+  MUSIC_VERSION_CREATION_UC_FAIL: {
+    code: 'MUSIC_202_F',
+    message: 'Music version creation failed, use case technical error',
   },
 } as const satisfies Record<string, ApiMessage>;
 

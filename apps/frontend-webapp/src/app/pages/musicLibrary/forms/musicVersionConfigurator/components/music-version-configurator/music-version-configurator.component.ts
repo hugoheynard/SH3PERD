@@ -8,7 +8,7 @@ import {
   SelectComponent, SelectListComponent,
 } from '@sh3pherd/ui-angular';
 import { MusicLibraryTextContentService } from '../../../../services/music-library-text-content.service';
-import { MusicVersionFormService } from '../../services/music-version-form.service';
+import { MusicVersionFormService } from '../../../../formServices/music-version-form.service';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgIf, NgStyle } from '@angular/common';
 import { TMusicReferenceDomainModel, TMusicVersionCreationFormPayload } from '@sh3pherd/shared-types';
@@ -62,9 +62,7 @@ export class MusicVersionConfiguratorComponent{
     title: this.titleSig() ?? '',
     artist: this.artistSig() ?? ''
   }));
-  private useDetailsSig = toSignal<boolean>(
-    (this.form.get('musicReferenceDetails.useVersionDetails') as FormControl<boolean>).valueChanges,
-    );
+
 
   constructor() {
     effect(() => {
@@ -76,20 +74,6 @@ export class MusicVersionConfiguratorComponent{
           this.musicRefsSuggestions.set(results);
         });
 
-      //listens to changes in the useDetails checkbox
-      const detailsGroup = this.form.get('musicReferenceDetails') as FormGroup;
-
-      if (this.useDetailsSig()) {
-        detailsGroup.patchValue({
-          title: this.form.get('details.title')!.value,
-          artist: this.form.get('details.artist')!.value,
-        });
-      } else {
-        detailsGroup.patchValue({
-          title: '',
-          artist: ''
-        });
-      }
     });
   };
 
@@ -106,26 +90,20 @@ export class MusicVersionConfiguratorComponent{
    */
   public musicRefFormOpen: WritableSignal<boolean>  = signal(false);
   openMusicRefForm = () => {
-    //this.musicRefFormOpen.set(true);
-    //this.form.get('createMusicReference')!.setValue(true);
-    const dialogRef = this.dialog.open(MusicReferenceFormComponent)
+    const dialogRef = this.dialog.open(MusicReferenceFormComponent, undefined, 'addRefDialog')
 
+    this.dialog.outputToObserver(dialogRef, 'created', (musicRef) => {
+      this.form.patchValue({ musicReference_id: musicRef.musicReference_id });
 
-    /*
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.form.patchValue({ musicReference_id: result });
-      }
+        //this.titleSig().set(musicRef.title);
+        //this.artistSig().set(musicRef.artist);
+
+      this.dialog.close(dialogRef);
     });
 
-     */
   };
 
-  closeMusicRefForm = () => this.musicRefFormOpen.set(false);
 
-  resetAddReferenceProcess(): void {
-    this.closeMusicRefForm();
-  };
 
   /**
    * saves the music reference to the database
@@ -133,18 +111,7 @@ export class MusicVersionConfiguratorComponent{
   async onSubmit(): Promise<any> {
     const raw = this.form.getRawValue();
 
-    if (raw.genre && raw.type) {
-      const payload: TMusicVersionCreationFormPayload = {
-        ...raw,
-        genre: raw.genre,
-        type: raw.type,
-        createMusicReference: raw.createMusicReference ?? false,
-        musicReferenceDetails: {
-          ...raw.musicReferenceDetails,
-          useVersionDetails: raw.musicReferenceDetails?.useVersionDetails ?? false,
-        }
-      };
-      await this.musVerServ.postMusicVersion(payload);
-    }
+    console.log('raw', raw);
+    await this.musVerServ.createOneMusicVersion(raw);
   };
 }
