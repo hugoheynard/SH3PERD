@@ -12,10 +12,11 @@ export const CORE_SERVICES: symbol = Symbol('CORE_SERVICES');
 export const CORE_USECASES: symbol = Symbol('CORE_USECASES');
 
 export const USE_CASES_TOKENS = {
-  auth: Symbol('AUTH_USE_CASES'),
-  musicReferences: Symbol('MUSIC_REFERENCES_USE_CASES'),
-  musicVersions: Symbol('MUSIC_VERSIONS_USE_CASES'),
-  musicRepertoireEntries: Symbol('MUSIC_REPERTOIRE_USE_CASES'),
+  auth: 'AUTH_USE_CASES',
+  musicReferences: 'MUSIC_REFERENCES_USE_CASES',
+  musicVersions: 'MUSIC_VERSIONS_USE_CASES',
+  musicRepertoireEntries: 'MUSIC_REPERTOIRE_USE_CASES',
+  musicLibrary: 'MUSIC_LIBRARY_USE_CASES',
 } as const;
 
 export type TCoreUseCasesTypeMap = {

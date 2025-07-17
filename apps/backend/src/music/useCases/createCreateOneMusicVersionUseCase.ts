@@ -6,7 +6,7 @@ import { apiCodes } from '../codes.js';
 
 export type TCreateOneMusicVersionUseCase = (input: {
   asker_id: TUserId;
-  formPayload: TMusicVersionCreationFormPayload
+  payload: TMusicVersionCreationFormPayload
 }) => Promise<TMusicVersionDomainModel>;
 
 export const createCreateOneMusicVersionUseCase = (deps: {
@@ -16,10 +16,10 @@ export const createCreateOneMusicVersionUseCase = (deps: {
 
   return async (input) => {
     try {
-      const { formPayload, asker_id } = input;
+      const { payload, asker_id } = input;
 
       const newVersion: TMusicVersionDomainModel = {
-        ...formPayload,
+        ...payload,
         owner_id: asker_id,
         metadata: RecordMetadataUtils.create(asker_id),
       };

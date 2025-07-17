@@ -27,7 +27,7 @@ export class MusicRepertoireService {
     if (searchMode === 'repertoire') {
       switch (target.mode) {
         case 'me':
-          return await this.getMusicRepertoire_Me();
+          return await this.getSingleUserMusicLibrary_me();
 
         case 'single-user':
           const user_id = target.singleUser_id;
@@ -59,12 +59,15 @@ export class MusicRepertoireService {
   /**
    * Fetches the user's music repertoire - default on the page initialization.
    */
-  async getMusicRepertoire_Me(filter?: any): Promise<any> {
+  async getSingleUserMusicLibrary_me(filter?: any): Promise<any> {
     try {
       const response: HttpResponse<any> = await firstValueFrom(
         this.http.post(
-          `${this.baseURL}/musicRepertoire/me`, {
-            filter: filter || {}
+          `${this.baseURL}/music-library/single-user`, {
+            requestDTO: {
+              target_id: 'user_11e5baa6-7edd-4e9f-833a-5ca642bba1b2',
+              filter: filter || {}
+            }
           },
           {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -74,6 +77,7 @@ export class MusicRepertoireService {
       if (!response.ok) {
         return false;
       }
+
       const result: any = Object.values(response.body)[0];
       this.musicRepertoire.set(result);
       return result;

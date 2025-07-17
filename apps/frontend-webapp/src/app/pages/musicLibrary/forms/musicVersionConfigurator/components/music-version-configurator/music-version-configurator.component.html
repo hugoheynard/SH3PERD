@@ -22,7 +22,7 @@
       <div class="grid2">
         <sh3-select-list
           formControlName="musicReference_id"
-          [ngStyle]="{ gridColumn: musicRefFormOpen() ? 'span 1' : 'span 2'}"
+          [ngStyle]="{ gridColumn: 'span 2'}"
           [items]="musicRefsSuggestions()"
           [trackByFn]="trackByMusicRef"
           [labelFn]="labelForMusicRef"

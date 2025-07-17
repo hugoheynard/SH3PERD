@@ -10,21 +10,22 @@ import { SMusicVersionCreationFormPayloadSchema } from '@sh3pherd/shared-types';
 /**
  * Controller for managing music versions.
  */
-@Controller('music-versions')
+@Controller('music-version')
 export class MusicVersionsController {
   constructor(
     @Inject(USE_CASES_TOKENS.musicVersions)
     private readonly uc: TCoreUseCasesTypeMap['musicVersions'],
-  ) {}
+  ) {};
 
   @Post()
   async createOne(
     @Req() req: Request,
-    @Body('formPayload',  new ZodValidationPipe(SMusicVersionCreationFormPayloadSchema)) formPayload: TMusicVersionCreationFormPayload
+    @Body('payload',
+      new ZodValidationPipe(SMusicVersionCreationFormPayloadSchema))
+      payload: TMusicVersionCreationFormPayload
   ): Promise<ApiResponse<TMusicVersionDomainModel>> {
-    console.log('calles')
 
-    const result = await this.uc.createOne({ formPayload, asker_id: req.user_id });
+    const result = await this.uc.createOne({ payload, asker_id: req.user_id });
     return buildApiResponse(
       apiCodes.music.MUSIC_VERSION_CREATED,
       result

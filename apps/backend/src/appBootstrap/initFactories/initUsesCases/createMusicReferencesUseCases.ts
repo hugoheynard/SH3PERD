@@ -1,9 +1,7 @@
-import type { TCoreServices } from '../createCoreServices.js';
-import type { TCoreRepositories } from '../createCoreRepositories.js';
-import type { ClientSession } from 'mongodb';
 import type { TCreateMusicReferenceRequestDTO, TMusicReferenceDomainModel, TUserId } from '@sh3pherd/shared-types';
 import { createFuzzySearchMusicRefUseCase } from '../../../music/useCases/createFuzzySearchMusicRefUseCase.js';
 import { createCreateOneMusicReferenceUseCase } from '../../../music/useCases/createCreateOneMusicReferenceUseCase.js';
+import type { TUseCasesFactoryGeneric } from '../../../types/useCases.generic.types.js';
 
 
 export type TMusicReferencesUseCases = {
@@ -12,11 +10,7 @@ export type TMusicReferencesUseCases = {
 }
 
 
-export const createMusicReferencesUseCases = (deps: {
-  services: TCoreServices;
-  repositories: TCoreRepositories;
-  session?: ClientSession;
-}): TMusicReferencesUseCases => {
+export const createMusicReferencesUseCases: TUseCasesFactoryGeneric<TMusicReferencesUseCases> = (deps) => {
 
   const { musicReferenceRepository} = deps.repositories;
 

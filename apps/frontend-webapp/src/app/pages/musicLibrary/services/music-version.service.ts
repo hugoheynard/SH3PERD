@@ -1,5 +1,5 @@
-import { inject, Injectable } from '@angular/core';
-import { HttpHeaders, HttpResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HttpResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { TMusicVersionCreationFormPayload } from '@shepherd/shared-types/music.versions';
 import { BaseHttpService } from '../../../services/BaseHttpService';
@@ -15,16 +15,14 @@ export class MusicVersionService extends BaseHttpService{
   /**
    * This service is responsible for posting a new music versions.
    */
-  async createOneMusicVersion(musicVersionFormDataPayload: TMusicVersionCreationFormPayload): Promise<TMusicVersionDomainModel | false> {
+  async createOneMusicVersion(payload: TMusicVersionCreationFormPayload): Promise<TMusicVersionDomainModel | false> {
     try {
       const response: HttpResponse<any> = await firstValueFrom(
         this.http.post(
-          `${this.baseURL}/music-version`,
-          musicVersionFormDataPayload,
-          {
-            headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-            observe: 'response'
-          }));
+          this.baseURL,
+          { payload },
+          { observe: 'response' }
+        ));
 
       if (!response.ok) {
         return false;
@@ -36,4 +34,28 @@ export class MusicVersionService extends BaseHttpService{
       return false;
     }
   };
+
+/*
+  async getMusicVersionBy_Me(): Promise<TMusicVersionDomainModel[]> {
+    try {
+      const response: HttpResponse<any> = await firstValueFrom(
+        this.http.get<TMusicVersionDomainModel[]>(
+          `${this.baseURL}/me`,
+          { observe: 'response' }
+        ));
+
+      if (!response.ok) {
+        return [];
+      }
+      return response.body.data;
+
+    } catch(e) {
+      console.log('error while getting music versions', e);
+      return [];
+    }
+  }
+   */
+
 }
+
+

@@ -1,8 +1,5 @@
-import type { TCoreRepositories } from '../createCoreRepositories.js';
+import type { TUseCasesFactoryGeneric } from '../../../types/useCases.generic.types.js';
 
-export const createContractsUseCases = (deps: {
-  services: any;
-  repositories: TCoreRepositories;
-}): any => {
+export const createContractsUseCases: TUseCasesFactoryGeneric<any> = (deps)=> {
   const {} = deps;
 };

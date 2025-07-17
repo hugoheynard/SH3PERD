@@ -8,12 +8,14 @@ import type { MongoClient } from 'mongodb';
 import type { TMusicReferencesUseCases } from './initUsesCases/createMusicReferencesUseCases.js';
 import { createMusicReferencesUseCases } from './initUsesCases/createMusicReferencesUseCases.js';
 import { createMusicVersionsUseCases, type TMusicVersionsUseCases } from './initUsesCases/createMusicVersionsUseCases.js';
+import { createMusicLibraryUseCases, type TMusicLibraryUseCases } from './initUsesCases/createMusicLibraryUseCases.js';
 
 export type TCoreUseCases = {
   auth: TAuthUseCases;
   musicReferences: TMusicReferencesUseCases;
   musicVersions: TMusicVersionsUseCases;
   musicRepertoireEntries: TMusicRepertoireUseCases;
+  musicLibrary: TMusicLibraryUseCases;
 };
 
 /**
@@ -32,6 +34,7 @@ export const createCoreUseCases = (deps: {
       musicReferences: createMusicReferencesUseCases(deps),
       musicVersions: createMusicVersionsUseCases(deps),
       musicRepertoireEntries: createMusicRepertoireUseCases(deps),
+      musicLibrary: createMusicLibraryUseCases(deps),
 
     };
   } catch (err: unknown) {

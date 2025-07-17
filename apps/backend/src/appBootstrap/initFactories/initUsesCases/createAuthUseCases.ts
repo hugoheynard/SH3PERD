@@ -9,13 +9,9 @@ import { generateTypedId } from '../../../utils/ids/generateTypedId.js';
 import { passwordManager } from '../../../auth/core/password-manager/index.js';
 import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
 import { createUserCredentials } from '../../../user/domain/createUserCredentials.js';
-import type { TCoreRepositories } from '../createCoreRepositories.js';
-import type { TCoreServices } from '../createCoreServices.js';
+import type { TUseCasesFactoryGeneric } from '../../../types/useCases.generic.types.js';
 
-export const createAuthUseCases = (deps: {
-  services: TCoreServices;
-  repositories: TCoreRepositories;
-}): TAuthUseCases => {
+export const createAuthUseCases: TUseCasesFactoryGeneric<TAuthUseCases> = (deps)=> {
   const { authTokenService } = deps.services;
   const { userCredentialsRepository, refreshTokenRepository } = deps.repositories;
 

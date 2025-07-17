@@ -93,7 +93,7 @@ export class MusicRepertoireTableComponent implements OnInit {
 
   async musicRepertoireFallBack(): Promise<void> {
     console.log('No config provided, falling back to default music repertoire fetch');
-    this.entries = await this.musicRepertoireService.getMusicRepertoire_Me();
+    this.entries = await this.musicRepertoireService.getSingleUserMusicLibrary_me();
   }
 
   setPage(page: number): void {

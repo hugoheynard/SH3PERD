@@ -30,6 +30,10 @@ export const MusicApiCodes = {
     code: 'MUSIC_202_F',
     message: 'Music version creation failed, use case technical error',
   },
+  MUSIC_LIBRARY_SINGLE_USER_SUCCESS: {
+    code: 'MUSIC_301_S',
+    message: 'Music library fetched successfully for single user',
+  }
 } as const satisfies Record<string, ApiMessage>;
 
 

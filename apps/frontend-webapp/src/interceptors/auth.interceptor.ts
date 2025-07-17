@@ -5,9 +5,8 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { TokenService } from '../app/services/token.service';
-import { Router } from '@angular/router';
-import { inject, Injectable } from '@angular/core';
-import { catchError, switchMap, throwError, from, tap, Observable } from 'rxjs';
+import { inject } from '@angular/core';
+import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../app/services/auth.service';
 
 /**
@@ -29,9 +28,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
 
   const accessToken = tokenService.getToken();
 
-  if (accessToken) {
-    console.log('[AuthInterceptor] Attaching access token to request:', req.url);
-  } else {
+  if (!accessToken) {
     console.warn('[AuthInterceptor] No access token found for request:', req.url);
   }
 

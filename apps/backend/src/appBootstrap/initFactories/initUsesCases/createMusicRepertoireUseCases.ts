@@ -1,13 +1,9 @@
 import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
 import { createGetMusicRepertoireByUserIdUseCase } from '../../../music/useCases/createGetMusicRepertoireByUserIdUseCase.js';
 import type { TMusicRepertoireUseCases } from '../../../music/types/musicRepertoire.useCases.types.js';
-import type { TCoreRepositories } from '../createCoreRepositories.js';
-import type { TCoreServices } from '../createCoreServices.js';
+import type { TUseCasesFactoryGeneric } from '../../../types/useCases.generic.types.js';
 
-export const createMusicRepertoireUseCases = (deps: {
-  services: TCoreServices;
-  repositories: TCoreRepositories;
-}): TMusicRepertoireUseCases => {
+export const createMusicRepertoireUseCases: TUseCasesFactoryGeneric<TMusicRepertoireUseCases> = (deps)  => {
   try {
     const { musicRepertoireRepository } = deps.repositories;
 

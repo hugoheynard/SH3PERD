@@ -16,6 +16,7 @@ import {AddMusicPanelComponent} from '../add-music-panel/add-music-panel.compone
 import {
   MusicVersionConfiguratorComponent
 } from '../../forms/musicVersionConfigurator/components/music-version-configurator/music-version-configurator.component';
+import { MusicRepertoireTable2Component } from '../music-repertoire-table2/music-repertoire-table2.component';
 
 
 @Component({
@@ -44,8 +45,8 @@ export class MusicLibraryComponent implements OnInit, IDynamicTabHost{
       isDeletable: false,
       isTitleEditable: false,
       isSearchable: true,
-      isActive: false,
-      default: false,
+      isActive: true,
+      default: true,
     }
   ];
 

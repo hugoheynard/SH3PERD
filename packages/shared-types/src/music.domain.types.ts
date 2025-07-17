@@ -1,6 +1,8 @@
 import type { TUserId } from './user.domain.js';
 import type { TMusicGrade } from './music.domain.schemas.js';
-import type { TMusicVersionId } from './music.versions.js';
+import type { TMusicVersionDomainModel, TMusicVersionId } from './music.versions.js';
+import type { TMusicReferenceDomainModel } from './music-references.js';
+import type { ApiResponse } from './api.types.js';
 
 
 export type TMusicRepertoireEntry_id = `musicRepertoireEntry_${string}`;
@@ -15,3 +17,23 @@ export type TMusicRepertoireEntryDomainModel = {
   updated_at: Date;
   created_by: TUserId;
 }
+
+
+export type TUserMusicLibraryItem = {
+  version: TMusicVersionDomainModel;
+  repertoireEntry?: TMusicRepertoireEntryDomainModel;
+  reference?: TMusicReferenceDomainModel;
+  source: 'owned' | 'borrowed';
+}
+
+export type TMusicLibraryFilter = {
+  version?: Partial<TMusicVersionDomainModel>
+  repertoireEntry?: Partial<TMusicRepertoireEntryDomainModel>;
+}
+
+export type TSingleUserMusicLibraryRequestDTO = {
+  target_id: TUserId;
+  filter?: TMusicLibraryFilter;
+}
+
+export type TUserMusicLibraryResponseDTO = ApiResponse<Record<TUserId, TUserMusicLibraryItem[]>>

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal, WritableSignal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormBlockComponent } from '../../../musicTabConfigurator/components/form-block/form-block.component';
 import {
   ButtonPrimaryComponent, ButtonSecondaryComponent, ButtonTertiaryComponent,
@@ -8,7 +8,7 @@ import {
   SelectComponent, SelectListComponent,
 } from '@sh3pherd/ui-angular';
 import { MusicLibraryTextContentService } from '../../../../services/music-library-text-content.service';
-import { MusicVersionFormService } from '../../../../formServices/music-version-form.service';
+import { IMusicVersionForm, MusicVersionFormService } from '../../../../formServices/music-version-form.service';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgIf, NgStyle } from '@angular/common';
 import { TMusicReferenceDomainModel, TMusicVersionCreationFormPayload } from '@sh3pherd/shared-types';
@@ -40,13 +40,13 @@ import { DialogService } from '../../../../../../services/dialog.service';
   standalone: true,
   styleUrl: './music-version-configurator.component.scss',
 })
-export class MusicVersionConfiguratorComponent{
+export class MusicVersionConfiguratorComponent {
   public textServ = inject(MusicLibraryTextContentService);
   private musRefServ = inject(MusicReferenceService);
-  private musVerServ = inject(MusicVersionService);
   private formServ = inject(MusicVersionFormService);
-  public form = this.formServ.buildForm();
+  public form: FormGroup<IMusicVersionForm> = this.formServ.form;
   private dialog = inject(DialogService);
+
 
   /**
    * SIGNAL FOR TRACK MAP RESEARCH
@@ -88,15 +88,12 @@ export class MusicVersionConfiguratorComponent{
   /**
    * creates a new music reference to match the music version, available globally
    */
-  public musicRefFormOpen: WritableSignal<boolean>  = signal(false);
+
   openMusicRefForm = () => {
     const dialogRef = this.dialog.open(MusicReferenceFormComponent, undefined, 'addRefDialog')
 
     this.dialog.outputToObserver(dialogRef, 'created', (musicRef) => {
       this.form.patchValue({ musicReference_id: musicRef.musicReference_id });
-
-        //this.titleSig().set(musicRef.title);
-        //this.artistSig().set(musicRef.artist);
 
       this.dialog.close(dialogRef);
     });
@@ -109,9 +106,6 @@ export class MusicVersionConfiguratorComponent{
    * saves the music reference to the database
    */
   async onSubmit(): Promise<any> {
-    const raw = this.form.getRawValue();
-
-    console.log('raw', raw);
-    await this.musVerServ.createOneMusicVersion(raw);
+    await this.formServ.submit()
   };
 }

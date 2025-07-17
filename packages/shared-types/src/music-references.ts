@@ -10,7 +10,7 @@ export const SMusicReferenceId = z.string().regex(
   { message: 'Invalid musicReferenceId format' },
 );
 
-export type TMusicReferenceId = `musicReference_${string}`;
+export type TMusicReferenceId = z.infer<typeof SMusicReferenceId>;
 
 
 export const SMusicReferenceDetails = z.object({

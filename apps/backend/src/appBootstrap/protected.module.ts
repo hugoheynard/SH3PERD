@@ -4,6 +4,7 @@ import { MusicModule } from '../music/music.module.js';
 import { CoreUseCasesAccessModule } from './core_modules/useCases/CoreUseCasesAccessModule.js';
 import { MusicReferenceController } from '../music/api/music-reference.controller.js';
 import { MusicVersionsController } from '../music/api/music-versions.controller.js';
+import { MusicLibraryController } from '../music/api/music-library.controller.js';
 
 @Module({
   imports: [
@@ -11,9 +12,10 @@ import { MusicVersionsController } from '../music/api/music-versions.controller.
       'musicReferences',
       'musicVersions',
       'musicRepertoireEntries',
+      'musicLibrary',
     ])
   ],
-  controllers: [MusicRepertoireController, MusicReferenceController, MusicVersionsController],
+  controllers: [MusicRepertoireController, MusicReferenceController, MusicVersionsController, MusicLibraryController],
   exports: [],
 })
 export class ProtectedModule {
