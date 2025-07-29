@@ -1,0 +1,55 @@
+<div class="music-entry-card">
+  <div>
+    <sh3-checkbox label=""/>
+    <span class="playButton">P</span>
+  </div>
+
+
+  <div class="main-info">
+    <p>{{ item.version.title }}</p>
+    <p class="artistName">{{ item.version.artist }}</p>
+  </div>
+
+  <div class="versionData">
+    <span class="label darkLabel">{{ item.version.type }}</span>
+    <span class="label darkLabel">{{ item.version.genre }}</span>
+  </div>
+
+  <div class="musicData">
+    <span class="label greyLabel">
+      <svg class="icon"  id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="12" height="12"><path d="M12,24C5.383,24,0,18.617,0,12S5.383,0,12,0s12,5.383,12,12-5.383,12-12,12ZM12,1C5.935,1,1,5.935,1,12s4.935,11,11,11,11-4.935,11-11S18.065,1,12,1Zm5,11.5c0-.276-.224-.5-.5-.5h-4.5V5.5c0-.276-.224-.5-.5-.5s-.5,.224-.5,.5v7c0,.276,.224,.5,.5,.5h5c.276,0,.5-.224,.5-.5Z"/></svg>
+      __:__
+    </span>
+    <span class="label greyLabel"> __bpm</span>
+    <span class="label greyLabel"> __st</span>
+    <span class="label greyLabel"> __</span>
+  </div>
+
+  <div class="repertoire-block">
+    <ng-container *ngIf="item.repertoireEntry; else addRepertoire">
+      <span class="label primaryLabel">
+        <sh3-svg-icon [name]="'lightning'" class="icon"/>
+        {{ item.repertoireEntry.energy }}
+      </span>
+      <span class="label primaryLabel">
+        <sh3-svg-icon [name]="'fire'" class="icon"/>
+        {{ item.repertoireEntry.effort }}
+      </span>
+
+      <span class="label primaryLabel">
+        <sh3-svg-icon [name]="'heart'" class="icon"/>
+        {{ item.repertoireEntry.effort }}
+
+      </span>
+      <span class="label primaryLabel">
+        <sh3-svg-icon [name]="'award'" class="icon"/>
+        {{ item.repertoireEntry.mastery }}
+      </span>
+
+    </ng-container>
+    <ng-template #addRepertoire>
+      <button (click)="addEntry.emit()">Ajouter une interprétation</button>
+    </ng-template>
+  </div>
+
+</div>

@@ -1,0 +1,80 @@
+.music-entry-card{
+  display: grid;
+  grid-template-columns: 1fr 8fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  gap: 2rem;
+  background-color: var(--headAndfootBgColor);
+  color: var(--baseTextColor);
+  border-radius: 8px;
+  border: 1px solid #7d808030;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.5rem;
+}
+
+.main-info {
+}
+
+.music-entry-card:hover {
+  border: 1px solid var(--colorSecondary);
+}
+
+.artistName {
+  font-weight: lighter;
+  text-transform: capitalize;
+  color: #7d8080;
+}
+
+.label .icon {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
+
+.versionData {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.2rem;
+}
+
+.musicData {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.2rem;
+}
+
+.repertoire-block {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.2rem;
+}
+
+.label {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 0.2rem;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  height: 0.8rem;
+  border-radius: 4px;
+
+}
+
+.primaryLabel {
+  background-color: rgba(var(--colorSecondary-rawRGB), 0.2);
+  color: var(--colorPrimary);
+}
+
+.greyLabel {
+  background-color: #7d808030;
+  color: #7d8080;
+}
+
+.darkLabel {
+  background-color: rgb(81, 84, 84);
+  color: var(--baseTextColor);
+}
+
+.playButton {
+  color: var(--colorPrimary);
+}

@@ -3,3 +3,4 @@
  */
 export * from './lib/buttons';
 export * from './lib/forms';
+export * from './lib/icones';

@@ -11,7 +11,7 @@ export const createMusicLibraryUseCases : TUseCasesFactoryGeneric<TMusicLibraryU
 
 
   const getUserMusicLibrary = createGetUserMusicLibraryUseCase({
-    getVersionsByUserIdFn: (user_id)=>musicVersionRepository.findVersionsByUserId(user_id),
+    getVersionsByUserIdFn: user_id=>musicVersionRepository.findVersionsByUserId(user_id),
   });
 
   return {

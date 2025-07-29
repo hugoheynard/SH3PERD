@@ -4,6 +4,7 @@ import {firstValueFrom} from 'rxjs';
 import {ApiURLService} from '../../../services/api-url.service';
 import {TMusicTabConfiguration} from '../types/TMusicTabConfiguration';
 import {TUserId} from '../../../../types/user.types';
+import { TMusicLibraryFilter, TUserMusicLibrary, TUserMusicLibraryResponseDTO } from '@sh3pherd/shared-types';
 
 @Injectable({
   providedIn: 'root'
@@ -13,10 +14,10 @@ export class MusicRepertoireService {
   private apiURLService: ApiURLService = inject(ApiURLService);
   private baseURL: string = this.apiURLService.api().protected().build();
 
-  public musicRepertoire: WritableSignal<any[]> = signal<any[]>([]);
+  public musicLibrary: WritableSignal<TUserMusicLibrary> = signal<TUserMusicLibrary>({});
 
 
-  async executeConfigStrategy(input: { config: TMusicTabConfiguration }): Promise<any[]> {
+  async executeConfigStrategy(input: { config: TMusicTabConfiguration }): Promise<any> {
     if (!input || !input.config || !input.config.searchConfiguration) {
       console.warn('Invalid input or missing searchConfiguration');
       return [];
@@ -37,7 +38,7 @@ export class MusicRepertoireService {
           }
           console.warn('Missing userId for singleUser targetMode');
           return [];
-
+/*
         case 'multiple-users':
           const userIds = target.multipleUsers_id;
 
@@ -46,6 +47,8 @@ export class MusicRepertoireService {
             return [];
           }
           return await this.getMusicRepertoire_MultipleUsers(userIds);
+
+ */
       }
     }
 
@@ -59,27 +62,30 @@ export class MusicRepertoireService {
   /**
    * Fetches the user's music repertoire - default on the page initialization.
    */
-  async getSingleUserMusicLibrary_me(filter?: any): Promise<any> {
+  async getSingleUserMusicLibrary_me(filter?: TMusicLibraryFilter): Promise<TUserMusicLibrary | false> {
     try {
-      const response: HttpResponse<any> = await firstValueFrom(
-        this.http.post(
+      const response: HttpResponse<TUserMusicLibraryResponseDTO> = await firstValueFrom(
+        this.http.post<TUserMusicLibraryResponseDTO>(
           `${this.baseURL}/music-library/single-user`, {
             requestDTO: {
               target_id: 'user_11e5baa6-7edd-4e9f-833a-5ca642bba1b2',
               filter: filter || {}
             }
           },
-          {
-            headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-            observe: 'response'
-          }))
+          { observe: 'response' }
+        )
+      );
 
       if (!response.ok) {
         return false;
       }
 
-      const result: any = Object.values(response.body)[0];
-      this.musicRepertoire.set(result);
+      if (!response.body || !response.body.data) {
+        console.warn('No data received from the server');
+        return false;
+      }
+      const result: TUserMusicLibraryResponseDTO['data'] = response.body.data;
+      this.musicLibrary.set(result);
       return result;
 
     } catch(e) {
@@ -105,7 +111,7 @@ export class MusicRepertoireService {
         return false;
       }
       const result: any = Object.values(response.body)[0];
-      this.musicRepertoire.set(result);
+      this.musicLibrary.set(result);
       return result;
 
     } catch(e) {
@@ -131,7 +137,7 @@ export class MusicRepertoireService {
         return false;
       }
       const result: any = Object.values(response.body)[0];
-      this.musicRepertoire.set(result);
+      this.musicLibrary.set(result);
       return result;
 
     } catch(e) {

@@ -8,7 +8,7 @@ import { apiCodes } from '../codes.js';
 
 export interface IMusicVersionRepository {
   saveOne: (document: TMusicVersionDomainModel, session?: ClientSession) => Promise<boolean>;
-  findVersionsByUserId: (userId: TUserId) => Promise<any[]>;
+  findVersionsByUserId: (userId: TUserId) => Promise<TUserMusicLibraryItem[]>;
 }
 
 export class MusicVersionRepository
@@ -155,8 +155,6 @@ export class MusicVersionRepository
       },
       { $unset: ['_id', 'version._id', 'repertoireEntry._id', 'reference._id'] }
     ]).toArray();
-
-    console.log(result);
 
     return result;
   };

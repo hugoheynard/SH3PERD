@@ -11,33 +11,48 @@
   <sh3-button-primary buttonLabel="Back to search" [onClick]="handleBackToConfig"/>
 </div>
 
+<ng-container *ngIf="!hasError404 && !hasNoMatch">
+  <div>
+    <sh3-button-secondary buttonLabel="stats"/>
+    <mat-icon> insert_chart_outlined</mat-icon>
+    <sh3-button-primary buttonLabel="+ Add track"/>
+  </div>
 
-<table
-  *ngIf="!hasError404 && !hasNoMatch"
-  cdk-table [dataSource]="pagedData" class="transparent-table">
+  <div class="statBlock">
+    <div class="overview">
+      <div class="statCard">
+        <div class="statContent">
+          <span>total</span>
+          <span>7</span>
+        </div>
 
-  <ng-container *ngFor="let column of displayedColumns" [cdkColumnDef]="column.key">
-    <th cdk-header-cell *cdkHeaderCellDef> {{ column.key }} </th>
+      </div>
+    </div>
+    <div class="specs">
 
-    <td cdk-cell *cdkCellDef="let row">
-      <ng-container *ngIf="column.key === 'duration'; else defaultCell">
-        {{ row[column.key] | duration }}
-      </ng-container>
-      <ng-template #defaultCell>
-        {{ row[column.key] }}
-      </ng-template>
-    </td>
-  </ng-container>
+    </div>
+    <div class="genres">
 
-  <tr cdk-header-row *cdkHeaderRowDef="columnKeys"></tr>
-  <tr
-    cdk-row
-    *cdkRowDef="let row; columns: columnKeys; let i = index"
-    [ngStyle]="{ animationDelay: i * 100 + 'ms' }"
-    class="table-row-animate"
-    (dblclick)="openDetails(row)"
-  ></tr>
-</table>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+
+  </div>
+
+  <div class="listContainer">
+    <music-card
+      *ngFor="let row of tableData"
+      [item]="row"/>
+  </div>
+
+</ng-container>
+
+
+
+
+
+
 
 <div class="custom-paginator"  *ngIf="!hasError404 && !hasNoMatch">
   <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 0">◀</button>

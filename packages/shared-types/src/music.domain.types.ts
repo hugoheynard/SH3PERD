@@ -36,4 +36,5 @@ export type TSingleUserMusicLibraryRequestDTO = {
   filter?: TMusicLibraryFilter;
 }
 
-export type TUserMusicLibraryResponseDTO = ApiResponse<Record<TUserId, TUserMusicLibraryItem[]>>
+export type TUserMusicLibrary = Record<TUserId, TUserMusicLibraryItem[]>;
+export type TUserMusicLibraryResponseDTO = ApiResponse<TUserMusicLibrary>;

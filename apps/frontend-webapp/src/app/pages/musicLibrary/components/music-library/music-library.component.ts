@@ -16,12 +16,11 @@ import {AddMusicPanelComponent} from '../add-music-panel/add-music-panel.compone
 import {
   MusicVersionConfiguratorComponent
 } from '../../forms/musicVersionConfigurator/components/music-version-configurator/music-version-configurator.component';
-import { MusicRepertoireTable2Component } from '../music-repertoire-table2/music-repertoire-table2.component';
 
 
 @Component({
     selector: 'app-music-library',
-  imports: [TabSystemComponent],
+  imports: [TabSystemComponent, MusicRepertoireTableComponent],
     templateUrl: './music-library.component.html',
     standalone: true,
     styleUrl: './music-library.component.scss',
