@@ -57,7 +57,6 @@
   padding: 0.2rem 0.5rem;
   height: 0.8rem;
   border-radius: 4px;
-
 }
 
 .primaryLabel {
@@ -77,4 +76,19 @@
 
 .playButton {
   color: var(--colorPrimary);
+}
+
+
+
+//STATS
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background-color: var(--headAndfootBgColor);
+  color: var(--baseTextColor);
 }

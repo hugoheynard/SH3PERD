@@ -81,7 +81,7 @@ export class TrackLineComponent implements OnInit {
      return;
    }
 
-   console.log(`✅ Tag "${tag}" déplacé depuis "${source}" vers "${targetSong.title}"`);
+   console.log(`✅ Tag "${tag}" déplacé depuis "${source}" vers "${targetSong.label}"`);
 
    if (source === "trackLine") {
      if (event.previousContainer === event.container) {

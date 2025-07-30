@@ -12,39 +12,56 @@
 </div>
 
 <ng-container *ngIf="!hasError404 && !hasNoMatch">
-  <div>
-    <sh3-button-secondary buttonLabel="stats"/>
-    <mat-icon> insert_chart_outlined</mat-icon>
-    <sh3-button-primary buttonLabel="+ Add track"/>
-  </div>
+  <div class="container">
+    <div class="statBlock">
+      <div class="statCat">
+        <span class="statBlockTitle">overview</span>
+        <stat-card
+          label="total"
+          [iconName]="'notes_2'"
+          [progressBar]="false"
+          value=32 />
+        <stat-card
+          label="completion"
+          [iconName]="'completed'"
+          value=75 maxValue=100 valueSuffix="%"/>
+        <stat-card
+          label="quality"
+          [iconName]="'diamond'"
+          value=70 maxValue=100 valueSuffix="%"/>
+      </div>
+      <div class="statCat">
+        <span class="statBlockTitle">score</span>
+        <stat-card label="energy" [iconName]="'lightning'" value=5 maxValue=5 />
+        <stat-card label="effort" [iconName]="'fire'" value=3.2 maxValue=5 />
+        <stat-card label="affinity" [iconName]="'heart'" value=3.4 maxValue=5 />
+        <stat-card label="mastery" [iconName]="'award'" value=4.2 maxValue=5 />
+      </div>
+      <div class="statCat">
+        <span class="statBlockTitle">genres</span>
 
-  <div class="statBlock">
-    <div class="overview">
-      <div class="statCard">
-        <div class="statContent">
-          <span>total</span>
-          <span>7</span>
-        </div>
-
+        +3 mores
       </div>
     </div>
-    <div class="specs">
 
+    <div class="filter-bar">
+      <div class="searchBar">
+      </div>
+      <sh3-button-secondary buttonLabel="stats"/>
+      <mat-icon> insert_chart_outlined</mat-icon>
+      <sh3-button-primary buttonLabel="+ Add track"/>
     </div>
-    <div class="genres">
 
+    <label>8 songs</label>
+    <div class="listContainer">
+      <music-card
+        *ngFor="let row of tableData"
+        [item]="row"/>
     </div>
   </div>
 
-  <div class="filter-bar">
 
-  </div>
 
-  <div class="listContainer">
-    <music-card
-      *ngFor="let row of tableData"
-      [item]="row"/>
-  </div>
 
 </ng-container>
 

@@ -64,7 +64,7 @@ export class PlaylistFormService {
   createSongFormGroup(song: any = {}): FormGroup {
     return this.fb.group({
       _id: [song._id || ''],
-      title: [song.title || ''],
+      title: [song.label || ''],
       artist: [song.artist || ''],
       tags: this.fb.array(song.tags || [])
     });

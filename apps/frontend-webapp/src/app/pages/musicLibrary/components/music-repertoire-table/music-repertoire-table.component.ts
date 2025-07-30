@@ -8,17 +8,18 @@ import {DurationPipe} from '../../../../../pipes/duration.pipe';
 import {MusicRepertoireService} from '../../services/music-repertoire.service';
 import {ITabDefinition} from '../../../../components/tabSystem/tab-system/ITabDefinition';
 import {TMusicTabConfiguration} from '../../types/TMusicTabConfiguration';
-import { ButtonPrimaryComponent, ButtonSecondaryComponent } from '@sh3pherd/ui-angular';
+import { ButtonPrimaryComponent, ButtonSecondaryComponent, InputComponent } from '@sh3pherd/ui-angular';
 import { TUserMusicLibrary, TUserMusicLibraryItem } from '@sh3pherd/shared-types';
 import { MusicCardComponent } from '../music-card/music-card.component';
 import { MatIcon } from '@angular/material/icon';
+import { StatCardComponent } from '../stat-card/stat-card.component';
 
 
 
 @Component({
   selector: 'music-repertoire-table',
   standalone: true,
-  imports: [CdkTableModule, NgForOf, NgIf, FormsModule, NgStyle, DurationPipe, ButtonPrimaryComponent, NgSwitch, NgSwitchCase, NgSwitchDefault, MusicCardComponent,MatIcon, ButtonSecondaryComponent, MatIcon],
+  imports: [CdkTableModule, NgForOf, NgIf, FormsModule, NgStyle, DurationPipe, ButtonPrimaryComponent, NgSwitch, NgSwitchCase, NgSwitchDefault, MusicCardComponent, MatIcon, ButtonSecondaryComponent, MatIcon, InputComponent, StatCardComponent],
   templateUrl: './music-repertoire-table.component.html',
   styleUrl: './music-repertoire-table.component.scss'
 })
@@ -165,7 +166,7 @@ export class MusicRepertoireTableComponent implements OnInit {
     // This method should be implemented to handle opening details of the entry
     this.openTab.emit({
       id: `track-${row.id}`,
-      title: `Track #${row.title}`,
+      title: `Track #${row.label}`,
       hasConfigurator: true,
       configComponentKey: 'music-version-details',
       displayComponentKey: 'music-version-details',

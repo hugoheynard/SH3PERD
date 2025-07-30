@@ -1,0 +1,12 @@
+<sh3-svg-icon [name]="iconName" class="statIcon"/>
+<div class="content">
+  <span class="title">{{ label }}</span>
+  <div class="valueContainer">
+    <span class="value">{{ getValue() }}</span>
+    <ng-container *ngIf="progressBar">
+      <div class="progress-bar" >
+        <div class="progress-fill" [style.width.%]="getProgressBar()"></div>
+      </div>
+    </ng-container>
+  </div>
+</div>
