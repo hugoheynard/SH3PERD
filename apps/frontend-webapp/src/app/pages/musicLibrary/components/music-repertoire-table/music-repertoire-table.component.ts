@@ -13,13 +13,14 @@ import { TUserMusicLibrary, TUserMusicLibraryItem } from '@sh3pherd/shared-types
 import { MusicCardComponent } from '../music-card/music-card.component';
 import { MatIcon } from '@angular/material/icon';
 import { StatCardComponent } from '../stat-card/stat-card.component';
+import { MusicLibraryStatsComponent } from '../music-library-stats/music-library-stats.component';
 
 
 
 @Component({
   selector: 'music-repertoire-table',
   standalone: true,
-  imports: [CdkTableModule, NgForOf, NgIf, FormsModule, NgStyle, DurationPipe, ButtonPrimaryComponent, NgSwitch, NgSwitchCase, NgSwitchDefault, MusicCardComponent, MatIcon, ButtonSecondaryComponent, MatIcon, InputComponent, StatCardComponent],
+  imports: [CdkTableModule, NgForOf, NgIf, FormsModule, NgStyle, DurationPipe, ButtonPrimaryComponent, NgSwitch, NgSwitchCase, NgSwitchDefault, MusicCardComponent, MatIcon, ButtonSecondaryComponent, MatIcon, InputComponent, StatCardComponent, MusicLibraryStatsComponent],
   templateUrl: './music-repertoire-table.component.html',
   styleUrl: './music-repertoire-table.component.scss'
 })

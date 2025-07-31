@@ -12,45 +12,15 @@
 </div>
 
 <ng-container *ngIf="!hasError404 && !hasNoMatch">
+
   <div class="container">
-    <div class="statBlock">
-      <div class="statCat">
-        <span class="statBlockTitle">overview</span>
-        <stat-card
-          label="total"
-          [iconName]="'notes_2'"
-          [progressBar]="false"
-          value=32 />
-        <stat-card
-          label="completion"
-          [iconName]="'completed'"
-          value=75 maxValue=100 valueSuffix="%"/>
-        <stat-card
-          label="quality"
-          [iconName]="'diamond'"
-          value=70 maxValue=100 valueSuffix="%"/>
-      </div>
-      <div class="statCat">
-        <span class="statBlockTitle">score</span>
-        <stat-card label="energy" [iconName]="'lightning'" value=5 maxValue=5 />
-        <stat-card label="effort" [iconName]="'fire'" value=3.2 maxValue=5 />
-        <stat-card label="affinity" [iconName]="'heart'" value=3.4 maxValue=5 />
-        <stat-card label="mastery" [iconName]="'award'" value=4.2 maxValue=5 />
-      </div>
-      <div class="statCat">
-        <span class="statBlockTitle">genres</span>
-
-        +3 mores
-      </div>
-    </div>
-
+    <music-library-stats />
     <div class="filter-bar">
       <div class="searchBar">
+        <input type="text">
       </div>
-      <sh3-button-secondary buttonLabel="stats"/>
-      <mat-icon> insert_chart_outlined</mat-icon>
-      <sh3-button-primary buttonLabel="+ Add track"/>
     </div>
+
 
     <label>8 songs</label>
     <div class="listContainer">
@@ -59,6 +29,7 @@
         [item]="row"/>
     </div>
   </div>
+
 
 
 
