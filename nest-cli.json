@@ -1,0 +1,29 @@
+{
+  "monorepo": true,
+  "root": "apps/sh3pherd-monorepo",
+  "sourceRoot": "apps/sh3pherd-monorepo/src",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/sh3pherd-monorepo/tsconfig.app.json"
+  },
+  "projects": {
+    "audio-processor": {
+      "type": "application",
+      "root": "apps/audio-processor",
+      "entryFile": "main",
+      "sourceRoot": "apps/audio-processor/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/audio-processor/tsconfig.app.json"
+      }
+    },
+    "sh3pherd-monorepo": {
+      "type": "application",
+      "root": "apps/sh3pherd-monorepo",
+      "entryFile": "main",
+      "sourceRoot": "apps/sh3pherd-monorepo/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/sh3pherd-monorepo/tsconfig.app.json"
+      }
+    }
+  }
+}
