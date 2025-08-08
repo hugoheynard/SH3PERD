@@ -2,6 +2,23 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { SVG_ICONS } from './SVG_ICONES';
 
+/**
+ * SvgIconComponent
+ *
+ * This component renders an SVG icon based on a provided `name` key,
+ * which is matched against a predefined `SVG_ICONS` registry.
+ *
+ * The raw SVG string is sanitized using Angular's DomSanitizer to safely inject it into the DOM.
+ *
+ * ⚠️ Important:
+ * This component does **not** apply any internal sizing (e.g. width or height).
+ * Consumers of this component must apply sizing via CSS or HTML attributes externally.
+ *
+ * @example
+ * <sh3-svg-icon [name]="'search'" class="w-4 h-4"></sh3-svg-icon>
+ *
+ * @input name - The key corresponding to the desired SVG in the registry (required).
+ */
 @Component({
   selector: 'sh3-svg-icon',
   imports: [],

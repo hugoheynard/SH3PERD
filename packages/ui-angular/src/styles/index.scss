@@ -13,6 +13,10 @@ body {
   --colorPrimary-rawRGB: 6, 164, 164;
   --colorSecondary: rgb(78, 141, 141);
   --colorSecondary-rawRGB: 78, 141, 141;
+  --colorAlert: rgb(182, 49, 49);
+  --colorAlert-rawRGB: 182, 49, 49;
+  --colorWarning: rgb(197, 153, 38);
+  --colorWarning-rawRGB: 197, 153, 38;
 }
 
 
@@ -20,6 +24,7 @@ body {
 //THEMES
 [data-theme='dark'] {
   --baseTextColor: #ccc;
+  --fadedTextColor: #7d8080;;
   --accentTextColor: white;
 
   //----------Structural elements color------------//

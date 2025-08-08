@@ -8,7 +8,12 @@ import {DurationPipe} from '../../../../../pipes/duration.pipe';
 import {MusicRepertoireService} from '../../services/music-repertoire.service';
 import {ITabDefinition} from '../../../../components/tabSystem/tab-system/ITabDefinition';
 import {TMusicTabConfiguration} from '../../types/TMusicTabConfiguration';
-import { ButtonPrimaryComponent, ButtonSecondaryComponent, InputComponent } from '@sh3pherd/ui-angular';
+import {
+  ButtonPrimaryComponent,
+  ButtonSecondaryComponent,
+  InputComponent,
+  MultiSelectDropdownComponent,
+} from '@sh3pherd/ui-angular';
 import { TUserMusicLibrary, TUserMusicLibraryItem } from '@sh3pherd/shared-types';
 import { MusicCardComponent } from '../music-card/music-card.component';
 import { MatIcon } from '@angular/material/icon';
@@ -20,7 +25,7 @@ import { MusicLibraryStatsComponent } from '../music-library-stats/music-library
 @Component({
   selector: 'music-repertoire-table',
   standalone: true,
-  imports: [CdkTableModule, NgForOf, NgIf, FormsModule, NgStyle, DurationPipe, ButtonPrimaryComponent, NgSwitch, NgSwitchCase, NgSwitchDefault, MusicCardComponent, MatIcon, ButtonSecondaryComponent, MatIcon, InputComponent, StatCardComponent, MusicLibraryStatsComponent],
+  imports: [CdkTableModule, NgForOf, NgIf, FormsModule, NgStyle, DurationPipe, ButtonPrimaryComponent, NgSwitch, NgSwitchCase, NgSwitchDefault, MusicCardComponent, MatIcon, ButtonSecondaryComponent, MatIcon, InputComponent, StatCardComponent, MusicLibraryStatsComponent, MultiSelectDropdownComponent],
   templateUrl: './music-repertoire-table.component.html',
   styleUrl: './music-repertoire-table.component.scss'
 })

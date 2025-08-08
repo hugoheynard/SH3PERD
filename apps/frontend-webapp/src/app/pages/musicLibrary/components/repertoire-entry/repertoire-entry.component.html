@@ -1,0 +1,10 @@
+<ng-container *ngIf="hasValidData(); else addRepertoire">
+  <sh3-tag [text]="data.energy" [variant]="'primary'" icon="lightning"/>
+  <sh3-tag [text]="data.effort" [variant]="'primary'" icon="fire"/>
+  <sh3-tag [text]="data.affinity" [variant]="'primary'" icon="heart"/>
+  <sh3-tag [text]="data.mastery" [variant]="'primary'" icon="award"/>
+</ng-container>
+<ng-template #addRepertoire>
+  <button (click)="addEntry()">Ajouter une interprétation</button>
+</ng-template>
+

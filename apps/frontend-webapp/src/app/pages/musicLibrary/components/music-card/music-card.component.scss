@@ -1,32 +1,62 @@
-.music-entry-card{
-  display: grid;
-  grid-template-columns: 1fr 8fr 1fr 1fr 1fr 1fr;
-  align-items: center;
-  gap: 2rem;
+@mixin listItemLayout {
   background-color: var(--headAndfootBgColor);
   color: var(--baseTextColor);
   border-radius: 8px;
   border: 1px solid #7d808030;
   font-size: 0.75rem;
-  padding: 0.1rem 0.5rem;
 }
+
+@mixin gridLabel {
+  display: grid;
+  gap: 0.2rem;
+}
+
+@mixin flexRow($justify: center) {
+  display: flex;
+  flex-direction: row;
+  justify-content: $justify;
+  align-items: center;
+  gap: 0.25rem;
+};
+
+.check {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: var(--colorPrimary);
+}
+
+.musicEntryContainer {
+  @include listItemLayout;
+  padding: 0.5rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.music-entry-card {
+  display: grid;
+  grid-template-columns: auto 1fr repeat(4, max-content);
+  align-items: center;
+  gap: 1rem 2rem;
+}
+
 
 .main-info {
+
 }
 
-.music-entry-card:hover {
+.musicEntryContainer:hover {
   border: 1px solid var(--colorSecondary);
 }
 
 .artistName {
   font-weight: lighter;
   text-transform: capitalize;
-  color: #7d8080;
 }
 
-.label .icon {
-  width: 12px;
-  height: 12px;
+.icon {
+  width: 0.75rem;
+  height: 0.75rem;
   fill: currentColor;
 }
 
@@ -42,37 +72,16 @@
   gap: 0.2rem;
 }
 
-.repertoire-block {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.2rem;
-}
+
 
 .label {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  gap: 0.2rem;
-  align-items: center;
+  @include flexRow();
   padding: 0.2rem 0.5rem;
   height: 0.8rem;
   border-radius: 4px;
 }
 
-.primaryLabel {
-  background-color: rgba(var(--colorSecondary-rawRGB), 0.2);
-  color: var(--colorPrimary);
-}
 
-.greyLabel {
-  background-color: #7d808030;
-  color: #7d8080;
-}
-
-.darkLabel {
-  background-color: rgb(81, 84, 84);
-  color: var(--baseTextColor);
-}
 
 .playButton {
   color: var(--colorPrimary);
@@ -92,3 +101,44 @@
   background-color: var(--headAndfootBgColor);
   color: var(--baseTextColor);
 }
+
+
+
+.fileContainer {
+  display: grid;
+  background-color: #2b2d2d;
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+
+.fileListContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.flexRowSpaceBetween {
+  @include flexRow(space-between);
+}
+
+.fileLine {
+  @include flexRow(space-between);
+  @include listItemLayout;
+  padding: 0.5rem;
+}
+
+.fileControl {
+  @include flexRow(space-between);
+  gap: 0.5rem;
+}
+
+.divider {
+  border: none;
+  height: 1px;
+  background-color: #7d808030;
+  margin: 16px 0;
+}
+
+

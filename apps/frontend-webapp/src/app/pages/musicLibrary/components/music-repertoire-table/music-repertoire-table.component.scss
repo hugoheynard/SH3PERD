@@ -92,8 +92,11 @@
 }
 
 .filter-bar {
+  display: flex;
+  flex-direction: row;
+  gap: 0.4rem;
   width: 100%;
-  height: 3rem;
+  padding: 0 1rem;
   background-color: var(--headAndfootBgColor);
   border: 1px solid #7d808030;
   border-radius: 8px;

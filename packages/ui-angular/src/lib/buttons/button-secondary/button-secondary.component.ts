@@ -1,14 +1,20 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { SvgIconComponent } from '../../icones';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'sh3-button-secondary',
-  imports: [],
+  imports: [
+    SvgIconComponent,
+    NgIf,
+  ],
   templateUrl: './button-secondary.component.html',
   standalone: true,
   styleUrl: './button-secondary.component.scss',
 })
 export class ButtonSecondaryComponent {
   @Input() buttonLabel: string = 'Click Me';
+  @Input() icon: string = '';
   @Input() disabled: boolean = false;
   @Input() onClick?: () => void;
   @Output() clicked: EventEmitter<void> = new EventEmitter<void>();
