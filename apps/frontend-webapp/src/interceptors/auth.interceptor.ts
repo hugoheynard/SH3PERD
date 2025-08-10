@@ -1,7 +1,5 @@
 import {
-  HttpErrorResponse, HttpEvent, HttpHandler,
-  HttpHandlerFn, HttpInterceptor,
-  HttpInterceptorFn,
+  HttpErrorResponse, type HttpHandlerFn, type HttpInterceptorFn,
   HttpRequest,
 } from '@angular/common/http';
 import { TokenService } from '../app/services/token.service';

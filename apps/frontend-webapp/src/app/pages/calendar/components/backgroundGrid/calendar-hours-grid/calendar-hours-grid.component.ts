@@ -1,4 +1,4 @@
-import {Component, inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject, type OnDestroy, type OnInit} from '@angular/core';
 import {DatePipe, NgForOf} from '@angular/common';
 
 

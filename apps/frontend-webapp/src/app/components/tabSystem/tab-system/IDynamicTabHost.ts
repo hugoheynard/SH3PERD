@@ -1,4 +1,4 @@
-import {ITabDefinition} from './ITabDefinition';
+import type { ITabDefinition } from './ITabDefinition';
 
 export interface IDynamicTabHost {
   generateDefaultTab: (id: string) => ITabDefinition;

@@ -1,5 +1,5 @@
 import {
-  AfterViewInit,
+  type AfterViewInit,
   Component,
   computed, effect,
   inject, Injector, runInInjectionContext,
@@ -8,12 +8,10 @@ import {
 } from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {RouteService} from '../../services/route.service';
-import {MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
 import {HeaderComponent} from '../header/header.component';
 import {AppMenuComponent} from '../menus/appMenu/app-menu.component';
 import {RouterOutlet} from '@angular/router';
-import {FooterComponent} from '../footer/footer.component';
-import {NgClass, NgIf} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {LayoutService} from '../../../core/services/layout.service';
 import {CircularMenuComponent} from '../circular-menu/circular-menu.component';
 

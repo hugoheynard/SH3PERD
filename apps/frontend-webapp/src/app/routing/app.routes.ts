@@ -1,4 +1,4 @@
-import {RouterModule, Routes} from '@angular/router';
+import {RouterModule, type Routes} from '@angular/router';
 import {NgModule} from '@angular/core';
 import {LoginLayoutComponent} from '../pages/login/loginLayout/loginLayout.component';
 import {LoginComponent} from '../pages/login/login/login.component';

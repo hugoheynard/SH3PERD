@@ -1,23 +1,16 @@
 import {
-  AfterViewInit,
+  type AfterViewInit,
   Component,
-  inject, Injector, OnDestroy,
-  OnInit,
+  inject, type OnDestroy,
+  type OnInit,
   signal,
-  Signal,
+  type Signal,
 } from '@angular/core';
 import {PlanningGridComponent} from '../planningGrid/planning-grid.component';
-import {MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
-import {MatButton} from '@angular/material/button';
 import {CalendarHoursGridComponent} from '../backgroundGrid/calendar-hours-grid/calendar-hours-grid.component';
 import {CalendarService} from '../../api/calendar.service';
-import {AppMenuComponent} from '../../../../components/menus/appMenu/app-menu.component';
-import {MatCalendar} from '@angular/material/datepicker';
-import {DatePickerCalendarComponent} from '../date-picker-calendar/date-picker-calendar.component';
-import {EventReactformComponent} from '../../../../forms/event-reactform/event-reactform.component';
 import {NgForOf} from '@angular/common';
 import {LayoutService} from '../../../../../core/services/layout.service';
-import {CalendarMenuComponent} from '../calendar-menu/calendar-menu.component';
 import {AutoScrollToNowDirective} from '../../core/directives/cal-auto-scroll-to-now.directive';
 
 @Component({
@@ -33,7 +26,7 @@ import {AutoScrollToNowDirective} from '../../core/directives/cal-auto-scroll-to
   ]
 })
 export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy{
-  private injector: Injector = inject(Injector);
+  //private injector: Injector = inject(Injector);
   private layoutService: LayoutService = inject(LayoutService);
   public calendarService: CalendarService = inject(CalendarService)
 

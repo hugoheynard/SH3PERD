@@ -1,4 +1,4 @@
-import {Component, ContentChildren, ElementRef, EventEmitter, Input, Output, QueryList} from '@angular/core';
+import {Component, ContentChildren, Input, QueryList} from '@angular/core';
 import {WizardStepComponent} from '../wizard-step/wizard-step.component';
 import {NgForOf, NgIf, NgTemplateOutlet} from '@angular/common';
 

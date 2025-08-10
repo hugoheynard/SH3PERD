@@ -7,7 +7,7 @@ import {Router} from '@angular/router';
 export class RouteService {
   private router: Router = inject(Router);
 
-  static tryCatchDecorator(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  static tryCatchDecorator(_target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {

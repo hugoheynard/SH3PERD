@@ -2,10 +2,10 @@ import {
   Directive,
   ElementRef,
   Input,
-  OnChanges,
-  OnInit,
+  type OnChanges,
+  type OnInit,
   Renderer2,
-  SimpleChanges
+  type SimpleChanges,
 } from '@angular/core';
 
 @Directive({

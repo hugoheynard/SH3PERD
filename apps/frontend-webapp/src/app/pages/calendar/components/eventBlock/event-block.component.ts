@@ -1,5 +1,5 @@
-import {Component, HostBinding, Input, OnInit} from '@angular/core';
-import {DatePipe, NgClass, NgIf, NgStyle} from '@angular/common';
+import {Component, HostBinding, Input} from '@angular/core';
+import {DatePipe, NgIf} from '@angular/common';
 
 type EventType = 'meeting' | 'rehearsal' | 'getIn' | 'off';
 

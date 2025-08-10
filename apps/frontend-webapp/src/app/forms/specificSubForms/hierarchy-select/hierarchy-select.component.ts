@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import { type AfterViewInit, Component, EventEmitter, Input, type OnInit, Output} from '@angular/core';
 import {SelectCheckboxComponent} from "../../select-checkbox/select-checkbox.component";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgIf} from '@angular/common';

@@ -1,15 +1,12 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatFormField, MatHint, MatLabel} from '@angular/material/form-field';
-import {MatIcon} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
 import {
-  DateAdapter,
   MAT_DATE_FORMATS,
-  MAT_DATE_LOCALE, MAT_NATIVE_DATE_FORMATS,
-  MatNativeDateModule,
+  MAT_DATE_LOCALE, MatNativeDateModule,
   provideNativeDateAdapter
 } from '@angular/material/core';
 import {SelectParticipantsComponent} from '../specificSubForms/select-participants/select-participants.component';

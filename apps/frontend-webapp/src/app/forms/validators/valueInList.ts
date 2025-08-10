@@ -1,4 +1,4 @@
-import { AbstractControl, ValidatorFn } from '@angular/forms';
+import { AbstractControl, type ValidatorFn } from '@angular/forms';
 
 export function valueInList(allowedValues: any[]): ValidatorFn {
   return (control: AbstractControl) => {

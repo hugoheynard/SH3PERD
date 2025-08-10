@@ -1,5 +1,4 @@
 import {Component, effect} from '@angular/core';
-import {MatCalendar} from '@angular/material/datepicker';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import {NgClass, NgForOf} from '@angular/common';
 import {DateService} from '../../../../services/date.service';

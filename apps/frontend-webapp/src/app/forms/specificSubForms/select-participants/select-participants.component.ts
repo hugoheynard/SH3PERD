@@ -1,8 +1,7 @@
 import {Component, Input} from '@angular/core';
-import {MatChip, MatChipGrid, MatChipListbox, MatChipOption, MatChipRow, MatChipSet} from '@angular/material/chips';
-import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {MatChipListbox, MatChipOption} from '@angular/material/chips';
+import {MatLabel} from '@angular/material/form-field';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
-import {MatInput} from '@angular/material/input';
 import {NgForOf} from '@angular/common';
 
 @Component({

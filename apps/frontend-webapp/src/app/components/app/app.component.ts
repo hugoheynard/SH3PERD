@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, type OnInit } from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import { AuthService } from '../../services/auth.service';
 
 
 
@@ -14,7 +13,6 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit{
-  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
   }

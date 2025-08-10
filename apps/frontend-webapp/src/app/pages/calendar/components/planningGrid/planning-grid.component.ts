@@ -1,7 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {CalendarService} from '../../api/calendar.service';
 import {EventBlockComponent} from '../eventBlock/event-block.component';
-import {NgClass, NgForOf, NgIf, NgStyle} from '@angular/common';
+import {NgClass, NgForOf} from '@angular/common';
 
 
 

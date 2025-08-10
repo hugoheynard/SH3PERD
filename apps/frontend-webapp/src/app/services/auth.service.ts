@@ -1,16 +1,13 @@
-import { inject, Injectable, signal, WritableSignal } from '@angular/core';
+import { inject, Injectable, signal, type WritableSignal } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {
   BehaviorSubject,
   catchError,
-  delay, delayWhen,
-  filter,
+  delay,
   finalize,
-  first, interval,
   map,
   Observable,
   of,
-  timeout,
 } from 'rxjs';
 import {TokenService} from './token.service';
 import {Router} from '@angular/router';
@@ -145,7 +142,7 @@ export class AuthService {
 
         return token;
       }),
-      catchError(err => {
+      catchError(() => {
         this.setAuthenticated(false);
         this.refreshQueue.forEach(cb => cb(null));
         this.refreshQueue = [];
@@ -181,15 +178,5 @@ export class AuthService {
   /** Helper to check if frontend "believes" the session is active */
   shouldHaveSession(): boolean {
     return this.authState$.value;
-  }
-
-  private waitForCookie(name: string, ms = 1500): Observable<boolean> {
-    return interval(50).pipe(
-      map(() => document.cookie.includes(name)),
-      filter(Boolean),
-      first(),
-      timeout({ first: ms }),
-      catchError(() => of(false))
-    );
   }
 }

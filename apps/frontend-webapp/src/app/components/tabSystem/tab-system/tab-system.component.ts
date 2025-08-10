@@ -1,18 +1,16 @@
 import {
-  AfterViewInit, ChangeDetectorRef,
+  type AfterViewInit, ChangeDetectorRef,
   Component, ComponentRef,
   ElementRef,
-  EventEmitter, inject,
-  Input, OnDestroy,
-  Output,
-  Type,
+  inject,
+  Input, Type,
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
 import {NgForOf, NgIf} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {ITabDefinition, TabBase, TabWithConfigurator, TabWithoutConfigurator} from './ITabDefinition';
-import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import type { ITabDefinition } from './ITabDefinition';
+import {CdkDrag, type CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatIcon} from '@angular/material/icon';
 import {TabNotFoundComponent} from '../tab-not-found/tab-not-found.component';
 
@@ -292,7 +290,7 @@ export class TabSystemComponent implements AfterViewInit{
     }
   };
 
-  trackByTabId(index: number, tab: ITabDefinition): string {
+  trackByTabId(_index: number, tab: ITabDefinition): string {
     return tab.id;
   };
 

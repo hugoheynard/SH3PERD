@@ -1,8 +1,6 @@
 import {ChangeDetectorRef, Component, effect, inject, Input, signal} from '@angular/core';
-import { Router } from '@angular/router';
 import {NgForOf, NgIf, NgStyle} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
-import {fromEvent, map, startWith} from 'rxjs';
 
 interface MenuItem {
   label: string;
@@ -47,8 +45,11 @@ export class CircularMenuComponent {
     this.isOpen.set(false);
   };
 
+  /*
   navigate(route: string): void {
     // this.router.navigate([route]);
     this.close();
   };
+
+   */
 }

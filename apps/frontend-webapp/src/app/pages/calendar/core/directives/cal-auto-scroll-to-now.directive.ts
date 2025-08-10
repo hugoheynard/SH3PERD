@@ -1,7 +1,7 @@
 import {
   Directive,
   ElementRef,
-  AfterViewInit,
+  type AfterViewInit,
   inject, Input
 } from '@angular/core';
 
