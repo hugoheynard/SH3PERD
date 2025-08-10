@@ -3,7 +3,7 @@ import {DatePipe, NgForOf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {PlaylistDisplayService} from '../playlist-display.service';
-import {Playlist} from '../playlist_interfaces';
+import type { Playlist } from '../playlist_interfaces';
 import {TagStyleDirective} from '../../../../Directives/tag-style.directive';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {PlaylistService} from '../../../services/playlistService/playlist.service';
@@ -28,7 +28,7 @@ export class PlaylistTableComponent {
   public playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
   private playlistService: any = inject(PlaylistService);
   private creationDateOrder: string = 'down';
-  private energyLevelOrder: any = null;
+  //private energyLevelOrder: any = null;
   @Input() playlists: any[] = [];
 
   editPlaylist(playlist: Playlist): void {

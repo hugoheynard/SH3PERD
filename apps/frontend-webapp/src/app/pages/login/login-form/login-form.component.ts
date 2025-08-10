@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Output} from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ButtonPrimaryComponent, InputComponent } from '@sh3pherd/ui-angular';
-import { TUserCredentialsDTO } from '@sh3pherd/shared-types';
+//import { TUserCredentialsDTO } from '@sh3pherd/shared-types';
 
 @Component({
   selector: 'app-login-form',

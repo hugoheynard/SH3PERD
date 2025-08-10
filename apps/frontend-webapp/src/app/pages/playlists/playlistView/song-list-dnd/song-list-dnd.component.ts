@@ -3,17 +3,12 @@ import {
   Input,
   ChangeDetectorRef,
   inject,
-  OnInit,
-  effect,
-  OnChanges,
-  SimpleChanges,
-  computed, Signal
+  type OnInit
 } from '@angular/core';
-import { CdkDragDrop, CdkDrag, CdkDropList, transferArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
-import {CommonModule, NgForOf} from '@angular/common';
+import { type CdkDragDrop, CdkDrag, CdkDropList, transferArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
+import {NgForOf} from '@angular/common';
 import { TrackLineComponent } from '../track-line/track-line.component';
 import {PlaylistDisplayService} from '../../playlist-display.service';
-import {AvailableTagsComponent} from '../available-tags/available-tags.component';
 import {AddSlotComponent} from '../add-slot/add-slot.component';
 import {DragStyleDirective} from '../../../../../Directives/drag-style.directive';
 import {AbstractControl, FormArray, FormGroup} from '@angular/forms';

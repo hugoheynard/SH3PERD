@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, type OnInit} from '@angular/core';
 import {PlTemplateService} from '../../../../services/pl-template.service';
 import {NgForOf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
@@ -59,7 +59,7 @@ export class PlTemplateTableComponent implements OnInit {
     return;
   };
 
-  editPlaylistTemplate(template: any): void {};
-  deletePlaylistTemplate(template: any): void {};
+  editPlaylistTemplate(_template: any): void {};
+  deletePlaylistTemplate(_template: any): void {};
 
 }

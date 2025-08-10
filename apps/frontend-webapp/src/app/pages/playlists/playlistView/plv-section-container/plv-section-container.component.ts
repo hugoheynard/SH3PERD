@@ -1,14 +1,10 @@
 import {
-  AfterViewChecked,
-  AfterViewInit, ChangeDetectorRef,
+  type AfterViewChecked,
+  ChangeDetectorRef,
   Component,
-  ContentChild,
   ElementRef,
-  EventEmitter, inject,
-  Input, OnChanges,
-  OnInit,
-  Output, SimpleChanges,
-  ViewChild
+  inject,
+  Input, ViewChild
 } from '@angular/core';
 import {CdkAccordion, CdkAccordionItem} from '@angular/cdk/accordion';
 import {MatIcon} from '@angular/material/icon';

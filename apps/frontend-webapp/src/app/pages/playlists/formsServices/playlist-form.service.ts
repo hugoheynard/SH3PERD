@@ -26,7 +26,7 @@ export class PlaylistFormService {
   };
 
   createPerformersFormGroup(performers: any = {}): FormGroup {
-    const { singersConfig, musiciansConfig, aerialConfig } = performers;
+    const { singersConfig, /*musiciansConfig, aerialConfig*/ } = performers;
 
      return this.fb.group({
        singersConfig: this.fb.group({

@@ -1,7 +1,7 @@
 import {Component, inject} from '@angular/core';
 import {LoginFormComponent} from '../login-form/login-form.component';
 import {NgOptimizedImage} from '@angular/common';
-import {NavigationService} from '../../../services/navigation.service';
+//import {NavigationService} from '../../../services/navigation.service';
 import {SnackbarService} from '../../../services/snackbar.service';
 import {AuthService} from '../../../services/auth.service';
 import {firstValueFrom} from 'rxjs';
@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  private navigationService = inject(NavigationService);
+  //private navigationService = inject(NavigationService);
   private snackbarService = inject(SnackbarService);
   private authService = inject(AuthService);
 

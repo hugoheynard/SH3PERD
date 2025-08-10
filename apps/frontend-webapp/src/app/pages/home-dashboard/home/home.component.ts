@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { TodayDateWidgetComponent } from '../today-date-widget/today-date-widget.component';
-import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
-import { NgComponentOutlet, NgForOf, NgStyle } from '@angular/common';
+import { type CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { WorkspaceContractWidgetComponent } from '../workspace-contract-widget/workspace-contract-widget.component';
 import { WidgetGridComponent } from '../widget-grid/widget-grid.component';
 

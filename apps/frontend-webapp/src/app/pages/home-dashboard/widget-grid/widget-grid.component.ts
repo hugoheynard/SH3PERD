@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import {
   DisplayGrid,
   GridsterComponent,
-  GridsterConfig,
-  GridsterItem,
+  type GridsterConfig,
+  type GridsterItem,
   GridsterItemComponent, GridsterItemComponentInterface,
   GridType,
 } from 'angular-gridster2';
@@ -47,7 +47,7 @@ export class WidgetGridComponent {
 
   ]
 
-  itemChange(item: GridsterItem, itemComponent: GridsterItemComponentInterface): void {
+  itemChange(item: GridsterItem, _itemComponent: GridsterItemComponentInterface): void {
     const typedItem = item as WidgetItem
     console.log('item changed', typedItem.component);
   }

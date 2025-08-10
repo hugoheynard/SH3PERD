@@ -1,6 +1,6 @@
 import {Component, inject, Input} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
-import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
+import {CdkDrag, type CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 import {NgForOf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {PlaylistDisplayService} from '../../playlist-display.service';

@@ -1,18 +1,15 @@
 import {
-  AfterViewInit,
-  ChangeDetectorRef,
+  //ChangeDetectorRef,
   Component,
-  inject,
+  //inject,
   Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges
+  type OnInit,
 } from '@angular/core';
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from '@angular/material/button';
 import {NgForOf, NgIf} from '@angular/common';
 import {MatChip, MatChipsModule, MatChipSet} from '@angular/material/chips';
-import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import {CdkDrag, type CdkDragDrop, CdkDropList, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {PlaylistDisplayService} from '../../playlist-display.service';
 import {OpenMusicLibButtonComponent} from '../open-music-lib-button/open-music-lib-button.component';
 import {TagStyleDirective} from '../../../../../Directives/tag-style.directive';
@@ -39,7 +36,7 @@ import {DragStyleDirective} from '../../../../../Directives/drag-style.directive
     styleUrl: './track-line.component.scss'
 })
 export class TrackLineComponent implements OnInit {
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  //private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   //service from the parent because of dynamic calling of component
   @Input() pldServ!: PlaylistDisplayService;
   @Input() songList: any = [];

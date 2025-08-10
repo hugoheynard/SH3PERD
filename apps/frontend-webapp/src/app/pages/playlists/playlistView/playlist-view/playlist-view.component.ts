@@ -2,7 +2,7 @@ import {
   Component,
   inject,
   Input,
-  OnInit,
+  type OnInit,
 } from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 
