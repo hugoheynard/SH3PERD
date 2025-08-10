@@ -1,7 +1,7 @@
 import {
   ChangeDetectorRef,
   Component, computed,
-  inject, OnInit,
+  inject, type OnInit,
   Type, ViewChild,
 } from '@angular/core';
 import {MusicRepertoireTableComponent} from '../music-repertoire-table/music-repertoire-table.component';
@@ -9,10 +9,9 @@ import {MusicTabConfiguratorComponent} from '../../forms/musicTabConfigurator/co
 import {MusicLibContextMenuComponent} from '../music-lib-context-menu/music-lib-context-menu.component';
 import {LayoutService} from '../../../../../core/services/layout.service';
 import {TabSystemComponent} from '../../../../components/tabSystem/tab-system/tab-system.component';
-import {ITabDefinition} from '../../../../components/tabSystem/tab-system/ITabDefinition';
+import type { ITabDefinition } from '../../../../components/tabSystem/tab-system/ITabDefinition';
 import {MusicLibNavDataService} from '../../services/music-lib-nav-data.service';
-import {IDynamicTabHost} from '../../../../components/tabSystem/tab-system/IDynamicTabHost';
-import {AddMusicPanelComponent} from '../add-music-panel/add-music-panel.component';
+import type { IDynamicTabHost } from '../../../../components/tabSystem/tab-system/IDynamicTabHost';
 import {
   MusicVersionConfiguratorComponent
 } from '../../forms/musicVersionConfigurator/components/music-version-configurator/music-version-configurator.component';
@@ -20,7 +19,7 @@ import {
 
 @Component({
     selector: 'app-music-library',
-  imports: [TabSystemComponent, MusicRepertoireTableComponent],
+  imports: [TabSystemComponent],
     templateUrl: './music-library.component.html',
     standalone: true,
     styleUrl: './music-library.component.scss',
@@ -45,7 +44,7 @@ export class MusicLibraryComponent implements OnInit, IDynamicTabHost{
       isTitleEditable: false,
       isSearchable: true,
       isActive: true,
-      default: true,
+      default: true
     }
   ];
 

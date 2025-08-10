@@ -1,12 +1,12 @@
-import {Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, inject, Input, type OnInit, Output} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MusicTabConfiguratorFormService} from '../../services/music-tab-configurator-form.service';
 import {ExploitationFilterFormComponent} from '../exploitation-filter-form/exploitation-filter-form.component';
 import {MusicDataFilterFormComponent} from '../music-data-filter-form/music-data-filter-form.component';
 import {FormBlockComponent} from '../form-block/form-block.component';
 import {SearchConfigurationFormComponent} from '../search-configuration-form/search-configuration-form.component';
-import {ITabDefinition} from '../../../../../../components/tabSystem/tab-system/ITabDefinition';
-import {TMusicTabConfiguration} from '../../../../types/TMusicTabConfiguration';
+import type { ITabDefinition } from '../../../../../../components/tabSystem/tab-system/ITabDefinition';
+import type { TMusicTabConfiguration } from '../../../../types/TMusicTabConfiguration';
 import { ButtonPrimaryComponent, CheckboxComponent, InputComponent } from '@sh3pherd/ui-angular';
 import { LabelWrapperDirective } from '../../../../../../../Directives/forms/label.directive';
 

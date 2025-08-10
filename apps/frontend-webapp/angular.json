@@ -128,7 +128,7 @@
     },
     "@sh3pherd/ui-angular": {
       "root": "packages/ui-angular",
-      "sourceRoot": "packages/ui-angular/src",
+      "sourceRoot": "packages/ui-angular/src/",
       "projectType": "library",
       "architect": {
         "build": {

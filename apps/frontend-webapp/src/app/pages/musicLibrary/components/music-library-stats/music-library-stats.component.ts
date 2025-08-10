@@ -8,8 +8,6 @@ import { ButtonSecondaryComponent } from '@sh3pherd/ui-angular';
   selector: 'music-library-stats',
   imports: [
     StatCardComponent,
-    MatIcon,
-    NgClass,
     NgIf,
     ButtonSecondaryComponent,
   ],

@@ -1,13 +1,10 @@
-import {Component, inject, OnInit, WritableSignal} from '@angular/core';
+import {Component, inject, type OnInit, type WritableSignal} from '@angular/core';
 import {PlaylistDisplayService} from '../../playlist-display.service';
 import {PlaylistService} from '../../../../services/playlistService/playlist.service';
 import {TabSystemComponent} from '../../../../components/tabSystem/tab-system/tab-system.component';
-import {IDynamicTabHost} from '../../../../components/tabSystem/tab-system/IDynamicTabHost';
-import {ITabDefinition} from '../../../../components/tabSystem/tab-system/ITabDefinition';
-import {
-  MusicLibContextMenuComponent
-} from '../../../musicLibrary/components/music-lib-context-menu/music-lib-context-menu.component';
-import {LayoutService} from '../../../../../core/services/layout.service';
+import type {IDynamicTabHost} from '../../../../components/tabSystem/tab-system/IDynamicTabHost';
+import type {ITabDefinition} from '../../../../components/tabSystem/tab-system/ITabDefinition';
+
 
 
 @Component({
@@ -20,7 +17,7 @@ import {LayoutService} from '../../../../../core/services/layout.service';
   styleUrl: './playlist-manager.component.scss'
 })
 export class PlaylistManagerComponent implements OnInit, IDynamicTabHost{
-  private layoutService: LayoutService = inject(LayoutService);
+ //private layoutService: LayoutService = inject(LayoutService);
 
   private playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
   private playlistService: PlaylistService = inject(PlaylistService);

@@ -8,12 +8,6 @@ import { WidgetGridComponent } from '../widget-grid/widget-grid.component';
 @Component({
   selector: 'app-home',
   imports: [
-    TodayDateWidgetComponent,
-    CdkDropList,
-    NgForOf,
-    CdkDrag,
-    NgComponentOutlet,
-    NgStyle,
     WidgetGridComponent,
   ],
   templateUrl: './home.component.html',

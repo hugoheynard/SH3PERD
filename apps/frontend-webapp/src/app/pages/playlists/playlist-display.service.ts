@@ -1,13 +1,10 @@
-import {inject, Injectable, signal, WritableSignal} from '@angular/core';
-import {Playlist} from './playlist_interfaces';
-import {PlaylistViewComponent} from './playlistView/playlist-view/playlist-view.component';
-import { LayoutService } from '../../../core/services/layout.service';
+import {Injectable, signal, type WritableSignal} from '@angular/core';
+import type {Playlist} from './playlist_interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlaylistDisplayService {
-  private layoutService: LayoutService = inject(LayoutService);
   public playlistSidenavSignal: WritableSignal<boolean> = signal(false);
   public currentPlaylistSignal: WritableSignal<Playlist | null> = signal(null);
   public playlistViewModeSignal: WritableSignal<'create' | 'edit'> = signal('create');
@@ -17,9 +14,13 @@ export class PlaylistDisplayService {
    * used to trigger the process "add an empty slot to playlist"
    * */
   public addEmptySlotSignal: WritableSignal<number> = signal<number>(0);
+
+  /*
   fireEvent_addEmptySlotSignal(): void {
     this.addEmptySlotSignal.set(this.addEmptySlotSignal() + 1);
   };
+
+   */
 
 
   /**

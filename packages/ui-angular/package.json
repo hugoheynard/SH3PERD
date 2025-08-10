@@ -2,6 +2,12 @@
   "name": "@sh3pherd/ui-angular",
   "version": "0.0.1",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/public-api.ts",
+      "types": "./src/public-api.ts"
+    }
+  },
   "scripts": {
     "build": "ng build ui-angular",
     "storybook": "ng run ui-angular:storybook",
@@ -12,10 +18,10 @@
     "@angular/cli": "^19.2.10",
     "@angular/common": "^19.2.0",
     "@angular/core": "^19.2.0",
-    "@angular/forms": "19.2.14"
+    "@angular/forms": "19.2.14",
+    "@angular/platform-browser": "^19.2.14"
   },
   "dependencies": {
-    "@angular/platform-browser": "^19.2.14",
     "tslib": "^2.3.0"
   },
   "sideEffects": false,

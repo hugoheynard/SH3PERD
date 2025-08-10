@@ -1,24 +1,24 @@
 import {
-  Component, EventEmitter, inject, Input, OnInit, Output
+  Component, EventEmitter, inject, Input, type OnInit, Output
 } from '@angular/core';
 import { CdkTableModule } from '@angular/cdk/table';
 import { NgForOf, NgIf, NgStyle, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {DurationPipe} from '../../../../../pipes/duration.pipe';
 import {MusicRepertoireService} from '../../services/music-repertoire.service';
-import {ITabDefinition} from '../../../../components/tabSystem/tab-system/ITabDefinition';
-import {TMusicTabConfiguration} from '../../types/TMusicTabConfiguration';
+import type { ITabDefinition } from '../../../../components/tabSystem/tab-system/ITabDefinition';
+import type { TMusicTabConfiguration } from '../../types/TMusicTabConfiguration';
 import {
   ButtonPrimaryComponent,
   ButtonSecondaryComponent,
   InputComponent,
   MultiSelectDropdownComponent,
 } from '@sh3pherd/ui-angular';
-import { TUserMusicLibrary, TUserMusicLibraryItem } from '@sh3pherd/shared-types';
+import type { TUserMusicLibraryItem } from '@sh3pherd/shared-types';
 import { MusicCardComponent } from '../music-card/music-card.component';
 import { MatIcon } from '@angular/material/icon';
 import { StatCardComponent } from '../stat-card/stat-card.component';
-import { MusicLibraryStatsComponent } from '../music-library-stats/music-library-stats.component';
+import { MusicLibraryStatsComponent } from '../music-library-stats/music-library-stats.component'
 
 
 

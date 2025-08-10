@@ -1,0 +1,29 @@
+{
+  "extends": "./tsconfig.base.flags.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2023",
+    "lib": ["esnext"],
+
+    "emitDecoratorMetadata": true,
+    "emitDeclarationOnly": false,
+    "declarationMap": true
+    //"noUncheckedIndexedAccess": true, // OMG NO !!
+  },
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-types",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__"
+  ],
+  // for tsc -b
+  "references": [
+    { "path": "./packages/shared-types" },
+    { "path": "./packages/ui-angular" }
+  ]
+}
+

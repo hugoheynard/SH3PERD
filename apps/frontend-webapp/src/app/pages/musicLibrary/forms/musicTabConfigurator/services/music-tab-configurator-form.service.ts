@@ -2,9 +2,8 @@ import {inject, Injectable} from '@angular/core';
 import {AbstractControl, FormGroup, NonNullableFormBuilder, Validators} from '@angular/forms';
 import {valueInList} from '../../../../../forms/validators/valueInList';
 import {allArrayNumbersInRange} from '../../../../../forms/validators/allArrayNumbersInRange';
-import {TMusicTabConfiguration} from '../../../types/TMusicTabConfiguration';
+import type { TMusicTabConfiguration } from '../../../types/TMusicTabConfiguration';
 import {deepPatchForm} from '../../../../../forms/validators/deepPatchForm';
-import {MusicLibraryTextContentService} from '../../../services/music-library-text-content.service';
 
 
 @Injectable({
@@ -12,7 +11,6 @@ import {MusicLibraryTextContentService} from '../../../services/music-library-te
 })
 export class MusicTabConfiguratorFormService {
   private fb: NonNullableFormBuilder = inject(NonNullableFormBuilder);
-  private TextContentService: MusicLibraryTextContentService = inject(MusicLibraryTextContentService);
 
   createForm(): FormGroup<Record<string, AbstractControl>> {
     return new FormGroup<Record<string, AbstractControl>>({

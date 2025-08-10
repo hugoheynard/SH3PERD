@@ -1,10 +1,10 @@
-import {inject, Injectable, signal, WritableSignal} from '@angular/core';
+import {inject, Injectable, signal, type WritableSignal} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
 import {ApiURLService} from '../../../services/api-url.service';
-import {TMusicTabConfiguration} from '../types/TMusicTabConfiguration';
-import {TUserId} from '../../../../types/user.types';
-import { TMusicLibraryFilter, TUserMusicLibrary, TUserMusicLibraryResponseDTO } from '@sh3pherd/shared-types';
+import type { TMusicTabConfiguration } from '../types/TMusicTabConfiguration';
+import type {TUserId} from '../../../../types/user.types';
+import type { TMusicLibraryFilter, TUserMusicLibrary, TUserMusicLibraryResponseDTO } from '@sh3pherd/shared-types';
 
 @Injectable({
   providedIn: 'root'

@@ -22,8 +22,6 @@ export interface WidgetItem extends GridsterItem {
     GridsterItemComponent,
     NgComponentOutlet,
     NgForOf,
-    WorkspaceContractWidgetComponent,
-    TodayDateWidgetComponent
   ],
   templateUrl: './widget-grid.component.html',
   standalone: true,
@@ -34,7 +32,7 @@ export class WidgetGridComponent {
     gridType: GridType.Fixed,        // 🧱 Grille à dimensions fixes
     fixedColWidth: 140,              // largeur d'une colonne (px)
     fixedRowHeight: 140,             // hauteur d'une ligne (px)
-    margin: 10,                      // espace entre les widgets (px)
+    margin: 10,                      // espace entre les widgets (px);
     displayGrid: DisplayGrid.OnDragAndResize,
     draggable: { enabled: true },
     resizable: { enabled: true },

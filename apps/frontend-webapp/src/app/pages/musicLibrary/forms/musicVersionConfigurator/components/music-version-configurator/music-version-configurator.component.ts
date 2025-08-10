@@ -1,22 +1,18 @@
-import { Component, computed, effect, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormBlockComponent } from '../../../musicTabConfigurator/components/form-block/form-block.component';
 import {
-  ButtonPrimaryComponent, ButtonSecondaryComponent, ButtonTertiaryComponent,
-  CheckboxComponent,
-  FileUploaderComponent,
+  ButtonPrimaryComponent, ButtonSecondaryComponent,
   InputComponent,
   SelectComponent, SelectListComponent,
 } from '@sh3pherd/ui-angular';
 import { MusicLibraryTextContentService } from '../../../../services/music-library-text-content.service';
-import { IMusicVersionForm, MusicVersionFormService } from '../../../../formServices/music-version-form.service';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { type IMusicVersionForm, MusicVersionFormService } from '../../../../formServices/music-version-form.service';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgIf, NgStyle } from '@angular/common';
-import { TMusicReferenceDomainModel, TMusicVersionCreationFormPayload } from '@sh3pherd/shared-types';
+import type { TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
 import { MusicReferenceService } from '../../../../services/music-reference.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MusicVersionService } from '../../../../services/music-version.service';
 import { startWith } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
 import { MusicReferenceFormComponent } from '../../../music-reference-form/music-reference-form.component';
 import { DialogService } from '../../../../../../services/dialog.service';
 
@@ -26,14 +22,11 @@ import { DialogService } from '../../../../../../services/dialog.service';
     FormBlockComponent,
     InputComponent,
     SelectComponent,
-    CheckboxComponent,
     ButtonPrimaryComponent,
     ReactiveFormsModule,
-    FileUploaderComponent,
     SelectListComponent,
     NgStyle,
     NgIf,
-    ButtonTertiaryComponent,
     ButtonSecondaryComponent,
   ],
   templateUrl: './music-version-configurator.component.html',

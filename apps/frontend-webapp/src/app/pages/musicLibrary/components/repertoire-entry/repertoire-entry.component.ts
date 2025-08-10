@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { NgIf } from '@angular/common';
-import { ButtonSecondaryComponent, TagComponent } from '@sh3pherd/ui-angular';
 import { TMusicRepertoireEntryDomainModel } from '@sh3pherd/shared-types';
+import { ButtonSecondaryComponent, TagComponent } from '@sh3pherd/ui-angular';
 
 
 
@@ -17,20 +17,23 @@ import { TMusicRepertoireEntryDomainModel } from '@sh3pherd/shared-types';
   styleUrl: './repertoire-entry.component.scss',
 })
 export class RepertoireEntryComponent {
-  @Input({ required: true }) data!: TMusicRepertoireEntryDomainModel;
+  @Input() data: TMusicRepertoireEntryDomainModel | undefined = {} as TMusicRepertoireEntryDomainModel;
 
   /**
    * Checks if the entry has valid data. All fields must be defined and not empty.
    */
-  hasValidData(): boolean {
-    const requiredFields: (keyof TMusicRepertoireEntryDomainModel)[] = ['energy', 'effort', 'affinity', 'mastery'];
-    return requiredFields.every(field => {
-      const value = this.data[field];
-      return value !== undefined && value !== null && String(value).trim() !== '';
+  isComplete(d: TMusicRepertoireEntryDomainModel): boolean {
+    const required: (keyof TMusicRepertoireEntryDomainModel)[] =
+      ['energy', 'effort', 'affinity', 'mastery'];
+    return required.every((k) => {
+      const v = d[k] as unknown;
+      return v !== undefined && v !== null && String(v).trim() !== '';
     });
-  };
+  }
 
   addEntry() {
 
   };
+
+  protected readonly String = String;
 }

@@ -6,8 +6,8 @@
       "node"
     ],
     "paths": {
-      "@shepherd/shared-types/*": ["../../packages/shared-types/src/*"],
-      "@sh3pherd/ui-angular": ["../../packages/ui-angular/src/public-api.ts"]
+      "@sh3pherd/shared-types/*": ["../../packages/shared-types/src/*"],
+      "@sh3pherd/ui-angular": ["../../packages/ui-angular/src/public-api.ts"],
     }
   },
   "files": [

@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    // --- Strictness (types) ---
+    "strict": true,
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "useUnknownInCatchVariables": true,
+
+    // --- Robustesse / lisibilité ---
+    "noFallthroughCasesInSwitch": true,
+    "allowUnreachableCode": false,
+    "forceConsistentCasingInFileNames": true,
+
+    // --- Interop & modules ---
+    "verbatimModuleSyntax": true,          // no ghost imports
+    "allowSyntheticDefaultImports": true,   // typing-friendly
+    "esModuleInterop": true,                // import ergonomic
+
+    // --- Build ergonomics ---
+    "skipLibCheck": true,                   // build performance
+    "incremental": true,
+    "sourceMap": true,
+    "removeComments": false,                // garde les commentaires en JS (utile en debug)
+    "allowJs": false,
+
+    // --- Decorators (if front Angular + back Nest) ---
+    "experimentalDecorators": true,
+
+    // --- various ---
+    "allowUnusedLabels": false
+  }
+}
+

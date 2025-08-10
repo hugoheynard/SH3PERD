@@ -1,5 +1,5 @@
 import {Injectable, signal} from '@angular/core';
-import {ITabDefinition} from '../../../components/tabSystem/tab-system/ITabDefinition';
+import type { ITabDefinition } from '../../../components/tabSystem/tab-system/ITabDefinition';
 
 @Injectable({
   providedIn: 'root'
@@ -19,13 +19,16 @@ export class MusicLibNavDataService {
     this.tabConfigSignal.set(null);
   };
 
+  /*
   saveTabConfig(tabConfig: ITabDefinition[]): void {
 
-  };
+  }
 
   openMusicTab(mode: 'add'| 'edit', tab?: ITabDefinition): void {
 
   };
+
+   */
 
 
 
