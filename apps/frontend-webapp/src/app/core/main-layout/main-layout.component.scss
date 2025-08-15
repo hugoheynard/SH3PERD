@@ -1,0 +1,101 @@
+@use "tokens" as t;
+@use "mixins" as m;
+
+
+:host {
+  display: block;
+  height: 100vh;
+  width: 100%;
+  overflow-x: clip;
+  overflow-y: hidden;
+}
+//----------vertical structure----------//
+.app-layout {
+  display: flex;
+  height: 92vh;
+}
+
+app-footer {
+  flex: 0 0 auto;
+  height: 300px;
+  background-color: #f5f5f5;
+  z-index: 1;
+}
+
+//----------main layout - application content----------//
+.menu-left {
+  width: t.$main-menus-width;
+  min-width: t.$main-menus-width;
+  height: t.$app-layout-children-height;
+}
+
+.layout-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: t.$app-layout-children-height;
+  overflow: hidden;
+}
+
+.layout-main {
+  position: relative;
+  width: 100%;
+  height: t.$app-layout-children-height;
+  display: flex;               // permet un layout horizontal
+  flex-direction: row;         // place les enfants côte à côte
+  overflow: hidden;
+
+  @media (max-width: t.$small-width-trigger) {
+    flex-direction: column;
+  };
+}
+
+
+
+//for left and right panels
+.panel{
+  width: t.$app-sidePanel-width;
+  height: t.$app-layout-children-height;
+  @include m.sidePanels;
+}
+
+
+
+
+
+
+.content {
+  flex: 1;                     // prend toute la largeur dispo
+  overflow-y: auto;
+  background-color: var(--pageBgColor);
+  min-width: 0;                // évite le débordement de flex
+  z-index: 2000;
+}
+
+
+.context-menu {
+  width: t.$main-menus-width;
+  height: t.$app-layout-children-height;
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.05);
+  background-color: var(--colorPrimaryMenus);
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.hidden {
+  display: none;
+}
+
+
+
+//---------Media query----------//
+
+@media (max-width: 768px) {
+  .context-menu {
+    display: none;
+  }
+
+  .menu-left {
+    display: none;
+  }
+}

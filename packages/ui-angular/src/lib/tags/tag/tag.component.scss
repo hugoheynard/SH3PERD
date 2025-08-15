@@ -9,7 +9,7 @@
 :host {
   @include flexRow();
   padding: 0.2rem 0.5rem;
-  height: 0.8rem;
+  height: 1rem;
   border-radius: 4px;
   --tag-bg: #f3f4f6;
   --tag-fg: #111827;
@@ -19,8 +19,7 @@
 };
 
 .icon {
-  width: 0.75rem;
-  height: 0.75rem;
+  font-size: .75rem;
   fill: currentColor;
 }
 

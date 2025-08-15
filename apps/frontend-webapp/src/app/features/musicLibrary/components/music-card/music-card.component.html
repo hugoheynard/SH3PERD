@@ -1,0 +1,59 @@
+<div class="musicEntryContainer">
+  <div class="music-entry-card">
+    <div class="selectAndPlay">
+      <sh3-checkbox label=""/>
+      <sh3-button-icon [icon]="'play'" />
+    </div>
+
+    <div class="main-info">
+      <span>{{ item.version.title }}</span>
+      <span class="artistName fadedText">{{ item.version.artist }}</span>
+    </div>
+
+    <div class="grid2">
+      <sh3-tag [text]=" item.version.type ?? 'N/A'" [variant]="item.version.type? 'lightGrey': 'warning'"/>
+      <sh3-tag [text]="item.version.genre ??  'N/A'" [variant]="item.version.genre? 'lightGrey': 'alert'"/>
+    </div>
+
+    <div class="grid4">
+      <sh3-tag [text]="`__:__`" [variant]="'fadedGrey'" icon="clock"/>
+      <sh3-tag [text]="`${120}bpm`" [variant]="'fadedGrey'" icon="metronome"/>
+      <sh3-tag [text]="`${2}st`" [variant]="'fadedGrey'"/>
+      <sh3-tag [text]="`C#m`" [variant]="'fadedGrey'"/>
+    </div>
+
+    <repertoire-entry [data]="item.repertoireEntry"/>
+
+    <div class="grid4">
+      <sh3-button-icon icon="stats" [disabled]="true" (clicked)="toggleStats()"/>
+      <sh3-button-icon icon="folder" (clicked)="toggleMusicFiles()"/>
+      <sh3-button-icon icon="edit" [disabled]="true" (clicked)="editItem()"/>
+      <sh3-button-icon icon="bin" type="critical" [disabled]="true" (clicked)="deleteItem()"/>
+    </div>
+  </div>
+
+  <ng-container *ngIf="statsVisible"><!--TODO--></ng-container>
+  <ng-container *ngIf="fileContainerVisible">
+    <div class="fileContainer">
+      <!--IMPORTS-->
+      <div class="flexRowSpaceBetween">
+        <span class="fadedText">Add new files</span>
+        <sh3-button-secondary buttonLabel="upload" [icon]="'upload'"/>
+      </div>
+      <hr class="divider" />
+
+      <!--LIST-->
+      <div class="fileListContainer">
+        <div class="flexRowSpaceBetween">
+          <span class="fadedText">Existing files</span>
+          <div class="flexRowSpaceBetween">
+            <span class="label greyLabel"> 3 files</span>
+            <span class="label greyLabel"> 56 MB</span>
+          </div>
+        </div>
+
+        <music-file-line />
+      </div>
+    </div>
+  </ng-container>
+</div>

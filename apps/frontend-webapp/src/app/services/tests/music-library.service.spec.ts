@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { MusicRepertoireService } from '../../pages/musicLibrary/services/music-repertoire.service';
+import { MusicRepertoireService } from '../../features/musicLibrary/services/music-repertoire.service';
 
 describe('MusicLibraryService', () => {
   let service: MusicRepertoireService;

@@ -22,18 +22,23 @@ $shepherd-theme: mat.define-theme((
   )
 ));
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using
-
-
-
-html, body { height: 100vh; }
-body {
+/**
+  * Apply the theme to the application. GENERAL
+ */
+html, body {
+  height: 100dvh;
   margin: 0;
+  padding: 0;
+}
+
+body {
   font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-  box-sizing: border-box;background-color: var(--culturedWhite);
-};
+  background-color: var(--culturedWhite);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
 .flexRowSpaceBetween {
   display: flex;
@@ -84,8 +89,20 @@ form {
 }
 
 
+//GENERIC CLASSES AND STYLES
+
+
 .fadedText {
   color: var(--fadedTextColor);
+}
+
+/**
+  * SVG Icon Styles
+  * This is a global style for SVG icons used in the application.
+ */
+sh3-svg-icon {
+  font-size: 0.75rem;
+  fill: var(--baseTextColor);
 }
 
 

@@ -10,7 +10,7 @@ import { routes } from './routing/app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import {provideHttpClient, withFetch, withInterceptors} from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import {PlaylistDisplayService} from './pages/playlists/playlist-display.service';
+import {PlaylistDisplayService} from './features/playlists/playlist-display.service';
 import {authInterceptor} from '../interceptors/auth.interceptor';
 import {AuthService} from './services/auth.service';
 import {catchError, firstValueFrom, of} from 'rxjs';

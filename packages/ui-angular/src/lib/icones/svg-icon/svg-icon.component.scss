@@ -1,5 +1,11 @@
 :host {
   display: inline-block;
-  width: inherit;
-  height: inherit;
+  width: 1em;
+  height: 1em;
+  color: inherit;
+}
+
+
+svg {
+  color: currentColor;
 }

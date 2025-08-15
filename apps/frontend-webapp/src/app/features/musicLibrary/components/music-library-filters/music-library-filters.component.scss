@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.25rem 1rem;
+  background-color: var(--headAndfootBgColor);
+  border: 1px solid #7d808030;
+  border-radius: 8px;
+}

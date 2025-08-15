@@ -1,13 +1,13 @@
 import {RouterModule, type Routes} from '@angular/router';
 import {NgModule} from '@angular/core';
-import {LoginLayoutComponent} from '../pages/login/loginLayout/loginLayout.component';
-import {LoginComponent} from '../pages/login/login/login.component';
-import {CalendarComponent} from '../pages/calendar/components/calendarPage/calendar.component';
+import {LoginLayoutComponent} from '../features/login/loginLayout/loginLayout.component';
+import {LoginComponent} from '../features/login/login/login.component';
+import {CalendarComponent} from '../features/calendar/components/calendarPage/calendar.component';
 import {authGuard} from '../../guards/auth.guard';
-import {PlaylistManagerComponent} from '../pages/playlists/components/playlist-manager/playlist-manager.component';
-import {MainLayoutComponent} from '../components/main-layout/main-layout.component';
-import {HomeComponent} from '../pages/home-dashboard/home/home.component';
-import {MusicLibraryComponent} from '../pages/musicLibrary/components/music-library/music-library.component';
+import {PlaylistManagerComponent} from '../features/playlists/components/playlist-manager/playlist-manager.component';
+import {MainLayoutComponent} from '../core/main-layout/main-layout.component';
+import {HomeComponent} from '../features/home-dashboard/home/home.component';
+import {MusicLibraryComponent} from '../features/musicLibrary/components/music-library/music-library.component';
 
 
 export const routes: Routes = [
@@ -23,10 +23,10 @@ export const routes: Routes = [
     component: MainLayoutComponent,
     //canActivate: [authGuard],
     children: [
-      { path: 'home', component: HomeComponent},
-      { path: 'calendar', component: CalendarComponent},
-      { path: 'musicLibrary', component: MusicLibraryComponent, canActivate: [authGuard] },
-      { path: 'playlistManager', component: PlaylistManagerComponent, canActivate: [authGuard]}
+      { path: 'home', component: HomeComponent, data: { pageName: 'dashboard' }},
+      { path: 'calendar', component: CalendarComponent, data: { pageName: 'calendar' }},
+      { path: 'musicLibrary', component: MusicLibraryComponent, canActivate: [authGuard], data: { pageName: 'music' } },
+      { path: 'playlistManager', component: PlaylistManagerComponent, canActivate: [authGuard], data: { pageName: 'playlists' }}
     ]
   },
   { path: '**', redirectTo: 'login' },

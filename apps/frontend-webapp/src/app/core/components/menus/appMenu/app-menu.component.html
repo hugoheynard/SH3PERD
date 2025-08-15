@@ -1,0 +1,13 @@
+<!--<app-icon-flat-button
+  *ngFor="let item of menuItems"
+  [iconName]="item.iconName"
+  [action]="item.action"
+  [ngClass]="{ 'active': isActive(item.route) }"
+/>-->
+
+<sh3-menu [items]="[
+  { id: 'home', label: 'dashboard', icon: 'home', route: 'home', disabled: false },
+  { id: 'calendar', label: 'calendar', icon: 'calendar', route: 'calendar' },
+  { id: 'music', label: 'music library', icon: 'notes_2', route: 'musicLibrary' },
+  { id: 'logout', label: 'logout', icon: 'logout', command: 'logout'}
+]" (command)="onCommand($event)" />

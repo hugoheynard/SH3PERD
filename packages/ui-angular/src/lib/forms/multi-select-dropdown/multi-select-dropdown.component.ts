@@ -1,6 +1,6 @@
 import {Component, ElementRef, forwardRef, HostListener, inject, Input} from '@angular/core';
 import { NgForOf, NgIf } from '@angular/common';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { type ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 
 @Component({
@@ -68,7 +68,7 @@ export class MultiSelectDropdownComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  setDisabledState?(isDisabled: boolean): void {
+  setDisabledState?(_isDisabled: boolean): void {
     // gérer l'état désactivé si besoin
   }
 

@@ -1,4 +1,4 @@
-import { ControlValueAccessor } from '@angular/forms';
+import type { ControlValueAccessor } from '@angular/forms';
 
 export abstract class BaseControlValueAccessor<T> implements ControlValueAccessor {
   private _value!: T;
@@ -33,6 +33,6 @@ export abstract class BaseControlValueAccessor<T> implements ControlValueAccesso
 
   get value(): T {
     return this._value;
-  }
+  };
 
 }

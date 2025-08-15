@@ -9,3 +9,19 @@
 }
 
 
+@mixin flexRow($justify: center) {
+  display: flex;
+  flex-direction: row;
+  justify-content: $justify;
+  align-items: center;
+  gap: 0.25rem;
+};
+
+
+@mixin listItemLayout {
+  background-color: var(--headAndfootBgColor);
+  color: var(--baseTextColor);
+  border-radius: 8px;
+  border: 1px solid #7d808030;
+  font-size: 0.75rem;
+}

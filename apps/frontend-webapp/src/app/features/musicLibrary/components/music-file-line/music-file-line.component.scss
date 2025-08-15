@@ -1,0 +1,15 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+
+:host {
+  @include m.flexRow(space-between);
+  @include m.listItemLayout;
+  padding: 0.5rem;
+}
+
+.fileControl {
+  @include m.flexRow(space-between);
+  gap: 0.5rem;
+}
+
+

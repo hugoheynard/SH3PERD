@@ -1,0 +1,26 @@
+<nav aria-label="Main Menu">
+  <ng-container *ngFor="let it of items; trackBy: trackById">
+    <!-- navigation items -->
+    <a *ngIf="it.route; else cmd"
+       [class.disabled]="it.disabled"
+       [routerLink]="it.route"
+       routerLinkActive="active"
+       [attr.aria-disabled]="it.disabled || null">
+      <i *ngIf="it.icon" aria-hidden="true"></i>
+      <!--<span class="label">{{ it.label }}</span>-->
+      <sh3-svg-icon [name]="it.icon" class="icon"/>
+    </a>
+
+    <!-- command items -->
+    <ng-template #cmd>
+      <button type="button"
+              class="menu-item"
+              [disabled]="it.disabled"
+              (click)="command.emit(it)">
+        <i *ngIf="it.icon" aria-hidden="true"></i>
+        <!--<span class="label">{{ it.label }}</span>-->
+        <sh3-svg-icon [name]="it.icon" class="icon"/>
+      </button>
+    </ng-template>
+  </ng-container>
+</nav>

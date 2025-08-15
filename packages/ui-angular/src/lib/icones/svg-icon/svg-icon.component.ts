@@ -1,5 +1,5 @@
-import { Component, Input, OnChanges } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Component, Input, type OnChanges } from '@angular/core';
+import { DomSanitizer, type SafeHtml } from '@angular/platform-browser';
 import { SVG_ICONS } from './SVG_ICONES';
 
 /**
@@ -12,7 +12,7 @@ import { SVG_ICONS } from './SVG_ICONES';
  *
  * ⚠️ Important:
  * This component does **not** apply any internal sizing (e.g. width or height).
- * Consumers of this component must apply sizing via CSS or HTML attributes externally.
+ * Consumers of this component must apply sizing via CSS or HTML attributes externally. use font-size.
  *
  * @example
  * <sh3-svg-icon [name]="'search'" class="w-4 h-4"></sh3-svg-icon>

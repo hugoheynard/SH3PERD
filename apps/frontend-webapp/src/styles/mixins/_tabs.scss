@@ -3,8 +3,10 @@
 
 @mixin baseTab{
   display: flex;
+  justify-content: center;
+  align-items: center;
   height: t.$tab-height;
-  padding: t.$tab-padding;
+  //padding: t.$tab-padding;
   border-radius: t.$tab-border-radius;
   color: var(--baseTextColor);
   background: var(--tab-bgColor);
