@@ -3,32 +3,32 @@
   <stat-card label="completion" [iconName]="'completed'" value=75 maxValue=100 valueSuffix="%"/>
   <stat-card label="quality" [iconName]="'diamond'" value=70 maxValue=100 valueSuffix="%"/>
   <stat-card label="freshness" [iconName]="'diamond'" [progressBar]="false" value=70 maxValue=100 valueSuffix=" points"/>
-  <sh3-button-secondary buttonLabel="more" class="button"/>
+
+  <div class="statBlock" *ngIf="isOpen()">
+    <div class="statCat">
+      <span class="statBlockTitle">Lib specs</span>
+      <stat-card label="energy" [iconName]="'lightning'" value=5 maxValue=5 />
+      <stat-card label="effort" [iconName]="'fire'" value=3.2 maxValue=5 />
+      <stat-card label="affinity" [iconName]="'heart'" value=3.4 maxValue=5 />
+      <stat-card label="mastery" [iconName]="'award'" value=4.2 maxValue=5 />
+    </div>
+    <div class="statCat">
+      <span class="statBlockTitle">Top genres</span>
+
+      +3 mores
+    </div>
+
+    <div class="statCat">
+      <span class="statBlockTitle">Exploitation Data</span>
+      <stat-card label="Freshness" [iconName]="'lightning'" value=5 maxValue=5 />
+      <stat-card label="Borrowed Tracks" [iconName]="'lightning'" value=5 maxValue=5 />
+      <stat-card label="Rotation Ratio" [iconName]="'lightning'" value=5 maxValue=5 />
+    </div>
+  </div>
 </div>
 
 
 
-<div class="statBlock" *ngIf="isOpen">
-  <div class="statCat">
-    <span class="statBlockTitle">Lib specs</span>
-    <stat-card label="energy" [iconName]="'lightning'" value=5 maxValue=5 />
-    <stat-card label="effort" [iconName]="'fire'" value=3.2 maxValue=5 />
-    <stat-card label="affinity" [iconName]="'heart'" value=3.4 maxValue=5 />
-    <stat-card label="mastery" [iconName]="'award'" value=4.2 maxValue=5 />
-  </div>
-  <div class="statCat">
-    <span class="statBlockTitle">Top genres</span>
 
-    +3 mores
-  </div>
-
-  <div class="statCat">
-    <span class="statBlockTitle">Exploitation Data</span>
-    <stat-card label="Freshness" [iconName]="'lightning'" value=5 maxValue=5 />
-    <stat-card label="Borrowed Tracks" [iconName]="'lightning'" value=5 maxValue=5 />
-    <stat-card label="Rotation Ratio" [iconName]="'lightning'" value=5 maxValue=5 />
-  </div>
-
-</div>
 
 

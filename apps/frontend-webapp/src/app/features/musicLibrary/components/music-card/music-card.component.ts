@@ -1,4 +1,4 @@
-import { Component, Input, TemplateRef } from '@angular/core';
+import { Component, Input, output,  TemplateRef } from '@angular/core';
 import type { TUserMusicLibraryItem } from '@sh3pherd/shared-types';
 import { RepertoireEntryComponent } from '../repertoire-entry/repertoire-entry.component';
 import {
@@ -29,6 +29,7 @@ import { NgIf } from '@angular/common';
 })
 export class MusicCardComponent {
   @Input() item: TUserMusicLibraryItem  = {} as TUserMusicLibraryItem;
+  public selected = output<TUserMusicLibraryItem>();
   protected readonly TemplateRef = TemplateRef;
 
   public fileContainerVisible: boolean = false;
@@ -56,7 +57,19 @@ export class MusicCardComponent {
 
   };
 
+  /**
+   * Check if the item can be edited.
+   * @returns {boolean} True if the item can be edited, false otherwise.
+   */
   canEdit(): boolean {
+    return true;
+  };
+
+  /**
+   * Check if the item can be deleted.
+   * @returns {boolean} True if the item can be deleted, false otherwise.
+   */
+  canDelete(): boolean {
     return true;
   };
 }

@@ -1,4 +1,3 @@
-@use 'tokens' as t;
 @use 'mixins' as m;
 @use 'index' as sh3;
 
@@ -27,10 +26,10 @@ form {
   height: 10rem;
   padding: 0 0.5rem;
   box-sizing: border-box;
-  font-size: t.$form-field-fontSize;
+  font-size: sh3.$form-field-fontSize-sm;
   margin-top: 0.25rem;
   border: 1px solid var(--form-field-borderColor);
-  border-radius: t.$form-field-radius;
+  border-radius: sh3.$form-field-radius-lg;
   color: var(--baseTextColor);
   outline: none;
   backdrop-filter: blur(4px);
@@ -59,7 +58,7 @@ form {
 
 
 .entry {
-  @include sh3.m-form-field-base;
+  @include sh3.form-field-base;
 
   &.selected {
     color: white;

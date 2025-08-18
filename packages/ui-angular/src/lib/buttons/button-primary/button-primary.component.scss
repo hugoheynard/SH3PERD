@@ -1,9 +1,8 @@
-@use '../../../styles/tokens' as t;
-@use '../../../styles/mixins' as m;
+@use '../../../styles/index' as sh3;
 
 button {
-  @include m.eraseDefault;
-  @include m.buttonPrimary('md');
+  @include sh3.eraseDefault;
+  @include sh3.buttonPrimary('sm');
   //background-color: t.$appBgColor_dark;
-  color: t.$buttonPrimaryTextColor;
+  color: sh3.$buttonPrimaryTextColor;
 }

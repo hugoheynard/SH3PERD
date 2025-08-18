@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output } from '@angular/core';
 import { SvgIconComponent } from '../../icones';
 import { NgIf } from '@angular/common';
 
@@ -17,7 +17,7 @@ export class ButtonSecondaryComponent {
   @Input() icon: string = '';
   @Input() disabled: boolean = false;
   @Input() onClick?: () => void;
-  @Output() clicked: EventEmitter<void> = new EventEmitter<void>();
+  clicked = output<void>();
 
   handleClick(): void {
     if (this.disabled) {

@@ -7,11 +7,12 @@
 
 .overview {
   position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   background-color: var(--headAndfootBgColor);
   flex-direction: row;
   align-items: center;
-  padding: 1rem 0.5rem;
+  padding: 0.5rem;
   border: 1px solid #7d808030;
   border-radius: 8px;
   gap: 0.5rem;
@@ -25,11 +26,11 @@
 
 .statBlock {
   display: grid;
+  grid-column: span 4;
   grid-template-columns: repeat(3, 1fr);
-  background-color: #242626;
-  border: 1px solid #7d808030;
-  border-radius: 8px;
-  padding: 1rem 0.5rem;
+  background-color: var(--listItemContainer2-bg);
+  border-radius: 6px;
+  padding: 0.5rem;
   gap: 2rem;
 }
 

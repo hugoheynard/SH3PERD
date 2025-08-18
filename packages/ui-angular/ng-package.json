@@ -2,10 +2,8 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../packages/ui-angular/dist",
   "lib": {
-    "entryFile": "src/public-api.ts",
-    "styleIncludePaths": [
-      "src/styles"
-    ]
+    "entryFile": "src/public-api.ts"
   },
-  "allowedNonPeerDependencies": []
+  "allowedNonPeerDependencies": [],
+  "styleIncludePaths": ["src/styles"]
 }

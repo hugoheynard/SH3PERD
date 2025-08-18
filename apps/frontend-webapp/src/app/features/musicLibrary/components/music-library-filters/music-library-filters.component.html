@@ -1,5 +1,16 @@
-<div class="searchBar">
-  <sh3-input type="text" />
-</div>
-<sh3-multi-select-dropdown [options]="[{label: 'jazz', value: 'jazz'}]" />
-<sh3-multi-select-dropdown [options]="[{label: 'jazz', value: 'jazz'}]"/>
+<form [formGroup]="form">
+
+  <div class="base">
+    <sh3-input-text size='small' class="input"></sh3-input-text>
+    <div class="deux">
+      <sh3-select placeholder="youtpi" size='small'
+        [options]="[{label: 'hello', value: 'hello'}]"/>
+      <sh3-multi-select-dropdown
+        placeholder="energy"
+        [options]="[{labelKey: 'hello', valueKey: 'hello'}]"/>
+    </div>
+
+  </div>
+
+
+</form>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { StatCardComponent } from '../stat-card/stat-card.component';
 import { NgIf } from '@angular/common';
 import { ButtonSecondaryComponent } from '@sh3pherd/ui-angular';
@@ -15,7 +15,7 @@ import { ButtonSecondaryComponent } from '@sh3pherd/ui-angular';
   styleUrl: './music-library-stats.component.scss',
 })
 export class MusicLibraryStatsComponent {
-  public isOpen: boolean = false;
+  readonly isOpen= input<boolean>(false);
 
 
 }

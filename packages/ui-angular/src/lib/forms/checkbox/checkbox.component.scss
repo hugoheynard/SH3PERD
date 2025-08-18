@@ -15,7 +15,7 @@
     width: 1rem;
     height: 1rem;
     border: 1px solid var(--form-field-borderColor);
-    border-radius: sh3.$form-field-radius;
+    border-radius: $form-field-radius-lg;
     background-color: var(--form-field-bgColor);
     position: relative;
     transition: all 0.2s ease;
@@ -35,7 +35,7 @@
   }
 
   .checkbox-label {
-    @include sh3.m-form-field-label;
+    @include sh3.form-field-label();
   }
 
   input:checked + .custom-checkbox {

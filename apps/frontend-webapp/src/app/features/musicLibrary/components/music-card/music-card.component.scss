@@ -39,6 +39,7 @@
 }
 
 
+
 /**
   * Main info section of the music card.
  */
@@ -66,7 +67,7 @@
  */
 .fileContainer {
   display: grid;
-  background-color: #2b2d2d;
+  background-color: var(--listItemContainer2-bg);
   border-radius: 6px;
   padding: 0.5rem;
 }

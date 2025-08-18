@@ -8,21 +8,20 @@ import {MusicRepertoireService} from '../../services/music-repertoire.service';
 import type { ITabDefinition } from '../../../../shared/tabSystem/tab-system/ITabDefinition';
 import type { TMusicTabConfiguration } from '../../types/TMusicTabConfiguration';
 import {
-  ButtonPrimaryComponent,
-  InputComponent,
-  MultiSelectDropdownComponent,
+  ButtonPrimaryComponent, ButtonSecondaryComponent,
 } from '@sh3pherd/ui-angular';
 import type { TUserMusicLibraryItem } from '@sh3pherd/shared-types';
 import { MusicCardComponent } from '../music-card/music-card.component';
 import { MusicLibraryStatsComponent } from '../music-library-stats/music-library-stats.component'
 import { MusicLibraryFiltersComponent } from '../music-library-filters/music-library-filters.component';
+import { PaginatorComponent } from '../../../../shared/paginator/paginator.component';
 
 
 
 @Component({
   selector: 'music-repertoire-table',
   standalone: true,
-  imports: [CdkTableModule, NgForOf, NgIf, FormsModule, ButtonPrimaryComponent, MusicCardComponent, InputComponent, MusicLibraryStatsComponent, MultiSelectDropdownComponent, MusicLibraryFiltersComponent],
+  imports: [CdkTableModule, NgForOf, NgIf, FormsModule, ButtonPrimaryComponent, MusicCardComponent, MusicLibraryStatsComponent, MusicLibraryFiltersComponent, PaginatorComponent, ButtonSecondaryComponent],
   templateUrl: './music-repertoire-table.component.html',
   styleUrl: './music-repertoire-table.component.scss'
 })
@@ -40,6 +39,8 @@ export class MusicRepertoireTableComponent implements OnInit {
   //---------- Pagination properties----------//
   public pageSize = 10;
   public currentPage = 0;
+
+  public statContainerOpen: boolean = false;
 
   /**
    * Formats the data for the table display.
@@ -134,18 +135,7 @@ export class MusicRepertoireTableComponent implements OnInit {
 
      */
     return []
-  }
-
-  get pagedData(): any[] {
-    const start = this.currentPage * this.pageSize;
-    return this.filteredData.slice(start, start + this.pageSize);
-  }
-
-  get totalPages(): number {
-    return Math.ceil(this.filteredData.length / this.pageSize);
-  }
-
-
+  };
 
   async musicRepertoireFallBack(): Promise<void> {
     console.log('No config provided, falling back to default music repertoire fetch');
@@ -157,9 +147,7 @@ export class MusicRepertoireTableComponent implements OnInit {
     this.tableData = data;
   };
 
-  setPage(page: number): void {
-    this.currentPage = Math.max(0, Math.min(page, this.totalPages - 1));
-  };
+
 
   /**
    * Opens the details of a track entry in a new tab.
@@ -184,5 +172,17 @@ export class MusicRepertoireTableComponent implements OnInit {
 
   readonly handleBackToConfig = (): void => {
     this.backToConfig.emit();
+  };
+
+  createNewVersion(): void {};
+
+
+  // -------------- UI -----------------
+  /**
+   * Toggles the visibility of the general statistics container.
+   */
+  toggleStatContainer(): void {
+    this.statContainerOpen = !this.statContainerOpen;
+    return;
   };
 }

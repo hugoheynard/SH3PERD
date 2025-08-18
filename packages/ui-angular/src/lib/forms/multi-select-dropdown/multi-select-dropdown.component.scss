@@ -1,10 +1,14 @@
 @use '../../../styles/index' as sh3;
-
+:host {
+  width: 100%;
+  height: 100%;
+}
 
 .custom-select {
-  @include sh3.m-form-field-base;
+  @include sh3.form-field-base();
   position: relative;
   cursor: pointer;
+
 
   &.open {
     border-bottom-left-radius: 0;
@@ -28,18 +32,19 @@
     border-radius: 0 0 6px 6px;
     z-index: 1000;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    background: var(--form-field-bgColor);
     padding: sh3.$form-field-padding;
-    max-height: 200px;
     overflow-y: auto;
     animation: dropdownEnter 200ms ease-out;
     transform-origin: top center;
+
 
     label {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 6px;
-      font-size: sh3.$form-field-fontSize;
+      font-size: sh3.$form-field-fontSize-sm;
     }
 
     .dropdown-placeholder {
@@ -66,15 +71,3 @@
   };
 };
 
-.dropdown-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 0.75rem;
-  border-top: 1px solid var(--form-field-borderColor);
-  padding-top: 0.5rem;
-
-  .button-primary {
-    @include sh3.m-buttonPrimary;
-    width: 100%;
-  }
-}

@@ -1,0 +1,50 @@
+@use 'tokens' as t;
+@use 'index' as sh3;
+
+
+:host {
+  @include sh3.form-field-baseHost;
+
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  padding: sh3.$form-field-padding;
+  transition: border-color .15s ease, box-shadow .15s ease;
+
+
+  &:focus-within {
+    border-color: var(--field-focus);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--field-focus) 25%, transparent);
+  }
+
+}
+
+
+button {
+  border: 0;
+  background: transparent;
+  padding: .25rem;
+  line-height: 0;
+  cursor: pointer;
+  color: var(--fadedTextColor);
+  border-radius: .4rem;
+
+  &:hover { background: color-mix(in oklab, currentColor 12%, transparent); }
+  &:active { transform: translateY(1px); }
+}
+
+input {
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--fadedTextColor);
+  width: 100%;
+  font: inherit;
+  padding: .25rem 0;
+
+  &::placeholder {
+    color: var(--field-placeholder);
+  }
+}

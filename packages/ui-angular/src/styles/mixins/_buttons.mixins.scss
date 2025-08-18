@@ -1,5 +1,6 @@
 @use '../../styles/tokens' as t;
 
+
 @mixin eraseDefault {
   all: unset;
   appearance: none;
@@ -22,12 +23,14 @@
   align-items: center;
   justify-content: center;
   letter-spacing: 0.05rem;
+  font-size: 1rem;
   text-transform: capitalize;
   background-color: var(--colorPrimary);
 
   //padding
   @if $size == sm {
     padding: t.$button-padding-sm;
+
   } @else if $size == md {
     padding: t.$button-padding-md;
   } @else if $size == lg {
@@ -36,7 +39,7 @@
     padding: t.$button-padding-md;
   }
   border-radius: t.$button-radius;
-  font-weight: 500;
+  font-weight: 400;
 
   transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
 

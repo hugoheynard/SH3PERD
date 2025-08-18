@@ -14,6 +14,10 @@
     <button type="button" class="btn-inc" (click)="increment()" [disabled]="disabled">+</button>
     <button type="button" class="btn-dec" (click)="decrement()" [disabled]="disabled">−</button>
   </div>
+
+  <button *ngIf="type === 'text'">
+    hello
+  </button>
 </div>
 
 <ng-template #internalInput>

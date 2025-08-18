@@ -27,8 +27,8 @@
     <div class="grid4">
       <sh3-button-icon icon="stats" [disabled]="true" (clicked)="toggleStats()"/>
       <sh3-button-icon icon="folder" (clicked)="toggleMusicFiles()"/>
-      <sh3-button-icon icon="edit" [disabled]="true" (clicked)="editItem()"/>
-      <sh3-button-icon icon="bin" type="critical" [disabled]="true" (clicked)="deleteItem()"/>
+      <sh3-button-icon icon="edit" [disabled]="!canEdit()" (clicked)="editItem()"/>
+      <sh3-button-icon icon="bin" [type]="'critical'" [disabled]="!canDelete()" (clicked)="deleteItem()"/>
     </div>
   </div>
 

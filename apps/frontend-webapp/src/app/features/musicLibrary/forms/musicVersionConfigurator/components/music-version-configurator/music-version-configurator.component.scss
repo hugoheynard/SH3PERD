@@ -64,7 +64,7 @@ span {
 }
 
 label {
-  @include sh3.m-form-field-label;
+  @include sh3.form-field-label;
 }
 
 @media (max-width: 768px) {

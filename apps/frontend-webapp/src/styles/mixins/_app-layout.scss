@@ -19,7 +19,7 @@
 
 
 @mixin listItemLayout {
-  background-color: var(--headAndfootBgColor);
+  background-color: var(--listItemContainer1-bg);
   color: var(--baseTextColor);
   border-radius: 8px;
   border: 1px solid #7d808030;

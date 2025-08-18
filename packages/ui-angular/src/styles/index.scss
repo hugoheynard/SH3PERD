@@ -1,6 +1,6 @@
-@use 'tokens' as t;
-@use 'mixins' as m;
-@forward "./mixins" as m-*;
+//@use 'tokens' as t;
+//@use 'mixins' as m;
+@forward "./mixins";
 @forward "./tokens";
 
 
@@ -41,6 +41,11 @@ body {
 
   --calendarSideBgColor: #292c2c;
 
+  //LIST CONTAINERS
+  --listItemContainer1-bg: var(--headAndfootBgColor);
+  --listItemContainer2-bg: #2b2d2d;
+
+
   //----------Form ------------//
   --form-field-borderColor: rgba(253, 255, 255, 0.15);
   --form-field-bgColor: #3d4242;
@@ -57,6 +62,9 @@ body {
   --pageTitleColor: rgba(239, 240, 243, 0.05);
   --baseTextColor: #2a2a2a;
 
+
+  --listItemContainer1-bg: var(--colorPrimaryMenus);
+
   //----------Structural elements color------------//
   --colorPrimaryMenus: #F5F7FA;
   --pageBgColor: white;
@@ -64,9 +72,9 @@ body {
   --sidePanelsPrimaryBgColor: #DDE3EB;
 
   //----------Form ------------//
-  --form-field-borderColor: rgba(60, 60, 60, 0.3);
-  --form-field-bgColor: rgba(125, 139, 141, 0.07);;
-  --form-field-focus-outlineColor: #{t.$primaryColor-rgb};
+  --form-field-borderColor: color-mix(in oklab, currentColor 12%, transparent);
+  --form-field-bgColor: #FFF; //OK
+  --form-field-focus-outlineColor: red;//#{t.$primaryColor-rgb};
   --form-block-bgColor:  rgb(51, 56, 56);
 
 

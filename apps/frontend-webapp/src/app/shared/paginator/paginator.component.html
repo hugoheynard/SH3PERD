@@ -1,0 +1,3 @@
+<button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 0">◀</button>
+<span>{{ currentPage + 1 }} / {{ totalPages }}</span>
+<button (click)="setPage(currentPage + 1)" [disabled]="currentPage + 1 >= totalPages">▶</button>

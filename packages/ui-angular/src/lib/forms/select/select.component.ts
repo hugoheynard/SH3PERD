@@ -1,4 +1,4 @@
-import { Component, ElementRef, forwardRef, HostListener, inject, Input } from '@angular/core';
+import { Component, ElementRef, forwardRef, HostListener, inject, input, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgForOf, NgIf } from '@angular/common';
 import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
@@ -18,6 +18,8 @@ import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
   ]
 })
 export class SelectComponent extends BaseControlValueAccessor<string | number | null> {
+  public readonly size = input<'small' | 'large'>('large');
+
   @Input() label: string = '';
   @Input() placeholder: string = 'Select';
   @Input() options: { label: string; value: string | number | null }[] = [];

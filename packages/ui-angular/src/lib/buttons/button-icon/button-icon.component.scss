@@ -11,7 +11,7 @@ sh3-svg-icon {
 }
 
 button {
-  @include sh3.m-eraseDefault;
+  @include sh3.eraseDefault();
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 

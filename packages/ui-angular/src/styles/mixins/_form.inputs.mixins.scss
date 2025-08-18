@@ -2,14 +2,9 @@
 
 
 @mixin form-field-base {
-  width: 100%;
-  height: t.$form-field-height;
   padding: t.$form-field-padding;
-  box-sizing: border-box;
-  font-size: t.$form-field-fontSize;
-  margin-top: 0.25rem;
-  border: 1px solid var(--form-field-borderColor);
-  border-radius: t.$form-field-radius;
+  font-size: t.$form-field-fontSize-sm;
+  border-radius: 7px;
   background: var(--form-field-bgColor);
   color: var(--baseTextColor);
   outline: none;
@@ -18,8 +13,8 @@
 
 
   &::placeholder {
-    color: rgba(253, 255, 255, 0.4);
-  }
+    color: var(--fadedTextColor);
+  };
 
   &:hover {
     border-color: rgba(var(--colorPrimary-rawRGB), 0.5);
@@ -34,4 +29,55 @@
   color: var(--baseTextColor);
   font-size: t.$form-field-label-fontSize;
   text-transform: capitalize;
+}
+
+/**
+    * Mixin to define color variables for form fields.
+    * This is used to ensure consistent styling across different form inputs.
+ */
+@mixin form-field-color-vars {
+  --field-bg: var(--form-field-bgColor);
+  --field-border: color-mix(in oklab, var(--fadedTextColor) 20%, transparent);
+  --field-text: var(--baseText, #111);
+  --field-placeholder: var(--fadedTextColor);
+  --field-focus: color-mix(in oklab, var(--fadedTextColor) 25%, var(--colorPrimary) 65%);
+}
+
+/**
+    * Mixin to define the size of form fields.
+    * This is used to ensure consistent sizing across different form inputs.
+    * @param {string} $size - The size of the form field, can be 'small' or 'large'.
+ */
+@mixin form-field-size($size) {
+  width: 100%;
+
+  @if $size == 'small' {
+    height: t.$form-field-height-sm;
+    font-size: t.$form-field-fontSize-sm;
+    border-radius: t.$form-field-radius-sm;
+  } @else if $size == 'large' {
+    height: t.$form-field-height-lg;
+    font-size: t.$form-field-fontSize-lg;
+    border-radius: t.$form-field-radius-lg;
+  }
+}
+
+@mixin form-field-baseHost() {
+  @include form-field-color-vars;
+
+  &[data-size='small'] {
+    @include form-field-size('small');
+
+    sh3-svg-icon {
+      font-size: t.$form-field-fontSize-sm;
+    }
+  }
+
+  &[data-size='large'] {
+    @include form-field-size('large');
+
+    sh3-svg-icon {
+      font-size: t.$form-field-fontSize-lg;
+    }
+  }
 }

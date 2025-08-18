@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, Input, output } from '@angular/core';
 
 /**
  * ButtonPrimaryComponent is a reusable Angular component that represents a primary button.
@@ -14,12 +14,13 @@ export class ButtonPrimaryComponent {
   @Input() buttonLabel: string = 'Click Me';
   @Input() disabled: boolean = false;
   @Input() onClick?: () => void;
-  @Output() click = new EventEmitter<void>();
+  readonly icon = input<string>();
+  clicked = output<void>();
 
   handleClick(): void {
     if (this.disabled) {
       return;
     }
-    this.click.emit();
+    this.clicked.emit();
   };
 }

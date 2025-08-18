@@ -5,7 +5,7 @@
 }
 
 button {
-  @include sh3.m-eraseDefault;
+  @include sh3.eraseDefault;
   font-size: sh3.$form-field-label-fontSize;
   text-transform: capitalize;
   //background-color: t.$appBgColor_dark;

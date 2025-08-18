@@ -1,4 +1,4 @@
-import {Component, ElementRef, forwardRef, HostListener, inject, Input} from '@angular/core';
+import { Component, ElementRef, forwardRef, HostListener, inject, input, Input } from '@angular/core';
 import { NgForOf, NgIf } from '@angular/common';
 import { type ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -18,7 +18,7 @@ import { type ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export class MultiSelectDropdownComponent implements ControlValueAccessor {
   private _elementRef: ElementRef = inject(ElementRef);
 
-  @Input() placeholder: string = 'Select options';
+  placeholder= input<string>('Select');
   @Input() options: any[] = [];
   @Input() labelKey: string = '';
   @Input() valueKey: string = '';

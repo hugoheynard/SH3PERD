@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, model, output } from '@angular/core';
 import { SvgIconComponent } from '../../icones';
 
 
@@ -11,19 +11,18 @@ import { SvgIconComponent } from '../../icones';
   styleUrl: './button-icon.component.scss'
 })
 export class ButtonIconComponent {
-  @Input({ required: true }) icon: string = '';
-  @Input() active: boolean = false;
-  @Input() disabled: boolean = false;
-  @Input() type: 'primary' | 'critical' = 'primary';
-  @Output() clicked = new EventEmitter<void>();
-
+  icon = input.required<string>();
+  active = model<boolean>(false);
+  disabled = input<boolean>(false);
+  type = input<'primary' | 'critical'>('primary');
+  clicked = output<void>();
 
   onClick(): void {
-    if (this.disabled) {
+    if (this.disabled()) {
       return;
     }
     this.clicked.emit();
-    this.active = !this.active;
+    this.active.update(v => !v);
     return;
   };
 }

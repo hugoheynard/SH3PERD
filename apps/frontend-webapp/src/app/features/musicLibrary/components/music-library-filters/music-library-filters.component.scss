@@ -1,3 +1,5 @@
+@use 'tokens' as t;
+
 :host {
   display: flex;
   flex-direction: row;
@@ -5,8 +7,27 @@
   align-items: center;
   gap: 0.4rem;
   width: 100%;
-  padding: 0.25rem 1rem;
-  background-color: var(--headAndfootBgColor);
+  padding: 0.5rem ;
+  background-color: var(--listItemContainer1-bg);
   border: 1px solid #7d808030;
   border-radius: 8px;
+}
+
+.base {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+
+
+.deux {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+.input {
+
 }
