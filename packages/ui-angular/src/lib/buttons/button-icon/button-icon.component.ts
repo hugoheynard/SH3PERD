@@ -14,14 +14,14 @@ export class ButtonIconComponent {
   icon = input.required<string>();
   active = model<boolean>(false);
   disabled = input<boolean>(false);
-  type = input<'primary' | 'critical'>('primary');
-  clicked = output<void>();
+  type = input<'neutral'| 'primary' | 'critical'>('neutral');
+  clicked = output<MouseEvent>();
 
-  onClick(): void {
+  onClick(e: MouseEvent): void {
     if (this.disabled()) {
       return;
     }
-    this.clicked.emit();
+    this.clicked.emit(e);
     this.active.update(v => !v);
     return;
   };

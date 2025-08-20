@@ -1,25 +1,33 @@
 
-  <label class="form-field-label">{{ label }}</label>
+  <label class="form-field-label">{{ label() }}</label>
 
   <div class="custom-select-wrapper"  [class.open]="isOpen">
-    <select class="native-select" [value]="value" (change)="onNativeChange($event)">
-      <option [value]="null" disabled hidden *ngIf="placeholder">
+    <select class="native-select" [value]="value" (change)="onNativeChange($event)" [attr.aria-label]="label || placeholder">
+      <option [value]="null" disabled hidden *ngIf="placeholder()">
         {{ placeholder }}
       </option>
-      <option *ngFor="let opt of options" [value]="opt.value">
+      <option *ngFor="let opt of options()" [value]="opt.value">
         {{ opt.label }}
       </option>
     </select>
 
-    <div class="custom-select-display" [attr.data-size]="size()" tabindex="0" (click)="toggleDropdown()">
-      <span class="display-label">{{ selectedLabel }}</span>
+    <div class="custom-select-display"
+         [attr.data-size]="size()"
+         [attr.data-empty]="hasValue()"
+         tabindex="0"
+         (click)="toggleDropdown()">
+      <span class="display-label" [class.placeholder]="hasValue()">{{ selectedLabel }}</span>
+      <sh3-button-icon [icon]="'reset'"
+                       type="neutral"
+                       *ngIf="allowClear() && hasValue()"
+                       (clicked)="clear($event)"/>
+      <sh3-svg-icon [name]=" isOpen? 'caret-up': 'caret-down'" />
     </div>
 
     <ul class="custom-select-options" *ngIf="isOpen">
-      <li *ngIf="placeholder" (click)="selectOption(null)">
-        {{ placeholder }}
-      </li>
-      <li [attr.data-size]="size()" *ngFor="let opt of options" (click)="selectOption(opt.value)">
+      <li [attr.data-size]="size()"
+          *ngFor="let opt of options()"
+          (click)="selectOption(opt.value)">
         {{ opt.label }}
       </li>
     </ul>

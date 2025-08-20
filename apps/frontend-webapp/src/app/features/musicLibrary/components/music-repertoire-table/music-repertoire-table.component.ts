@@ -1,5 +1,5 @@
 import {
-  Component, EventEmitter, inject, Input, type OnInit, Output
+  Component, effect, EventEmitter, inject, Input, type OnInit, Output, signal,
 } from '@angular/core';
 import { CdkTableModule } from '@angular/cdk/table';
 import { NgForOf, NgIf } from '@angular/common';
@@ -13,7 +13,7 @@ import {
 import type { TUserMusicLibraryItem } from '@sh3pherd/shared-types';
 import { MusicCardComponent } from '../music-card/music-card.component';
 import { MusicLibraryStatsComponent } from '../music-library-stats/music-library-stats.component'
-import { MusicLibraryFiltersComponent } from '../music-library-filters/music-library-filters.component';
+import { type Filters, MusicLibraryFiltersComponent } from '../music-library-filters/music-library-filters.component';
 import { PaginatorComponent } from '../../../../shared/paginator/paginator.component';
 
 
@@ -35,7 +35,7 @@ export class MusicRepertoireTableComponent implements OnInit {
   public tableData: any[] = [];
   public columns: { key: string; order: number }[] = [];
   public columnKeys: string[] = [];
-  public filter: string = '';
+  public filter: any = signal<Filters>({});
   //---------- Pagination properties----------//
   public pageSize = 10;
   public currentPage = 0;
@@ -118,8 +118,17 @@ export class MusicRepertoireTableComponent implements OnInit {
     }
   };
 
+  constructor() {
+    effect(() => {
+      const f = this.filter();
+      console.log('Filter changed:', f);
+    });
+  }
 
 
+  applyFilters(filter: any): any {
+    console.log('Applying filters:', filter);
+  }
 
   get filteredData(): any[] {
     if (!Array.isArray(this.tableData)) {

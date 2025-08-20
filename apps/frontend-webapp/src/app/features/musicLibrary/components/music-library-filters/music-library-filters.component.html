@@ -1,13 +1,22 @@
 <form [formGroup]="form">
 
   <div class="base">
-    <sh3-input-text size='small' class="input"></sh3-input-text>
-    <div class="deux">
-      <sh3-select placeholder="youtpi" size='small'
-        [options]="[{label: 'hello', value: 'hello'}]"/>
+    <sh3-input-text size='small' class="input"/>
+
+
+    <div class="deux" formGroupName="repertoireEntry">
+      <sh3-select placeholder="genres" size='small' [options]="textServ.getGenreOptions()" formControlName="energy"/>
+      <sh3-multi-select-dropdown
+        placeholder="energy"
+        [options]="[{labelKey: 'hello', valueKey: 'hello'}]" />
       <sh3-multi-select-dropdown
         placeholder="energy"
         [options]="[{labelKey: 'hello', valueKey: 'hello'}]"/>
+      <sh3-multi-select-dropdown
+        placeholder="energy"
+        [options]="[{labelKey: 'hello', valueKey: 'hello'}]"/>
+
+
     </div>
 
   </div>

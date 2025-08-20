@@ -44,7 +44,7 @@
 }
 
 .entry {
-  @include sh3.m-form-field-base;
+  @include sh3.form-field-base;
   transition: background-color 0.2s ease;
 
   &.selected {

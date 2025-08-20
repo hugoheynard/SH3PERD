@@ -16,23 +16,26 @@ button {
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 
   --btn-color: var(--colorPrimary);
-  --btn-color-bg-rawRGB: var(--colorPrimary-rawRGB);
+  --btn-color-bg: color-mix(in oklab, var(--btn-color) 12%, transparent);
 
   &[type='critical'] {
     --btn-color: var(--colorAlert);
-    --btn-color-bg-rawRGB: var(--colorAlert-rawRGB);
+  }
+
+  &[type='neutral'] {
+    --btn-color: var(--fadedTextColor);
   }
 
   &:hover:not(:disabled) {
     sh3-svg-icon {
-      fill: var(--btn-color);
+      fill: color-mix(in oklab, var(--btn-color) 12%, transparent);
     }
   }
 
   &.active {
     sh3-svg-icon {
       fill: var(--btn-color);
-      background: rgba(var(--btn-color-bg-rawRGB), 0.2);
+      background: color-mix(in oklab, var(--btn-color) 12%, transparent);
       border-radius: 2px;
     }
   }

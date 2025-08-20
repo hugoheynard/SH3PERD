@@ -18,7 +18,7 @@
       <sh3-button-primary buttonLabel=" + new" (clicked)="createNewVersion()"/>
     </div>
     <music-library-stats [isOpen]="statContainerOpen"/>
-    <music-library-filters />
+    <music-library-filters [(filterValue)]="filter"/>
 
     <label class="fadedText">8 songs</label>
     <div class="listContainer">

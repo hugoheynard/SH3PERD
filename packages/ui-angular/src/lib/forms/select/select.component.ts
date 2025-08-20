@@ -1,14 +1,16 @@
-import { Component, ElementRef, forwardRef, HostListener, inject, input, Input } from '@angular/core';
+import { Component, ElementRef, forwardRef, HostListener, inject, input } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgForOf, NgIf } from '@angular/common';
 import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
+import { ButtonIconComponent } from '../../buttons';
+import { SvgIconComponent } from '../../icones';
 
 @Component({
   selector: 'sh3-select',
   standalone: true,
   templateUrl: './select.component.html',
   styleUrl: './select.component.scss',
-  imports: [NgForOf, NgIf],
+  imports: [NgForOf, NgIf, ButtonIconComponent, SvgIconComponent],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -19,10 +21,10 @@ import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
 })
 export class SelectComponent extends BaseControlValueAccessor<string | number | null> {
   public readonly size = input<'small' | 'large'>('large');
-
-  @Input() label: string = '';
-  @Input() placeholder: string = 'Select';
-  @Input() options: { label: string; value: string | number | null }[] = [];
+  public readonly allowClear = input<boolean>(true);
+  public readonly label = input<string>('');
+  public readonly placeholder = input<string>('Select');
+  public readonly options = input<{ label: string; value: string | number | null }[]>([]);
   private elRef: ElementRef = inject(ElementRef);
   public isOpen: boolean = false;
 
@@ -33,15 +35,25 @@ export class SelectComponent extends BaseControlValueAccessor<string | number | 
   selectOption(value: string | number | null): void {
     this.value = value;
     this.isOpen = false;
+    return;
+  };
+
+  /**
+   * Checks if the select component is empty to determine if a placeholder should be shown.
+   * @returns {boolean} True if the select component is empty, false otherwise.
+   */
+  hasValue(): boolean {
+    return this.value !== null && this.value !== undefined && this.value !== '';
   };
 
   onNativeChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     this.selectOption(selectElement.value);
+    return;
   };
 
   get selectedLabel(): string {
-    return this.options.find(opt => opt.value === this.value)?.label || this.placeholder;
+    return this.options().find(opt => opt.value === this.value)?.label || this.placeholder();
   };
 
   @HostListener('document:click', ['$event'])
@@ -51,5 +63,17 @@ export class SelectComponent extends BaseControlValueAccessor<string | number | 
     if (!clickedInside) {
       this.isOpen = false;
     }
+    return;
   };
+
+  /**
+   * Clears the selected value when the clear button is clicked.
+   * This method stops the event propagation to prevent the dropdown from closing immediately.
+   * @param evt
+   */
+  clear(evt: Event): void {
+    evt.stopPropagation();
+    this.value = null;
+    return;
+  }
 }

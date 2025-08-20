@@ -13,6 +13,10 @@
   border-radius: 8px;
 }
 
+form {
+  width: 100%;
+}
+
 .base {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
