@@ -2,10 +2,10 @@ import {
   HttpErrorResponse, type HttpHandlerFn, type HttpInterceptorFn,
   HttpRequest,
 } from '@angular/common/http';
-import { TokenService } from '../app/services/token.service';
+import { TokenService } from '../app/core/services/token.service';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
-import { AuthService } from '../app/services/auth.service';
+import { AuthService } from '../app/core/services/auth.service';
 
 /**
  * Http interceptor to attach access tokens to outgoing requests,

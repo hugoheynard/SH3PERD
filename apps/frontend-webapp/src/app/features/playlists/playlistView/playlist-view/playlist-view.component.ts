@@ -10,10 +10,10 @@ import {MatIcon} from '@angular/material/icon';
 import {PlaylistDisplayService} from '../../playlist-display.service';
 import {SongListDndComponent} from '../song-list-dnd/song-list-dnd.component';
 import {PlvSectionContainerComponent} from '../plv-section-container/plv-section-container.component';
-import {PlaylistService} from '../../../../services/playlistService/playlist.service';
+import {PlaylistService} from '../../playlistService/playlist.service';
 import {PlaylistFormService} from '../../formsServices/playlist-form.service';
 import {StyledInputDirective} from '../../../../../Directives/styled-input.directive';
-import {SnackbarService} from '../../../../services/snackbar.service';
+import {SnackbarService} from '../../../../core/services/snackbar.service';
 import {
   FormBlockComponent
 } from '../../../musicLibrary/forms/musicTabConfigurator/components/form-block/form-block.component';

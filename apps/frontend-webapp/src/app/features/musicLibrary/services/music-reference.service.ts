@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { firstValueFrom, Observable } from 'rxjs';
 import type { TMusicReferenceCreationResponseDTO, TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
 import type { TCreateMusicReferenceRequestDTO } from '@sh3pherd/shared-types';
-import { BaseHttpService } from '../../../services/BaseHttpService';
+import { BaseHttpService } from '../../../core/services/BaseHttpService';
 
 
 @Injectable({

@@ -7,7 +7,6 @@ import { MultiSelectDropdownComponent } from '@sh3pherd/ui-angular';
   selector: 'music-data-filter-form',
   imports: [
     FormsModule,
-    MultiSelectDropdownComponent,
     ReactiveFormsModule,
     MultiSelectDropdownComponent,
   ],

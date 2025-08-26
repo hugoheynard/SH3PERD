@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import type { TMusicVersionCreationFormPayload, TMusicVersionDomainModel } from '@sh3pherd/shared-types';
-import { BaseHttpService } from '../../../services/BaseHttpService';
+import { BaseHttpService } from '../../../core/services/BaseHttpService';
 
 
 @Injectable({

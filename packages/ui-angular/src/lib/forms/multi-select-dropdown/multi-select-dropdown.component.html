@@ -1,26 +1,30 @@
 
-<div class="custom-select">
+<div tabindex="0" class="custom-select">
   <div class="select-label" (click)="toggleDropdown()">
-    {{ selectedLabels.length ? selectedLabels.join(', ') : placeholder() }}
+     <span class="select-label-text">
+    {{ selectedLabels.length ? selectedLabels : placeholder() }}
+  </span>
+    <sh3-svg-icon [name]=" dropdownOpen? 'caret-up': 'caret-down'" />
   </div>
+
 
   <div class="dropdown" [class.open]="dropdownOpen" *ngIf="dropdownOpen" (click)="$event.stopPropagation()">
     <label class="dropdown-select-all">
       <input
         type="checkbox"
+        [disabled]="disabled"
         [checked]="isAllSelected()"
-        (click)="$event.stopPropagation()"
-        (change)="onSelectAllCheckboxChange($event)"
-      />
+        (change)="onSelectAllCheckboxChange($event)" />
       {{ isAllSelected() ? 'Unselect all' : 'Select all' }}
     </label>
 
-    <label *ngFor="let option of options">
-      <input type="checkbox"
-             [checked]="isSelected(option?.[valueKey])"
-             (click)="$event.stopPropagation()"
-             (change)="onCheckboxChange($event, option?.[valueKey])" />
-      {{ option[labelKey] }}
+    <label *ngFor="let option of options(); trackBy: trackByValue">
+      <input
+        type="checkbox"
+        [disabled]="disabled"
+        [checked]="isSelected(option[valueKey()])"
+        (change)="onCheckboxChange($event, option[valueKey()])" />
+      {{ option[labelKey()] }}
     </label>
   </div>
 </div>

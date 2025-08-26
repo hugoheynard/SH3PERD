@@ -44,6 +44,8 @@ export class MusicLibraryTextContentService {
     return SToneEnum
       .options
       .map((tone: TToneEnum) => ({ label: tone, value: tone}));
-  }
+  };
+
+
 }
 

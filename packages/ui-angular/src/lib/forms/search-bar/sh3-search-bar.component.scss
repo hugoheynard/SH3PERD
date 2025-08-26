@@ -1,9 +1,9 @@
-@use 'tokens' as t;
-@use 'index' as sh3;
+@use '../../../styles/index' as sh3;
 
 
 :host {
-  @include sh3.form-field-baseHost;
+  @include sh3.form-field-root();
+  @include sh3.form-field-color-vars();
 
   display: flex;
   align-items: center;

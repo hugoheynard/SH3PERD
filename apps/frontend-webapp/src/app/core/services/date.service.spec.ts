@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SnackbarService } from '../snackbar.service';
+import { DateService } from './date.service';
 
-describe('SnackbarService', () => {
-  let service: SnackbarService;
+describe('DateService', () => {
+  let service: DateService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SnackbarService);
+    service = TestBed.inject(DateService);
   });
 
   it('should be created', () => {

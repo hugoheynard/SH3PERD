@@ -24,9 +24,9 @@ export interface IMusicVersionForm {
 export class MusicVersionFormService {
   private fb: FormBuilder = inject(FormBuilder);
   private http: MusicVersionService = inject(MusicVersionService);
-  public form: FormGroup<IMusicVersionForm> = this.initForm();
+  public form: FormGroup<IMusicVersionForm> = this.buildForm();
 
-  initForm(): FormGroup<IMusicVersionForm>{
+  buildForm(): FormGroup<IMusicVersionForm>{
     return this.fb.group<IMusicVersionForm>({
       title: this.fb.nonNullable.control('', Validators.required),
       artist: this.fb.nonNullable.control('', Validators.required),
@@ -36,7 +36,8 @@ export class MusicVersionFormService {
       pitch: this.fb.nonNullable.control(0, Validators.required),
       musicReference_id: this.fb.control(null),
     });
-  }
+  };
+
 
   async submit(): Promise<any>{
     if(!this.form.valid) {

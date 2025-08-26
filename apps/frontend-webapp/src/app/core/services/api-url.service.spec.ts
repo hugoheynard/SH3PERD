@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PlTemplateService } from '../pl-template.service';
+import { ApiURLService } from './api-url.service';
 
-describe('PlTemplateService', () => {
-  let service: PlTemplateService;
+describe('ApiURLService', () => {
+  let service: ApiURLService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(PlTemplateService);
+    service = TestBed.inject(ApiURLService);
   });
 
   it('should be created', () => {

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Sh3InputTextComponent } from './sh3-input-text.component';
+import { Sh3SearchBarComponent } from './sh3-search-bar.component.js';
 
 describe('Sh3InputTextComponent', () => {
-  let component: Sh3InputTextComponent;
-  let fixture: ComponentFixture<Sh3InputTextComponent>;
+  let component: Sh3SearchBarComponent;
+  let fixture: ComponentFixture<Sh3SearchBarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Sh3InputTextComponent]
+      imports: [Sh3SearchBarComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Sh3InputTextComponent);
+    fixture = TestBed.createComponent(Sh3SearchBarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

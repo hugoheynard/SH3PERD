@@ -6,8 +6,8 @@ import {
 } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { authInterceptor } from './auth.interceptor';
-import { TokenService } from '../app/services/token.service';
-import { AuthService } from '../app/services/auth.service';
+import { TokenService } from '../app/core/services/token.service';
+import { AuthService } from '../app/core/services/auth.service';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 

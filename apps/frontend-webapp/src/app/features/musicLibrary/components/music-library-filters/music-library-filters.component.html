@@ -1,22 +1,27 @@
-<form [formGroup]="form">
+<form [formGroup]="filterForm">
 
   <div class="base">
-    <sh3-input-text size='small' class="input"/>
+    <sh3-search-bar size='small' class="input"/>
 
 
     <div class="deux" formGroupName="repertoireEntry">
-      <sh3-select placeholder="genres" size='small' [options]="textServ.getGenreOptions()" formControlName="energy"/>
+      <sh3-multi-select-dropdown
+        placeholder="genres"
+        size='small'
+        [options]="textServ.getGenreOptions()"
+        formControlName="energy"/>
+      <sh3-multi-select-dropdown
+        size='small'
+        placeholder="energy"
+        [options]="textServ.getMusicGradeArray()" />
       <sh3-multi-select-dropdown
         placeholder="energy"
-        [options]="[{labelKey: 'hello', valueKey: 'hello'}]" />
+        size='small'
+        [options]="textServ.getGenreOptions()"/>
       <sh3-multi-select-dropdown
         placeholder="energy"
-        [options]="[{labelKey: 'hello', valueKey: 'hello'}]"/>
-      <sh3-multi-select-dropdown
-        placeholder="energy"
-        [options]="[{labelKey: 'hello', valueKey: 'hello'}]"/>
-
-
+        size='small'
+        [options]="textServ.getMusicGradeArray()"/>
     </div>
 
   </div>

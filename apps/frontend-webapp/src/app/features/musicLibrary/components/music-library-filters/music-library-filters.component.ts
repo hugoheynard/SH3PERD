@@ -1,10 +1,10 @@
 import { Component, DestroyRef, inject, model } from '@angular/core';
-import { MultiSelectDropdownComponent, SelectComponent } from '@sh3pherd/ui-angular';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Sh3InputTextComponent } from '../../../../shared/sh3-input-text/sh3-input-text.component';
+import { MultiSelectDropdownComponent, Sh3SearchBarComponent } from '@sh3pherd/ui-angular';
+import { FormBuilder, type FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs';
 import { MusicLibraryTextContentService } from '../../services/music-library-text-content.service';
+import { MusicRepertoireEntryFormService } from '../../formServices/music-repertoire-entry-form.service';
 
 export type Filters = any;
 
@@ -14,36 +14,43 @@ export type Filters = any;
   imports: [
     MultiSelectDropdownComponent,
     ReactiveFormsModule,
-    Sh3InputTextComponent,
-    SelectComponent,
+    Sh3SearchBarComponent
   ],
+  standalone: true,
   templateUrl: './music-library-filters.component.html',
   styleUrl: './music-library-filters.component.scss'
 })
 export class MusicLibraryFiltersComponent {
-  public textServ = inject(MusicLibraryTextContentService);
   private fb = inject(FormBuilder);
-  public form = this.fb.group({
-    searchText: this.fb.control<string>(''),
-    repertoireEntry: this.fb.group({
-      energy: this.fb.control<number[]>([])
-    }),
-  });
+  public textServ = inject(MusicLibraryTextContentService);
+  //subForms
+  private readonly repertoireEntry = inject(MusicRepertoireEntryFormService);
 
+  public filterForm: FormGroup<any> = this.buildForm();
   public filterValue = model<Filters>();
 
   constructor(destroyRef: DestroyRef) {
-    this.form.valueChanges.pipe(
-      startWith(this.form.getRawValue()),
+    this.filterForm.valueChanges.pipe(
+      startWith(this.filterForm.getRawValue()),
       debounceTime(300),
       map(this.compileFilters),
       distinctUntilChanged((a,b) => JSON.stringify(a) === JSON.stringify(b)),
       takeUntilDestroyed(destroyRef)
-    ).subscribe(v => this.filterValue.set(v));
-  }
-
+    ).subscribe((v: any) => this.filterValue.set(v));
+  };
 
   compileFilters(raw: any): Filters {
     return raw;
   };
+
+  buildForm(): any {
+    return this.fb.group({
+      searchText: this.fb.control<string>(''),
+      musicVersion: this.fb.group({
+        genre: this.fb.control<string[] | undefined>(undefined),
+        type: this.fb.control<string[] | undefined>(undefined),
+      }),
+      repertoireEntry: this.repertoireEntry.buildForm()
+    });
+  }
 }

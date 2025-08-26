@@ -1,4 +1,11 @@
-import { Component, ElementRef, forwardRef, HostListener, inject, input } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  forwardRef,
+  HostListener,
+  inject,
+  input,
+} from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgForOf, NgIf } from '@angular/common';
 import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
@@ -17,7 +24,8 @@ import { SvgIconComponent } from '../../icones';
       useExisting: forwardRef(() => SelectComponent),
       multi: true,
     }
-  ]
+  ],
+  host: { '[attr.data-size]': 'size()' }
 })
 export class SelectComponent extends BaseControlValueAccessor<string | number | null> {
   public readonly size = input<'small' | 'large'>('large');
@@ -27,6 +35,8 @@ export class SelectComponent extends BaseControlValueAccessor<string | number | 
   public readonly options = input<{ label: string; value: string | number | null }[]>([]);
   private elRef: ElementRef = inject(ElementRef);
   public isOpen: boolean = false;
+
+
 
   toggleDropdown(): void {
     this.isOpen = !this.isOpen;
@@ -38,12 +48,13 @@ export class SelectComponent extends BaseControlValueAccessor<string | number | 
     return;
   };
 
+
   /**
    * Checks if the select component is empty to determine if a placeholder should be shown.
    * @returns {boolean} True if the select component is empty, false otherwise.
    */
   hasValue(): boolean {
-    return this.value !== null && this.value !== undefined && this.value !== '';
+    return this.value !== null && this.value !== undefined && this.value !== '' && this.value !== 'null' && this.value !== 0;
   };
 
   onNativeChange(event: Event): void {

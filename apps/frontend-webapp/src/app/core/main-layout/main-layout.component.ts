@@ -6,8 +6,8 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import {AuthService} from '../../services/auth.service';
-import {RouteService} from '../../services/route.service';
+import {AuthService} from '../services/auth.service';
+import {RouteService} from '../services/route.service';
 import {HeaderComponent} from '../components/header/header.component';
 import {AppMenuComponent} from '../components/menus/appMenu/app-menu.component';
 import {RouterOutlet} from '@angular/router';

@@ -2,17 +2,14 @@
 
 
 :host {
-  @include sh3.form-field-baseHost();
+  @include sh3.form-field-root();
+  @include sh3.form-field-color-vars();
   user-select: none;
   cursor: pointer;
-  width: 100%;
-  text-transform: capitalize;
-
 
   .form-field-label {
     @include sh3.form-field-label();
   }
-
 
   .custom-select-wrapper {
     position: relative;
@@ -23,34 +20,28 @@
      * This is hidden but still accessible for screen readers and form submission
      */
     .native-select {
-      position: absolute;
-      background: none;
       width: 100%;
       height: 100%;
+      position: absolute;
+      background: none;
       opacity: 0;
       z-index: 1;
-    }
+    };
 
     .custom-select-display {
-      @include sh3.form-field-base();
-      //@include sh3.form-field-size('small');
-
-      color: var(--field-placeholder);
-      background-color: var(--field-bg);
-      border: 1px solid var(--field-border);
-      border-radius: sh3.$form-field-radius-sm;
-
+      //@include sh3.form-field-base();
+      @include sh3.field-baseStyle();
+      position: relative;
       display: flex;
       flex-direction: row;
       align-items: center;
       gap: .4rem;
-      cursor: pointer;
-      position: relative;
-      z-index: 2;
-      padding: sh3.$form-field-padding;
+
+
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      z-index: 2;
 
       .display-label {
         overflow: hidden;
@@ -58,49 +49,38 @@
         white-space: nowrap;
         flex: 1;
       }
+    };
 
-      sh3-button-icon {
-        width: 1rem;
-      }
 
-      sh3-svg-icon {
-        font-size: 1rem;
-        fill: var(--fadedTextColor);
-      }
-    }
-
-    /**
-     * Options dropdown
-     */
+     //Options dropdown
     .custom-select-options {
+      width: 100%;
       position: absolute;
       top: 100%;
       left: 0;
-      width: 100%;
       margin: 0;
       padding: 0;
       list-style: none;
       background: var(--field-bg);
       border: 1px solid var(--field-border);
       color: var(--fadedTextColor);
-      border-radius: sh3.$form-field-radius-lg;
+      border-radius: var(--field-radius);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       z-index: 2000;
 
-
+      // Display options as a list
       li {
-        padding: sh3.$form-field-padding;
-
-        color: var(--fadedTextColor);
-        @include sh3.form-field-size('small');
+        @include sh3.field-baseStyle();
+        border: none;
+        padding: var(--field-padding);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
 
         &:hover {
           background-color: rgba(var(--colorPrimary-rawRGB), 0.1);
-        }
-      }
+        };
+      };
     }
 
     &.open .custom-select-options {
@@ -112,20 +92,12 @@
 /**
 * Size management
 */
-.custom-select-display{
-  &[data-size='small'] {
-    @include sh3.form-field-size('small');
+sh3-button-icon {
+  width: var(--field-font-size);
+  height: var(--field-font-size);
+};
 
-    sh3-svg-icon {
-      font-size: sh3.$form-field-fontSize-sm;
-    }
-  }
-
-  &[data-size='large'] {
-    @include sh3.form-field-size('large');
-
-    sh3-svg-icon {
-      font-size: sh3.$form-field-fontSize-lg;
-    }
-  }
-}
+sh3-svg-icon {
+  font-size: var(--field-font-size);
+  fill: var(--fadedTextColor);
+};

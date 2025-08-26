@@ -2,8 +2,8 @@ import {Component, inject} from '@angular/core';
 import {PlaylistTemplateFormService} from '../../formsServices/playlist-template-form.service';
 import {ReactiveFormsModule} from '@angular/forms';
 import {NgIf} from '@angular/common';
-import {PlTemplateService} from '../../../../services/pl-template.service';
-import {SnackbarService} from '../../../../services/snackbar.service';
+import {PlTemplateService} from '../../playlistService/pl-template.service';
+import {SnackbarService} from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'pl-template-form',

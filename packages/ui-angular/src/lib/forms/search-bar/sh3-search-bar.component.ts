@@ -1,17 +1,18 @@
 import { Component, input } from '@angular/core';
 import { NgIf } from '@angular/common';
-import { SvgIconComponent } from '@sh3pherd/ui-angular';
+import { SvgIconComponent } from '../../icones';
 
 @Component({
-  selector: 'sh3-input-text',
+  selector: 'sh3-search-bar',
   imports: [
     NgIf,
     SvgIconComponent,
   ],
-  templateUrl: './sh3-input-text.component.html',
-  styleUrl: './sh3-input-text.component.scss',
+  standalone: true,
+  templateUrl: './sh3-search-bar.component.html',
+  styleUrl: './sh3-search-bar.component.scss',
   host: { '[attr.data-size]': 'size()' }
 })
-export class Sh3InputTextComponent {
+export class Sh3SearchBarComponent {
   public readonly size = input<'small' | 'large'>('large');
 }

@@ -6,7 +6,7 @@ import {PlaylistDisplayService} from '../playlist-display.service';
 import type { Playlist } from '../playlist_interfaces';
 import {TagStyleDirective} from '../../../../Directives/tag-style.directive';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
-import {PlaylistService} from '../../../services/playlistService/playlist.service';
+import {PlaylistService} from '../playlistService/playlist.service';
 
 @Component({
     selector: 'playlist-table',

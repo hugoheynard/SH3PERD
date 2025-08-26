@@ -1,6 +1,6 @@
 import {Component, inject, type OnInit, type WritableSignal} from '@angular/core';
 import {PlaylistDisplayService} from '../../playlist-display.service';
-import {PlaylistService} from '../../../../services/playlistService/playlist.service';
+import {PlaylistService} from '../../playlistService/playlist.service';
 import {TabSystemComponent} from '../../../../shared/tabSystem/tab-system/tab-system.component';
 import type {IDynamicTabHost} from '../../../../shared/tabSystem/tab-system/IDynamicTabHost';
 import type {ITabDefinition} from '../../../../shared/tabSystem/tab-system/ITabDefinition';

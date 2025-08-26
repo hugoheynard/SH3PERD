@@ -11,14 +11,12 @@ import { CheckboxComponent, MultiSelectDropdownComponent, SelectComponent } from
     FormsModule,
     LabelWrapperDirective,
     MultiSelectDropdownComponent,
-
     NgSwitchCase,
     ReactiveFormsModule,
     NgSwitch,
     NgIf,
-
     SelectComponent,
-    CheckboxComponent,
+    CheckboxComponent
   ],
   templateUrl: './search-configuration-form.component.html',
   standalone: true,

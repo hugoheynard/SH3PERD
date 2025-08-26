@@ -14,7 +14,7 @@ import { MusicReferenceService } from '../../../../services/music-reference.serv
 import { toSignal } from '@angular/core/rxjs-interop';
 import { startWith } from 'rxjs';
 import { MusicReferenceFormComponent } from '../../../music-reference-form/music-reference-form.component';
-import { DialogService } from '../../../../../../services/dialog.service';
+import { DialogService } from '../../../../../../core/services/dialog.service';
 
 @Component({
   selector: 'app-music-version-configurator',

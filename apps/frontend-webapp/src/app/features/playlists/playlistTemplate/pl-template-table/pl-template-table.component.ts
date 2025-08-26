@@ -1,9 +1,9 @@
 import {Component, inject, type OnInit} from '@angular/core';
-import {PlTemplateService} from '../../../../services/pl-template.service';
+import {PlTemplateService} from '../../playlistService/pl-template.service';
 import {NgForOf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
-import {PlaylistService} from '../../../../services/playlistService/playlist.service';
+import {PlaylistService} from '../../playlistService/playlist.service';
 
 @Component({
   selector: 'pl-template-table',

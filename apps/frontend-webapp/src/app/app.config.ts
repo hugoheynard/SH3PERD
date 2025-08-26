@@ -12,7 +12,7 @@ import {provideHttpClient, withFetch, withInterceptors} from '@angular/common/ht
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {PlaylistDisplayService} from './features/playlists/playlist-display.service';
 import {authInterceptor} from '../interceptors/auth.interceptor';
-import {AuthService} from './services/auth.service';
+import {AuthService} from './core/services/auth.service';
 import {catchError, firstValueFrom, of} from 'rxjs';
 
 export const provideAuthEnvironmentInitializer = () =>

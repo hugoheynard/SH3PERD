@@ -1,10 +1,10 @@
 
-  <label class="form-field-label">{{ label() }}</label>
+<label class="form-field-label">{{ label() }}</label>
 
   <div class="custom-select-wrapper"  [class.open]="isOpen">
     <select class="native-select" [value]="value" (change)="onNativeChange($event)" [attr.aria-label]="label || placeholder">
       <option [value]="null" disabled hidden *ngIf="placeholder()">
-        {{ placeholder }}
+        {{ placeholder() }}
       </option>
       <option *ngFor="let opt of options()" [value]="opt.value">
         {{ opt.label }}
