@@ -1,26 +1,24 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, type WritableSignal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
-  private currentTheme: 'light' | 'dark' = 'dark';
+  private currentTheme: WritableSignal<'light' | 'dark'> = signal('dark');
 
   constructor() {
-    const saved = localStorage.getItem('theme') as 'light' | 'dark';
-    this.setTheme(saved ?? 'dark');
+    this.setTheme('dark');
   }
 
   toggleTheme(): void {
-    const next = this.currentTheme === 'dark' ? 'light' : 'dark';
+    const next = this.currentTheme() === 'dark' ? 'light' : 'dark';
     this.setTheme(next);
   };
 
   setTheme(theme: 'light' | 'dark'): void {
-    this.currentTheme = theme;
+    this.currentTheme.set(theme);
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
   }
 
   getTheme(): 'light' | 'dark' {
-    return this.currentTheme;
+    return this.currentTheme();
   };
-};
+}

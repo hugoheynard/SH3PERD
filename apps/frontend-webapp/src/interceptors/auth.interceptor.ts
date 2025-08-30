@@ -2,10 +2,15 @@ import {
   HttpErrorResponse, type HttpHandlerFn, type HttpInterceptorFn,
   HttpRequest,
 } from '@angular/common/http';
-import { TokenService } from '../app/core/services/token.service';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../app/core/services/auth.service';
+
+const isApiUrl = (url: string) => url.includes('/api/');
+const isAuthUrl = (url: string) => /\/auth\/(login|refresh|logout)/.test(url);
+const withCredsIfApi = (req: HttpRequest<any>) =>
+  isApiUrl(req.url) && !req.withCredentials ? req.clone({ withCredentials: true }) : req;
+
 
 /**
  * Http interceptor to attach access tokens to outgoing requests,
@@ -14,58 +19,44 @@ import { AuthService } from '../app/core/services/auth.service';
  * @returns An observable of the HTTP event
  */
 export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn) => {
-  const tokenService = inject(TokenService);
-  const authService = inject(AuthService);
+  const auth = inject(AuthService);
 
-  const shouldIgnore = req.url.includes('/auth');
+  const baseReq = withCredsIfApi(req);
 
-  if (shouldIgnore) {
-    console.log('[AuthInterceptor] Ignoring auth URL:', req.url);
-    return next(req);
+  // Bypass auth for login, refresh, logout endpoints and if explicitly asked
+  if (isAuthUrl(baseReq.url) || baseReq.headers.has('X-Skip-Auth')) {
+    return next(baseReq);
   }
 
-  const accessToken = tokenService.getToken();
+  // 1) Get valid access token (from memory or refresh if needed)
+  return auth.getValidAccessToken$().pipe(
+    switchMap(token => {
+      const authedReq = token
+        ? baseReq.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+        : baseReq;
 
-  if (!accessToken) {
-    console.warn('[AuthInterceptor] No access token found for request:', req.url);
-  }
+      // 2) Make the request with the access token
+      return next(authedReq).pipe(
+        catchError((e: unknown) => {
+          const err = e as HttpErrorResponse;
+          const alreadyRetried = authedReq.headers.has('X-Retry');
 
-  const authReq = accessToken
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${accessToken}` } })
-    : req;
-
-  return next(authReq).pipe(
-    catchError((error: HttpErrorResponse) => {
-      const is401 = error.status === 401;
-      const isRefreshingRequest = req.url.includes('/auth/refresh');
-
-      if (!is401 || isRefreshingRequest || !authService.shouldHaveSession()) {
-        console.error('[AuthInterceptor] Request failed (not handled):', error.status, req.url);
-        return throwError(() => error);
-      }
-
-      console.warn('[AuthInterceptor] 401 received, attempting refresh:', req.url);
-
-      return authService.refreshSession().pipe(
-        switchMap((newToken: string | null) => {
-          if (!newToken) {
-            console.error('[AuthInterceptor] Refresh failed — no new token');
-            return throwError(() => new Error('Session refresh failed'));
+          if (err.status === 401 && !alreadyRetried) {
+            // Refresh via cookie HttpOnly
+            return auth.refreshSession$().pipe(
+              switchMap(newToken => {
+                if (!newToken) {
+                  return throwError(() => err);
+                }
+                const retryReq = authedReq.clone({
+                  setHeaders: { Authorization: `Bearer ${newToken}`, 'X-Retry': '1' }
+                });
+                return next(retryReq);
+              })
+            );
           }
 
-          console.log('[AuthInterceptor] Refresh succeeded, retrying original request with new token:', req.url);
-
-          tokenService.setToken(newToken);
-
-          const retriedReq = req.clone({
-            setHeaders: { Authorization: `Bearer ${newToken}` }
-          });
-
-          return next(retriedReq);
-        }),
-        catchError(refreshError => {
-          console.error('[AuthInterceptor] Refresh request failed:', refreshError);
-          return throwError(() => refreshError);
+          return throwError(() => err);
         })
       );
     })

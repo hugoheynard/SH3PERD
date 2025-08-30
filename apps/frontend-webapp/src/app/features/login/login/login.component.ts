@@ -29,7 +29,7 @@ export class LoginComponent {
   };
 
   async onLogin(credentials: TUserCredentialsDTO): Promise<void> {
-    const success = await firstValueFrom(this.authService.login(credentials));
+    const success = await firstValueFrom(this.authService.login$(credentials));
 
     if (!success) {
       this.snackbarService.show('Login failed', 'Close', 3000);

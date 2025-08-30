@@ -21,7 +21,7 @@ export class MusicLibraryController {
     @Req() req: Request,
     @Body('requestDTO') requestDTO: TSingleUserMusicLibraryRequestDTO
   ): Promise<TUserMusicLibraryResponseDTO> {
-    console.log('getUserMusicLibrary called with requestDTO:', req);
+    console.log('getUserMusicLibrary called with requestDTO:', req.cookies);
     const result = await this.uc.getUserMusicLibrary({ target_id: requestDTO.target_id });
     return buildApiResponse(apiCodes.music.MUSIC_LIBRARY_SINGLE_USER_SUCCESS, result)
   };

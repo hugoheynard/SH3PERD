@@ -1,5 +1,9 @@
 import type { TSecureCookieConfig } from '../../auth/types/auth.domain.tokens.js';
 
+export const REFRESH_COOKIE_NAME = 'sh3pherd_refreshToken';
+
+export const REFRESH_COOKIE_PATH = '/api/auth/refresh';
+
 export const secureCookieConfig: TSecureCookieConfig = {
   httpOnly: process.env['COOKIE_HTTP_ONLY'] === 'true',
   secure: process.env['NODE_ENV'] === 'production',

@@ -21,12 +21,13 @@ export const routes: Routes = [
   },
   { path: 'app',
     component: MainLayoutComponent,
-    //canActivate: [authGuard],
+    canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
       { path: 'home', component: HomeComponent, data: { pageName: 'dashboard' }},
-      { path: 'calendar', component: CalendarComponent, data: { pageName: 'calendar' }},
-      { path: 'musicLibrary', component: MusicLibraryComponent, canActivate: [authGuard], data: { pageName: 'music' } },
-      { path: 'playlistManager', component: PlaylistManagerComponent, canActivate: [authGuard], data: { pageName: 'playlists' }}
+      { path: 'calendar', component: CalendarComponent,  data: { pageName: 'calendar' }},
+      { path: 'musicLibrary', component: MusicLibraryComponent,  data: { pageName: 'music' } },
+      { path: 'playlistManager', component: PlaylistManagerComponent, data: { pageName: 'playlists' }}
     ]
   },
   { path: '**', redirectTo: 'login' },
@@ -34,7 +35,7 @@ export const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 
 export class AppRoutingModule {}

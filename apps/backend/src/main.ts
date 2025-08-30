@@ -12,6 +12,8 @@ async function bootstrap(): Promise<void> {
   app.enableCors({
     origin: 'http://localhost:4200', //TODO manager CORS avec env
     credentials: true,
+    methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type','Authorization','X-XSRF-TOKEN']
   });
 
   app.setGlobalPrefix('api');

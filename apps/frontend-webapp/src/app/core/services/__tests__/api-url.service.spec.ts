@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DialogService } from './dialog.service';
+import { ApiURLService } from '../api-url.service';
 
-describe('DialogService', () => {
-  let service: DialogService;
+describe('ApiURLService', () => {
+  let service: ApiURLService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(DialogService);
+    service = TestBed.inject(ApiURLService);
   });
 
   it('should be created', () => {

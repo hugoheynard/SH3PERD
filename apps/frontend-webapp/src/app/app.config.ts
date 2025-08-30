@@ -1,7 +1,5 @@
 import {
   type ApplicationConfig,
-  inject,
-  provideEnvironmentInitializer,
   provideZoneChangeDetection
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -12,21 +10,11 @@ import {provideHttpClient, withFetch, withInterceptors} from '@angular/common/ht
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {PlaylistDisplayService} from './features/playlists/playlist-display.service';
 import {authInterceptor} from '../interceptors/auth.interceptor';
-import {AuthService} from './core/services/auth.service';
-import {catchError, firstValueFrom, of} from 'rxjs';
 
-export const provideAuthEnvironmentInitializer = () =>
-  provideEnvironmentInitializer(() => {
-    const authService = inject(AuthService);
-    return firstValueFrom(
-      authService.autoLogin().pipe(
-        catchError((err) => {
-          console.warn('[Auth Init] Failed during autoLogin', err);
-          return of(void 0);
-        })
-      )
-    );
-  });
+
+
+
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -37,7 +25,6 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([authInterceptor]),
       withFetch()
     ),
-    provideAuthEnvironmentInitializer(),
     provideAnimationsAsync(),
     { provide: PlaylistDisplayService, useClass: PlaylistDisplayService }
   ]

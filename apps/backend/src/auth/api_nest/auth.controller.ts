@@ -1,12 +1,12 @@
 import {
   Body,
-  Controller,
+  Controller, Get,
   HttpCode,
   Inject,
   Post,
   Req,
   Res,
-  UseInterceptors,
+  //UseInterceptors,
 } from '@nestjs/common';
 import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import type {
@@ -18,11 +18,12 @@ import type { Request, Response } from 'express';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
 import { userCredentialsDTOSchema } from '../zodSchemas/userCredentialsDTOSchema.js';
 import { Public } from '../../utils/nest/decorators/IsPublic.js';
-import { LogoutInterceptor } from './logout.interceptor.js';
+//import { LogoutInterceptor } from './logout.interceptor.js';
 import type { TUserId } from '../../user/types/user.domain.types.js';
 import type { TRefreshToken } from '../types/auth.domain.tokens.js';
 
-@UseInterceptors(LogoutInterceptor)
+
+//@UseInterceptors(LogoutInterceptor)
 @Controller('')
 export class AuthController {
   constructor(
@@ -55,6 +56,7 @@ export class AuthController {
     @Body(new ZodValidationPipe(userCredentialsDTOSchema)) requestDTO: TUserCredentialsDTO,
     @Res({ passthrough: true }) res: Response,
   ): Promise<TLoginResponseDTO> {
+
     const { authToken, user_id, refreshTokenSecureCookie } = await this.authUseCases.login({
       email: requestDTO.email,
       password: requestDTO.password,
@@ -86,8 +88,12 @@ export class AuthController {
   async refreshSession(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<{ authToken: string; user_id: TUserId }> {
+  ): Promise<{ authToken: string | null; user_id : TUserId | null}> {
     const currentRefreshToken: TRefreshToken = req.cookies['sh3pherd_refreshToken'];
+
+    if (!currentRefreshToken) {
+      return { authToken: null, user_id: null };
+    }
 
     const { user_id, refreshTokenSecureCookie, authToken } = await this.authUseCases.refresh({
       refreshToken: currentRefreshToken,
@@ -127,4 +133,13 @@ export class AuthController {
 
     return { message: 'Logout successful' };
   }
+
+  /**
+   * ping - Health check endpoint to verify server is running.
+   */
+  @Public()
+  @Get('ping')
+  ping(): { ok: 'true' } {
+    return { ok: 'true' };
+  };
 }

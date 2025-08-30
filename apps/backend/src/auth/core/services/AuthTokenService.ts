@@ -9,6 +9,7 @@ import type {
   TGenerateRefreshTokenCookie,
   TVerifyAuthTokenFn,
 } from '../../types/auth.core.contracts.js';
+import { REFRESH_COOKIE_PATH, REFRESH_COOKIE_NAME } from '../../../appBootstrap/config/secureCookieConfig.js';
 
 /**
  * AuthTokenService orchestrates the creation and validation of both access and refresh tokens.
@@ -88,13 +89,13 @@ export class AuthTokenService implements IAuthTokenService {
     const { secure, sameSite, maxAge } = this.deps.secureCookieConfig;
 
     return {
-      name: 'sh3pherd_refreshToken',
+      name: REFRESH_COOKIE_NAME,
       value: input.refreshToken,
       options: {
         httpOnly: true,
         secure,
         sameSite,
-        path: input.customPath ?? '/', // 🧠 fallback
+        path: REFRESH_COOKIE_PATH,
         maxAge,
       },
     };

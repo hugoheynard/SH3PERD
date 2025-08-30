@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'shepherd-frontend-webapp/**'  # Ce workflow se déclenche uniquement si des fichiers dans "front/" changent
+      - 'frontend-webapp/**'  # Ce workflow se déclenche uniquement si des fichiers dans "front/" changent
 
 jobs:
   build-and-deploy:
@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: shepherd-frontend-webapp  # Toutes les commandes suivantes s'exécutent dans le dossier "front"
+        working-directory: frontend-webapp  # Toutes les commandes suivantes s'exécutent dans le dossier "front"
 
     steps:
       - name: Checkout repository
@@ -28,7 +28,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        # Installe les dépendances NPM du projet Angular (comme en local)
 
       #- name: Run tests
         #run: npm run test -- --watch=false --browsers=ChromeHeadless

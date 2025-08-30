@@ -4,9 +4,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "types": [
-      "jasmine"
-    ]
+    "types": ["jest"],
+    "esModuleInterop": true,
+    "module": "esnext",
+    "target": "es2022",
+    "allowJs": true
   },
   "include": [
     "src/**/*.spec.ts",

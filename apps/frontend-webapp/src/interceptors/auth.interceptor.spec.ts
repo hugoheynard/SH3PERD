@@ -6,7 +6,7 @@ import {
 } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { authInterceptor } from './auth.interceptor';
-import { TokenService } from '../app/core/services/token.service';
+import { AuthTokenService } from '../app/core/services/auth-token.service';
 import { AuthService } from '../app/core/services/auth.service';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
@@ -14,7 +14,7 @@ import { of } from 'rxjs';
 describe('authInterceptor (Angular 18+)', () => {
   let http: HttpClient;
   let httpMock: HttpTestingController;
-  let tokenService: jasmine.SpyObj<TokenService>;
+  let tokenService: jasmine.SpyObj<AuthTokenService>;
   let authService: jasmine.SpyObj<AuthService>;
   let router: jasmine.SpyObj<Router>;
 
@@ -29,7 +29,7 @@ describe('authInterceptor (Angular 18+)', () => {
           withInterceptorsFromDi() // Important pour activer l'intercepteur via DI
         ),
         provideHttpClientTesting(),
-        { provide: TokenService, useValue: tokenService },
+        { provide: AuthTokenService, useValue: tokenService },
         { provide: AuthService, useValue: authService },
         { provide: Router, useValue: router },
         {

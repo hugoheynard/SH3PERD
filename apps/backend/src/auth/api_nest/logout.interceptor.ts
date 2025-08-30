@@ -6,7 +6,11 @@ import {
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 
-import { secureCookieConfig } from '../../appBootstrap/config/secureCookieConfig.js';
+import {
+  REFRESH_COOKIE_NAME,
+  REFRESH_COOKIE_PATH,
+  secureCookieConfig,
+} from '../../appBootstrap/config/secureCookieConfig.js';
 
 /** * LogoutInterceptor - Interceptor to handle logout requests.
  * This interceptor checks if the request is a logout request and clears the refresh token cookie if it exists.
@@ -18,18 +22,18 @@ export class LogoutInterceptor implements NestInterceptor {
     const request = ctx.getRequest();
     const response = ctx.getResponse();
 
-    const isLogoutRoute = request.method === 'POST' && request.url.includes('/auth/logout');
+    const isLogoutRoute = request.method === 'POST' && request.url.includes('/api/auth/logout');
 
     return next.handle().pipe(
       tap(() => {
         if (isLogoutRoute && request.cookies?.sh3pherd_refreshToken) {
           const { httpOnly, secure, sameSite } = secureCookieConfig;
 
-          response.clearCookie('sh3pherd_refreshToken', {
+          response.clearCookie(REFRESH_COOKIE_NAME, {
             httpOnly,
             secure,
             sameSite,
-            path: '/',
+            path: REFRESH_COOKIE_PATH,
           });
         }
       }),
