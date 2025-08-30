@@ -1,67 +1,73 @@
 <div class="tab-header">
   <!-- 🔥 tab control and navigation -->
-  <div class="add-tab"
-       *ngIf="allowDynamicTabs"
-       (click)="addNewTab()"
-       cdkDrag [cdkDragDisabled]="true">
-    ＋
-  </div>
-
-    <div
-      #tabHeaderRef
-      class="tab-header-scroll-container"
-      tabindex="-1"
-      cdkDropList
-      [cdkDropListData]="tabs"
-      (cdkDropListDropped)="dropTab($event)"
-      [cdkDropListOrientation]="'horizontal'"
-      [cdkDropListLockAxis]="'x'"
-    >
-
-      <div
-      *ngFor="let tab of tabs ; let i = index; trackBy: trackByTabId"
-      class="tab"
-      [class.active]="tab.isActive"
-      [class.tab-editing]="tab.isEditingTitle"
-      [class.with-search]="tab.isActive && tab.isSearchVisible"
-      cdkDrag
-      [cdkDragLockAxis]="'x'"
-      [cdkDragBoundary]="'.tab-header-scroll-container'"
-      (click)="activateTab(tab.id)"
-      (dblclick)="tab.isTitleEditable !== false && enableTabNameEdit(tab)"
-    >
-      <!-- Nom normal ou édition -->
-      <ng-container *ngIf="!tab.isEditingTitle; else editTemplate">
-        {{ tab.title }}
-      </ng-container>
-
-      <ng-template #editTemplate>
-        <input
-          [(ngModel)]="tab.title"
-          (keydown.enter)="disableTabNameEdit(tab)"
-          (blur)="disableTabNameEdit(tab)"
-          autofocus
-        />
-      </ng-template>
-      <!-- 🔥 buttons -->
-      <span *ngIf="tab.isSearchable" class="search-toggle" (click)="toggleSearch(tab)"><mat-icon>search</mat-icon></span>
-      <span *ngIf="tab.isDeletable" class="close" (click)="closeTab(tab.id)">✕</span>
+  @if (allowDynamicTabs) {
+    <div class="add-tab"
+      (click)="addNewTab()"
+      cdkDrag [cdkDragDisabled]="true">
+      ＋
     </div>
+  }
+
+  <div
+    #tabHeaderRef
+    class="tab-header-scroll-container"
+    tabindex="-1"
+    cdkDropList
+    [cdkDropListData]="tabs"
+    (cdkDropListDropped)="dropTab($event)"
+    [cdkDropListOrientation]="'horizontal'"
+    [cdkDropListLockAxis]="'x'"
+    >
+
+    @for (tab of tabs ; track trackByTabId(i, tab); let i = $index) {
+      <div
+        class="tab"
+        [class.active]="tab.isActive"
+        [class.tab-editing]="tab.isEditingTitle"
+        [class.with-search]="tab.isActive && tab.isSearchVisible"
+        cdkDrag
+        [cdkDragLockAxis]="'x'"
+        [cdkDragBoundary]="'.tab-header-scroll-container'"
+        (click)="activateTab(tab.id)"
+        (dblclick)="tab.isTitleEditable !== false && enableTabNameEdit(tab)"
+        >
+        <!-- Nom normal ou édition -->
+        @if (!tab.isEditingTitle) {
+          {{ tab.title }}
+        } @else {
+          <input
+            [(ngModel)]="tab.title"
+            (keydown.enter)="disableTabNameEdit(tab)"
+            (blur)="disableTabNameEdit(tab)"
+            autofocus
+            />
+        }
+        <!-- 🔥 buttons -->
+        @if (tab.isSearchable) {
+          <span class="search-toggle" (click)="toggleSearch(tab)"><mat-icon>search</mat-icon></span>
+        }
+        @if (tab.isDeletable) {
+          <span class="close" (click)="closeTab(tab.id)">✕</span>
+        }
+      </div>
+    }
   </div>
 </div>
 
-<ng-container *ngIf="activeTab as tab">
-  <div *ngIf="tab.isSearchVisible" class="modern-search-bar">
-    <div class="input-wrapper">
-      <input
-        [(ngModel)]="tab.searchValue"
-        (ngModelChange)="applyFilter($event)"
-        placeholder="Search..."
-      />
-      <div class="underline"></div>
+@if (activeTab; as tab) {
+  @if (tab.isSearchVisible) {
+    <div class="modern-search-bar">
+      <div class="input-wrapper">
+        <input
+          [(ngModel)]="tab.searchValue"
+          (ngModelChange)="applyFilter($event)"
+          placeholder="Search..."
+          />
+        <div class="underline"></div>
+      </div>
     </div>
-  </div>
-</ng-container>
+  }
+}
 
 <div class="tab-content">
   <!-- 🔥 active tab content -->

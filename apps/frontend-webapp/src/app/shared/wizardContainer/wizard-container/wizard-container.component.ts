@@ -1,14 +1,12 @@
 import {Component, ContentChildren, Input, QueryList} from '@angular/core';
 import {WizardStepComponent} from '../wizard-step/wizard-step.component';
-import {NgForOf, NgIf, NgTemplateOutlet} from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'app-wizard-container',
   imports: [
-    NgTemplateOutlet,
-    NgIf,
-    NgForOf
-  ],
+    NgTemplateOutlet
+],
   templateUrl: './wizard-container.component.html',
   standalone: true,
   styleUrl: './wizard-container.component.scss'

@@ -1,27 +1,30 @@
 <div class="trackLine">
   <mat-icon>drag_handle</mat-icon>
 
-  <span *ngIf="song.get('_id').value; else noSong">{{ song.get('title').value }}</span>
-  <ng-template #noSong>
+  @if (song.get('_id').value) {
+    <span>{{ song.get('title').value }}</span>
+  } @else {
     <open-music-lib-button [pldServ]="pldServ"/>
-  </ng-template>
+  }
 
   <!--NEW-->
   <div class="tagDropZone"
-       cdkDropList
-       [id]="tagDropZoneId"
-       [cdkDropListData]="song.get('tags').value"
-       [cdkDropListConnectedTo]="getConnections()"
-       (cdkDropListDropped)="onTagDropped($event)">
+    cdkDropList
+    [id]="tagDropZoneId"
+    [cdkDropListData]="song.get('tags').value"
+    [cdkDropListConnectedTo]="getConnections()"
+    (cdkDropListDropped)="onTagDropped($event)">
 
-    <div *ngFor="let tag of song.get('tags').value" TagStyle [text]="tag"
-         DragStyle
-         cdkDrag
+    @for (tag of song.get('tags').value; track tag) {
+      <div TagStyle [text]="tag"
+        DragStyle
+        cdkDrag
          [cdkDragData]="{
                 tag: tag,
                 source: 'trackLine',
                 fromSong: song
                 }"></div>
+    }
   </div>
 
   <button mat-icon-button (click)="toggleExpand()">
@@ -30,19 +33,19 @@
 
 </div>
 
-<div class="expandedTrack" *ngIf="expandedTrack">
-  <div class="flexRowSpaceBetween">
-    <div><mat-icon>person</mat-icon> Performers</div>
-    <mat-chip-set
-      class="example-chip"
-      cdkDropList
-      cdkDropListOrientation="horizontal">
-      @for (performer of compatiblesPerformers; track performer.name) {
-        <mat-chip class="example-box" cdkDrag>{{performer.name}}</mat-chip>
-      }
-    </mat-chip-set>
-    <button>+</button>
+@if (expandedTrack) {
+  <div class="expandedTrack">
+    <div class="flexRowSpaceBetween">
+      <div><mat-icon>person</mat-icon> Performers</div>
+      <mat-chip-set
+        class="example-chip"
+        cdkDropList
+        cdkDropListOrientation="horizontal">
+        @for (performer of compatiblesPerformers; track performer.name) {
+          <mat-chip class="example-box" cdkDrag>{{performer.name}}</mat-chip>
+        }
+      </mat-chip-set>
+      <button>+</button>
+    </div>
   </div>
-
-
-</div>
+}

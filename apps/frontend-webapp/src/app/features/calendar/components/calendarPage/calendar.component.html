@@ -3,10 +3,11 @@
 
   <div class="splitGrid">
     <div class="centerCol">
-      <app-planningGrid #planningGrid class="planning"
-                        *ngFor="let planning of calendarDataSignal().calendarData.plannings"
-                        [events] = "getPlanningEvents(planning)"
-                        [internalCollisions]="calendarDataSignal().calendarData.collisions[planning.staff_id]"/>
+      @for (planning of calendarDataSignal().calendarData.plannings; track planning) {
+        <app-planningGrid #planningGrid class="planning"
+          [events] = "getPlanningEvents(planning)"
+          [internalCollisions]="calendarDataSignal().calendarData.collisions[planning.staff_id]"/>
+      }
     </div>
   </div>
 </div>

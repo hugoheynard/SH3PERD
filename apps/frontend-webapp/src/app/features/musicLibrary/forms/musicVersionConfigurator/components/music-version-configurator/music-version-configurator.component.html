@@ -16,34 +16,32 @@
   </app-form-block>
 
   <!-- Track Map allows user to connect the version to a music reference,
-    it will be used to detect possible interactions on tracks between team mates,
-    it should be on by default-->
+  it will be used to detect possible interactions on tracks between team mates,
+  it should be on by default-->
   <app-form-block [ngStyle]="{ gridColumn: 'span 2' }" title="Track Reference" [disabled]="false">
-      <div class="grid2">
-        <sh3-select-list
-          formControlName="musicReference_id"
-          [ngStyle]="{ gridColumn: 'span 2'}"
-          [items]="musicRefsSuggestions()"
-          [trackByFn]="trackByMusicRef"
-          [labelFn]="labelForMusicRef"
-          [valueFn]="trackByMusicRef"
-          [maxSelection]="1"
-          [emptyTemplate]="customEmptyTpl" />
+    <div class="grid2">
+      <sh3-select-list
+        formControlName="musicReference_id"
+        [ngStyle]="{ gridColumn: 'span 2'}"
+        [items]="musicRefsSuggestions()"
+        [trackByFn]="trackByMusicRef"
+        [labelFn]="labelForMusicRef"
+        [valueFn]="trackByMusicRef"
+        [maxSelection]="1"
+        [emptyTemplate]="customEmptyTpl" />
 
-        <ng-template #customEmptyTpl>
-          <ng-container *ngIf="artistSig() && titleSig(); else noInput">
-            <div class="emptyCase">
-              <span>NO MATCH</span>
-              <sh3-button-secondary buttonLabel="Create reference" (click)="openMusicRefForm()"/>
-            </div>
-
-          </ng-container>
-        <ng-template #noInput>
+      <ng-template #customEmptyTpl>
+        @if (artistSig() && titleSig()) {
+          <div class="emptyCase">
+            <span>NO MATCH</span>
+            <sh3-button-secondary buttonLabel="Create reference" (click)="openMusicRefForm()"/>
+          </div>
+        } @else {
           <div class="emptyCase">
             <span>NO MATCH</span>
             <div>Please type artist and title to search.</div>
           </div>
-        </ng-template>
+        }
       </ng-template>
     </div>
 
@@ -55,14 +53,14 @@
 </form>
 
 <!--
-  <app-form-block title="My repertoire entry" [disabled]="repertoireEntryDisabled()" formGroupName="repertoireEntryData">
-    <div class="grid2">
-      <sh3-select label='energy' [options]="textServ.getMusicGradeArray()" formControlName="effort"/>
-      <sh3-select label='effort' [options]="textServ.getMusicGradeArray()" formControlName="energy"/>
-      <sh3-select label='mastery' [options]="textServ.getMusicGradeArray()" formControlName="mastery"/>
-      <sh3-select label='affinity' [options]="textServ.getMusicGradeArray()" formControlName="affinity"/>
-    </div>
-  </app-form-block>-->
+<app-form-block title="My repertoire entry" [disabled]="repertoireEntryDisabled()" formGroupName="repertoireEntryData">
+  <div class="grid2">
+    <sh3-select label='energy' [options]="textServ.getMusicGradeArray()" formControlName="effort"/>
+    <sh3-select label='effort' [options]="textServ.getMusicGradeArray()" formControlName="energy"/>
+    <sh3-select label='mastery' [options]="textServ.getMusicGradeArray()" formControlName="mastery"/>
+    <sh3-select label='affinity' [options]="textServ.getMusicGradeArray()" formControlName="affinity"/>
+  </div>
+</app-form-block>-->
 
 <!--
 <app-form-block title="Options" formGroupName="options" [disabled]="false">
@@ -72,26 +70,26 @@
 
 
 <!--<div class="bottomRow">
-    <app-form-block title="Upload file" [disabled]="false">
-      <sh3-file-uploader />
-    </app-form-block>
+<app-form-block title="Upload file" [disabled]="false">
+  <sh3-file-uploader />
+</app-form-block>
 
-    FILE LIST IS A TABLE OF MUSIC FILES RELATED TO THE VERSION
-    user should be able to add a file for this version, assign a file for usage,
-    it is related to the repertoire entry
-    <app-form-block title="File list" [disabled]="fileListDisabled()">
-      <div>
+FILE LIST IS A TABLE OF MUSIC FILES RELATED TO THE VERSION
+user should be able to add a file for this version, assign a file for usage,
+it is related to the repertoire entry
+<app-form-block title="File list" [disabled]="fileListDisabled()">
+  <div>
 
-      </div>
-    </app-form-block>
-  </div>-->
+  </div>
+</app-form-block>
+</div>-->
 
 <!-- <div class="keySelectorContainer">
-        <label>Key selection</label>
-        <div class="key" formGroupName="key">
-          <sh3-select placeholder="Root" [options]="textServ.getKeysNote()" formControlName="root"/>
-          <sh3-select placeholder=alt [options]="textServ.getKeysAlterations('D')" formControlName="alteration"/>
-          <sh3-select placeholder=tone [options]="textServ.getKeysTone()" formControlName="tone"/>
-          <sh3-button-primary buttonLabel="clear selection" />
-        </div>
-      </div>-->
+<label>Key selection</label>
+<div class="key" formGroupName="key">
+  <sh3-select placeholder="Root" [options]="textServ.getKeysNote()" formControlName="root"/>
+  <sh3-select placeholder=alt [options]="textServ.getKeysAlterations('D')" formControlName="alteration"/>
+  <sh3-select placeholder=tone [options]="textServ.getKeysTone()" formControlName="tone"/>
+  <sh3-button-primary buttonLabel="clear selection" />
+</div>
+</div>-->

@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabelWrapperDirective} from '../../../../../../../Directives/forms/label.directive';
 
-import {NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
+
 import { CheckboxComponent, MultiSelectDropdownComponent, SelectComponent } from '@sh3pherd/ui-angular';
 
 @Component({
@@ -11,13 +11,10 @@ import { CheckboxComponent, MultiSelectDropdownComponent, SelectComponent } from
     FormsModule,
     LabelWrapperDirective,
     MultiSelectDropdownComponent,
-    NgSwitchCase,
     ReactiveFormsModule,
-    NgSwitch,
-    NgIf,
     SelectComponent,
     CheckboxComponent
-  ],
+],
   templateUrl: './search-configuration-form.component.html',
   standalone: true,
   styleUrl: './search-configuration-form.component.scss',

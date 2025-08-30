@@ -7,7 +7,7 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import {NgForOf, NgIf} from '@angular/common';
+
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import type { ITabDefinition } from './ITabDefinition';
 import {CdkDrag, type CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
@@ -17,14 +17,12 @@ import {TabNotFoundComponent} from '../tab-not-found/tab-not-found.component';
 @Component({
   selector: 'app-tab-system',
   imports: [
-    NgForOf,
-    NgIf,
     ReactiveFormsModule,
     FormsModule,
     CdkDropList,
     CdkDrag,
     MatIcon
-  ],
+],
   templateUrl: './tab-system.component.html',
   standalone: true,
   styleUrl: './tab-system.component.scss'

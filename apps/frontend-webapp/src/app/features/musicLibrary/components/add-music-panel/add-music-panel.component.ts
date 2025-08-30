@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import {FormBlockComponent} from '../../forms/musicTabConfigurator/components/form-block/form-block.component';
 import {LabelWrapperDirective} from '../../../../../Directives/forms/label.directive';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {NgClass, NgForOf, NgIf} from '@angular/common';
+import { NgClass } from '@angular/common';
 import {
   WizardContainerComponent
 } from '../../../../shared/wizardContainer/wizard-container/wizard-container.component';
@@ -15,14 +15,12 @@ import { InputComponent, SelectComponent } from '@sh3pherd/ui-angular';
     FormBlockComponent,
     LabelWrapperDirective,
     ReactiveFormsModule,
-    NgIf,
     WizardContainerComponent,
     WizardStepComponent,
-    NgForOf,
     NgClass,
     InputComponent,
-    SelectComponent,
-  ],
+    SelectComponent
+],
   templateUrl: './add-music-panel.component.html',
   standalone: true,
   styleUrl: './add-music-panel.component.scss'

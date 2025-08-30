@@ -1,5 +1,5 @@
 import {Component, HostBinding, Input} from '@angular/core';
-import {DatePipe, NgIf} from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 type EventType = 'meeting' | 'rehearsal' | 'getIn' | 'off';
 
@@ -24,9 +24,8 @@ export interface EventBlock {
   styleUrl: './event-block.component.scss',
   standalone: true,
   imports: [
-    DatePipe,
-    NgIf
-  ]
+    DatePipe
+]
 })
 export class EventBlockComponent {
   @Input() event!: EventBlock;

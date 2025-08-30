@@ -1,14 +1,15 @@
 
-  <app-select-checkbox
-    [formControl]="services"
-    [label]="'Services'"
-    [options]="[{ label: 'artistic', value: 'artistic'}]"/>
+<app-select-checkbox
+  [formControl]="services"
+  [label]="'Services'"
+  [options]="[{ label: 'artistic', value: 'artistic'}]"/>
 
+@if (formGroup?.get('categories')?.enabled) {
   <app-select-checkbox
-    *ngIf="formGroup?.get('categories')?.enabled"
     [formControl]="categories"
     [label]="'Categories'"
     [options]="[
     { label: 'dj', value: 'dj'},
     { label: 'musicians', value: 'dj'}
     ]"/>
+}

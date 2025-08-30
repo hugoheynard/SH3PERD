@@ -4,14 +4,14 @@
     <app-wizard-step>
       <app-form-block [title]="'Version details'" [disabled]="false">
         <sh3-input type="text"
-                   class="fullRow"
-                   placeholder="Enter version name"
-                   [formControl]="versionFormGroup.get('versionName')" />
+          class="fullRow"
+          placeholder="Enter version name"
+          [formControl]="versionFormGroup.get('versionName')" />
 
         <sh3-input type="text"
-                   class="fullRow"
-                   placeholder="Enter version artist"
-                   [formControl]="versionFormGroup.get('versionName')" />
+          class="fullRow"
+          placeholder="Enter version artist"
+          [formControl]="versionFormGroup.get('versionName')" />
 
         <div class="versionDetails">
           <sh3-select
@@ -39,38 +39,37 @@
       <app-form-block [title]="'SELECT OR ADD MUSIC'" [disabled]="false">
 
         <sh3-input type="text"
-                   label='title'
-                   placeholder="Enter music title"
-                   [formControl]="musicFormGroup.get('title')"
-                   [required]="true" />
+          label='title'
+          placeholder="Enter music title"
+          [formControl]="musicFormGroup.get('title')"
+          [required]="true" />
 
         <sh3-input type="text"
-                   label='artist'
-                   placeholder="Enter artist name"
-                   [formControl]="musicFormGroup.get('artist')" />
+          label='artist'
+          placeholder="Enter artist name"
+          [formControl]="musicFormGroup.get('artist')" />
 
         <!--allows user to map directly to an existing musicReference,
         or create a new one ono the go-->
         <div class="musicMatchTable" label="Select a matching song">
-          <ng-container *ngIf="matchedTracks.length !== 0 ; else noTracksFound">
-            <div
-              *ngFor="let track of matchedTracks"
-              class="entry"
-              [ngClass]="{ 'selected': track.id === selectedTrackId }"
-              (click)="selectTrack(track)"
-            >
-              {{ track.title }} - {{ track.artist }}
-            </div>
-          </ng-container>
-
-          <ng-template #noTracksFound>
+          @if (matchedTracks.length !== 0 ) {
+            @for (track of matchedTracks; track track) {
+              <div
+                class="entry"
+                [ngClass]="{ 'selected': track.id === selectedTrackId }"
+                (click)="selectTrack(track)"
+                >
+                {{ track.title }} - {{ track.artist }}
+              </div>
+            }
+          } @else {
             <p>No matching tracks found. Please add a track.</p>
-
             <div class="addNewTrack" (click)="addNewTrack()">
               <span class="material-icons">add</span>
               Add new track
             </div>
-          </ng-template>
+          }
+
         </div>
 
       </app-form-block>

@@ -2,17 +2,16 @@ import {Component, Input} from '@angular/core';
 import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatOption} from "@angular/material/core";
 import {MatSelect} from "@angular/material/select";
-import {NgForOf} from '@angular/common';
+
 
 @Component({
     selector: 'app-select-checkbox',
     imports: [
-        MatFormField,
-        MatLabel,
-        MatOption,
-        MatSelect,
-        NgForOf
-    ],
+    MatFormField,
+    MatLabel,
+    MatOption,
+    MatSelect
+],
     templateUrl: './select-checkbox.component.html',
     standalone: true,
     styleUrl: './select-checkbox.component.scss'

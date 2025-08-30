@@ -1,15 +1,20 @@
-<div class="overlay" *ngIf="isOpen()" (click)="close()"></div>
+@if (isOpen()) {
+  <div class="overlay" (click)="close()"></div>
+}
 
-<div class="grid-menu" *ngIf="isOpen()">
-  <button class="menu-item" (click)="toggle()"><mat-icon class="menu-icon">clear</mat-icon></button>
-  <button
-    class="menu-item"
-    *ngFor="let item of menuItems; let i = index"
-    [ngStyle]="{ '--i': i }"
-  >
-    <mat-icon class="menu-icon">{{ item.iconName }}</mat-icon>
-  </button>
-</div>
+@if (isOpen()) {
+  <div class="grid-menu">
+    <button class="menu-item" (click)="toggle()"><mat-icon class="menu-icon">clear</mat-icon></button>
+    @for (item of menuItems; track item; let i = $index) {
+      <button
+        class="menu-item"
+        [ngStyle]="{ '--i': i }"
+        >
+        <mat-icon class="menu-icon">{{ item.iconName }}</mat-icon>
+      </button>
+    }
+  </div>
+}
 
 
 

@@ -6,7 +6,7 @@ import {
   type OnInit
 } from '@angular/core';
 import { type CdkDragDrop, CdkDrag, CdkDropList, transferArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
-import {NgForOf} from '@angular/common';
+
 import { TrackLineComponent } from '../track-line/track-line.component';
 import {PlaylistDisplayService} from '../../playlist-display.service';
 import {AddSlotComponent} from '../add-slot/add-slot.component';
@@ -17,13 +17,12 @@ import {PlaylistFormService} from '../../formsServices/playlist-form.service';
 @Component({
     selector: 'song-list-dnd',
     imports: [
-        CdkDrag,
-        CdkDropList,
-        NgForOf,
-        TrackLineComponent,
-        AddSlotComponent,
-        DragStyleDirective
-    ],
+    CdkDrag,
+    CdkDropList,
+    TrackLineComponent,
+    AddSlotComponent,
+    DragStyleDirective
+],
     templateUrl: './song-list-dnd.component.html',
     standalone: true,
     styleUrl: './song-list-dnd.component.scss'

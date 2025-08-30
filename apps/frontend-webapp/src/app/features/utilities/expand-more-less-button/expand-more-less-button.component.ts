@@ -1,15 +1,14 @@
 import {Component, EventEmitter, Output, ViewEncapsulation} from '@angular/core';
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from "@angular/material/button";
-import {NgIf} from "@angular/common";
+
 
 @Component({
   selector: 'expand-more-less-button',
   imports: [
     MatIcon,
-    MatIconButton,
-    NgIf
-  ],
+    MatIconButton
+],
   templateUrl: './expand-more-less-button.component.html',
   styleUrl: './expand-more-less-button.component.scss',
   standalone: true,

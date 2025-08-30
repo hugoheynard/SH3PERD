@@ -8,7 +8,7 @@ import {
 import { MusicLibraryTextContentService } from '../../../../services/music-library-text-content.service';
 import { type IMusicVersionForm, MusicVersionFormService } from '../../../../formServices/music-version-form.service';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { NgIf, NgStyle } from '@angular/common';
+import { NgStyle } from '@angular/common';
 import type { TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
 import { MusicReferenceService } from '../../../../services/music-reference.service';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -26,9 +26,8 @@ import { DialogService } from '../../../../../../core/services/dialog.service';
     ReactiveFormsModule,
     SelectListComponent,
     NgStyle,
-    NgIf,
-    ButtonSecondaryComponent,
-  ],
+    ButtonSecondaryComponent
+],
   templateUrl: './music-version-configurator.component.html',
   standalone: true,
   styleUrl: './music-version-configurator.component.scss',

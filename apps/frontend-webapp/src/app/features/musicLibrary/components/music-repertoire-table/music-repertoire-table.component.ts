@@ -2,7 +2,7 @@ import {
   Component, effect, EventEmitter, inject, Input, type OnInit, Output, signal,
 } from '@angular/core';
 import { CdkTableModule } from '@angular/cdk/table';
-import { NgForOf, NgIf } from '@angular/common';
+
 import {FormsModule} from '@angular/forms';
 import {MusicRepertoireService} from '../../services/music-repertoire.service';
 import type { ITabDefinition } from '../../../../shared/tabSystem/tab-system/ITabDefinition';
@@ -21,7 +21,7 @@ import { PaginatorComponent } from '../../../../shared/paginator/paginator.compo
 @Component({
   selector: 'music-repertoire-table',
   standalone: true,
-  imports: [CdkTableModule, NgForOf, NgIf, FormsModule, ButtonPrimaryComponent, MusicCardComponent, MusicLibraryStatsComponent, MusicLibraryFiltersComponent, PaginatorComponent, ButtonSecondaryComponent],
+  imports: [CdkTableModule, FormsModule, ButtonPrimaryComponent, MusicCardComponent, MusicLibraryStatsComponent, MusicLibraryFiltersComponent, PaginatorComponent, ButtonSecondaryComponent],
   templateUrl: './music-repertoire-table.component.html',
   styleUrl: './music-repertoire-table.component.scss'
 })

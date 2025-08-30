@@ -1,84 +1,85 @@
 <table id="playlistTable">
   <colgroup>
-    <col style="width: 10px;">
-    <col style="width: 70px;">
-    <col style="width: 200px;">
-    <col style="width: 50px;">
-    <col style="width: 50px;">
-    <col style="width: 250px;">
-    <col style="width: 40px;">
-    <col style="width: 40px;">
-  </colgroup>
-  <thead>
-    <tr>
-      <td class="iconCol"><mat-icon>remove_red_eye</mat-icon></td>
+  <col style="width: 10px;">
+  <col style="width: 70px;">
+  <col style="width: 200px;">
+  <col style="width: 50px;">
+  <col style="width: 50px;">
+  <col style="width: 250px;">
+  <col style="width: 40px;">
+  <col style="width: 40px;">
+</colgroup>
+<thead>
+  <tr>
+    <td class="iconCol"><mat-icon>remove_red_eye</mat-icon></td>
+    <td>
+      <div class="flexRowSpaceBetween">
+        <span>Creation date</span>
+        <button mat-icon-button class="sortButton"
+          (click)="sortByCreationDate()">
+          <mat-icon>compare_arrows</mat-icon>
+        </button>
+      </div>
+    </td>
+    <td>Name</td>
+    <td>
+      <div class="flexRowSpaceBetween">
+        <div>ENERGY</div>
+        <button mat-icon-button class="sortButton"
+          (click)="sortByEnergyLevel()">
+          <mat-icon>compare_arrows</mat-icon>
+        </button>
+      </div>
+    </td>
+    <td>
+      <div class="flexRowSpaceBetween">
+        <div>DURATION</div>
+        <button mat-icon-button class="sortButton"
+          (click)="sortByEnergyLevel()">
+          <mat-icon>compare_arrows</mat-icon>
+        </button>
+      </div>
+    </td>
+    <td>tags</td>
+    <!--<td class="iconCol"><mat-icon>favorite_border</mat-icon></td>-->
+    <td></td>
+  </tr>
+</thead>
+
+<tbody>
+  @for (playlist of playlists; track playlist; let index = $index) {
+    <tr >
       <td>
-        <div class="flexRowSpaceBetween">
-          <span>Creation date</span>
-          <button mat-icon-button class="sortButton"
-                  (click)="sortByCreationDate()">
-            <mat-icon>compare_arrows</mat-icon>
-          </button>
-        </div>
+        <button mat-icon-button (click)="editPlaylist(playlist)">
+          <mat-icon>remove_red_eye</mat-icon>
+        </button>
       </td>
-      <td>Name</td>
+      <td>{{ playlist.dataInformation.creation_date | date:'yyyy/MM/dd' }}</td>
+      <td>{{ playlist.settings.name }}</td>
+      <td>{{ playlist.settings.energy }}</td>
+      <!--<td>{{ playlist.songListData.duration }}</td>-->
       <td>
-        <div class="flexRowSpaceBetween">
-          <div>ENERGY</div>
-          <button mat-icon-button class="sortButton"
-                  (click)="sortByEnergyLevel()">
-            <mat-icon>compare_arrows</mat-icon>
-          </button>
-        </div>
+        @for (tag of playlist.tags; track tag) {
+          <div TagStyle [text]='tag'></div>
+        }
       </td>
+      <!--<td><app-favorite-dynamic-icon [favorite]="playlist.favorite"/></td>-->
       <td>
-        <div class="flexRowSpaceBetween">
-          <div>DURATION</div>
-          <button mat-icon-button class="sortButton"
-                  (click)="sortByEnergyLevel()">
-            <mat-icon>compare_arrows</mat-icon>
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="editPlaylist(playlist)">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
           </button>
-        </div>
+          <button mat-menu-item (click)="deletePlaylist({ playlist_id: playlist._id })">
+            <mat-icon>delete_outline</mat-icon>
+            <span>Delete</span>
+          </button>
+        </mat-menu>
       </td>
-      <td>tags</td>
-      <!--<td class="iconCol"><mat-icon>favorite_border</mat-icon></td>-->
-      <td></td>
     </tr>
-  </thead>
-
-  <tbody>
-    <ng-container *ngFor="let playlist of playlists; let index = index" >
-      <tr >
-        <td>
-          <button mat-icon-button (click)="editPlaylist(playlist)">
-            <mat-icon>remove_red_eye</mat-icon>
-          </button>
-        </td>
-        <td>{{ playlist.dataInformation.creation_date | date:'yyyy/MM/dd' }}</td>
-        <td>{{ playlist.settings.name }}</td>
-        <td>{{ playlist.settings.energy }}</td>
-        <!--<td>{{ playlist.songListData.duration }}</td>-->
-        <td>
-          <div *ngFor="let tag of playlist.tags" TagStyle [text]='tag'></div>
-        </td>
-        <!--<td><app-favorite-dynamic-icon [favorite]="playlist.favorite"/></td>-->
-        <td>
-          <button mat-icon-button [matMenuTriggerFor]="menu">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="editPlaylist(playlist)">
-              <mat-icon>edit</mat-icon>
-              <span>Edit</span>
-            </button>
-
-            <button mat-menu-item (click)="deletePlaylist({ playlist_id: playlist._id })">
-              <mat-icon>delete_outline</mat-icon>
-              <span>Delete</span>
-            </button>
-          </mat-menu>
-        </td>
-      </tr>
-    </ng-container>
-  </tbody>
+  }
+</tbody>
 </table>

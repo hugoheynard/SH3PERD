@@ -1,6 +1,10 @@
-<div class="overlay" *ngIf="disabled" [ngClass]="{ 'dialog': asDialog }">
-  <span class="icon"><mat-icon>block</mat-icon></span>
-</div>
+@if (disabled) {
+  <div class="overlay" [ngClass]="{ 'dialog': asDialog }">
+    <span class="icon"><mat-icon>block</mat-icon></span>
+  </div>
+}
 
-<h2 *ngIf="title">{{ title }}</h2>
+@if (title) {
+  <h2>{{ title }}</h2>
+}
 <ng-content />

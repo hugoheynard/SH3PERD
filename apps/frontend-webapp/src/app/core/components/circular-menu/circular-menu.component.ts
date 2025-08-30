@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, effect, inject, Input, signal} from '@angular/core';
-import {NgForOf, NgIf, NgStyle} from '@angular/common';
+import { NgStyle } from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 
 interface MenuItem {
@@ -13,11 +13,9 @@ interface MenuItem {
   templateUrl: './circular-menu.component.html',
   standalone: true,
   imports: [
-    NgForOf,
-    NgIf,
     MatIcon,
     NgStyle
-  ],
+],
   styleUrls: ['./circular-menu.component.scss']
 })
 export class CircularMenuComponent {

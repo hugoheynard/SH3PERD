@@ -1,16 +1,15 @@
 import {Component, inject} from '@angular/core';
 import {PlaylistTemplateFormService} from '../../formsServices/playlist-template-form.service';
 import {ReactiveFormsModule} from '@angular/forms';
-import {NgIf} from '@angular/common';
+
 import {PlTemplateService} from '../../playlistService/pl-template.service';
 import {SnackbarService} from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'pl-template-form',
   imports: [
-    ReactiveFormsModule,
-    NgIf
-  ],
+    ReactiveFormsModule
+],
   templateUrl: './pl-template-form.component.html',
   standalone: true,
   styleUrl: './pl-template-form.component.scss'

@@ -1,31 +1,33 @@
 <div class="wizard-viewport">
   <div class="wizard-slider">
-    <ng-container *ngFor="let step of steps.toArray(); let i = index">
-      <div class="wizard-step" *ngIf="i === currentStep">
-        <ng-template [ngTemplateOutlet]="step.templateRef" />
-      </div>
-    </ng-container>
+    @for (step of steps.toArray(); track step; let i = $index) {
+      @if (i === currentStep) {
+        <div class="wizard-step">
+          <ng-template [ngTemplateOutlet]="step.templateRef" />
+        </div>
+      }
+    }
   </div>
 </div>
 
 
 <div class="wizard-navigation">
   <button type="button" (click)="previousStep()"
-          [disabled]="currentStep === 0">Previous</button>
+  [disabled]="currentStep === 0">Previous</button>
   <button type="button" (click)="nextStep()"
-          [disabled]="currentStep === maxStep">Next
+    [disabled]="currentStep === maxStep">Next
   </button>
 </div>
 
 <!-- Dots navigation -->
-<ng-container *ngIf="dotNavigation">
+@if (dotNavigation) {
   <div class="wizard-dots">
-  <span
-    *ngFor="let step of steps.toArray(); let i = index"
-    class="dot"
-    [class.active]="i === currentStep"
-    (click)="goToStep(i)">
-  </span>
+    @for (step of steps.toArray(); track step; let i = $index) {
+      <span
+        class="dot"
+        [class.active]="i === currentStep"
+        (click)="goToStep(i)">
+      </span>
+    }
   </div>
-
-</ng-container>
+}

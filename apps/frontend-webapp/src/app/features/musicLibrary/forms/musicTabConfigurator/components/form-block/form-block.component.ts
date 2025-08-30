@@ -1,14 +1,13 @@
 import { Component, HostBinding, Input } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-form-block',
   imports: [
     MatIcon,
-    NgIf,
-    NgClass,
-  ],
+    NgClass
+],
   standalone: true,
   styleUrl: './form-block.component.scss',
   templateUrl: './form-block.component.html',

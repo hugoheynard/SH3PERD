@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import {CdkAccordion, CdkAccordionItem} from '@angular/cdk/accordion';
 import {MatIcon} from '@angular/material/icon';
-import {CommonModule, NgIf} from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'plv-section-container',
@@ -16,9 +16,8 @@ import {CommonModule, NgIf} from '@angular/common';
     CommonModule,
     CdkAccordion,
     CdkAccordionItem,
-    MatIcon,
-    NgIf
-  ],
+    MatIcon
+],
   templateUrl: './plv-section-container.component.html',
   standalone: true,
   styleUrl: './plv-section-container.component.scss'

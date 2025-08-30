@@ -1,13 +1,12 @@
 import { Component, Input, numberAttribute } from '@angular/core';
 import { SvgIconComponent } from '@sh3pherd/ui-angular';
-import { NgIf } from '@angular/common';
+
 
 @Component({
   selector: 'stat-card',
   imports: [
-    SvgIconComponent,
-    NgIf,
-  ],
+    SvgIconComponent
+],
   templateUrl: './stat-card.component.html',
   standalone: true,
   styleUrl: './stat-card.component.scss',

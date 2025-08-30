@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from '@angular/material/button';
-import {NgForOf, NgIf} from '@angular/common';
+
 import {MatChip, MatChipsModule, MatChipSet} from '@angular/material/chips';
 import {CdkDrag, type CdkDragDrop, CdkDropList, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {PlaylistDisplayService} from '../../playlist-display.service';
@@ -18,19 +18,17 @@ import {DragStyleDirective} from '../../../../../Directives/drag-style.directive
 @Component({
     selector: 'track-line',
     imports: [
-        MatIcon,
-        MatIconButton,
-        NgIf,
-        MatChipSet,
-        MatChipsModule,
-        CdkDropList,
-        MatChip,
-        CdkDrag,
-        NgForOf,
-        OpenMusicLibButtonComponent,
-        TagStyleDirective,
-        DragStyleDirective
-    ],
+    MatIcon,
+    MatIconButton,
+    MatChipSet,
+    MatChipsModule,
+    CdkDropList,
+    MatChip,
+    CdkDrag,
+    OpenMusicLibButtonComponent,
+    TagStyleDirective,
+    DragStyleDirective
+],
     templateUrl: './track-line.component.html',
     standalone: true,
     styleUrl: './track-line.component.scss'

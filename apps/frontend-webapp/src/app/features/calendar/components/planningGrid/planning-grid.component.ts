@@ -1,16 +1,15 @@
 import {Component, Input} from '@angular/core';
 import {EventBlockComponent} from '../eventBlock/event-block.component';
-import {NgClass, NgForOf} from '@angular/common';
+import { NgClass } from '@angular/common';
 
 
 
 @Component({
     selector: 'app-planningGrid',
     imports: [
-        EventBlockComponent,
-        NgForOf,
-        NgClass,
-    ],
+    EventBlockComponent,
+    NgClass
+],
     templateUrl: './planning-grid.component.html',
     standalone: true,
     styleUrl: './planning-grid.component.scss'

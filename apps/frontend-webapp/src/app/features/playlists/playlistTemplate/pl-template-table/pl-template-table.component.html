@@ -24,18 +24,20 @@
 
 
 
-  <tr *ngFor="let plTemp of filteredPlTemplates">
-    <td>{{plTemp.name}}</td>
-    <td>{{plTemp.description}}</td>
-    <td>{{plTemp.usage}}</td>
-    <td>{{plTemp.requiredLength}}</td>
-    <td>{{plTemp.numberOfSongs}}</td>
-    <td>{{plTemp.performers.singers}}</td>
-    <td>
-      <button mat-icon-button (click)="createPlaylistFromTemplate({ playlistTemplate_id: plTemp._id })"><mat-icon>playlist_add</mat-icon></button>
-      <button mat-icon-button (click)="editPlaylistTemplate(plTemp)"><mat-icon>edit</mat-icon></button>
-      <button mat-icon-button (click)="deletePlaylistTemplate(plTemp)"><mat-icon>delete_forever</mat-icon></button>
-    </td>
-  </tr>
+    @for (plTemp of filteredPlTemplates; track plTemp) {
+      <tr>
+        <td>{{plTemp.name}}</td>
+        <td>{{plTemp.description}}</td>
+        <td>{{plTemp.usage}}</td>
+        <td>{{plTemp.requiredLength}}</td>
+        <td>{{plTemp.numberOfSongs}}</td>
+        <td>{{plTemp.performers.singers}}</td>
+        <td>
+          <button mat-icon-button (click)="createPlaylistFromTemplate({ playlistTemplate_id: plTemp._id })"><mat-icon>playlist_add</mat-icon></button>
+          <button mat-icon-button (click)="editPlaylistTemplate(plTemp)"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button (click)="deletePlaylistTemplate(plTemp)"><mat-icon>delete_forever</mat-icon></button>
+        </td>
+      </tr>
+    }
   </tbody>
 </table>

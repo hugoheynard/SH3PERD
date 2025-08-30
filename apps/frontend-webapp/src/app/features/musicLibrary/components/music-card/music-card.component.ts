@@ -9,7 +9,7 @@ import {
   TagComponent,
 } from '@sh3pherd/ui-angular';
 import { MusicFileLineComponent } from '../music-file-line/music-file-line.component';
-import { NgIf } from '@angular/common';
+
 
 @Component({
   selector: 'music-card',
@@ -20,9 +20,8 @@ import { NgIf } from '@angular/common';
     TagComponent,
     RepertoireEntryComponent,
     MusicFileLineComponent,
-    ButtonIconComponent,
-    NgIf,
-  ],
+    ButtonIconComponent
+],
   templateUrl: './music-card.component.html',
   standalone: true,
   styleUrl: './music-card.component.scss',

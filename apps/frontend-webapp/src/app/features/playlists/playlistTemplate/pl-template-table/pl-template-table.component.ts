@@ -1,6 +1,6 @@
 import {Component, inject, type OnInit} from '@angular/core';
 import {PlTemplateService} from '../../playlistService/pl-template.service';
-import {NgForOf} from '@angular/common';
+
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {PlaylistService} from '../../playlistService/playlist.service';
@@ -8,10 +8,9 @@ import {PlaylistService} from '../../playlistService/playlist.service';
 @Component({
   selector: 'pl-template-table',
   imports: [
-    NgForOf,
     MatIcon,
     MatIconButton
-  ],
+],
   templateUrl: './pl-template-table.component.html',
   standalone: true,
   styleUrl: './pl-template-table.component.scss'

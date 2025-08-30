@@ -1,12 +1,12 @@
 import {Component, effect} from '@angular/core';
 import {provideNativeDateAdapter} from '@angular/material/core';
-import {NgClass, NgForOf} from '@angular/common';
+import { NgClass } from '@angular/common';
 import {DateService} from '../../../../core/services/date.service';
 
 @Component({
     selector: 'app-date-picker-calendar',
     providers: [provideNativeDateAdapter()],
-    imports: [NgForOf, NgClass],
+    imports: [NgClass],
     templateUrl: './date-picker-calendar.component.html',
     standalone: true,
     styleUrl: './date-picker-calendar.component.scss'

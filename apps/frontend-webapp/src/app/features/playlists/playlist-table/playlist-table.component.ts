@@ -1,5 +1,5 @@
 import {Component, inject, Input} from '@angular/core';
-import {DatePipe, NgForOf} from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {PlaylistDisplayService} from '../playlist-display.service';
@@ -11,7 +11,6 @@ import {PlaylistService} from '../playlistService/playlist.service';
 @Component({
     selector: 'playlist-table',
   imports: [
-    NgForOf,
     MatIcon,
     MatIconButton,
     TagStyleDirective,
@@ -19,7 +18,7 @@ import {PlaylistService} from '../playlistService/playlist.service';
     MatMenu,
     MatMenuItem,
     MatMenuTrigger
-  ],
+],
     templateUrl: './playlist-table.component.html',
     standalone: true,
     styleUrl: './playlist-table.component.scss'

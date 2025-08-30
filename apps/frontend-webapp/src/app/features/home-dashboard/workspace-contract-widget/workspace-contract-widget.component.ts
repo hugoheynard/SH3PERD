@@ -1,12 +1,11 @@
 import { Component, Input } from '@angular/core';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'workspace-contract-widget',
   imports: [
-    NgIf,
-    NgClass,
-  ],
+    NgClass
+],
   templateUrl: './workspace-contract-widget.component.html',
   standalone: true,
   styleUrl: './workspace-contract-widget.component.scss',

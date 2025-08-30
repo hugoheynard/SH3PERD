@@ -3,10 +3,10 @@
   <span class="title">{{ label }}</span>
   <div class="valueContainer">
     <span class="value">{{ getValue() }}</span>
-    <ng-container *ngIf="progressBar">
+    @if (progressBar) {
       <div class="progress-bar" >
         <div class="progress-fill" [style.width.%]="getProgressBar()"></div>
       </div>
-    </ng-container>
+    }
   </div>
 </div>

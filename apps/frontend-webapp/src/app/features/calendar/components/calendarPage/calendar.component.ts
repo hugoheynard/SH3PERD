@@ -9,7 +9,7 @@ import {
 import {PlanningGridComponent} from '../planningGrid/planning-grid.component';
 import {CalendarHoursGridComponent} from '../calendar-hours-grid/calendar-hours-grid.component';
 import {CalendarService} from '../../api/calendar.service';
-import {NgForOf} from '@angular/common';
+
 import {LayoutService} from '../../../../../core/services/layout.service';
 import {AutoScrollToNowDirective} from '../../core/directives/cal-auto-scroll-to-now.directive';
 
@@ -21,9 +21,8 @@ import {AutoScrollToNowDirective} from '../../core/directives/cal-auto-scroll-to
   imports: [
     PlanningGridComponent,
     CalendarHoursGridComponent,
-    NgForOf,
     AutoScrollToNowDirective
-  ]
+]
 })
 export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy{
   //private injector: Injector = inject(Injector);

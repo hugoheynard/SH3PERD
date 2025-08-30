@@ -2,17 +2,16 @@ import {Component, Input} from '@angular/core';
 import {MatChipListbox, MatChipOption} from '@angular/material/chips';
 import {MatLabel} from '@angular/material/form-field';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
-import {NgForOf} from '@angular/common';
+
 
 @Component({
     selector: 'app-select-participants',
     imports: [
-        MatChipListbox,
-        MatChipOption,
-        MatLabel,
-        ReactiveFormsModule,
-        NgForOf
-    ],
+    MatChipListbox,
+    MatChipOption,
+    MatLabel,
+    ReactiveFormsModule
+],
     templateUrl: './select-participants.component.html',
     standalone: true,
     styleUrl: './select-participants.component.scss'

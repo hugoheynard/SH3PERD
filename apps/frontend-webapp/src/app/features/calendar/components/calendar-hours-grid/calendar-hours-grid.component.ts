@@ -1,5 +1,5 @@
 import {Component, inject, type OnDestroy, type OnInit} from '@angular/core';
-import {DatePipe, NgForOf} from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 /**
  * This component displays a grid of hours for a calendar view.
@@ -9,7 +9,7 @@ import {DatePipe, NgForOf} from '@angular/common';
  */
 @Component({
   selector: 'app-calendar-hours-grid',
-  imports: [NgForOf,],
+  imports: [],
   providers: [DatePipe],
   templateUrl: './calendar-hours-grid.component.html',
   standalone: true,

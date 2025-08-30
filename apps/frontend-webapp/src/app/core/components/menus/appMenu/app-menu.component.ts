@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import {CommonModule} from '@angular/common';
+
 import {IconFlatButtonComponent} from '../icon-flat-button/icon-flat-button.component';
 import { type MenuItem, Sh3MenuComponent } from '../sh3-menu/sh3-menu.component';
 
@@ -11,7 +11,7 @@ import { type MenuItem, Sh3MenuComponent } from '../sh3-menu/sh3-menu.component'
     templateUrl: './app-menu.component.html',
     styleUrl: './app-menu.component.scss',
     standalone: true,
-  imports: [CommonModule, RouterModule, IconFlatButtonComponent, Sh3MenuComponent],
+  imports: [RouterModule, IconFlatButtonComponent, Sh3MenuComponent],
 })
 export class AppMenuComponent {
    @Input() menuItems: MenuItem[] = [];

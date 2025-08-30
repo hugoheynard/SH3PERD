@@ -7,7 +7,7 @@ import {
   GridsterItemComponent, GridsterItemComponentInterface,
   GridType,
 } from 'angular-gridster2';
-import { NgComponentOutlet, NgForOf } from '@angular/common';
+import { NgComponentOutlet } from '@angular/common';
 import { WorkspaceContractWidgetComponent } from '../workspace-contract-widget/workspace-contract-widget.component';
 import { TodayDateWidgetComponent } from '../today-date-widget/today-date-widget.component';
 
@@ -20,9 +20,8 @@ export interface WidgetItem extends GridsterItem {
   imports: [
     GridsterComponent,
     GridsterItemComponent,
-    NgComponentOutlet,
-    NgForOf,
-  ],
+    NgComponentOutlet
+],
   templateUrl: './widget-grid.component.html',
   standalone: true,
   styleUrl: './widget-grid.component.scss',

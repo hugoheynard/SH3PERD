@@ -1,17 +1,21 @@
 <!-- 404 Error -->
-<div *ngIf="hasError404" class="error-page">
-  <h1>404</h1>
-  <p>Oups ! Something went wrong</p>
-</div>
+@if (hasError404) {
+  <div class="error-page">
+    <h1>404</h1>
+    <p>Oups ! Something went wrong</p>
+  </div>
+}
 
 <!-- No Match Result -->
-<div *ngIf="hasNoMatch && !hasError404" class="error-page">
-  <h1>NO MATCH</h1>
-  <span>Try different search parameters.</span>
-  <sh3-button-primary buttonLabel="Back to search" [onClick]="handleBackToConfig"/>
-</div>
+@if (hasNoMatch && !hasError404) {
+  <div class="error-page">
+    <h1>NO MATCH</h1>
+    <span>Try different search parameters.</span>
+    <sh3-button-primary buttonLabel="Back to search" [onClick]="handleBackToConfig"/>
+  </div>
+}
 
-<ng-container *ngIf="!hasError404 && !hasNoMatch">
+@if (!hasError404 && !hasNoMatch) {
   <div class="container">
     <div class="buttons">
       <sh3-button-secondary buttonLabel="stats" icon="stats" (clicked)="toggleStatContainer()"/>
@@ -19,14 +23,15 @@
     </div>
     <music-library-stats [isOpen]="statContainerOpen"/>
     <music-library-filters [(filterValue)]="filter"/>
-
     <label class="fadedText">8 songs</label>
     <div class="listContainer">
-      <music-card *ngFor="let row of tableData" [item]="row"/>
+      @for (row of tableData; track row) {
+        <music-card [item]="row"/>
+      }
     </div>
   </div>
   <paginator />
-</ng-container>
+}
 
 
 

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { NgIf } from '@angular/common';
+
 import type { TMusicRepertoireEntryDomainModel } from '@sh3pherd/shared-types';
 import { ButtonSecondaryComponent, TagComponent } from '@sh3pherd/ui-angular';
 
@@ -8,10 +8,9 @@ import { ButtonSecondaryComponent, TagComponent } from '@sh3pherd/ui-angular';
 @Component({
   selector: 'repertoire-entry',
   imports: [
-    NgIf,
     TagComponent,
-    ButtonSecondaryComponent,
-  ],
+    ButtonSecondaryComponent
+],
   templateUrl: './repertoire-entry.component.html',
   standalone: true,
   styleUrl: './repertoire-entry.component.scss',

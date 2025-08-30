@@ -6,23 +6,28 @@
   </div>
 
   <div id="days-of-week" class="days-grid">
-    <span
-      class="day-of-week"
-      [ngClass]="{'underlineCurrentDay': i === currentWeekDay}"
-      *ngFor="let day of ['S', 'M', 'T', 'W', 'T', 'F', 'S']; let i = index">
-      {{ day }}
-    </span>
+    @for (day of ['S', 'M', 'T', 'W', 'T', 'F', 'S']; track day; let i = $index) {
+      <span
+        class="day-of-week"
+        [ngClass]="{'underlineCurrentDay': i === currentWeekDay}"
+        >
+        {{ day }}
+      </span>
+    }
   </div>
 
   <div class="days-grid">
-    <span class="day empty" *ngFor="let _ of emptyDaysArray"></span>
-    <span
-      class="day"
-      [ngClass]="{'miniCal_focus': selectedDate && date.getTime() === selectedDate.getTime()}"
-      *ngFor="let date of daysInMonth"
-      (click)="selectDate(date)">
-      {{ date.getDate() }}
-    </span>
+    @for (_ of emptyDaysArray; track _) {
+      <span class="day empty"></span>
+    }
+    @for (date of daysInMonth; track date) {
+      <span
+        class="day"
+        [ngClass]="{'miniCal_focus': selectedDate && date.getTime() === selectedDate.getTime()}"
+        (click)="selectDate(date)">
+        {{ date.getDate() }}
+      </span>
+    }
   </div>
 
 </div>

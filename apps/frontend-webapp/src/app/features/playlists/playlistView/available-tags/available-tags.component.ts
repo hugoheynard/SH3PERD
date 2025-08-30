@@ -1,7 +1,7 @@
 import {Component, inject, Input} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {CdkDrag, type CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
-import {NgForOf} from '@angular/common';
+
 import {FormsModule} from '@angular/forms';
 import {PlaylistDisplayService} from '../../playlist-display.service';
 import {TagStyleDirective} from '../../../../../Directives/tag-style.directive';
@@ -9,13 +9,12 @@ import {TagStyleDirective} from '../../../../../Directives/tag-style.directive';
 @Component({
     selector: 'available-tags',
     imports: [
-        MatIcon,
-        CdkDropList,
-        CdkDrag,
-        NgForOf,
-        FormsModule,
-        TagStyleDirective
-    ],
+    MatIcon,
+    CdkDropList,
+    CdkDrag,
+    FormsModule,
+    TagStyleDirective
+],
     standalone: true,
     templateUrl: './available-tags.component.html',
     styleUrl: './available-tags.component.scss'

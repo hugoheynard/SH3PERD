@@ -48,32 +48,31 @@
         <input type="checkbox" formControlName="singers">
       </div>
 
-      <div formGroupName="singersConfig" *ngIf="singerActive()">
-        <div class="flexRowSpaceBetween">
-          <div class="inputWithLabel">
-            <label>Number of singers</label>
-            <input type="number" min="1" step="1" formControlName="quantity" class="inputShadow">
-          </div>
-
-          <ng-container *ngIf="moreThanOneSinger()">
-            <div class="inputWithLabel">
-              <label>Split Mode</label>
-              <select formControlName="splitMode" class="inputShadow">
-                <option value="half_split">Half split</option>
-                <option value="alternate">Alternate</option>
-              </select>
-            </div>
-          </ng-container>
-        </div>
-
-        <ng-container *ngIf="moreThanOneSinger()">
+      @if (singerActive()) {
+        <div formGroupName="singersConfig">
           <div class="flexRowSpaceBetween">
-            <label>Contains duo</label>
-            <input  class="inputWithLabel" type="checkbox" formControlName="containsDuo">
+            <div class="inputWithLabel">
+              <label>Number of singers</label>
+              <input type="number" min="1" step="1" formControlName="quantity" class="inputShadow">
+            </div>
+            @if (moreThanOneSinger()) {
+              <div class="inputWithLabel">
+                <label>Split Mode</label>
+                <select formControlName="splitMode" class="inputShadow">
+                  <option value="half_split">Half split</option>
+                  <option value="alternate">Alternate</option>
+                </select>
+              </div>
+            }
           </div>
-        </ng-container>
-
-      </div>
+          @if (moreThanOneSinger()) {
+            <div class="flexRowSpaceBetween">
+              <label>Contains duo</label>
+              <input  class="inputWithLabel" type="checkbox" formControlName="containsDuo">
+            </div>
+          }
+        </div>
+      }
     </section>
 
     <!--MUSICIANS CONFIG-->
@@ -83,15 +82,17 @@
         <input type="checkbox" formControlName="musicians">
       </div>
 
-      <div formGroupName="musiciansConfig" *ngIf="musicianActive()">
-        <div class="inputWithLabel">
-          <label>Role</label>
-          <select formControlName="role" class="inputShadow">
-            <option value="solo">Solo</option>
-            <option value="support">Support</option>
-          </select>
+      @if (musicianActive()) {
+        <div formGroupName="musiciansConfig">
+          <div class="inputWithLabel">
+            <label>Role</label>
+            <select formControlName="role" class="inputShadow">
+              <option value="solo">Solo</option>
+              <option value="support">Support</option>
+            </select>
+          </div>
         </div>
-      </div>
+      }
     </section>
 
     <!--AERIAL CONFIG-->
@@ -101,16 +102,18 @@
         <input type="checkbox" formControlName="aerial" >
       </div>
 
-      <div formGroupName="aerialConfig" *ngIf="aerialActive()">
-        <div class="inputWithLabel">
-          <label>Performance position</label>
-          <select formControlName="performancePosition" class="inputShadow">
-            <option value="start">Start</option>
-            <option value="end">End</option>
-            <option value="manual">Manuel</option>
-          </select>
+      @if (aerialActive()) {
+        <div formGroupName="aerialConfig">
+          <div class="inputWithLabel">
+            <label>Performance position</label>
+            <select formControlName="performancePosition" class="inputShadow">
+              <option value="start">Start</option>
+              <option value="end">End</option>
+              <option value="manual">Manuel</option>
+            </select>
+          </div>
         </div>
-      </div>
+      }
 
     </section>
 
@@ -120,8 +123,12 @@
   <div class="footer">
     <div class="flexRowSpaceBetween">
       <button class="inputShadow">Cancel</button>
-      <button *ngIf="!editMode" class="submit" (click)="postPlTemplate({ formData: templateForm.value })">Create Template</button>
-      <button *ngIf="editMode"  class="submit" (click)="updatePlTemplate({ formData: templateForm.value })">Save changes</button>
+      @if (!editMode) {
+        <button class="submit" (click)="postPlTemplate({ formData: templateForm.value })">Create Template</button>
+      }
+      @if (editMode) {
+        <button  class="submit" (click)="updatePlTemplate({ formData: templateForm.value })">Save changes</button>
+      }
     </div>
   </div>
 </form>

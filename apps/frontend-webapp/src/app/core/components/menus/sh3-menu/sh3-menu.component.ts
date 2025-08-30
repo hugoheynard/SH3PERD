@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { NgForOf, NgIf } from '@angular/common';
+
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { SvgIconComponent } from '@sh3pherd/ui-angular';
 
@@ -16,12 +16,10 @@ export interface MenuItem {
 @Component({
   selector: 'sh3-menu',
   imports: [
-    NgIf,
-    NgForOf,
     RouterLinkActive,
     RouterLink,
-    SvgIconComponent,
-  ],
+    SvgIconComponent
+],
   templateUrl: './sh3-menu.component.html',
   styleUrl: './sh3-menu.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

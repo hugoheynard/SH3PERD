@@ -32,8 +32,10 @@
     </div>
   </div>
 
-  <ng-container *ngIf="statsVisible"><!--TODO--></ng-container>
-  <ng-container *ngIf="fileContainerVisible">
+  @if (statsVisible) {
+    <!--TODO-->
+  }
+  @if (fileContainerVisible) {
     <div class="fileContainer">
       <!--IMPORTS-->
       <div class="flexRowSpaceBetween">
@@ -41,7 +43,6 @@
         <sh3-button-secondary buttonLabel="upload" [icon]="'upload'"/>
       </div>
       <hr class="divider" />
-
       <!--LIST-->
       <div class="fileListContainer">
         <div class="flexRowSpaceBetween">
@@ -51,9 +52,8 @@
             <span class="label greyLabel"> 56 MB</span>
           </div>
         </div>
-
         <music-file-line />
       </div>
     </div>
-  </ng-container>
+  }
 </div>
