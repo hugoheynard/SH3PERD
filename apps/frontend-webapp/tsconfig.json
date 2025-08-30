@@ -5,6 +5,7 @@
   "extends": "../../tsconfig.angular.json",
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
+    "esModuleInterop": true,
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "declaration": false,
