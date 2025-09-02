@@ -1,40 +1,42 @@
 <label [attr.for]="inputId" >{{ label }}</label>
-<div class="input-wrapper" *ngIf="control; else internalInput">
-  <input
-    [id]="inputId"
-    [attr.type]="type"
-    [attr.min]="min"
-    [attr.max]="max"
-    [attr.disabled]="disabled || null"
-
-    *ngIf="control; else internalInput"
-    [formControl]="control" />
-
-  <div class="number-controls" *ngIf="type === 'number'">
-    <button type="button" class="btn-inc" (click)="increment()" [disabled]="disabled">+</button>
-    <button type="button" class="btn-dec" (click)="decrement()" [disabled]="disabled">−</button>
-  </div>
-
-  <button *ngIf="type === 'text'">
-    hello
-  </button>
-</div>
-
-<ng-template #internalInput>
+@if (control) {
   <div class="input-wrapper">
     <input
       [id]="inputId"
       [attr.type]="type"
       [attr.min]="min"
       [attr.max]="max"
+      [attr.disabled]="disabled || null"
+      [formControl]="control" />
+
+    @if (type === 'number') {
+      <div class="number-controls">
+        <button type="button" class="btn-inc" (click)="increment()" [disabled]="disabled">+</button>
+        <button type="button" class="btn-dec" (click)="decrement()" [disabled]="disabled">−</button>
+      </div>
+    }
+  </div>
+}
+
+@else {
+  <div class="input-wrapper" >
+    <input
+      [id]="inputId"
+      [attr.type]="type"
+      [attr.min]="min"
+      [attr.max]="max"
       [value]="value"
+      tabindex="0"
       [attr.disabled]="disabled || null"
       (input)="onInputChange($event)"
       (blur)="onTouched()" />
 
-    <div class="number-controls" *ngIf="type === 'number'">
-      <button type="button" class="btn-inc" (click)="increment()" [disabled]="disabled">+</button>
-      <button type="button" class="btn-dec" (click)="decrement()" [disabled]="disabled">−</button>
-    </div>
+    @if (type === 'number') {
+      <div class="number-controls">
+        <button type="button" class="btn-inc" (click)="increment()" [disabled]="disabled">+</button>
+        <button type="button" class="btn-dec" (click)="decrement()" [disabled]="disabled">−</button>
+      </div>
+    }
   </div>
-</ng-template>
+}
+

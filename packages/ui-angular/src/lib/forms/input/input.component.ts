@@ -1,6 +1,5 @@
-import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import { Component, EventEmitter, forwardRef, input, Input, Output } from '@angular/core';
 import { FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
 import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
 /**
  * Input component for forms.
@@ -14,7 +13,6 @@ import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
   selector: 'sh3-input',
   imports: [
     ReactiveFormsModule,
-    NgIf,
   ],
   templateUrl: './input.component.html',
   standalone: true,
@@ -26,6 +24,7 @@ import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
       multi: true,
     },
   ],
+  host: { '[attr.data-size]': 'size()' }
 })
 export class InputComponent
   extends BaseControlValueAccessor<string | number> {
@@ -34,6 +33,7 @@ export class InputComponent
   @Input() min?: number;
   @Input() max?: number;
   @Input() placeholder?: string;
+  public readonly size = input<'small' | 'large'>('large')
 
   /** If FormControl, we use:  */
   @Input() control?: FormControl;

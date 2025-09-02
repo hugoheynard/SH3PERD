@@ -61,5 +61,5 @@ export class RecordMetadataUtils {
       updated_at: new Date(),
       active: true
     };
-  }
+  };
 }

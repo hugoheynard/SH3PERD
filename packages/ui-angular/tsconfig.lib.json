@@ -9,7 +9,9 @@
     "types": []
   },
   "angularCompilerOptions": {
-    "compilationMode": "partial"
+    "compilationMode": "partial",
+    "enableControlFlow": true,
+    "strictTemplates": true
   },
   "exclude": [
     "**/*.spec.ts"

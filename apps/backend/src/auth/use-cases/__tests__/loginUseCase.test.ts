@@ -2,15 +2,15 @@ import { jest } from '@jest/globals';
 
 import { createLoginUseCase } from '../createLoginUseCase.js';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
-import type { TUserDomainModel } from '../../../user/types/user.domain.types';
+import type { TUserCredentialsRecord } from '../../../user/types/user.domain.types';
 import type { TCreateAuthSessionResult } from '../../types/auth.domain.tokens';
 import type { TLoginRequestDTO } from '../../../../dist/auth/zodSchemas/loginRequestDTOSchema';
-import type { TFindUserByEmailFn } from '../../../user/types/user.core.repo';
+import type { TFindUserCredentialsByEmailFn } from '../../../user/types/user.credentials.contracts.js';
 import type { TComparePassword, TCreateAuthSessionFn } from '../../types/auth.core.contracts';
 import type { TLoginUseCaseDeps } from '../../types/auth.core.useCase';
 
 describe('createLoginUseCase', () => {
-  const mockUser: TUserDomainModel = {
+  const mockUser: TUserCredentialsRecord = {
     user_id: 'user_123',
     email: 'test@example.com',
     password: 'hashed-password',
@@ -41,7 +41,7 @@ describe('createLoginUseCase', () => {
     password: 'clear-password',
   };
 
-  const findUserByEmailFn = jest.fn<TFindUserByEmailFn>();
+  const findUserByEmailFn = jest.fn<TFindUserCredentialsByEmailFn>();
   const comparePasswordFn = jest.fn<TComparePassword>();
   const createAuthSessionFn = jest.fn<TCreateAuthSessionFn>();
 

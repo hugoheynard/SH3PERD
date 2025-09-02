@@ -19,7 +19,7 @@ import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js'
 import { userCredentialsDTOSchema } from '../zodSchemas/userCredentialsDTOSchema.js';
 import { Public } from '../../utils/nest/decorators/IsPublic.js';
 //import { LogoutInterceptor } from './logout.interceptor.js';
-import type { TUserId } from '../../user/types/user.domain.types.js';
+import type { TUserId } from '@sh3pherd/shared-types';
 import type { TRefreshToken } from '../types/auth.domain.tokens.js';
 
 

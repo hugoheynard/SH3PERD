@@ -1,10 +1,10 @@
 import type { IRefreshTokenRepository } from '../../auth/types/auth.core.tokens.contracts.js';
-import type { IUserRepository } from '../../user/types/user.core.repo.js';
+import type { IUserCredentialsRepository } from '../../user/types/user.credentials.contracts.js';
 import type { IContractRepository } from '../../contracts/types/contracts.core.types.js';
 import type { MongoClient } from 'mongodb';
 import { TechnicalError } from '../../utils/errorManagement/errorClasses/TechnicalError.js';
 import { RefreshTokenMongoRepository } from '../../auth/repositories/RefreshTokenMongoRepository.js';
-import { UserMongoRepository } from '../../user/repository/adapters/mongo/MongoUserRepository.js';
+import { UserCredentialsMongoRepository } from '../../user/repository/adapters/mongo/MongoUserCredentialsRepository.js';
 import { ContractMongoRepository } from '../../contracts/core/ContractMongoRepository.js';
 import { EventUnitMongoRepository } from '../../calendar/repositories/EventUnitMongoRepository.js';
 import { MusicRepertoireMongoRepository } from '../../music/repositories/MusicRepertoireRepository.js';
@@ -13,10 +13,14 @@ import type { IMusicReferenceRepository } from '../../music/types/musicReference
 import { MusicReferenceMongoRepository } from '../../music/repositories/MusicReferenceRepository.js';
 import type { IMusicVersionRepository } from '../../music/repositories/MusicVersionRepository.js';
 import { MusicVersionRepository } from '../../music/repositories/MusicVersionRepository.js';
+import type { IUserProfileRepository } from '../../user/types/user.profile.contracts.js';
+import { UserProfileMongoRepository } from '../../user/repository/adapters/mongo/UserProfileMongoRepository.js';
 
 export type TCoreRepositories = {
   refreshTokenRepository: IRefreshTokenRepository;
-  userCredentialsRepository: IUserRepository;
+  //USER
+  userCredentialsRepository: IUserCredentialsRepository;
+  userProfileRepository: IUserProfileRepository;
   contractRepository: IContractRepository;
   eventUnitsRepository: any;
   //MUSIC
@@ -46,10 +50,15 @@ export const createCoreRepositories = (input: {
         dbName,
         collectionName: 'refreshToken',
       }),
-      userCredentialsRepository: new UserMongoRepository({
+      userCredentialsRepository: new UserCredentialsMongoRepository({
         client,
         dbName,
         collectionName: 'user_credentials',
+      }),
+      userProfileRepository: new UserProfileMongoRepository({
+        client,
+        dbName,
+        collectionName: 'user_profiles',
       }),
       contractRepository: new ContractMongoRepository({
         client,

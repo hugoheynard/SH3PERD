@@ -1,11 +1,10 @@
 <div
   class="selectList"
   tabindex="0"
-  aria-label="Selectable list"
->
-  <ng-container *ngIf="items.length; else customEmpty">
+  aria-label="Selectable list">
+
+  @for (item of items; track item) {
     <div
-      *ngFor="let item of items"
       class="entry"
       [class.selected]="isSelected(item)"
       [class.disabled]="isDisabled(item)"
@@ -13,13 +12,12 @@
     >
       {{ labelFn(item) }}
     </div>
-  </ng-container>
+  } @empty {
+    @if (emptyTemplate) {
+      <ng-container *ngTemplateOutlet="emptyTemplate" />
+    } @else {
+      <div class="empty-state">No Match found.</div>
+    }
+  }
+
 </div>
-
-<ng-template #customEmpty>
-  <ng-container *ngTemplateOutlet="emptyTemplate || defaultEmpty" />
-</ng-template>
-
-<ng-template #defaultEmpty>
-  <div class="empty-state">No Match found.</div>
-</ng-template>

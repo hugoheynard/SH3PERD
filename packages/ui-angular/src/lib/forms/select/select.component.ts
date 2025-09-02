@@ -7,7 +7,6 @@ import {
   input,
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
-import { NgForOf, NgIf } from '@angular/common';
 import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
 import { ButtonIconComponent } from '../../buttons';
 import { SvgIconComponent } from '../../icones';
@@ -17,7 +16,7 @@ import { SvgIconComponent } from '../../icones';
   standalone: true,
   templateUrl: './select.component.html',
   styleUrl: './select.component.scss',
-  imports: [NgForOf, NgIf, ButtonIconComponent, SvgIconComponent],
+  imports: [ButtonIconComponent, SvgIconComponent],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

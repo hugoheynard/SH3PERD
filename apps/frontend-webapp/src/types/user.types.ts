@@ -1,1 +1,0 @@
-export type TUserId = `user_${string}`;

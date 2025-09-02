@@ -7,7 +7,7 @@ import type {
   TMarkContractAsFavoriteFn,
 } from '../types/contracts.core.types.js';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
-import type { TUserId } from '../../user/types/user.domain.types.js';
+import type { TUserId } from '@sh3pherd/shared-types';
 
 @autoBind
 export class ContractMongoRepository

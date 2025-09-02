@@ -1,4 +1,4 @@
-import type { TUserId } from '../../user/types/user.domain.types.js';
+import type { TUserId } from '@sh3pherd/shared-types';
 
 export type TEventUnitId = `eventUnit_${string}`;
 export type TEventType = 'rehearsal' | 'show' | 'meeting' | 'administrative';

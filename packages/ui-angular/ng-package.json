@@ -4,6 +4,8 @@
   "lib": {
     "entryFile": "src/public-api.ts"
   },
-  "allowedNonPeerDependencies": [],
-  "styleIncludePaths": ["src/styles"]
+  "allowedNonPeerDependencies": []
+
 }
+
+

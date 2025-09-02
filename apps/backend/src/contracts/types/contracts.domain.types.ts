@@ -1,4 +1,4 @@
-import type { TUserId } from '../../user/types/user.domain.types.js';
+import type { TUserId } from '@sh3pherd/shared-types';
 
 export type TContractId = `contract_${string}`;
 export type TContractAddendumId = `contractAddendum_${string}`;

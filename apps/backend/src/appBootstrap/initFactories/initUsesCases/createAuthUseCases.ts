@@ -11,6 +11,7 @@ import { TechnicalError } from '../../../utils/errorManagement/errorClasses/Tech
 import { createUserCredentials } from '../../../user/domain/createUserCredentials.js';
 import type { TUseCasesFactoryGeneric } from '../../../types/useCases.generic.types.js';
 
+
 export const createAuthUseCases: TUseCasesFactoryGeneric<TAuthUseCases> = (deps)=> {
   const { authTokenService } = deps.services;
   const { userCredentialsRepository, refreshTokenRepository } = deps.repositories;
@@ -20,29 +21,24 @@ export const createAuthUseCases: TUseCasesFactoryGeneric<TAuthUseCases> = (deps)
       register: createRegisterUserUseCase({
         generateUserIdFn: () => generateTypedId('user'),
         createUserFn: createUserCredentials,
-        findUserByEmailFn:
-          userCredentialsRepository.findUserByEmail.bind(userCredentialsRepository),
-        hashPasswordFn: passwordManager.hashPassword.bind(passwordManager),
-        saveUserFn: userCredentialsRepository.saveUser.bind(userCredentialsRepository),
+        findUserByEmailFn: (input)=> userCredentialsRepository.findUserByEmail(input),
+        hashPasswordFn: (input)=> passwordManager.hashPassword(input),
+        saveUserFn: (input)=> userCredentialsRepository.saveUser(input),
       }),
       login: createLoginUseCase({
-        findUserByEmailFn:
-          userCredentialsRepository.findUserByEmail.bind(userCredentialsRepository),
-        comparePasswordFn: passwordManager.comparePassword.bind(passwordManager),
-        createAuthSessionFn: authTokenService.createAuthSession.bind(authTokenService),
+        findUserByEmailFn: (input)=> userCredentialsRepository.findUserByEmail(input),
+        comparePasswordFn: (input) => passwordManager.comparePassword(input),
+        createAuthSessionFn: (input) => authTokenService.createAuthSession(input),
       }),
       refresh: createRefreshSessionUseCase({
-        findRefreshTokenFn: refreshTokenRepository.findRefreshToken.bind(refreshTokenRepository),
-        verifyRefreshTokenFn: authTokenService.verifyRefreshToken.bind(authTokenService),
-        createAuthSessionFn: authTokenService.createAuthSession.bind(authTokenService),
-        deleteRefreshTokenFn:
-          refreshTokenRepository.deleteRefreshToken.bind(refreshTokenRepository),
+        findRefreshTokenFn: (input) => refreshTokenRepository.findRefreshToken(input),
+        verifyRefreshTokenFn: (input) => authTokenService.verifyRefreshToken(input),
+        createAuthSessionFn: (input) => authTokenService.createAuthSession(input),
+        deleteRefreshTokenFn: (input) => refreshTokenRepository.deleteRefreshToken(input),
       }),
       logout: createLogoutUseCase({
-        deleteRefreshTokenFn:
-          refreshTokenRepository.deleteRefreshToken.bind(refreshTokenRepository),
-        deleteAllRefreshTokensForUserFn:
-          refreshTokenRepository.deleteAllRefreshTokensForUser.bind(refreshTokenRepository),
+        deleteRefreshTokenFn: (input) => refreshTokenRepository.deleteRefreshToken(input),
+        deleteAllRefreshTokensForUserFn: (input) => refreshTokenRepository.deleteAllRefreshTokensForUser(input),
       }),
     };
   } catch (err) {

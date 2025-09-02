@@ -4,7 +4,7 @@ import type {
   Document,
   Filter,
   FindOneAndUpdateOptions,
-  MongoClient,
+  MongoClient, OptionalUnlessRequiredId,
   UpdateFilter,
   WithId,
 } from 'mongodb';
@@ -53,8 +53,21 @@ export abstract class BaseMongoRepository<TDomainModel extends Document> {
     });
 
     return result ? this.mapMongoDocToDomainModel(result) : null;
-  }
+  };
 
+  protected async saveDoc(doc: OptionalUnlessRequiredId<TDomainModel>): Promise<boolean> {
+    const result = await this.collection.insertOne(doc);
+
+    if (!result.acknowledged || !result.insertedId) {
+      return false;
+    }
+    return true;
+  };
+
+  /**
+   * Starts a new MongoDB client session.
+   * @protected
+   */
   protected startSession(): ClientSession {
     return this.client.startSession();
   }

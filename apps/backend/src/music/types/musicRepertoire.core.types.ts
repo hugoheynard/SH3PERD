@@ -1,4 +1,4 @@
-import type { TUserId } from '../../user/types/user.domain.types.js';
+import type { TUserId } from '@sh3pherd/shared-types';
 import type { TUserRepertoireTableRow } from './music.domain.types.js';
 
 export type TMusicRepertoireByUserIdPipelineResult = {

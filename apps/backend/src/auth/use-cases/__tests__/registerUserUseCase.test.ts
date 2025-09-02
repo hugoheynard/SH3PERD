@@ -1,9 +1,12 @@
 import { jest } from '@jest/globals';
-import type { TUserDomainModel, TUserId } from '../../../user/types/user.domain.types';
+import type { TUserCredentialsRecord, TUserId } from '../../../user/types/user.domain.types';
 import type { TRegisterUserUseCaseDeps } from '../../types/auth.core.useCase';
-import type { TFindUserByEmailFn, TSaveUserFn } from '../../../user/types/user.core.repo';
+import type {
+  TCreateUserCredentialRecordFn,
+  TFindUserCredentialsByEmailFn,
+  TSaveUserCredentialsFn,
+} from '../../../user/types/user.credentials.contracts.js';
 import type { THashPasswordFn } from '../../types/auth.core.contracts';
-import type { TCreateUserFn } from '../../../user/types/user.core.contracts';
 import { createRegisterUserUseCase } from '../createRegisterUserUseCase';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
 
@@ -13,7 +16,7 @@ describe('createRegisterUserUseCase', () => {
   const hashedPassword = 'hashed_password';
   const generatedUserId: TUserId = 'user_123';
 
-  const domainUser: TUserDomainModel = {
+  const domainUser: TUserCredentialsRecord = {
     user_id: generatedUserId,
     email,
     password: hashedPassword,
@@ -22,10 +25,10 @@ describe('createRegisterUserUseCase', () => {
   };
 
   const deps: TRegisterUserUseCaseDeps = {
-    findUserByEmailFn: jest.fn<TFindUserByEmailFn>().mockResolvedValue(null),
+    findUserByEmailFn: jest.fn<TFindUserCredentialsByEmailFn>().mockResolvedValue(null),
     hashPasswordFn: jest.fn<THashPasswordFn>().mockResolvedValue(hashedPassword),
-    createUserFn: jest.fn<TCreateUserFn>().mockReturnValue(domainUser),
-    saveUserFn: jest.fn<TSaveUserFn>().mockResolvedValue(false),
+    createUserFn: jest.fn<TCreateUserCredentialRecordFn>().mockReturnValue(domainUser),
+    saveUserFn: jest.fn<TSaveUserCredentialsFn>().mockResolvedValue(false),
     generateUserIdFn: jest.fn<any>().mockReturnValue(generatedUserId),
   };
 
@@ -48,7 +51,7 @@ describe('createRegisterUserUseCase', () => {
   });
 
   it('should throw BusinessError if email already exists', async () => {
-    deps.findUserByEmailFn = jest.fn<TFindUserByEmailFn>().mockResolvedValue(domainUser);
+    deps.findUserByEmailFn = jest.fn<TFindUserCredentialsByEmailFn>().mockResolvedValue(domainUser);
     const useCaseWithTakenEmail = createRegisterUserUseCase(deps);
 
     await expect(useCaseWithTakenEmail({ email, password })).rejects.toThrow(

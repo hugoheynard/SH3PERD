@@ -1,15 +1,26 @@
 @use '../../../styles/index' as sh3;
 
+:host {
+  display: flex;
+  flex-direction: column;
+  @include sh3.form-field-root();
+  @include sh3.form-field-color-vars();
+
+}
+
 .input-wrapper {
+  display: flex;
   position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 input {
-  @include sh3.form-field-base;
+  @include sh3.field-baseStyle();
 }
 
 label {
-  @include sh3.form-field-label;
+  @include sh3.form-field-label();
 }
 
 input[type='number']::-webkit-outer-spin-button,

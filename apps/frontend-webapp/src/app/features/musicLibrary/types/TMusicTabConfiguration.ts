@@ -1,6 +1,6 @@
 import type {TSearchMode, TTargetMode} from './musicLibrary.types';
 import type {TNumberRange_1to4} from '../../../../types/genericNumbers.types';
-import type { TUserId } from '../../../../types/user.types';
+import type { TUserId } from '@sh3pherd/shared-types';
 
 export type TMusicTabTitle = {
   autoTitle: boolean;

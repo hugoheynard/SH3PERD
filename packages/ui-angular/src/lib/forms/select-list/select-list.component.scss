@@ -1,6 +1,5 @@
-@use '../../../../../../apps/frontend-webapp/src/styles/tokens/index' as t;
-@use '../../../../../../apps/frontend-webapp/src/styles/mixins/index' as m;
 @use '../../../styles/index' as sh3;
+
 
 :host {
   width: 100%;
@@ -14,10 +13,10 @@
   height: 10rem;
   padding: 0 0.5rem;
   box-sizing: border-box;
-  font-size: t.$form-field-fontSize;
+  font-size: sh3.$form-field-fontSize-lg;
   margin-top: 0.25rem;
   border: 1px solid var(--form-field-borderColor);
-  border-radius: t.$form-field-radius;
+  border-radius: sh3.$form-field-radius-lg;
   color: var(--baseTextColor);
   outline: none;
   backdrop-filter: blur(4px);

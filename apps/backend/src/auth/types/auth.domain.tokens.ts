@@ -1,5 +1,5 @@
 import type { KeyObject } from 'crypto';
-import type { TUserId } from '../../user/types/user.domain.types.js';
+import type { TUserId } from '@sh3pherd/shared-types';
 
 export type TRefreshToken = `refreshToken_${string}`;
 

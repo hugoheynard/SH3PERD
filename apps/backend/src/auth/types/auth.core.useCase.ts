@@ -1,5 +1,9 @@
-import type { TUserId } from '../../user/types/user.domain.types.js';
-import type { TFindUserByEmailFn, TSaveUserFn } from '../../user/types/user.core.repo.js';
+import type { TUserId } from '@sh3pherd/shared-types';
+import type {
+  TCreateUserCredentialRecordFn,
+  TFindUserCredentialsByEmailFn,
+  TSaveUserCredentialsFn,
+} from '../../user/types/user.credentials.contracts.js';
 import type {
   TComparePassword,
   TCreateAuthSessionFn,
@@ -9,7 +13,6 @@ import type {
 } from './auth.core.contracts.js';
 import type { TRefreshToken, TRefreshTokenSecureCookie } from './auth.domain.tokens.js';
 import type { TRevokeRefreshTokenFn, TVerifyRefreshTokenFn } from './auth.core.tokens.contracts.js';
-import type { TCreateUserFn } from '../../user/types/user.core.contracts.js';
 
 /**
  * Login Use Case Types
@@ -18,7 +21,7 @@ export type TUserCredentialsDTO = { email: string; password: string };
 export type TLoginResponseDTO = { authToken: string; user_id: TUserId };
 
 export type TLoginUseCaseDeps = {
-  findUserByEmailFn: TFindUserByEmailFn;
+  findUserByEmailFn: TFindUserCredentialsByEmailFn;
   comparePasswordFn: TComparePassword;
   createAuthSessionFn: TCreateAuthSessionFn;
 };
@@ -57,10 +60,10 @@ export type TLogoutUseCase = (input: {
  */
 export type TRegisterResponseDTO = { user_id: TUserId };
 export type TRegisterUserUseCaseDeps = {
-  findUserByEmailFn: TFindUserByEmailFn;
+  findUserByEmailFn: TFindUserCredentialsByEmailFn;
   hashPasswordFn: THashPasswordFn;
-  createUserFn: TCreateUserFn;
-  saveUserFn: TSaveUserFn;
+  createUserFn: TCreateUserCredentialRecordFn;
+  saveUserFn: TSaveUserCredentialsFn;
   generateUserIdFn: () => TUserId;
 };
 export type TRegisterUserUseCase = (input: TUserCredentialsDTO) => Promise<TRegisterResponseDTO>;
