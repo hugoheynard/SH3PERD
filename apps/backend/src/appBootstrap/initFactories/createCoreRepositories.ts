@@ -4,8 +4,8 @@ import type { IContractRepository } from '../../contracts/types/contracts.core.t
 import type { MongoClient } from 'mongodb';
 import { TechnicalError } from '../../utils/errorManagement/errorClasses/TechnicalError.js';
 import { RefreshTokenMongoRepository } from '../../auth/repositories/RefreshTokenMongoRepository.js';
-import { UserCredentialsMongoRepository } from '../../user/repository/adapters/mongo/MongoUserCredentialsRepository.js';
-import { ContractMongoRepository } from '../../contracts/core/ContractMongoRepository.js';
+import { UserCredentialsMongoRepository } from '../../user/repository/MongoUserCredentialsRepository.js';
+import { ContractMongoRepository } from '../../contracts/repositories/ContractMongoRepository.js';
 import { EventUnitMongoRepository } from '../../calendar/repositories/EventUnitMongoRepository.js';
 import { MusicRepertoireMongoRepository } from '../../music/repositories/MusicRepertoireRepository.js';
 import type { IMusicRepertoireRepository } from '../../music/types/musicRepertoire.core.types.js';
@@ -14,13 +14,17 @@ import { MusicReferenceMongoRepository } from '../../music/repositories/MusicRef
 import type { IMusicVersionRepository } from '../../music/repositories/MusicVersionRepository.js';
 import { MusicVersionRepository } from '../../music/repositories/MusicVersionRepository.js';
 import type { IUserProfileRepository } from '../../user/types/user.profile.contracts.js';
-import { UserProfileMongoRepository } from '../../user/repository/adapters/mongo/UserProfileMongoRepository.js';
+import { UserProfileMongoRepository } from '../../user/repository/UserProfileMongoRepository.js';
+import { UserPreferencesMongoRepository } from '../../user/repository/UserPreferencesMongoRepository.js';
+
 
 export type TCoreRepositories = {
   refreshTokenRepository: IRefreshTokenRepository;
   //USER
   userCredentialsRepository: IUserCredentialsRepository;
   userProfileRepository: IUserProfileRepository;
+  userPreferencesRepository: any; // Add UserPreferencesRepository when implemented
+  //CONTRACTS
   contractRepository: IContractRepository;
   eventUnitsRepository: any;
   //MUSIC
@@ -45,47 +49,18 @@ export const createCoreRepositories = (input: {
     }
 
     return {
-      refreshTokenRepository: new RefreshTokenMongoRepository({
-        client,
-        dbName,
-        collectionName: 'refreshToken',
-      }),
-      userCredentialsRepository: new UserCredentialsMongoRepository({
-        client,
-        dbName,
-        collectionName: 'user_credentials',
-      }),
-      userProfileRepository: new UserProfileMongoRepository({
-        client,
-        dbName,
-        collectionName: 'user_profiles',
-      }),
-      contractRepository: new ContractMongoRepository({
-        client,
-        dbName,
-        collectionName: 'contracts',
-      }),
-      eventUnitsRepository: new EventUnitMongoRepository({
-        client,
-        dbName,
-        collectionName: 'eventUnits',
-      }),
+      refreshTokenRepository: new RefreshTokenMongoRepository({ client, dbName, collectionName: 'refreshToken' }),
+      //USER
+      userCredentialsRepository: new UserCredentialsMongoRepository({ client, dbName, collectionName: 'user_credentials'}),
+      userProfileRepository: new UserProfileMongoRepository({ client, dbName, collectionName: 'user_profiles' }),
+      userPreferencesRepository: new UserPreferencesMongoRepository({ client, dbName, collectionName: 'user_preferences' }),
+      //CONTRACT
+      contractRepository: new ContractMongoRepository({ client, dbName, collectionName: 'contracts' }),
+      eventUnitsRepository: new EventUnitMongoRepository({ client, dbName, collectionName: 'eventUnits' }),
       //music and playlists
-      musicReferenceRepository: new MusicReferenceMongoRepository({
-        client,
-        dbName,
-        collectionName: 'music_references',
-      }),
-      musicVersionRepository: new MusicVersionRepository({
-        client,
-        dbName,
-        collectionName: 'music_versions',
-      }),
-      musicRepertoireRepository: new MusicRepertoireMongoRepository({
-        client,
-        dbName,
-        collectionName: 'music_repertoireEntries',
-      }),
+      musicReferenceRepository: new MusicReferenceMongoRepository({ client, dbName, collectionName: 'music_references' }),
+      musicVersionRepository: new MusicVersionRepository({ client, dbName, collectionName: 'music_versions' }),
+      musicRepertoireRepository: new MusicRepertoireMongoRepository({ client, dbName, collectionName: 'music_repertoireEntries' }),
     };
   } catch (error) {
     if (error instanceof TechnicalError) {

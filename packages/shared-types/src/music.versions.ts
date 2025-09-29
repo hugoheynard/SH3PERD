@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SUserId } from './user.domain.js';
+import { SUserId } from './user/user.domain.js';
 import { SGenreEnum, SMusicReference_id, STypeEnum } from './music.domain.schemas.js';
 import { SRecordMetadata } from './metadata.types.js';
 

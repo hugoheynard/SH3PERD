@@ -2,7 +2,7 @@ import type {
   TEventPairs,
   TEventUnitDomainModel,
   TEventUnitId,
-} from '../../types/eventUnits.domain.types.js';
+} from '@sh3pherd/shared-types';
 import type { TEventIntersectionColliderContext } from '../services/CalendarService.js';
 
 export const computeEventIntersections = (input: {

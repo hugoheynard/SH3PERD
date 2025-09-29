@@ -1,10 +1,17 @@
 // Entry point for @sh3pherd/shared-types
 
+
 export * from './api.types.js';
 export * from './metadata.types.js';
 
 export * from './auth.dto.types.js';
 
+
+//USER
+export * from './user/user.domain.js';
+export * from './user/user-credentials.js';
+export * from './user/user-profile.js';
+export * from './user/user-preferences.js';
 
 /**
  * MUSIC
@@ -16,8 +23,18 @@ export * from './music.versions.js';
 export * from './music-references.js';
 
 
-export * from './user.domain.js';
+
 export { SRecordMetadata } from './metadata.types.js';
+
+//COMPANY
+export * from './company.domain.js';
+export * from './contracts.domain.types.js'
+export * from './contracts.dto.types.js';
+
+
+//CALENDAR
+export * from './event.domain.js';
+
 
 
 

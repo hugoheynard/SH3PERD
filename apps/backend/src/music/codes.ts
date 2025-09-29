@@ -41,6 +41,7 @@ export const apiCodes = {
   music: MusicApiCodes
 }
 
+
 export function buildApiResponse<T>(entry: ApiMessage, data?: T): ApiResponse<T> {
   return {
     code: entry.code,

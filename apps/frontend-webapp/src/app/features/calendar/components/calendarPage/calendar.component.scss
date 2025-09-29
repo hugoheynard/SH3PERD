@@ -18,10 +18,10 @@
 }
 
 .centerCol {
-  position: absolute;
-  top: 0;
-  left: 50px;
-  right: 50px;
+  position: absolute; //check enlever
+  top: 0; //check enlever
+  left: 50px; //check enlever
+  right: 50px; //check enlever
   background-color: var(--pageBgColor);
   display: flex;
   box-sizing: border-box;

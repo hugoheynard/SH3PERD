@@ -11,6 +11,7 @@ import {AuthTokenService} from './auth-token.service';
 import {Router} from '@angular/router';
 import type { TUserCredentialsDTO } from '@sh3pherd/shared-types';
 import { BaseHttpService } from './BaseHttpService';
+import { UserContextService } from './user-context.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ export class AuthService extends BaseHttpService {
   private tokenService: AuthTokenService =  inject(AuthTokenService);
   private URL: string = this.apiURLService.api().route('auth').build();
   private refreshInFlight$: Observable<string | null> | null = null;
+  private userCtx = inject(UserContextService);
 
 
   /**
@@ -38,6 +40,7 @@ export class AuthService extends BaseHttpService {
             throw new Error('Missing authToken');
           }
           this.tokenService.setToken(token);
+          this.userCtx.getUser();
         }),
         map(() => true),
         catchError(err => {
@@ -71,6 +74,7 @@ export class AuthService extends BaseHttpService {
             this.tokenService.clear();
           }
           this.tokenService.setToken(token);
+          this.userCtx.getUser();
         }),
         catchError(() => {
           this.tokenService.clear();
@@ -108,8 +112,6 @@ export class AuthService extends BaseHttpService {
         this.router.createUrlTree(['/login'])
       });
   };
-
-
 
   /**
    * Ensures a valid access token is available.

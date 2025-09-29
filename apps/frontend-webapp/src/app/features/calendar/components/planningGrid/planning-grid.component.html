@@ -1,5 +1,5 @@
-@for (event of events; track event) {
-  <app-eventBlock
+@for (event of events(); track event) {
+  <eventBlock
     [event]="event"
     [ngClass]="fullGridOrSplit(event)"
     [style.grid-row-start]="getPosition(event.startDate)"

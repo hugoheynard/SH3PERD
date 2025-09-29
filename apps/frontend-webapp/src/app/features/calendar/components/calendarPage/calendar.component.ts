@@ -1,17 +1,15 @@
 import {
-  type AfterViewInit,
   Component,
   inject, type OnDestroy,
   type OnInit,
-  signal,
-  type Signal,
 } from '@angular/core';
 import {PlanningGridComponent} from '../planningGrid/planning-grid.component';
 import {CalendarHoursGridComponent} from '../calendar-hours-grid/calendar-hours-grid.component';
-import {CalendarService} from '../../api/calendar.service';
 
-import {LayoutService} from '../../../../../core/services/layout.service';
-import {AutoScrollToNowDirective} from '../../core/directives/cal-auto-scroll-to-now.directive';
+import {LayoutService} from '../../../../core/services/layout.service';
+import {AutoScrollToNowDirective} from '../../directives/cal-auto-scroll-to-now.directive';
+import { CalendarStore } from '../../calendar-store';
+import type { TEventUnitId } from '@sh3pherd/shared-types';
 
 @Component({
   selector: 'app-calendarPage',
@@ -24,27 +22,13 @@ import {AutoScrollToNowDirective} from '../../core/directives/cal-auto-scroll-to
     AutoScrollToNowDirective
 ]
 })
-export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy{
-  //private injector: Injector = inject(Injector);
+export class CalendarComponent implements OnInit, OnDestroy{
   private layoutService: LayoutService = inject(LayoutService);
-  public calendarService: CalendarService = inject(CalendarService)
+  private readonly calendarStore = inject(CalendarStore);
 
-  public calendarOptions: any  = {
-    viewMode: 'singlePersonDay',
-    crossPath: false //crossPath: persons who work when and where I work
-  };
+  readonly calendarData = this.calendarStore.data;
 
-  //singlePersonWeek
-  calendarDataSignal: Signal<any> = signal({
-    calendarData: {
-      events: [],
-      plannings: []
-    }
-  });
-
-  async ngOnInit(): Promise<void> {};
-
-  async ngAfterViewInit(): Promise<void> {
+  async ngOnInit(): Promise<void> {
     await this.loadCalendarMenu();
   };
 
@@ -62,6 +46,6 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy{
 
 
   getPlanningEvents(planning: any) {
-    return planning.calendar_events.map((event: string) => this.calendarDataSignal().calendarData.events[event])
+    return planning.calendar_events.map((event: TEventUnitId) => this.calendarData().events[event])
   };
 }

@@ -37,6 +37,12 @@ export class RecordMetadataUtils {
     };
   };
 
+  static patchUpdate(): Partial<TRecordMetadata> {
+    return {
+      updated_at: new Date()
+    };
+  }
+
   /**
    * Marks the given metadata as inactive (`active = false`) without deleting it.
    *
@@ -62,4 +68,19 @@ export class RecordMetadataUtils {
       active: true
     };
   };
+
+  static stripDocMetadata<TRecord extends object>(
+    doc: TRecord & TRecordMetadata
+  ): Omit<TRecord, keyof TRecordMetadata> {
+    const { created_at, created_by, updated_at, active, ...domain } = doc;
+    return domain;
+  };
+
+  static stripDocArrayMetadata<TDomain extends object>(
+    docs: Array<TDomain & TRecordMetadata>
+  ): Omit<TDomain, keyof TRecordMetadata>[] {
+    return docs.map(({ created_at, created_by, updated_at, active, ...rest }) => rest);
+  };
+
+
 }

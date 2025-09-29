@@ -1,4 +1,4 @@
-import type { TUserId } from './user.domain.js';
+import type { TUserId } from './user/user.domain.js';
 import type { TMusicGrade } from './music.domain.schemas.js';
 import type { TMusicVersionDomainModel, TMusicVersionId } from './music.versions.js';
 import type { TMusicReferenceDomainModel } from './music-references.js';

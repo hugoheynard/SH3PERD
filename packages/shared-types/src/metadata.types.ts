@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SUserId } from './user.domain.js';
+import { SUserId, type TUserId } from './user/user.domain.js';
 
 
 export const SRecordMetadata = z.object({
@@ -10,4 +10,9 @@ export const SRecordMetadata = z.object({
 });
 
 
-export type TRecordMetadata = z.infer<typeof SRecordMetadata>;
+export type TRecordMetadata = {
+  created_at: Date;
+  updated_at: Date;
+  created_by: TUserId;
+  active: boolean;
+};

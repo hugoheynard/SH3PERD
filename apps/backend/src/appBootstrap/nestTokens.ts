@@ -13,6 +13,8 @@ export const CORE_USECASES: symbol = Symbol('CORE_USECASES');
 
 export const USE_CASES_TOKENS = {
   auth: 'AUTH_USE_CASES',
+  user: 'USER_USE_CASES',
+  contracts: 'CONTRACT_USE_CASES',
   musicReferences: 'MUSIC_REFERENCES_USE_CASES',
   musicVersions: 'MUSIC_VERSIONS_USE_CASES',
   musicRepertoireEntries: 'MUSIC_REPERTOIRE_USE_CASES',

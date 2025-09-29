@@ -1,0 +1,24 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+
+:host {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr 3fr;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--colorBackground);
+  color: var(--colorOnBackground);
+}
+
+.currentContract {
+  @include m.listItemLayout;
+}
+
+.listEntryContainer{
+  @include m.listItemLayout;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}

@@ -24,4 +24,9 @@
   border-radius: 8px;
   border: 1px solid #7d808030;
   font-size: 0.75rem;
+  padding: 0.5rem;
+
+  &:hover {
+    border: 1px solid var(--colorSecondary);
+  }
 }

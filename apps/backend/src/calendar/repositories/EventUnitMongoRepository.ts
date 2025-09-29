@@ -1,10 +1,11 @@
 import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type { TEventUnitDomainModel } from '../types/eventUnits.domain.types.js';
 import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
-import type { TUserId } from '@sh3pherd/shared-types';
+import type { TUserId, TEventUnitDomainModel } from '@sh3pherd/shared-types';
 
-export class EventUnitMongoRepository extends BaseMongoRepository<TEventUnitDomainModel> {
+export class EventUnitMongoRepository
+  extends BaseMongoRepository<TEventUnitDomainModel>
+{
   constructor(input: TBaseMongoRepoDeps) {
     super(input);
   }

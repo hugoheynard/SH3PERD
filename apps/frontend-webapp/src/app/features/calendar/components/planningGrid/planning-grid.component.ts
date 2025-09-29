@@ -1,6 +1,7 @@
-import {Component, Input} from '@angular/core';
+import { Component, input } from '@angular/core';
 import {EventBlockComponent} from '../eventBlock/event-block.component';
 import { NgClass } from '@angular/common';
+import type { TEventUnitDomainModel } from '@sh3pherd/shared-types';
 
 
 
@@ -15,41 +16,49 @@ import { NgClass } from '@angular/common';
     styleUrl: './planning-grid.component.scss'
 })
 export class PlanningGridComponent {
-  @Input() events: any[] = [];
-  @Input() internalCollisions: any;
+  public readonly events = input.required<TEventUnitDomainModel[]>();
+  public readonly internalCollisions = input<any>();
 
 
-  getPosition(date: string) {
-
+  /**
+   * Calculate the grid position for a given date for rowStart and rowEnd
+   * @param date
+   */
+  getPosition(date: Date): number {
     const newDate: Date = new Date(date)
-    //calcul des coordonnées rowStart et RowEnd
     const hours: number = newDate.getHours();
     const minutes: number = newDate.getMinutes();
 
     return (hours * 60 + minutes ) / 5 + 1;
   };
 
-  fullGridOrSplit(event: any): string { //TODO bah faire marcher hein
-
+  /**
+   * Determines if the event should take full width or split column based on collisions
+   * @param event
+   */
+  fullGridOrSplit(event: TEventUnitDomainModel): 'fullWidth' | 'splitCol' { //TODO bah faire marcher hein
     if (!this.collide(event)) {
-      return 'fullWidth'; // Full width
+      return 'fullWidth';
     }
 
     return 'splitCol';
   };
 
-  collide(event: any): boolean {
-    for (const otherEvent of this.events) {
-      if (event._id === otherEvent._id) {
-        continue; // Ignore l'auto-comparaison
+  /**
+   * Check if the event collides with any other event in the list
+   * @param event
+   */
+  collide(event: TEventUnitDomainModel): boolean {
+    for (const otherEvent of this.events()) {
+      if (event.eventUnit_id === otherEvent.eventUnit_id) {
+        continue;
       }
       if ((event.startDate < otherEvent.endDate) && (otherEvent.startDate < event.endDate)) {
-        return true; // Collision détectée
+        return true;
       }
     }
-    return false; // Aucune collision détectée
-  }
-
+    return false;
+  };
 
 
   /*

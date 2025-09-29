@@ -1,5 +1,4 @@
-import type { TUserId } from '@sh3pherd/shared-types';
-import type { TEventUnitDomainModel, TEventUnitId } from '../../types/eventUnits.domain.types.js';
+import type { TUserId, TEventUnitId, TEventUnitDomainModel } from '@sh3pherd/shared-types';
 
 export type TEventIntersectionColliderContext = {
   target_id: TUserId;

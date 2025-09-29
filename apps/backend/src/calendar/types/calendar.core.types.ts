@@ -1,4 +1,4 @@
-import type { TEventUnitDomainModel } from './eventUnits.domain.types.js';
+import type { TEventUnitDomainModel } from '@sh3pherd/shared-types';
 
 /**
  * @description

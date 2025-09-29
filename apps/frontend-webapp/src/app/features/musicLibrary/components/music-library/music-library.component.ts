@@ -7,7 +7,7 @@ import {
 import {MusicRepertoireTableComponent} from '../music-repertoire-table/music-repertoire-table.component';
 import {MusicTabConfiguratorComponent} from '../../forms/musicTabConfigurator/components/music-tab-configurator/music-tab-configurator.component';
 import {MusicLibContextMenuComponent} from '../music-lib-context-menu/music-lib-context-menu.component';
-import {LayoutService} from '../../../../../core/services/layout.service';
+import {LayoutService} from '../../../../core/services/layout.service';
 import {TabSystemComponent} from '../../../../shared/tabSystem/tab-system/tab-system.component';
 import type { ITabDefinition } from '../../../../shared/tabSystem/tab-system/ITabDefinition';
 import {MusicLibNavDataService} from '../../services/music-lib-nav-data.service';

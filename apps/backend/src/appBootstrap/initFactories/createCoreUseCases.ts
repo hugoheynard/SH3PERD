@@ -9,9 +9,13 @@ import type { TMusicReferencesUseCases } from './initUsesCases/createMusicRefere
 import { createMusicReferencesUseCases } from './initUsesCases/createMusicReferencesUseCases.js';
 import { createMusicVersionsUseCases, type TMusicVersionsUseCases } from './initUsesCases/createMusicVersionsUseCases.js';
 import { createMusicLibraryUseCases, type TMusicLibraryUseCases } from './initUsesCases/createMusicLibraryUseCases.js';
+import { createUserUseCases, type TUserUseCases } from '../../user/useCases/createUserUseCases.js';
+import { contractUseCasesFactory, type TContractsUseCases } from '../../contracts/useCase/contractUseCasesFactory.js';
 
 export type TCoreUseCases = {
   auth: TAuthUseCases;
+  user: TUserUseCases;
+  contracts: TContractsUseCases;
   musicReferences: TMusicReferencesUseCases;
   musicVersions: TMusicVersionsUseCases;
   musicRepertoireEntries: TMusicRepertoireUseCases;
@@ -31,6 +35,8 @@ export const createCoreUseCases = (deps: {
   try {
     return {
       auth: createAuthUseCases(deps),
+      user: createUserUseCases(deps),
+      contracts: contractUseCasesFactory(deps),
       musicReferences: createMusicReferencesUseCases(deps),
       musicVersions: createMusicVersionsUseCases(deps),
       musicRepertoireEntries: createMusicRepertoireUseCases(deps),

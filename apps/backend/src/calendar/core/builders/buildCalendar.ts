@@ -1,5 +1,4 @@
-import type { TEventUnitDomainModel, TEventUnitId } from '../../types/eventUnits.domain.types.js';
-import type { TUserId } from '@sh3pherd/shared-types';
+import type { TUserId, TEventUnitId, TEventUnitDomainModel, TCalendarDomainModel } from '@sh3pherd/shared-types';
 
 export type TBuildCalendarInput = {
   readonly eventUnits: readonly TEventUnitDomainModel[];
@@ -7,7 +6,7 @@ export type TBuildCalendarInput = {
 };
 
 export type TBuildCalendarOutput = {
-  readonly calendars: Map<TUserId, { user_id: TUserId; participatesIn: TEventUnitId[] }>;
+  readonly calendars: Map<TUserId, TCalendarDomainModel>;
   readonly eventUnits: Map<TEventUnitId, TEventUnitDomainModel>;
 };
 

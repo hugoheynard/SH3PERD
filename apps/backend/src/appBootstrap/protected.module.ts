@@ -5,17 +5,29 @@ import { CoreUseCasesAccessModule } from './core_modules/useCases/CoreUseCasesAc
 import { MusicReferenceController } from '../music/api/music-reference.controller.js';
 import { MusicVersionsController } from '../music/api/music-versions.controller.js';
 import { MusicLibraryController } from '../music/api/music-library.controller.js';
+import { ContractController } from '../contracts/api/contract.controller.js';
+import { UserController } from '../user/api/user.controller.js';
+
 
 @Module({
   imports: [
     MusicModule, CoreUseCasesAccessModule.forMany([
+      'user',
+      'contracts',
       'musicReferences',
       'musicVersions',
       'musicRepertoireEntries',
       'musicLibrary',
     ])
   ],
-  controllers: [MusicRepertoireController, MusicReferenceController, MusicVersionsController, MusicLibraryController],
+  controllers: [
+    UserController,
+    ContractController,
+    MusicRepertoireController,
+    MusicReferenceController,
+    MusicVersionsController,
+    MusicLibraryController
+  ],
   exports: [],
 })
 export class ProtectedModule {

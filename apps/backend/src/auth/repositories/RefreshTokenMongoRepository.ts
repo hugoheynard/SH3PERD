@@ -68,7 +68,7 @@ export class RefreshTokenMongoRepository
   public async findRefreshToken(
     input: Parameters<TFindRefreshTokenFn>[0],
   ): ReturnType<TFindRefreshTokenFn> {
-    return await this.findDocBy(input);
+    return await this.findOneDocBy(input);
   }
 
   @failThrows500('REFRESH_TOKEN_DELETE_FAILED')

@@ -3,10 +3,10 @@
 
   <div class="splitGrid">
     <div class="centerCol">
-      @for (planning of calendarDataSignal().calendarData.plannings; track planning) {
+      @for (planning of calendarData()?.plannings; track planning) {
         <app-planningGrid #planningGrid class="planning"
           [events] = "getPlanningEvents(planning)"
-          [internalCollisions]="calendarDataSignal().calendarData.collisions[planning.staff_id]"/>
+          [internalCollisions]="calendarData()?.calendarData.collisions[planning.staff_id]"/>
       }
     </div>
   </div>

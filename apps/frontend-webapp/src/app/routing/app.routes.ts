@@ -8,6 +8,7 @@ import {PlaylistManagerComponent} from '../features/playlists/components/playlis
 import {MainLayoutComponent} from '../core/main-layout/main-layout.component';
 import {HomeComponent} from '../features/home-dashboard/home/home.component';
 import {MusicLibraryComponent} from '../features/musicLibrary/components/music-library/music-library.component';
+import { ContractPageComponent } from '../features/contracts/components/contract-page/contract-page.component';
 
 
 export const routes: Routes = [
@@ -27,7 +28,8 @@ export const routes: Routes = [
       { path: 'home', component: HomeComponent, data: { pageName: 'dashboard' }},
       { path: 'calendar', component: CalendarComponent,  data: { pageName: 'calendar' }},
       { path: 'musicLibrary', component: MusicLibraryComponent,  data: { pageName: 'music' } },
-      { path: 'playlistManager', component: PlaylistManagerComponent, data: { pageName: 'playlists' }}
+      { path: 'playlistManager', component: PlaylistManagerComponent, data: { pageName: 'playlists' }},
+      { path: 'contracts', component: ContractPageComponent, data: { pageName: 'contracts' } },
     ]
   },
   { path: '**', redirectTo: 'login' },

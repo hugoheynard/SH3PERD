@@ -31,7 +31,7 @@ export class MusicReferenceMongoRepository
   async findOne(
     filter: Filter<TMusicReferenceDomainModel>,
   ): Promise<TMusicReferenceDomainModel | null> {
-    return await this.findDocBy(filter);
+    return await this.findOneDocBy(filter);
   }
 
   @failThrows500('MUSIC_REFERENCE_FIND_MANY_ERROR', 'Error while finding music reference by filter')

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
-import { ThemeService } from '../../../../core/services/theme.service';
+import { ThemeService } from '../../services/theme.service';
 import { CircularMenuComponent } from '../circular-menu/circular-menu.component';
 import { NavigationService } from '../../services/navigation.service';
 

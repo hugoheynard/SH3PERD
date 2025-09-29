@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import {AppMenuComponent} from '../../../../core/components/menus/appMenu/app-menu.component';
 import { AddMusicPanelComponent } from '../add-music-panel/add-music-panel.component';
-import { LayoutService } from '../../../../../core/services/layout.service';
+import { LayoutService } from '../../../../core/services/layout.service';
 
 @Component({
   selector: 'app-music-lib-context-menu',

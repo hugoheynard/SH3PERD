@@ -12,7 +12,7 @@ import {HeaderComponent} from '../components/header/header.component';
 import {AppMenuComponent} from '../components/menus/appMenu/app-menu.component';
 import {RouterOutlet} from '@angular/router';
 import {NgClass} from '@angular/common';
-import {LayoutService} from '../../../core/services/layout.service';
+import {LayoutService} from '../services/layout.service';
 import {CircularMenuComponent} from '../components/circular-menu/circular-menu.component';
 
 
