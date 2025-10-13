@@ -11,12 +11,13 @@
   ],
   "scripts": {
     "dev:backend": "turbo run start --filter=@sh3pherd/backend",
-    "dev:webapp": "turbo run start --filter=frontend-webapp",
+    "dev:webapp": "turbo run start --filter=@sh3pherd/frontend-webapp",
+    "dev:all": "pnpm run dev:watch & pnpm run dev:backend",
     "create:package": "tsx dev-toolbox/scripts/create-package.ts",
     "updatePackagesRefs": "tsx dev-toolbox/scripts/update-packageRefs.ts",
     "lint:imports": "tsx dev-toolbox/scripts/scan-cross-package-imports.ts",
     "build": "turbo run build",
-    "dev:watch": "turbo run dev:watch",
+    "dev:watch": "turbo run dev:watch --filter=@sh3pherd/backend --filter=@sh3pherd/shared-types --log-order=stream --log-prefix=none --output-logs=full",
     "test": "jest --workspaces",
     "clean": "turbo run clean"
   },

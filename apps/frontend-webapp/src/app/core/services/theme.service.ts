@@ -8,7 +8,7 @@ export class ThemeService {
 
   constructor() {
     effect(() => {
-      const theme = this.userCtx.userStrict.preferences.theme;
+      const theme = this.userCtx.userStrict.preferences.preferences.theme;
       theme ? this.setTheme(theme) : this.setTheme('dark');
     })
 
@@ -17,7 +17,7 @@ export class ThemeService {
   toggleTheme(): void {
     const next = this.currentTheme() === 'dark' ? 'light' : 'dark';
     this.setTheme(next);
-    this.userCtx.updateUserPreferences({ theme: next });
+    //this.userCtx.updateUserPreferences({ theme: next });
   };
 
   setTheme(theme: 'light' | 'dark'): void {

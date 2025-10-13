@@ -4,7 +4,7 @@ import { buildCalendar } from '../../calendar/core/builders/buildCalendar.js';
 import { computeEventIntersections } from '../../calendar/core/colliders/computeEventIntersection.js';
 import { getAuthConfig } from '../config/getAuthConfig.js';
 import { secureCookieConfig } from '../config/secureCookieConfig.js';
-import type { IAuthTokenService } from '../../auth/types/auth.core.tokens.contracts.js';
+import type { IAuthTokenService } from '../../auth/core/services/AuthTokenService.js';
 import type { TCoreRepositories } from './createCoreRepositories.js';
 //import { PermissionService } from '../../permissions/core/PermissionService.js';
 
@@ -16,28 +16,22 @@ export type TCoreServices = {
   calendarService: CalendarService;
 };
 
-/**
- * Factory type for creating core services.
- * @param input - An object containing the required repositories.
- * @returns An object containing the initialized core services.
- */
-export type TCoreServicesFactory = (input: { repositories: TCoreRepositories }) => TCoreServices;
 
 /**
  * Factory function to create core services.
- * @param input
+ * @param deps
  * @returns An object containing the initialized core services.
  */
-export const createCoreServices: TCoreServicesFactory = input => {
+export function createCoreServices(deps: { repositories: TCoreRepositories }): TCoreServices{
 
-  const { refreshTokenRepository } = input.repositories;
+  const refreshTokenRepo = deps.repositories.refreshToken;
 
   try {
     const authTokenService = createAuthTokenService({
-      findRefreshTokenFn: refreshTokenRepository.findRefreshToken,
-      saveRefreshTokenFn: refreshTokenRepository.saveRefreshToken,
-      deleteRefreshTokenFn: refreshTokenRepository.deleteRefreshToken,
-      deleteAllRefreshTokensForUserFn: refreshTokenRepository.deleteAllRefreshTokensForUser,
+      findOneRefreshTokenFn: filter => refreshTokenRepo.findOne(filter),
+      saveFn: refreshTokenRecord => refreshTokenRepo.save(refreshTokenRecord),
+      deleteRefreshTokenFn: filter => refreshTokenRepo.deleteOne(filter),
+      deleteAllRefreshTokensForUserFn: filter => refreshTokenRepo.deleteMany(filter),
       authConfig: getAuthConfig(),
       secureCookieConfig,
     });

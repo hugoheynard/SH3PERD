@@ -12,10 +12,10 @@ export type TContractsUseCases = {
 
 
 export const contractUseCasesFactory: TUseCasesFactoryGeneric<TContractsUseCases> = (deps) => {
-  const { contractRepository } = deps.repositories;
+  const { contract } = deps.repositories;
 
   return {
-    create: createContractUseCaseFactory({ saveContractFn: (x) => contractRepository.create(x)}),
-    getContractsByFilter: getContractsByFilterUseCaseFactory({ findContractsByFilterFn: (filter) => contractRepository.findManyDocsBy(filter) }),
+    create: createContractUseCaseFactory({ saveContractFn: (x: any) => contract.save(x)}),
+    getContractsByFilter: getContractsByFilterUseCaseFactory({ findContractsByFilterFn: (filter) => contract.findMany(filter) }),
   };
 }

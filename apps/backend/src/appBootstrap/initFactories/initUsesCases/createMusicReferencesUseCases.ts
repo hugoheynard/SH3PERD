@@ -12,14 +12,14 @@ export type TMusicReferencesUseCases = {
 
 export const createMusicReferencesUseCases: TUseCasesFactoryGeneric<TMusicReferencesUseCases> = (deps) => {
 
-  const { musicReferenceRepository} = deps.repositories;
+  const { musicReference} = deps.repositories;
 
   const dynamicSearchMusicReferences = createFuzzySearchMusicRefUseCase({
-    textSearchInMusicReferencesFn: (searchValue: string) => musicReferenceRepository.findByTextSearch(searchValue)
+    textSearchInMusicReferencesFn: (searchValue: string) => musicReference.findByTextSearch(searchValue)
   })
 
   const createOne = createCreateOneMusicReferenceUseCase({
-    saveOneMusicReferenceFn: (document: TMusicReferenceDomainModel) => musicReferenceRepository.saveOne(document)
+    saveOneMusicReferenceFn: (document: TMusicReferenceDomainModel) => musicReference.saveOne(document)
   })
 
   return {

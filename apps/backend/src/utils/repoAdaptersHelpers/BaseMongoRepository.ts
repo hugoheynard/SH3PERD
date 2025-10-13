@@ -3,29 +3,15 @@ import type {
   Collection,
   Document,
   Filter,
-  FindOneAndUpdateOptions,
-  MongoClient, OptionalUnlessRequiredId,
-  UpdateFilter,
+  FindOptions,
+  MongoClient,
+  OptionalUnlessRequiredId,
   WithId,
 } from 'mongodb';
 import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
+import type { IBaseCRUD, TUpdateOneMongoFn } from './repository.genericFunctions.types.js';
 
-/**
- * Type definition for a function that finds multiple documents by a filter.
- */
-export type TFindManyDocsByFilterFn<T> = (filter: Filter<T>) => Promise<T[] | null>;
-
-export interface IBaseCRUD<TRecord> {
-  create: (docOrDocs: OptionalUnlessRequiredId<TRecord> | OptionalUnlessRequiredId<TRecord>[]) => Promise<boolean>;
-  findOneDocBy: (filter: Filter<TRecord>) => Promise<TRecord | null>;
-  findManyDocsBy: TFindManyDocsByFilterFn<TRecord>;
-  deleteOne: (filter: Filter<TRecord>) => Promise<boolean>;
-  deleteMany: (filter: Filter<TRecord>) => Promise<boolean>;
-}
-
-export abstract class BaseMongoRepository<TRecord extends Document>
-  implements IBaseCRUD<TRecord> {
-
+export abstract class BaseMongoRepository<TRecord extends Document> implements IBaseCRUD<TRecord> {
   protected readonly client: MongoClient;
   protected readonly collection: Collection<TRecord>;
 
@@ -38,50 +24,43 @@ export abstract class BaseMongoRepository<TRecord extends Document>
   /**
    * Generic find method that can be reused by specific child implementations.
    */
-  async findOneDocBy(filter: Filter<TRecord>): Promise<TRecord | null> {
+  async findOne(filter: Filter<TRecord>): Promise<TRecord | null> {
     const result = await this.collection.findOne(filter);
-
-    if (!result) {
-      return null;
-    }
-
-    return this.mapMongoDocToDomainModel(result);
+    return result ? this.mapMongoDocToDomainModel(result): null;
   };
 
-  async findManyDocsBy(filter: Filter<TRecord>): Promise<TRecord[] | null> {
-    const results = await this.collection.find(filter).toArray();
+  async findMany(filter: Filter<TRecord>, options?: FindOptions): Promise<TRecord[] | null> {
+    const results = await this.collection.find(
+      filter,
+      {
+        ...options,
+        projection: { ...(options?.projection ?? {}), _id: 0 }
+      }
+    ).toArray();
 
-    if (!results || results.length === 0) {
-      return null;
-    }
-
-    return results.map(this.mapMongoDocToDomainModel);
+    return results.length > 0 ? results.map(r => this.mapMongoDocToDomainModel(r)) : null;
   };
 
   /**
    * Generic update method that can be reused by specific child implementations.
    * @param input
    */
-  async findOneAndUpdateDoc(input: {
-    filter: Filter<TRecord>;
-    update: UpdateFilter<TRecord>;
-    options?: FindOneAndUpdateOptions;
-  }): Promise<TRecord | null> {
+  async updateOne(input: Parameters<TUpdateOneMongoFn<TRecord>>[0]): ReturnType<TUpdateOneMongoFn<TRecord>> {
     const { filter, update, options } = input;
 
     const result = await this.collection.findOneAndUpdate(filter, update, {
-      projection: options?.projection ?? { _id: 0 },
-      returnDocument: 'after',
       ...options,
+      projection: { ...(options?.projection ?? {}), _id: 0 },
+      returnDocument: 'after',
     });
 
-    return result ? this.mapMongoDocToDomainModel(result) : null;
+    return result ? result['value'] : null;
   };
 
   /**
    * Generic create method that can be reused by specific child implementations.
    */
-  async create(docOrDocs: OptionalUnlessRequiredId<TRecord> | OptionalUnlessRequiredId<TRecord>[]): Promise<boolean> {
+  async save(docOrDocs: OptionalUnlessRequiredId<TRecord> | OptionalUnlessRequiredId<TRecord>[]): Promise<boolean> {
     if (!Array.isArray(docOrDocs)) {
       const result = await this.collection.insertOne(docOrDocs);
       return result.acknowledged && !!result.insertedId;

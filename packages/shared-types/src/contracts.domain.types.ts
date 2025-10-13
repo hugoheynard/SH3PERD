@@ -7,8 +7,11 @@ import type { TRecordMetadata } from './metadata.types.js';
 // -------------------------
 // Contract & Signature IDs
 // -------------------------
-export const SContractId = z.string().regex(/^contract_[a-zA-Z0-9_-]+$/, { message: 'Invalid contract_id format' });
-export type TContractId = `contract_${string}`| z.infer<typeof SContractId>;
+export const SContractId = z.custom<`contract_${string}`>(
+  (val): val is `contract_${string}` =>
+    typeof val === "string" && val.startsWith("contract_"), { message: 'Invalid contract format. Expected format: contract_<unique_identifier>' }
+);
+export type TContractId = `contract_${string}`| z.infer<typeof SContractId> | string;
 
 export const SContractSignatureId = z.string().regex(/^contractSignature_[a-zA-Z0-9_-]+$/, { message: 'Invalid contractSignature_id format' });
 
@@ -112,10 +115,12 @@ export type TContractDomainModel = {
   status: TContractStatusEnum;
   startDate: Date;
   endDate?: Date;
-  //signedBy?: {
-  //user?: TContractSignatureDomainModel;
-  //company?: TContractSignatureDomainModel;
-  //};
+
+  signedBy?: {
+    user?: TContractSignatureDomainModel;
+    company?: TContractSignatureDomainModel;
+
+  };
   /*
   trial?: {
     endDate: Date;
@@ -123,9 +128,11 @@ export type TContractDomainModel = {
     validatedAt?: Date;
     rejectedAt?: Date;
   };
+
    */
 
   //addenda?: TContractAddendumDomainModel[];
+  //ressourceStatus: boolean; //Enum active / deleted / archived
 };
 export type TContractRecord = TContractDomainModel & TRecordMetadata;
 

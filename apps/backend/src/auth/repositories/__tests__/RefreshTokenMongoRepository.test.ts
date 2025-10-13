@@ -2,7 +2,6 @@ import { jest } from '@jest/globals';
 import type { Collection, DeleteResult, Document, InsertOneResult } from 'mongodb';
 import { RefreshTokenMongoRepository } from '../RefreshTokenMongoRepository.js';
 import { ObjectId } from 'mongodb';
-import type { TRefreshToken, TRefreshTokenDomainModel } from '../../types/auth.domain.tokens';
 
 /**
  * No need to test throws in this test file. Decorator tested in utils package.

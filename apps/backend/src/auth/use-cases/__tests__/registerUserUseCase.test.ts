@@ -1,14 +1,16 @@
 import { jest } from '@jest/globals';
 import type { TUserCredentialsRecord, TUserId } from '../../../user/types/user.domain.types';
-import type { TRegisterUserUseCaseDeps } from '../../types/auth.core.useCase';
 import type {
   TCreateUserCredentialRecordFn,
-  TFindUserCredentialsByEmailFn,
-  TSaveUserCredentialsFn,
+
 } from '../../../user/types/user.credentials.contracts.js';
 import type { THashPasswordFn } from '../../types/auth.core.contracts';
-import { createRegisterUserUseCase } from '../createRegisterUserUseCase';
+import { registerUserUseCaseFactory, type TRegisterUserUseCaseDeps } from '../registerUserUseCaseFactory.js';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
+import type {
+  TFindUserCredentialsByEmailFn,
+  TSaveUserCredentialsFn,
+} from '../../../user/repository/UserCredentialsMongoRepository.js';
 
 describe('createRegisterUserUseCase', () => {
   const email = 'new@example.com';
@@ -25,34 +27,34 @@ describe('createRegisterUserUseCase', () => {
   };
 
   const deps: TRegisterUserUseCaseDeps = {
-    findUserByEmailFn: jest.fn<TFindUserCredentialsByEmailFn>().mockResolvedValue(null),
+    findOneFn: jest.fn<TFindUserCredentialsByEmailFn>().mockResolvedValue(null),
     hashPasswordFn: jest.fn<THashPasswordFn>().mockResolvedValue(hashedPassword),
     createUserFn: jest.fn<TCreateUserCredentialRecordFn>().mockReturnValue(domainUser),
-    saveUserFn: jest.fn<TSaveUserCredentialsFn>().mockResolvedValue(false),
+    saveFn: jest.fn<TSaveUserCredentialsFn>().mockResolvedValue(false),
     generateUserIdFn: jest.fn<any>().mockReturnValue(generatedUserId),
   };
 
-  const useCase = createRegisterUserUseCase(deps);
+  const useCase = registerUserUseCaseFactory(deps);
 
   it('should register user successfully when email is unique', async () => {
     const request: TRegisterRequestDTO = { email, password };
 
     const result = await useCase(request);
 
-    expect(deps.findUserByEmailFn).toHaveBeenCalledWith({ email });
+    expect(deps.findOneFn).toHaveBeenCalledWith({ email });
     expect(deps.hashPasswordFn).toHaveBeenCalledWith({ password });
     expect(deps.createUserFn).toHaveBeenCalledWith({
       user_id: generatedUserId,
       email,
       password: hashedPassword,
     });
-    expect(deps.saveUserFn).toHaveBeenCalledWith({ user: domainUser });
+    expect(deps.saveFn).toHaveBeenCalledWith({ user: domainUser });
     expect(result).toEqual({ user_id: generatedUserId });
   });
 
   it('should throw BusinessError if email already exists', async () => {
-    deps.findUserByEmailFn = jest.fn<TFindUserCredentialsByEmailFn>().mockResolvedValue(domainUser);
-    const useCaseWithTakenEmail = createRegisterUserUseCase(deps);
+    deps.findOneFn = jest.fn<TFindUserCredentialsByEmailFn>().mockResolvedValue(domainUser);
+    const useCaseWithTakenEmail = registerUserUseCaseFactory(deps);
 
     await expect(useCaseWithTakenEmail({ email, password })).rejects.toThrow(
       new BusinessError('email already in use', 'USER_ALREADY_EXISTS', 409),

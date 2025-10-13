@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import type { Collection, InsertOneResult, Document, ObjectId } from 'mongodb';
-import { mongoUserRepository } from '../MongoUserCredentialsRepository.js';
+import { mongoUserRepository } from '../UserCredentialsMongoRepository.js';
 import type { TUserDomainModel } from '@sh3pherd/shared-types';
 
 describe('MongoUserRepository', () => {

@@ -1,6 +1,14 @@
-import type { TLogoutUseCase, TLogoutUseCaseDeps } from '../types/auth.core.useCase.js';
 import { BusinessError } from '../../utils/errorManagement/errorClasses/BusinessError.js';
+import type { TUserId, TRefreshToken } from '@sh3pherd/shared-types';
 
+/**
+ * Logout Use Case Types
+ */
+export type TLogoutUseCaseDeps = {
+  deleteOneFn: (filter: { refreshToken: TRefreshToken }) => Promise<boolean>;
+  deleteManyFn: (filter: { user_id: TUserId }) => Promise<boolean>;
+};
+export type TLogoutUseCase = (input: { user_id?: TUserId; refreshToken?: TRefreshToken; }) => Promise<boolean>;
 /**
  * Factory function for the logout use case.
  *
@@ -36,15 +44,19 @@ import { BusinessError } from '../../utils/errorManagement/errorClasses/Business
  * // Full revocation without token
  * await logout({ user_id: 'user_456' });
  */
-export const createLogoutUseCase = (deps: TLogoutUseCaseDeps): TLogoutUseCase => {
-  return async (input) => {
-    if (input.refreshToken) {
-      const success = await deps.deleteRefreshTokenFn({ refreshToken: input.refreshToken });
+export function logoutUseCaseFactory (deps: TLogoutUseCaseDeps): TLogoutUseCase {
+  const { deleteOneFn, deleteManyFn } = deps;
 
-      // Si le token n’existe pas ou n’est pas valide
+  return async function (input) {
+
+    const { refreshToken, user_id } = input;
+
+    if (refreshToken) {
+      const success = await deleteOneFn({ refreshToken });
+
       if (!success) {
-        if (input.user_id) {
-          await deps.deleteAllRefreshTokensForUserFn({ user_id: input.user_id });
+        if (user_id) {
+          await deleteManyFn({ user_id });
           return true;
         }
 
@@ -58,11 +70,11 @@ export const createLogoutUseCase = (deps: TLogoutUseCaseDeps): TLogoutUseCase =>
       return true;
     }
 
-    if (input.user_id) {
-      await deps.deleteAllRefreshTokensForUserFn({ user_id: input.user_id });
+    if (user_id) {
+      await deleteManyFn({ user_id });
       return true;
     }
 
     throw new BusinessError('Missing logout input', 'MISSING_LOGOUT_INPUT', 400);
   };
-};
+}

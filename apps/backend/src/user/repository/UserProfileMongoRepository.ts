@@ -23,7 +23,7 @@ export class UserProfileMongoRepository
    * */
   @failThrows500('USER_PROFILE_SAVE_FAILED')
   public async saveUserProfile(input: Parameters<TSaveUserProfileFn>[0]): ReturnType<TSaveUserProfileFn> {
-    return this.create(input);
+    return this.save(input);
   };
 
   /**
@@ -32,7 +32,7 @@ export class UserProfileMongoRepository
    */
   @failThrows500('USER_PROFILE_FIND_BY_ID_FAILED')
   public async findUserProfileByUserId(filter: Parameters<TFindUserProfileByUserIdFn>[0]): ReturnType<TFindUserProfileByUserIdFn> {
-    return await this.findOneDocBy(filter);
+    return await this.findOne(filter);
   };
 
 }

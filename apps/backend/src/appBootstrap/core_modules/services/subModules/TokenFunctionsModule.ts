@@ -6,8 +6,8 @@ import {
   VERIFY_REFRESH_TOKEN_FN,
 } from '../../../nestTokens.js';
 import type { TVerifyAuthTokenFn } from '../../../../auth/types/auth.core.contracts.js';
-import type { TVerifyRefreshTokenFn } from '../../../../auth/types/auth.core.tokens.contracts.js';
 import type { TCoreServices } from '../../../initFactories/createCoreServices.js';
+import type { TVerifyRefreshTokenFn } from '../../../../auth/core/token-manager/RefreshTokenManager.js';
 
 @Module({
   imports: [CoreServicesModule],

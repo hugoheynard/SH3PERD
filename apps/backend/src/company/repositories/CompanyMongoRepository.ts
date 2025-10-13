@@ -11,6 +11,6 @@ export class CompanyMongoRepository
   };
 
   async saveOne(doc: TCompanyRecord): Promise<boolean> {
-    return this.create(doc)
+    return this.save(doc)
   };
 }

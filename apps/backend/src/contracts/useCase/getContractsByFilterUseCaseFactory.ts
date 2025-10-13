@@ -1,7 +1,7 @@
 import type { TContractRecord,  TUserId, TContractDomainModel, TCompanyId, TCompanyRecord } from '@sh3pherd/shared-types';
-import type { TFindManyDocsByFilterFn } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js';
 import type { Filter } from 'mongodb';
+import type { TFindManyMongoFn } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
 
 export type TContractViewDetails = {
@@ -20,7 +20,7 @@ export type TGetContractsByFilterUseCase = (input: {
 
 
 export const getContractsByFilterUseCaseFactory = (deps: {
-  findContractsByFilterFn: TFindManyDocsByFilterFn<TContractRecord>;
+  findContractsByFilterFn: TFindManyMongoFn<TContractRecord>;
   findCompanyByIdFn?: (company_id: TCompanyId) => Promise<TCompanyRecord>;
 }): TGetContractsByFilterUseCase => {
 

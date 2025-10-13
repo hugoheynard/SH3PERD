@@ -4,12 +4,15 @@
     "declaration": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./"
+    "baseUrl": "."
   },
   "include": ["src"],
   "exclude": [
     "dist",
     "dist/types",
     "node_modules"
+  ],
+  "references": [
+    { "path": "../../packages/shared-types" }
   ]
 }

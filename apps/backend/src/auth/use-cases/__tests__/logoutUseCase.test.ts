@@ -1,14 +1,14 @@
 import { jest } from '@jest/globals';
-import { createLogoutUseCase } from '../createLogoutUseCase';
+import { logoutUseCaseFactory } from '../logoutUseCaseFactory.js';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
 
 describe('createLogoutUseCase', () => {
   const deleteRefreshTokenFn = jest.fn();
   const deleteAllRefreshTokensForUserFn = jest.fn();
 
-  const logout = createLogoutUseCase({
-    deleteRefreshTokenFn,
-    deleteAllRefreshTokensForUserFn,
+  const logout = logoutUseCaseFactory({
+    deleteOneFn: deleteRefreshTokenFn,
+    deleteManyFn: deleteAllRefreshTokensForUserFn,
   });
 
   const validRefreshToken = 'refreshToken_valid';

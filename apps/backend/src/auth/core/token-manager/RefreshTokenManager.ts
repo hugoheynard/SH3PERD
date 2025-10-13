@@ -1,22 +1,36 @@
-import { autoBind } from '../../../utils/classUtils/autoBind.js';
-import type {
-  IAbstractRefreshTokenManager,
-  TGenerateRefreshTokenFn,
-  TRefreshTokenManagerDeps,
-  TRevokeRefreshTokenFn,
-  TVerifyRefreshTokenFn,
-} from '../../types/auth.core.tokens.contracts.js';
 import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
-import type { TRefreshTokenDomainModel } from '../../types/auth.domain.tokens.js';
+import type { TRefreshTokenDomainModel } from '@sh3pherd/shared-types';
+import type { TRevokeRefreshTokenResult } from '../../types/auth.domain.tokens.js';
+import type { IRefreshTokenRepository } from '../../repositories/RefreshTokenMongoRepository.js';
+import type { TDateIsNotPassed } from '../../types/auth.core.tokens.contracts.js';
+import type { TUserId, TRefreshToken, TRefreshTokenRecord } from '@sh3pherd/shared-types';
+import type { TGenericSaveFn } from '../../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
 /**
  * RefreshTokenManager handles the lifecycle of refresh tokens,
  * including generation, validation, and revocation.
- *
- * This class follows a clean architecture principle where responsibilities
- * like token generation, persistence, and validation are injected.
  */
-@autoBind
+//RefreshTokenManager Functions
+export type TGenerateRefreshTokenFn = (input: { user_id: TUserId }) => Promise<TRefreshToken>;
+export type TVerifyRefreshTokenFn = (input: { refreshTokenDomainModel: TRefreshTokenDomainModel; }) => boolean;
+export type TRevokeRefreshTokenFn = (input: { refreshToken: TRefreshToken; }) => Promise<TRevokeRefreshTokenResult>;
+export type IAbstractRefreshTokenManager = {
+  generateRefreshToken: TGenerateRefreshTokenFn;
+  verifyRefreshToken: TVerifyRefreshTokenFn;
+  revokeRefreshToken: TRevokeRefreshTokenFn;
+};
+export type TRefreshTokenManagerDeps = {
+  generatorFn: () => Promise<TRefreshToken>;
+  validateRefreshTokenDateFn: TDateIsNotPassed;
+  saveRefreshTokenFn: TGenericSaveFn<TRefreshTokenRecord>;
+  deleteRefreshTokenFn: IRefreshTokenRepository['deleteOne'];
+  ttlMs: number;
+};
+
+/**
+ * RefreshTokenManager handles the lifecycle of refresh tokens,
+ * including generation, validation, and revocation.
+ */
 export class RefreshTokenManager implements IAbstractRefreshTokenManager {
   private readonly deps: TRefreshTokenManagerDeps;
 
@@ -44,13 +58,14 @@ export class RefreshTokenManager implements IAbstractRefreshTokenManager {
       }
 
       const record: TRefreshTokenDomainModel = {
+        id: newRefreshToken,
         refreshToken: newRefreshToken,
         user_id: input.user_id,
         expiresAt: new Date(Date.now() + this.deps.ttlMs),
         createdAt: new Date(),
       };
 
-      await this.deps.saveRefreshTokenFn({ refreshTokenDomainModel: record });
+      await this.deps.saveRefreshTokenFn(record);
 
       return newRefreshToken;
     } catch (error) {

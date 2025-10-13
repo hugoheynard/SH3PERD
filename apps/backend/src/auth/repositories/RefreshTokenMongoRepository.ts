@@ -1,17 +1,11 @@
-import { autoBind } from '../../utils/classUtils/autoBind.js';
 import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type { TRefreshTokenDomainModel } from '../types/auth.domain.tokens.js';
-import type {
-  IRefreshTokenRepository,
-  TRefreshTokenMongoRepositoryDeps,
-} from '../types/auth.core.tokens.contracts.js';
-import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
-import type {
-  TDeleteAllRefreshTokensForUserFn,
-  TDeleteRefreshTokenFn,
-  TFindRefreshTokenFn,
-  TSaveRefreshTokenFn,
-} from '../types/auth.core.contracts.js';
+import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
+import type { TRefreshTokenRecord } from '@sh3pherd/shared-types';
+import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
+
+
+export type IRefreshTokenRepository = IBaseCRUD<TRefreshTokenRecord> & {};
+
 
 /**
  * MongoDB-based implementation of the `IRefreshTokenRepository` interface.
@@ -35,69 +29,11 @@ import type {
  *
  * @implements {IRefreshTokenRepository}
  */
-@autoBind
 export class RefreshTokenMongoRepository
-  extends BaseMongoRepository<TRefreshTokenDomainModel>
+  extends BaseMongoRepository<TRefreshTokenRecord>
   implements IRefreshTokenRepository
 {
-  constructor(input: TRefreshTokenMongoRepositoryDeps) {
+  constructor(input: TBaseMongoRepoDeps) {
     super(input);
-  }
-
-  @failThrows500('REFRESH_TOKEN_SAVE_FAILED')
-  public async saveRefreshToken(
-    input: Parameters<TSaveRefreshTokenFn>[0],
-  ): ReturnType<TSaveRefreshTokenFn> {
-    const { refreshToken, user_id, expiresAt, createdAt } = input.refreshTokenDomainModel;
-
-    const result = await this.collection.insertOne({
-      refreshToken,
-      user_id,
-      expiresAt,
-      createdAt,
-    });
-
-    if (!result.acknowledged || !result.insertedId) {
-      return false;
-    }
-
-    return true;
-  }
-
-  @failThrows500('REFRESH_TOKEN_FIND_FAILED')
-  public async findRefreshToken(
-    input: Parameters<TFindRefreshTokenFn>[0],
-  ): ReturnType<TFindRefreshTokenFn> {
-    return await this.findOneDocBy(input);
-  }
-
-  @failThrows500('REFRESH_TOKEN_DELETE_FAILED')
-  public async deleteRefreshToken(
-    input: Parameters<TDeleteRefreshTokenFn>[0],
-  ): ReturnType<TDeleteRefreshTokenFn> {
-    const { refreshToken } = input;
-
-    const result = await this.collection.deleteOne({ refreshToken: refreshToken });
-
-    if (result.deletedCount === 0) {
-      return false;
-    }
-
-    return { revokedToken: refreshToken };
-  }
-
-  @failThrows500('REFRESH_TOKEN_DELETE_ALL_FOR_USER_FAILED')
-  public async deleteAllRefreshTokensForUser(
-    input: Parameters<TDeleteAllRefreshTokensForUserFn>[0],
-  ): ReturnType<TDeleteAllRefreshTokensForUserFn> {
-    const { user_id } = input;
-
-    const result = await this.collection.deleteMany({ user_id: user_id });
-
-    if (result.deletedCount === 0) {
-      return false;
-    }
-
-    return true;
   }
 }

@@ -1,14 +1,5 @@
 import type { KeyObject } from 'crypto';
-import type { TUserId } from '@sh3pherd/shared-types';
-
-export type TRefreshToken = `refreshToken_${string}`;
-
-export type TRefreshTokenDomainModel = {
-  refreshToken: TRefreshToken;
-  user_id: TUserId;
-  expiresAt: Date;
-  createdAt: Date;
-};
+import type { TUserId, TRefreshToken } from '@sh3pherd/shared-types';
 
 export type TAuthTokenPayload = {
   user_id: TUserId;

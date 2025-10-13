@@ -10,10 +10,10 @@ export type TMusicVersionsUseCases = {
 }
 
 export const createMusicVersionsUseCases: TUseCasesFactoryGeneric<TMusicVersionsUseCases> = (deps) => {
-  const { musicVersionRepository } = deps.repositories;
+  const { musicVersion } = deps.repositories;
 
   const createOne = createCreateOneMusicVersionUseCase({
-    saveOneMusicVersionFn: (document)=>musicVersionRepository.saveOne(document),
+    saveOneMusicVersionFn: (document)=>musicVersion.saveOne(document),
   })
 
 

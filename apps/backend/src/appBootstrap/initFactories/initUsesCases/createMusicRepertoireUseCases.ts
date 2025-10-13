@@ -5,10 +5,10 @@ import type { TUseCasesFactoryGeneric } from '../../../types/useCases.generic.ty
 
 export const createMusicRepertoireUseCases: TUseCasesFactoryGeneric<TMusicRepertoireUseCases> = (deps)  => {
   try {
-    const { musicRepertoireRepository } = deps.repositories;
+    const { musicRepertoire } = deps.repositories;
 
     const getMusicRepertoireByUserId = createGetMusicRepertoireByUserIdUseCase({
-      findMusicRepertoireByUserIdFn: musicRepertoireRepository.findRepertoireByUserId,
+      findMusicRepertoireByUserIdFn: musicRepertoire.findRepertoireByUserId,
     });
 
     return {

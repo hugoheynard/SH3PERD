@@ -22,5 +22,5 @@ export type TUserMeViewModel =
 
 
 export const SUserGroupId = z.string().regex(/^userGroup_[a-zA-Z0-9_-]+$/, { message: 'Invalid userGroup_id format' } );
-export type TUserGroupId = `userGroup_${string}` | z.infer<typeof SUserGroupId>;
+
 

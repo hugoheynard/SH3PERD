@@ -25,12 +25,12 @@ export const buildCalendar: TBuildCalendarFn = (input) => {
 
   //builder logic
   for (const event of eventUnits) {
-    if (!event.eventUnit_id) {
+    if (!event.id) {
       console.warn(`Skipped event with missing eventUnit_id: ${JSON.stringify(event)}`);
       continue;
     }
 
-    eventUnitsMap.set(event.eventUnit_id, event);
+    eventUnitsMap.set(event.id, event);
 
     for (const participant of event.participants || []) {
       //avoids creating planning for members in event but not in query
@@ -44,7 +44,7 @@ export const buildCalendar: TBuildCalendarFn = (input) => {
       }
 
       //pushes eventUnit_id to the calendar
-      calendarMap.get(participant)!.participatesIn.push(event.eventUnit_id);
+      calendarMap.get(participant)!.participatesIn.push(event.id);
     }
   }
 

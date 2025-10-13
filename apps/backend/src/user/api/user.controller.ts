@@ -1,10 +1,11 @@
 import { Body, Controller, Get, Inject, Patch, Req } from '@nestjs/common';
 import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import type { Request } from 'express';
-import type { ApiResponse, TUserMeViewModel, TUserPreferencesDomainModel } from '@sh3pherd/shared-types';
+import type { ApiResponse, TUserMeViewModel, TUpdateUserPreferencesRequestDTO } from '@sh3pherd/shared-types';
 import { buildApiResponse } from '../../music/codes.js';
 import { USER_API_CODES_SUCCESS } from './userCodes.js';
 import { USER } from '../../permissions/permissionsRegistry.js';
+
 
 @Controller('user')
 export class UserController {
@@ -30,13 +31,13 @@ export class UserController {
   @Patch('preferences')
   updatePreferences(
     @Req() req: Request,
-    @Body() requestDTO: { update: Partial<TUserPreferencesDomainModel> }
+    @Body() requestDTO: TUpdateUserPreferencesRequestDTO
   ) {
     return this.uc.updateUserPreferences({
       asker_id: req.user_id,
       permission: USER.PREFERENCES.WRITE.SELF,
       filter: { user_id: req.user_id },
-      update: requestDTO.update
+      update: requestDTO.update,
     });
-  }
+  };
 }

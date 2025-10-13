@@ -1,13 +1,13 @@
 import { jest } from '@jest/globals';
 
-import { createLoginUseCase } from '../createLoginUseCase.js';
+import { loginUseCaseFactory } from '../loginUseCaseFactory.js';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
 import type { TUserCredentialsRecord } from '../../../user/types/user.domain.types';
 import type { TCreateAuthSessionResult } from '../../types/auth.domain.tokens';
 import type { TLoginRequestDTO } from '../../../../dist/auth/zodSchemas/loginRequestDTOSchema';
-import type { TFindUserCredentialsByEmailFn } from '../../../user/types/user.credentials.contracts.js';
 import type { TComparePassword, TCreateAuthSessionFn } from '../../types/auth.core.contracts';
 import type { TLoginUseCaseDeps } from '../../types/auth.core.useCase';
+import type { TFindUserCredentialsByEmailFn } from '../../../user/repository/UserCredentialsMongoRepository.js';
 
 describe('createLoginUseCase', () => {
   const mockUser: TUserCredentialsRecord = {
@@ -51,7 +51,7 @@ describe('createLoginUseCase', () => {
     createAuthSessionFn,
   };
 
-  const useCase = createLoginUseCase(deps);
+  const useCase = loginUseCaseFactory(deps);
 
   beforeEach(() => {
     jest.clearAllMocks();

@@ -1,13 +1,14 @@
-import type { TAuthTokenServiceFactory } from '../types/auth.core.tokens.contracts.js';
-import { JwtAuthTokenManager, RefreshTokenManager } from '../core/token-manager/index.js';
+
 import { generateTypedId } from '../../utils/ids/generateTypedId.js';
 import { dateIsNotPassed } from '../../utils/date/dateIsNotPassed.js';
-import { AuthTokenService } from '../core/services/AuthTokenService.js';
+import { AuthTokenService, type TAuthTokenServiceFactory } from '../core/services/AuthTokenService.js';
+import { JwtAuthTokenManager } from '../core/token-manager/JwtAuthTokenManager.js';
+import { RefreshTokenManager } from '../core/token-manager/RefreshTokenManager.js';
 
 export const createAuthTokenService: TAuthTokenServiceFactory = (deps) => {
   const {
-    findRefreshTokenFn,
-    saveRefreshTokenFn,
+    findOneRefreshTokenFn,
+    saveFn,
     deleteRefreshTokenFn,
     deleteAllRefreshTokensForUserFn,
     authConfig,
@@ -25,14 +26,14 @@ export const createAuthTokenService: TAuthTokenServiceFactory = (deps) => {
 
     const refreshTokenManager = new RefreshTokenManager({
       generatorFn: () => Promise.resolve(generateTypedId('refreshToken')),
-      validateRefreshTokenDateFn: dateIsNotPassed,
-      saveRefreshTokenFn: (input) => saveRefreshTokenFn(input),
-      deleteRefreshTokenFn: (input) => deleteRefreshTokenFn(input),
+      validateRefreshTokenDateFn: input => dateIsNotPassed(input),
+      saveRefreshTokenFn: input => saveFn(input),
+      deleteRefreshTokenFn: filter => deleteRefreshTokenFn(filter),
       ttlMs: secureCookieConfig.maxAge,
     });
 
     return new AuthTokenService({
-      findRefreshTokenFn: findRefreshTokenFn,
+      findRefreshTokenFn: findOneRefreshTokenFn,
       generateAuthTokenFn: authTokenManager.generateAuthToken,
       generateRefreshTokenFn: refreshTokenManager.generateRefreshToken,
       verifyAuthTokenFn: authTokenManager.verifyAuthToken,

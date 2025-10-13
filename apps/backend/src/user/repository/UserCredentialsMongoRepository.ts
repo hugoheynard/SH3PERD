@@ -1,22 +1,25 @@
-import { autoBind } from '../../utils/classUtils/autoBind.js';
 import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type { TUserCredentialsRecord } from '@sh3pherd/shared-types';
-import type {
-  IUserCredentialsRepository,
-  TFindUserCredentialsByEmailFn,
-  TUserCredentialsMongoRepositoryDeps,
-} from '../types/user.credentials.contracts.js';
+import type { TUserCredentialsRecord, TUserId, TUserMeViewModel } from '@sh3pherd/shared-types';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
-import type { TUserId, TUserMeViewModel } from '@sh3pherd/shared-types';
+import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
+import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
 
+export type TSaveUserCredentialsFn = (input: { user: TUserCredentialsRecord }) => Promise<boolean>;
+export type TFindUserCredentialsByEmailFn = (filter: { email: string }) => Promise<TUserCredentialsRecord | null>;
 
-@autoBind
+export type IUserCredentialsRepository = IBaseCRUD<TUserCredentialsRecord> & {
+  saveUser: TSaveUserCredentialsFn;
+  findUserByEmail: TFindUserCredentialsByEmailFn;
+  getUserMe: (user_id: TUserId) => Promise<TUserMeViewModel>;
+};
+
+
 export class UserCredentialsMongoRepository
   extends BaseMongoRepository<TUserCredentialsRecord>
   implements IUserCredentialsRepository
 {
-  constructor(input: TUserCredentialsMongoRepositoryDeps) {
+  constructor(input: TBaseMongoRepoDeps) {
     super(input);
   }
 
@@ -31,7 +34,7 @@ export class UserCredentialsMongoRepository
   public async findUserByEmail(
     filter: Parameters<TFindUserCredentialsByEmailFn>[0],
   ): ReturnType<TFindUserCredentialsByEmailFn> {
-    return await this.findOneDocBy(filter);
+    return await this.findOne(filter);
   }
 
   /**

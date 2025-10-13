@@ -1,8 +1,21 @@
-import type {
-  TRefreshSessionUseCase,
-  TRefreshSessionUseCaseDeps,
-} from '../types/auth.core.useCase.js';
 import { BusinessError } from '../../utils/errorManagement/errorClasses/BusinessError.js';
+import type { TCreateAuthSessionFn } from '../types/auth.core.contracts.js';
+import type { TRefreshTokenSecureCookie } from '../types/auth.domain.tokens.js';
+import type { TLoginResponseDTO, TRefreshSessionRequestDTO, TRefreshToken, TRefreshTokenRecord } from '@sh3pherd/shared-types';
+import type { TGenericRepoFindOneFn } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
+import type { TVerifyRefreshTokenFn } from '../core/token-manager/RefreshTokenManager.js';
+
+/**
+ * Refresh Session Use Case Types
+ */
+
+export type TRefreshSessionUseCaseDeps = {
+  findOneFn: TGenericRepoFindOneFn<TRefreshTokenRecord>;
+  verifyRefreshTokenFn: TVerifyRefreshTokenFn;
+  createAuthSessionFn: TCreateAuthSessionFn;
+  deleteOneFn: (filter: { refreshToken: TRefreshToken }) => Promise<boolean>;
+};
+export type TRefreshSessionUseCase = (input: TRefreshSessionRequestDTO) => Promise<TLoginResponseDTO & { refreshTokenSecureCookie: TRefreshTokenSecureCookie }>;
 
 /**
  * RefreshSessionUseCase - Re-issues a new authentication session using a valid refresh token.
@@ -29,14 +42,13 @@ import { BusinessError } from '../../utils/errorManagement/errorClasses/Business
  * const useCase = createRefreshSessionUseCase(deps);
  * const result = await useCase({ refreshToken: 'refreshToken_xyz' });
  */
-export const createRefreshSessionUseCase = (
-  deps: TRefreshSessionUseCaseDeps,
-): TRefreshSessionUseCase => {
-  const { findRefreshTokenFn, verifyRefreshTokenFn, createAuthSessionFn, deleteRefreshTokenFn } =
-    deps;
+export function refreshSessionUseCaseFactory (deps: TRefreshSessionUseCaseDeps): TRefreshSessionUseCase {
+  const { findOneFn, verifyRefreshTokenFn, createAuthSessionFn, deleteOneFn } = deps;
 
-  return async ({ refreshToken }) => {
-    const token = await findRefreshTokenFn({ refreshToken });
+  return async (input) => {
+    const { refreshToken } = input;
+
+    const token = await findOneFn({ filter: { refreshToken } });
 
     if (!token) {
       throw new BusinessError('Refresh token not found', 'TOKEN_NOT_FOUND', 401);
@@ -45,7 +57,7 @@ export const createRefreshSessionUseCase = (
     const isValid = verifyRefreshTokenFn({ refreshTokenDomainModel: token });
 
     if (!isValid) {
-      await deleteRefreshTokenFn({ refreshToken });
+      await deleteOneFn({ refreshToken });
       throw new BusinessError('Invalid tokens', 'INVALID_TOKENS', 401);
     }
 

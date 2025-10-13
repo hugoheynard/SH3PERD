@@ -50,7 +50,7 @@ export class PlanningGridComponent {
    */
   collide(event: TEventUnitDomainModel): boolean {
     for (const otherEvent of this.events()) {
-      if (event.eventUnit_id === otherEvent.eventUnit_id) {
+      if (event.id === otherEvent.id) {
         continue;
       }
       if ((event.startDate < otherEvent.endDate) && (otherEvent.startDate < event.endDate)) {

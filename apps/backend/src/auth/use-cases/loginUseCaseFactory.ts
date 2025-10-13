@@ -22,7 +22,7 @@ import { BusinessError } from '../../utils/errorManagement/errorClasses/Business
  * const useCase = loginUseCase({ findUserByEmailFn, comparePasswordFn, createAuthSessionFn });
  * const result = await useCase({ email: 'a@test.com', password: 'secret' });
  */
-export const createLoginUseCase =
+export const loginUseCaseFactory =
   (deps: TLoginUseCaseDeps): TLoginUseCase =>
   async (request) => {
     const { email, password } = request;
@@ -44,11 +44,11 @@ export const createLoginUseCase =
       throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 400);
     }
 
-    const session = await deps.createAuthSessionFn({ user_id: user.user_id });
+    const session = await deps.createAuthSessionFn({ user_id: user.id });
 
     return {
       authToken: session.authToken,
-      user_id: user.user_id,
+      user_id: user.id,
       refreshTokenSecureCookie: session.refreshTokenSecureCookie,
     };
   };

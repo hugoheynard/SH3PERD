@@ -2,11 +2,15 @@
   "name": "@sh3pherd/shared-types",
   "version": "1.0.0",
   "type": "module",
-  "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/types/index.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": ["src/*"]
     }
   },
   "private": true,

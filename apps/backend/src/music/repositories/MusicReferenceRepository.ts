@@ -4,7 +4,7 @@ import type {
   IMusicReferenceRepository,
 } from '../types/musicReferences.types.js';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
-import type { ClientSession, Filter } from 'mongodb';
+import type { ClientSession } from 'mongodb';
 import type { TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
 
 
@@ -27,19 +27,6 @@ export class MusicReferenceMongoRepository
   }
 
   //FIND METHODS
-  @failThrows500('MUSIC_REFERENCE_FIND_ONE_ERROR', 'Error while finding music reference by id')
-  async findOne(
-    filter: Filter<TMusicReferenceDomainModel>,
-  ): Promise<TMusicReferenceDomainModel | null> {
-    return await this.findOneDocBy(filter);
-  }
-
-  @failThrows500('MUSIC_REFERENCE_FIND_MANY_ERROR', 'Error while finding music reference by filter')
-  async findMany(
-    filter: Filter<TMusicReferenceDomainModel>,
-  ): Promise<TMusicReferenceDomainModel[] | null> {
-    return await this.collection.find(filter).toArray();
-  }
 
   async findAll(): Promise<TMusicReferenceDomainModel[]> {
     return await this.collection.find().toArray();

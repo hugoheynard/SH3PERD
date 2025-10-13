@@ -1,7 +1,7 @@
 import { buildContract } from '../core/buildContract.js';
 import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js';
 import type { TContractRecord, TCreateContractRequestDTO, TUserId } from '@sh3pherd/shared-types';
-import type { TCreateContractFn } from '../types/contracts.core.types.js';
+import type { TCreateContractFn } from '../repositories/contracts.repository.types.js';
 import { TechnicalError } from '../../utils/errorManagement/errorClasses/TechnicalError.js';
 
 

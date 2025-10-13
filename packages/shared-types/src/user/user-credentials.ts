@@ -4,14 +4,14 @@ import { SUserId, type TUserId } from './user.domain.js';
 
 
 export const SUserCredentialsDomainModel = z.object({
-  user_id: SUserId,
+  id: SUserId,
   email: z.string().email(),
   password: z.string(),
   active: z.boolean(),
   email_verified: z.boolean(),
 });
 export type TUserCredentialsDomainModel = {
-  user_id: TUserId;
+  id: TUserId;
   email: string;
   password: string;
   active: boolean;

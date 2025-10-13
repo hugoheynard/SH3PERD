@@ -4,7 +4,8 @@ import type {
   TContractId,
   TContractRecord,
 } from '@sh3pherd/shared-types';
-import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+
+import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
 export type TContractMongoRepositoryDeps = TBaseMongoRepoDeps;
 
@@ -18,5 +19,5 @@ export interface IContractRepository extends IBaseCRUD<TContractRecord>{
 }
 
 
-export type TCreateContractFn = IContractRepository['create'];
+export type TCreateContractFn = IContractRepository['save'];
 export type TMarkContractAsFavoriteFn = IContractRepository['markContractAsFavorite'];

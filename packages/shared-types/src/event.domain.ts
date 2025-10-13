@@ -15,19 +15,26 @@ import type { TContractId } from './contracts.domain.types.js';
  */
 
 
-export const SEventUnitId = z.string().regex(/^eventUnit_[a-zA-Z0-9-]+$/, { message: 'Invalid eventUnit_id format. Expected format: eventUnit_<unique_identifier>' });
+export const SEventUnitId = z.custom<`eventUnit_${string}`>(
+  (val): val is `eventUnit_${string}` =>
+    typeof val === "string" && val.startsWith("eventUnit_"), { message: 'Invalid eventUnit_id format. Expected format: eventUnit_<unique_identifier>' }
+);
 
-export type TEventUnitId = `eventUnit_${string}` | z.infer<typeof SEventUnitId>;
+export type TEventUnitId = `eventUnit_${string}`;
 
+/**
+ * Event Unit Domain Model
+ * Represents a scheduled event involving one or more participants within a specific timeframe.
+ */
 export type TEventUnitDomainModel = {
-  eventUnit_id: TEventUnitId;
+  id: TEventUnitId;
   title: string;
   description?: string;
   category: 'off' | 'work';
   startDate: Date;
   endDate: Date;
   participants: TContractId[];
-  isLocked: boolean; // if true, no one can edit the event unit, passed events are locked
+  //isLocked: boolean; // if true, no one can edit the event unit, passed events are locked
   //type: TEventType;
   //playlist: TEventPlaylist | null;
   //location: string; // depends on company available performance spots or follow(wherever stuff happens)

@@ -2,6 +2,12 @@ import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRe
 import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
 import type { TUserId, TEventUnitDomainModel } from '@sh3pherd/shared-types';
+import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
+
+export interface IEventUnitRepository extends IBaseCRUD<TEventUnitDomainModel> {
+
+}
+
 
 export class EventUnitMongoRepository
   extends BaseMongoRepository<TEventUnitDomainModel>
@@ -27,13 +33,3 @@ export class EventUnitMongoRepository
       .toArray();
   }
 }
-
-/**
- *
- */
-
-export const EVENT_UNIT_DEFAULT: Readonly<any> = Object.freeze({
-  eventUnit_id: null,
-  name: `New Event ${new Date().toLocaleDateString()}`,
-  description: null,
-});

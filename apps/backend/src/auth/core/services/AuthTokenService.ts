@@ -1,15 +1,49 @@
 import type {
-  IAuthTokenService,
-  TAuthTokenServiceDeps,
-  TRevokeRefreshTokenFn,
-  TVerifyRefreshTokenFn,
-} from '../../types/auth.core.tokens.contracts.js';
-import type {
   TCreateAuthSessionFn,
+  TGenerateAuthTokenFn,
   TGenerateRefreshTokenCookie,
   TVerifyAuthTokenFn,
 } from '../../types/auth.core.contracts.js';
-import { REFRESH_COOKIE_PATH, REFRESH_COOKIE_NAME } from '../../../appBootstrap/config/secureCookieConfig.js';
+import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from '../../../appBootstrap/config/secureCookieConfig.js';
+import type {
+  TGenerateRefreshTokenFn,
+  TRevokeRefreshTokenFn,
+  TVerifyRefreshTokenFn,
+} from '../token-manager/RefreshTokenManager.js';
+import type { IRefreshTokenRepository } from '../../repositories/RefreshTokenMongoRepository.js';
+import type { TAuthConfig } from '../../types/auth.domain.config.js';
+import type { TSecureCookieConfig } from '../../types/auth.domain.tokens.js';
+import type {
+  TGenericRepoFindOneFn, TGenericSaveFn,
+} from '../../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
+import type { TRefreshTokenRecord } from '@sh3pherd/shared-types';
+
+export type TAuthTokenServiceFactory = (deps: {
+  findOneRefreshTokenFn: TGenericRepoFindOneFn<TRefreshTokenRecord>;
+  saveFn: TGenericSaveFn<TRefreshTokenRecord>;
+  deleteRefreshTokenFn: IRefreshTokenRepository['deleteOne'];
+  deleteAllRefreshTokensForUserFn: IRefreshTokenRepository['deleteMany'];
+  authConfig: TAuthConfig;
+  secureCookieConfig: TSecureCookieConfig;
+}) => IAuthTokenService;
+
+export type TAuthTokenServiceDeps = {
+  generateAuthTokenFn: TGenerateAuthTokenFn;
+  generateRefreshTokenFn: TGenerateRefreshTokenFn;
+  findRefreshTokenFn: TGenericRepoFindOneFn<TRefreshTokenRecord>;
+  verifyAuthTokenFn: TVerifyAuthTokenFn;
+  verifyRefreshTokenFn: TVerifyRefreshTokenFn;
+  revokeRefreshTokenFn: TRevokeRefreshTokenFn;
+  deleteAllRefreshTokensForUserFn: IRefreshTokenRepository['deleteMany'];
+  secureCookieConfig: TSecureCookieConfig;
+};
+export type IAuthTokenService = {
+  createAuthSession: TCreateAuthSessionFn;
+  verifyAuthToken: TVerifyAuthTokenFn;
+  verifyRefreshToken: TVerifyRefreshTokenFn;
+  revokeRefreshToken: TRevokeRefreshTokenFn;
+  generateRefreshTokenCookie: TGenerateRefreshTokenCookie;
+};
 
 /**
  * AuthTokenService orchestrates the creation and validation of both access and refresh tokens.

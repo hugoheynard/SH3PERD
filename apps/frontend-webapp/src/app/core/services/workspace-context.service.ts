@@ -16,7 +16,7 @@ export class WorkspaceContextService {
    */
   readonly currentContractId = computed<TContractId | null>(() => {
     const user = this.userCtx.userMe();
-    return user?.preferences?.contract_workspace ?? null;
+    return user?.preferences?.preferences.contract_workspace ?? null;
   });
 
   /** signal strict (throw si null) */

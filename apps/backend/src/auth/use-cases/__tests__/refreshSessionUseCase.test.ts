@@ -1,17 +1,15 @@
 import { jest } from '@jest/globals';
 import type {
   TCreateAuthSessionResult,
-  TRefreshToken,
-  TRefreshTokenDomainModel,
+
+
 } from '../../types/auth.domain.tokens';
 import type { TRefreshSessionUseCaseDeps } from '../../types/auth.core.useCase';
-import type { TCreateAuthSessionFn, TFindRefreshTokenFn } from '../../types/auth.core.contracts';
-import type {
-  TRevokeRefreshTokenFn,
-  TVerifyRefreshTokenFn,
-} from '../../types/auth.core.tokens.contracts';
-import { createRefreshSessionUseCase } from '../createRefreshSessionUseCase';
+import type { TCreateAuthSessionFn } from '../../types/auth.core.contracts';
+import { refreshSessionUseCaseFactory } from '../refreshSessionUseCaseFactory.js';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
+import type { TFindRefreshTokenFn } from '../../repositories/RefreshTokenMongoRepository.js';
+import type { TRevokeRefreshTokenFn, TVerifyRefreshTokenFn } from '../../core/token-manager/RefreshTokenManager.js';
 
 describe('createRefreshSessionUseCase', () => {
   const refreshToken: TRefreshToken = 'refreshToken_test';
@@ -47,7 +45,7 @@ describe('createRefreshSessionUseCase', () => {
       .mockResolvedValue({ revokedToken: refreshToken }),
   };
 
-  const useCase = createRefreshSessionUseCase(deps);
+  const useCase = refreshSessionUseCaseFactory(deps);
 
   it('should return a new session when the refresh token is valid', async () => {
     const result = await useCase({ refreshToken });
@@ -66,7 +64,7 @@ describe('createRefreshSessionUseCase', () => {
 
   it('should throw BusinessError if refresh token is not found', async () => {
     deps.findRefreshTokenFn = jest.fn<TFindRefreshTokenFn>().mockResolvedValue(null);
-    const invalidUseCase = createRefreshSessionUseCase(deps);
+    const invalidUseCase = refreshSessionUseCaseFactory(deps);
 
     await expect(invalidUseCase({ refreshToken })).rejects.toThrow(BusinessError);
     await expect(invalidUseCase({ refreshToken })).rejects.toThrow('Refresh token not found');
@@ -75,7 +73,7 @@ describe('createRefreshSessionUseCase', () => {
   it('should revoke token and throw BusinessError if refresh token is invalid', async () => {
     deps.findRefreshTokenFn = jest.fn<TFindRefreshTokenFn>().mockResolvedValue(tokenRecord);
     deps.verifyRefreshTokenFn = jest.fn<TVerifyRefreshTokenFn>().mockReturnValue(false);
-    const invalidUseCase = createRefreshSessionUseCase(deps);
+    const invalidUseCase = refreshSessionUseCaseFactory(deps);
 
     await expect(invalidUseCase({ refreshToken })).rejects.toThrow(BusinessError);
     await expect(deps.deleteRefreshTokenFn).toHaveBeenCalledWith({ refreshToken });

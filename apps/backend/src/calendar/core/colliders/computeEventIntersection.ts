@@ -29,11 +29,11 @@ export const computeEventIntersections = (input: {
       const a = relevantEvents[i];
       const b = relevantEvents[j];
 
-      if (a.eventUnit_id === b.eventUnit_id) {
+      if (a.id === b.id) {
         continue;
       }
 
-      const pairKey = [a.eventUnit_id, b.eventUnit_id].sort().join('-') as TEventPairs;
+      const pairKey = [a.id, b.id].sort().join('-') as TEventPairs;
       if (checkedPairs.has(pairKey)) {
         continue;
       }
@@ -59,7 +59,7 @@ export const computeEventIntersections = (input: {
       };
 
       checkedPairs.add(pairKey);
-      eventCollisionMap.set(intersected.eventUnit_id, intersected);
+      eventCollisionMap.set(intersected.id, intersected);
     }
   }
 

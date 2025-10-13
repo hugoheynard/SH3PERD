@@ -1,4 +1,4 @@
-import { createAuthUseCases } from './initUsesCases/createAuthUseCases.js';
+import { authUseCasesComposition } from '../../auth/use-cases/authUseCases.composition.js';
 import { createMusicRepertoireUseCases } from './initUsesCases/createMusicRepertoireUseCases.js';
 import type { TCoreRepositories } from './createCoreRepositories.js';
 import type { TAuthUseCases } from '../../auth/types/auth.core.useCase.js';
@@ -34,7 +34,7 @@ export const createCoreUseCases = (deps: {
 }): TCoreUseCases => {
   try {
     return {
-      auth: createAuthUseCases(deps),
+      auth: authUseCasesComposition(deps),
       user: createUserUseCases(deps),
       contracts: contractUseCasesFactory(deps),
       musicReferences: createMusicReferencesUseCases(deps),

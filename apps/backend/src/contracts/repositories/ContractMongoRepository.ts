@@ -3,7 +3,7 @@ import type {
   IContractRepository,
   TContractMongoRepositoryDeps,
   TMarkContractAsFavoriteFn,
-} from '../types/contracts.core.types.js';
+} from './contracts.repository.types.js';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
 import type {
   TUserId,
@@ -48,8 +48,8 @@ export class ContractMongoRepository
         {
           $project: {
             contract_id: 1,
-            company_id: 1,
-            user_id: 1,
+            //company_id: 1,
+            //user_id: 1,
             startDate: 1,
             endDate: 1,
             status: 1,
@@ -83,7 +83,7 @@ export class ContractMongoRepository
 
   @failThrows500('FIND_FAVORITE_USER_CONTRACT_FAILED', 'Error while finding favorite user contract')
   async findUsersFavorite(user_id: TUserId): Promise<TContractRecord | null> {
-    const result = await this.findOneDocBy({ user_id, favorite: true });
+    const result = await this.findOne({ user_id, favorite: true });
 
     if (!result) {
       return null;
@@ -114,14 +114,14 @@ export class ContractMongoRepository
     try {
       await session.withTransaction(async () => {
         // Unmark any existing favorite contract for the user
-        await this.findOneAndUpdateDoc({
+        await this.updateOne({
           filter: { user_id, favorite: true },
           update: { $set: { favorite: false } },
           options: { session },
         });
 
         // Mark the new favorite
-        const newFavorite = await this.findOneAndUpdateDoc({
+        const newFavorite = await this.updateOne({
           filter: { contract_id },
           update: { $set: { favorite: true } },
           options: {

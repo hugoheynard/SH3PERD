@@ -4,6 +4,8 @@
 export * from './api.types.js';
 export * from './metadata.types.js';
 
+//AUTH
+export * from './auth.domain.js';
 export * from './auth.dto.types.js';
 
 
@@ -12,6 +14,7 @@ export * from './user/user.domain.js';
 export * from './user/user-credentials.js';
 export * from './user/user-profile.js';
 export * from './user/user-preferences.js';
+export * from './user/userGroup.types.js';
 
 /**
  * MUSIC

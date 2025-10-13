@@ -11,6 +11,7 @@ import { AuthModule } from '../auth/api_nest/auth.module.js';
 import { CoreServicesModule } from './core_modules/services/CoreServiceModule.js';
 import { AuthGuard } from '../auth/api_nest/auth.guard.js';
 import { TokenFunctionsModule } from './core_modules/services/subModules/TokenFunctionsModule.js';
+import { CoreRepositoriesModule } from './core_modules/repositories/CoreRepositoriesModule.js';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { TokenFunctionsModule } from './core_modules/services/subModules/TokenFu
     MongoModule,
     // Token verification for AuthGuard
     TokenFunctionsModule,
+    CoreRepositoriesModule,
     //Services
     CoreServicesModule,
     // Modules

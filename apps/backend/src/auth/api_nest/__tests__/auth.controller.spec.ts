@@ -36,11 +36,11 @@ describe('AuthController', () => {
   it('should register a user', async () => {
     const dto = { email: 'test@example.com', password: '1234' };
     const expected = { user_id: 'user_1' };
-    mockAuthUseCases.register.mockResolvedValue(expected);
+    mockAuthUseCases.registerUseCase.mockResolvedValue(expected);
 
     const result = await controller.register(dto);
     expect(result).toEqual(expected);
-    expect(mockAuthUseCases.register).toHaveBeenCalledWith(dto);
+    expect(mockAuthUseCases.registerUseCase).toHaveBeenCalledWith(dto);
   });
 
   it('should login and set cookie', async () => {
@@ -59,7 +59,7 @@ describe('AuthController', () => {
       },
     };
 
-    mockAuthUseCases.login.mockResolvedValue(expected);
+    mockAuthUseCases.loginUseCase.mockResolvedValue(expected);
 
     const result = await controller.login(dto, res);
     expect(res.cookie).toHaveBeenCalledWith(
@@ -94,7 +94,7 @@ describe('AuthController', () => {
       },
     };
 
-    mockAuthUseCases.refresh.mockResolvedValue(expected);
+    mockAuthUseCases.refreshUseCase.mockResolvedValue(expected);
 
     const result = await controller.refreshSession(req, res);
     expect(res.cookie).toHaveBeenCalled();
@@ -117,7 +117,7 @@ describe('AuthController', () => {
     } as any as Response;
 
     const result = await controller.logout(req, res);
-    expect(mockAuthUseCases.logout).toHaveBeenCalledWith({
+    expect(mockAuthUseCases.logoutUseCase).toHaveBeenCalledWith({
       user_id: 'user_1',
       refreshToken: 'refresh_123',
     });

@@ -1,4 +1,3 @@
-import { autoBind } from '../../utils/classUtils/autoBind.js';
 import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { TMusicRepertoireEntryDomainModel } from '../types/music.domain.types.js';
 import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
@@ -9,7 +8,7 @@ import type {
 } from '../types/musicRepertoire.core.types.js';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
 
-@autoBind
+
 export class MusicRepertoireMongoRepository
   extends BaseMongoRepository<TMusicRepertoireEntryDomainModel>
   implements IMusicRepertoireRepository
@@ -27,7 +26,7 @@ export class MusicRepertoireMongoRepository
   ): ReturnType<TFindMusicRepertoireByUserIdFn> {
     const targetUserIds = Array.isArray(input.user_id) ? input.user_id : [input.user_id];
 
-    const result = await this.collection.aggregate<TMusicRepertoireByUserIdPipelineResult>([
+    const result = this.collection.aggregate<TMusicRepertoireByUserIdPipelineResult>([
       // Step 1 : filter by user
       { $match: { user_id: { $in: targetUserIds } } },
       // Step 2 : join versions

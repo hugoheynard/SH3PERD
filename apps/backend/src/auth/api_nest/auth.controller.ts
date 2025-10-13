@@ -12,15 +12,16 @@ import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/
 import type {
   TUserCredentialsDTO,
   TLoginResponseDTO,
-  TRegisterResponseDTO,
-} from '../types/auth.core.useCase.js';
+  TRegisterUserResponseDTO,
+  TUserId,
+  TRefreshToken
+} from '@sh3pherd/shared-types';
 import type { Request, Response } from 'express';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
 import { userCredentialsDTOSchema } from '../zodSchemas/userCredentialsDTOSchema.js';
 import { Public } from '../../utils/nest/decorators/IsPublic.js';
 //import { LogoutInterceptor } from './logout.interceptor.js';
-import type { TUserId } from '@sh3pherd/shared-types';
-import type { TRefreshToken } from '../types/auth.domain.tokens.js';
+
 
 
 //@UseInterceptors(LogoutInterceptor)
@@ -34,8 +35,8 @@ export class AuthController {
   @Post('register')
   register(
     @Body(new ZodValidationPipe(userCredentialsDTOSchema)) requestDTO: TUserCredentialsDTO,
-  ): Promise<TRegisterResponseDTO> {
-    return this.authUseCases.register(requestDTO);
+  ): Promise<TRegisterUserResponseDTO> {
+    return this.authUseCases.registerUseCase(requestDTO);
   }
 
   /**
@@ -57,7 +58,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<TLoginResponseDTO> {
 
-    const { authToken, user_id, refreshTokenSecureCookie } = await this.authUseCases.login({
+    const { authToken, user_id, refreshTokenSecureCookie } = await this.authUseCases.loginUseCase({
       email: requestDTO.email,
       password: requestDTO.password,
     });
@@ -95,7 +96,7 @@ export class AuthController {
       return { authToken: null, user_id: null };
     }
 
-    const { user_id, refreshTokenSecureCookie, authToken } = await this.authUseCases.refresh({
+    const { user_id, refreshTokenSecureCookie, authToken } = await this.authUseCases.refreshUseCase({
       refreshToken: currentRefreshToken,
     });
 
@@ -129,7 +130,7 @@ export class AuthController {
     const refreshToken = req.cookies['sh3pherd_refreshToken'];
     const user_id = req.user_id;
 
-    await this.authUseCases.logout({ user_id, refreshToken });
+    await this.authUseCases.logoutUseCase({ user_id, refreshToken });
 
     return { message: 'Logout successful' };
   }

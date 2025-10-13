@@ -21,4 +21,6 @@ export type TUserPreferencesRecord = TUserPreferencesDomainModel & TRecordMetada
 
 
 //DTO
-export type TUpdateUserPreferencesDTO = Partial<TUserPreferencesDomainModel>
+export type TUpdateUserPreferencesRequestDTO = {
+  update: Partial<TUserPreferencesDomainModel>
+};

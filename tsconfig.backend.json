@@ -5,11 +5,14 @@
     "moduleResolution": "NodeNext",
     "target": "ES2023",
     "lib": ["esnext"],
-
     "emitDecoratorMetadata": true,
     "emitDeclarationOnly": false,
-    "declarationMap": true
+    "declarationMap": true,
     //"noUncheckedIndexedAccess": true, // OMG NO !!
+    "baseUrl": ".",
+    "paths": {
+      "@sh3pherd/shared-types": ["./packages/shared-types/src"]
+    }
   },
   "include": ["src"],
   "exclude": [
@@ -22,7 +25,7 @@
   ],
   // for tsc -b
   "references": [
-    { "path": "./packages/shared-types" },
+    { "path": "packages/shared-types" },
     { "path": "./packages/ui-angular" }
   ]
 }

@@ -1,4 +1,3 @@
-import { autoBind } from '../../../utils/classUtils/autoBind.js';
 import type {
   IHasherStrategy,
   IPasswordManager,
@@ -8,7 +7,7 @@ import type {
 } from './types/Interfaces.js';
 import type { TComparePasswordResult } from '../../types/auth.core.contracts.js';
 
-@autoBind
+
 export class PasswordManager implements IPasswordManager {
   private readonly registry: Record<string, IHasherStrategy>;
   private readonly currentStrategyKey: string;
