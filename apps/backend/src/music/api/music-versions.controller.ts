@@ -1,10 +1,11 @@
 import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
 import type { ApiResponse, TMusicVersionCreationFormPayload, TMusicVersionDomainModel } from '@sh3pherd/shared-types';
-import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import { apiCodes, buildApiResponse } from '../codes.js';
 import type { Request } from 'express';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
 import { SMusicVersionCreationFormPayloadSchema } from '@sh3pherd/shared-types';
+import { MUSIC_VERSIONS_USE_CASES } from '../music.tokens.js';
+import type { TMusicVersionsUseCases } from '../useCases/versions/createMusicVersionsUseCases.js';
 
 
 /**
@@ -13,8 +14,7 @@ import { SMusicVersionCreationFormPayloadSchema } from '@sh3pherd/shared-types';
 @Controller('music-version')
 export class MusicVersionsController {
   constructor(
-    @Inject(USE_CASES_TOKENS.musicVersions)
-    private readonly uc: TCoreUseCasesTypeMap['musicVersions'],
+    @Inject(MUSIC_VERSIONS_USE_CASES) private readonly uc: TMusicVersionsUseCases,
   ) {};
 
   @Post()

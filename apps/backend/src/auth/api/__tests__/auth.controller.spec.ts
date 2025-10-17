@@ -1,8 +1,8 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import { AuthController } from '../auth.controller';
-import { USE_CASES_TOKENS } from '../../../appBootstrap/nestTokens';
-import type { TCoreUseCasesTypeMap } from '../../../appBootstrap/nestTokens';
+import { USE_CASES_TOKENS } from '../../../appBootstrap/nestTokens.js';
+import type { TCoreUseCasesTypeMap } from '../../../appBootstrap/nestTokens.js';
 import { jest } from '@jest/globals';
 
 import type express from 'express';

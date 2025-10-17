@@ -27,3 +27,13 @@ export const createMusicReferencesUseCases: TUseCasesFactoryGeneric<TMusicRefere
     createOne
   };
 };
+
+export class MusicReferencesUseCasesFactory {
+  constructor(
+
+  ){}
+
+  create(): any {
+    return {};
+  }
+}

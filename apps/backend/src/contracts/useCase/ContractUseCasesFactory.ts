@@ -20,7 +20,7 @@ export class ContractsUseCaseFactory {
 
   create(): TContractsUseCases {
     return {
-      create: (dto) =>this.createContract.execute(dto),
+      create: (dto, asker_id) =>this.createContract.execute(dto, asker_id),
       getByFilter: (dto) =>this.getByFilter.execute(dto),
     }
   }

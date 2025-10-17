@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Inject, Post, Query, Req } from '@nestjs/common';
-import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import type {
   TCreateMusicReferenceRequestDTO,
   TMusicReferenceCreationResponseDTO,
@@ -7,13 +6,14 @@ import type {
 } from '@sh3pherd/shared-types';
 import { apiCodes, buildApiResponse } from '../codes.js';
 import type { Request } from 'express';
+import { MUSIC_REFERENCES_USE_CASES } from '../music.tokens.js';
+import type { TMusicReferencesUseCases } from '../useCases/references/createMusicReferencesUseCases.js';
 
 
 @Controller('music-reference')
 export class MusicReferenceController {
   constructor(
-    @Inject(USE_CASES_TOKENS.musicReferences)
-    private readonly uc: TCoreUseCasesTypeMap['musicReferences'],
+    @Inject(MUSIC_REFERENCES_USE_CASES) private readonly uc: TMusicReferencesUseCases,
   ) {};
 
   /**

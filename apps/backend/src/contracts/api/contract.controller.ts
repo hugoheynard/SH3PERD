@@ -1,5 +1,4 @@
 import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
-import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import type { Request } from 'express';
 import type { TCreateContractRequestDTO, TGetContractsByFilterRequestDTO } from '@sh3pherd/shared-types';
 import { CONTRACTS_USE_CASES } from '../contracts.tokens.js';

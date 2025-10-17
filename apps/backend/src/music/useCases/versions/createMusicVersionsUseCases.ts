@@ -21,3 +21,13 @@ export const createMusicVersionsUseCases: TUseCasesFactoryGeneric<TMusicVersions
     createOne,
   };
 }
+
+export class MusicVersionsUseCasesFactory {
+  constructor(
+
+  ) {};
+
+  create(): any {
+    return {};
+  }
+}

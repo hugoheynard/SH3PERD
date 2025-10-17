@@ -18,3 +18,12 @@ export const createMusicLibraryUseCases : TUseCasesFactoryGeneric<TMusicLibraryU
     getUserMusicLibrary
   };
 }
+
+export class MusicLibraryUseCasesFactory {
+  constructor(
+  ) {};
+
+  create(): any {
+    return {};
+  };
+}

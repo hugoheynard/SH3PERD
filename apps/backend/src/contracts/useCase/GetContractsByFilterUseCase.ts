@@ -1,7 +1,7 @@
 import type { TContractRecord,  TUserId, TContractDomainModel } from '@sh3pherd/shared-types';
 import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js';
 import type { Filter } from 'mongodb';
-import { Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import type { IContractRepository } from '../repositories/contracts.repository.types.js';
 import { CONTRACT_REPO } from '../../appBootstrap/nestTokens.js';
 
@@ -15,7 +15,7 @@ export type TContractViewDetails = {
 
 export type TContractViewModel = TContractDomainModel & TContractViewDetails;
 
-export type TGetContractsByFilterUseCase = (input: {
+export type TGetContractsByFilterUseCase = (requestDTO: {
   asker_id: TUserId;
   filter: Filter<TContractRecord>;
 }) => Promise<TContractDomainModel[]>;
@@ -27,8 +27,8 @@ export class GetContractsByFilterUseCase {
     @Inject(CONTRACT_REPO) private readonly contractRepo: IContractRepository,
   ) {};
 
-  async execute(requestDTO: any): any {
-    const { filter , asker_id } = input;
+  async execute(requestDTO: any): Promise<any> {
+    const { filter , asker_id } = requestDTO;
 
     //Add permissions here
     if (!asker_id ) {

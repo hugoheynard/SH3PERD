@@ -1,14 +1,23 @@
 import { Module } from '@nestjs/common';
-import { MusicVersionUseCasesModule } from './music-version-use-cases.module.js';
-import { CREATE_MUSIC_REPERTOIRE_ENTRY_USE_CASE } from '../music.tokens.js';
+import {
+  CREATE_MUSIC_REPERTOIRE_ENTRY_USE_CASE,
+  MUSIC_REPERTOIRE_USE_CASES,
+  MUSIC_REPERTOIRE_USE_CASES_FACTORY,
+} from '../music.tokens.js';
 import { AddMusicRepertoireEntry } from './repertoire/AddMusicRepertoireEntry.js';
-import { MusicReferencesUseCasesModule } from './music-references-use-cases.module.js';
+import { MusicRepertoireUseCaseFactory } from './repertoire/MusicRepertoireUseCasesFactory.js';
 
 @Module({
-  imports: [MusicVersionUseCasesModule, MusicReferencesUseCasesModule],
+  imports: [],
   providers: [
+    { provide: MUSIC_REPERTOIRE_USE_CASES_FACTORY, useClass: MusicRepertoireUseCaseFactory },
+    {
+      provide: MUSIC_REPERTOIRE_USE_CASES,
+      useFactory:  (factory: MusicRepertoireUseCaseFactory) => factory.create(),
+      inject: [MUSIC_REPERTOIRE_USE_CASES_FACTORY],
+    },
     { provide: CREATE_MUSIC_REPERTOIRE_ENTRY_USE_CASE, useClass: AddMusicRepertoireEntry },
   ],
-  exports: [],
+  exports: [MUSIC_REPERTOIRE_USE_CASES],
 })
 export class MusicRepertoireUseCasesModule {}

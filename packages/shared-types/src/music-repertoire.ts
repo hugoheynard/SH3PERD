@@ -11,6 +11,7 @@ import type { TMusicVersionId } from './music.versions.js';
 
 export type TMusicRepertoireEntryDomainModel = {
   musicVersion_id: TMusicVersionId;
+  user_id: TUserId;
   performer_id: TUserId;
   effort: TEffortLevel;
   mastery: TMasteryLevel;
@@ -45,4 +46,4 @@ export type TGetMusicRepertoireByFilterRequestDTO = {
   filter: any;
 }
 
-export type TGetMusicRepertoireByFilterResponseDTO = Record<TUserId, TUserRepertoireTableRow[]>
+export type TGetMusicRepertoireByFilterResponseDTO = Map<TUserId, TUserRepertoireTableRow[]>

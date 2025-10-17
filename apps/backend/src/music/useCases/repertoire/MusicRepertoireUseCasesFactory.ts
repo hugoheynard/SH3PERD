@@ -11,8 +11,8 @@ export class MusicRepertoireUseCaseFactory {
 
   create(): TMusicRepertoireUseCases {
     return {
-      createEntry: (dto) => this.createEntry.execute(dto),
-      getEntriesBy: (dto) => { throw new Error('Method not implemented.');  },
+      createEntry: (dto: any) => this.createEntry.execute(dto),
+      getEntriesBy: () => { throw new Error('Method not implemented.');  },
     }
   }
 }

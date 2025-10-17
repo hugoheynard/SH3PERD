@@ -1,16 +1,17 @@
 import { Body, Controller, Get, Inject, Patch, Req } from '@nestjs/common';
-import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import type { Request } from 'express';
 import type { ApiResponse, TUserMeViewModel, TUpdateUserPreferencesRequestDTO } from '@sh3pherd/shared-types';
 import { buildApiResponse } from '../../music/codes.js';
 import { USER_API_CODES_SUCCESS } from './userCodes.js';
 import { USER } from '../../permissions/permissionsRegistry.js';
+import type { TUserUseCases } from '../useCases/UserUseCasesFactory.js';
+import { USER_USE_CASES } from '../user.tokens.js';
 
 
 @Controller('user')
 export class UserController {
   constructor(
-    @Inject(USE_CASES_TOKENS.user) private readonly uc: TCoreUseCasesTypeMap['user']
+    @Inject(USER_USE_CASES) private readonly uc: TUserUseCases,
   ) {};
 
   /**

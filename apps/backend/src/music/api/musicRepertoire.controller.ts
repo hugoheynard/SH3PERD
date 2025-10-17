@@ -1,6 +1,7 @@
 import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
-import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import type { Request } from 'express';
+import { MUSIC_REPERTOIRE_USE_CASES } from '../music.tokens.js';
+import type { TMusicRepertoireUseCases } from '../types/musicRepertoire.useCases.types.js';
 
 @Controller('musicRepertoire')
 export class MusicRepertoireController {
@@ -9,8 +10,7 @@ export class MusicRepertoireController {
   // adding new repertoire, updating existing ones, etc.
 
   constructor(
-    @Inject(USE_CASES_TOKENS.musicRepertoireEntries)
-    private readonly uc: TCoreUseCasesTypeMap['musicRepertoireEntries'],
+    @Inject(MUSIC_REPERTOIRE_USE_CASES) private readonly uc: TMusicRepertoireUseCases,
   ) {}
 
   @Post('/me')

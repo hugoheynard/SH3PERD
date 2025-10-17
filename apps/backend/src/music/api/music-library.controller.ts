@@ -1,17 +1,16 @@
 import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
-import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import type { Request } from 'express';
 import type { TSingleUserMusicLibraryRequestDTO, TUserMusicLibraryResponseDTO } from '@sh3pherd/shared-types';
 import { apiCodes, buildApiResponse } from '../codes.js';
+import type { TMusicLibraryUseCases } from '../useCases/library/createMusicLibraryUseCases.js';
+import { MUSIC_LIBRARY_USE_CASES } from '../music.tokens.js';
 
 /**
   * Controller for managing the music library.
  */
 @Controller('music-library')
 export class MusicLibraryController {
-  constructor(
-    @Inject(USE_CASES_TOKENS.musicLibrary)
-    private readonly uc: TCoreUseCasesTypeMap['musicLibrary']) {};
+  constructor(@Inject(MUSIC_LIBRARY_USE_CASES) private readonly uc: TMusicLibraryUseCases) {};
   /**
     * Endpoint to fetch the music library of a single user.
     * This will return the music versions associated with the user.
