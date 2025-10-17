@@ -1,0 +1,2 @@
+export const USER_USE_CASES_FACTORY= Symbol('USER_USE_CASES_FACTORY');
+export const GET_USER_ME_USE_CASE= Symbol('GET_USER_ME_USE_CASE');

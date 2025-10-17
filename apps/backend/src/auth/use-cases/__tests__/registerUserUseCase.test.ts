@@ -5,7 +5,7 @@ import type {
 
 } from '../../../user/types/user.credentials.contracts.js';
 import type { THashPasswordFn } from '../../types/auth.core.contracts';
-import { registerUserUseCaseFactory, type TRegisterUserUseCaseDeps } from '../registerUserUseCaseFactory.js';
+import { registerUserUseCaseFactory, type TRegisterUserUseCaseDeps } from '../old/registerUserUseCaseFactory.js';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
 import type {
   TFindUserCredentialsByEmailFn,

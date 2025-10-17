@@ -1,14 +1,16 @@
-import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
-import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { TUserProfileRecord } from '@sh3pherd/shared-types';
-import type {
-  IUserProfileRepository,
-  TFindUserProfileByUserIdFn,
-  TSaveUserProfileFn,
-} from '../types/user.profile.contracts.js';
+import type { TFindUserProfileByUserIdFn, TSaveUserProfileFn } from '../types/user.profile.contracts.js';
+import { Injectable } from '@nestjs/common';
+import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
+export interface IUserProfileRepository extends IBaseCRUD<TUserProfileRecord>{
+  saveUserProfile: TSaveUserProfileFn;
+  findUserProfileByUserId: TFindUserProfileByUserIdFn;
+}
 
+@Injectable()
 export class UserProfileMongoRepository
   extends BaseMongoRepository<TUserProfileRecord>
   implements IUserProfileRepository

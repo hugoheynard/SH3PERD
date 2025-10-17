@@ -6,10 +6,10 @@ import type {
 } from '../../types/auth.domain.tokens';
 import type { TRefreshSessionUseCaseDeps } from '../../types/auth.core.useCase';
 import type { TCreateAuthSessionFn } from '../../types/auth.core.contracts';
-import { refreshSessionUseCaseFactory } from '../refreshSessionUseCaseFactory.js';
+import { refreshSessionUseCaseFactory } from '../RefreshSessionUseCase.js';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
 import type { TFindRefreshTokenFn } from '../../repositories/RefreshTokenMongoRepository.js';
-import type { TRevokeRefreshTokenFn, TVerifyRefreshTokenFn } from '../../core/token-manager/RefreshTokenManager.js';
+import type { TRevokeRefreshTokenFn, TVerifyRefreshTokenFn } from '../../core/token-manager/RefreshTokenService.js';
 
 describe('createRefreshSessionUseCase', () => {
   const refreshToken: TRefreshToken = 'refreshToken_test';

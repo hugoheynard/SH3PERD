@@ -1,6 +1,5 @@
-import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type { TMusicRepertoireEntryDomainModel } from '../types/music.domain.types.js';
-import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
+import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import type { TMusicRepertoireEntryDomainModel } from '@sh3pherd/shared-types';
 import type {
   IMusicRepertoireRepository,
   TFindMusicRepertoireByUserIdFn,

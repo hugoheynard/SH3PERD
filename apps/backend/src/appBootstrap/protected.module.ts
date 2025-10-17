@@ -1,33 +1,24 @@
 import { Module } from '@nestjs/common';
-import { MusicRepertoireController } from '../music/api/musicRepertoire.controller.js';
 import { MusicModule } from '../music/music.module.js';
-import { CoreUseCasesAccessModule } from './core_modules/useCases/CoreUseCasesAccessModule.js';
-import { MusicReferenceController } from '../music/api/music-reference.controller.js';
-import { MusicVersionsController } from '../music/api/music-versions.controller.js';
-import { MusicLibraryController } from '../music/api/music-library.controller.js';
 import { ContractController } from '../contracts/api/contract.controller.js';
 import { UserController } from '../user/api/user.controller.js';
+import { APP_GUARD } from '@nestjs/core';
+import { ContractContextGuard } from '../contracts/api/contract-context.guard.js';
+import { TokenFunctionsModule } from '../auth/core/TokenFunctions.module.js';
 
 
 @Module({
   imports: [
-    MusicModule, CoreUseCasesAccessModule.forMany([
-      'user',
-      'contracts',
-      'musicReferences',
-      'musicVersions',
-      'musicRepertoireEntries',
-      'musicLibrary',
-    ])
+    TokenFunctionsModule,
+    MusicModule
   ],
   controllers: [
     UserController,
     ContractController,
-    MusicRepertoireController,
-    MusicReferenceController,
-    MusicVersionsController,
-    MusicLibraryController
   ],
+  providers: [
+    { provide: APP_GUARD, useClass: ContractContextGuard }
+    ],
   exports: [],
 })
 export class ProtectedModule {

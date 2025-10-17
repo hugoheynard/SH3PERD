@@ -3,7 +3,10 @@ import type { TUserPreferencesDomainModel } from './user-preferences.js';
 import type { TUserProfileDomainModel } from './user-profile.js';
 
 // USER ID
-export const SUserId = z.string().regex(/^user_[a-zA-Z0-9_-]+$/, { message: 'Invalid user_id format' });
+export const SUserId = z.custom<`user_${string}`>(
+  (val): val is `user_${string}` =>
+    typeof val === "string" && val.startsWith("user_"), { message: 'Invalid eventUnit_id format. Expected format: eventUnit_<unique_identifier>' }
+);
 export type TUserId = `user_${string}` | z.infer<typeof SUserId>;
 
 

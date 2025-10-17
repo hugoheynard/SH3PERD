@@ -10,7 +10,7 @@ import type {
   TContractRecord
 } from '@sh3pherd/shared-types';
 import type { Filter } from 'mongodb';
-import type { TContractViewModel } from '../useCase/getContractsByFilterUseCaseFactory.js';
+import type { TContractViewModel } from '../useCase/GetContractsByFilterUseCase.js';
 
 
 export class ContractMongoRepository

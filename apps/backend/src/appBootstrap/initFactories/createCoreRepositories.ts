@@ -1,45 +1,16 @@
-
-import type { IContractRepository } from '../../contracts/repositories/contracts.repository.types.js';
 import type { MongoClient } from 'mongodb';
 import { TechnicalError } from '../../utils/errorManagement/errorClasses/TechnicalError.js';
-import {
-  type IRefreshTokenRepository,
-  RefreshTokenMongoRepository,
-} from '../../auth/repositories/RefreshTokenMongoRepository.js';
-import {
-  type IUserCredentialsRepository,
-  UserCredentialsMongoRepository,
-} from '../../user/repository/UserCredentialsMongoRepository.js';
+import { RefreshTokenMongoRepository } from '../../auth/repositories/RefreshTokenMongoRepository.js';
+import { UserCredentialsMongoRepository } from '../../user/repository/UserCredentialsMongoRepository.js';
 import { ContractMongoRepository } from '../../contracts/repositories/ContractMongoRepository.js';
-import {
-  EventUnitMongoRepository,
-  type IEventUnitRepository,
-} from '../../calendar/repositories/EventUnitMongoRepository.js';
+import { EventUnitMongoRepository } from '../../calendar/repositories/EventUnitMongoRepository.js';
 import { MusicRepertoireMongoRepository } from '../../music/repositories/MusicRepertoireRepository.js';
-import type { IMusicRepertoireRepository } from '../../music/types/musicRepertoire.core.types.js';
-import type { IMusicReferenceRepository } from '../../music/types/musicReferences.types.js';
 import { MusicReferenceMongoRepository } from '../../music/repositories/MusicReferenceRepository.js';
-import type { IMusicVersionRepository } from '../../music/repositories/MusicVersionRepository.js';
 import { MusicVersionRepository } from '../../music/repositories/MusicVersionRepository.js';
-import type { IUserProfileRepository } from '../../user/types/user.profile.contracts.js';
 import { UserProfileMongoRepository } from '../../user/repository/UserProfileMongoRepository.js';
 import { UserPreferencesMongoRepository } from '../../user/repository/UserPreferencesMongoRepository.js';
+import type { TCoreRepositories } from '../database/CoreRepositoriesModule.js';
 
-
-export type TCoreRepositories = {
-  refreshToken: IRefreshTokenRepository;
-  //USER
-  userCredentials: IUserCredentialsRepository;
-  userProfile: IUserProfileRepository;
-  userPreferences: any; // Add UserPreferencesRepository when implemented
-  //CONTRACTS
-  contract: IContractRepository;
-  eventUnit: IEventUnitRepository;
-  //MUSIC
-  musicReference: IMusicReferenceRepository;
-  musicVersion: IMusicVersionRepository;
-  musicRepertoire: IMusicRepertoireRepository;
-};
 
 export const createCoreRepositories = (input: {
   client: MongoClient;

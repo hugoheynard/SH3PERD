@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 
-import { loginUseCaseFactory } from '../loginUseCaseFactory.js';
+import { loginUseCaseFactory } from '../LoginUseCase.js';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
 import type { TUserCredentialsRecord } from '../../../user/types/user.domain.types';
 import type { TCreateAuthSessionResult } from '../../types/auth.domain.tokens';

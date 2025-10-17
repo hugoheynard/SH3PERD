@@ -1,7 +1,7 @@
 
 import type { TUserId } from '@sh3pherd/shared-types';
 import {jest } from '@jest/globals';
-import { createCreateOneMusicReferenceUseCase } from '../createCreateOneMusicReferenceUseCase.js';
+import { createCreateOneMusicReferenceUseCase } from '../references/createCreateOneMusicReferenceUseCase.js';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
 import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
 

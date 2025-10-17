@@ -2,13 +2,15 @@ import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
 import { type TCoreUseCasesTypeMap, USE_CASES_TOKENS } from '../../appBootstrap/nestTokens.js';
 import type { Request } from 'express';
 import type { TCreateContractRequestDTO, TGetContractsByFilterRequestDTO } from '@sh3pherd/shared-types';
+import { CONTRACTS_USE_CASES } from '../contracts.tokens.js';
+import type { TContractsUseCases } from '../useCase/ContractUseCasesFactory.js';
 
 
 @Controller('contract')
 export class ContractController {
   constructor(
-    @Inject(USE_CASES_TOKENS.contracts)
-    private readonly uc: TCoreUseCasesTypeMap['contracts']) {}
+    @Inject(CONTRACTS_USE_CASES) private readonly contractsUC: TContractsUseCases
+  ) {};
 
   /**
    * Endpoint to get contracts for the current user based on provided filters.
@@ -23,7 +25,7 @@ export class ContractController {
   ) {
     const { filter } = requestDTO || {};
 
-    return this.uc.getContractsByFilter({
+    return this.contractsUC.getByFilter({
       asker_id:  req.user_id,
       filter: { ...filter, user_id: req.user_id },
     });
@@ -40,7 +42,7 @@ export class ContractController {
     @Req() req: Request,
     @Body('requestDTO') requestDTO: TCreateContractRequestDTO
   ) {
-    return this.uc.create(requestDTO, req.user_id);
+    return this.contractsUC.create(requestDTO, req.user_id);
   };
 
   /*

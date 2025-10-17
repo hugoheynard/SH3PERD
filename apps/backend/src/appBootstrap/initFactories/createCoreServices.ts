@@ -1,18 +1,13 @@
-import { createAuthTokenService } from '../../auth/factories/createAuthTokenService.js';
 import { CalendarService } from '../../calendar/core/services/CalendarService.js';
 import { buildCalendar } from '../../calendar/core/builders/buildCalendar.js';
 import { computeEventIntersections } from '../../calendar/core/colliders/computeEventIntersection.js';
-import { getAuthConfig } from '../config/getAuthConfig.js';
-import { secureCookieConfig } from '../config/secureCookieConfig.js';
-import type { IAuthTokenService } from '../../auth/core/services/AuthTokenService.js';
-import type { TCoreRepositories } from './createCoreRepositories.js';
-//import { PermissionService } from '../../permissions/core/PermissionService.js';
+import type { IAuthTokenService } from '../../auth/services/auth.service.js';
 
 /**
  * Type representing the core services of the application.
  */
 export type TCoreServices = {
-  authTokenService: IAuthTokenService;
+  authTokenService?: IAuthTokenService;
   calendarService: CalendarService;
 };
 
@@ -22,19 +17,11 @@ export type TCoreServices = {
  * @param deps
  * @returns An object containing the initialized core services.
  */
-export function createCoreServices(deps: { repositories: TCoreRepositories }): TCoreServices{
+export function createCoreServices(): TCoreServices{
 
-  const refreshTokenRepo = deps.repositories.refreshToken;
+
 
   try {
-    const authTokenService = createAuthTokenService({
-      findOneRefreshTokenFn: filter => refreshTokenRepo.findOne(filter),
-      saveFn: refreshTokenRecord => refreshTokenRepo.save(refreshTokenRecord),
-      deleteRefreshTokenFn: filter => refreshTokenRepo.deleteOne(filter),
-      deleteAllRefreshTokensForUserFn: filter => refreshTokenRepo.deleteMany(filter),
-      authConfig: getAuthConfig(),
-      secureCookieConfig,
-    });
 
     /*
     const permissionService = new PermissionService({
@@ -42,6 +29,7 @@ export function createCoreServices(deps: { repositories: TCoreRepositories }): T
     });
 
      */
+
 
     const calendarService = new CalendarService({
       buildCalendarFn: buildCalendar,
@@ -52,7 +40,7 @@ export function createCoreServices(deps: { repositories: TCoreRepositories }): T
 
 
     return {
-      authTokenService,
+
       calendarService
     };
   } catch (e: unknown) {

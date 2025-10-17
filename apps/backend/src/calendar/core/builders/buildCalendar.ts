@@ -1,12 +1,12 @@
-import type { TUserId, TEventUnitId, TEventUnitDomainModel, TCalendarDomainModel } from '@sh3pherd/shared-types';
+import type { TContractId, TEventUnitId, TEventUnitDomainModel, TCalendarDomainModel } from '@sh3pherd/shared-types';
 
 export type TBuildCalendarInput = {
   readonly eventUnits: readonly TEventUnitDomainModel[];
-  readonly user_ids: readonly TUserId[];
+  readonly user_ids: readonly TContractId[];
 };
 
 export type TBuildCalendarOutput = {
-  readonly calendars: Map<TUserId, TCalendarDomainModel>;
+  readonly calendars: Map<TContractId, TCalendarDomainModel>;
   readonly eventUnits: Map<TEventUnitId, TEventUnitDomainModel>;
 };
 
@@ -16,12 +16,12 @@ export type TBuildCalendarFn = (input: TBuildCalendarInput) => TBuildCalendarOut
  * Builds a user calendar from event participation data.
  * Pure, readonly-safe implementation.
  */
-export const buildCalendar: TBuildCalendarFn = (input) => {
+export function buildCalendar(input: TBuildCalendarInput): TBuildCalendarOutput {
   const { eventUnits, user_ids } = input;
 
   const eventUnitsMap: Map<TEventUnitId, TEventUnitDomainModel> = new Map();
-  const calendarMap: Map<TUserId, { user_id: TUserId; participatesIn: TEventUnitId[] }> = new Map();
-  const userSet: Set<TUserId> = new Set(user_ids);
+  const calendarMap: Map<TContractId, { user_id: TContractId; participatesIn: TEventUnitId[] }> = new Map();
+  const userSet: Set<TContractId> = new Set(user_ids);
 
   //builder logic
   for (const event of eventUnits) {
@@ -52,4 +52,4 @@ export const buildCalendar: TBuildCalendarFn = (input) => {
     calendars: calendarMap,
     eventUnits: eventUnitsMap,
   };
-};
+}

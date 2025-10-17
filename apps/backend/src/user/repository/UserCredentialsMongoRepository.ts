@@ -1,8 +1,8 @@
-import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { TUserCredentialsRecord, TUserId, TUserMeViewModel } from '@sh3pherd/shared-types';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
-import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
+import { Injectable } from '@nestjs/common';
 
 
 export type TSaveUserCredentialsFn = (input: { user: TUserCredentialsRecord }) => Promise<boolean>;
@@ -14,7 +14,7 @@ export type IUserCredentialsRepository = IBaseCRUD<TUserCredentialsRecord> & {
   getUserMe: (user_id: TUserId) => Promise<TUserMeViewModel>;
 };
 
-
+@Injectable()
 export class UserCredentialsMongoRepository
   extends BaseMongoRepository<TUserCredentialsRecord>
   implements IUserCredentialsRepository

@@ -1,5 +1,6 @@
 import type { TCoreServices } from '../appBootstrap/initFactories/createCoreServices.js';
-import type { TCoreRepositories } from '../appBootstrap/initFactories/createCoreRepositories.js';
+
+import type { TCoreRepositories } from '../appBootstrap/database/CoreRepositoriesModule.js';
 
 /**
  * A generic factory type for creating use cases with dependencies on core services and repositories.

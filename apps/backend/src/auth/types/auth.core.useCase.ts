@@ -1,10 +1,10 @@
 import type { TLoginResponseDTO, TUserCredentialsDTO } from '@sh3pherd/shared-types';
 import type { TComparePassword, TCreateAuthSessionFn } from './auth.core.contracts.js';
 import type { TRefreshTokenSecureCookie } from './auth.domain.tokens.js';
-import type { TRegisterUserUseCase } from '../use-cases/registerUserUseCaseFactory.js';
 import type { TFindUserCredentialsByEmailFn } from '../../user/repository/UserCredentialsMongoRepository.js';
-import type { TRefreshSessionUseCase } from '../use-cases/refreshSessionUseCaseFactory.js';
-import type { TLogoutUseCase } from '../use-cases/logoutUseCaseFactory.js';
+import type { TRefreshSessionUseCase } from '../use-cases/RefreshSessionUseCase.js';
+import type { TLogoutUseCase } from '../use-cases/LogoutUseCase.js';
+import type { TRegisterUserUseCase } from '../use-cases/RegisterUserUseCase.js';
 
 
 export type TLoginUseCaseDeps = {
@@ -22,6 +22,6 @@ export type TLoginUseCase = (input: TUserCredentialsDTO) => Promise<TLoginRespon
 export type TAuthUseCases = {
   loginUseCase: TLoginUseCase;
   registerUseCase: TRegisterUserUseCase;
-  refreshUseCase: TRefreshSessionUseCase;
+  refreshSessionUseCase: TRefreshSessionUseCase;
   logoutUseCase: TLogoutUseCase;
 };

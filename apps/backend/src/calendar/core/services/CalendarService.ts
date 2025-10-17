@@ -1,8 +1,8 @@
-import type { TUserId, TEventUnitId, TEventUnitDomainModel } from '@sh3pherd/shared-types';
+import type { TContractId, TEventUnitId, TEventUnitDomainModel } from '@sh3pherd/shared-types';
 
 export type TEventIntersectionColliderContext = {
-  target_id: TUserId;
-  intersectsWith: TUserId[];
+  target_id: TContractId;
+  intersectsWith: TContractId[];
 };
 
 export type TColliderContext = {
@@ -17,9 +17,9 @@ export type TEventIntersectionFn = (input: {
 export type TCalendarServiceDeps = {
   buildCalendarFn: (input: {
     readonly eventUnits: readonly TEventUnitDomainModel[];
-    readonly user_ids: readonly TUserId[];
+    readonly user_ids: readonly TContractId[];
   }) => {
-    readonly calendars: Map<TUserId, { user_id: TUserId; participatesIn: TEventUnitId[] }>;
+    readonly calendars: Map<TContractId, { user_id: TContractId; participatesIn: TEventUnitId[] }>;
     readonly eventUnits: Map<TEventUnitId, TEventUnitDomainModel>;
   };
   colliderRegistry: {
@@ -39,7 +39,7 @@ export class CalendarService {
 
   build(input: {
     eventUnits: TEventUnitDomainModel[];
-    user_ids: TUserId[];
+    user_ids: TContractId[];
     context?: TColliderContext;
   }): any {
     const { eventUnits, user_ids, context = {} } = input;

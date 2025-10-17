@@ -1,6 +1,5 @@
-import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { TMusicVersionDomainModel, TUserId, TUserMusicLibraryItem } from '@sh3pherd/shared-types';
-import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
 import type { ClientSession } from 'mongodb';
 import { apiCodes } from '../codes.js';

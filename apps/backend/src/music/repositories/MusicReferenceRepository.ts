@@ -1,5 +1,5 @@
-import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
-import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+
+import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type {
   IMusicReferenceRepository,
 } from '../types/musicReferences.types.js';

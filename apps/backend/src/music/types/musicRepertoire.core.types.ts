@@ -1,5 +1,6 @@
 import type { TUserId } from '@sh3pherd/shared-types';
-import type { TUserRepertoireTableRow } from './music.domain.types.js';
+import type { TMusicRepertoireEntryDomainModel, TUserRepertoireTableRow } from '@sh3pherd/shared-types';
+import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
 export type TMusicRepertoireByUserIdPipelineResult = {
   user_id: TUserId;
@@ -14,6 +15,6 @@ export type TFindMusicRepertoireByUserIdFn = (input: {
 }) => Promise<TMusicRepertoireByUserIdPipelineResult[]>;
 
 // Repository interface for Music Repertoire
-export type IMusicRepertoireRepository = {
+export interface IMusicRepertoireRepository extends IBaseCRUD<TMusicRepertoireEntryDomainModel> {
   findRepertoireByUserId: TFindMusicRepertoireByUserIdFn;
 };

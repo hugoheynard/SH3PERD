@@ -1,7 +1,6 @@
-import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
+import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
-import type { TUserId, TEventUnitDomainModel } from '@sh3pherd/shared-types';
+import type { TContractId, TEventUnitDomainModel } from '@sh3pherd/shared-types';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
 export interface IEventUnitRepository extends IBaseCRUD<TEventUnitDomainModel> {
@@ -18,7 +17,7 @@ export class EventUnitMongoRepository
 
   @failThrows500('FIND_EVENT_UNIT_FAILED', 'Error while finding event unit')
   async getEventUnits(input: {
-    user_ids: TUserId[];
+    user_ids: TContractId[];
     startDate: Date;
     endDate: Date;
   }): Promise<TEventUnitDomainModel[]> {

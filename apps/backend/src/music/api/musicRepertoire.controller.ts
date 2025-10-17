@@ -15,7 +15,7 @@ export class MusicRepertoireController {
 
   @Post('/me')
   async me(@Body() requestDTO: any, @Req() req: Request): Promise<any> {
-    return this.uc.getMusicRepertoireByUserId({
+    return this.uc.getEntriesBy({
       asker_user_id: req.user_id,
       target_user_id: req.user_id,
       filter: requestDTO.filter
@@ -24,6 +24,6 @@ export class MusicRepertoireController {
 
   @Post('/')
   async getRepertoire(@Body() requestDTO: any): Promise<any> {
-    return this.uc.getMusicRepertoireByUserId(requestDTO);
+    return this.uc.getEntriesBy(requestDTO);
   }
 }

@@ -8,8 +8,13 @@ import type {
   OptionalUnlessRequiredId,
   WithId,
 } from 'mongodb';
-import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
 import type { IBaseCRUD, TUpdateOneMongoFn } from './repository.genericFunctions.types.js';
+
+export type TBaseMongoRepoDeps = {
+  client: MongoClient;
+  dbName: string;
+  collectionName: string;
+};
 
 export abstract class BaseMongoRepository<TRecord extends Document> implements IBaseCRUD<TRecord> {
   protected readonly client: MongoClient;

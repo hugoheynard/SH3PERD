@@ -1,10 +1,10 @@
 import { isRehashDueFromLastHashDate } from '../utils/isRehashDueFromLastHashDate';
 import { HashParser } from '../utils/HashParser';
 import { createHasherRegistry } from '../hasherRegistry/createHasherRegistry';
-import { PasswordManager } from '../PasswordManager';
+import { PasswordService } from '../PasswordService.js';
 import bcrypt from 'bcrypt';
 
-const passwordManager = new PasswordManager({
+const passwordManager = new PasswordService({
   currentStrategyKey: 'argon2id:v1',
   registry: createHasherRegistry({ hashParser: HashParser }),
   hashParserFunction: HashParser.extract,
@@ -42,7 +42,7 @@ describe('PasswordManager - real instance', () => {
     const password = 'SafePass123!';
 
     // Instance en bcrypt
-    const bcryptManager = new PasswordManager({
+    const bcryptManager = new PasswordService({
       currentStrategyKey: 'bcrypt:v1',
       registry: createHasherRegistry({ hashParser: HashParser }),
       hashParserFunction: HashParser.extract,
@@ -54,7 +54,7 @@ describe('PasswordManager - real instance', () => {
     const bcryptHash = await bcryptManager.hashPassword({ password });
     // Instance argon
 
-    const argon2Manager = new PasswordManager({
+    const argon2Manager = new PasswordService({
       currentStrategyKey: 'argon2id:v1',
       registry: createHasherRegistry({ hashParser: HashParser }),
       hashParserFunction: HashParser.extract,
@@ -87,7 +87,7 @@ describe('PasswordManager - real instance', () => {
     const oldHashWithMeta = ['bcrypt', 'bcrypt', 'v1', hashed_at, rawHash].join(':::');
 
     // 🔐 Vérifie avec un manager qui va rehasher si date trop ancienne
-    const manager = new PasswordManager({
+    const manager = new PasswordService({
       currentStrategyKey: 'bcrypt:v1',
       registry: createHasherRegistry({ hashParser: HashParser }),
       hashParserFunction: HashParser.extract,

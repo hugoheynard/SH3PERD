@@ -3,8 +3,6 @@ import type { Options } from 'argon2';
 export type IPasswordManagerInput = {
   currentStrategyKey: string;
   registry: Record<string, IHasherStrategy>;
-  hashParserFunction: THashParserFunction;
-  verifyLastHashDateFunction: TVerifyLastHashDateFunction;
   rehashAfterDays: number;
 };
 
@@ -30,7 +28,7 @@ export type IHasherStrategy = {
   }) => Promise<ICompareResult_copy>;
 };
 
-export type IPasswordManager = {
+export type IPasswordService = {
   hashPassword: (input: { password: string }) => Promise<string>;
   comparePassword: (input: {
     password: string;

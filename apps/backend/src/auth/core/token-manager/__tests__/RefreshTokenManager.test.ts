@@ -7,7 +7,7 @@ import type {
   TSaveRefreshTokenFn,
   TUserId,
 } from '@sh3pherd/shared-types';
-import { RefreshTokenManager } from '../RefreshTokenManager';
+import { RefreshTokenService } from '../RefreshTokenService.js';
 
 describe('RefreshTokenManager', () => {
   const mockUserId: TUserId = 'user_123' as TUserId;
@@ -51,7 +51,7 @@ describe('RefreshTokenManager', () => {
     ttlMs: ttlMs_ONEDAY,
   } as TRefreshTokenManagerDeps;
 
-  const sut = new RefreshTokenManager(deps);
+  const sut = new RefreshTokenService(deps);
 
   beforeEach(() => {
     jest.clearAllMocks(); // 🔄

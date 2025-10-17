@@ -2,7 +2,8 @@ import { Global, Module } from '@nestjs/common';
 import { getMongoClient } from './getMongoClient.js';
 import { ConfigService } from '@nestjs/config';
 import { MongoClient } from 'mongodb';
-import { MONGO_CLIENT } from '../nestTokens.js';
+
+export const MONGO_CLIENT: symbol = Symbol('MONGO_CLIENT');
 
 /**
  * @module MongoModule

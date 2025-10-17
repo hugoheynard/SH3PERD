@@ -1,4 +1,4 @@
-import { JwtAuthTokenManager } from '../JwtAuthTokenManager';
+import { JwtService } from '../JwtService.js';
 import type { TAuthTokenManagerOptions, TAuthTokenPayload } from '@sh3pherd/shared-types';
 
 describe('JwtAuthTokenManager', () => {
@@ -44,7 +44,7 @@ xwIDAQAB
 -----END PUBLIC KEY-----
 `;
 
-  let manager: JwtAuthTokenManager;
+  let manager: JwtService;
 
   const payload: TAuthTokenPayload = {
     user_id: 'user-123',
@@ -57,7 +57,7 @@ xwIDAQAB
   };
 
   beforeAll(() => {
-    manager = new JwtAuthTokenManager({ options });
+    manager = new JwtService({ options });
   });
 
   it('should generate a valid JWT', async () => {

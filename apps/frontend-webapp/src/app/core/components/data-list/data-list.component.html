@@ -1,0 +1,25 @@
+<div class="data-list">
+  <div class="data-header">
+    @for (key of displayedKeys(); track key) {
+      <div class="data-cell font-semibold">{{ key }}</div>
+    }
+    @if (rowActionsTemplate()) {
+      <div class="data-cell font-semibold">Actions</div>
+    }
+  </div>
+
+  @for (item of data(); track item) {
+    <div class="data-row">
+      @for (key of displayedKeys(); track key) {
+        <div class="data-cell">{{ item[key] }}</div>
+      }
+      @if (rowActionsTemplate()) {
+        <div class="data-cell">
+          <ng-container
+            *ngTemplateOutlet="rowActionsTemplate(); context: { $implicit: item }">
+          </ng-container>
+        </div>
+      }
+    </div>
+  }
+</div>

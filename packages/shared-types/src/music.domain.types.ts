@@ -1,22 +1,45 @@
 import type { TUserId } from './user/user.domain.js';
-import type { TMusicGrade } from './music.domain.schemas.js';
-import type { TMusicVersionDomainModel, TMusicVersionId } from './music.versions.js';
-import type { TMusicReferenceDomainModel } from './music-references.js';
+import type { TMusicReferenceDomainModel  } from './music-references.js';
 import type { ApiResponse } from './api.types.js';
+import type { TMusicVersionDomainModel } from './music.versions.js';
+import type { TMusicRepertoireEntryDomainModel } from './music-repertoire.js';
 
 
-export type TMusicRepertoireEntry_id = `musicRepertoireEntry_${string}`;
-export type TMusicRepertoireEntryDomainModel = {
-  musicVersion_id: TMusicVersionId;
-  user_id: TUserId;
-  energy: TMusicGrade;
-  effort: TMusicGrade;
-  mastery: TMusicGrade;
-  affinity: TMusicGrade;
-  created_at: Date;
-  updated_at: Date;
-  created_by: TUserId;
-}
+export type TMusicGenres = 'jazz' | 'pop' | 'rock' | 'soul' | 'EDM';
+export type TMusicKeys =
+  | 'C'
+  | 'C#'
+  | 'D'
+  | 'D#'
+  | 'E'
+  | 'F'
+  | 'F#'
+  | 'G'
+  | 'G#'
+  | 'A'
+  | 'A#'
+  | 'B'
+  | 'Cm'
+  | 'C#m'
+  | 'Dm'
+  | 'D#m'
+  | 'Em'
+  | 'Fm'
+  | 'F#m'
+  | 'Gm'
+  | 'G#m'
+  | 'Am'
+  | 'A#m'
+  | 'Bm';
+export type TVersionEnergy = 1 | 2 | 3 | 4;
+export type TVersionType = 'original' | 'cover' | 'remix';
+export type TMasteryLevel = 1 | 2 | 3 | 4;
+export type TEffortLevel = 1 | 2 | 3 | 4;
+
+
+
+
+
 
 
 export type TUserMusicLibraryItem = {

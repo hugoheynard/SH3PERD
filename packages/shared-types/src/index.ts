@@ -24,6 +24,7 @@ export * from './music.domain.schemas.js';
 export * from './music.domain.types.js';
 export * from './music.versions.js';
 export * from './music-references.js';
+export * from './music-repertoire.js'
 
 
 

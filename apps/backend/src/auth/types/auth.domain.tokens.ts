@@ -1,9 +1,7 @@
 import type { KeyObject } from 'crypto';
 import type { TUserId, TRefreshToken } from '@sh3pherd/shared-types';
 
-export type TAuthTokenPayload = {
-  user_id: TUserId;
-};
+export type TAuthTokenPayload = { user_id: TUserId; };
 
 export type TAuthTokenManagerOptions = {
   privateKey: string | Buffer | KeyObject;

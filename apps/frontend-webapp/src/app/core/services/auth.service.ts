@@ -74,7 +74,7 @@ export class AuthService extends BaseHttpService {
             this.tokenService.clear();
           }
           this.tokenService.setToken(token);
-          this.userCtx.getUser();
+          //this.userCtx.getUser();
         }),
         catchError(() => {
           this.tokenService.clear();

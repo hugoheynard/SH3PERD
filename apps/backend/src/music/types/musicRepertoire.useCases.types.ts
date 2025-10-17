@@ -1,12 +1,9 @@
-import type { TUserId } from '@sh3pherd/shared-types';
-import type { TUserRepertoireTableRow } from './music.domain.types.js';
+import type { TGetMusicRepertoireByFilterRequestDTO, TGetMusicRepertoireByFilterResponseDTO } from '@sh3pherd/shared-types';
+
 
 export type TMusicRepertoireUseCases = {
-  getMusicRepertoireByUserId: TGetMusicRepertoireUseCaseFn;
+  createEntry: any;
+  getEntriesBy: TGetMusicRepertoireByUseCase;
 };
 
-export type TGetMusicRepertoireUseCaseFn = (requestDTO: {
-  asker_user_id: TUserId | undefined;
-  target_user_id: TUserId | TUserId[] | undefined;
-  filter: any;
-}) => Promise<Map<TUserId, TUserRepertoireTableRow[]>>;
+export type TGetMusicRepertoireByUseCase = (requestDTO:TGetMusicRepertoireByFilterRequestDTO) => Promise<TGetMusicRepertoireByFilterResponseDTO>;

@@ -1,4 +1,3 @@
-import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
 import type {
   TUserId,
   TContractId,
@@ -6,6 +5,7 @@ import type {
 } from '@sh3pherd/shared-types';
 
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
+import type { TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 
 export type TContractMongoRepositoryDeps = TBaseMongoRepoDeps;
 

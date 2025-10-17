@@ -11,7 +11,7 @@ export const SContractId = z.custom<`contract_${string}`>(
   (val): val is `contract_${string}` =>
     typeof val === "string" && val.startsWith("contract_"), { message: 'Invalid contract format. Expected format: contract_<unique_identifier>' }
 );
-export type TContractId = `contract_${string}`| z.infer<typeof SContractId> | string;
+export type TContractId = `contract_${string}`| z.infer<typeof SContractId>;
 
 export const SContractSignatureId = z.string().regex(/^contractSignature_[a-zA-Z0-9_-]+$/, { message: 'Invalid contractSignature_id format' });
 

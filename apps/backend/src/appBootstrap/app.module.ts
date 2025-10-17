@@ -7,11 +7,10 @@ import configuration from './config/configuration.js';
 import { MongoModule } from './database/MongoModule.js';
 import { ProtectedModule } from './protected.module.js';
 import { APP_GUARD, RouterModule } from '@nestjs/core';
-import { AuthModule } from '../auth/api_nest/auth.module.js';
-import { CoreServicesModule } from './core_modules/services/CoreServiceModule.js';
-import { AuthGuard } from '../auth/api_nest/auth.guard.js';
-import { TokenFunctionsModule } from './core_modules/services/subModules/TokenFunctionsModule.js';
-import { CoreRepositoriesModule } from './core_modules/repositories/CoreRepositoriesModule.js';
+import { AuthModule } from '../auth/auth.module.js';
+import { AuthGuard } from '../auth/api/auth.guard.js';
+import { TokenFunctionsModule } from '../auth/core/TokenFunctions.module.js';
+import { CoreRepositoriesModule } from './database/CoreRepositoriesModule.js';
 
 @Module({
   imports: [
@@ -26,8 +25,6 @@ import { CoreRepositoriesModule } from './core_modules/repositories/CoreReposito
     // Token verification for AuthGuard
     TokenFunctionsModule,
     CoreRepositoriesModule,
-    //Services
-    CoreServicesModule,
     // Modules
     AuthModule,
     ProtectedModule,

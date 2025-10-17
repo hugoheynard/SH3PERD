@@ -1,1 +1,12 @@
-<p>user-groups works!</p>
+<data-list
+  [displayedKeys]="['name', 'description', 'users']"
+  [data]="dataTest"
+  [rowActionsTemplate]="actionsTemplate"
+/>
+
+
+<!-- row action template -->
+<ng-template #actionsTemplate let-userGroup>
+  <sh3-button-icon icon='edit' (clicked)="edit(userGroup)"/>
+  <sh3-button-icon icon='bin' (clicked)="delete(userGroup)"/>
+</ng-template>

@@ -1,7 +1,7 @@
-import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type { TBaseMongoRepoDeps } from '../../types/mongo/mongo.types.js';
+import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { TRefreshTokenRecord } from '@sh3pherd/shared-types';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
+import { Injectable } from '@nestjs/common';
 
 
 export type IRefreshTokenRepository = IBaseCRUD<TRefreshTokenRecord> & {};
@@ -29,6 +29,7 @@ export type IRefreshTokenRepository = IBaseCRUD<TRefreshTokenRecord> & {};
  *
  * @implements {IRefreshTokenRepository}
  */
+@Injectable()
 export class RefreshTokenMongoRepository
   extends BaseMongoRepository<TRefreshTokenRecord>
   implements IRefreshTokenRepository

@@ -1,7 +1,5 @@
-import { PasswordManager } from './PasswordManager.js';
-import { HashParser } from './utils/HashParser.js';
+import { PasswordService } from './PasswordService.js';
 import { createHasherRegistry } from './hasherRegistry/createHasherRegistry.js';
-import { isRehashDueFromLastHashDate } from './utils/isRehashDueFromLastHashDate.js';
 
 // @sh3pherd/password-manager
 
@@ -12,10 +10,8 @@ import { isRehashDueFromLastHashDate } from './utils/isRehashDueFromLastHashDate
  * @example
  * import { passwordManager } from '@sh3pherd/password-manager';
  */
-export const passwordManager = new PasswordManager({
+export const passwordManager = new PasswordService({
   currentStrategyKey: 'argon2id:v1',
-  registry: createHasherRegistry({ hashParser: HashParser }),
-  hashParserFunction: HashParser.extract,
-  verifyLastHashDateFunction: isRehashDueFromLastHashDate,
+  registry: createHasherRegistry(),
   rehashAfterDays: 30,
 });

@@ -70,7 +70,7 @@ export type TEventMatrixDomainModel = {
 
 
 
-export type TCalendarDomainModel = { user_id: TUserId,  participatesIn: TEventUnitId[]; }
+export type TCalendarDomainModel = { user_id: TContractId,  participatesIn: TEventUnitId[]; }
 
 export type TCalendarDataResponseDTO = {
   calendars: Record<TUserId, TCalendarDomainModel>
