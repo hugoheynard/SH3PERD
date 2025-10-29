@@ -1,6 +1,6 @@
-import type { TLoginResponseDTO, TUserCredentialsDTO } from '@sh3pherd/shared-types';
+import type { TLoginRequestDTO, TLoginResponseDTO } from '@sh3pherd/shared-types';
 import { BusinessError } from '../../utils/errorManagement/errorClasses/BusinessError.js';
-import type { IUserCredentialsRepository } from '../../user/repository/UserCredentialsMongoRepository.js';
+import type { IUserCredentialsRepository } from '../../user/credentials/UserCredentialsMongoRepo.repository.js';
 import { Inject, Injectable } from '@nestjs/common';
 import type { IPasswordService } from '../core/password-manager/types/Interfaces.js';
 import type { IAuthTokenService } from '../services/auth.service.js';
@@ -34,11 +34,11 @@ export class LoginUseCase {
    * const useCase = loginUseCase({ findUserByEmailFn, comparePasswordFn, createAuthSessionFn });
    * const result = await useCase({ email: 'a@test.com', password: 'secret' });
    */
-  async execute(request: TUserCredentialsDTO): Promise<TLoginResponseDTO & { refreshTokenSecureCookie: TRefreshTokenSecureCookie
+  async execute(request: TLoginRequestDTO): Promise<TLoginResponseDTO & { refreshTokenSecureCookie: TRefreshTokenSecureCookie
   }> {
     const { email, password } = request;
 
-    const user = await this.userCredRepo.findOne({ filter: { email } });
+    const user = await this.userCredRepo.findOne({ email });
     if (!user) {
       throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 400);
     }

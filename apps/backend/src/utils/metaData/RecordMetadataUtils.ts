@@ -1,4 +1,4 @@
-import type { TRecordMetadata, TUserId } from '@sh3pherd/shared-types';
+import type { TRecordMetadata, TUserId, TContractId } from '@sh3pherd/shared-types';
 
 
 /**
@@ -10,13 +10,15 @@ export class RecordMetadataUtils {
    * Initializes `created_at`, `updated_at` to the current date, and sets `active` to true.
    *
    * @param creator_id - The ID of the user creating the record.
+   * @param context - Optional contract context ID.
    * @returns A fully initialized metadata object.
    */
-  static create(creator_id: TUserId): TRecordMetadata {
+  static create(creator_id: TUserId, context?: TContractId): TRecordMetadata {
     const dateNow = new Date();
 
     return {
       created_by: creator_id,
+      creation_context: context,
       created_at: dateNow,
       updated_at: dateNow,
       active: true
@@ -72,15 +74,17 @@ export class RecordMetadataUtils {
   static stripDocMetadata<TRecord extends object>(
     doc: TRecord & TRecordMetadata
   ): Omit<TRecord, keyof TRecordMetadata> {
-    const { created_at, created_by, updated_at, active, ...domain } = doc;
-    return domain;
+    const { created_at, created_by, creation_context, updated_at, active, ...domain } = doc;
+    return domain ;
   };
 
   static stripDocArrayMetadata<TDomain extends object>(
     docs: Array<TDomain & TRecordMetadata>
   ): Omit<TDomain, keyof TRecordMetadata>[] {
-    return docs.map(({ created_at, created_by, updated_at, active, ...rest }) => rest);
+    return docs.map(({ created_at, created_by, creation_context, updated_at, active, ...rest }) => rest);
   };
+
+
 
 
 }

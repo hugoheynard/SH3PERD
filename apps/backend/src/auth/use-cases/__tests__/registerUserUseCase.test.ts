@@ -10,7 +10,7 @@ import { BusinessError } from '../../../utils/errorManagement/errorClasses/Busin
 import type {
   TFindUserCredentialsByEmailFn,
   TSaveUserCredentialsFn,
-} from '../../../user/repository/UserCredentialsMongoRepository.js';
+} from '../../../user/credentials/UserCredentialsMongoRepo.repository.js';
 
 describe('createRegisterUserUseCase', () => {
   const email = 'new@example.com';

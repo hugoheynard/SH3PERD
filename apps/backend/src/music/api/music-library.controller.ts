@@ -2,7 +2,7 @@ import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import type { TSingleUserMusicLibraryRequestDTO, TUserMusicLibraryResponseDTO } from '@sh3pherd/shared-types';
 import { apiCodes, buildApiResponse } from '../codes.js';
-import type { TMusicLibraryUseCases } from '../useCases/library/createMusicLibraryUseCases.js';
+import type { TMusicLibraryUseCases } from '../useCases/library/MusicLibraryUseCasesFactory.js';
 import { MUSIC_LIBRARY_USE_CASES } from '../music.tokens.js';
 
 /**

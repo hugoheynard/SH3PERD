@@ -1,37 +1,99 @@
 @use 'tokens' as t;
 @use 'mixins' as m;
 
+
+
 :host {
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
 }
 
 .data-list {
-
+  background: var(--dataList-bg);
+  border: 1px solid var(--dataList-border);
+  box-shadow: var(--dataList-shadow);
+  border-radius: 8px;
+  border: 1px solid #7d808030;
 }
 
 .data-header {
-  @include m.listItemLayout;
+  //@include m.listItemLayout;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
   font-weight: bold;
   height: 3rem;
+  padding: 0 0.5rem;
+  background-color: var(--dataList-header-bg);
+  color: var(--dataList-header-color);
+  border-bottom: 1px solid var(--dataList-header-border);
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+
+  .data-cell {
+    flex: 1;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 0 0.25rem;
+  }
 }
 
 .data-row{
-  @include m.listItemLayout;
+  //@include m.listItemLayout;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  height: 3rem;
+  height: 2.75rem;
+  background-color: var(--dataList-row-bg);
+  border-bottom: 1px solid var(--dataList-row-border);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+
+  &:nth-child(even) {
+    background-color: var(--dataList-row-alt-bg);
+  }
+
+  &:last-child {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+
+  &:hover {
+    background-color: var(--dataList-row-hover-bg);
+    border-color: var(--dataList-row-active-border);
+  }
+
+  &.active {
+    background-color: var(--dataList-row-active-bg);
+    border-left: 3px solid var(--dataList-row-active-border);
+  }
+
+  &.error {
+    background-color: var(--dataList-row-error-bg);
+  }
+
+  &.warning {
+    background-color: var(--dataList-row-warning-bg);
+  }
+
+  .data-cell {
+    flex: 1;
+    padding: 0 0.75rem;
+    font-size: 0.8rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    color: var(--dataList-cell-text);
+    border-right: 1px solid var(--dataList-cell-border);
+
+    &:first-child {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+
+
+  }
 }
 
-.data-cell {
-
-}

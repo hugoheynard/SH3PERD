@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MUSIC_LIBRARY_USE_CASES, MUSIC_LIBRARY_USE_CASES_FACTORY } from '../music.tokens.js';
-import { MusicLibraryUseCasesFactory } from './library/createMusicLibraryUseCases.js';
+import { MusicLibraryUseCasesFactory } from './library/MusicLibraryUseCasesFactory.js';
 
 @Module({
   imports: [],

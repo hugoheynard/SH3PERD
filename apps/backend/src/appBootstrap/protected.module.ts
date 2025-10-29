@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
 import { MusicModule } from '../music/music.module.js';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, } from '@nestjs/core';
 import { ContractContextGuard } from '../contracts/api/contract-context.guard.js';
 import { TokenFunctionsModule } from '../auth/core/TokenFunctions.module.js';
 import { ContractModule } from '../contracts/contract.module.js';
 import { UserModule } from '../user/user.module.js';
+import { UserGroupsModule } from '../userGroups/user-groups.module.js';
 
 
 @Module({
   imports: [
     TokenFunctionsModule,
     UserModule,
+    MusicModule,
     ContractModule,
-    MusicModule
+    UserGroupsModule
   ],
-  controllers: [],
   providers: [
     { provide: APP_GUARD, useClass: ContractContextGuard }
     ],

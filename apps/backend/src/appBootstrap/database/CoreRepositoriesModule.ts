@@ -1,38 +1,38 @@
 import { Global, Module, type Provider, type Type } from '@nestjs/common';
 import {
+  CONTRACT_READ_REPO,
   CONTRACT_REPO,
-  CORE_REPOSITORIES,
   EVENT_UNIT_REPO,
   MUSIC_REFERENCE_REPO,
   MUSIC_REPERTOIRE_REPO,
   MUSIC_VERSION_REPO,
   REFRESH_TOKEN_REPO,
-  USER_CREDENTIALS_REPO,
+  USER_CREDENTIALS_REPO, USER_GROUPS_REPO,
   USER_PREFERENCES_REPO,
   USER_PROFILE_REPO,
 } from '../nestTokens.js';
 import { ConfigService } from '@nestjs/config';
 import type { MongoClient } from 'mongodb';
-import { createCoreRepositories } from '../initFactories/createCoreRepositories.js';
-import { MONGO_CLIENT } from './MongoModule.js';
 import {
   type IUserPreferencesRepository,
   UserPreferencesMongoRepository,
-} from '../../user/repository/UserPreferencesMongoRepository.js';
+} from '../../user/preferences/UserPreferencesMongoRepo.repository.js';
 import {
   type IUserCredentialsRepository,
   UserCredentialsMongoRepository,
-} from '../../user/repository/UserCredentialsMongoRepository.js';
+} from '../../user/credentials/UserCredentialsMongoRepo.repository.js';
 import {
   type IUserProfileRepository,
   UserProfileMongoRepository,
-} from '../../user/repository/UserProfileMongoRepository.js';
+} from '../../user/profile/UserProfileMongoRepo.repository.js';
 import {
   type IRefreshTokenRepository,
   RefreshTokenMongoRepository,
 } from '../../auth/repositories/RefreshTokenMongoRepository.js';
-import type { IContractRepository } from '../../contracts/repositories/contracts.repository.types.js';
-import { ContractMongoRepository } from '../../contracts/repositories/ContractMongoRepository.js';
+import {
+  ContractMongoRepository,
+  type IContractRepository,
+} from '../../contracts/repositories/ContractMongoRepository.js';
 import {
   EventUnitMongoRepository,
   type IEventUnitRepository,
@@ -45,6 +45,12 @@ import {
 import type { IMusicRepertoireRepository } from '../../music/types/musicRepertoire.core.types.js';
 import { MusicReferenceMongoRepository } from '../../music/repositories/MusicReferenceRepository.js';
 import { MusicRepertoireMongoRepository } from '../../music/repositories/MusicRepertoireRepository.js';
+import {
+  type IUserGroupsMongoRepository,
+  UserGroupsMongoRepository,
+} from '../../userGroups/infra/UserGroupsMongoRepository.js';
+import { MONGO_CLIENT } from './db.tokens.js';
+import { ContractReadRepository } from '../../contracts/repositories/ContractReadRepository.js';
 
 
 // --- HELPERS ---
@@ -74,7 +80,8 @@ export type TCoreRepositories = {
   //USER
   userCredentials: IUserCredentialsRepository;
   userProfile: IUserProfileRepository;
-  userPreferences: IUserPreferencesRepository; // Add UserPreferencesRepository when implemented
+  userPreferences: IUserPreferencesRepository;
+  userGroups: IUserGroupsMongoRepository;
   //CONTRACTS
   contract: IContractRepository;
   eventUnit: IEventUnitRepository;
@@ -96,26 +103,29 @@ export type TCoreRepositories = {
 @Global()
 @Module({
   providers: [
-    {
-      provide: CORE_REPOSITORIES,
-      useFactory: (client: MongoClient, config: ConfigService): TCoreRepositories => {
-        return createCoreRepositories({
-          client,
-          dbName: config.get<string>('CORE_DB_NAME'),
-        });
-      },
-      inject: [MONGO_CLIENT, ConfigService],
-    },
     mongoRepoProvider<IRefreshTokenRepository>(REFRESH_TOKEN_REPO, RefreshTokenMongoRepository, 'refreshToken'),
     mongoRepoProvider<IUserCredentialsRepository>(USER_CREDENTIALS_REPO, UserCredentialsMongoRepository, 'user_credentials'),
     mongoRepoProvider<IUserProfileRepository>(USER_PROFILE_REPO, UserProfileMongoRepository, 'user_profiles'),
     mongoRepoProvider<IUserPreferencesRepository>(USER_PREFERENCES_REPO, UserPreferencesMongoRepository, 'user_preferences'),
+    mongoRepoProvider<IUserGroupsMongoRepository>(USER_GROUPS_REPO, UserGroupsMongoRepository, 'user_groups'),
     mongoRepoProvider<IContractRepository>(CONTRACT_REPO, ContractMongoRepository, 'contracts'),
+    { provide: CONTRACT_READ_REPO, useClass: ContractReadRepository },
     mongoRepoProvider<IEventUnitRepository>(EVENT_UNIT_REPO, EventUnitMongoRepository, 'eventUnits'),
     mongoRepoProvider<IMusicReferenceRepository>(MUSIC_REFERENCE_REPO, MusicReferenceMongoRepository, 'music_references'),
     mongoRepoProvider<IMusicVersionRepository>(MUSIC_VERSION_REPO, MusicVersionRepository, 'music_version'),
     mongoRepoProvider<IMusicRepertoireRepository>(MUSIC_REPERTOIRE_REPO, MusicRepertoireMongoRepository, 'music_repertoireEntries'),
   ],
-  exports: [CORE_REPOSITORIES, USER_PREFERENCES_REPO, REFRESH_TOKEN_REPO, USER_CREDENTIALS_REPO, USER_PROFILE_REPO, CONTRACT_REPO, EVENT_UNIT_REPO, MUSIC_REFERENCE_REPO, MUSIC_VERSION_REPO, MUSIC_REPERTOIRE_REPO],
+  exports: [
+    USER_PREFERENCES_REPO,
+    REFRESH_TOKEN_REPO,
+    USER_CREDENTIALS_REPO,
+    USER_PROFILE_REPO,
+    CONTRACT_REPO,
+    CONTRACT_READ_REPO,
+    USER_GROUPS_REPO,
+    EVENT_UNIT_REPO,
+    MUSIC_REFERENCE_REPO,
+    MUSIC_VERSION_REPO,
+    MUSIC_REPERTOIRE_REPO],
 })
 export class CoreRepositoriesModule {}

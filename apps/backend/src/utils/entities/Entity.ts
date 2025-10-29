@@ -1,4 +1,6 @@
 import { randomUUID } from 'crypto';
+import { RecordMetadataUtils } from '../metaData/RecordMetadataUtils.js';
+import type { TRecordMetadata } from '@sh3pherd/shared-types';
 
 export type TId<T extends string> = `${T}_${string}`;
 
@@ -56,4 +58,19 @@ export abstract class Entity<TDomainModel extends {id: TDomainModel['id']}> {
   private generateId(prefix: string): TDomainModel['id'] {
     return `${prefix}_${randomUUID()}`;
   };
+
+  /**
+   * Generic factory to construct an Entity from a DB record,
+   * stripping metadata fields.
+   */
+  static fromRecord<
+    TRecord extends TRecordMetadata & Record<string, unknown>,
+    TEntity extends Entity<any>
+  >(
+    this: new (props: Omit<TRecord, keyof TRecordMetadata>) => TEntity,
+    record: TRecord
+  ): TEntity {
+    const cleanProps = RecordMetadataUtils.stripDocMetadata(record);
+    return new this(cleanProps);
+  }
 }

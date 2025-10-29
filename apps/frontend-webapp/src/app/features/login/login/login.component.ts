@@ -5,8 +5,8 @@ import {NgOptimizedImage} from '@angular/common';
 import {SnackbarService} from '../../../core/services/snackbar.service';
 import {AuthService} from '../../../core/services/auth.service';
 import {firstValueFrom} from 'rxjs';
-import type { TUserCredentialsDTO } from '@sh3pherd/shared-types';
 import { Router } from '@angular/router';
+import type { TLoginRequestDTO } from '@sh3pherd/shared-types';
 
 @Component({
   selector: 'login',
@@ -28,7 +28,7 @@ export class LoginComponent {
     this.isFormValid = valid;
   };
 
-  async onLogin(credentials: TUserCredentialsDTO): Promise<void> {
+  async onLogin(credentials: TLoginRequestDTO): Promise<void> {
     const success = await firstValueFrom(this.authService.login$(credentials));
 
     if (!success) {

@@ -1,12 +1,10 @@
 import { z } from 'zod';
 import type { TUserPreferencesDomainModel } from './user-preferences.js';
 import type { TUserProfileDomainModel } from './user-profile.js';
+import { createIdSchema } from '../utils/createIdSchema.js';
 
 // USER ID
-export const SUserId = z.custom<`user_${string}`>(
-  (val): val is `user_${string}` =>
-    typeof val === "string" && val.startsWith("user_"), { message: 'Invalid eventUnit_id format. Expected format: eventUnit_<unique_identifier>' }
-);
+export const SUserId = createIdSchema('user');
 export type TUserId = `user_${string}` | z.infer<typeof SUserId>;
 
 
@@ -23,7 +21,5 @@ export type TUserMeViewModel =
 
 
 
-
-export const SUserGroupId = z.string().regex(/^userGroup_[a-zA-Z0-9_-]+$/, { message: 'Invalid userGroup_id format' } );
 
 

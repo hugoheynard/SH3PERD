@@ -1,6 +1,7 @@
 import { bootstrapTestApp } from './bootstrapTestApp.js';
 
-import { MONGO_CLIENT } from '../../src/appBootstrap/database/MongoModule.js';
+
+import { MONGO_CLIENT } from '../../src/appBootstrap/database/db.tokens.js';
 
 export const getTestDb = async () => {
   const app = await bootstrapTestApp();

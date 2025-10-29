@@ -1,11 +1,11 @@
-import type { Filter, FindOneAndUpdateOptions, OptionalUnlessRequiredId, UpdateFilter } from 'mongodb';
+import type { ClientSession, Filter, FindOneAndUpdateOptions, OptionalUnlessRequiredId, UpdateFilter } from 'mongodb';
 
 /*
  * Type definition for CRUD functions using Mongo.
  */
 export type TGenericSaveFn<TRecord> = (docOrDocs: TRecord | TRecord[]) => Promise<boolean>;
 
-export type TGenericRepoFindOneFn<TRecord> = (input: { filter: Partial<TRecord> | Filter<TRecord> }) => Promise<TRecord | null>;
+export type TGenericRepoFindOneFn<TRecord> = (filter: Partial<TRecord> | Filter<TRecord>) => Promise<TRecord | null>;
 
 /**
  * Type definition for a generic repository update function.
@@ -14,9 +14,9 @@ export type TGenericRepoFindOneFn<TRecord> = (input: { filter: Partial<TRecord> 
  */
 export type TGenericRepoUpdateOneFn<TRecord> = (input: { filter: Partial<TRecord> | Filter<TRecord>, update: Partial<TRecord> | UpdateFilter<TRecord> }) => Promise<TRecord | null>;
 
-export type TSaveMongoFn<TRecord> = (docOrDocs: OptionalUnlessRequiredId<TRecord> | OptionalUnlessRequiredId<TRecord>[]) => Promise<boolean>;
+export type TSaveMongoFn<TRecord> = (docOrDocs: OptionalUnlessRequiredId<TRecord> | OptionalUnlessRequiredId<TRecord>[], session?: ClientSession) => Promise<boolean>;
 export type TFindOneMongoFn<TRecord> = (filter: Filter<TRecord>) => Promise<TRecord | null>;
-export type TFindManyMongoFn<TRecord> = (filter: Filter<TRecord>) => Promise<TRecord[] | null>;
+export type TFindManyMongoFn<TRecord> = (input: { filter: Filter<TRecord> }) => Promise<TRecord[] | null>;
 export type TUpdateOneMongoFn<TRecord> = (input: { filter: Filter<TRecord>; update: UpdateFilter<TRecord>; options?: FindOneAndUpdateOptions; }) => Promise<TRecord | null>;
 export type TDeleteOneMongoFn<TRecord> = (filter: Filter<TRecord>) => Promise<boolean>;
 export type TDeleteManyMongoFn<TRecord> = (filter: Filter<TRecord>) => Promise<boolean>;
@@ -32,5 +32,7 @@ export interface IBaseCRUD<TRecord> {
   //updateMany: any;
   deleteOne: TDeleteOneMongoFn<TRecord>;
   deleteMany: TDeleteManyMongoFn<TRecord>;
+
+  startSession: ()=> ClientSession;
 }
 

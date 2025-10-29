@@ -17,4 +17,4 @@ export type TFindMusicRepertoireByUserIdFn = (input: {
 // Repository interface for Music Repertoire
 export interface IMusicRepertoireRepository extends IBaseCRUD<TMusicRepertoireEntryDomainModel> {
   findRepertoireByUserId: TFindMusicRepertoireByUserIdFn;
-};
+}

@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { UserUseCasesModule } from './useCases/user-use-cases.module.js';
-import { UserController } from './api/user.controller.js';
+import { UserController } from './user.controller.js';
+
 
 @Module({
-  imports: [UserUseCasesModule],
+  imports: [
+    UserUseCasesModule,
+
+  ],
   controllers: [ UserController],
 })
 export class UserModule {}

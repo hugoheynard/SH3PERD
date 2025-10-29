@@ -3,7 +3,7 @@ import type { Request } from 'express';
 import { MUSIC_REPERTOIRE_USE_CASES } from '../music.tokens.js';
 import type { TMusicRepertoireUseCases } from '../types/musicRepertoire.useCases.types.js';
 
-@Controller('musicRepertoire')
+@Controller('repertoire')
 export class MusicRepertoireController {
   // This controller will handle routes related to music repertoire.
   // You can define methods here to handle specific requests, such as getting repertoire data,

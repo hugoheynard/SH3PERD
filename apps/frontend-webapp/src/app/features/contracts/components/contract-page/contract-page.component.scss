@@ -15,10 +15,4 @@
   @include m.listItemLayout;
 }
 
-.listEntryContainer{
-  @include m.listItemLayout;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-}
+

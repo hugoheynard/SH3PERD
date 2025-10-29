@@ -28,7 +28,7 @@
   display: grid;
   grid-column: span 4;
   grid-template-columns: repeat(3, 1fr);
-  background-color: var(--listItemContainer2-bg);
+  background-color: var(--surface2-bgColor);
   border-radius: 6px;
   padding: 0.5rem;
   gap: 2rem;

@@ -1,14 +1,16 @@
 import { Component, inject } from '@angular/core';
-import { ButtonSecondaryComponent } from '@sh3pherd/ui-angular';
-import { PaginatorComponent } from '../../../../shared/paginator/paginator.component';
+import { ButtonIconComponent } from '@sh3pherd/ui-angular';
 import { ContractStore } from '../../services/contract.store';
+import { DataListComponent } from '../../../../core/components/data-list/data-list.component';
+import type { TContractId } from '@sh3pherd/shared-types';
 
 @Component({
   selector: 'app-contract-page',
   imports: [
-    PaginatorComponent,
-    ButtonSecondaryComponent,
+    DataListComponent,
+    ButtonIconComponent,
   ],
+  standalone: true,
   templateUrl: './contract-page.component.html',
   styleUrl: './contract-page.component.scss'
 })
@@ -21,6 +23,10 @@ export class ContractPageComponent {
     // Initialization logic here
     this.store.loadMyContracts({});
     console.log('Contracts loaded:', this.contracts());
+  };
+
+  edit(contractId: TContractId): void {
+    console.log('Contract page edited:', contractId);
   };
 
 }

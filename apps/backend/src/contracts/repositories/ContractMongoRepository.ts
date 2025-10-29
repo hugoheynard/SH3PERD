@@ -1,29 +1,33 @@
-import { BaseMongoRepository } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type {
-  IContractRepository,
-  TContractMongoRepositoryDeps,
-  TMarkContractAsFavoriteFn,
-} from './contracts.repository.types.js';
+import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
-import type {
-  TUserId,
-  TContractRecord
-} from '@sh3pherd/shared-types';
+import type { TContractRecord, TUserId, TContractId } from '@sh3pherd/shared-types';
 import type { Filter } from 'mongodb';
-import type { TContractViewModel } from '../useCase/GetContractsByFilterUseCase.js';
+import type { TContractViewModel } from '../useCase/GetCurrentUserContracts.useCase.js';
+import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
+
+export interface IContractRepository extends IBaseCRUD<TContractRecord> {
+  markContractAsFavorite: (input: {
+    contract_id: TContractId;
+    user_id: TUserId;
+  }) => Promise<TContractRecord | null>;
+}
+
+export type TCreateContractFn = IContractRepository['save'];
+export type TMarkContractAsFavoriteFn = IContractRepository['markContractAsFavorite'];
 
 export class ContractMongoRepository
   extends BaseMongoRepository<TContractRecord>
   implements IContractRepository
 {
-  constructor(input: TContractMongoRepositoryDeps) {
+  constructor(input: TBaseMongoRepoDeps) {
     super(input);
   }
 
   async contractViewModelPipelineByFilter(
     filter: Filter<TContractRecord>
   ): Promise<TContractViewModel[]> {
+
     return this.collection
       .aggregate<TContractViewModel>([
         { $match: filter },
@@ -61,6 +65,7 @@ export class ContractMongoRepository
       ])
       .toArray();
   };
+
 
 
 

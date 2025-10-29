@@ -7,7 +7,7 @@ import {
 } from '../contracts.tokens.js';
 import { CreateContractUseCase } from './CreateContractUseCase.js';
 import { ContractsUseCaseFactory } from './ContractUseCasesFactory.js';
-import { GetContractsByFilterUseCase } from './GetContractsByFilterUseCase.js';
+import { GetCurrentUserContractList } from './GetCurrentUserContracts.useCase.js';
 
 @Module({
   imports: [],
@@ -19,7 +19,7 @@ import { GetContractsByFilterUseCase } from './GetContractsByFilterUseCase.js';
       inject: [CONTRACTS_USE_CASES_FACTORY],
     },
     { provide: CREATE_CONTRACT_USE_CASE, useClass: CreateContractUseCase },
-    { provide: GET_CONTRACTS_BY_FILTER_USE_CASE, useClass: GetContractsByFilterUseCase },
+    { provide: GET_CONTRACTS_BY_FILTER_USE_CASE, useClass: GetCurrentUserContractList },
   ],
   exports: [CONTRACTS_USE_CASES],
 })

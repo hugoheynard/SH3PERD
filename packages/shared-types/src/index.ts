@@ -33,11 +33,13 @@ export { SRecordMetadata } from './metadata.types.js';
 //COMPANY
 export * from './company.domain.js';
 export * from './contracts.domain.types.js'
+export * from './contract.viewModel.types.js';
 export * from './contracts.dto.types.js';
 
 
 //CALENDAR
 export * from './event.domain.js';
+export { createIdSchema } from './utils/createIdSchema.js';
 
 
 

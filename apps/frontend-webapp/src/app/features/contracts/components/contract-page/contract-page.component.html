@@ -2,18 +2,19 @@
   Favorite Contract
 </div>
 
-<div>
-  <div class="listEntryContainer">
-    <span>Company</span>
-    <span>Start date</span>
-    <span>End date</span>
-    <span>Roles</span>
-    <span>Status</span>
-    <span>Completion</span>
-    <sh3-button-secondary [buttonLabel]="'Open contract workspace'"/>
+<data-list
+  [data]="contracts()"
+  [column]="[
+  { fromKey: 'company_name', label: 'company' },
+  { fromKey: 'status' },
+  { fromKey: 'startDate', label: 'start date', pipe: 'date', pipeArgs: ['shortDate'] },
+  { fromKey: 'endDate', label: 'end date', pipe: 'date', pipeArgs: ['shortDate'] }
+  ]"
+  [rowActionsTemplate]="actionsTemplate"
+/>
 
-    <span></span>
-  </div>
-  <paginator />
-</div>
+<!-- row action template -->
+<ng-template #actionsTemplate let-contract>
+  <sh3-button-icon icon='edit' (clicked)="edit(contract)"/>
+</ng-template>
 

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, forwardRef, Input, Output, TemplateRef } from '@angular/core';
-import { NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -37,8 +37,6 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
 @Component({
   selector: 'sh3-select-list',
   imports: [
-    NgForOf,
-    NgIf,
     NgTemplateOutlet,
   ],
   templateUrl: './select-list.component.html',

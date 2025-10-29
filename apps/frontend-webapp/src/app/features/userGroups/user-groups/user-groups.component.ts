@@ -8,6 +8,7 @@ import { ButtonIconComponent } from '@sh3pherd/ui-angular';
     DataListComponent,
     ButtonIconComponent,
   ],
+  standalone: true,
   templateUrl: './user-groups.component.html',
   styleUrl: './user-groups.component.scss'
 })

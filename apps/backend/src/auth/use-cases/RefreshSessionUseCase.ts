@@ -58,7 +58,7 @@ export class RefreshSessionUseCase {
   async execute(input: any) {
     const { refreshToken } = input;
 
-    const token = await this.refreshTokenRepo.findOne({ filter: { refreshToken } });
+    const token = await this.refreshTokenRepo.findOne({ refreshToken });
 
     if (!token) {
       throw new BusinessError('Refresh token not found', 'TOKEN_NOT_FOUND', 401);

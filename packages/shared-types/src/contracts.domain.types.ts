@@ -2,23 +2,20 @@ import { z } from 'zod';
 import { SUserId, type TUserId } from './user/user.domain.js';
 import { SCompanyId, type TCompanyId } from './company.domain.js';
 import type { TRecordMetadata } from './metadata.types.js';
-
+import { createIdSchema } from './utils/createIdSchema.js';
 
 // -------------------------
 // Contract & Signature IDs
 // -------------------------
-export const SContractId = z.custom<`contract_${string}`>(
-  (val): val is `contract_${string}` =>
-    typeof val === "string" && val.startsWith("contract_"), { message: 'Invalid contract format. Expected format: contract_<unique_identifier>' }
-);
+export const SContractId = createIdSchema('contract');
 export type TContractId = `contract_${string}`| z.infer<typeof SContractId>;
 
-export const SContractSignatureId = z.string().regex(/^contractSignature_[a-zA-Z0-9_-]+$/, { message: 'Invalid contractSignature_id format' });
+export const SContractSignatureId = createIdSchema('contract_signature');
 
-export const SSignatureId = z.string().regex(/^signature_[a-zA-Z0-9_-]+$/, { message: 'Invalid signature_id format' });
+export const SSignatureId = createIdSchema('signature_id');
 export type TSignatureId = `signature_${string}` | z.infer<typeof SSignatureId>;
 
-export const SAddendumId = z.string().regex(/^addendum_[a-zA-Z0-9_-]+$/, { message: 'Invalid addendum_id format' });
+export const SAddendumId = createIdSchema('addendum');
 export type TAddendumId = `addendum_${string}` | z.infer<typeof SAddendumId>;
 
 // -------------------------
@@ -109,7 +106,7 @@ export const SContractDomainModel = z.object({
  * the contract's status, trial period, and important dates.
  */
 export type TContractDomainModel = {
-  contract_id: TContractId;
+  id: TContractId;
   user_id: TUserId;
   company_id: TCompanyId;
   status: TContractStatusEnum;

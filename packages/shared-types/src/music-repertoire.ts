@@ -14,7 +14,9 @@ export type TMusicRepertoireEntryDomainModel = {
   user_id: TUserId;
   performer_id: TUserId;
   effort: TEffortLevel;
+  energy: 1 | 2 | 3 | 4;
   mastery: TMasteryLevel;
+  affinity: 1 | 2 | 3 | 4;
   created_at: Date;
   updated_at: Date;
   created_by: TUserId;

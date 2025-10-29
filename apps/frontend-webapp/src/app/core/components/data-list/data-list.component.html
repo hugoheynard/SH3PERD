@@ -1,7 +1,7 @@
 <div class="data-list">
   <div class="data-header">
-    @for (key of displayedKeys(); track key) {
-      <div class="data-cell font-semibold">{{ key }}</div>
+    @for (col of column(); track col.fromKey) {
+      <div class="data-cell font-semibold">{{ col.label ?? col.fromKey }}</div>
     }
     @if (rowActionsTemplate()) {
       <div class="data-cell font-semibold">Actions</div>
@@ -10,8 +10,10 @@
 
   @for (item of data(); track item) {
     <div class="data-row">
-      @for (key of displayedKeys(); track key) {
-        <div class="data-cell">{{ item[key] }}</div>
+      @for (col of column(); track col.fromKey) {
+        <div class="data-cell">
+          {{ formatValue(item[col.fromKey], col) }}
+        </div>
       }
       @if (rowActionsTemplate()) {
         <div class="data-cell">

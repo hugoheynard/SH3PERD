@@ -1,8 +1,8 @@
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { CalendarService } from './calendar.service';
 import type { TUserId, TUserGroupId, TContractId } from '@sh3pherd/shared-types';
-//import { UserContextService } from '../../core/services/user-context.service';
-import { WorkspaceContextService } from '../../core/services/workspace-context.service';
+import { UserContextService } from '../../core/services/user-context.service';
+
 
 export interface CalendarDataRequest {
   users: TUserId[],
@@ -23,8 +23,7 @@ export type CalendarDataResponse = any;
 })
 export class CalendarStore {
   private readonly calendarService = inject(CalendarService);
-  //private readonly userCtx = inject(UserContextService);
-  private readonly workspaceCtx = inject(WorkspaceContextService);
+  private readonly userCtx = inject(UserContextService);
 
   /**
    * Parameters for loading calendar data
@@ -34,7 +33,7 @@ export class CalendarStore {
     users: [],
     scope: {
       type: 'me',
-      contract_id: this.workspaceCtx.currentContractIdStrict()
+      contract_id: this.userCtx.currentContractIdStrict()
     },
     granularity: 'day',
     date: new Date(Date.now()),
@@ -73,7 +72,7 @@ export class CalendarStore {
     this.setParams({
       scope: {
         type: 'me',
-        contract_id: this.workspaceCtx.currentContractIdStrict()
+        contract_id: this.userCtx.currentContractIdStrict()
       },
       granularity: 'day',
       users: ['user_hugo'],

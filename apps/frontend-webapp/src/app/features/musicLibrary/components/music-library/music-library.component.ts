@@ -19,7 +19,7 @@ import {
 
 @Component({
     selector: 'app-music-library',
-  imports: [TabSystemComponent, MusicRepertoireTableComponent],
+  imports: [MusicRepertoireTableComponent],
     templateUrl: './music-library.component.html',
     standalone: true,
     styleUrl: './music-library.component.scss',

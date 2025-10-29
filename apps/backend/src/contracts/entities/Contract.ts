@@ -1,34 +1,15 @@
-import type { TContractDomainModel, TContractId } from '@sh3pherd/shared-types';
+import type { TContractDomainModel } from '@sh3pherd/shared-types';
+import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
 
 /**
  * Contract entity represents a contract between a user and a company.
  */
-export class Contract {
-  constructor(private _props: TContractDomainModel) {}
-
-  // ----------- Methods ----------- //
-
-  isActive(date?: Date): boolean {
-    const dateToCompare = date ? date: new Date();
-    return this.startDate <= dateToCompare
-    && this.endDate ? dateToCompare <= this.endDate : true;
+export class Contract extends Entity<TContractDomainModel>{
+  constructor(props: TEntityInput<TContractDomainModel>) {
+    super(props, 'contract');
   };
-
-  isSignedByUser(): boolean {
-    return !!this.props.signedBy?.user;
-  };
-
-  isSignedByCompany(): boolean {
-    return !!this.props.signedBy?.company;
-  };
-
 
   // ----------- Getters ----------- //
-
-  get contract_id(): TContractId {
-    return this.props.contract_id;
-  };
-
   get startDate(): Date {
     return this.props.startDate;
   };
@@ -44,8 +25,21 @@ export class Contract {
 
    */
 
-  get props(): TContractDomainModel {
-    return this._props;
+
+  // ----------- Methods ----------- //
+  isActive(date?: Date): boolean {
+    const dateToCompare = date ? date: new Date();
+    return this.startDate <= dateToCompare && this.endDate ? dateToCompare <= this.endDate : true;
   };
+
+  isSignedByUser(): boolean {
+    return !!this.props.signedBy?.user;
+  };
+
+  isSignedByCompany(): boolean {
+    return !!this.props.signedBy?.company;
+  };
+
+
 
 }

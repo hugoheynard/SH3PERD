@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
-import { TestController } from '../test.controller.js';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration.js';
 import { MongoModule } from './database/MongoModule.js';
@@ -11,6 +10,11 @@ import { AuthModule } from '../auth/auth.module.js';
 import { AuthGuard } from '../auth/api/auth.guard.js';
 import { TokenFunctionsModule } from '../auth/core/TokenFunctions.module.js';
 import { CoreRepositoriesModule } from './database/CoreRepositoriesModule.js';
+import { UserModule } from '../user/user.module.js';
+import { ContractModule } from '../contracts/contract.module.js';
+import { MusicModule } from '../music/music.module.js';
+import { UserGroupsModule } from '../userGroups/user-groups.module.js';
+import { UserProfileModule } from '../user/profile/user-profile.module.js';
 
 @Module({
   imports: [
@@ -27,14 +31,32 @@ import { CoreRepositoriesModule } from './database/CoreRepositoriesModule.js';
     CoreRepositoriesModule,
     // Modules
     AuthModule,
+    UserModule,
+    UserProfileModule,
+    ContractModule,
     ProtectedModule,
     // ⚠️ Prefix split
     RouterModule.register([
       { path: 'auth', module: AuthModule },
-      { path: 'protected', module: ProtectedModule },
+      {
+        path: 'protected',
+        module: ProtectedModule,
+        children: [
+          {
+            path: 'user',
+            module: UserModule,
+            children: [
+              { path: 'profile', module: UserProfileModule }
+            ]
+          },
+          { path: 'music', module: MusicModule },
+          { path: 'contracts', module: ContractModule },
+          { path: 'user-groups', module: UserGroupsModule },
+        ]
+      },
     ]),
   ],
-  controllers: [AppController, TestController],
+  controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: AuthGuard }],
 })
 export class AppModule {}

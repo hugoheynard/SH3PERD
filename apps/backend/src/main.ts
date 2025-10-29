@@ -3,14 +3,25 @@ import { loadEnv } from './appBootstrap/config/loadEnv.js';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './appBootstrap/app.module.js';
 import cookieParser from 'cookie-parser';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 
 loadEnv(process.env['NODE_ENV'] || 'dev');
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn']
+    //logger: ['error', 'warn']
   });
+
+  const config = new DocumentBuilder()
+    .setTitle('API Documentation')
+    .setDescription('Plan et endpoints de mon application')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   app.enableCors({
     origin: 'http://localhost:4200', //TODO manager CORS avec env

@@ -30,20 +30,21 @@ export abstract class BaseMongoRepository<TRecord extends Document> implements I
    * Generic find method that can be reused by specific child implementations.
    */
   async findOne(filter: Filter<TRecord>): Promise<TRecord | null> {
+
     const result = await this.collection.findOne(filter);
     return result ? this.mapMongoDocToDomainModel(result): null;
   };
 
-  async findMany(filter: Filter<TRecord>, options?: FindOptions): Promise<TRecord[] | null> {
+  async findMany(input: { filter: Filter<TRecord>, options?: FindOptions }): Promise<TRecord[]> {
     const results = await this.collection.find(
-      filter,
+      input.filter,
       {
-        ...options,
-        projection: { ...(options?.projection ?? {}), _id: 0 }
+        ...input.options,
+        projection: { ...(input.options?.projection ?? {}), _id: 0 }
       }
     ).toArray();
 
-    return results.length > 0 ? results.map(r => this.mapMongoDocToDomainModel(r)) : null;
+    return results.length > 0 ? results.map(r => this.mapMongoDocToDomainModel(r)) : [];
   };
 
   /**
@@ -65,12 +66,12 @@ export abstract class BaseMongoRepository<TRecord extends Document> implements I
   /**
    * Generic create method that can be reused by specific child implementations.
    */
-  async save(docOrDocs: OptionalUnlessRequiredId<TRecord> | OptionalUnlessRequiredId<TRecord>[]): Promise<boolean> {
+  async save(docOrDocs: OptionalUnlessRequiredId<TRecord> | OptionalUnlessRequiredId<TRecord>[], session?: ClientSession): Promise<boolean> {
     if (!Array.isArray(docOrDocs)) {
-      const result = await this.collection.insertOne(docOrDocs);
+      const result = await this.collection.insertOne(docOrDocs, { session });
       return result.acknowledged && !!result.insertedId;
     }
-    const result = await this.collection.insertMany(docOrDocs);
+    const result = await this.collection.insertMany(docOrDocs, { session });
     return result.acknowledged && result.insertedCount === docOrDocs.length;
   };
 
@@ -94,7 +95,7 @@ export abstract class BaseMongoRepository<TRecord extends Document> implements I
    * Starts a new MongoDB client session.
    * @protected
    */
-  protected startSession(): ClientSession {
+  startSession(): ClientSession {
     return this.client.startSession();
   };
 

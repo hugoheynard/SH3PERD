@@ -1,6 +1,10 @@
 <data-list
-  [displayedKeys]="['name', 'description', 'users']"
   [data]="dataTest"
+  [column]="[
+    { fromKey: 'name', label: 'Group Name' },
+    { fromKey: 'description', label: 'Description' },
+  ]"
+
   [rowActionsTemplate]="actionsTemplate"
 />
 

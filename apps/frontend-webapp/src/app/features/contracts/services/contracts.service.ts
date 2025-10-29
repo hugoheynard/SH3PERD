@@ -1,15 +1,23 @@
 import { Injectable } from '@angular/core';
 import { BaseHttpService } from '../../../core/services/BaseHttpService';
-import type { TContractDomainModel } from '@sh3pherd/shared-types';
+import type { TContractListItemViewModel } from '@sh3pherd/shared-types';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContractsService extends BaseHttpService{
-  private readonly contractURL = this.apiURLService.api().protected().route('contract').build();
+  private readonly contractURL = this.apiURLService.api().protected().route('contracts').build();
 
-  getContracts_me(filter: any) {
-    return this.http.post<TContractDomainModel[]>(`${this.contractURL}/me`, filter );
+  /**
+   * Get current user's contract list
+   * @param filter
+   */
+  getCurrentUserContractList(filter: any) {
+    return this.http.post<TContractListItemViewModel[]>(`${this.contractURL}/me`, filter );
+  };
+
+  getUserContractList(user_id: string, filter: any) {
+    return this.http.post<TContractListItemViewModel[]>(`${this.contractURL}/user/${user_id}`, filter );
   };
 }

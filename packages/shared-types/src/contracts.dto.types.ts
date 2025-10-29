@@ -6,6 +6,7 @@ import type { TContractDomainModel } from './contracts.domain.types.js';
 export type TCreateContractRequestDTO = {
   company_id: TCompanyId;
   user_id: TUserId;
+  status: TContractDomainModel['status'];
   startDate: Date;
   endDate?: Date;
 }

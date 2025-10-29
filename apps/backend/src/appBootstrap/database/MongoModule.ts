@@ -1,9 +1,8 @@
 import { Global, Module } from '@nestjs/common';
 import { getMongoClient } from './getMongoClient.js';
 import { ConfigService } from '@nestjs/config';
-import { MongoClient } from 'mongodb';
-
-export const MONGO_CLIENT: symbol = Symbol('MONGO_CLIENT');
+import { type Db, MongoClient } from 'mongodb';
+import { MONGO_CLIENT, MONGO_CORE_DB } from './db.tokens.js';
 
 /**
  * @module MongoModule
@@ -34,7 +33,14 @@ export const MONGO_CLIENT: symbol = Symbol('MONGO_CLIENT');
       },
       inject: [ConfigService],
     },
+    {
+      provide: MONGO_CORE_DB,
+      useFactory: async (client: MongoClient, config: ConfigService): Promise<Db> => {
+        return client.db(config.get<string>('CORE_DB_NAME'));
+      },
+      inject: [MONGO_CLIENT, ConfigService]
+    },
   ],
-  exports: [MONGO_CLIENT],
+  exports: [MONGO_CLIENT, MONGO_CORE_DB],
 })
 export class MongoModule {}

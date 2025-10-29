@@ -2,7 +2,7 @@ import type { TAuthUseCases } from '../../auth/types/auth.core.useCase.js';
 import type { TMusicRepertoireUseCases } from '../../music/types/musicRepertoire.useCases.types.js';
 import type { TMusicReferencesUseCases } from '../../music/useCases/references/createMusicReferencesUseCases.js';
 import {  type TMusicVersionsUseCases } from '../../music/useCases/versions/createMusicVersionsUseCases.js';
-import {  type TMusicLibraryUseCases } from '../../music/useCases/library/createMusicLibraryUseCases.js';
+import {  type TMusicLibraryUseCases } from '../../music/useCases/library/MusicLibraryUseCasesFactory.js';
 import { type TContractsUseCases } from '../../contracts/useCase/ContractUseCasesFactory.js';
 
 

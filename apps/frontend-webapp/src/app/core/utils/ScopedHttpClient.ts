@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { WorkspaceContextService } from '../services/workspace-context.service';
+import { UserContextService } from '../services/user-context.service';
 
 /**
  * HttpClient contextuel et stateless, avec API fluide
@@ -10,11 +10,12 @@ import { WorkspaceContextService } from '../services/workspace-context.service';
 @Injectable({ providedIn: 'root' })
 export class ScopedHttpClient {
   private readonly http = inject(HttpClient);
-  private readonly contractContext = inject(WorkspaceContextService);
+  private readonly contractId = inject(UserContextService).currentContractId();
 
   /** Crée un nouveau scope avec les headers donnés */
   private scoped(headers: HttpHeaders) {
     const self = this;
+    const contractId = this.contractId;
 
     return {
       /** Ajouter un header custom */
@@ -32,7 +33,6 @@ export class ScopedHttpClient {
       },
 
       withContract() {
-        const contractId = self.contractContext.currentContractId();
         if (!contractId) {
           return self.scoped(headers);
         }
@@ -80,11 +80,10 @@ export class ScopedHttpClient {
 
   /** Point d’entrée de la DSL : crée un scope contractuel */
   withContract() {
-    const contractId = this.contractContext.currentContractId();
     let headers = new HttpHeaders();
 
-    if (contractId) {
-      headers = headers.set('X-Contract-Id', contractId);
+    if (this.contractId) {
+      headers = headers.set('X-Contract-Id', this.contractId);
     }
 
     return this.scoped(headers);

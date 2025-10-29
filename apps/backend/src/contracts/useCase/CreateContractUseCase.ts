@@ -1,14 +1,13 @@
-import { buildContract } from '../core/buildContract.js';
 import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js';
 import type { TContractRecord, TCreateContractRequestDTO, TUserId } from '@sh3pherd/shared-types';
-import type { IContractRepository } from '../repositories/contracts.repository.types.js';
 import { TechnicalError } from '../../utils/errorManagement/errorClasses/TechnicalError.js';
 import { Inject, Injectable } from '@nestjs/common';
 import { CONTRACT_REPO } from '../../appBootstrap/nestTokens.js';
+import { Contract } from '../entities/Contract.js';
+import type { IContractRepository } from '../repositories/ContractMongoRepository.js';
 
 
 export type TCreateContractUseCase = (inputDTO: TCreateContractRequestDTO, asker_id: TUserId) => Promise<TContractRecord>;
-
 
 
 @Injectable()
@@ -18,7 +17,9 @@ export class CreateContractUseCase {
   ) {}
 
   async execute(inputDTO: TCreateContractRequestDTO, asker_id: TUserId): Promise<TContractRecord> {
-    const contractDomain = buildContract(inputDTO);
+
+
+    const contractDomain = new Contract(inputDTO).toDomain;
     const metadata = RecordMetadataUtils.create(asker_id);
     const record = { ...contractDomain, ...metadata }
 

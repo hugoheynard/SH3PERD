@@ -9,9 +9,9 @@ import {
 } from 'rxjs';
 import {AuthTokenService} from './auth-token.service';
 import {Router} from '@angular/router';
-import type { TUserCredentialsDTO } from '@sh3pherd/shared-types';
 import { BaseHttpService } from './BaseHttpService';
 import { UserContextService } from './user-context.service';
+import type { TLoginRequestDTO } from '@sh3pherd/shared-types';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +21,8 @@ export class AuthService extends BaseHttpService {
   private tokenService: AuthTokenService =  inject(AuthTokenService);
   private URL: string = this.apiURLService.api().route('auth').build();
   private refreshInFlight$: Observable<string | null> | null = null;
-  private userCtx = inject(UserContextService);
+  private readonly userCtx = inject(UserContextService);
+
 
 
   /**
@@ -29,7 +30,7 @@ export class AuthService extends BaseHttpService {
    * @param credentials
    * @returns Observable<boolean> - true if login successful, false otherwise
    */
-  login$(credentials: TUserCredentialsDTO): Observable<boolean> {
+  login$(credentials: TLoginRequestDTO): Observable<boolean> {
     return this.http
       .post<{ authToken: string }>(`${this.URL}/login`, credentials, { withCredentials: true })
       .pipe(
@@ -74,7 +75,10 @@ export class AuthService extends BaseHttpService {
             this.tokenService.clear();
           }
           this.tokenService.setToken(token);
-          //this.userCtx.getUser();
+
+          if (this.tokenService.getToken()) {
+            this.userCtx.getUser();
+          }
         }),
         catchError(() => {
           this.tokenService.clear();

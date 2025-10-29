@@ -9,15 +9,16 @@ import {
   //UseInterceptors,
 } from '@nestjs/common';
 import type {
-  TUserCredentialsDTO,
+  TLoginRequestDTO,
   TLoginResponseDTO,
+  TRegisterUserRequestDTO,
   TRegisterUserResponseDTO,
   TUserId,
   TRefreshToken
 } from '@sh3pherd/shared-types';
+import { SuserCredentialsDTO, SRegisterUserRequestDTO } from '@sh3pherd/shared-types';
 import type { Request, Response } from 'express';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
-import { userCredentialsDTOSchema } from '../zodSchemas/userCredentialsDTOSchema.js';
 import { Public } from '../../utils/nest/decorators/IsPublic.js';
 import type { TAuthUseCases } from '../types/auth.core.useCase.js';
 import { AUTH_USE_CASES } from '../auth.tokens.js';
@@ -33,7 +34,7 @@ export class AuthController {
   @Public()
   @Post('register')
   register(
-    @Body(new ZodValidationPipe(userCredentialsDTOSchema)) requestDTO: TUserCredentialsDTO,
+    @Body(new ZodValidationPipe(SRegisterUserRequestDTO)) requestDTO: TRegisterUserRequestDTO,
   ): Promise<TRegisterUserResponseDTO> {
     return this.auth.registerUseCase(requestDTO);
   }
@@ -53,7 +54,7 @@ export class AuthController {
   @Post('login')
   @HttpCode(200)
   async login(
-    @Body(new ZodValidationPipe(userCredentialsDTOSchema)) requestDTO: TUserCredentialsDTO,
+    @Body(new ZodValidationPipe(SuserCredentialsDTO)) requestDTO: TLoginRequestDTO,
     @Res({ passthrough: true }) res: Response,
   ): Promise<TLoginResponseDTO> {
 

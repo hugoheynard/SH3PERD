@@ -2,14 +2,16 @@ import type { TContractId } from '../contracts.domain.types.js';
 import type { TRecordMetadata } from '../metadata.types.js';
 import { z } from 'zod';
 import type { TUserId } from './user.domain.js';
+import { createIdSchema } from '../utils/createIdSchema.js';
+
 
 //ID
-export const SUserPreferencesId = z.string().regex(/^userPreferences_[a-zA-Z0-9_-]+$/, { message: 'Invalid userPreferences_id format' });
+export const SUserPreferencesId = createIdSchema('userPreferences');
 export type TUserPreferencesId = `userPreferences_${string}` | z.infer<typeof SUserPreferencesId>;
 
 
 export type TUserPreferencesDomainModel = {
-  userPreferences_id: TUserPreferencesId;
+  id: TUserPreferencesId;
   user_id: TUserId;
   preferences: {
     theme: 'light' | 'dark';
