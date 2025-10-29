@@ -1,18 +1,19 @@
 import { z } from 'zod';
 import type { TRecordMetadata } from './metadata.types.js';
+import { createIdSchema } from './utils/createIdSchema.js';
 
-export const SCompanyId = z.string().regex(
-  /^company_[a-zA-Z0-9_-]+$/,
-  { message: 'Invalid company_id format' }
-);
+export const SCompanyId = createIdSchema('company');
 
-export type TCompanyId = z.infer<typeof SCompanyId>;
+export type TCompanyId = `company_${string}`;
 
 export const SCompanyDomainModel = z.object({
-  company_id: SCompanyId,
+  id: SCompanyId,
 })
 
-export type TCompanyDomainModel = z.infer<typeof SCompanyDomainModel>;
+export type TCompanyDomainModel = {
+  id: TCompanyId;
+  name: string;
+};
 
 
 export type TCompanyRecord = TCompanyDomainModel & TRecordMetadata;

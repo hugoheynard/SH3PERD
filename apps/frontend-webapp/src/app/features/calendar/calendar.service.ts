@@ -6,7 +6,7 @@ import type { TUserId, TCalendarDataResponseDTO } from '@sh3pherd/shared-types';
 
 @Injectable({ providedIn: 'root'})
 export class CalendarService extends BaseHttpService{
-  private URL = this.apiURLService.api().route('calendar').build();
+  private URL = this.UrlBuilder.api().route('calendar').build();
 
   /**
    * Loads calendar events for the specified date and users.

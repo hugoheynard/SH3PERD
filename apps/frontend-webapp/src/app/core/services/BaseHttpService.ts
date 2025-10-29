@@ -9,6 +9,6 @@ import { ScopedHttpClient } from '../utils/ScopedHttpClient';
 export abstract class BaseHttpService {
   protected readonly http: HttpClient = inject(HttpClient);
   protected readonly scopedHttp = inject(ScopedHttpClient);
-  protected readonly apiURLService: ApiURLService = inject(ApiURLService);
+  protected readonly UrlBuilder: ApiURLService = inject(ApiURLService);
   protected readonly snackBar = inject(SnackbarService);
 }

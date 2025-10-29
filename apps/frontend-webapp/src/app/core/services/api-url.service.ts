@@ -64,10 +64,10 @@ export class ApiURLService {
     return full;
   };
 
-  getProtectedBaseUrl(prefix: string): string {
+  apiProtectedRoute(prefix: string): this {
     this.api();
     this.protected();
     this.route(prefix);
-    return this.build();
+    return this;
   };
 }

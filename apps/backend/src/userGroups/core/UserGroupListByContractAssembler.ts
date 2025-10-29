@@ -1,16 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { TContractId,  TUserProfileDomainModel,TContractDomainModel, TUserGroupDomainModel } from '@sh3pherd/shared-types';
+import type { TContractId,  TUserProfileDomainModel,TContractDomainModel, TUserGroupDomainModel, TUserGroupListViewModel } from '@sh3pherd/shared-types';
 import { CONTRACT_REPO, USER_GROUPS_REPO, USER_PROFILE_REPO } from '../../appBootstrap/nestTokens.js';
 import type { IUserGroupsMongoRepository } from '../infra/UserGroupsMongoRepository.js';
 import type { IContractRepository } from '../../contracts/repositories/ContractMongoRepository.js';
 import type { IUserProfileRepository } from '../../user/profile/UserProfileMongoRepo.repository.js';
 import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js';
 
-export type TUserGroupListViewModel = {
-  userGroups: TUserGroupDomainModel[];
-  contracts: Record<TContractId, TContractDomainModel>;
-  userProfiles: Record<TContractId, TUserProfileDomainModel>;
-};
+
 
 @Injectable()
 export class UserGroupListByContractAssembler {
@@ -39,7 +35,6 @@ export class UserGroupListByContractAssembler {
     }
 
     const { contracts, userProfiles } = await this.generateContractAndUserProfileObjects([...uniqueContractIds]);
-
 
     return {
       userGroups,

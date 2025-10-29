@@ -38,7 +38,7 @@ export class LoginUseCase {
   }> {
     const { email, password } = request;
 
-    const user = await this.userCredRepo.findOne({ email });
+    const user = await this.userCredRepo.findOne({ filter: { email }});
     if (!user) {
       throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 400);
     }

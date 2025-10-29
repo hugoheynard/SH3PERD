@@ -9,7 +9,7 @@ import { BaseHttpService } from '../../../core/services/BaseHttpService';
   providedIn: 'root'
 })
 export class MusicReferenceService extends BaseHttpService {
-  private baseURL: string = this.apiURLService.getProtectedBaseUrl('music-reference');
+  private baseURL: string = this.UrlBuilder.apiProtectedRoute('music-reference').build();
 
   /**
    * Searches for music references by title and artist.

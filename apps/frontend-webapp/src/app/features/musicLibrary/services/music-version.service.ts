@@ -9,7 +9,7 @@ import { BaseHttpService } from '../../../core/services/BaseHttpService';
   providedIn: 'root'
 })
 export class MusicVersionService extends BaseHttpService{
-  private baseURL: string = this.apiURLService.getProtectedBaseUrl('music-version');
+  private baseURL: string = this.UrlBuilder.apiProtectedRoute('music-version').build();
 
   /**
    * This service is responsible for posting a new music versions.
@@ -26,7 +26,7 @@ export class MusicVersionService extends BaseHttpService{
       if (!response.ok) {
         return false;
       }
-      return response.body.data;
+      return response.body.userGroups;
 
     } catch(e) {
       console.log('error while creating music version', e);

@@ -8,7 +8,7 @@ import { createIdSchema } from './utils/createIdSchema.js';
 // Contract & Signature IDs
 // -------------------------
 export const SContractId = createIdSchema('contract');
-export type TContractId = `contract_${string}`| z.infer<typeof SContractId>;
+export type TContractId = `contract_${string}`;
 
 export const SContractSignatureId = createIdSchema('contract_signature');
 
@@ -78,7 +78,7 @@ export type TContractSignatureRecord = TContractSignatureDomainModel & TRecordMe
 // Contract
 // -------------------------
 export const SContractDomainModel = z.object({
-  contract_id: SContractId,
+  id: SContractId,
   user_id: SUserId,
   company_id: SCompanyId,
   status: SContractStatusEnum,
@@ -137,7 +137,7 @@ export type TContractRecord = TContractDomainModel & TRecordMetadata;
 // Contract Addendum //DONT USE NOW
 // -------------------------
 export const SContractAddendumDomainModel = z.object({
-  addendum_id: SAddendumId,
+  id: SAddendumId,
   contract_id: SContractId,
   reason: z.string(),
   effectiveDate: z.date(),

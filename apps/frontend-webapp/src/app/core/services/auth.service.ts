@@ -19,7 +19,7 @@ import type { TLoginRequestDTO } from '@sh3pherd/shared-types';
 export class AuthService extends BaseHttpService {
   private router: Router = inject(Router);
   private tokenService: AuthTokenService =  inject(AuthTokenService);
-  private URL: string = this.apiURLService.api().route('auth').build();
+  private URL: string = this.UrlBuilder.api().route('auth').build();
   private refreshInFlight$: Observable<string | null> | null = null;
   private readonly userCtx = inject(UserContextService);
 

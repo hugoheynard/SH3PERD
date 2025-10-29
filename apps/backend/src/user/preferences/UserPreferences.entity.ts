@@ -14,11 +14,11 @@ export class UserPreferences extends Entity<TUserPreferencesDomainModel>{
 
   // --- Getters  ---
   get contractWorkspace(): TContractId {
-    return this.props.preferences.contract_workspace;
+    return this.props.contract_workspace;
   };
 
   get theme(): 'light' | 'dark' {
-    return this.props.preferences.theme;
+    return this.props.theme;
   };
 
   // --- Methods ---
@@ -26,7 +26,7 @@ export class UserPreferences extends Entity<TUserPreferencesDomainModel>{
    * Change the theme from light → dark or dark → light.
    */
   changeTheme(): void {
-    this.props.preferences.theme = this.theme === 'light' ? 'dark' : 'light';
+    this.props.theme = this.theme === 'light' ? 'dark' : 'light';
   };
 
   /**
@@ -34,6 +34,6 @@ export class UserPreferences extends Entity<TUserPreferencesDomainModel>{
    * @param newWorkspace
    */
   changeContractWorkspace(newWorkspace: TContractId): void {
-    this.props.preferences.contract_workspace = newWorkspace;
+    this.props.contract_workspace = newWorkspace;
   };
 }

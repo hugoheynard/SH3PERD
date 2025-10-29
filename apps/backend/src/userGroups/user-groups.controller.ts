@@ -1,10 +1,12 @@
 import { Body, Controller, Inject, Param, Patch, Post } from '@nestjs/common';
-import { Scoped } from '../utils/nest/decorators/Scoped.js';
+import { ContractScoped } from '../utils/nest/decorators/ContractScoped.js';
 import { ContractScopedContext } from '../utils/nest/decorators/Context.js';
 import type { TUseCaseContext } from '../types/useCases.generic.types.js';
 import type { UserGroupsService } from './user-groups.service.js';
 import { USER_GROUPS_SERVICE } from './user-groups.tokens.js';
 import type { TUserGroupId } from '@sh3pherd/shared-types';
+import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { UserGroupListDTO } from './user-groups.dto.js';
 
 
 @Controller()
@@ -13,27 +15,46 @@ export class UserGroupsController {
     @Inject(USER_GROUPS_SERVICE) private readonly userGroupsService: UserGroupsService,
   ) {};
 
-  /**
-   * Endpoint to get the current user's user-groups scoped to the current contract.
-   * @param context
-   * @param requestDTO
-   */
-  @Scoped('contract')
+  @ApiOperation({
+    summary: 'Get user groups for the current user (contract scoped operation)',
+    description: `
+Retrieves all **user groups** in which the currently authenticated user participates within the current **contract scope**.
+
+This endpoint uses the contract scope context to:
+- Resolve which user groups are accessible
+- Attach related contract and user profile information
+- Respect permission boundaries defined by the current user's contract`,
+  })
+  @ApiOkResponse({
+    description: `Returns the **aggregated view model** containing:
+      - The list of user groups where the user is a member, lead, or delegated
+      - The corresponding contracts (keyed by contract_id)
+      - The related user profiles`,
+    type: UserGroupListDTO
+  })
+  @ContractScoped()
   @Post('me')
   async getCurrentUserContractsUserGroups(
     @ContractScopedContext() context: TUseCaseContext<'scoped'>,
     @Body() requestDTO: any
-  ): Promise<any> {
+  ): Promise<UserGroupListDTO> {
     return await this.userGroupsService.getCurrentUserUserGroups({ requestDTO, context });
   };
 
-  /**
-   * Endpoint to add members to a user group.
-   * @param context
-   * @param id
-   * @param requestDTO
-   */
-  @Scoped('contract')
+  @ApiOperation({
+    summary: 'Add member to user group (contract scoped operation)',
+    description: `
+Adds a new member to the specified **user group** within the current **contract scope**.
+
+This endpoint allows authorized users to:
+- Add members to user groups they lead or have permissions for
+- Ensure that the addition respects the contract scope and permission boundaries`,
+  })
+  @ApiOkResponse({
+    description: 'Returns the updated user group with the new member added.',
+    type: Object,
+  })
+  @ContractScoped()
   @Patch(':id/add-member')
   addMemberToGroup(
     @ContractScopedContext() context: TUseCaseContext<'scoped'>,

@@ -15,7 +15,7 @@ export type TGenericRepoFindOneFn<TRecord> = (filter: Partial<TRecord> | Filter<
 export type TGenericRepoUpdateOneFn<TRecord> = (input: { filter: Partial<TRecord> | Filter<TRecord>, update: Partial<TRecord> | UpdateFilter<TRecord> }) => Promise<TRecord | null>;
 
 export type TSaveMongoFn<TRecord> = (docOrDocs: OptionalUnlessRequiredId<TRecord> | OptionalUnlessRequiredId<TRecord>[], session?: ClientSession) => Promise<boolean>;
-export type TFindOneMongoFn<TRecord> = (filter: Filter<TRecord>) => Promise<TRecord | null>;
+export type TFindOneMongoFn<TRecord> = (input: { filter: Filter<TRecord> }) => Promise<TRecord | null>;
 export type TFindManyMongoFn<TRecord> = (input: { filter: Filter<TRecord> }) => Promise<TRecord[] | null>;
 export type TUpdateOneMongoFn<TRecord> = (input: { filter: Filter<TRecord>; update: UpdateFilter<TRecord>; options?: FindOneAndUpdateOptions; }) => Promise<TRecord | null>;
 export type TDeleteOneMongoFn<TRecord> = (filter: Filter<TRecord>) => Promise<boolean>;

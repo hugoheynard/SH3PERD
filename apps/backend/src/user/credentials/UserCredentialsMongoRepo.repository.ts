@@ -34,7 +34,7 @@ export class UserCredentialsMongoRepository
   public async findUserByEmail(
     filter: Parameters<TFindUserCredentialsByEmailFn>[0],
   ): ReturnType<TFindUserCredentialsByEmailFn> {
-    return await this.findOne(filter);
+    return await this.findOne({ filter });
   }
 
   /**

@@ -13,10 +13,8 @@ export type TUserPreferencesId = `userPreferences_${string}` | z.infer<typeof SU
 export type TUserPreferencesDomainModel = {
   id: TUserPreferencesId;
   user_id: TUserId;
-  preferences: {
-    theme: 'light' | 'dark';
-    contract_workspace: TContractId;
-  }
+  theme: 'light' | 'dark';
+  contract_workspace: TContractId;
 };
 
 export type TUserPreferencesRecord = TUserPreferencesDomainModel & TRecordMetadata;

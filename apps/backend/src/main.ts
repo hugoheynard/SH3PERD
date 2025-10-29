@@ -27,7 +27,7 @@ async function bootstrap(): Promise<void> {
     origin: 'http://localhost:4200', //TODO manager CORS avec env
     credentials: true,
     methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-    allowedHeaders: ['Content-Type','Authorization','X-XSRF-TOKEN']
+    allowedHeaders: ['Content-Type','Authorization','X-XSRF-TOKEN', 'X-Feature']
   });
 
   app.setGlobalPrefix('api');

@@ -88,7 +88,7 @@ export class ContractMongoRepository
 
   @failThrows500('FIND_FAVORITE_USER_CONTRACT_FAILED', 'Error while finding favorite user contract')
   async findUsersFavorite(user_id: TUserId): Promise<TContractRecord | null> {
-    const result = await this.findOne({ user_id, favorite: true });
+    const result = await this.findOne({ filter: { user_id, favorite: true }});
 
     if (!result) {
       return null;

@@ -36,7 +36,7 @@ export class UserContextService  {
    * Nullable - may be null if not set in user preferences.
    */
   readonly currentContractId = computed<TContractId | null>(() => {
-    return this._user()?.preferences?.preferences.contract_workspace ?? null;
+    return this._user()?.preferences.contract_workspace ?? null;
   });
 
   /** signal strict (throw si null) */

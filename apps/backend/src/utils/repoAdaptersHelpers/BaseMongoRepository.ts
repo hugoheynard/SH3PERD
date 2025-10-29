@@ -29,9 +29,9 @@ export abstract class BaseMongoRepository<TRecord extends Document> implements I
   /**
    * Generic find method that can be reused by specific child implementations.
    */
-  async findOne(filter: Filter<TRecord>): Promise<TRecord | null> {
+  async findOne(input: { filter: Filter<TRecord> }): Promise<TRecord | null> {
 
-    const result = await this.collection.findOne(filter);
+    const result = await this.collection.findOne(input.filter);
     return result ? this.mapMongoDocToDomainModel(result): null;
   };
 

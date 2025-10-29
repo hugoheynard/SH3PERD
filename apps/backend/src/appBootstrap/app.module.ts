@@ -56,7 +56,7 @@ import { UserProfileModule } from '../user/profile/user-profile.module.js';
       },
     ]),
   ],
-  controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: AuthGuard }],
+  controllers: [AppController],
 })
 export class AppModule {}

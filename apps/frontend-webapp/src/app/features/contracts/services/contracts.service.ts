@@ -7,7 +7,7 @@ import type { TContractListItemViewModel } from '@sh3pherd/shared-types';
   providedIn: 'root'
 })
 export class ContractsService extends BaseHttpService{
-  private readonly contractURL = this.apiURLService.api().protected().route('contracts').build();
+  private readonly contractURL = this.UrlBuilder.apiProtectedRoute('contracts').build();
 
   /**
    * Get current user's contract list

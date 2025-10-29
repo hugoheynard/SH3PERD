@@ -19,7 +19,7 @@ export const createMusicReferencesUseCases: TUseCasesFactoryGeneric<TMusicRefere
   })
 
   const createOne = createCreateOneMusicReferenceUseCase({
-    saveOneMusicReferenceFn: (document: TMusicReferenceDomainModel) => musicReference.saveOne(document)
+    saveOneMusicReferenceFn: (document: TMusicReferenceDomainModel) => musicReference.save(document)
   })
 
   return {

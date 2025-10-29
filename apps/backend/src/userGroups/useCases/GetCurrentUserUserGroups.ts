@@ -1,12 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { USER_GROUPS_REPO } from '../../appBootstrap/nestTokens.js';
-import type { IUserGroupsMongoRepository } from '../infra/UserGroupsMongoRepository.js';
 import type { TUseCaseContext } from '../../types/useCases.generic.types.js';
-import type { TUserGroupDomainModel, TUserGroupRecord } from '@sh3pherd/shared-types';
+import type { TUserGroupRecord, TUserGroupListViewModel } from '@sh3pherd/shared-types';
 import type { Filter } from 'mongodb';
-import { UserGroup } from '../user-group.entity.js';
+import { USER_GROUPS_BY_CONTRACT_ASSEMBLER } from '../user-groups.tokens.js';
+import type { UserGroupListByContractAssembler } from '../core/UserGroupListByContractAssembler.js';
 
-export type TGetCurrentUserUserGroupsUseCase = (input: { requestDTO: Filter<TUserGroupRecord>; context: TUseCaseContext<'scoped'>; }) => Promise<TUserGroupDomainModel[]>;
+export type TGetCurrentUserUserGroupsUseCase = (input: { requestDTO: Filter<TUserGroupRecord>; context: TUseCaseContext<'scoped'>; }) => Promise<TUserGroupListViewModel>;
 
 /**
  * GetCurrentUserUserGroups use case
@@ -16,19 +15,17 @@ export type TGetCurrentUserUserGroupsUseCase = (input: { requestDTO: Filter<TUse
 @Injectable()
 export class GetCurrentUserUserGroupsUseCase {
   constructor(
-    @Inject(USER_GROUPS_REPO) private readonly userGroupsRepo: IUserGroupsMongoRepository,
+    @Inject(USER_GROUPS_BY_CONTRACT_ASSEMBLER) private readonly assembler: UserGroupListByContractAssembler,
   ) {};
 
-  async execute(input: { requestDTO: Filter<TUserGroupRecord>; context: TUseCaseContext<'scoped'>; }): Promise<TUserGroupDomainModel[]> {
+  async execute(input: { requestDTO: Filter<TUserGroupRecord>; context: TUseCaseContext<'scoped'>; }): Promise<TUserGroupListViewModel> {
     const { requestDTO, context } = input;
 
-    const result = await this.userGroupsRepo
-      .getContractScopedUserGroups(context.contract_scope);
+    const result = await this.assembler.execute(context.contract_scope);
+
     console.log(requestDTO);
 
-    const entities = result.map(record => UserGroup.fromRecord(record).toDomain);
-
-    return result ? entities : [];
+    return result;
   };
 
 }

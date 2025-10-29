@@ -1,12 +1,19 @@
-<data-list
-  [data]="dataTest"
-  [column]="[
-    { fromKey: 'name', label: 'Group Name' },
+@if (!userGroupObject) {
+
+} @else {
+  <data-list
+    [data]="userGroupObject.userGroups"
+    [column]="[
+    { fromKey: 'name', label: 'Name' },
     { fromKey: 'description', label: 'Description' },
+    { fromKey: 'groupLead', label: 'Group Lead' },
+    { fromKey: 'members', label: 'Members' }
   ]"
 
-  [rowActionsTemplate]="actionsTemplate"
-/>
+    [rowActionsTemplate]="actionsTemplate"
+  />
+}
+
 
 
 <!-- row action template -->

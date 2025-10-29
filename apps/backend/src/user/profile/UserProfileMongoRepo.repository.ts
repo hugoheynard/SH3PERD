@@ -34,7 +34,7 @@ export class UserProfileMongoRepository
    */
   @failThrows500('USER_PROFILE_FIND_BY_ID_FAILED')
   public async findUserProfileByUserId(filter: Parameters<TFindUserProfileByUserIdFn>[0]): ReturnType<TFindUserProfileByUserIdFn> {
-    return await this.findOne(filter);
+    return await this.findOne({ filter });
   };
 
 }

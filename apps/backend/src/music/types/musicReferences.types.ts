@@ -1,5 +1,6 @@
 import type { TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
 import type { ClientSession } from 'mongodb';
+import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
 
 //REPOSITORY TYPES
@@ -8,10 +9,7 @@ export type TFindOneMusicReferenceByFilterFn = (filter: Partial<TMusicReferenceD
 export type TFindManyMusicReferenceByFilterFn = (filter: any) => Promise<TMusicReferenceDomainModel[] | null>;
 export type TFindMusicReferenceByTextSearchFn = (searchValue: string) => Promise<TMusicReferenceDomainModel[]>;
 
-export type IMusicReferenceRepository = {
-  saveOne: TSaveOneMusicReferenceFn;
-  findOne: TFindOneMusicReferenceByFilterFn;
-  findMany: TFindManyMusicReferenceByFilterFn;
+export interface IMusicReferenceRepository extends IBaseCRUD<any> {
   findAll: () => Promise<TMusicReferenceDomainModel[]>;
   findByTextSearch: TFindMusicReferenceByTextSearchFn;
-};
+}

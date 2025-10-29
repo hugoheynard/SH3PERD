@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, type OnInit, inject } from '@angular/core';
 import { DataListComponent } from '../../../core/components/data-list/data-list.component';
 import { ButtonIconComponent } from '@sh3pherd/ui-angular';
+import { UserGroupService } from '../user-group.service';
 
 @Component({
   selector: 'user-groups',
@@ -12,7 +13,10 @@ import { ButtonIconComponent } from '@sh3pherd/ui-angular';
   templateUrl: './user-groups.component.html',
   styleUrl: './user-groups.component.scss'
 })
-export class UserGroupsComponent {
+export class UserGroupsComponent implements OnInit {
+  private readonly ugServ = inject(UserGroupService);
+  readonly userGroupObject = this.ugServ.userGroups();
+
   edit(userGroup: any) {
     alert(`Not implemented yet, would edit user group with id ${userGroup.id}`);
   }
@@ -21,10 +25,10 @@ export class UserGroupsComponent {
     alert(`Not implemented yet, would edit user group with id ${userGroup.id}`);
   }
 
-  dataTest = [{
-    name: 'hugoTest',
-    description: 'Hugo Test Group',
-    users: ['hugo', 'test']
-  }]
+  // --- Lifecycle ---
+  ngOnInit(): void {
+    this.ugServ.getMyUserGroups();
+  };
+
 
 }
