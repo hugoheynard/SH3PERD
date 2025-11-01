@@ -75,7 +75,9 @@ export class DataListComponent<T extends object> {
     value: unknown,
     col: DataListColumn<T>
   ): string {
-    if (!col.pipe) return String(value ?? '');
+    if (!col.pipe) {
+      return String(value ?? '');
+    }
 
     // Si le pipe custom n’a jamais été instancié, on l’ajoute maintenant
     if (!this.pipeInstances.has(col.pipe)) {

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { ApiResponse } from './api.types.js';
+import type { TApiResponse } from './api.types.js';
 import { SRecordMetadata } from './metadata.types.js';
 
 /**
@@ -19,7 +19,7 @@ export const SMusicReferenceDetails = z.object({
 })
 
 export type TCreateMusicReferenceRequestDTO = z.infer<typeof SMusicReferenceDetails>;
-export type TMusicReferenceCreationResponseDTO = ApiResponse<TMusicReferenceDomainModel>
+export type TMusicReferenceCreationResponseDTO = TApiResponse<TMusicReferenceDomainModel>
 
 export const SMusicReferenceDomainModel = SMusicReferenceDetails
   .extend({

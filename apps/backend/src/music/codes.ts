@@ -1,9 +1,6 @@
-import type { ApiResponse } from '@sh3pherd/shared-types';
+import type { TApiResponse, TApiMessage } from '@sh3pherd/shared-types';
 
-export type ApiMessage = {
-  code: string;
-  message: string;
-};
+
 
 export const MusicApiCodes = {
   MUSIC_REFERENCE_CREATED: {
@@ -34,7 +31,7 @@ export const MusicApiCodes = {
     code: 'MUSIC_301_S',
     message: 'Music library fetched successfully for single user',
   }
-} as const satisfies Record<string, ApiMessage>;
+} as const satisfies Record<string, TApiMessage>;
 
 
 export const apiCodes = {
@@ -42,7 +39,7 @@ export const apiCodes = {
 }
 
 
-export function buildApiResponse<T>(entry: ApiMessage, data?: T): ApiResponse<T> {
+export function buildApiResponse<T>(entry: TApiMessage, data: T): TApiResponse<T> {
   return {
     code: entry.code,
     message: entry.message,

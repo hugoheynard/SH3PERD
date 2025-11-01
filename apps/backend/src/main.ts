@@ -5,22 +5,35 @@ import { AppModule } from './appBootstrap/app.module.js';
 import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+import { getApiModels } from './utils/swagger/api-model.swagger.util.js';
+//import { ApiResponseDTO } from './utils/swagger/api-response.swagger.util.js';
+
 
 loadEnv(process.env['NODE_ENV'] || 'dev');
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
-    //logger: ['error', 'warn']
+    logger: ['error', 'warn']
   });
 
+  //TODO: Swagger setup should be done only in non-production envs and extract logic in config file
   const config = new DocumentBuilder()
-    .setTitle('API Documentation')
+    .setTitle('SH3PHERD API Documentation')
     .setDescription('Plan et endpoints de mon application')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      description: 'Enter JWT token',
+      name: 'Authorization',
+      in: 'header',
+      }, 'bearer')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config, {
+    extraModels: getApiModels(),
+  });
   SwaggerModule.setup('api', app, document);
 
   app.enableCors({

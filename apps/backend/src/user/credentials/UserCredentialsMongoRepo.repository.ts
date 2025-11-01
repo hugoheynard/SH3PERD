@@ -46,15 +46,15 @@ export class UserCredentialsMongoRepository
   public async getUserMe(user_id: TUserId): Promise<TUserMeViewModel> {
       const results = await this.collection
         .aggregate<TUserMeViewModel>([
-          { $match: { user_id } },
-          { $lookup: { from: "user_profiles", localField: "user_id", foreignField: "user_id", as: "profile" }},
+          { $match: { id: user_id } },
+          { $lookup: { from: "user_profiles", localField: "id", foreignField: "user_id", as: "profile" }},
           { $unwind: { path: '$profile', preserveNullAndEmptyArrays: true } },
-          { $lookup: { from: "user_preferences", localField: "user_id", foreignField: "user_id", as: "preferences"} },
+          { $lookup: { from: "user_preferences", localField: "id", foreignField: "user_id", as: "preferences"} },
           { $unwind: { path: '$preferences', preserveNullAndEmptyArrays: true } },
           { $unset: ["profile._id", "profile.user_id", "preferences._id", 'preferences.user_id'] },
           { $project: {
               _id: 0,
-              user_id: 1,
+              id: 1,
               profile: 1,
               preferences: 1
             }
@@ -62,6 +62,8 @@ export class UserCredentialsMongoRepository
           { $limit: 1 }
         ])
         .toArray();
+
+      console.log(results);
 
     return results[0];
   };

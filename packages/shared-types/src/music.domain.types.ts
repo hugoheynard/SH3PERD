@@ -1,6 +1,6 @@
 import type { TUserId } from './user/user.domain.js';
 import type { TMusicReferenceDomainModel  } from './music-references.js';
-import type { ApiResponse } from './api.types.js';
+import type { TApiResponse } from './api.types.js';
 import type { TMusicVersionDomainModel } from './music.versions.js';
 import type { TMusicRepertoireEntryDomainModel } from './music-repertoire.js';
 
@@ -60,4 +60,4 @@ export type TSingleUserMusicLibraryRequestDTO = {
 }
 
 export type TUserMusicLibrary = Record<TUserId, TUserMusicLibraryItem[]>;
-export type TUserMusicLibraryResponseDTO = ApiResponse<TUserMusicLibrary>;
+export type TUserMusicLibraryResponseDTO = TApiResponse<TUserMusicLibrary>;

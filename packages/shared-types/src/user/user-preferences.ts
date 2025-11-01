@@ -1,7 +1,7 @@
 import type { TContractId } from '../contracts.domain.types.js';
 import type { TRecordMetadata } from '../metadata.types.js';
 import { z } from 'zod';
-import type { TUserId } from './user.domain.js';
+import { SUserId, type TUserId } from './user.domain.js';
 import { createIdSchema } from '../utils/createIdSchema.js';
 
 
@@ -19,6 +19,12 @@ export type TUserPreferencesDomainModel = {
 
 export type TUserPreferencesRecord = TUserPreferencesDomainModel & TRecordMetadata;
 
+export const SUserPreferencesDomainModel = z.object({
+  id: SUserPreferencesId,
+  user_id: SUserId,
+  theme: z.enum(['light', 'dark']),
+  contract_workspace: z.string(),
+});
 
 //DTO
 export type TUpdateUserPreferencesRequestDTO = {

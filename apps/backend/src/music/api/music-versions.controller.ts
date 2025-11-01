@@ -1,5 +1,5 @@
 import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
-import type { ApiResponse, TMusicVersionCreationFormPayload, TMusicVersionDomainModel } from '@sh3pherd/shared-types';
+import type { TApiResponse, TMusicVersionCreationFormPayload, TMusicVersionDomainModel } from '@sh3pherd/shared-types';
 import { apiCodes, buildApiResponse } from '../codes.js';
 import type { Request } from 'express';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
@@ -23,7 +23,7 @@ export class MusicVersionsController {
     @Body('payload',
       new ZodValidationPipe(SMusicVersionCreationFormPayloadSchema))
       payload: TMusicVersionCreationFormPayload
-  ): Promise<ApiResponse<TMusicVersionDomainModel>> {
+  ): Promise<TApiResponse<TMusicVersionDomainModel>> {
 
     const result = await this.uc.createOne({ payload, asker_id: req.user_id });
     return buildApiResponse(

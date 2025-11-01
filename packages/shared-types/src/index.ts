@@ -14,6 +14,10 @@ export * from './user/user.domain.js';
 export * from './user/user-credentials.js';
 export * from './user/user-profile.js';
 export * from './user/user-preferences.js';
+export * from './user/user.readModels.types.js';
+
+
+
 export * from './user/userGroup.types.js';
 
 /**
