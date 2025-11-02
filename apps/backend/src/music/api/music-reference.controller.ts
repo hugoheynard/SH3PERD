@@ -4,7 +4,7 @@ import type {
   TMusicReferenceCreationResponseDTO,
   TMusicReferenceDomainModel,
 } from '@sh3pherd/shared-types';
-import { apiCodes, buildApiResponse } from '../codes.js';
+import { apiCodes, buildApiResponseDTO } from '../codes.js';
 import type { Request } from 'express';
 import { MUSIC_REFERENCES_USE_CASES } from '../music.tokens.js';
 import type { TMusicReferencesUseCases } from '../useCases/references/createMusicReferencesUseCases.js';
@@ -37,7 +37,7 @@ export class MusicReferenceController {
   ): Promise<TMusicReferenceCreationResponseDTO> {
     const result = await this.uc.createOne(req.user_id, payload);
 
-    return buildApiResponse<TMusicReferenceDomainModel>(
+    return buildApiResponseDTO<TMusicReferenceDomainModel>(
       apiCodes.music.MUSIC_REFERENCE_CREATED,
       result
     );

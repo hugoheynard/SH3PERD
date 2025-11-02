@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import type { TUserMeViewModel, TUserPreferencesDomainModel } from '@sh3pherd/shared-types';
+import type { TApiResponse, TUserMeViewModel, TUserPreferencesDomainModel } from '@sh3pherd/shared-types';
 //import { BaseHttpService } from './BaseHttpService';
 import type { TContractId } from '@sh3pherd/shared-types';
 import { strictComputed } from '../utils/strictComputed';
@@ -47,8 +47,8 @@ export class UserContextService  {
    * If the request fails, it logs the error and sets the user signal to null.
    */
   getUser(): void {
-    this.http.get<TUserMeViewModel>(`${this.userURL}/me`).subscribe({
-      next: (user) => this.setUser(user),
+    this.http.get<TApiResponse<TUserMeViewModel>>(`${this.userURL}/me`).subscribe({
+      next: (res) => this.setUser(res.data),
       error: (err) => {
         console.error('Failed to load user profile', err);
         this.setUser(null);

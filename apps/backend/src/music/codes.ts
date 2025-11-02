@@ -39,7 +39,7 @@ export const apiCodes = {
 }
 
 
-export function buildApiResponse<T>(entry: TApiMessage, data: T): TApiResponse<T> {
+export function buildApiResponseDTO<TResponsePayload>(entry: TApiMessage, data: TResponsePayload): TApiResponse<TResponsePayload> {
   return {
     code: entry.code,
     message: entry.message,

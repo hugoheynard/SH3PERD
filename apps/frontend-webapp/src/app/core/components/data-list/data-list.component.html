@@ -1,7 +1,13 @@
 <div class="data-list">
   <div class="data-header">
     @for (col of column(); track col.fromKey) {
-      <div class="data-cell font-semibold">{{ col.label ?? col.fromKey }}</div>
+      <div class="data-cell font-semibold" role="columnheader">
+        @if (col.headerTemplate) {
+          <ng-container *ngTemplateOutlet="col.headerTemplate; context: { $implicit: col }" />
+        } @else {
+          {{ col.label ?? col.fromKey }}
+        }
+      </div>
     }
     @if (rowActionsTemplate()) {
       <div class="data-cell font-semibold">Actions</div>
@@ -12,14 +18,16 @@
     <div class="data-row">
       @for (col of column(); track col.fromKey) {
         <div class="data-cell">
+          @if (col.dataTemplate) {
+            <ng-container *ngTemplateOutlet="col.dataTemplate; context: { $implicit: item }" />
+          } @else {
           {{ formatValue(item[col.fromKey], col) }}
+          }
         </div>
       }
       @if (rowActionsTemplate()) {
         <div class="data-cell">
-          <ng-container
-            *ngTemplateOutlet="rowActionsTemplate(); context: { $implicit: item }">
-          </ng-container>
+          <ng-container *ngTemplateOutlet="rowActionsTemplate(); context: { $implicit: item }" />
         </div>
       }
     </div>

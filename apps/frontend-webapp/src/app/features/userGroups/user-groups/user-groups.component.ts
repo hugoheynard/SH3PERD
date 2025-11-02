@@ -1,13 +1,15 @@
 import { Component, type OnInit, inject } from '@angular/core';
 import { DataListComponent } from '../../../core/components/data-list/data-list.component';
-import { ButtonIconComponent } from '@sh3pherd/ui-angular';
+import { ButtonIconComponent, SvgIconComponent } from '@sh3pherd/ui-angular';
 import { UserGroupService } from '../user-group.service';
+import type { TContractId } from '@sh3pherd/shared-types';
 
 @Component({
   selector: 'user-groups',
   imports: [
     DataListComponent,
     ButtonIconComponent,
+    SvgIconComponent,
   ],
   standalone: true,
   templateUrl: './user-groups.component.html',
@@ -29,6 +31,11 @@ export class UserGroupsComponent implements OnInit {
   ngOnInit(): void {
     this.ugServ.getMyUserGroups();
   };
+
+  getInitialFromContractId(contract_id: TContractId ): string | undefined {
+    const userProfile = this.ugServ.userGroups()?.userProfiles[contract_id];
+    return userProfile?.first_name[0];
+  }
 
 
 }

@@ -1,7 +1,7 @@
 import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import type { TSingleUserMusicLibraryRequestDTO, TUserMusicLibraryResponseDTO } from '@sh3pherd/shared-types';
-import { apiCodes, buildApiResponse } from '../codes.js';
+import { apiCodes, buildApiResponseDTO } from '../codes.js';
 import type { TMusicLibraryUseCases } from '../useCases/library/MusicLibraryUseCasesFactory.js';
 import { MUSIC_LIBRARY_USE_CASES } from '../music.tokens.js';
 
@@ -22,7 +22,7 @@ export class MusicLibraryController {
   ): Promise<TUserMusicLibraryResponseDTO> {
     console.log('getUserMusicLibrary called with requestDTO:', req.cookies);
     const result = await this.uc.getUserMusicLibrary({ target_id: requestDTO.target_id });
-    return buildApiResponse(apiCodes.music.MUSIC_LIBRARY_SINGLE_USER_SUCCESS, result)
+    return buildApiResponseDTO(apiCodes.music.MUSIC_LIBRARY_SINGLE_USER_SUCCESS, result)
   };
 
   /*

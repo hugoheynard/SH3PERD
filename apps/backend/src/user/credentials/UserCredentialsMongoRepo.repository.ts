@@ -45,7 +45,7 @@ export class UserCredentialsMongoRepository
   //TODO: Move this to a dedicated repository 'UserQueryRepository'
   public async getUserMe(user_id: TUserId): Promise<TUserMeViewModel> {
       const results = await this.collection
-        .aggregate<TUserMeViewModel>([
+        .aggregate([
           { $match: { id: user_id } },
           { $lookup: { from: "user_profiles", localField: "id", foreignField: "user_id", as: "profile" }},
           { $unwind: { path: '$profile', preserveNullAndEmptyArrays: true } },
@@ -63,8 +63,6 @@ export class UserCredentialsMongoRepository
         ])
         .toArray();
 
-      console.log(results);
-
-    return results[0];
+    return results[0] as TUserMeViewModel;
   };
 }

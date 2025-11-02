@@ -41,7 +41,7 @@ type ApiResponseCode = { code: string; message: string };
  * @param status - HTTP status (default: 200)
  * @param description - Optional description for Swagger
  */
-export function apiSuccess<T extends Type<any>>(
+export function apiSuccessDTO<T extends Type<any>>(
   code: ApiResponseCode,
   model: T,
   status: number = 200,

@@ -1,27 +1,16 @@
-import { Body, Controller, Get, Inject, Patch} from '@nestjs/common';
-import type { TUpdateUserPreferencesRequestDTO, TUserId } from '@sh3pherd/shared-types';//TApiResponse,
-import { SGetUserMeResponseDTO, type TAsyncApiResponse, type TUserMeViewModel } from '@sh3pherd/shared-types';
-import { buildApiResponse } from '../music/codes.js';
-import { USER_CODES_SUCCESS } from './userCodes.js';
+import { Body, Controller, Get, Inject, Patch } from '@nestjs/common';
+import type { TUpdateUserPreferencesRequestDTO, TUserId } from '@sh3pherd/shared-types'; //TApiResponse,
+import { type TAsyncApiResponseDTO, type TUserMeViewModel } from '@sh3pherd/shared-types';
+import { buildApiResponseDTO } from '../music/codes.js';
+import { USER_CODES_SUCCESS } from './user.codes.js';
 import { USER } from '../permissions/permissionsRegistry.js';
 import type { TUserUseCases } from './useCases/UserUseCasesFactory.js';
 import { USER_USE_CASES } from './user.tokens.js';
 import { CurrentUser } from '../utils/nest/decorators/CurrentUser.js';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
-import { apiSuccess } from '../utils/swagger/api-response.swagger.util.js';
-import { ApiModel } from '../utils/swagger/api-model.swagger.util.js';
-import { createZodDto } from 'nestjs-zod';
-
-
-// DTOs
-@ApiModel()
-export class GetUserMeResponseDTO extends createZodDto(SGetUserMeResponseDTO) {}
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { apiSuccessDTO } from '../utils/swagger/api-response.swagger.util.js';
+import { ResPayloadValidator } from '../utils/nest/ResPayloadValidator.decorator.js';
+import { UserMeViewModelPayload } from './dtos/user.dto.js';
 
 
 @ApiTags('users')
@@ -40,10 +29,11 @@ export class UserController {
     description: "Returns the current user's information." +
       " This includes user profile details and preferences."
   })
-  @ApiResponse(apiSuccess(USER_CODES_SUCCESS.GET_USER_ME, GetUserMeResponseDTO , 200))
+  @ApiResponse(apiSuccessDTO(USER_CODES_SUCCESS.GET_USER_ME, UserMeViewModelPayload , 200))
+  @ResPayloadValidator(UserMeViewModelPayload)
   @Get('me')
-  async getUserMe(@CurrentUser() id: TUserId): TAsyncApiResponse<TUserMeViewModel> {
-    return buildApiResponse(USER_CODES_SUCCESS.GET_USER_ME, await this.uc.getUserMe(id));
+  async getUserMe(@CurrentUser() id: TUserId): TAsyncApiResponseDTO<TUserMeViewModel> {
+    return buildApiResponseDTO<TUserMeViewModel>(USER_CODES_SUCCESS.GET_USER_ME, await this.uc.getUserMe(id));
   };
 
   /**

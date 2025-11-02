@@ -10,7 +10,7 @@ export type TUserProfileId = `userProfile_${string}`
 export const SUserProfileDomainModel = z.object({
   id: SUserProfileId,
   user_id: SUserId,
-  first_name: z.string(),
+  first_name: z.string({ message: 'first_name should be a string' }),
   last_name: z.string(),
   display_name: z.string().optional(),
   phone: z.string().optional(),

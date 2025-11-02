@@ -1,0 +1,27 @@
+.columnIcon {
+  font-size: 1rem;
+}
+
+.initial-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 1rem;
+  height: 1rem;
+
+  border: 1px solid #ccc;
+  border-radius: 50%;        /* cercle parfait */
+
+  font-size: 0.75rem;        /* équiv. text-xs */
+  font-weight: 600;          /* équiv. font-semibold */
+  color: #ccc;            /* équiv. text-gray-700 */
+
+  background-color: #616a68; /* léger fond (optionnel) */
+  user-select: none;         /* empêche la sélection de texte */
+
+  transition: transform 0.15s ease-in-out;
+  &:hover {
+    transform: scale(1.1);
+  }
+}

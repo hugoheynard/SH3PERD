@@ -18,6 +18,8 @@ import {
 export type DataListColumn<T> = {
   fromKey: keyof T;
   label?: string;
+  headerTemplate?: TemplateRef<{ $implicit: DataListColumn<T> }>;
+  dataTemplate?: TemplateRef<{ $implicit: T }>;
   pipe?: PipeName;
   pipeArgs?: unknown[];
 };
@@ -96,5 +98,5 @@ export class DataListComponent<T extends object> {
       console.error(`Error in pipe "${col.pipe}" :`, err);
       return String(value ?? '');
     }
-  }
+  };
 }

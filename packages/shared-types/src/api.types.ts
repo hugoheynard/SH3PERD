@@ -9,7 +9,7 @@ export type TApiResponse<T> = TApiMessage & {
   data: T;
 };
 
-export type TAsyncApiResponse<DTO> = Promise<TApiResponse<DTO>>;
+export type TAsyncApiResponseDTO<DTO> = Promise<TApiResponse<DTO>>;
 
 export function createApiResponseSchema(useCaseResultSchema: ZodSchema) {
 

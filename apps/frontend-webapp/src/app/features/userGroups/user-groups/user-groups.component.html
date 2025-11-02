@@ -6,18 +6,56 @@
     [column]="[
     { fromKey: 'name', label: 'Name' },
     { fromKey: 'description', label: 'Description' },
-    { fromKey: 'groupLead', label: 'Group Lead' },
-    { fromKey: 'members', label: 'Members' }
+    { fromKey: 'groupLead', label: 'Group Lead', headerTemplate: groupLeadHeader, dataTemplate: groupLeadData },
+    { fromKey: 'hasDelegatedRights', label: 'Referral', headerTemplate: referral, dataTemplate: referralData },
+    { fromKey: 'members', label: 'Members', headerTemplate: members, dataTemplate: membersData }
   ]"
-
     [rowActionsTemplate]="actionsTemplate"
   />
 }
 
 
+<!-- Column header templates -->
+<ng-template #groupLeadHeader>
+  <sh3-svg-icon [name]="'groupLead'" class="columnIcon"/>
+</ng-template>
+
+<ng-template #referral>
+  <sh3-svg-icon [name]="'referral'" class="columnIcon"/>
+</ng-template>
+
+<ng-template #members>
+  <sh3-svg-icon [name]="'team'" class="columnIcon"/>
+</ng-template>
+
+
+<!-- Column data templates -->
+<ng-template #groupLeadData let-item>
+  @if(item.groupLead) {
+    <span class="initial-circle">{{ getInitialFromContractId(item.groupLead) }}</span>
+  }
+</ng-template>
+
+<ng-template #referralData let-item>
+  @if(item.hasDelegatedRights && item.hasDelegatedRights.length > 0) {
+    @for (person of item.hasDelegatedRights; track person) {
+      <span class="initial-circle">{{ getInitialFromContractId(person) }}</span>
+    }
+  }
+</ng-template>
+
+<ng-template #membersData let-item>
+  @if(item.members && item.members.length > 0) {
+    @for (person of item.members; track person) {
+      <span class="initial-circle">{{ getInitialFromContractId(person) }}</span>
+    }
+  }
+</ng-template>
+
 
 <!-- row action template -->
 <ng-template #actionsTemplate let-userGroup>
-  <sh3-button-icon icon='edit' (clicked)="edit(userGroup)"/>
+  <sh3-button-icon icon='edit' [type]="'primary'" (clicked)="edit(userGroup)"/>
   <sh3-button-icon icon='bin' (clicked)="delete(userGroup)"/>
 </ng-template>
+
