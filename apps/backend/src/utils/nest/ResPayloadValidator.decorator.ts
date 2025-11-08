@@ -6,12 +6,16 @@ import { PayloadValidationErrorResponseDto } from './PayloadValidationErrorRespo
 /**
  * Decorator to validate response at runtime against the provided DTO or Zod schema.
  * @param dtoOrSchema
+ * @param options
  * @constructor
  */
-export function ResPayloadValidator(dtoOrSchema: any) {
+export function ResPayloadValidator(dtoOrSchema: any, options: { active?: boolean } = { active: true }) {
 
   const schema = 'schema' in dtoOrSchema ? dtoOrSchema.schema.strict() : dtoOrSchema;
 
+  if( !options.active) {
+    return applyDecorators();
+  }
   return applyDecorators(
     UseInterceptors(new ResponsePayloadValidationInterceptor(schema)),
     ApiInternalServerErrorResponse({

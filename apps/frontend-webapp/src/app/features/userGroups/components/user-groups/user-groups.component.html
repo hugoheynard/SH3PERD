@@ -7,7 +7,7 @@
     { fromKey: 'name', label: 'Name' },
     { fromKey: 'description', label: 'Description' },
     { fromKey: 'groupLead', label: 'Group Lead', headerTemplate: groupLeadHeader, dataTemplate: groupLeadData },
-    { fromKey: 'hasDelegatedRights', label: 'Referral', headerTemplate: referral, dataTemplate: referralData },
+    { fromKey: 'referents', label: 'Referents', headerTemplate: referral, dataTemplate: referralData },
     { fromKey: 'members', label: 'Members', headerTemplate: members, dataTemplate: membersData }
   ]"
     [rowActionsTemplate]="actionsTemplate"
@@ -55,7 +55,8 @@
 
 <!-- row action template -->
 <ng-template #actionsTemplate let-userGroup>
-  <sh3-button-icon icon='edit' [type]="'primary'" (clicked)="edit(userGroup)"/>
+  <sh3-button-icon [icon]="'view'" [type]="'primary'" (clicked)="edit(userGroup)"/>
+  <sh3-button-icon [icon]="'add-doc'" [type]="'primary'" (clicked)="createChildGroup(userGroup)"/>
   <sh3-button-icon icon='bin' (clicked)="delete(userGroup)"/>
 </ng-template>
 

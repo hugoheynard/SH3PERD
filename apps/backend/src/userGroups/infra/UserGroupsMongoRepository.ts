@@ -19,7 +19,7 @@ export class UserGroupsMongoRepository
     const result = await this.collection.find({
       $or: [
         { groupLead: contract_scope },
-        { hasDelegatedRights: { $in: [contract_scope] } },
+        { referents: { $in: [contract_scope] } },
         { members: { $in: [contract_scope] } },
         { creation_context: contract_scope },
       ],

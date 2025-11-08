@@ -3,9 +3,16 @@
 
 
 @mixin sidePanels {
-  min-width: 320px;
-  max-width: 480px;
+  width: 480px;
+  min-width: 360px;
+  max-width: 90vw;
   background-color: var(--sidePanelsPrimaryBgColor);
+
+  @media (max-width: 768px) {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
 }
 
 

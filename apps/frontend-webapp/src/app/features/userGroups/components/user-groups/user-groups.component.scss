@@ -13,7 +13,7 @@
   border: 1px solid #ccc;
   border-radius: 50%;        /* cercle parfait */
 
-  font-size: 0.75rem;        /* équiv. text-xs */
+  font-size: 0.85rem;        /* équiv. text-xs */
   font-weight: 600;          /* équiv. font-semibold */
   color: #ccc;            /* équiv. text-gray-700 */
 
@@ -24,4 +24,8 @@
   &:hover {
     transform: scale(1.1);
   }
+}
+
+sh3-button-icon {
+
 }

@@ -23,7 +23,7 @@ export class GetCurrentUserUserGroupsUseCase {
 
     const result = await this.assembler.execute(context.contract_scope);
 
-    console.log(requestDTO);
+    console.log('GetCurrentUserUserGroupsUseCase', requestDTO);
 
     return result;
   };

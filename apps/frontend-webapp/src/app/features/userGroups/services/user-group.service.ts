@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
-import { BaseHttpService } from '../../core/services/BaseHttpService';
-import type { TUserGroupListViewModel } from '@sh3pherd/shared-types';
+import { BaseHttpService } from '../../../core/services/BaseHttpService';
+import type { TUserGroupListViewModel, TUserGroupId } from '@sh3pherd/shared-types';
+import type { TApiResponse } from '@sh3pherd/shared-types';
 
 
 @Injectable({
@@ -26,10 +27,10 @@ export class UserGroupService extends BaseHttpService {
     const url = `${this.url}/me`;
 
     this.scopedHttp
-      .withFeature('user-groups::list::me')
-      .post<TUserGroupListViewModel>(url, {})
+      .withFeature('user-groups::list::currentUser')
+      .post<TApiResponse<any>>(url, {})
       .subscribe({
-        next: value=> this._userGroups.set(value),
+        next: value=> this._userGroups.set(value.data),
         error: err => {
           console.error('[UserGroups] Error loading user groups: ', err);
         }
@@ -49,4 +50,21 @@ export class UserGroupService extends BaseHttpService {
       })
   };
 
+  /**
+   * Fetches the form configuration for creating a sub-user group under the specified user group.
+   * @param userGroupId
+   */
+  getSubUserGroupFormConfig(userGroupId: TUserGroupId) {
+    const url = `${this.url}/${userGroupId}/sub-group/initial-form-config`;
+
+    return this.scopedHttp
+      .withFeature('user-groups::sub-group::get-form-config')
+      .get<any>(url)
+      .subscribe({
+        next: value=> value,
+        error: err => {
+          console.error('[UserGroups] Error loading sub-group form config: ', err);
+        }
+      });
+  };
 }

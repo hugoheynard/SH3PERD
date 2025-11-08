@@ -18,10 +18,8 @@ export class ResponsePayloadValidationInterceptor implements NestInterceptor {
     return next.handle().pipe(
       rxMap((response) => {
         const data = response?.data ?? response;
-        console.log('[PayloadValidator] hasOwnProperty("her"):', Object.prototype.hasOwnProperty.call(data, 'her'));
 
         const parsed = this.schema.safeParse(data);
-        console.log(data);
 
         if (!parsed.success) {
           throw new PayloadValidationException(parsed.error);

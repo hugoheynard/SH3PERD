@@ -2,12 +2,10 @@ import {
   type AfterViewInit,
   Component,
   computed, effect,
-  inject, Injector, runInInjectionContext,
+  inject, InjectionToken, Injector, runInInjectionContext,
   ViewChild,
-  ViewContainerRef
+  ViewContainerRef,
 } from '@angular/core';
-import {AuthService} from '../services/auth.service';
-import {RouteService} from '../services/route.service';
 import {HeaderComponent} from '../components/header/header.component';
 import {AppMenuComponent} from '../components/menus/appMenu/app-menu.component';
 import {RouterOutlet} from '@angular/router';
@@ -15,6 +13,7 @@ import {NgClass} from '@angular/common';
 import {LayoutService} from '../services/layout.service';
 import {CircularMenuComponent} from '../components/circular-menu/circular-menu.component';
 
+export const PANEL_DATA = new InjectionToken<unknown>('PANEL_DATA');
 
 @Component({
   selector: 'app-main-layout',
@@ -31,8 +30,6 @@ import {CircularMenuComponent} from '../components/circular-menu/circular-menu.c
 })
 export class MainLayoutComponent implements AfterViewInit{
   private injector: Injector = inject(Injector);
-  public authService: AuthService = inject(AuthService);
-  public routeService: RouteService = inject(RouteService);
   private layoutService: LayoutService = inject(LayoutService);
 
   public title: string = 'shepherd';
@@ -66,10 +63,18 @@ export class MainLayoutComponent implements AfterViewInit{
 
       effect(() => {
         this.rightPanel.clear();
-        const comp = this.layoutService.rightPanelComponent();
-        if (comp) {
-          this.rightPanel.createComponent(comp, {injector: this.injector});
+        const panelConfig = this.layoutService.rightPanelComponent();
+
+        if (!panelConfig) {
+          return;
         }
+
+        const customInjector = Injector.create({
+          parent: this.injector,
+          providers: [{ provide: PANEL_DATA, useValue: panelConfig.data }],
+        });
+
+        this.rightPanel.createComponent(panelConfig.component!, { injector: customInjector });
       });
 
       effect(() => {

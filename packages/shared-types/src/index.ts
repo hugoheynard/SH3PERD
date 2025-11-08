@@ -18,7 +18,7 @@ export * from './user/user.readModels.types.js';
 
 
 
-export * from './user/userGroup.types.js';
+export * from './user/user-group.types.js';
 
 /**
  * MUSIC
@@ -44,6 +44,10 @@ export * from './contracts.dto.types.js';
 //CALENDAR
 export * from './event.domain.js';
 export { createIdSchema } from './utils/createIdSchema.js';
+
+
+//Utils
+export * from './utils/form.js';
 
 
 

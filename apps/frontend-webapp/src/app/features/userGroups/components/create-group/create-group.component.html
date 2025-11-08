@@ -1,0 +1,11 @@
+<form [formGroup]="form">
+  <sh3-input formControlName="name" label="Group Name" />
+  <sh3-input formControlName="description" label="Description" />
+  <sh3-input formControlName="groupLead" label="Group Lead" />
+  <sh3-input formControlName="members" label="Members" />
+
+  <footer class="drawer-footer">
+    <sh3-button-primary type="neutral">Cancel</sh3-button-primary>
+    <sh3-button-secondary type="primary" [disabled]="form.invalid">Create</sh3-button-secondary>
+  </footer>
+</form>

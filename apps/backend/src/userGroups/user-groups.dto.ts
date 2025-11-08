@@ -1,7 +1,11 @@
-import { ApiExtraModels } from '@nestjs/swagger';
 import { createZodDto } from 'nestjs-zod';
-import { SUserGroupListViewModel } from '@sh3pherd/shared-types';
+import { SUserGroupListViewModel, SSubgroupInitialFormValuesObject } from '@sh3pherd/shared-types';
+import { ApiModel } from '../utils/swagger/api-model.swagger.util.js';
 
 
-@ApiExtraModels()
+@ApiModel()
 export class UserGroupListDTO extends createZodDto(SUserGroupListViewModel) {}
+
+@ApiModel()
+export class SubgroupInitialFormValuesObjectDTO extends createZodDto(SSubgroupInitialFormValuesObject) {}
+

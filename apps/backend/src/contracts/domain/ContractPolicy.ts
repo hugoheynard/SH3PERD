@@ -1,0 +1,14 @@
+import type { ContractEntity } from './ContractEntity.js';
+import { DomainError } from '../../utils/errorManagement/errorClasses/DomainError.js';
+
+
+export class ContractPolicy {
+  static ensureActive(contract: ContractEntity) {
+    if (!contract.isActive()) {
+      throw new DomainError('Contract is inactive', {
+        code: 'CONTRACT_INACTIVE',
+        context: { contractId: contract.id },
+      });
+    }
+  }
+}

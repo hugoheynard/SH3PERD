@@ -9,7 +9,7 @@ import {MainLayoutComponent} from '../core/main-layout/main-layout.component';
 import {HomeComponent} from '../features/home-dashboard/home/home.component';
 import {MusicLibraryComponent} from '../features/musicLibrary/components/music-library/music-library.component';
 import { ContractPageComponent } from '../features/contracts/components/contract-page/contract-page.component';
-import { UserGroupsComponent } from '../features/userGroups/user-groups/user-groups.component';
+import { UserGroupsComponent } from '../features/userGroups/components/user-groups/user-groups.component';
 
 
 export const routes: Routes = [

@@ -4,7 +4,7 @@ import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
 /**
  * Contract entity represents a contract between a user and a company.
  */
-export class Contract extends Entity<TContractDomainModel>{
+export class ContractEntity extends Entity<TContractDomainModel>{
   constructor(props: TEntityInput<TContractDomainModel>) {
     super(props, 'contract');
   };
@@ -22,7 +22,6 @@ export class Contract extends Entity<TContractDomainModel>{
   get ressourceStatus(): boolean {
     return this.props.ressourceStatus;
   };
-
    */
 
 

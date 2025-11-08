@@ -8,6 +8,8 @@ import {
 } from '../contracts.domain.types.js';
 import type { TRecordMetadata } from '../metadata.types.js';
 import { SUserProfileDomainModel, type TUserProfileDomainModel } from './user-profile.js';
+import { SCompanyId, type TCompanyId } from '../company.domain.js';
+import { type TFormOption, zFormOption } from '../utils/form.js';
 
 
 export const SUserGroupId = createIdSchema('userGroup');
@@ -17,13 +19,14 @@ export type TUserGroupId = `userGroup_${string}`;
  * Enumeration of possible user group types within the organization.
  * These types help categorize user groups based on their purpose and structure.
  */
-export enum UserGroupType {
-  ORGANIZATION = 'organization',
+export enum UserGroupTypesEnum {
+  ROOT = 'root',
   DEPARTMENT = 'department',
   TEAM = 'team',
   PROJECT = 'project',
-  OTHER = 'other',
 }
+
+export const SUserGroupTypesEnum = z.nativeEnum(UserGroupTypesEnum, { message : 'Invalid user group type' });
 
 /**
  * Domain model representing a user group within the organization.
@@ -33,9 +36,9 @@ export enum UserGroupType {
  */
 export type TUserGroupDomainModel = {
   id: TUserGroupId;
-  type: UserGroupType;
-  name:string;
-  description?:string;
+  type: UserGroupTypesEnum;
+  name: string;
+  description?: string;
   /**
    * Contract ID of the group lead (e.g., manager or team lead)
    * Group lead can give permissions to other employees in the group
@@ -43,24 +46,26 @@ export type TUserGroupDomainModel = {
    */
   groupLead: TContractId;
   /** List of contract IDs that have delegated rights within this user group */
-  hasDelegatedRights: TContractId[];
+  referents: TContractId[];
   /** List of employee contract IDs associated with this user group */
   members:TContractId[];
   /** Parent user group ID if this group is a sub-group */
   parent_group_id: TUserGroupId | null;
+  company_id: TCompanyId;
   created_by?: TContractId;
 };
 
 
 export const SUserGroupDomainModel = z.object({
   id: SUserGroupId,
-  type: z.nativeEnum(UserGroupType),
+  type: SUserGroupTypesEnum,
   name: z.string(),
   description: z.string().optional(),
   groupLead: SContractId,
-  hasDelegatedRights: z.array(SContractId),
+  referents: z.array(SContractId),
   members: z.array(SContractId),
   parent_group_id: SUserGroupId.or(z.null()),
+  company_id: SCompanyId,
 })
 
 export type TUserGroupRecord = TUserGroupDomainModel & TRecordMetadata;
@@ -87,3 +92,21 @@ export const SUserGroupListViewModel = z.object({
   contracts: z.record(SContractId, SContractDomainModel).describe('Map of contracts keyed by contract_id (e.g. "contract_abcd1234")'),
   userProfiles: z.record(SContractId, SUserProfileDomainModel).describe('Map of contracts keyed by contract_id (e.g. "contract_abcd1234")'),
 });
+
+
+
+export type TSubgroupInitialFormValuesObject = {
+  name: string;
+  typeOptions: TFormOption<UserGroupTypesEnum>[];
+  referralsOptions: TFormOption<TContractId>[];
+  membersOptions: TFormOption<TContractId>[];
+}
+
+
+export const SSubgroupInitialFormValuesObject = z.object({
+  name: z.string(),
+  typeOptions: z.array(zFormOption(SUserGroupTypesEnum)),
+  referralsOptions: z.array(zFormOption(SContractId)),
+  membersOptions: z.array(zFormOption(SContractId)),
+});
+

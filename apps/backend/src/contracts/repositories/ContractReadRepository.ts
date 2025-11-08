@@ -1,12 +1,17 @@
 import { MONGO_CORE_DB } from '../../appBootstrap/database/db.tokens.js';
-import type { TUserId, TContractRecord } from '@sh3pherd/shared-types';
+import type { TUserId, TContractRecord, TContractId, TUserProfileRecord } from '@sh3pherd/shared-types';
 import type { Collection } from 'mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Db } from 'mongodb';
 
 
+export interface IContractReadRepository {
+  getContractListViewModel(userId: TUserId): Promise<any[]>;
+  getContractWithUserProfile(idOrIds: TContractId | TContractId[] ): Promise<{ contract: TContractRecord; userProfile: TUserProfileRecord }[]>;
+}
+
 @Injectable()
-export class ContractReadRepository {
+export class ContractReadRepository implements IContractReadRepository {
   private readonly collection: Collection<TContractRecord>;
 
   constructor(@Inject(MONGO_CORE_DB) private readonly db: Db) {
@@ -40,6 +45,35 @@ export class ContractReadRepository {
           status: 1,
         },
       },
+    ]).toArray();
+  };
+
+  async getContractWithUserProfile(idOrIds: TContractId | TContractId[] ): Promise<{ contract: TContractRecord; userProfile: TUserProfileRecord }[]> {
+    const isArray = Array.isArray(idOrIds);
+    const ids = isArray ? idOrIds : [idOrIds];
+
+    return this.collection.aggregate<{ contract: TContractRecord; userProfile: TUserProfileRecord }>([
+      { $match: { id: { $in: ids } } },
+      {
+        $lookup: {
+          from: "user_profiles",
+          localField: "user_id",
+          foreignField: "user_id",
+          as: "userProfile"
+        }
+      },
+      { $unwind: { path: "$userProfile", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 0,
+          contract: "$$ROOT",
+          userProfile: "$userProfile",
+        }
+      },
+
+      {
+        $unset: ["contract.userProfile", "userProfile._id", "contract._id"]
+      }
     ]).toArray();
   };
 }

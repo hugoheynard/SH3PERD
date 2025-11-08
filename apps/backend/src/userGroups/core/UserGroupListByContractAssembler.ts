@@ -30,7 +30,7 @@ export class UserGroupListByContractAssembler {
     for (const ug of userGroupsRecord) {
       uniqueContractIds.add(ug.groupLead);
       ug.members.forEach(id => uniqueContractIds.add(id));
-      ug.hasDelegatedRights.forEach(id => uniqueContractIds.add(id));
+      ug.referents.forEach(id => uniqueContractIds.add(id));
       userGroups.push(RecordMetadataUtils.stripDocMetadata(ug));
     }
 
