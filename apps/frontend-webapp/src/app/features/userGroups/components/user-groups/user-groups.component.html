@@ -1,8 +1,10 @@
-@if (!userGroupObject) {
+@let data = userGroupObject();
 
+@if (!data) {
+<!--loading -->
 } @else {
   <data-list
-    [data]="userGroupObject.userGroups"
+    [data]="data.userGroups"
     [column]="[
     { fromKey: 'name', label: 'Name' },
     { fromKey: 'description', label: 'Description' },
@@ -37,8 +39,8 @@
 </ng-template>
 
 <ng-template #referralData let-item>
-  @if(item.hasDelegatedRights && item.hasDelegatedRights.length > 0) {
-    @for (person of item.hasDelegatedRights; track person) {
+  @if(item.referents && item.referents.length > 0) {
+    @for (person of item.referents; track person) {
       <span class="initial-circle">{{ getInitialFromContractId(person) }}</span>
     }
   }

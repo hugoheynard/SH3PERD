@@ -1,22 +1,23 @@
-import { Body, Controller, Get, Inject, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ContractScoped } from '../utils/nest/decorators/ContractScoped.js';
 import { ContractScopedContext } from '../utils/nest/decorators/Context.js';
 import type { TUseCaseContext } from '../types/useCases.generic.types.js';
-import type { UserGroupsService } from './user-groups.service.js';
-import { USER_GROUPS_SERVICE } from './user-groups.tokens.js';
 import type { TUserGroupId, TAsyncApiResponseDTO } from '@sh3pherd/shared-types';
 import { ApiOkResponse, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { SubgroupInitialFormValuesObjectDTO, UserGroupListDTO } from './user-groups.dto.js';
+import { SubgroupInitialFormValuesObjectDTO, UserGroupListDTO } from './application/dto/user-groups.dto.js';
 import { ResPayloadValidator } from '../utils/nest/ResPayloadValidator.decorator.js';
 import { apiSuccessDTO } from '../utils/swagger/api-response.swagger.util.js';
 import { USERGROUP_SUCCESS } from './user-groups.codes.js';
 import { buildApiResponseDTO } from '../music/codes.js';
+import { QueryBus } from '@nestjs/cqrs';
+import { GetCurrentUserUserGroupsQuery } from './application/query/GetCurrentUserUserGroupsQuery.js';
+import { GetSubGroupInitialFormValueObjectQuery, } from './application/query/GetSubGroupInitialFormValueObjectQuery.js';
 
 
 @Controller()
 export class UserGroupsController {
   constructor(
-    @Inject(USER_GROUPS_SERVICE) private readonly userGroupsService: UserGroupsService,
+    private readonly queryBus: QueryBus,
   ) {};
 
   //--- get/me ---
@@ -46,7 +47,9 @@ export class UserGroupsController {
   ): TAsyncApiResponseDTO<UserGroupListDTO> {
     return buildApiResponseDTO(
       USERGROUP_SUCCESS.GET_CURRENT_USER_USERGROUPS,
-      await this.userGroupsService.getCurrentUserUserGroups({ requestDTO, context })
+      await this.queryBus.execute(
+        new GetCurrentUserUserGroupsQuery(context, requestDTO.filter)
+      )
     );
   };
 
@@ -69,7 +72,9 @@ export class UserGroupsController {
   ): TAsyncApiResponseDTO<SubgroupInitialFormValuesObjectDTO> {
     return buildApiResponseDTO(
       USERGROUP_SUCCESS.GET_SUBGROUP_INITIAL_FORM_VALUES,
-      await this.userGroupsService.getSubGroupInitialFormValues(context, id)
+      await this.queryBus.execute(
+        new GetSubGroupInitialFormValueObjectQuery(context, id)
+      )
     );
   };
 

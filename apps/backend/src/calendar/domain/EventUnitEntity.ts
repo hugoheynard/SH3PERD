@@ -1,7 +1,7 @@
-import { Entity, type TEntityInput } from '../../../utils/entities/Entity.js';
+import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
 import type { TEventUnitDomainModel, TContractId } from '@sh3pherd/shared-types';
 
-export class EventUnit extends Entity<TEventUnitDomainModel> {
+export class EventUnitEntity extends Entity<TEventUnitDomainModel> {
   constructor(props: TEntityInput<TEventUnitDomainModel>) {
     super(props, 'eventUnit');
 

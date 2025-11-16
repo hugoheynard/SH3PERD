@@ -102,7 +102,7 @@ LIGHT THEME
 
 
 [data-theme='light'] {
-  --pageTitleColor: rgba(239, 240, 243, 0.05);
+  --pageTitleColor: rgba(18, 69, 221, 0.05);
   --baseTextColor: #2a2a2a;
 
 
@@ -110,9 +110,9 @@ LIGHT THEME
 
 
   //----------Structural elements color------------//
-  --colorPrimaryMenus: #F5F7FA;
-  --pageBgColor: white;
-  --headAndfootBgColor: #E9EDF2;
+  --colorPrimaryMenus: white;
+  --pageBgColor: #F5F7FA;
+  --headAndfootBgColor: #F5F7FA;
   --sidePanelsPrimaryBgColor: #DDE3EB;
 
   //----------Form ------------//
@@ -126,5 +126,12 @@ LIGHT THEME
   --tab-bgColor: rgba(253, 255, 255, 0.03);
   --tab-bgColor-active: rgba(253, 255, 255, 0.20);
 
+
+
+}
+
+@mixin radiusAndShadow {
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 

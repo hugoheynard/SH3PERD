@@ -1,6 +1,6 @@
 import type { TUserMeViewModel, TUserId } from '@sh3pherd/shared-types';
 import { Inject, Injectable } from '@nestjs/common';
-import type { IUserCredentialsRepository } from '../credentials/UserCredentialsMongoRepo.repository.js';
+import type { IUserCredentialsRepository } from '../domain/UserCredentialsMongoRepo.repository.js';
 import { USER_CREDENTIALS_REPO } from '../../appBootstrap/nestTokens.js';
 
 

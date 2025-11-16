@@ -98,7 +98,7 @@ export const SUserGroupListViewModel = z.object({
 export type TSubgroupInitialFormValuesObject = {
   name: string;
   typeOptions: TFormOption<UserGroupTypesEnum>[];
-  referralsOptions: TFormOption<TContractId>[];
+  referentsOptions: TFormOption<TContractId>[];
   membersOptions: TFormOption<TContractId>[];
 }
 
@@ -106,7 +106,7 @@ export type TSubgroupInitialFormValuesObject = {
 export const SSubgroupInitialFormValuesObject = z.object({
   name: z.string(),
   typeOptions: z.array(zFormOption(SUserGroupTypesEnum)),
-  referralsOptions: z.array(zFormOption(SContractId)),
+  referentsOptions: z.array(zFormOption(SContractId)),
   membersOptions: z.array(zFormOption(SContractId)),
 });
 

@@ -7,7 +7,7 @@ import type { TCreateAuthSessionResult } from '../../types/auth.domain.tokens';
 import type { TLoginRequestDTO } from '../../../../dist/auth/zodSchemas/loginRequestDTOSchema';
 import type { TComparePassword, TCreateAuthSessionFn } from '../../types/auth.core.contracts';
 import type { TLoginUseCaseDeps } from '../../types/auth.core.useCase';
-import type { TFindUserCredentialsByEmailFn } from '../../../user/credentials/UserCredentialsMongoRepo.repository.js';
+import type { TFindUserCredentialsByEmailFn } from '../../../user/domain/UserCredentialsMongoRepo.repository.js';
 
 describe('createLoginUseCase', () => {
   const mockUser: TUserCredentialsRecord = {

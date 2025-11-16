@@ -1,8 +1,8 @@
 import { type CanActivate, type ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import type { Request } from 'express';
-import type { IUserPreferencesRepository } from '../../user/preferences/UserPreferencesMongoRepo.repository.js';
+import type { IUserPreferencesRepository } from '../../user/infra/UserPreferencesMongoRepo.repository.js';
 import { USER_PREFERENCES_REPO } from '../../appBootstrap/nestTokens.js';
-import { UserPreferences } from '../../user/preferences/UserPreferences.entity.js';
+import { UserPreferences } from '../../user/infra/UserPreferences.entity.js';
 import { Reflector } from '@nestjs/core';
 import { CONTRACT_SCOPED_KEY } from '../../utils/nest/decorators/ContractScoped.js';
 

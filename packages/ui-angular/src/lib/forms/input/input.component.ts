@@ -1,4 +1,4 @@
-import { Component, EventEmitter, forwardRef, input, Input, Output } from '@angular/core';
+import { Component, forwardRef, input, Input, output, } from '@angular/core';
 import { FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
 /**
@@ -8,7 +8,6 @@ import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
  * <sh3-input label="Nom" [(value)]="name"></sh3-input>
  * <sh3-input label="Âge" type="number" [(value)]="age"></sh3-input>
  */
-
 @Component({
   selector: 'sh3-input',
   imports: [
@@ -26,24 +25,25 @@ import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
   ],
   host: { '[attr.data-size]': 'size()' }
 })
-export class InputComponent
-  extends BaseControlValueAccessor<string | number> {
-  @Input() label!: string;
-  @Input() type: 'text' | 'number' | 'email' | 'password' | 'tel' | 'url' = 'text';
-  @Input() min?: number;
-  @Input() max?: number;
-  @Input() placeholder?: string;
+export class InputComponent extends BaseControlValueAccessor<string | number> {
+  readonly label= input<string>();
+  readonly type = input<'text' | 'number' | 'email' | 'password' | 'tel' | 'url'> ('text');
+  readonly min= input<number | null>(null);
+  readonly max= input<number | null>(null);
+  readonly placeholder= input<string>('');
   public readonly size = input<'small' | 'large'>('large')
 
   /** If FormControl, we use:  */
   @Input() control?: FormControl;
 
   /** Valeur managée si pas de FormControl */
-  @Output() valueChange = new EventEmitter<string | number>();
+  valueChange = output<string | number>();
 
   public inputId: string = crypto.randomUUID();
 
-
+  /**
+  * Handles manual input change
+  */
   onInputChange(event: Event) {
     const target = event.target as HTMLInputElement;
     const val = target.value;
@@ -51,18 +51,21 @@ export class InputComponent
     this.valueChange.emit(val);
     this.onChange(val);
     this.onTouched();
-  }
+  };
 
+  /**
+   * Increment value by step, respecting max bound
+   */
   increment(): void {
     const current = this.getValueAsNumber();
-    const max = this.max ?? Infinity;
+    const max = this.max() ?? Infinity;
     const next = Math.min(current + 1, max);
     this.setValue(next);
-  }
+  };
 
   decrement(): void {
     const current = this.getValueAsNumber();
-    const min = this.min ?? -Infinity;
+    const min = this.min() ?? -Infinity;
     const next = Math.max(current - 1, min);
     this.setValue(next);
   }

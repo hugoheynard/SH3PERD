@@ -1,5 +1,5 @@
 import type { TEventUnitDomainModel } from '@sh3pherd/shared-types';
-import { EventUnit } from '../domain/entities/EventUnit.js';
+import { EventUnitEntity } from '../domain/EventUnitEntity.js';
 import type { TGenericSaveFn } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
 /**
@@ -16,7 +16,7 @@ export const createEventUnitUseCaseFactory = (deps: {
    * @param deps
    */
   return async function createEventUnitUseCase(input: Omit<TEventUnitDomainModel, 'id'>): Promise<TEventUnitDomainModel> {
-    const eventUnit = new EventUnit(input);
+    const eventUnit = new EventUnitEntity(input);
 
 
     const result = await saveEventUnit(eventUnit.toDomain)

@@ -1,8 +1,12 @@
-import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
+import { AggregateEntity, type TEntityInput } from '../../utils/entities/Entity.js';
 import type { TUserGroupDomainModel, TContractId } from '@sh3pherd/shared-types';
 import { DomainError } from '../../utils/errorManagement/errorClasses/DomainError.js';
 
-export class UserGroupEntity extends Entity<TUserGroupDomainModel>{
+
+/**
+ * Represents a user group entity within the system.
+ */
+export class UserGroupEntity extends AggregateEntity<TUserGroupDomainModel>{
   private readonly _referentsSet: Set<TContractId>;
   private readonly _membersSet: Set<TContractId>;
 
@@ -10,7 +14,6 @@ export class UserGroupEntity extends Entity<TUserGroupDomainModel>{
     super(props, 'user-group');
 
     this.ensureHasGroupLead(props);
-    this.ensureHasEnoughMembers(props);
 
     this._referentsSet = new Set(this.props.referents);
     this._membersSet = new Set(this.props.members);
@@ -56,17 +59,6 @@ export class UserGroupEntity extends Entity<TUserGroupDomainModel>{
     });
   }
 
-
-  /**
-   * Ensure the user group has at least 2 members.
-   * @param props
-   * @private
-   */
-  private ensureHasEnoughMembers(props: TEntityInput<TUserGroupDomainModel>): void {
-    if (props.members.length < 2) {
-      throw new Error('User group must have at least 2 members.');
-    }
-  };
 
   // Factory method
   /**

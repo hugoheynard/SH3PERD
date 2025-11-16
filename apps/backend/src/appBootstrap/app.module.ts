@@ -15,6 +15,7 @@ import { ContractModule } from '../contracts/contract.module.js';
 import { MusicModule } from '../music/music.module.js';
 import { UserGroupsModule } from '../userGroups/user-groups.module.js';
 import { UserProfileModule } from '../user/profile/user-profile.module.js';
+import { GlobalCqrsModule } from './global-cqrs.module.js';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UserProfileModule } from '../user/profile/user-profile.module.js';
       cache: true, // Caches the configuration for performance
       load: [configuration], // You can load additional configuration files or functions here
     }),
+    GlobalCqrsModule,
     // Database module, returns MongoClient instance
     MongoModule,
     // Token verification for AuthGuard
@@ -55,6 +57,7 @@ import { UserProfileModule } from '../user/profile/user-profile.module.js';
         ]
       },
     ]),
+    GlobalCqrsModule,
   ],
   providers: [AppService, { provide: APP_GUARD, useClass: AuthGuard }],
   controllers: [AppController],

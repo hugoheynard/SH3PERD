@@ -16,11 +16,11 @@ import type { MongoClient } from 'mongodb';
 import {
   type IUserPreferencesRepository,
   UserPreferencesMongoRepository,
-} from '../../user/preferences/UserPreferencesMongoRepo.repository.js';
+} from '../../user/infra/UserPreferencesMongoRepo.repository.js';
 import {
   type IUserCredentialsRepository,
   UserCredentialsMongoRepository,
-} from '../../user/credentials/UserCredentialsMongoRepo.repository.js';
+} from '../../user/domain/UserCredentialsMongoRepo.repository.js';
 import {
   type IUserProfileRepository,
   UserProfileMongoRepository,

@@ -1,11 +1,15 @@
 <form [formGroup]="form">
   <sh3-input formControlName="name" label="Group Name" />
   <sh3-input formControlName="description" label="Description" />
-  <sh3-input formControlName="groupLead" label="Group Lead" />
-  <sh3-input formControlName="members" label="Members" />
+  <sh3-select formControlName="type" label="Type" [options]="typeOptions" placeholder="group type"/>
+  <sh3-multi-select-dropdown formControlName="referents" [options]="referentOptions" placeholder="referents"/>
+  <sh3-multi-select-dropdown formControlName="members" [options]="membersOptions" placeholder="members"/>
 
   <footer class="drawer-footer">
-    <sh3-button-primary type="neutral">Cancel</sh3-button-primary>
-    <sh3-button-secondary type="primary" [disabled]="form.invalid">Create</sh3-button-secondary>
+    <sh3-button-primary
+      type="primary"
+      [disabled]="form.invalid"
+      buttonLabel="submit"
+      (clicked)="submit()"/>
   </footer>
 </form>

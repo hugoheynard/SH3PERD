@@ -1,7 +1,9 @@
-import { Injectable, signal } from '@angular/core';
+import { effect, Injectable, signal } from '@angular/core';
 import { BaseHttpService } from '../../../core/services/BaseHttpService';
 import type { TUserGroupListViewModel, TUserGroupId } from '@sh3pherd/shared-types';
 import type { TApiResponse } from '@sh3pherd/shared-types';
+import type { TSubgroupInitialFormValuesObject } from '@sh3pherd/shared-types';
+import { catchError, map, of } from 'rxjs';
 
 
 @Injectable({
@@ -13,11 +15,17 @@ export class UserGroupService extends BaseHttpService {
   private _userGroups = signal<TUserGroupListViewModel| null>(null);
 
   get userGroups() {
-    if(!this._userGroups()) {
-      this.getMyUserGroups();
-    }
     return this._userGroups.asReadonly();
   };
+
+  constructor() {
+    super();
+    effect(() => {
+      if (this._userGroups() === null) {
+        this.getMyUserGroups();
+      }
+    });
+  }
 
   /**
    * Fetches the user groups associated with the current user.
@@ -32,11 +40,16 @@ export class UserGroupService extends BaseHttpService {
       .subscribe({
         next: value=> this._userGroups.set(value.data),
         error: err => {
+          this._userGroups.set(null);
           console.error('[UserGroups] Error loading user groups: ', err);
         }
       });
   };
 
+  /**
+   * Creates a new user group with the provided data.
+   * @param data
+   */
   createUserGroup(data: any){
     const url = this.url;
 
@@ -59,12 +72,13 @@ export class UserGroupService extends BaseHttpService {
 
     return this.scopedHttp
       .withFeature('user-groups::sub-group::get-form-config')
-      .get<any>(url)
-      .subscribe({
-        next: value=> value,
-        error: err => {
-          console.error('[UserGroups] Error loading sub-group form config: ', err);
-        }
-      });
+      .get<TApiResponse<TSubgroupInitialFormValuesObject>>(url)
+      .pipe(
+        map(res => res.data),
+        catchError(err => {
+          console.error('[UserGroups] Error loading sub-group form config:', err);
+          return of(null); // retourne un flux vide pour éviter le crash
+        })
+      );
   };
 }

@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import { RecordMetadataUtils } from '../metaData/RecordMetadataUtils.js';
 import type { TRecordMetadata } from '@sh3pherd/shared-types';
+import { AggregateRoot, EventBus } from '@nestjs/cqrs';
 
 export type TId<T extends string> = `${T}_${string}`;
 
@@ -38,10 +39,11 @@ export type TEntityInput<
  * note:
  * -> I know props is ok with the cast only ! sorry TS
  */
-export abstract class Entity<TDomainModel extends {id: TDomainModel['id']}> {
+export abstract class Entity<TDomainModel extends {id: TDomainModel['id']}> extends AggregateRoot {
   protected props: TDomainModel;
 
   protected constructor(props: TEntityInput<TDomainModel>, prefix: string) {
+    super();
     const id = props.id ?? this.generateId(prefix);
     this.props = { ...props, id } as TDomainModel;
   };
@@ -72,5 +74,35 @@ export abstract class Entity<TDomainModel extends {id: TDomainModel['id']}> {
   ): TEntity {
     const cleanProps = RecordMetadataUtils.stripDocMetadata(record);
     return new this(cleanProps);
+  }
+}
+
+
+export abstract class AggregateEntity<TDomainModel extends { id: TDomainModel['id'] }> extends Entity<TDomainModel> {
+  commitEvents(eventBus: EventBus): void {
+    eventBus.publishAll(this.getUncommittedEvents());
+    this.commit();
+  }
+}
+
+/**
+ * Abstract base class for value objects.
+ * Implements equality based on properties.
+ * @template TProps - Shape of the value object's properties.
+ */
+export abstract class ValueObject<TProps extends object> {
+  protected readonly props: TProps;
+
+  protected constructor(props: TProps) {
+    this.props = Object.freeze({ ...props });
+  }
+
+  equals(vo?: ValueObject<TProps>): boolean {
+    if (!vo) return false;
+    return JSON.stringify(this.props) === JSON.stringify(vo.props);
+  }
+
+  get value(): TProps {
+    return this.props;
   }
 }

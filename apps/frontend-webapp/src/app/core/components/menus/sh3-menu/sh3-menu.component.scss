@@ -5,6 +5,8 @@
 :host {
   height: 100%;
   width: 100%;
+  background-color: var(--colorPrimaryMenus);
+  @include sh3.radiusAndShadow
 }
 
 nav {
@@ -14,14 +16,13 @@ nav {
   justify-content: space-around;
   height: 100%;
   color: var(--baseTextColor);
-  background-color: var(--colorPrimaryMenus);
 }
 
 
 
 .icon {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.4rem;
+  height: 1.4rem;
   color: white;
 }
 

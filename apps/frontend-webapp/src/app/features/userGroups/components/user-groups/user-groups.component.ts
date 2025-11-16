@@ -1,4 +1,4 @@
-import { Component, inject, type AfterViewInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DataListComponent } from '../../../../core/components/data-list/data-list.component';
 import { ButtonIconComponent, SvgIconComponent } from '@sh3pherd/ui-angular';
 import { UserGroupService } from '../../services/user-group.service';
@@ -18,10 +18,10 @@ import { CreateGroupComponent } from '../create-group/create-group.component';
   templateUrl: './user-groups.component.html',
   styleUrl: './user-groups.component.scss'
 })
-export class UserGroupsComponent implements AfterViewInit {
+export class UserGroupsComponent {
   private readonly ugServ = inject(UserGroupService);
   private readonly layout = inject(LayoutService);
-  readonly userGroupObject = this.ugServ.userGroups();
+  readonly userGroupObject = this.ugServ.userGroups;
 
   edit(userGroup: any) {
     alert(`Not implemented yet, would edit user group with id ${userGroup.id}`);
@@ -30,12 +30,6 @@ export class UserGroupsComponent implements AfterViewInit {
   delete(userGroup: any) {
     alert(`Not implemented yet, would edit user group with id ${userGroup.id}`);
   }
-
-  // --- Lifecycle ---
-  ngAfterViewInit(): void {
-    this.ugServ.getMyUserGroups();
-  };
-
 
   getInitialFromContractId(contract_id: TContractId ): string | undefined {
     const userProfile = this.ugServ.userGroups()?.userProfiles[contract_id];

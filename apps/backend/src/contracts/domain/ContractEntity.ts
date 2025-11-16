@@ -9,15 +9,6 @@ export class ContractEntity extends Entity<TContractDomainModel>{
     super(props, 'contract');
   };
 
-  // ----------- Getters ----------- //
-  get startDate(): Date {
-    return this.props.startDate;
-  };
-
-  get endDate(): Date | undefined {
-    return this.props.endDate;
-  };
-
   /*
   get ressourceStatus(): boolean {
     return this.props.ressourceStatus;
@@ -28,7 +19,7 @@ export class ContractEntity extends Entity<TContractDomainModel>{
   // ----------- Methods ----------- //
   isActive(date?: Date): boolean {
     const dateToCompare = date ? date: new Date();
-    return this.startDate <= dateToCompare && this.endDate ? dateToCompare <= this.endDate : true;
+    return this.props.startDate <= dateToCompare && this.props.endDate ? dateToCompare <= this.props.endDate : true;
   };
 
   isSignedByUser(): boolean {
@@ -38,6 +29,14 @@ export class ContractEntity extends Entity<TContractDomainModel>{
   isSignedByCompany(): boolean {
     return !!this.props.signedBy?.company;
   };
+
+  getSnapshot() {
+
+    return {
+      contract_id: this.props.id,
+      user_id: this.props.user_id
+    };
+  }
 
 
 

@@ -6,9 +6,9 @@ import {
   USER_GROUPS_BY_CONTRACT_ASSEMBLER,
   USER_GROUPS_SERVICE,
 } from './user-groups.tokens.js';
-import { GetCurrentUserUserGroupsUseCase } from './useCases/GetCurrentUserUserGroups.js';
+import { GetCurrentUserUserGroupsHandler } from './application/query/GetCurrentUserUserGroupsQuery.js';
 import { UserGroupListByContractAssembler } from './core/UserGroupListByContractAssembler.js';
-import { GetSubGroupInitialFormValueObjectUseCase } from './useCases/get-sub-group-initial-form-value-object-use-case.service.js';
+import { GetSubGroupInitialFormValueObjectHandler } from './application/query/GetSubGroupInitialFormValueObjectQuery.js';
 
 @Module({
   imports: [],
@@ -19,8 +19,8 @@ import { GetSubGroupInitialFormValueObjectUseCase } from './useCases/get-sub-gro
     { provide: USER_GROUPS_BY_CONTRACT_ASSEMBLER, useClass: UserGroupListByContractAssembler },
 
     //--- USE CASES --
-    { provide: GET_CURRENT_USER_USER_GROUPS_USE_CASE, useClass: GetCurrentUserUserGroupsUseCase },
-    { provide: GET_USER_GROUP_SUBGROUP_INITIAL_FORM_VALUES_USE_CASE, useClass: GetSubGroupInitialFormValueObjectUseCase },
+    { provide: GET_CURRENT_USER_USER_GROUPS_USE_CASE, useClass: GetCurrentUserUserGroupsHandler },
+    { provide: GET_USER_GROUP_SUBGROUP_INITIAL_FORM_VALUES_USE_CASE, useClass: GetSubGroupInitialFormValueObjectHandler },
   ],
   controllers: [UserGroupsController],
   exports: [USER_GROUPS_SERVICE],

@@ -1,5 +1,4 @@
 import { Component, ElementRef, forwardRef, HostListener, inject, input} from '@angular/core';
-import {  NgForOf, NgIf } from '@angular/common';
 import { type ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { SvgIconComponent } from '../../icones';
 
@@ -9,8 +8,6 @@ type Opt = Record<string, any>;
   selector: 'sh3-multi-select-dropdown',
   imports: [
     SvgIconComponent,
-    NgIf,
-    NgForOf,
   ],
   standalone: true,
   templateUrl: './multi-select-dropdown.component.html',
@@ -92,7 +89,7 @@ export class MultiSelectDropdownComponent implements ControlValueAccessor {
    */
   isAllSelected(): boolean {
     const vk = this.valueKey();
-    const opts = this.options();
+    const opts = this.options?.() ?? [];
     return opts.length > 0 && opts
       .every(o => this.selectedIds.includes(o[vk]))
   };
@@ -103,8 +100,9 @@ export class MultiSelectDropdownComponent implements ControlValueAccessor {
    * @param checked - Whether to select or deselect all options.
    */
   toggleSelectAll(checked: boolean): void {
+    const opts = this.options?.() ?? [];
     const vk = this.valueKey();
-    const next = checked ? this.options().map(o => o[vk]) : [];
+    const next = checked ? opts.map(o => o[vk]) : [];
     this.selectedIds = next;
     this.onChange([...next]);
     this.onTouched();
@@ -118,11 +116,12 @@ export class MultiSelectDropdownComponent implements ControlValueAccessor {
 
   // -------- utils
   get selectedLabels(): string[] {
+    const opts = this.options?.() ?? [];
     const vk = this.valueKey();
     const lk = this.labelKey();
     const set = new Set(this.selectedIds);
 
-    return this.options()
+    return opts
       .filter(o => set.has(o[vk]))
       .map(o => String(o[lk]));
   };

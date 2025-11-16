@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { IPasswordService } from '../core/password-manager/types/Interfaces.js';
 import { BusinessError } from '../../utils/errorManagement/errorClasses/BusinessError.js';
-import { UserCredential } from '../../user/credentials/UserCredential.entity.js';
+import { UserCredential } from '../../user/domain/UserCredential.entity.js';
 import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js';
-import type { IUserCredentialsRepository } from '../../user/credentials/UserCredentialsMongoRepo.repository.js';
+import type { IUserCredentialsRepository } from '../../user/domain/UserCredentialsMongoRepo.repository.js';
 import type { TRegisterUserResponseDTO, TRegisterUserRequestDTO } from '@sh3pherd/shared-types';
 import { PASSWORD_SERVICE } from '../auth.tokens.js';
 import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO } from '../../appBootstrap/nestTokens.js';
