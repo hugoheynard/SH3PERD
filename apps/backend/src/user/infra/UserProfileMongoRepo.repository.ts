@@ -1,17 +1,18 @@
-import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
+import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
 import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type { TUserProfileRecord, TUserId} from '@sh3pherd/shared-types';
-import type { TFindUserProfileByUserIdFn, TSaveUserProfileFn } from '../profile/user.profile.contracts.js';
+import type { TUserProfileRecord, TUserProfileDomainModel, TUserId, TRecordMetadata} from '@sh3pherd/shared-types';
 import { Injectable } from '@nestjs/common';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 import { UserProfileAggregateRoot } from '../domain/UserProfileAggregateRoot.js';
 import { UserProfileMapper } from './UserProfileMapper.js';
+import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js';
+
 
 export interface IUserProfileRepository extends IBaseCRUD<TUserProfileRecord>{
-  saveUserProfile: TSaveUserProfileFn;
-  findUserProfileByUserId: TFindUserProfileByUserIdFn;
-  findOneByUserId: (user_id: TUserId) => Promise<UserProfileAggregateRoot | null>
-  updateOneFromAR: (ar: UserProfileAggregateRoot) => Promise<TUserProfileRecord | null>;
+  saveUserProfileFromAR: (ar: UserProfileAggregateRoot, meta: TRecordMetadata) => Promise<TUserProfileDomainModel | false>;
+  findOneArByUserId: (user_id: TUserId) => Promise<UserProfileAggregateRoot | null>;
+  findOneViewModelByUserId: (user_id: TUserId) => Promise<TUserProfileDomainModel | null>
+  updateOneFromAR: (ar: UserProfileAggregateRoot) => Promise<TUserProfileDomainModel | null>;
 }
 
 @Injectable()
@@ -25,28 +26,35 @@ export class UserProfileMongoRepository
 
   /**
    * saves a user profile to the database.
-   * @param input
+   * @param ar
+   * @param meta
    * */
-  @failThrows500('USER_PROFILE_SAVE_FAILED')
-  public async saveUserProfile(input: Parameters<TSaveUserProfileFn>[0]): ReturnType<TSaveUserProfileFn> {
-    return this.save(input);
+  @technicalFailThrows500('USER_PROFILE_SAVE_FAILED')
+  public async saveUserProfileFromAR(ar: UserProfileAggregateRoot, meta: TRecordMetadata): Promise<TUserProfileDomainModel | false> {
+    const doc = ar.snapshot
+
+    const result = await this.save({
+      ...doc,
+      ...meta
+    });
+
+    if (!result) {
+      return false;
+    }
+
+    ar.commit();
+
+    return doc;
   };
 
-  /**
-   * Finds a user profile by user ID.
-   * @param filter
-   */
-  @failThrows500('USER_PROFILE_FIND_BY_ID_FAILED')
-  public async findUserProfileByUserId(filter: Parameters<TFindUserProfileByUserIdFn>[0]): ReturnType<TFindUserProfileByUserIdFn> {
-    return await this.findOne({ filter });
-  };
 
   /**
    * Finds one UserProfileAggregateRoot by user ID.
    * @param user_id
    * @return {Promise<UserProfileAggregateRoot | null>}
    */
-  async findOneByUserId(user_id: TUserId): Promise<UserProfileAggregateRoot | null> {
+  @technicalFailThrows500('USER_PROFILE_REPO_FIND_BY_ID_FAILED')
+  async findOneArByUserId(user_id: TUserId): Promise<UserProfileAggregateRoot | null> {
     const result = await this.findOne({ filter: { user_id } });
 
     if (!result) {
@@ -56,15 +64,27 @@ export class UserProfileMongoRepository
     return UserProfileMapper.recordToAggregate(result);
   };
 
+  @technicalFailThrows500('USER_PROFILE_REPO_FIND_BY_ID_FAILED')
+  async findOneViewModelByUserId(user_id: TUserId): Promise<TUserProfileDomainModel | null> {
+    const result = await this.findOne({ filter: { user_id } });
+
+    if (!result) {
+      return null;
+    }
+
+    return RecordMetadataUtils.stripDocMetadata(result);
+  };
+
   /**
    * Updates one user profile from an aggregate root.
    * @param ar
+   * @param meta
    */
-  async updateOneFromAR(ar: UserProfileAggregateRoot): Promise<TUserProfileRecord | null> {
+  async updateOneFromAR(ar: UserProfileAggregateRoot): Promise<TUserProfileDomainModel | null> {
 
     const result = await this.updateOne({
       filter: { id: ar.id },
-      update: ar.getUpdateObject()
+      update: { $set: { ...ar.getUpdateObject(), ...RecordMetadataUtils.update() } }
     });
 
     if (!result) {
@@ -72,7 +92,7 @@ export class UserProfileMongoRepository
     }
 
     ar.commit();
-    return result;
+    return RecordMetadataUtils.stripDocMetadata(result);
   };
 
 }

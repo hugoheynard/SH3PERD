@@ -42,4 +42,8 @@ export class UserProfileAggregateRoot extends AggregateRoot {
   getUpdateObject() {
     return this.profile.getDiffProps();
   };
+
+  get snapshot() {
+    return this.profile.toDomain;
+  }
 }

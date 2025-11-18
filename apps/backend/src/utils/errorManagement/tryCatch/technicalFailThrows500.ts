@@ -27,7 +27,7 @@ import { TechnicalError } from '../errorClasses/TechnicalError.js';
  *
  * @throws {TechnicalError} When the decorated method throws
  */
-export function failThrows500(code: string, message?: string): MethodDecorator {
+export function technicalFailThrows500(code: string, message?: string): MethodDecorator {
   return (
     target: object,
     propertyKey: string | symbol,

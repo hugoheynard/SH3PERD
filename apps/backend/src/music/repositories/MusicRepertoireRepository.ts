@@ -5,7 +5,7 @@ import type {
   TFindMusicRepertoireByUserIdFn,
   TMusicRepertoireByUserIdPipelineResult,
 } from '../types/musicRepertoire.core.types.js';
-import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
+import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
 
 
 export class MusicRepertoireMongoRepository
@@ -16,7 +16,7 @@ export class MusicRepertoireMongoRepository
     super(input);
   }
 
-  @failThrows500(
+  @technicalFailThrows500(
     'FIND_MUSIC_REPERTOIRE_BY_USER_ID_FAILED',
     'Failed to find music repertoire by user_id',
   )

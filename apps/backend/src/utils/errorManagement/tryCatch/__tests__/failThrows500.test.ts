@@ -1,19 +1,19 @@
-import { failThrows500 } from '../failThrows500.js';
+import { technicalFailThrows500 } from '../technicalFailThrows500.js';
 import { TechnicalError } from '../../errorClasses/TechnicalError.js';
 
 describe('failThrows500', () => {
   class TestService {
-    @failThrows500('TEST_ERROR_CODE', 'Custom failure message')
+    @technicalFailThrows500('TEST_ERROR_CODE', 'Custom failure message')
     async failMethod() {
       throw new Error('Original error');
     }
 
-    @failThrows500('NO_MESSAGE_CODE')
+    @technicalFailThrows500('NO_MESSAGE_CODE')
     async failWithoutMessage() {
       throw new Error('Another error');
     }
 
-    @failThrows500('OK_SHOULD_NOT_THROW')
+    @technicalFailThrows500('OK_SHOULD_NOT_THROW')
     async successMethod() {
       return 'success';
     }
@@ -49,7 +49,7 @@ describe('failThrows500', () => {
 
     // simulate descriptor undefined
     expect(() => {
-      failThrows500('INVALID_USE')(target, prop, undefined as any);
+      technicalFailThrows500('INVALID_USE')(target, prop, undefined as any);
     }).toThrowError(/@failThrows500 must be applied to a method/);
   });
 });

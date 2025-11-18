@@ -1,14 +1,16 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { USER_PROFILE_REPO } from '../../../appBootstrap/nestTokens.js';
 import { Inject } from '@nestjs/common';
-import type { TUserId, TUserProfileRecord, TUserProfileDomainModel } from '@sh3pherd/shared-types';
+import type { TUserId, TUserProfileDomainModel } from '@sh3pherd/shared-types';
 import { SUserProfileDomainModel } from '@sh3pherd/shared-types';
 import type { IUserProfileRepository } from '../../infra/UserProfileMongoRepo.repository.js';
 import { createZodDto } from 'nestjs-zod';
 import { ApiModel } from '../../../utils/swagger/api-model.swagger.util.js';
 
+
 @ApiModel()
 export class UpdateUserProfileResponseDTO extends createZodDto(SUserProfileDomainModel) {}
+
 
 export class UpdateUserProfileCommand {
   constructor(
@@ -18,17 +20,16 @@ export class UpdateUserProfileCommand {
   ) {}
 }
 
-
 @CommandHandler(UpdateUserProfileCommand)
-export class UpdateUserProfileHandler implements ICommandHandler<UpdateUserProfileCommand> {
+export class UpdateUserProfileHandler implements ICommandHandler<UpdateUserProfileCommand, UpdateUserProfileResponseDTO | null> {
   constructor(
     @Inject(USER_PROFILE_REPO) private readonly userProfileRepo: IUserProfileRepository,
   ) {};
 
-  async execute(cmd: UpdateUserProfileCommand): Promise<TUserProfileRecord | null> {
+  async execute(cmd: UpdateUserProfileCommand): Promise<UpdateUserProfileResponseDTO | null> {
     const { ctx, targetUser_id, updateData } = cmd;
 
-    const ar = await this.userProfileRepo.findOneByUserId(targetUser_id);
+    const ar = await this.userProfileRepo.findOneArByUserId(targetUser_id);
 
     if (!ar) {
       throw new Error('USER_PROFILE_NOT_FOUND');
@@ -41,6 +42,7 @@ export class UpdateUserProfileHandler implements ICommandHandler<UpdateUserProfi
         updateData.last_name,
       );
     }
+
 
     return await this.userProfileRepo.updateOneFromAR(ar);
   };

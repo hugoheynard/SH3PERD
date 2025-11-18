@@ -1,5 +1,5 @@
 import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
+import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
 import type { TContractRecord, TUserId, TContractId } from '@sh3pherd/shared-types';
 import type { Filter } from 'mongodb';
 import type { TContractViewModel } from '../useCase/GetCurrentUserContracts.useCase.js';
@@ -77,7 +77,7 @@ export class ContractMongoRepository
 
 
 
-  @failThrows500('', '')
+  @technicalFailThrows500('', '')
   async findById(filter: any) {
     const contract = await this.collection.findOne(filter);
     if (!contract) {
@@ -86,7 +86,7 @@ export class ContractMongoRepository
     return contract;
   }
 
-  @failThrows500('FIND_FAVORITE_USER_CONTRACT_FAILED', 'Error while finding favorite user contract')
+  @technicalFailThrows500('FIND_FAVORITE_USER_CONTRACT_FAILED', 'Error while finding favorite user contract')
   async findUsersFavorite(user_id: TUserId): Promise<TContractRecord | null> {
     const result = await this.findOne({ filter: { user_id, favorite: true }});
 
@@ -107,7 +107,7 @@ export class ContractMongoRepository
    *
    * @throws If the transaction fails or MongoDB encounters an error.
    */
-  @failThrows500('MARK_CONTRACT_AS_FAVORITE_FAILED', 'Error while marking as favorite')
+  @technicalFailThrows500('MARK_CONTRACT_AS_FAVORITE_FAILED', 'Error while marking as favorite')
   async markContractAsFavorite(
     input: Parameters<TMarkContractAsFavoriteFn>[0],
   ): ReturnType<TMarkContractAsFavoriteFn> {

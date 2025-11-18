@@ -27,7 +27,7 @@ export type TUserProfileDomainModel = {
   display_name?: string;
   phone?: string;
   avatar_url?: string;
-  active?: boolean;
+  active: boolean;
 };
 
 export type TUserProfileRecord = TUserProfileDomainModel & TRecordMetadata;

@@ -1,6 +1,6 @@
 import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { TUserCredentialsRecord, TUserId, TUserPreferencesRecord, TUserProfileRecord } from '@sh3pherd/shared-types';
-import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
+import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 import { Injectable } from '@nestjs/common';
 import { User } from '../domain/User.aggregate.js';
@@ -27,14 +27,14 @@ export class UserCredentialsMongoRepository
     super(input);
   }
 
-  @failThrows500('USER_PROFILE_SAVE_FAILED')
+  @technicalFailThrows500('USER_PROFILE_SAVE_FAILED')
   public async saveUser(input: { user: TUserCredentialsRecord }): Promise<boolean> {
     const result = await this.collection.insertOne(input.user);
 
     return !(!result.acknowledged || !result.insertedId);
   }
 
-  @failThrows500('USER_PROFILE_FIND_BY_EMAIL_FAILED')
+  @technicalFailThrows500('USER_PROFILE_FIND_BY_EMAIL_FAILED')
   public async findUserByEmail(
     filter: Parameters<TFindUserCredentialsByEmailFn>[0],
   ): ReturnType<TFindUserCredentialsByEmailFn> {

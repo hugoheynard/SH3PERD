@@ -1,6 +1,6 @@
 import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { TMusicVersionDomainModel, TUserId, TUserMusicLibraryItem } from '@sh3pherd/shared-types';
-import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
+import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
 import type { ClientSession } from 'mongodb';
 import { apiCodes } from '../codes.js';
 
@@ -18,7 +18,7 @@ export class MusicVersionRepository
     super(input);
   };
 
-  @failThrows500(
+  @technicalFailThrows500(
     apiCodes.music.MUSIC_VERSION_CREATION_REPO_FAIL.code,
     apiCodes.music.MUSIC_VERSION_CREATION_REPO_FAIL.message
   )

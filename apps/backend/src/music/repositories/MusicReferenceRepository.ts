@@ -3,7 +3,7 @@ import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAd
 import type {
   IMusicReferenceRepository,
 } from '../types/musicReferences.types.js';
-import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
+import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
 import type { TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
 
 
@@ -26,7 +26,7 @@ export class MusicReferenceMongoRepository
    * related to an atlas search index created on the cluster.
    * @param searchValue
    */
-  @failThrows500('MUSIC_REFERENCE_TEXT_SEARCH_ERROR', 'Error while searching music references by text')
+  @technicalFailThrows500('MUSIC_REFERENCE_TEXT_SEARCH_ERROR', 'Error while searching music references by text')
   async findByTextSearch(searchValue: string): Promise<TMusicReferenceDomainModel[]> {
 
     return await this.collection

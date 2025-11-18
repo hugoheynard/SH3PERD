@@ -30,10 +30,9 @@ export class RecordMetadataUtils {
    * @param metadata - The existing metadata to update.
    * @returns A new metadata object with an updated timestamp.
    */
-  static update(metadata: TRecordMetadata): TRecordMetadata {
+  static update(): { updated_at: Date } {
 
     return {
-      ...metadata,
       updated_at: new Date()
     };
   };
