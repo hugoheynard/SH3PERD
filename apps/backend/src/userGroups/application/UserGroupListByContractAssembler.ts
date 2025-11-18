@@ -3,7 +3,7 @@ import type { TContractId,  TUserProfileDomainModel,TContractDomainModel, TUserG
 import { CONTRACT_REPO, USER_GROUPS_REPO, USER_PROFILE_REPO } from '../../appBootstrap/nestTokens.js';
 import type { IUserGroupsMongoRepository } from '../infra/UserGroupsMongoRepository.js';
 import type { IContractRepository } from '../../contracts/repositories/ContractMongoRepository.js';
-import type { IUserProfileRepository } from '../../user/profile/UserProfileMongoRepo.repository.js';
+import type { IUserProfileRepository } from '../../user/infra/UserProfileMongoRepo.repository.js';
 import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js';
 
 

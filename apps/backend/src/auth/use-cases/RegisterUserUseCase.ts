@@ -1,14 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { IPasswordService } from '../core/password-manager/types/Interfaces.js';
 import { BusinessError } from '../../utils/errorManagement/errorClasses/BusinessError.js';
-import { UserCredential } from '../../user/domain/UserCredential.entity.js';
+import { UserCredentialEntity } from '../../user/domain/UserCredential.entity.js';
 import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js';
-import type { IUserCredentialsRepository } from '../../user/domain/UserCredentialsMongoRepo.repository.js';
+import type { IUserCredentialsRepository } from '../../user/infra/UserCredentialsMongoRepo.repository.js';
 import type { TRegisterUserResponseDTO, TRegisterUserRequestDTO } from '@sh3pherd/shared-types';
 import { PASSWORD_SERVICE } from '../auth.tokens.js';
 import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO } from '../../appBootstrap/nestTokens.js';
-import { UserProfile } from '../../user/profile/user-profile.entity.js';
-import type { IUserProfileRepository } from '../../user/profile/UserProfileMongoRepo.repository.js';
+import { UserProfileEntity } from '../../user/domain/UserProfileEntity.js';
+import type { IUserProfileRepository } from '../../user/infra/UserProfileMongoRepo.repository.js';
 
 export type TRegisterUserUseCase = (input: TRegisterUserRequestDTO) => Promise<TRegisterUserResponseDTO>;
 
@@ -36,17 +36,18 @@ export class RegisterUserUseCase {
       throw new BusinessError('email already in use', 'USER_ALREADY_EXISTS', 409);
     }
 
-    const credentials = new UserCredential({
+    const credentials = new UserCredentialEntity({
       email: requestDTO.email,
       password: await this.password.hashPassword({ password: requestDTO.password }),
       email_verified: false,
       active: true
     });
 
-    const profile = new UserProfile({
+    const profile = new UserProfileEntity({
       user_id: credentials.id,
       first_name: requestDTO.first_name,
-      last_name: requestDTO.last_name
+      last_name: requestDTO.last_name,
+      active: true
     })
 
     const session = await this.userCredsRepo.startSession()

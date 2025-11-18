@@ -57,7 +57,6 @@ import { GlobalCqrsModule } from './global-cqrs.module.js';
         ]
       },
     ]),
-    GlobalCqrsModule,
   ],
   providers: [AppService, { provide: APP_GUARD, useClass: AuthGuard }],
   controllers: [AppController],

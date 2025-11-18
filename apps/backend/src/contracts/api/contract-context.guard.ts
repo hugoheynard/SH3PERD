@@ -2,7 +2,7 @@ import { type CanActivate, type ExecutionContext, Inject, Injectable, Unauthoriz
 import type { Request } from 'express';
 import type { IUserPreferencesRepository } from '../../user/infra/UserPreferencesMongoRepo.repository.js';
 import { USER_PREFERENCES_REPO } from '../../appBootstrap/nestTokens.js';
-import { UserPreferences } from '../../user/infra/UserPreferences.entity.js';
+import { UserPreferences } from '../../user/domain/UserPreferences.entity.js';
 import { Reflector } from '@nestjs/core';
 import { CONTRACT_SCOPED_KEY } from '../../utils/nest/decorators/ContractScoped.js';
 

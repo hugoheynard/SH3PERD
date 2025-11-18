@@ -15,6 +15,7 @@ export const SUserProfileDomainModel = z.object({
   display_name: z.string().optional(),
   phone: z.string().optional(),
   avatar_url: z.string().url().optional(),
+  active: z.boolean(),
 });
 
 
@@ -26,6 +27,7 @@ export type TUserProfileDomainModel = {
   display_name?: string;
   phone?: string;
   avatar_url?: string;
+  active?: boolean;
 };
 
 export type TUserProfileRecord = TUserProfileDomainModel & TRecordMetadata;

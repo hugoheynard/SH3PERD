@@ -1,7 +1,8 @@
-import { ValueObject } from '../utils/entities/Entity.js';
+import type { TUserId } from '@sh3pherd/shared-types';
+import { ValueObject } from '../../utils/entities/ValueObject.js';
 
 export interface IUserIdentityProps {
-  user_id: string;
+  user_id: TUserId;
   first_name: string;
   last_name: string;
 }

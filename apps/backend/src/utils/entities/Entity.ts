@@ -2,8 +2,8 @@ import { randomUUID } from 'crypto';
 import { RecordMetadataUtils } from '../metaData/RecordMetadataUtils.js';
 import type { TRecordMetadata } from '@sh3pherd/shared-types';
 import { AggregateRoot, EventBus } from '@nestjs/cqrs';
+import { EntityUtils } from './EntityUtils.js';
 
-export type TId<T extends string> = `${T}_${string}`;
 
 /**
  * Type for entity input, making `id` optional from the domain model type.
@@ -40,12 +40,15 @@ export type TEntityInput<
  * -> I know props is ok with the cast only ! sorry TS
  */
 export abstract class Entity<TDomainModel extends {id: TDomainModel['id']}> extends AggregateRoot {
+  protected readonly _originalProps: TDomainModel;
   protected props: TDomainModel;
+  protected readonly utils = EntityUtils;
 
   protected constructor(props: TEntityInput<TDomainModel>, prefix: string) {
     super();
     const id = props.id ?? this.generateId(prefix);
     this.props = { ...props, id } as TDomainModel;
+    this._originalProps = { ...this.props, id  } as TDomainModel;
   };
 
   /** Snapshot */
@@ -57,6 +60,18 @@ export abstract class Entity<TDomainModel extends {id: TDomainModel['id']}> exte
     return this.props.id;
   };
 
+  //--- Compare methods ---//
+  getDiffProps(): Record<string, any> {
+    return this.utils.deepDiffToDotSet(this._originalProps, this.props );
+  };
+
+
+  //--- Private Methods ---//
+  /**
+   * Generates a unique ID with the given prefix.
+   * @param prefix
+   * @private
+   */
   private generateId(prefix: string): TDomainModel['id'] {
     return `${prefix}_${randomUUID()}`;
   };
@@ -74,10 +89,16 @@ export abstract class Entity<TDomainModel extends {id: TDomainModel['id']}> exte
   ): TEntity {
     const cleanProps = RecordMetadataUtils.stripDocMetadata(record);
     return new this(cleanProps);
-  }
+  };
+
+
 }
 
 
+/**
+ * Abstract base class for aggregate entities.
+ * Extends the base Entity class and adds event committing functionality.
+ */
 export abstract class AggregateEntity<TDomainModel extends { id: TDomainModel['id'] }> extends Entity<TDomainModel> {
   commitEvents(eventBus: EventBus): void {
     eventBus.publishAll(this.getUncommittedEvents());
@@ -85,24 +106,3 @@ export abstract class AggregateEntity<TDomainModel extends { id: TDomainModel['i
   }
 }
 
-/**
- * Abstract base class for value objects.
- * Implements equality based on properties.
- * @template TProps - Shape of the value object's properties.
- */
-export abstract class ValueObject<TProps extends object> {
-  protected readonly props: TProps;
-
-  protected constructor(props: TProps) {
-    this.props = Object.freeze({ ...props });
-  }
-
-  equals(vo?: ValueObject<TProps>): boolean {
-    if (!vo) return false;
-    return JSON.stringify(this.props) === JSON.stringify(vo.props);
-  }
-
-  get value(): TProps {
-    return this.props;
-  }
-}

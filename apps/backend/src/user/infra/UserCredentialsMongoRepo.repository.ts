@@ -1,8 +1,12 @@
 import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type { TUserCredentialsRecord, TUserId, TUserMeViewModel } from '@sh3pherd/shared-types';
+import type { TUserCredentialsRecord, TUserId, TUserPreferencesRecord, TUserProfileRecord } from '@sh3pherd/shared-types';
 import { failThrows500 } from '../../utils/errorManagement/tryCatch/failThrows500.js';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 import { Injectable } from '@nestjs/common';
+import { User } from '../domain/User.aggregate.js';
+import { UserProfileEntity } from '../domain/UserProfileEntity.js';
+import { UserCredentialEntity } from '../domain/UserCredential.entity.js';
+import { UserPreferences } from '../domain/UserPreferences.entity.js';
 
 
 export type TSaveUserCredentialsFn = (input: { user: TUserCredentialsRecord }) => Promise<boolean>;
@@ -11,7 +15,7 @@ export type TFindUserCredentialsByEmailFn = (filter: { email: string }) => Promi
 export type IUserCredentialsRepository = IBaseCRUD<TUserCredentialsRecord> & {
   saveUser: TSaveUserCredentialsFn;
   findUserByEmail: TFindUserCredentialsByEmailFn;
-  getUserMe: (user_id: TUserId) => Promise<TUserMeViewModel>;
+  findOneUser: (user_id: TUserId) => Promise<User>;
 };
 
 @Injectable()
@@ -43,8 +47,8 @@ export class UserCredentialsMongoRepository
    * @param user_id
    */
   //TODO: Move this to a dedicated repository 'UserQueryRepository'
-  public async getUserMe(user_id: TUserId): Promise<TUserMeViewModel> {
-      const results = await this.collection
+  public async findOneUser(user_id: TUserId): Promise<User> {
+      const [result] = await this.collection
         .aggregate([
           { $match: { id: user_id } },
           { $lookup: { from: "user_profiles", localField: "id", foreignField: "user_id", as: "profile" }},
@@ -54,7 +58,13 @@ export class UserCredentialsMongoRepository
           { $unset: ["profile._id", "profile.user_id", "preferences._id", 'preferences.user_id'] },
           { $project: {
               _id: 0,
-              id: 1,
+              credentials: {
+                id: "$id",
+                email: "$email",
+                password: "$password",
+                email_verified: "$email_verified",
+                active: "$active",
+              },
               profile: 1,
               preferences: 1
             }
@@ -63,6 +73,16 @@ export class UserCredentialsMongoRepository
         ])
         .toArray();
 
-    return results[0] as TUserMeViewModel;
+    if (!result) {
+      throw new Error(`User with id ${user_id} not found`);
+    }
+
+    const { credentials, profile, preferences } = result;
+
+    return new User(
+      UserProfileEntity.fromRecord(profile as TUserProfileRecord),
+      UserCredentialEntity.fromRecord(credentials as TUserCredentialsRecord),
+      UserPreferences.fromRecord(preferences as TUserPreferencesRecord),
+    );
   };
 }

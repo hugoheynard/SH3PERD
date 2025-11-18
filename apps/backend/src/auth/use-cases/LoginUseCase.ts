@@ -1,6 +1,6 @@
 import type { TLoginRequestDTO, TLoginResponseDTO } from '@sh3pherd/shared-types';
 import { BusinessError } from '../../utils/errorManagement/errorClasses/BusinessError.js';
-import type { IUserCredentialsRepository } from '../../user/domain/UserCredentialsMongoRepo.repository.js';
+import type { IUserCredentialsRepository } from '../../user/infra/UserCredentialsMongoRepo.repository.js';
 import { Inject, Injectable } from '@nestjs/common';
 import type { IPasswordService } from '../core/password-manager/types/Interfaces.js';
 import type { IAuthTokenService } from '../services/auth.service.js';

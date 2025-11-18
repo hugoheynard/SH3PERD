@@ -7,7 +7,7 @@ import {
   USER_GROUPS_SERVICE,
 } from './user-groups.tokens.js';
 import { GetCurrentUserUserGroupsHandler } from './application/query/GetCurrentUserUserGroupsQuery.js';
-import { UserGroupListByContractAssembler } from './core/UserGroupListByContractAssembler.js';
+import { UserGroupListByContractAssembler } from './application/UserGroupListByContractAssembler.js';
 import { GetSubGroupInitialFormValueObjectHandler } from './application/query/GetSubGroupInitialFormValueObjectQuery.js';
 
 @Module({

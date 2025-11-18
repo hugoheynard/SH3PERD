@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UserProfileController } from './user-profile.controller.js';
+import { UserProfileController } from '../api/user-profile.controller.js';
 
 @Module({
   imports: [],

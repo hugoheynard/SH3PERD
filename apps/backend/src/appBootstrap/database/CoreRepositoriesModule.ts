@@ -20,11 +20,11 @@ import {
 import {
   type IUserCredentialsRepository,
   UserCredentialsMongoRepository,
-} from '../../user/domain/UserCredentialsMongoRepo.repository.js';
+} from '../../user/infra/UserCredentialsMongoRepo.repository.js';
 import {
   type IUserProfileRepository,
   UserProfileMongoRepository,
-} from '../../user/profile/UserProfileMongoRepo.repository.js';
+} from '../../user/infra/UserProfileMongoRepo.repository.js';
 import {
   type IRefreshTokenRepository,
   RefreshTokenMongoRepository,

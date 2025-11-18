@@ -21,7 +21,6 @@ export class RecordMetadataUtils {
       creation_context: context,
       created_at: dateNow,
       updated_at: dateNow,
-      active: true
     };
   };
 
@@ -55,7 +54,6 @@ export class RecordMetadataUtils {
     return {
       ...metadata,
       updated_at: new Date(),
-      active: false
     };
   };
 
@@ -67,21 +65,20 @@ export class RecordMetadataUtils {
     return {
       ...metadata,
       updated_at: new Date(),
-      active: true
     };
   };
 
   static stripDocMetadata<TRecord extends object>(
     doc: TRecord & TRecordMetadata
   ): Omit<TRecord, keyof TRecordMetadata> {
-    const { created_at, created_by, creation_context, updated_at, active, ...domain } = doc;
+    const { created_at, created_by, creation_context, updated_at, ...domain } = doc;
     return domain ;
   };
 
   static stripDocArrayMetadata<TDomain extends object>(
     docs: Array<TDomain & TRecordMetadata>
   ): Omit<TDomain, keyof TRecordMetadata>[] {
-    return docs.map(({ created_at, created_by, creation_context, updated_at, active, ...rest }) => rest);
+    return docs.map(({ created_at, created_by, creation_context, updated_at, ...rest }) => rest);
   };
 
 

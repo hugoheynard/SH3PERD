@@ -3,7 +3,7 @@ import type { TUseCaseContext } from '../../../types/useCases.generic.types.js';
 import type { TUserGroupRecord, TUserGroupListViewModel } from '@sh3pherd/shared-types';
 import type { Filter } from 'mongodb';
 import { USER_GROUPS_BY_CONTRACT_ASSEMBLER } from '../../user-groups.tokens.js';
-import type { UserGroupListByContractAssembler } from '../../core/UserGroupListByContractAssembler.js';
+import type { UserGroupListByContractAssembler } from '../UserGroupListByContractAssembler.js';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
 export type TGetCurrentUserUserGroupsUseCase = (input: { requestDTO: Filter<TUserGroupRecord>; context: TUseCaseContext<'scoped'>; }) => Promise<TUserGroupListViewModel>;
@@ -15,7 +15,6 @@ export class GetCurrentUserUserGroupsQuery {
     public readonly requestDTO: Filter<TUserGroupRecord>,
   ) {}
 }
-
 
 
 /**

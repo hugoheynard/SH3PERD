@@ -7,7 +7,7 @@ export const SRecordMetadata = z.object({
   created_at: z.date(),
   updated_at: z.date(),
   created_by: SUserId,
-  active: z.boolean().default(true),
+  //active: z.boolean().default(true),
 });
 
 
@@ -16,5 +16,5 @@ export type TRecordMetadata = {
   updated_at: Date;
   created_by: TUserId;
   creation_context?: TContractId
-  active: boolean;
+  //active?: boolean;
 };
