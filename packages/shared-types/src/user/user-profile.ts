@@ -31,3 +31,5 @@ export type TUserProfileDomainModel = {
 };
 
 export type TUserProfileRecord = TUserProfileDomainModel & TRecordMetadata;
+
+export type TUserProfileViewModel = Omit<TUserProfileDomainModel, 'id' | 'user_id' | 'avatar_url' | 'active'>;

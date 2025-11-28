@@ -35,5 +35,5 @@ export class GetUserProfileHandler {
     }
 
     return ar;
-  }
+  };
 }

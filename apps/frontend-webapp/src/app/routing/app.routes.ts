@@ -10,6 +10,9 @@ import {HomeComponent} from '../features/home-dashboard/home/home.component';
 import {MusicLibraryComponent} from '../features/musicLibrary/components/music-library/music-library.component';
 import { ContractPageComponent } from '../features/contracts/components/contract-page/contract-page.component';
 import { UserGroupsComponent } from '../features/userGroups/components/user-groups/user-groups.component';
+import {
+  UserProfilePageComponent
+} from '../features/user/profile/components/user-profile-page/user-profile-page.component';
 
 
 export const routes: Routes = [
@@ -32,6 +35,7 @@ export const routes: Routes = [
       { path: 'playlistManager', component: PlaylistManagerComponent, data: { pageName: 'playlists' }},
       { path: 'contracts', component: ContractPageComponent, data: { pageName: 'contracts' } },
       { path: 'userGroup', component: UserGroupsComponent, data: { pageName: 'userGroups' }},
+      { path: 'user-profile', component: UserProfilePageComponent, data: { pageName: 'profile' }},
     ]
   },
   { path: '**', redirectTo: 'login' },

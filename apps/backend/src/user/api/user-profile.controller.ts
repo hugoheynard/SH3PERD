@@ -2,7 +2,7 @@ import { Controller, Get, Patch, Body } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   UpdateUserProfileCommand,
-  UpdateUserProfileResponseDTO,
+  UserProfileResponseDTO,
 } from '../application/commands/UpdateUserProfileCommand.js';
 import { buildApiResponseDTO } from '../../music/codes.js';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
@@ -22,26 +22,27 @@ export class UserProfileController {
 
 
   @ApiOperation({ summary: 'Get current user profile' })
-  @ApiResponse(apiSuccessDTO(USER_PROFILE_SUCCESS.GET_USER_PROFILE, Object))
+  @ApiResponse(apiSuccessDTO(USER_PROFILE_SUCCESS.GET_USER_PROFILE, UserProfileResponseDTO))
   @Get('me')
   async getCurrentUserProfile(
     @ActorId() actor_id: TUserId,
   ): Promise<TApiResponse<any>> {
+
     return buildApiResponseDTO(
       USER_PROFILE_SUCCESS.GET_USER_PROFILE,
-      this.qryBus.execute(
+      await this.qryBus.execute(
         new GetUserProfileQuery({ actor_id }, actor_id)
       )
     )
   };
 
   @ApiOperation({ summary: 'Update current user profile' })
-  @ApiResponse(apiSuccessDTO(USER_PROFILE_SUCCESS.UPDATE_USER_PROFILE, UpdateUserProfileResponseDTO))
+  @ApiResponse(apiSuccessDTO(USER_PROFILE_SUCCESS.UPDATE_USER_PROFILE, UserProfileResponseDTO))
   @Patch('me')
   async updateCurrentUserProfile(
     @ActorId() actor_id: TUserId,
     @Body() requestDTO: { updateData: Partial<TUserProfileDomainModel> }
-  ):Promise<TApiResponse<UpdateUserProfileResponseDTO>> {
+  ):Promise<TApiResponse<UserProfileResponseDTO>> {
 
     return buildApiResponseDTO(
       USER_PROFILE_SUCCESS.UPDATE_USER_PROFILE,

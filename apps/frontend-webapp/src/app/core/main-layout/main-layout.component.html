@@ -1,16 +1,16 @@
-<app-header />
+<app-header class="[grid-area:header]"/>
 
-<div class="app-layout">
-  <appMenu class="menu-left" />
+<appMenu class="[grid-area:menuLeft] sm:none" />
 
-  <div class="layout-body">
-    <div class="layout-main">
-      <div class="panel" [ngClass]="{ 'hidden': !hasLeftPanel() }">
-        <ng-template #leftPanelContainer />
-      </div>
+<div class="[grid-area:content] flex flex-col flex-1 bg-background overflow-hidden">
+  <div class="relative flex flex-row overflow-hidden h-full">
 
-      <app-circular-menu #circularMenu
-        [menuItems]="[
+    <div class="panel" [ngClass]="{ 'hidden': !hasLeftPanel() }">
+      <ng-template #leftPanelContainer />
+    </div>
+
+    <app-circular-menu
+                       [menuItems]="[
         { label: 'Home', iconName: 'home', route: '/home' },
         { label: 'Calendar', iconName: 'calendar_today', route: '/profile' },
         { label: 'Music', iconName: 'library_music', route: '/musicLibrary' },
@@ -20,22 +20,19 @@
         { label: 'Logout', iconName: 'logout', route: '/settings' },
 
         ]"
-      />
+    />
 
-      <div class="content">
-        <router-outlet />
-      </div>
-
-      <div class="panel" [ngClass]="{ 'hidden': !hasRightPanel() }">
-        <ng-template #rightPanelContainer />
-      </div>
-
-      <div class="context-menu" [ngClass]="{ 'hidden': !hasContextMenu() }">
-        <ng-template #contextMenuContainer />
-      </div>
+    <div class="p-4 flex-1 overflow-y-auto">
+      <router-outlet />
     </div>
 
-  </div>
-</div>
+    <div class="panel" [ngClass]="{ 'hidden': !hasRightPanel() }">
+      <ng-template #rightPanelContainer />
+    </div>
 
-<!--<div class="app-footer"></div>-->
+    <div class="context-menu w-appMenu shadow-md bg-menu sm:none" [ngClass]="{ 'hidden': hasContextMenu() }">
+      <ng-template #contextMenuContainer />
+    </div>
+  </div>
+
+</div>

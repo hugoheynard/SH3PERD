@@ -7,9 +7,13 @@ import type { IUserProfileRepository } from '../../infra/UserProfileMongoRepo.re
 import { createZodDto } from 'nestjs-zod';
 import { ApiModel } from '../../../utils/swagger/api-model.swagger.util.js';
 
-
+/**
+ * Generated DTO class for user profile response,
+ * based on SUserProfileDomainModel schema.
+ * All actions on user profile will use this DTO as response type.
+ */
 @ApiModel()
-export class UpdateUserProfileResponseDTO extends createZodDto(SUserProfileDomainModel) {}
+export class UserProfileResponseDTO extends createZodDto(SUserProfileDomainModel) {}
 
 
 export class UpdateUserProfileCommand {
@@ -21,12 +25,12 @@ export class UpdateUserProfileCommand {
 }
 
 @CommandHandler(UpdateUserProfileCommand)
-export class UpdateUserProfileHandler implements ICommandHandler<UpdateUserProfileCommand, UpdateUserProfileResponseDTO | null> {
+export class UpdateUserProfileHandler implements ICommandHandler<UpdateUserProfileCommand, UserProfileResponseDTO | null> {
   constructor(
     @Inject(USER_PROFILE_REPO) private readonly userProfileRepo: IUserProfileRepository,
   ) {};
 
-  async execute(cmd: UpdateUserProfileCommand): Promise<UpdateUserProfileResponseDTO | null> {
+  async execute(cmd: UpdateUserProfileCommand): Promise<UserProfileResponseDTO | null> {
     const { ctx, targetUser_id, updateData } = cmd;
 
     const ar = await this.userProfileRepo.findOneArByUserId(targetUser_id);

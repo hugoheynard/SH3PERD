@@ -1,0 +1,32 @@
+:host {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: 2fr 5fr 2fr;
+  gap: 1rem;
+};
+
+.section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: var(--color-surface);
+  border-radius: 8px;
+  padding: 1rem;
+  gap: 2rem;
+};
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+h2 {
+  color: var(--baseTextColor);
+  font-weight: 400;
+  font-size: 1rem;
+  text-transform: uppercase;
+};
+
+

@@ -1,12 +1,10 @@
-@use '../../../styles/index' as sh3;
+@use '../../../../../../../packages/ui-angular/src/styles/index' as sh3;
 
 :host {
   position: relative;
 }
 
 button {
-  @include sh3.eraseDefault;
-  font-size: sh3.$form-field-label-fontSize;
   text-transform: capitalize;
   //background-color: t.$appBgColor_dark;
   color: var(--colorSecondary);
