@@ -16,6 +16,10 @@ import {
 import { TimelineInteractionService } from '../timeline-interaction.service';
 import { LayoutService } from '../../../core/services/layout.service';
 import { ProgramSidePanelComponent } from '../program-side-panel/program-side-panel.component';
+import { timeToMinutes } from '../utils/timeToMinutes';
+import { TimeMarkersComponent } from '../time-markers/time-markers.component';
+import { PIXELS_PER_MINUTE } from '../utils/PROGRAM_CONSTS';
+import { mockPerformanceSlotsTemplates } from '../utils/mockDATAS';
 
 
 @Component({
@@ -23,6 +27,7 @@ import { ProgramSidePanelComponent } from '../program-side-panel/program-side-pa
   imports: [
     PerformanceSlotComponent,
     ProgramHeaderComponent,
+    TimeMarkersComponent,
   ],
   templateUrl: './programs-page.component.html',
   styleUrl: './programs-page.component.scss'
@@ -32,22 +37,19 @@ export class ProgramsPageComponent implements OnInit {
   private interaction = inject(TimelineInteractionService);
   private layout = inject(LayoutService)
 
-  templates: PerformanceTemplate[] = [
-    { id: 't1', name: 'PBO', duration: 15, type: 'PBO', color: '#d066ed' },
-    { id: 't2', name: 'Cabaret', duration: 15, type: 'CABARET', color: '#f19010' },
-    { id: 't3', name: 'Aerial', duration: 5, type: 'AERIAL', color: '#66eda1' },
-    { id: 't4', name: 'Club', duration: 15, type: 'CLUB_ROTATION', color: '#66b9ed' },
-    { id: 't5', name: 'FINAL', duration: 5, type: 'FINAL', color: '#66ceed' }
-  ];
-
+  /* ---------------------------------------------------
+       LIFECYCLE
+    --------------------------------------------------- */
   ngOnInit() {
     this.layout.setRightPanel(ProgramSidePanelComponent, {
-      templates: this.templates,
+      templates: mockPerformanceSlotsTemplates,
       onTemplateDragStart: (template: any) => this.startTemplateDrag(template),
     });
   }
 
-
+  /* ---------------------------------------------------
+       GETTERS & SETTERS
+    --------------------------------------------------- */
   get rooms() {
     return this.state.rooms;
   }
@@ -77,26 +79,20 @@ export class ProgramsPageComponent implements OnInit {
     this.state.setEnd(value);
   }
 
-
-
   /* ---------------------------------------------------
      VIEW CHILDREN (ROOM LAYERS)
   --------------------------------------------------- */
   @ViewChildren('roomLayer')
   roomLayers!: QueryList<ElementRef<HTMLDivElement>>;
 
-  readonly PIXELS_PER_MINUTE = 5;
   readonly SNAP_MINUTES = 5;
 
   // ---- UTILS TIME ----
-  private timeToMinutes(time: string): number {
-    const [h, m] = time.split(':').map(Number);
-    return h * 60 + m;
-  }
+
 
   get totalMinutes(): number {
-    const start = this.timeToMinutes(this.programStart);
-    let end = this.timeToMinutes(this.programEnd);
+    const start = timeToMinutes(this.programStart);
+    let end = timeToMinutes(this.programEnd);
 
     if (end <= start) {
       end += 24 * 60;
@@ -106,40 +102,21 @@ export class ProgramsPageComponent implements OnInit {
   }
 
   get timelineHeight(): number {
-    return this.totalMinutes * this.PIXELS_PER_MINUTE;
+    return this.totalMinutes * PIXELS_PER_MINUTE;
   }
 
-  get timeMarkers(): number[] {
-    return Array.from(
-      { length: this.totalMinutes / 5 + 1 },
-      (_, i) => i * 5
-    );
-  }
-
-  formatTime(offsetMinutes: number): string {
-
-    const start = this.timeToMinutes(this.programStart);
-    let absolute = start + offsetMinutes;
-
-    absolute = absolute % (24 * 60);
-
-    const hours = Math.floor(absolute / 60);
-    const mins = absolute % 60;
-
-    return `${hours}:${mins.toString().padStart(2, '0')}`;
-  }
 
   /**
    * Calculate the pixel offset for the grid based on the program's start time.
     This ensures that the time markers align correctly with the actual times.
    */
   get gridOffsetPx(): number {
-    const startMinutes = this.timeToMinutes(this.programStart);
+    const startMinutes = timeToMinutes(this.programStart);
 
     // On veut l'offset dans une heure
     const minuteWithinHour = startMinutes % 60;
 
-    return minuteWithinHour * this.PIXELS_PER_MINUTE;
+    return minuteWithinHour * PIXELS_PER_MINUTE;
   }
 
 
@@ -152,13 +129,13 @@ export class ProgramsPageComponent implements OnInit {
   }
 
   getSlotStartTime(slot: PerformanceSlot): string {
-    const programStartMinutes = this.timeToMinutes(this.programStart);
+    const programStartMinutes = timeToMinutes(this.programStart);
     const absolute = programStartMinutes + slot.startMinutes;
     return this.minutesToTime(absolute);
   }
 
   getSlotEndTime(slot: PerformanceSlot): string {
-    const programStartMinutes = this.timeToMinutes(this.programStart);
+    const programStartMinutes = timeToMinutes(this.programStart);
     const absolute =
       programStartMinutes + slot.startMinutes + slot.duration;
     return this.minutesToTime(absolute);
@@ -171,7 +148,6 @@ export class ProgramsPageComponent implements OnInit {
     this.draggingTemplate = template;
   }
 
-
   /**
    * Handle mouse up events on the document to finalize the dragging of a performance template. If a template is being dragged and a valid preview room is set, this method calculates the start time based on the preview position and creates a new performance slot in the state with the properties of the dragged template. After handling the drop, it resets the dragging state and stops any ongoing interactions.
    * @param _event
@@ -183,7 +159,7 @@ export class ProgramsPageComponent implements OnInit {
     if (this.draggingTemplate && this.previewRoomId) {
 
       const startMinutes =
-        this.previewTop / this.PIXELS_PER_MINUTE;
+        this.previewTop / PIXELS_PER_MINUTE;
 
       this.state.addSlot({
         id: crypto.randomUUID(),
@@ -225,11 +201,11 @@ export class ProgramsPageComponent implements OnInit {
         ) {
           const offsetY = event.clientY - rect.top;
 
-          const rawMinutes = offsetY / this.PIXELS_PER_MINUTE;
+          const rawMinutes = offsetY / PIXELS_PER_MINUTE;
           const snapped =
             Math.round(rawMinutes / this.SNAP_MINUTES) * this.SNAP_MINUTES;
 
-          this.previewTop = Math.max(0, snapped * this.PIXELS_PER_MINUTE);
+          this.previewTop = Math.max(0, snapped * PIXELS_PER_MINUTE);
 
           this.previewRoomId =
             layer.nativeElement.dataset['roomId'];
@@ -295,8 +271,6 @@ export class ProgramsPageComponent implements OnInit {
     this.interaction.startSlotDrag(event, slot);
   }
 
-
-
   // --- RESIZER SLOT ---
   startSlotResize(event: MouseEvent, slot: PerformanceSlot) {
     this.interaction.startSlotResize(event, slot);
@@ -323,4 +297,6 @@ export class ProgramsPageComponent implements OnInit {
   removeRoom(roomId: string) {
     this.state.removeRoom(roomId);
   }
+
+  protected readonly PIXELS_PER_MINUTE = PIXELS_PER_MINUTE;
 }

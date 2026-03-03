@@ -1,0 +1,6 @@
+@for (minute of visibleTimeMarkers; track minute) {
+  <div class="time-marker"
+       [style.top.px]="getPosition(minute)">
+    {{ formatTime(minute) }}
+  </div>
+}

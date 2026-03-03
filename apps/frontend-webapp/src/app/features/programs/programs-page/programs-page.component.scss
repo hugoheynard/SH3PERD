@@ -1,7 +1,12 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
 .planner {
   display: flex;
-  height: 100vh;
   background: #f5f6f8;
+  height: 100%;
   font-family: Inter, system-ui, sans-serif;
 }
 
@@ -30,27 +35,14 @@
   background: #fff;
 }
 
-.time-body {
-  position: relative;
-  flex: 1;
-}
-
-.time-marker {
-  position: absolute;
-  left: 10px;
-  font-size: 11px;
-  font-weight: 500;
-  color: #9aa0a6;
-  transform: translateY(-50%);
-}
 
 /* ---------------- ROOMS CONTAINER ---------------- */
 
 .rooms-container {
   flex: 1;
   display: flex;
-  overflow-x: auto;  /* scroll horizontal */
-  overflow-y: auto;  /* scroll vertical */
+  overflow-x: auto;
+  overflow-y: visible;
 }
 
 /* chaque room */
@@ -140,7 +132,6 @@
         transparent 1px,
         transparent 25px
     ),
-
 
       /* 15 minutes - medium */
     repeating-linear-gradient(

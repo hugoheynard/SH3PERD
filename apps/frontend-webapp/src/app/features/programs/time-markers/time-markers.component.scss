@@ -1,0 +1,15 @@
+:host {
+  position: relative;
+  flex: 1;
+}
+
+.time-marker {
+  position: absolute;
+  left: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #9aa0a6;
+  transform: translateY(-50%);
+}
+
+

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import type { PerformanceSlot } from '../program-state.service';
+import { PIXELS_PER_MINUTE } from '../utils/PROGRAM_CONSTS';
 
 @Component({
   selector: 'app-performance-slot',
@@ -15,21 +16,23 @@ import type { PerformanceSlot } from '../program-state.service';
 })
 export class PerformanceSlotComponent {
   @Input({ required: true }) slot!: PerformanceSlot;
-  @Input({ required: true }) pixelsPerMinute!: number;
 
   @Input() startTime!: string;
   @Input() endTime!: string;
 
-  @Input() color!: string;
 
   @Output() slotMouseDown = new EventEmitter<MouseEvent>();
 
   get top(): number {
-    return this.slot.startMinutes * this.pixelsPerMinute;
+    return this.slot.startMinutes * PIXELS_PER_MINUTE;
   }
 
   get height(): number {
-    return this.slot.duration * this.pixelsPerMinute;
+    return this.slot.duration * PIXELS_PER_MINUTE;
+  }
+
+  get color(): string {
+    return this.slot.color;
   }
 
   onMouseDown(event: MouseEvent) {

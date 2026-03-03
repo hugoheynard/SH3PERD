@@ -9,18 +9,12 @@
   <!-- Timeline -->
   <div class="timeline">
     <div class="time-column">
-
       <div class="time-header"></div>
       <div class="header-separator"></div>
-
-      <div class="time-body">
-        @for (minute of timeMarkers; track minute) {
-          <div class="time-marker"
-               [style.top.px]="minute * PIXELS_PER_MINUTE">
-            {{ formatTime(minute) }}
-          </div>
-        }
-      </div>
+      <app-time-markers
+      [totalMinutes]=totalMinutes
+      [programStart]=programStart
+      />
     </div>
 
     <!-- ROOMS -->
@@ -50,8 +44,6 @@
             @for (slot of getSlotsForRoom(room.id); track slot.id) {
               <app-performance-slot
                 [slot]="slot"
-                [color]="slot.color"
-                [pixelsPerMinute]="PIXELS_PER_MINUTE"
                 [startTime]="getSlotStartTime(slot)"
                 [endTime]="getSlotEndTime(slot)"
                 (slotMouseDown)="startSlotDrag($event, slot)"
@@ -75,12 +67,5 @@
       }
 
     </div>
-    <!--
-    <div class="room-column add-room-column">
-      <button class="add-room-btn" (click)="addRoom()">
-        + Add Room
-      </button>
-    </div>
-  -->
   </div>
 </div>
