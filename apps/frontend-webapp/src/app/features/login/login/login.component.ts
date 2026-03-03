@@ -36,7 +36,7 @@ export class LoginComponent {
       return;
     }
 
-    await this.router.navigateByUrl('/app/home');
+    await this.router.navigateByUrl('/app/program');
     this.snackbarService.show('Welcome to SH3PHERD', 'Close', 3000);
   };
 }

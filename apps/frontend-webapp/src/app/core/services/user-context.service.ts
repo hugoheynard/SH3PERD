@@ -13,7 +13,7 @@ import { ApiURLService } from './api-url.service';
 export class UserContextService  {
   private readonly http = inject(HttpClient);
   private readonly url = inject(ApiURLService);
-  private readonly userURL = this.url.api().protected().route('user').build();
+  private readonly userURL = this.url.apiProtectedRoute('user').build();
   private readonly _user = signal<TUserMeViewModel | null>(null);
 
   userMe = this._user.asReadonly();
@@ -48,7 +48,9 @@ export class UserContextService  {
    */
   getUser(): void {
     this.http.get<TApiResponse<TUserMeViewModel>>(`${this.userURL}/me`).subscribe({
-      next: (res) => this.setUser(res.data),
+      next: (res) => {
+        this.setUser(res.data)
+      },
       error: (err) => {
         console.error('Failed to load user profile', err);
         this.setUser(null);

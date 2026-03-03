@@ -112,8 +112,7 @@ export class AuthService extends BaseHttpService {
         })
       )
       .subscribe(() => {
-        console.log('[AuthService] Logout flow finished');
-        this.router.createUrlTree(['/login'])
+        this.router.navigate(['/login']);
       });
   };
 

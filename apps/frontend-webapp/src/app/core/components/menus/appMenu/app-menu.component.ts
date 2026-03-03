@@ -1,8 +1,9 @@
-import {Component, Input} from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 
 import {IconFlatButtonComponent} from '../icon-flat-button/icon-flat-button.component';
 import { type MenuItem, Sh3MenuComponent } from '../sh3-menu/sh3-menu.component';
+import { AuthService } from '../../../services/auth.service';
 
 
 
@@ -15,6 +16,7 @@ import { type MenuItem, Sh3MenuComponent } from '../sh3-menu/sh3-menu.component'
 })
 export class AppMenuComponent {
    @Input() menuItems: MenuItem[] = [];
+   private authService = inject(AuthService);
 
   constructor(private router: Router) {}
 
@@ -23,7 +25,7 @@ export class AppMenuComponent {
   }
 
   private handlers: Record<string, () => void> = {
-    logout:     () => console.log('logout'),
+    logout: () => this.authService.logout(),
   };
 
   onCommand(it: MenuItem) {

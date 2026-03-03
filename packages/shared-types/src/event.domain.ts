@@ -13,8 +13,6 @@ import type { TContractId } from './contracts.domain.types.js';
  * -> a timeframe split between multiple users, according to a time schema (e.g. split equally, 20min work -> 20min break, etc.)
  * The goal of an EventMatrix is to provide a structured way to organize and visualize the allocation of time and resources within a given period, to insure a non-interrupted workflow.
  */
-
-
 export const SEventUnitId = z.custom<`eventUnit_${string}`>(
   (val): val is `eventUnit_${string}` =>
     typeof val === "string" && val.startsWith("eventUnit_"), { message: 'Invalid eventUnit_id format. Expected format: eventUnit_<unique_identifier>' }
@@ -56,15 +54,18 @@ export type TEventPlaylist = {
 export type TEventPairs = `${TEventUnitId}-${TEventUnitId}`;
 
 
-
-
+/**
+ * Event Matrix Domain Model
+ * Represents a collection of event units within a defined timeframe, involving multiple participants.
+ * Used to organize and visualize the allocation of time and resources.
+ */
 export type TEventMatrixDomainModel = {
   eventMatrix_id: `eventMatrix_${string}`;
   title: string;
   description?: string;
   startDate: Date; // start of the matrix
   endDate: Date; // end of the matrix
-  participants: TUserId[]; // users involved in the matrix
+  participants: TContractId[]; // users involved in the matrix
   eventUnits: TEventUnitDomainModel[]; // event units within the matrix
 }
 

@@ -1,0 +1,19 @@
+<div class="slot-bg" [style.background]="color"></div>
+
+<div class="slot-content">
+  <div class="slot-top">
+    <div class="slot-title">{{ slot.type }}</div>
+    <div class="slot-time">
+      {{ startTime }} - {{ endTime }}
+    </div>
+  </div>
+
+  <div class="slot-bottom">
+    <ng-content></ng-content>
+  </div>
+</div>
+
+<div
+  class="resize-handle"
+  (mousedown)="onResizeMouseDown($event)">
+</div>

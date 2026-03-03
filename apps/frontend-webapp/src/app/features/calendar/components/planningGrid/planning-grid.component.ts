@@ -1,75 +1,90 @@
-import { Component, input } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, input, output } from '@angular/core';
 import {EventBlockComponent} from '../eventBlock/event-block.component';
-import { NgClass } from '@angular/common';
+import { NgStyle } from '@angular/common';
 import type { TEventUnitDomainModel } from '@sh3pherd/shared-types';
 
 
+const PX_PER_MINUTE = 3;
+const DEFAULT_DURATION_MIN = 30;
 
 @Component({
-    selector: 'app-planningGrid',
-    imports: [
-    EventBlockComponent,
-    NgClass
-],
-    templateUrl: './planning-grid.component.html',
-    standalone: true,
-    styleUrl: './planning-grid.component.scss'
+  selector: 'app-planningGrid',
+  standalone: true,
+  imports: [EventBlockComponent, NgStyle],
+  templateUrl: './planning-grid.component.html',
+  styleUrl: './planning-grid.component.scss',
 })
 export class PlanningGridComponent {
-  public readonly events = input.required<TEventUnitDomainModel[]>();
-  public readonly internalCollisions = input<any>();
+  /* =========================
+   * Inputs / Outputs
+   * ========================= */
 
+  readonly events = input.required<TEventUnitDomainModel[]>();
 
-  /**
-   * Calculate the grid position for a given date for rowStart and rowEnd
-   * @param date
-   */
-  getPosition(date: Date): number {
-    const newDate: Date = new Date(date)
-    const hours: number = newDate.getHours();
-    const minutes: number = newDate.getMinutes();
+  /** Émission vers le parent (source of truth) */
+  readonly createEvent = output<Partial<TEventUnitDomainModel>>();
 
-    return (hours * 60 + minutes ) / 5 + 1;
-  };
+  /* =========================
+   * DOM
+   * ========================= */
 
-  /**
-   * Determines if the event should take full width or split column based on collisions
-   * @param event
-   */
-  fullGridOrSplit(event: TEventUnitDomainModel): 'fullWidth' | 'splitCol' { //TODO bah faire marcher hein
-    if (!this.collide(event)) {
-      return 'fullWidth';
-    }
+  private readonly hostEl = inject(ElementRef<HTMLElement>);
 
-    return 'splitCol';
-  };
+  /* =========================
+   * Rendering
+   * ========================= */
 
-  /**
-   * Check if the event collides with any other event in the list
-   * @param event
-   */
-  collide(event: TEventUnitDomainModel): boolean {
-    for (const otherEvent of this.events()) {
-      if (event.id === otherEvent.id) {
-        continue;
-      }
-      if ((event.startDate < otherEvent.endDate) && (otherEvent.startDate < event.endDate)) {
-        return true;
-      }
-    }
-    return false;
-  };
+  getEventStyle(event: TEventUnitDomainModel): Record<string, string> {
+    const startMin = this.minutesFromStartOfDay(event.startDate);
+    const endMin = this.minutesFromStartOfDay(event.endDate);
 
+    return {
+      top: `${startMin * PX_PER_MINUTE}px`,
+      height: `${(endMin - startMin) * PX_PER_MINUTE}px`,
+      position: 'absolute',
+    };
+  }
 
-  /*
-  getPlanningsColumnNumber(internalCollisions: any) {
-    const planningColumnNumbers = Object.fromEntries(
-      Object.entries(internalCollisions)
-        .map(([key, planningCollision]) => [
-          key, (1 + planningCollision?.maxCollisions) * 2
-        ])
-    );
-    return Math.max(...Object.values(planningColumnNumbers));
-  };
-*/
+  /* =========================
+   * Interaction
+   * ========================= */
+
+  @HostListener('dblclick', ['$event'])
+  onHostDblClick(event: MouseEvent): void {
+    const host = this.hostEl.nativeElement;
+    const rect = host.getBoundingClientRect();
+
+    const offsetY = event.clientY - rect.top + host.scrollTop;
+    const minutes = offsetY / PX_PER_MINUTE;
+    const snapped = this.snapTo5(minutes);
+
+    const startDate = this.dateFromMinutes(snapped);
+    const endDate = this.dateFromMinutes(snapped + DEFAULT_DURATION_MIN);
+
+    console.log('Creating event at', startDate, 'to', endDate);
+
+    this.createEvent.emit({
+      startDate,
+      endDate,
+    });
+  }
+
+  /* =========================
+   * Utils
+   * ========================= */
+
+  private minutesFromStartOfDay(date: Date): number {
+    return date.getHours() * 60 + date.getMinutes();
+  }
+
+  private snapTo5(minutes: number): number {
+    return Math.round(minutes / 5) * 5;
+  }
+
+  private dateFromMinutes(minutes: number): Date {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    date.setMinutes(minutes);
+    return date;
+  }
 }

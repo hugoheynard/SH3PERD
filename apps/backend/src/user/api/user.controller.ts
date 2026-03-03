@@ -12,7 +12,7 @@ import { GetCurrentUserViewModelQuery } from '../application/query/GetCurrentUse
 import { QueryBus } from '@nestjs/cqrs';
 
 
-@ApiTags('users')
+@ApiTags('user')
 @ApiBearerAuth('bearer')
 @ApiUnauthorizedResponse({
   description: 'Authentication required. Missing or invalid Bearer token.',
@@ -29,7 +29,7 @@ export class UserController {
       " This includes user profile details and preferences."
   })
   @ApiResponse(apiSuccessDTO(USER_CODES_SUCCESS.GET_USER_ME, UserMeViewModelPayload , 200))
-  @ResPayloadValidator(UserMeViewModelPayload)
+  @ResPayloadValidator(UserMeViewModelPayload, { active: false })
   @Get('me')
   async getUserMe(@ActorId() id: TUserId): TAsyncApiResponseDTO<TUserMeViewModel> {
 

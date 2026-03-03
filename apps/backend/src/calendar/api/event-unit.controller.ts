@@ -1,11 +1,11 @@
 import { Body, Controller, Post, Req } from '@nestjs/common';
-import { createEventUnit } from '../../useCases/eventsUseCase.composition.js';
+import { createEventUnit } from '../useCases/eventsUseCase.composition.js';
 import type { Request } from 'express';
 
-@Controller('event')
+@Controller('event-unit')
 export class EventUnitController {
 
-  @Post('unit')
+  @Post()
   createEvent(
     @Req() req: Request,
     @Body() requestDTO: any

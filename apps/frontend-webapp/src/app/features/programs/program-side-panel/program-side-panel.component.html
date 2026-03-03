@@ -1,0 +1,24 @@
+<!-- Template Library -->
+<div class="panel-section">
+  <div class="section-header">
+    <span>Templates</span>
+  </div>
+
+  <div class="section-content">
+    <!-- templates -->
+    @for (template of config.templates; track template.id) {
+      <div
+        class="template-item"
+        (mousedown)="config.onTemplateDragStart(template)">
+        {{ template.name }} ({{ template.duration }}m)
+      </div>
+    }
+  </div>
+</div>
+
+<div class="panel-section">
+  <div class="section-header">
+    <span>Artists</span>
+  </div>
+
+</div>

@@ -1,0 +1,86 @@
+<app-program-header
+  [(programName)]="programName"
+  [(programStart)]="programStart"
+  [(programEnd)]="programEnd"
+  (addRoom)="addRoom()"
+/>
+
+<div class="planner">
+  <!-- Timeline -->
+  <div class="timeline">
+    <div class="time-column">
+
+      <div class="time-header"></div>
+      <div class="header-separator"></div>
+
+      <div class="time-body">
+        @for (minute of timeMarkers; track minute) {
+          <div class="time-marker"
+               [style.top.px]="minute * PIXELS_PER_MINUTE">
+            {{ formatTime(minute) }}
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- ROOMS -->
+    <div class="rooms-container">
+
+      @for (room of rooms; track room.id) {
+        <div class="room-column">
+          <div class="room-header">
+            {{ room.name }}
+
+            @if (!isBaseRoom(room)) {
+              <button
+                class="room-delete"
+                (click)="removeRoom(room.id)">
+                ✕
+              </button>
+            }
+          </div>
+          <div class="header-separator"></div>
+          <div
+            class="slots-layer"
+            #roomLayer
+            [attr.data-room-id]="room.id"
+            [style.height.px]="timelineHeight"
+            [style.background-position]="'0px -' + gridOffsetPx + 'px'">
+
+            @for (slot of getSlotsForRoom(room.id); track slot.id) {
+              <app-performance-slot
+                [slot]="slot"
+                [color]="slot.color"
+                [pixelsPerMinute]="PIXELS_PER_MINUTE"
+                [startTime]="getSlotStartTime(slot)"
+                [endTime]="getSlotEndTime(slot)"
+                (slotMouseDown)="startSlotDrag($event, slot)"
+                (slotResizeStart)="startSlotResize($event, slot)" />
+            }
+
+            <!-- Preview -->
+            @if (draggingTemplate && previewRoomId === room.id) {
+              <div
+                class="slot preview"
+                [style.top.px]="previewTop"
+                [style.height.px]="draggingTemplate.duration * PIXELS_PER_MINUTE"
+              >
+                {{ draggingTemplate.type }}
+              </div>
+            }
+
+          </div>
+
+        </div>
+      }
+
+    </div>
+    <!--
+    <div class="room-column add-room-column">
+      <button class="add-room-btn" (click)="addRoom()">
+        + Add Room
+      </button>
+    </div>
+  -->
+  </div>
+</div>

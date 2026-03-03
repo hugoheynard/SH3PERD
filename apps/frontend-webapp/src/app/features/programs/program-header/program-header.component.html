@@ -1,0 +1,104 @@
+<div class="header-left">
+  <div class="program-title">
+    <input
+      class="title-input"
+      type="text"
+      [(ngModel)]="programName"
+      (ngModelChange)="programNameChange.emit($event)"
+    />
+  </div>
+
+  <div class="program-time">
+    <label>
+      <span class="label-text">Start</span>
+      <input
+        type="time"
+        [(ngModel)]="programStart"
+        (ngModelChange)="programStartChange.emit($event)"
+      />
+    </label>
+
+    <span class="separator">→</span>
+
+    <label>
+      <span class="label-text">End</span>
+      <input
+        type="time"
+        [(ngModel)]="programEnd"
+        (ngModelChange)="programEndChange.emit($event)"
+      />
+    </label>
+  </div>
+</div>
+
+
+
+<!-- Floating menu for program actions -->
+<div class="program-actions"
+     [class.visible]="true"
+     [class.saved]="isSaved">
+
+  <div class="action-bar">
+
+    <button
+      class="icon-btn"
+      (click)="addRoom.emit()"
+      aria-label="Add room">
+      ＋
+    </button>
+
+    <div class="divider"></div>
+
+    <!-- Mode Switch between manual and assisted by backend -->
+    <div class="mode-switch">
+
+      <div
+        class="mode-indicator"
+        [class.assisted]="mode === 'assisted'">
+      </div>
+
+      <button
+        (click)="setMode('manual')"
+        [class.active]="mode === 'manual'">
+        Manual
+      </button>
+
+      <button
+        (click)="setMode('assisted')"
+        [class.active]="mode === 'assisted'">
+        Assisted
+      </button>
+
+    </div>
+
+    <button
+      class="icon-btn primary"
+      (click)="onSaveClick()"
+      aria-label="Save program">
+
+      @if (!isSaved) {
+        ✓
+      } @else {
+        ✓
+      }
+    </button>
+
+    <div class="divider"></div>
+
+    <!-- Export PDF -->
+    <button
+      class="icon-btn pdf"
+      (click)="exportPdf.emit()"
+      aria-label="Export PDF">
+      ⎙
+    </button>
+
+  </div>
+
+  @if (isSaved) {
+    <div class="saved-label">
+      Saved
+    </div>
+  }
+
+</div>

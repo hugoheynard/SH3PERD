@@ -13,6 +13,7 @@ import { UserGroupsComponent } from '../features/userGroups/components/user-grou
 import {
   UserProfilePageComponent
 } from '../features/user/profile/components/user-profile-page/user-profile-page.component';
+import { ProgramsPageComponent } from '../features/programs/programs-page/programs-page.component';
 
 
 export const routes: Routes = [
@@ -30,6 +31,7 @@ export const routes: Routes = [
     canActivateChild: [authGuard],
     children: [
       { path: 'home', component: HomeComponent, data: { pageName: 'dashboard' }},
+      { path: 'program', component: ProgramsPageComponent, data: { pageName: 'program' }},
       { path: 'calendar', component: CalendarComponent,  data: { pageName: 'calendar' }},
       { path: 'musicLibrary', component: MusicLibraryComponent,  data: { pageName: 'music' } },
       { path: 'playlistManager', component: PlaylistManagerComponent, data: { pageName: 'playlists' }},

@@ -8,8 +8,9 @@ import {CalendarHoursGridComponent} from '../calendar-hours-grid/calendar-hours-
 
 import {LayoutService} from '../../../../core/services/layout.service';
 import {AutoScrollToNowDirective} from '../../directives/cal-auto-scroll-to-now.directive';
-import { CalendarStore } from '../../calendar-store';
 import type { TEventUnitId } from '@sh3pherd/shared-types';
+import { CalendarService } from '../../calendar.service';
+import type { TEventUnitDomainModel } from '@sh3pherd/shared-types';
 
 @Component({
   selector: 'app-calendarPage',
@@ -22,14 +23,21 @@ import type { TEventUnitId } from '@sh3pherd/shared-types';
     AutoScrollToNowDirective
 ]
 })
-export class CalendarComponent implements OnInit, OnDestroy{
-  private layoutService: LayoutService = inject(LayoutService);
-  private readonly calendarStore = inject(CalendarStore);
+export class CalendarComponent implements OnInit, OnDestroy {
+  private layoutService = inject(LayoutService);
+  private readonly calendarServ = inject(CalendarService);
 
-  readonly calendarData = this.calendarStore.data;
+  readonly calendarData = this.calendarServ.data;
 
   async ngOnInit(): Promise<void> {
     await this.loadCalendarMenu();
+
+    this.calendarServ.setParams({
+      users: ['user_hugo'],
+      date: new Date('2025-01-01'),
+    });
+
+    this.calendarServ.load();
   };
 
   ngOnDestroy(): void {
@@ -44,8 +52,16 @@ export class CalendarComponent implements OnInit, OnDestroy{
   };
 
 
+  getPlanningEvents(planning: any): TEventUnitDomainModel[] {
+    const data = this.calendarData();
 
-  getPlanningEvents(planning: any) {
-    return planning.calendar_events.map((event: TEventUnitId) => this.calendarData().events[event])
-  };
+    if (!data || !planning?.calendar_events?.length) {
+      console.log('No data or no calendar events found');
+      return [];
+    }
+
+    return planning.calendar_events
+      .map((eventId: TEventUnitId) => data.events[eventId])
+      .filter(Boolean);
+  }
 }

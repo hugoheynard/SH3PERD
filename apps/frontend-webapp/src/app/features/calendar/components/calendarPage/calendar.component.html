@@ -1,12 +1,11 @@
 <div #calendarContainer class="calendar-scroll-container" appAutoScrollToNow [speed]="250">
-  <app-calendar-hours-grid/> <!--on va mettre tout le background ici-->
+  <app-calendar-hours-grid /> <!--on va mettre tout le background ici-->
 
   <div class="splitGrid">
     <div class="centerCol">
       @for (planning of calendarData()?.plannings; track planning) {
         <app-planningGrid #planningGrid class="planning"
-          [events] = "getPlanningEvents(planning)"
-          [internalCollisions]="calendarData()?.calendarData.collisions[planning.staff_id]"/>
+          [events] = "getPlanningEvents(planning)" />
       }
     </div>
   </div>
