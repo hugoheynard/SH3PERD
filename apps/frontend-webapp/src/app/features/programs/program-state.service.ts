@@ -15,7 +15,7 @@ export interface PerformanceSlot {
   type: string;
   color: string;
   roomId: string;
-  artistIds: string[]
+  artists: Artist[]
 }
 
 export interface Room {
@@ -29,6 +29,11 @@ export interface ProgramState {
   endTime: string;
   rooms: Room[];
   slots: PerformanceSlot[];
+}
+
+export interface Artist {
+  id: string;
+  name: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -82,14 +87,14 @@ export class ProgramStateService {
 
   setEnd(time: string) {
     this.state.endTime = time;
-  }
+  };
 
   addRoom(name: string) {
     this.state.rooms.push({
       id: crypto.randomUUID(),
       name
     });
-  }
+  };
 
   /**
    * Removes a room from the program state. If the room being removed is the default room (the first one in the list), it will not be deleted to ensure there is always at least one room available. Additionally, all performance slots associated with the removed room will also be deleted from the state.
@@ -113,23 +118,71 @@ export class ProgramStateService {
     this.state.rooms = this.rooms.filter(r => r.id !== roomId);
   };
 
+
+  /* ---------------------------------
+    SLOT HANDLING
+   ---------------------------------- */
   addSlot(slot: PerformanceSlot) {
     this.state.slots.push(slot);
-  }
+  };
 
   updateSlot(slot: PerformanceSlot) {
     const index = this.state.slots.findIndex(s => s.id === slot.id);
     if (index !== -1) {
       this.state.slots[index] = slot;
     }
-  }
+  };
 
   removeSlot(id: string) {
     this.state.slots =
       this.state.slots.filter(s => s.id !== id);
-  }
+  };
 
   getSlotsForRoom(roomId: string) {
     return this.state.slots.filter(s => s.roomId === roomId);
-  }
+  };
+
+
+  /* ---------------------------------
+    ARTIST HANDLING
+   ----------------------------------- */
+  /**
+   * Adds an artist to a specific performance slot. The method first checks if the slot with the given ID exists. If it does, it then checks if the artist is already associated with that slot to prevent duplicates. If the artist is not already in the slot's list of artists, they are added to the array of artists for that slot.
+   * @param slotId
+   * @param artist
+   */
+  addArtistToSlot(slotId: string, artist: Artist) {
+
+    const slot = this.slots.find(s => s.id === slotId);
+
+    if (!slot) {
+      return;
+    }
+
+    const exists = slot.artists.some(a => a.id === artist.id);
+
+    if (!exists) {
+      slot.artists = [...slot.artists, artist];
+    }
+  };
+
+  /**
+   * Removes an artist from a specific performance slot.
+   * It finds the slot by ID and removes the artist with the given ID
+   * from the slot's artists array.
+   */
+  removeArtistFromSlot(slotId: string, artistId: string): void {
+
+    const slot = this.slots.find(s => s.id === slotId);
+    if (!slot) {
+      return;
+    }
+
+    const hasArtist = slot.artists.some(a => a.id === artistId);
+    if (!hasArtist) {
+      return;
+    }
+
+    slot.artists = slot.artists.filter(a => a.id !== artistId);
+  };
 }

@@ -3,17 +3,24 @@
 <div class="slot-content">
   <div class="slot-top">
     <div class="slot-title">{{ slot.type }}</div>
-    <div class="slot-time">
-      {{ startTime }} - {{ endTime }}
+    <div class="artist-container">
+      @for (artist of slot.artists; track artist.id) {
+        <app-artist-chip [artist]="artist"/>
+      }
     </div>
+    <div class="slot-time">{{ startTime }} - {{ endTime }}</div>
   </div>
 
   <div class="slot-bottom">
     <ng-content></ng-content>
+    <div class="artists">
+
+    </div>
   </div>
 </div>
 
+<!-- Resize handle -->
 <div
   class="resize-handle"
-  (mousedown)="onResizeMouseDown($event)">
+  (pointerdown)="onResizeMouseDown($event)">
 </div>

@@ -21,4 +21,12 @@
     <span>Artists</span>
   </div>
 
+  @for(artist of config.artists; track artist.id) {
+  <div
+    class="template-item"
+    (mousedown)="config.onArtistDragStart(artist)">
+    {{ artist.name }}
+  </div>
+  }
+
 </div>

@@ -11,10 +11,7 @@
     <div class="time-column">
       <div class="time-header"></div>
       <div class="header-separator"></div>
-      <app-time-markers
-      [totalMinutes]=totalMinutes
-      [programStart]=programStart
-      />
+      <app-time-markers [totalMinutes]=totalMinutes [programStart]=programStart />
     </div>
 
     <!-- ROOMS -->
@@ -26,14 +23,11 @@
             {{ room.name }}
 
             @if (!isBaseRoom(room)) {
-              <button
-                class="room-delete"
-                (click)="removeRoom(room.id)">
-                ✕
-              </button>
+              <button class="room-delete" (click)="removeRoom(room.id)">✕</button>
             }
           </div>
           <div class="header-separator"></div>
+
           <div
             class="slots-layer"
             #roomLayer
@@ -46,18 +40,18 @@
                 [slot]="slot"
                 [startTime]="getSlotStartTime(slot)"
                 [endTime]="getSlotEndTime(slot)"
-                (slotMouseDown)="startSlotDrag($event, slot)"
+                (slotPointerDown)="startSlotDrag($event, slot)"
                 (slotResizeStart)="startSlotResize($event, slot)" />
             }
 
             <!-- Preview -->
-            @if (draggingTemplate && previewRoomId === room.id) {
+            @if (previewTemplate && previewRoomId === room.id) {
               <div
                 class="slot preview"
                 [style.top.px]="previewTop"
-                [style.height.px]="draggingTemplate.duration * PIXELS_PER_MINUTE"
+                [style.height.px]="previewTemplate.duration * PIXELS_PER_MINUTE"
               >
-                {{ draggingTemplate.type }}
+                {{ previewTemplate.type }}
               </div>
             }
 

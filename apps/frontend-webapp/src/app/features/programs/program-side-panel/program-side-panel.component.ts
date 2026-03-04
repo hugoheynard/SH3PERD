@@ -1,12 +1,12 @@
 import { Component, Inject} from '@angular/core';
 import { PANEL_DATA } from '../../../core/main-layout/main-layout.component';
-import type { PerformanceTemplate } from '../program-state.service';
+import type { Artist, PerformanceTemplate } from '../program-state.service';
 
 export interface ProgramSidePanelConfig {
   templates: PerformanceTemplate[];
-  //artists: Artist[];
+  artists: Artist[];
   onTemplateDragStart: (template: PerformanceTemplate) => void;
-  //onArtistDragStart: (artist: Artist) => void;
+  onArtistDragStart: (artist: Artist) => void;
 }
 
 @Component({

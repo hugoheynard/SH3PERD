@@ -1,26 +1,37 @@
 import {
   Component,
-  type ElementRef,
+  ElementRef,
   HostListener,
-  inject,
-  type OnInit,
-  type QueryList,
+  QueryList,
   ViewChildren,
+  inject,
+  type OnInit
 } from '@angular/core';
+
 import { PerformanceSlotComponent } from '../performance-slot/performance-slot.component';
 import { ProgramHeaderComponent } from '../program-header/program-header.component';
-import {
-  type PerformanceSlot, type PerformanceTemplate,
-  ProgramStateService, type Room,
+import type {
+  Artist,
+  PerformanceSlot,
+  PerformanceTemplate,
+  Room
 } from '../program-state.service';
-import { TimelineInteractionService } from '../timeline-interaction.service';
+import { ProgramStateService } from '../program-state.service';
+
+import {
+  TimelineInteractionService
+} from '../timeline-interaction.service';
+
 import { LayoutService } from '../../../core/services/layout.service';
 import { ProgramSidePanelComponent } from '../program-side-panel/program-side-panel.component';
-import { timeToMinutes } from '../utils/timeToMinutes';
 import { TimeMarkersComponent } from '../time-markers/time-markers.component';
-import { PIXELS_PER_MINUTE } from '../utils/PROGRAM_CONSTS';
-import { mockPerformanceSlotsTemplates } from '../utils/mockDATAS';
 
+import { timeToMinutes } from '../utils/timeToMinutes';
+import { PIXELS_PER_MINUTE } from '../utils/PROGRAM_CONSTS';
+import {
+  mockArtists_external,
+  mockPerformanceSlotsTemplates
+} from '../utils/mockDATAS';
 
 @Component({
   selector: 'app-programs-page',
@@ -33,23 +44,35 @@ import { mockPerformanceSlotsTemplates } from '../utils/mockDATAS';
   styleUrl: './programs-page.component.scss'
 })
 export class ProgramsPageComponent implements OnInit {
+
   private state = inject(ProgramStateService);
   private interaction = inject(TimelineInteractionService);
-  private layout = inject(LayoutService)
+  private layout = inject(LayoutService);
 
-  /* ---------------------------------------------------
-       LIFECYCLE
-    --------------------------------------------------- */
+  previewTop = 0;
+  previewRoomId?: string;
+  hoveredSlot?: PerformanceSlot;
+
+  readonly SNAP_MINUTES = 5;
+
+  @ViewChildren('roomLayer')
+  roomLayers!: QueryList<ElementRef<HTMLDivElement>>;
+
+  /* ---------------- LIFECYCLE ---------------- */
+
   ngOnInit() {
     this.layout.setRightPanel(ProgramSidePanelComponent, {
       templates: mockPerformanceSlotsTemplates,
-      onTemplateDragStart: (template: any) => this.startTemplateDrag(template),
+      artists: mockArtists_external,
+      onTemplateDragStart: (t: PerformanceTemplate) =>
+        this.startTemplateDrag(t),
+      onArtistDragStart: (a: Artist) =>
+        this.startArtistDrag(a),
     });
   }
 
-  /* ---------------------------------------------------
-       GETTERS & SETTERS
-    --------------------------------------------------- */
+  /* ---------------- STATE GETTERS ---------------- */
+
   get rooms() {
     return this.state.rooms;
   }
@@ -79,24 +102,13 @@ export class ProgramsPageComponent implements OnInit {
     this.state.setEnd(value);
   }
 
-  /* ---------------------------------------------------
-     VIEW CHILDREN (ROOM LAYERS)
-  --------------------------------------------------- */
-  @ViewChildren('roomLayer')
-  roomLayers!: QueryList<ElementRef<HTMLDivElement>>;
-
-  readonly SNAP_MINUTES = 5;
-
-  // ---- UTILS TIME ----
-
+  /* ---------------- TIME UTILS ---------------- */
 
   get totalMinutes(): number {
     const start = timeToMinutes(this.programStart);
     let end = timeToMinutes(this.programEnd);
 
-    if (end <= start) {
-      end += 24 * 60;
-    }
+    if (end <= start) end += 24 * 60;
 
     return end - start;
   }
@@ -105,22 +117,12 @@ export class ProgramsPageComponent implements OnInit {
     return this.totalMinutes * PIXELS_PER_MINUTE;
   }
 
-
-  /**
-   * Calculate the pixel offset for the grid based on the program's start time.
-    This ensures that the time markers align correctly with the actual times.
-   */
   get gridOffsetPx(): number {
     const startMinutes = timeToMinutes(this.programStart);
-
-    // On veut l'offset dans une heure
     const minuteWithinHour = startMinutes % 60;
-
     return minuteWithinHour * PIXELS_PER_MINUTE;
   }
 
-
-  //SLOT TIME
   private minutesToTime(totalMinutes: number): string {
     totalMinutes = totalMinutes % (24 * 60);
     const hours = Math.floor(totalMinutes / 60);
@@ -141,154 +143,204 @@ export class ProgramsPageComponent implements OnInit {
     return this.minutesToTime(absolute);
   }
 
-  draggingTemplate?: PerformanceTemplate;
-  previewTop = 0;
+  /* ---------------- TEMPLATE DRAG ---------------- */
 
   startTemplateDrag(template: PerformanceTemplate) {
-    this.draggingTemplate = template;
+    this.interaction.currentDrag = { type: 'template', template };
   }
 
-  /**
-   * Handle mouse up events on the document to finalize the dragging of a performance template. If a template is being dragged and a valid preview room is set, this method calculates the start time based on the preview position and creates a new performance slot in the state with the properties of the dragged template. After handling the drop, it resets the dragging state and stops any ongoing interactions.
-   * @param _event
-   */
-  @HostListener('document:mouseup', ['$event'])
-  onMouseUp(_event: MouseEvent) {
+  private handleTemplateMove(event: PointerEvent) {
 
-    // ----- DROP TEMPLATE -----
-    if (this.draggingTemplate && this.previewRoomId) {
+    if (!this.roomLayers) return;
 
-      const startMinutes =
-        this.previewTop / PIXELS_PER_MINUTE;
+    for (const layer of this.roomLayers.toArray()) {
 
-      this.state.addSlot({
-        id: crypto.randomUUID(),
-        startMinutes,
-        duration: this.draggingTemplate.duration,
-        type: this.draggingTemplate.type,
-        color: this.draggingTemplate.color,
-        roomId: this.previewRoomId,
-        artistIds: []
-      });
-    }
+      const rect = layer.nativeElement.getBoundingClientRect();
 
-    // ----- RESET -----
-    this.draggingTemplate = undefined;
-    this.previewRoomId = undefined;
+      if (
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom
+      ) {
+        const offsetY = event.clientY - rect.top;
 
-    this.interaction.stop();
-  }
+        const rawMinutes = offsetY / PIXELS_PER_MINUTE;
+        const snapped =
+          Math.round(rawMinutes / this.SNAP_MINUTES) * this.SNAP_MINUTES;
 
-  /**
-   * Handle mouse move events on the document to manage dragging of performance templates and existing slots. This method checks if a template is being dragged and updates the preview position accordingly. It also handles vertical dragging and resizing of existing slots, as well as horizontal room changes when dragging a slot across different room layers.
-   * @param event
-   */
-  @HostListener('document:mousemove', ['$event'])
-  onMouseMove(event: MouseEvent) {
+        this.previewTop =
+          Math.max(0, snapped * PIXELS_PER_MINUTE);
 
-    // 1️----- DRAG TEMPLATE -----
-    if (this.draggingTemplate && this.roomLayers) {
-
-      for (const layer of this.roomLayers.toArray()) {
-
-        const rect = layer.nativeElement.getBoundingClientRect();
-
-        if (
-          event.clientX >= rect.left &&
-          event.clientX <= rect.right &&
-          event.clientY >= rect.top &&
-          event.clientY <= rect.bottom
-        ) {
-          const offsetY = event.clientY - rect.top;
-
-          const rawMinutes = offsetY / PIXELS_PER_MINUTE;
-          const snapped =
-            Math.round(rawMinutes / this.SNAP_MINUTES) * this.SNAP_MINUTES;
-
-          this.previewTop = Math.max(0, snapped * PIXELS_PER_MINUTE);
-
-          this.previewRoomId =
-            layer.nativeElement.dataset['roomId'];
-        }
-      }
-    }
-
-    // 2️⃣ Vertical drag + resize
-    this.interaction.handleMouseMove(event);
-
-    // 3️⃣ Horizontal room change
-    const draggingSlot = this.interaction.currentDraggingSlot;
-
-    if (draggingSlot && this.roomLayers) {
-      for (const layer of this.roomLayers.toArray()) {
-
-        const rect = layer.nativeElement.getBoundingClientRect();
-
-        if (
-          event.clientX >= rect.left &&
-          event.clientX <= rect.right
-        ) {
-          const newRoomId =
-            layer.nativeElement.dataset['roomId'];
-
-          if (
-            newRoomId &&
-            draggingSlot.roomId !== newRoomId
-          ) {
-            draggingSlot.roomId = newRoomId;
-          }
-        }
+        this.previewRoomId =
+          layer.nativeElement.dataset['roomId'];
       }
     }
   }
 
-  //DRAG EXISTING SLOTS
-  /**
-   * Start dragging an existing performance slot. If the ALT key is held during the drag, a duplicate of the slot will be created and dragged instead.
-   *
-   * This method checks if the ALT key is pressed when initiating the drag. If it is, it creates a copy of the slot with a new unique ID and the same properties, adds it to the state, and starts dragging the copy. If the ALT key is not pressed, it simply starts dragging the original slot.
-   * @param event
-   * @param slot
-   */
-  startSlotDrag(event: MouseEvent, slot: PerformanceSlot) {
+  private handleTemplateDrop() {
 
-    // ALT = duplication
+    const drag = this.interaction.currentDrag;
+    if (drag?.type !== 'template') return;
+    if (!this.previewRoomId) return;
+
+    const startMinutes =
+      this.previewTop / PIXELS_PER_MINUTE;
+
+    this.state.addSlot({
+      id: crypto.randomUUID(),
+      startMinutes,
+      duration: drag.template.duration,
+      type: drag.template.type,
+      color: drag.template.color,
+      roomId: this.previewRoomId,
+      artists: []
+    });
+  }
+
+  /* ---------------- ARTIST DRAG ---------------- */
+
+  startArtistDrag(artist: Artist) {
+    this.interaction.currentDrag = { type: 'artist', artist };
+  }
+
+  private handleArtistHover(event: PointerEvent) {
+
+    const element =
+      document.elementFromPoint(event.clientX, event.clientY);
+
+    const slotElement =
+      element?.closest('[data-slot-id]');
+
+    if (slotElement) {
+      const slotId =
+        slotElement.getAttribute('data-slot-id');
+
+      this.hoveredSlot =
+        this.slots.find(s => s.id === slotId);
+    } else {
+      this.hoveredSlot = undefined;
+    }
+  }
+
+  private handleArtistDrop() {
+
+    const drag = this.interaction.currentDrag;
+    if (drag?.type !== 'artist') return;
+    if (!this.hoveredSlot) return;
+
+    this.state.addArtistToSlot(
+      this.hoveredSlot.id,
+      drag.artist
+    );
+  }
+
+  /* ---------------- SLOT DRAG / RESIZE ---------------- */
+
+  startSlotDrag(event: PointerEvent, slot: PerformanceSlot): void {
+
     if (event.altKey) {
-
       const copy: PerformanceSlot = {
         ...slot,
         id: crypto.randomUUID(),
-        artistIds: [...(slot.artistIds ?? [])]
+        artists: [...slot.artists]
       };
 
       this.state.addSlot(copy);
-
       this.interaction.startSlotDrag(event, copy);
       return;
     }
 
-    // Drag normal
     this.interaction.startSlotDrag(event, slot);
   }
 
-  // --- RESIZER SLOT ---
-  startSlotResize(event: MouseEvent, slot: PerformanceSlot) {
+  startSlotResize(event: PointerEvent, slot: PerformanceSlot): void {
     this.interaction.startSlotResize(event, slot);
   }
 
-  /* ---------------------------------------------------
-   ROOMS
---------------------------------------------------- */
-  previewRoomId?: string;
+  private handleRoomChange(event: PointerEvent) {
+
+    const drag = this.interaction.currentDrag;
+    if (drag?.type !== 'slot') return;
+
+    for (const layer of this.roomLayers.toArray()) {
+
+      const rect =
+        layer.nativeElement.getBoundingClientRect();
+
+      if (
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right
+      ) {
+        const newRoomId =
+          layer.nativeElement.dataset['roomId'];
+
+        if (
+          newRoomId &&
+          drag.slot.roomId !== newRoomId
+        ) {
+          drag.slot.roomId = newRoomId;
+        }
+      }
+    }
+  }
+
+  /* ---------------- GLOBAL EVENTS ---------------- */
+
+  @HostListener('document:pointermove', ['$event'])
+  onPointerMove(event: PointerEvent) {
+
+    const drag = this.interaction.currentDrag;
+    if (!drag) return;
+
+    switch (drag.type) {
+
+      case 'template':
+        this.handleTemplateMove(event);
+        break;
+
+      case 'artist':
+        this.handleArtistHover(event);
+        break;
+
+      case 'slot':
+        this.handleRoomChange(event);
+        break;
+    }
+
+    this.interaction.handlePointerMove(event);
+  }
+
+  @HostListener('document:pointerup')
+  onPointerUp() {
+
+    const drag = this.interaction.currentDrag;
+    if (!drag) return;
+
+    switch (drag.type) {
+      case 'template':
+        this.handleTemplateDrop();
+        break;
+      case 'artist':
+        this.handleArtistDrop();
+        break;
+    }
+
+    this.previewRoomId = undefined;
+    this.hoveredSlot = undefined;
+
+    this.interaction.stop();
+  }
+
+  /* ---------------- ROOMS ---------------- */
 
   getSlotsForRoom(roomId: string): PerformanceSlot[] {
     return this.slots.filter(s => s.roomId === roomId);
-  };
+  }
 
   addRoom() {
     this.state.addRoom(`Room ${this.rooms.length + 1}`);
-  };
-
+  }
 
   isBaseRoom(room: Room): boolean {
     return this.rooms[0]?.id === room.id;
@@ -299,4 +351,11 @@ export class ProgramsPageComponent implements OnInit {
   }
 
   protected readonly PIXELS_PER_MINUTE = PIXELS_PER_MINUTE;
+
+  get previewTemplate(): PerformanceTemplate | undefined {
+    const drag = this.interaction.currentDrag;
+    return drag?.type === 'template'
+      ? drag.template
+      : undefined;
+  }
 }
