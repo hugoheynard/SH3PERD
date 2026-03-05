@@ -26,7 +26,7 @@ import { LayoutService } from '../../../core/services/layout.service';
 import { ProgramSidePanelComponent } from '../program-side-panel/program-side-panel.component';
 import { TimeMarkersComponent } from '../time-markers/time-markers.component';
 
-import { timeToMinutes } from '../utils/timeToMinutes';
+import { time_functions_utils } from '../utils/time_functions_utils';
 import { PIXELS_PER_MINUTE } from '../utils/PROGRAM_CONSTS';
 import {
   mockArtists_external,
@@ -81,66 +81,20 @@ export class ProgramsPageComponent implements OnInit {
     return this.state.slots;
   }
 
-  get programName() {
-    return this.state.program.name;
-  }
-  set programName(value: string) {
-    this.state.setName(value);
-  }
-
   get programStart() {
-    return this.state.program.startTime;
-  }
-  set programStart(value: string) {
-    this.state.setStart(value);
-  }
-
-  get programEnd() {
-    return this.state.program.endTime;
-  }
-  set programEnd(value: string) {
-    this.state.setEnd(value);
+    return this.state.startTime();
   }
 
   /* ---------------- TIME UTILS ---------------- */
 
-  get totalMinutes(): number {
-    const start = timeToMinutes(this.programStart);
-    let end = timeToMinutes(this.programEnd);
-
-    if (end <= start) end += 24 * 60;
-
-    return end - start;
-  }
-
   get timelineHeight(): number {
-    return this.totalMinutes * PIXELS_PER_MINUTE;
+    return this.state.totalMinutes() * PIXELS_PER_MINUTE;
   }
 
   get gridOffsetPx(): number {
-    const startMinutes = timeToMinutes(this.programStart);
+    const startMinutes = time_functions_utils(this.programStart);
     const minuteWithinHour = startMinutes % 60;
     return minuteWithinHour * PIXELS_PER_MINUTE;
-  }
-
-  private minutesToTime(totalMinutes: number): string {
-    totalMinutes = totalMinutes % (24 * 60);
-    const hours = Math.floor(totalMinutes / 60);
-    const mins = totalMinutes % 60;
-    return `${hours}:${mins.toString().padStart(2, '0')}`;
-  }
-
-  getSlotStartTime(slot: PerformanceSlot): string {
-    const programStartMinutes = timeToMinutes(this.programStart);
-    const absolute = programStartMinutes + slot.startMinutes;
-    return this.minutesToTime(absolute);
-  }
-
-  getSlotEndTime(slot: PerformanceSlot): string {
-    const programStartMinutes = timeToMinutes(this.programStart);
-    const absolute =
-      programStartMinutes + slot.startMinutes + slot.duration;
-    return this.minutesToTime(absolute);
   }
 
   /* ---------------- TEMPLATE DRAG ---------------- */
@@ -172,8 +126,7 @@ export class ProgramsPageComponent implements OnInit {
         this.previewTop =
           Math.max(0, snapped * PIXELS_PER_MINUTE);
 
-        this.previewRoomId =
-          layer.nativeElement.dataset['roomId'];
+        this.previewRoomId = layer.nativeElement.dataset['roomId'];
       }
     }
   }
@@ -181,8 +134,14 @@ export class ProgramsPageComponent implements OnInit {
   private handleTemplateDrop() {
 
     const drag = this.interaction.currentDrag;
-    if (drag?.type !== 'template') return;
-    if (!this.previewRoomId) return;
+
+    if (drag?.type !== 'template') {
+      return;
+    }
+
+    if (!this.previewRoomId) {
+      return;
+    }
 
     const startMinutes =
       this.previewTop / PIXELS_PER_MINUTE;
@@ -217,7 +176,7 @@ export class ProgramsPageComponent implements OnInit {
         slotElement.getAttribute('data-slot-id');
 
       this.hoveredSlot =
-        this.slots.find(s => s.id === slotId);
+        this.slots().find(s => s.id === slotId);
     } else {
       this.hoveredSlot = undefined;
     }
@@ -335,15 +294,11 @@ export class ProgramsPageComponent implements OnInit {
   /* ---------------- ROOMS ---------------- */
 
   getSlotsForRoom(roomId: string): PerformanceSlot[] {
-    return this.slots.filter(s => s.roomId === roomId);
-  }
-
-  addRoom() {
-    this.state.addRoom(`Room ${this.rooms.length + 1}`);
+    return this.slots().filter(s => s.roomId === roomId);
   }
 
   isBaseRoom(room: Room): boolean {
-    return this.rooms[0]?.id === room.id;
+    return this.rooms()[0]?.id === room.id;
   }
 
   removeRoom(roomId: string) {

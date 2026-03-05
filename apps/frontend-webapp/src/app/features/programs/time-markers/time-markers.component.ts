@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
-import { timeToMinutes } from '../utils/timeToMinutes';
+import { Component, inject } from '@angular/core';
+import { time_functions_utils } from '../utils/time_functions_utils';
 import { PIXELS_PER_MINUTE } from '../utils/PROGRAM_CONSTS';
+import { ProgramStateService } from '../program-state.service';
 
 @Component({
   selector: 'app-time-markers',
@@ -9,11 +10,12 @@ import { PIXELS_PER_MINUTE } from '../utils/PROGRAM_CONSTS';
   styleUrl: './time-markers.component.scss'
 })
 export class TimeMarkersComponent {
-  @Input({ required: true }) totalMinutes: number = 0;
-  @Input({ required: true }) programStart: string = '00:00';
+  private state = inject(ProgramStateService);
+  totalMinutes = this.state.totalMinutes;
+  programStart = this.state.startTime;
 
   get timeMarkers(): number[] {
-    const steps = Math.ceil(this.totalMinutes / 5);
+    const steps = Math.ceil(this.totalMinutes() / 5);
     return Array.from({ length: steps + 1 }, (_, i) => i * 5);
   }
 
@@ -23,7 +25,7 @@ export class TimeMarkersComponent {
 
   formatTime(offsetMinutes: number): string {
 
-    const start = timeToMinutes(this.programStart);
+    const start = time_functions_utils(this.programStart());
     let absolute = start + offsetMinutes;
 
     absolute = absolute % (24 * 60);
@@ -40,16 +42,7 @@ export class TimeMarkersComponent {
    * @param offsetMinutes
    */
   getPosition(offsetMinutes: number): number {
-    return offsetMinutes * PIXELS_PER_MINUTE - this.gridOffsetPx;
+    return offsetMinutes * PIXELS_PER_MINUTE;
   };
 
-  /**
-   * Calculate the pixel offset for the grid based on the program's start time.
-   * This ensures that the time markers align correctly with the actual times.
-   */
-  get gridOffsetPx(): number {
-    const startMinutes = timeToMinutes(this.programStart);
-    const minuteWithinHour = startMinutes % 60;
-    return minuteWithinHour * PIXELS_PER_MINUTE;
-  }
 }

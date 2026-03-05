@@ -3,8 +3,8 @@
     <input
       class="title-input"
       type="text"
-      [(ngModel)]="programName"
-      (ngModelChange)="programNameChange.emit($event)"
+      [ngModel]="state.name()"
+      (ngModelChange)="state.changeProgramName($event)"
     />
   </div>
 
@@ -13,8 +13,8 @@
       <span class="label-text">Start</span>
       <input
         type="time"
-        [(ngModel)]="programStart"
-        (ngModelChange)="programStartChange.emit($event)"
+        [ngModel]="state.startTime()"
+        (ngModelChange)="state.changeStartTime($event)"
       />
     </label>
 
@@ -24,8 +24,8 @@
       <span class="label-text">End</span>
       <input
         type="time"
-        [(ngModel)]="programEnd"
-        (ngModelChange)="programEndChange.emit($event)"
+        [ngModel]="state.endTime()"
+        (ngModelChange)="state.changeEndTime($event)"
       />
     </label>
   </div>
@@ -42,7 +42,7 @@
 
     <button
       class="icon-btn"
-      (click)="addRoom.emit()"
+      (click)="state.addRoom()"
       aria-label="Add room">
       ＋
     </button>
@@ -54,18 +54,18 @@
 
       <div
         class="mode-indicator"
-        [class.assisted]="mode === 'assisted'">
+        [class.assisted]="state.mode() === 'assisted'">
       </div>
 
       <button
-        (click)="setMode('manual')"
-        [class.active]="mode === 'manual'">
+        (click)="state.changeProgramMode('manual')"
+        [class.active]="state.mode() === 'manual'">
         Manual
       </button>
 
       <button
-        (click)="setMode('assisted')"
-        [class.active]="mode === 'assisted'">
+        (click)="state.changeProgramMode('assisted')"
+        [class.active]="state.mode() === 'assisted'">
         Assisted
       </button>
 

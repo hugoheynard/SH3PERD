@@ -3,19 +3,42 @@
 <div class="slot-content">
   <div class="slot-top">
     <div class="slot-title">{{ slot.type }}</div>
-    <div class="artist-container">
-      @for (artist of slot.artists; track artist.id) {
-        <app-artist-chip [artist]="artist"/>
-      }
-    </div>
+    <!-- Artistes en haut si compact -->
+    @if (isCompact) {
+      <div class="artist-container compact">
+        @for (artist of slot.artists; track artist.id) {
+          <app-artist-chip
+            [artist]="artist"
+            (remove)="removeArtist($event)">
+          </app-artist-chip>
+        }
+      </div>
+    }
     <div class="slot-time">{{ startTime }} - {{ endTime }}</div>
+
+    <button
+      class="expand-btn"
+      (pointerdown)="toggleExpanded($event)">
+      +
+    </button>
   </div>
 
   <div class="slot-bottom">
     <ng-content></ng-content>
-    <div class="artists">
-
-    </div>
+    <!-- Artistes en bas si normal -->
+    @if (!isCompact) {
+      <div class="slot-staff">
+        <div class="staff-label">Staff</div>
+        <div class="artist-container">
+          @for (artist of slot.artists; track artist.id) {
+            <app-artist-chip
+              [artist]="artist"
+              (remove)="removeArtist($event)">
+            </app-artist-chip>
+          }
+        </div>
+      </div>
+    }
   </div>
 </div>
 
@@ -24,3 +47,11 @@
   class="resize-handle"
   (pointerdown)="onResizeMouseDown($event)">
 </div>
+
+@if (isExpanded) {
+  <div class="slot-side-info">
+    <div class="info-title">Details</div>
+    <div>Duration: {{ slot.duration }} min</div>
+    <div>Artists: {{ slot.artists.length }}</div>
+  </div>
+}

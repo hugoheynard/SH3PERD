@@ -1,9 +1,4 @@
-<app-program-header
-  [(programName)]="programName"
-  [(programStart)]="programStart"
-  [(programEnd)]="programEnd"
-  (addRoom)="addRoom()"
-/>
+<app-program-header />
 
 <div class="planner">
   <!-- Timeline -->
@@ -11,13 +6,13 @@
     <div class="time-column">
       <div class="time-header"></div>
       <div class="header-separator"></div>
-      <app-time-markers [totalMinutes]=totalMinutes [programStart]=programStart />
+      <app-time-markers  />
     </div>
 
     <!-- ROOMS -->
     <div class="rooms-container">
 
-      @for (room of rooms; track room.id) {
+      @for (room of rooms(); track room.id) {
         <div class="room-column">
           <div class="room-header">
             {{ room.name }}
@@ -38,8 +33,6 @@
             @for (slot of getSlotsForRoom(room.id); track slot.id) {
               <app-performance-slot
                 [slot]="slot"
-                [startTime]="getSlotStartTime(slot)"
-                [endTime]="getSlotEndTime(slot)"
                 (slotPointerDown)="startSlotDrag($event, slot)"
                 (slotResizeStart)="startSlotResize($event, slot)" />
             }

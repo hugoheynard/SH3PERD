@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
+import { minutesToTime, time_functions_utils } from './utils/time_functions_utils';
 
 export interface PerformanceTemplate {
   id: string;
@@ -50,6 +51,32 @@ export class ProgramStateService {
     slots: []
   };
 
+  name = signal(this.defaultProgramName);
+  startTime = signal('12:00');
+  endTime = signal('19:00');
+
+  totalMinutes = computed(() => {
+
+    const start = time_functions_utils(this.startTime());
+    let end = time_functions_utils(this.endTime());
+
+    if (end <= start) {
+      end += 24 * 60;
+    }
+
+    return end - start;
+  });
+
+  slots = signal<PerformanceSlot[]>([]);
+  rooms = signal<Room[]>([
+    { id: 'r1', name: 'Terrasse' },
+    { id: 'r2', name: 'LPC' }
+  ]);
+
+  mode= signal<'manual' | 'assisted'>('manual');
+
+
+  // -------- GETTERS --------
   /** Generates a default program name based on the current date, formatted as "Program DD-MM-YYYY". */
   get defaultProgramName(): string {
     const date = new Date();
@@ -61,69 +88,95 @@ export class ProgramStateService {
     return `Program ${day}-${month}-${year}`;
   }
 
-  // -------- GETTERS --------
-
-  get program() {
-    return this.state;
-  }
-
-  get rooms() {
-    return this.state.rooms;
-  }
-
-  get slots() {
-    return this.state.slots;
-  }
+  /**
+   * Returns the current state of the program, including its name, start and end times, rooms, and performance slots. This getter compiles all relevant information about the program into a single object that can be easily accessed and used throughout the application.
+   */
+  get program(): ProgramState {
+    return {
+      name: this.name(),
+      startTime: this.startTime(),
+      endTime: this.endTime(),
+      rooms: this.rooms(),
+      slots: this.slots(),
+    };
+  };
 
   // -------- MUTATIONS --------
-
-  setName(name: string) {
-    this.state.name = name;
-  }
-
-  setStart(time: string) {
-    this.state.startTime = time;
-  }
-
-  setEnd(time: string) {
-    this.state.endTime = time;
+  changeProgramName(name: string) {
+    this.name.set(name);
   };
 
-  addRoom(name: string) {
-    this.state.rooms.push({
-      id: crypto.randomUUID(),
-      name
-    });
+  changeStartTime(time: string) {
+    this.startTime.set(time);
   };
+
+  changeEndTime(time: string) {
+    this.endTime.set(time);
+  };
+
+  changeProgramMode(newMode: 'manual' | 'assisted') {
+    this.mode.set(newMode);
+  };
+
+  /* ---------------------------------
+  ROOM HANDLING
+ ---------------------------------- */
+  addRoom() {
+
+    const id = crypto.randomUUID();
+
+    this.rooms.update(rooms => [
+      ...rooms,
+      {
+        id,
+        name: 'New Room'
+      }
+    ]);
+  }
 
   /**
    * Removes a room from the program state. If the room being removed is the default room (the first one in the list), it will not be deleted to ensure there is always at least one room available. Additionally, all performance slots associated with the removed room will also be deleted from the state.
    * @param roomId
    */
   removeRoom(roomId: string) {
-    // safe-guard
-    if (this.rooms.length <= 1) {
+
+    const rooms = this.rooms();
+
+    // safeguard
+    if (rooms.length <= 1) {
       return;
     }
 
-    // don't delete the first room, it's the default one and we want to keep it as a fallback
-    if (this.rooms[0].id === roomId) {
+    // ne pas supprimer la première room
+    if (rooms[0].id === roomId) {
       return;
     }
 
-    // delete all slots associated with the room
-    this.state.slots = this.slots.filter(s => s.roomId !== roomId);
+    // 1️⃣ supprimer les slots liés
+    this.slots.update(slots =>
+      slots.filter(s => s.roomId !== roomId)
+    );
 
-    // delete room
-    this.state.rooms = this.rooms.filter(r => r.id !== roomId);
-  };
-
+    // 2️⃣ supprimer la room
+    this.rooms.update(rooms =>
+      rooms.filter(r => r.id !== roomId)
+    );
+  }
 
   /* ---------------------------------
     SLOT HANDLING
    ---------------------------------- */
   addSlot(slot: PerformanceSlot) {
-    this.state.slots.push(slot);
+    this.slots.update(slots => [
+      ...slots,
+      slot
+    ]);
+  };
+
+  removeSlot(id: string) {
+    this.slots.update(slots =>
+      slots.filter(s => s.id !== id)
+    );
   };
 
   updateSlot(slot: PerformanceSlot) {
@@ -133,13 +186,21 @@ export class ProgramStateService {
     }
   };
 
-  removeSlot(id: string) {
-    this.state.slots =
-      this.state.slots.filter(s => s.id !== id);
-  };
-
   getSlotsForRoom(roomId: string) {
     return this.state.slots.filter(s => s.roomId === roomId);
+  };
+
+  getSlotStartTime(slot: PerformanceSlot): string {
+    const programStartMinutes = time_functions_utils(this.startTime());
+    const absolute = programStartMinutes + slot.startMinutes;
+    return minutesToTime(absolute);
+  };
+
+  getSlotEndTime(slot: PerformanceSlot): string {
+    const programStartMinutes = time_functions_utils(this.startTime());
+    const absolute =
+      programStartMinutes + slot.startMinutes + slot.duration;
+    return minutesToTime(absolute);
   };
 
 
@@ -152,19 +213,27 @@ export class ProgramStateService {
    * @param artist
    */
   addArtistToSlot(slotId: string, artist: Artist) {
+    this.slots.update(slots =>
+      slots.map(slot => {
 
-    const slot = this.slots.find(s => s.id === slotId);
+        if (slot.id !== slotId) {
+          return slot;
+        }
 
-    if (!slot) {
-      return;
-    }
+        const exists =
+          slot.artists.some(a => a.id === artist.id);
 
-    const exists = slot.artists.some(a => a.id === artist.id);
+        if (exists) {
+          return slot;
+        }
 
-    if (!exists) {
-      slot.artists = [...slot.artists, artist];
-    }
-  };
+        return {
+          ...slot,
+          artists: [...slot.artists, artist]
+        };
+      })
+    );
+  }
 
   /**
    * Removes an artist from a specific performance slot.
@@ -172,17 +241,22 @@ export class ProgramStateService {
    * from the slot's artists array.
    */
   removeArtistFromSlot(slotId: string, artistId: string): void {
+    this.slots.update(slots =>
+      slots.map(slot => {
 
-    const slot = this.slots.find(s => s.id === slotId);
-    if (!slot) {
-      return;
-    }
+        if (slot.id !== slotId) {
+          return slot;
+        }
 
-    const hasArtist = slot.artists.some(a => a.id === artistId);
-    if (!hasArtist) {
-      return;
-    }
+        if (!slot.artists.some(a => a.id === artistId)) {
+          return slot;
+        }
 
-    slot.artists = slot.artists.filter(a => a.id !== artistId);
-  };
+        return {
+          ...slot,
+          artists: slot.artists.filter(a => a.id !== artistId)
+        };
+      })
+    );
+  }
 }

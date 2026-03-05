@@ -1,10 +1,10 @@
 .chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   position: relative;
-  padding: 4px 10px;
+  padding: 2px 4px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 0.70rem;
   font-weight: 600;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -24,7 +24,7 @@
   border: none;
   color: white;
   font-size: 11px;
-  margin-left: 6px;
+  margin-left: 0.5rem;
   opacity: 0;
   pointer-events: none;
   cursor: pointer;

@@ -138,3 +138,31 @@
   transform: scaleX(1.2);
 }
 
+.artist-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.artist-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.artist-container.compact {
+  margin-top: 4px;
+}
+
+.slot-staff {
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+
+.staff-label {
+  font-size: 10px;
+  opacity: 0.6;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+

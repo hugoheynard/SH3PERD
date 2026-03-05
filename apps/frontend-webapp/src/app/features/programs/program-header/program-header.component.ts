@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, inject, output} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ProgramStateService } from '../program-state.service';
 
 @Component({
   selector: 'app-program-header',
@@ -10,18 +11,10 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './program-header.component.scss'
 })
 export class ProgramHeaderComponent {
-  @Input() programName!: string;
-  @Input() programStart!: string;
-  @Input() programEnd!: string;
+  state = inject(ProgramStateService);
 
-  @Output() programStartChange = new EventEmitter<string>();
-  @Output() programEndChange = new EventEmitter<string>();
-  @Output() programNameChange = new EventEmitter<string>();
-
-  @Output() addRoom = new EventEmitter<void>();
-  @Output() save = new EventEmitter<void>();
-  @Output() exportPdf = new EventEmitter<void>();
-
+  save = output<void>();
+  exportPdf = output<void>();
 
   isSaved = false;
 
@@ -33,16 +26,5 @@ export class ProgramHeaderComponent {
     setTimeout(() => {
       this.isSaved = false;
     }, 2000);
-  }
-
-
-  // Mode can be 'manual' or 'assisted' switching between manual and assisted mode
-  mode: 'manual' | 'assisted' = 'manual';
-
-  @Output() modeChange = new EventEmitter<'manual' | 'assisted'>();
-
-  setMode(newMode: 'manual' | 'assisted') {
-    this.mode = newMode;
-    this.modeChange.emit(newMode);
   }
 }
