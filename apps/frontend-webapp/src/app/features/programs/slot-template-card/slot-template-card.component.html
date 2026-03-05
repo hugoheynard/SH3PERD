@@ -1,0 +1,21 @@
+<div class="template-card"
+     (pointerdown)="dragStart.emit(template())">
+
+  <div class="template-accent"
+       [style.background]="template().color">
+  </div>
+
+  <div class="template-content">
+    <div class="template-title">
+      {{ template().type }}
+    </div>
+
+    <div class="template-meta">
+      {{ template().duration }} min
+    </div>
+  </div>
+
+  <button class="edit-btn">✏</button>
+
+  <div class="drag-icon">⠿</div>
+</div>

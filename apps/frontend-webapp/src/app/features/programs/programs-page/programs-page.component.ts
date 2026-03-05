@@ -156,10 +156,7 @@ export class ProgramsPageComponent implements OnInit {
 
   private handleArtistHover(event: PointerEvent) {
 
-    const element = document.elementFromPoint(
-      event.clientX,
-      event.clientY
-    );
+    const element = document.elementFromPoint(event.clientX, event.clientY);
 
     const slotElement = element?.closest('[data-slot-id]');
 
@@ -175,6 +172,11 @@ export class ProgramsPageComponent implements OnInit {
     this.hover.set(slot ?? null);
   }
 
+  /**
+   * Handles dropping an artist onto a performance slot.
+   * If the current drag session is of type 'artist' and there is a hovered slot, adds the artist to that slot.
+   * @private
+   */
   private handleArtistDrop() {
 
     const drag = this.drag.current();
@@ -189,10 +191,7 @@ export class ProgramsPageComponent implements OnInit {
       return;
     }
 
-    this.state.addArtistToSlot(
-      hoveredSlot.id,
-      drag.artist
-    );
+    this.state.addArtistToSlot(hoveredSlot.id, drag.artist);
   }
 
   /* ---------------- SLOT DRAG / RESIZE ---------------- */
@@ -228,15 +227,13 @@ export class ProgramsPageComponent implements OnInit {
 
     for (const layer of this.roomLayers.toArray()) {
 
-      const rect =
-        layer.nativeElement.getBoundingClientRect();
+      const rect = layer.nativeElement.getBoundingClientRect();
 
       if (
         event.clientX >= rect.left &&
         event.clientX <= rect.right
       ) {
-        const newRoomId =
-          layer.nativeElement.dataset['roomId'];
+        const newRoomId = layer.nativeElement.dataset['roomId'];
 
         if (
           newRoomId &&
@@ -303,6 +300,10 @@ export class ProgramsPageComponent implements OnInit {
 
   /* ---------------- ROOMS ---------------- */
 
+  /**
+   * Returns an array of performance slots that are scheduled in a specific room, identified by the provided roomId.
+   * @param roomId
+   */
   getSlotsForRoom(roomId: string): PerformanceSlot[] {
     return this.slots().filter(s => s.roomId === roomId);
   }

@@ -1,3 +1,13 @@
+:host {
+  --panel-bg: #111318;
+  --panel-surface: #171a21;
+  --panel-border: rgba(255,255,255,0.06);
+  --panel-hover: #1f232c;
+  --text-primary: #f5f7fa;
+  --text-secondary: #9aa3b2;
+  --accent: #6c63ff;
+}
+
 /* ---------------- LIBRARY ---------------- */
 
 .library {
@@ -34,11 +44,37 @@
   background: #ddd;
 }
 
-.section-header {
-  font-size: 11px;
+
+
+.panel-header {
+  font-size: 14px;
   font-weight: 600;
+  letter-spacing: 0.4px;
+  opacity: 0.7;
+  color: var(--text-secondary);
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: #9ca3af;
-  margin-bottom: 16px;
+  letter-spacing: 0.8px;
+  color: var(--text-secondary);
+}
+
+.section-action {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 12px;
+  cursor: pointer;
 }

@@ -1,20 +1,21 @@
-<!-- Template Library -->
+<div class="panel-header">
+  Program Tools
+</div>
+
+<!-- Templates -->
 <div class="panel-section">
   <div class="section-header">
-    <span>Templates</span>
+    <span>Slot Templates</span>
+    <button class="section-action" (click)="openCreateTemplate()">+ New</button>
   </div>
 
-  <div class="section-content">
-    <!-- templates -->
+  <div class="template-list">
     @for (template of config.templates; track template.id) {
-      <div
-        class="template-item"
-        (mousedown)="config.onTemplateDragStart(template)">
-        {{ template.name }} ({{ template.duration }}m)
-      </div>
+      <app-slot-template-card [template]="template" (pointerdown)="onTemplateDrag(template)" />
     }
   </div>
 </div>
+
 
 <div class="panel-section">
   <div class="section-header">
