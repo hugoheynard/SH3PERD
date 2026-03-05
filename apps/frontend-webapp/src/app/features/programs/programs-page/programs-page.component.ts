@@ -15,12 +15,12 @@ import type {
   PerformanceSlot,
   PerformanceTemplate,
   Room
-} from '../program-state.service';
-import { ProgramStateService } from '../program-state.service';
+} from '../services/program-state.service';
+import { ProgramStateService } from '../services/program-state.service';
 
 import {
   TimelineInteractionService
-} from '../timeline-interaction.service';
+} from '../services/timeline-interaction.service';
 
 import { LayoutService } from '../../../core/services/layout.service';
 import { ProgramSidePanelComponent } from '../program-side-panel/program-side-panel.component';
@@ -32,6 +32,8 @@ import {
   mockArtists_external,
   mockPerformanceSlotsTemplates
 } from '../utils/mockDATAS';
+import { DragSessionService } from '../services/drag-session.service';
+import { SlotHoverService } from '../services/slot-hover.service';
 
 @Component({
   selector: 'app-programs-page',
@@ -46,20 +48,20 @@ import {
 export class ProgramsPageComponent implements OnInit {
 
   private state = inject(ProgramStateService);
+  private drag = inject(DragSessionService);
   private interaction = inject(TimelineInteractionService);
+  private hover = inject(SlotHoverService);
+
   private layout = inject(LayoutService);
 
   previewTop = 0;
   previewRoomId?: string;
-  hoveredSlot?: PerformanceSlot;
 
   readonly SNAP_MINUTES = 5;
 
-  @ViewChildren('roomLayer')
-  roomLayers!: QueryList<ElementRef<HTMLDivElement>>;
+  @ViewChildren('roomLayer') roomLayers!: QueryList<ElementRef<HTMLDivElement>>;
 
   /* ---------------- LIFECYCLE ---------------- */
-
   ngOnInit() {
     this.layout.setRightPanel(ProgramSidePanelComponent, {
       templates: mockPerformanceSlotsTemplates,
@@ -71,41 +73,31 @@ export class ProgramsPageComponent implements OnInit {
     });
   }
 
-  /* ---------------- STATE GETTERS ---------------- */
-
-  get rooms() {
-    return this.state.rooms;
-  }
-
-  get slots() {
-    return this.state.slots;
-  }
-
-  get programStart() {
-    return this.state.startTime();
-  }
+  /* ---------------- STATE SIGNALS ---------------- */
+  rooms = this.state.rooms;
+  slots = this.state.slots;
 
   /* ---------------- TIME UTILS ---------------- */
-
   get timelineHeight(): number {
     return this.state.totalMinutes() * PIXELS_PER_MINUTE;
   }
 
   get gridOffsetPx(): number {
-    const startMinutes = time_functions_utils(this.programStart);
+    const startMinutes = time_functions_utils(this.state.startTime());
     const minuteWithinHour = startMinutes % 60;
     return minuteWithinHour * PIXELS_PER_MINUTE;
   }
 
   /* ---------------- TEMPLATE DRAG ---------------- */
-
   startTemplateDrag(template: PerformanceTemplate) {
-    this.interaction.currentDrag = { type: 'template', template };
-  }
+    this.drag.start({ type: 'template', template });
+  };
 
   private handleTemplateMove(event: PointerEvent) {
 
-    if (!this.roomLayers) return;
+    if (!this.roomLayers) {
+      return;
+    }
 
     for (const layer of this.roomLayers.toArray()) {
 
@@ -133,7 +125,7 @@ export class ProgramsPageComponent implements OnInit {
 
   private handleTemplateDrop() {
 
-    const drag = this.interaction.currentDrag;
+    const drag = this.drag.current();
 
     if (drag?.type !== 'template') {
       return;
@@ -158,38 +150,47 @@ export class ProgramsPageComponent implements OnInit {
   }
 
   /* ---------------- ARTIST DRAG ---------------- */
-
   startArtistDrag(artist: Artist) {
-    this.interaction.currentDrag = { type: 'artist', artist };
+    this.drag.start({ type: 'artist', artist });
   }
 
   private handleArtistHover(event: PointerEvent) {
 
-    const element =
-      document.elementFromPoint(event.clientX, event.clientY);
+    const element = document.elementFromPoint(
+      event.clientX,
+      event.clientY
+    );
 
-    const slotElement =
-      element?.closest('[data-slot-id]');
+    const slotElement = element?.closest('[data-slot-id]');
 
-    if (slotElement) {
-      const slotId =
-        slotElement.getAttribute('data-slot-id');
-
-      this.hoveredSlot =
-        this.slots().find(s => s.id === slotId);
-    } else {
-      this.hoveredSlot = undefined;
+    if (!slotElement) {
+      this.hover.clear();
+      return;
     }
+
+    const slotId = slotElement.getAttribute('data-slot-id');
+
+    const slot = this.slots().find(s => s.id === slotId);
+
+    this.hover.set(slot ?? null);
   }
 
   private handleArtistDrop() {
 
-    const drag = this.interaction.currentDrag;
-    if (drag?.type !== 'artist') return;
-    if (!this.hoveredSlot) return;
+    const drag = this.drag.current();
+
+    if (drag?.type !== 'artist') {
+      return;
+    }
+
+    const hoveredSlot = this.hover.hovered();
+
+    if (!hoveredSlot) {
+      return;
+    }
 
     this.state.addArtistToSlot(
-      this.hoveredSlot.id,
+      hoveredSlot.id,
       drag.artist
     );
   }
@@ -219,8 +220,11 @@ export class ProgramsPageComponent implements OnInit {
 
   private handleRoomChange(event: PointerEvent) {
 
-    const drag = this.interaction.currentDrag;
-    if (drag?.type !== 'slot') return;
+    const drag = this.drag.current();
+
+    if (drag?.type !== 'slot') {
+      return;
+    }
 
     for (const layer of this.roomLayers.toArray()) {
 
@@ -249,8 +253,11 @@ export class ProgramsPageComponent implements OnInit {
   @HostListener('document:pointermove', ['$event'])
   onPointerMove(event: PointerEvent) {
 
-    const drag = this.interaction.currentDrag;
-    if (!drag) return;
+    const drag = this.drag.current();
+
+    if (!drag) {
+      return;
+    }
 
     switch (drag.type) {
 
@@ -273,8 +280,11 @@ export class ProgramsPageComponent implements OnInit {
   @HostListener('document:pointerup')
   onPointerUp() {
 
-    const drag = this.interaction.currentDrag;
-    if (!drag) return;
+    const drag = this.drag.current();
+
+    if (!drag) {
+      return;
+    }
 
     switch (drag.type) {
       case 'template':
@@ -286,8 +296,8 @@ export class ProgramsPageComponent implements OnInit {
     }
 
     this.previewRoomId = undefined;
-    this.hoveredSlot = undefined;
 
+    this.hover.clear();
     this.interaction.stop();
   }
 
@@ -308,7 +318,8 @@ export class ProgramsPageComponent implements OnInit {
   protected readonly PIXELS_PER_MINUTE = PIXELS_PER_MINUTE;
 
   get previewTemplate(): PerformanceTemplate | undefined {
-    const drag = this.interaction.currentDrag;
+    const drag = this.drag.current();
+
     return drag?.type === 'template'
       ? drag.template
       : undefined;

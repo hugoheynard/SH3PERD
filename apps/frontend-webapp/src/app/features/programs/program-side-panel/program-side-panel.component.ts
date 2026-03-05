@@ -1,6 +1,6 @@
 import { Component, Inject} from '@angular/core';
 import { PANEL_DATA } from '../../../core/main-layout/main-layout.component';
-import type { Artist, PerformanceTemplate } from '../program-state.service';
+import type { Artist, PerformanceTemplate } from '../services/program-state.service';
 
 export interface ProgramSidePanelConfig {
   templates: PerformanceTemplate[];

@@ -1,14 +1,13 @@
-import { Injectable } from '@angular/core';
-import type {
-  Artist,
-  PerformanceSlot,
-  PerformanceTemplate
-} from './program-state.service';
+import { inject, Injectable } from '@angular/core';
+import type { PerformanceSlot } from './program-state.service';
+import { PointerTrackerService } from './pointer-tracker.service';
+import { DragSessionService, type DragState } from './drag-session.service';
 
 @Injectable({ providedIn: 'root' })
 export class TimelineInteractionService {
+  private pointer = inject(PointerTrackerService);
+  private drag = inject(DragSessionService);
 
-  private activePointerId?: number;
   currentDrag?: DragState;
 
   private dragStartY = 0;
@@ -23,14 +22,21 @@ export class TimelineInteractionService {
   /* ------------------ SLOT DRAG ------------------ */
 
   startSlotDrag(event: PointerEvent, slot: PerformanceSlot) {
+    if (this.drag.isDragging()) {
+      return;
+    }
+
     event.preventDefault();
     event.stopPropagation();
 
-    // Capture du pointer pour garder le contrôle même hors élément
+    this.pointer.start(event);
+
+    // keep to keep tracking the pointer even if it goes outside the slot element
     (event.target as HTMLElement)?.setPointerCapture(event.pointerId);
 
-    this.activePointerId = event.pointerId;
-    this.currentDrag = { type: 'slot', slot };
+    //this.activePointerId = event.pointerId;
+    //this.currentDrag = { type: 'slot', slot };
+    this.drag.start({ type: 'slot', slot });
 
     this.dragStartY = event.clientY;
     this.originalStartMinutes = slot.startMinutes;
@@ -39,13 +45,18 @@ export class TimelineInteractionService {
   /* ------------------ SLOT RESIZE ------------------ */
 
   startSlotResize(event: PointerEvent, slot: PerformanceSlot) {
+    if (this.drag.isDragging()) {
+      return;
+    }
+
     event.preventDefault();
     event.stopPropagation();
 
+    this.pointer.start(event);
+
     (event.target as HTMLElement)?.setPointerCapture(event.pointerId);
 
-    this.activePointerId = event.pointerId;
-    this.currentDrag = { type: 'resize', slot };
+    this.drag.start({ type: 'resize', slot });
 
     this.resizeStartY = event.clientY;
     this.originalDuration = slot.duration;
@@ -55,21 +66,19 @@ export class TimelineInteractionService {
 
   handlePointerMove(event: PointerEvent) {
 
-    if (!this.currentDrag) return;
-
-    // On vérifie le pointerId uniquement pour slot/resize
-    if (
-      (this.currentDrag.type === 'slot' ||
-        this.currentDrag.type === 'resize') &&
-      event.pointerId !== this.activePointerId
-    ) {
+    if (!this.pointer.isActivePointer(event)) {
       return;
     }
 
-    switch (this.currentDrag.type) {
+    const drag = this.drag.current();
+    if (!drag) {
+      return;
+    }
+
+    switch (drag.type) {
 
       case 'slot': {
-        const slot = this.currentDrag.slot;
+        const slot = drag.slot;
 
         const deltaY = event.clientY - this.dragStartY;
         const deltaMinutes = deltaY / this.PIXELS_PER_MINUTE;
@@ -85,7 +94,7 @@ export class TimelineInteractionService {
       }
 
       case 'resize': {
-        const slot = this.currentDrag.slot;
+        const slot = drag.slot;
 
         const deltaY = event.clientY - this.resizeStartY;
         const deltaMinutes = deltaY / this.PIXELS_PER_MINUTE;
@@ -108,17 +117,7 @@ export class TimelineInteractionService {
   /* ------------------ STOP ------------------ */
 
   stop() {
-    this.currentDrag = undefined;
-    this.activePointerId = undefined;
+    this.drag.stop();
+    this.pointer.stop();
   }
 }
-
-/* ---------------------------------------------------
-   DRAG STATE TYPE
---------------------------------------------------- */
-
-export type DragState =
-  | { type: 'template'; template: PerformanceTemplate }
-  | { type: 'artist'; artist: Artist }
-  | { type: 'slot'; slot: PerformanceSlot }
-  | { type: 'resize'; slot: PerformanceSlot };

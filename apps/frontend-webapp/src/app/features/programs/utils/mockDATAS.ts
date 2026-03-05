@@ -1,4 +1,4 @@
-import type { PerformanceTemplate } from '../program-state.service';
+import type { PerformanceTemplate } from '../services/program-state.service';
 
 export const mockPerformanceSlotsTemplates: PerformanceTemplate[] = [
   { id: 't1', name: 'PBO', duration: 15, type: 'PBO', color: '#d066ed',  },

@@ -1,6 +1,6 @@
 import { Component, inject, output} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ProgramStateService } from '../program-state.service';
+import { ProgramStateService } from '../services/program-state.service';
 
 @Component({
   selector: 'app-program-header',

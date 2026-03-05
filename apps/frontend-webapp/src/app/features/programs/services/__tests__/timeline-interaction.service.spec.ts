@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { TimelineInteractionService } from './timeline-interaction.service';
+import { TimelineInteractionService } from '../timeline-interaction.service';
 
 describe('TimelineInteractionService', () => {
   let service: TimelineInteractionService;

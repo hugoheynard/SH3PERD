@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { time_functions_utils } from '../utils/time_functions_utils';
 import { PIXELS_PER_MINUTE } from '../utils/PROGRAM_CONSTS';
-import { ProgramStateService } from '../program-state.service';
+import { ProgramStateService } from '../services/program-state.service';
 
 @Component({
   selector: 'app-time-markers',

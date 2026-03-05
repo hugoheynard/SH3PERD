@@ -1,5 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { minutesToTime, time_functions_utils } from './utils/time_functions_utils';
+import { minutesToTime, time_functions_utils } from '../utils/time_functions_utils';
 
 export interface PerformanceTemplate {
   id: string;

@@ -1,7 +1,8 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { type PerformanceSlot, ProgramStateService } from '../program-state.service';
+import { type PerformanceSlot, ProgramStateService } from '../services/program-state.service';
 import { PIXELS_PER_MINUTE, SNAP_MINUTES } from '../utils/PROGRAM_CONSTS';
 import { ArtistChipComponent } from '../artist-chip/artist-chip.component';
+import { SlotHoverService } from '../services/slot-hover.service';
 
 @Component({
   selector: 'app-performance-slot',
@@ -12,7 +13,7 @@ import { ArtistChipComponent } from '../artist-chip/artist-chip.component';
   styleUrl: './performance-slot.component.scss',
   host: {
     '[attr.data-slot-id]': "slot.id",
-    '[class.hover-artist]':"hoverArtist",
+    '[class.hover-artist]':"isHovered",
     '[class.expanded]': 'isExpanded',
     '[style.top.px]': 'top',
     '[style.height.px]': 'height',
@@ -23,9 +24,13 @@ import { ArtistChipComponent } from '../artist-chip/artist-chip.component';
 })
 export class PerformanceSlotComponent {
   private state = inject(ProgramStateService);
+  private hover = inject(SlotHoverService);
+
+  get isHovered(): boolean {
+    return this.hover.hovered()?.id === this.slot.id;
+  }
 
   @Input({ required: true }) slot!: PerformanceSlot;
-  @Input() hoverArtist = false;
   @Output() slotPointerDown = new EventEmitter<PointerEvent>();
 
   isExpanded = false;
