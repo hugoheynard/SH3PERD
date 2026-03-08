@@ -1,58 +1,48 @@
-:host {
-  --panel-bg: #111318;
-  --panel-surface: #171a21;
+/*:host {
+  --panel-bg: #101318;
+  --panel-surface:  #242a33;
+  --panel-surface-2: #1c2029;
   --panel-border: rgba(255,255,255,0.06);
-  --panel-hover: #1f232c;
-  --text-primary: #f5f7fa;
-  --text-secondary: #9aa3b2;
-  --accent: #6c63ff;
-}
+  --panel-hover: #1d222b;
+}*/
 
-/* ---------------- LIBRARY ---------------- */
+/* ---------------- PANEL BASE ---------------- */
 
 .library {
   width: 100%;
-  padding: 16px;
-  border-left: 1px solid #ddd;
+  height: 100%;
+  padding: 20px;
+  border-left: 1px solid var(--panel-border-color);
+  box-shadow: -6px 0 20px rgba(0,0,0,0.4);
   overflow-y: auto;
   user-select: none;
 }
 
-.template-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-
-  padding: 12px 14px;
-  margin-bottom: 12px;
-
-  border-radius: 10px;
-  background: #ffffff;
-  border: 1px solid #f1f3f5;
-
-  cursor: grab;
-  transition: all 0.15s ease;
+/* subtle scrollbar */
+.library::-webkit-scrollbar {
+  width: 8px;
 }
 
-.template-item:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+.library::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 8px;
 }
 
-.template-item:active {
-  cursor: grabbing;
-  background: #ddd;
-}
-
-
+/* ---------------- HEADER ---------------- */
 
 .panel-header {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.4px;
-  opacity: 0.7;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
   color: var(--text-secondary);
+  opacity: 0.8;
+
+  margin-bottom: 24px;
 }
+
+/* ---------------- SECTION ---------------- */
 
 .panel-section {
   display: flex;
@@ -60,21 +50,153 @@
   gap: 16px;
 }
 
+/* ---------------- SECTION HEADER ---------------- */
+
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  font-size: 12px;
+  margin-top: 28px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+
+  border-bottom: 1px solid var(--panel-border-color);
+
+
+  transition: all 0.15s ease;
+}
+
+.section-header:hover {
+  border-bottom-color: rgba(255,255,255,0.12);
+}
+
+/* Left part (chevron + title) */
+
+.section-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* Chevron */
+
+.chevron {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+}
+
+.chevron.collapsed {
+  transform: rotate(-90deg);
+}
+
+/* Title */
+
+.section-title {
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+
   color: var(--text-secondary);
 }
 
-.section-action {
+/* Count */
+
+.section-count {
+  margin-left: 6px;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+/* ---------------- SECTION ACTIONS ---------------- */
+
+.section-action,
+.section-add {
   background: none;
   border: none;
-  color: var(--accent);
-  font-size: 12px;
+  font-size: var(--text-sm);
+  color: var(--accent-color);
   cursor: pointer;
+
+  padding: 4px 6px;
+  border-radius: 6px;
+
+  transition: all 0.15s ease;
+}
+
+.section-action:hover,
+.section-add:hover {
+  background: rgba(108,99,255,0.12);
+}
+
+/* ---------------- TEMPLATE LIST ---------------- */
+
+.template-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  overflow: hidden;
+  max-height: 2000px;
+  transition:
+    max-height 0.25s ease,
+    opacity 0.2s ease;
+}
+
+/* ---------------- ARTIST GRID ---------------- */
+
+.artist-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+
+
+  overflow: hidden;
+  max-height: 2000px;
+  transition:
+    max-height 0.25s ease,
+    opacity 0.2s ease;
+}
+
+/* ---------------- COLLAPSED STATE ---------------- */
+
+.template-list.collapsed,
+.artist-grid.collapsed {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------------- CARD BASE (for template items if needed) ---------------- */
+
+.template-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  padding: 14px;
+  border-radius: var(--radius-md);
+
+  border: 1px solid var(--panel-border-color);
+
+  cursor: grab;
+  transition: all 0.15s ease;
+}
+
+.template-item:hover {
+  background: var(--panel-hover);
+  transform: translateY(-2px);
+}
+
+.template-item:active {
+  cursor: grabbing;
+}
+
+/* ---------------- SUBTLE DEPTH ---------------- */
+
+.panel-section + .panel-section {
+  margin-top: 12px;
 }

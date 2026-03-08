@@ -1,0 +1,32 @@
+<div class="workload-container">
+
+  <div class="workload-meta">
+    <span class="work-time">{{ totalWorkedMinutes() }} min</span>
+    <span class="load-score">{{ globalScore() }}</span>
+  </div>
+
+  <div class="workload-strip">
+
+    <!-- Gaps -->
+    @for (gap of gaps(); track $index) {
+      <div
+        class="workload-gap"
+        [style.left.%]="gap.left"
+        [style.width.%]="gap.width">
+      </div>
+    }
+
+    <!-- Segments -->
+    @for (segment of normalizedSegments(); track $index) {
+      <div
+        class="workload-segment"
+        [style.left.%]="segment.left"
+        [style.width.%]="segment.width"
+        [style.background]="segment.color"
+        [style.opacity]="segment.opacity">
+      </div>
+    }
+
+  </div>
+
+</div>

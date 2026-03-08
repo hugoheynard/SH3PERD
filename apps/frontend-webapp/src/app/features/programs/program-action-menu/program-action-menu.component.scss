@@ -1,0 +1,212 @@
+/* ---------------- PROGRAM ACTIONS ---------------- */
+
+.program-actions {
+  position: sticky;
+  top: 12px;
+  z-index: 60;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  opacity: 0;
+  transform: translateY(-6px);
+
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.program-actions.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.program-actions,
+.program-actions * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+
+/* ---------------- ACTION BAR ---------------- */
+
+.action-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 6px 8px;
+
+  border-radius: var(--radius-lg);
+
+  background: var(--floating-panel-color);
+
+  border: 1px solid var(--panel-border-color);
+
+  backdrop-filter: blur(8px);
+
+  box-shadow:
+    0 12px 28px rgba(0,0,0,0.35);
+
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+
+.action-bar:hover {
+  box-shadow:
+    0 16px 32px rgba(0,0,0,0.45);
+
+  transform: translateY(-1px);
+}
+
+
+/* ---------------- ICON BUTTONS ---------------- */
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: transparent;
+
+  border-radius: var(--radius-round);
+
+  font-size: 15px;
+  font-weight: 600;
+
+  color: var(--text-secondary);
+
+  cursor: pointer;
+
+  transition:
+    background .18s ease,
+    transform .18s ease,
+    color .18s ease;
+}
+
+.icon-btn:hover {
+  background: var(--hover-color);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+
+/* ---------------- PRIMARY BUTTON ---------------- */
+
+.icon-btn.primary {
+  background: var(--accent-color);
+  color: white;
+}
+
+.icon-btn.primary:hover {
+  transform: translateY(-1px) scale(1.05);
+}
+
+
+/* ---------------- PDF BUTTON ---------------- */
+
+.icon-btn.pdf {
+  width: 30px;
+  height: 30px;
+}
+
+.icon-btn.pdf:hover {
+  color: var(--accent-color);
+}
+
+
+/* ---------------- DIVIDER ---------------- */
+
+.divider {
+  width: 1px;
+  height: 16px;
+  background: var(--panel-border-color);
+}
+
+
+/* ---------------- MODE SWITCH ---------------- */
+
+.mode-switch {
+  position: relative;
+  display: flex;
+
+  width: 160px;
+
+  background: var(--hover-color);
+
+  border-radius: 999px;
+
+  padding: 3px;
+}
+
+.mode-indicator {
+  position: absolute;
+
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+
+  width: calc(50% - 3px);
+
+  background: var(--accent-color);
+
+  border-radius: 999px;
+
+  transition: transform .28s cubic-bezier(.4,0,.2,1);
+}
+
+.mode-indicator.assisted {
+  transform: translateX(100%);
+}
+
+.mode-switch button {
+  flex: 1;
+  z-index: 2;
+
+  border: none;
+  background: transparent;
+
+  padding: 5px 0;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  color: var(--text-secondary);
+
+  transition: color .2s ease;
+}
+
+.mode-switch button.active {
+  color: white;
+}
+
+
+/* ---------------- SAVED LABEL ---------------- */
+
+.saved-label {
+  margin-top: 6px;
+
+  font-size: 11px;
+
+  color: var(--accent-color);
+
+  opacity: 0;
+
+  animation: fadeSaved .25s ease forwards;
+}
+
+@keyframes fadeSaved {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

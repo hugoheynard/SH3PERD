@@ -16,7 +16,8 @@ export interface PerformanceSlot {
   type: string;
   color: string;
   roomId: string;
-  artists: Artist[]
+  artists: Artist[];
+  loadScore?: number;
 }
 
 export interface Room {

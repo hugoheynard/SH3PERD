@@ -1,0 +1,54 @@
+:root {
+
+  /* Colors */
+  --content-page-bg-color: #282e39;
+  --header-color: #1b2028;
+  --panel-color: #171c23;
+  --panel-border-color: rgba(255,255,255,0.06);
+  --sidebar-color: #141821;
+
+  --card-color: #2c323d;
+  --hover-color: #2f3541;
+
+  --accent-color: #06a4a4;
+
+  --color-warning: rgb(197, 153, 38);
+  --color-alert: rgb(182, 49, 49);
+
+  --text-primary: #f5f7fa;
+  --text-secondary: #9aa3b2;
+  --text-faded: #7d8080;
+
+
+  /* rounded corners */
+  --radius-sm: 4px;
+  --radius-md: 14px;
+  --radius-lg: 30px;
+  --radius-round: 50%;
+
+  /* fonts */
+  --text-sm: 0.75rem;
+  --text-md: 0.875rem;
+  --text-lg: 1rem;
+
+  /* layout*/
+  --w-appMenu: 3.5rem;
+  --h-header: 64px;
+  --sidePanel-w: 30%;
+
+  /*FLOATING MENUS*/
+
+  --floating-panel-color: #222832;
+  --floating-border-color: rgba(255,255,255,0.08);
+  --shadow-floating: 0 12px 28px rgba(0,0,0,0.35);
+  --shadow-floating-hover: 0 16px 32px rgba(0,0,0,0.45);
+  --icon-color: var(--text-secondary);
+  --icon-hover-bg: rgba(255,255,255,0.06);
+
+
+  /* program layer */
+  --5min-line: rgba(255, 255, 255, 0.02); /* light rgba(0,0,0,0.03);*/
+  --15min-line: rgba(255, 255, 255, 0.05); /* light rgba(0,0,0,0.08); */
+  --60min-line: rgba(255, 255, 255, 0.1);
+  --col-separator: rgba(255, 255, 255, 0.2); /* light rgba(0,0,0,0.06); */
+}

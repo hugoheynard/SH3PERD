@@ -1,0 +1,50 @@
+.workload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.workload-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.work-time {
+  color: var(--text-secondary);
+}
+
+.load-score {
+  font-weight: 600;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+}
+
+/* Timeline */
+
+.workload-strip {
+  position: relative;
+  height: 8px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  overflow: hidden;
+}
+
+/* Gaps */
+
+.workload-gap {
+  position: absolute;
+  height: 100%;
+  background: rgba(255,255,255,0.08);
+}
+
+/* Segments */
+
+.workload-segment {
+  position: absolute;
+  height: 100%;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}

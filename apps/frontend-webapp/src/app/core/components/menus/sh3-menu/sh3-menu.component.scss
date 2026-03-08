@@ -5,7 +5,8 @@
 :host {
   height: 100%;
   width: 100%;
-  background-color: var(--colorPrimaryMenus);
+  backdrop-filter: blur(6px);
+  background: #14161a;
   @include sh3.radiusAndShadow
 }
 

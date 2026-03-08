@@ -5,7 +5,7 @@
 
 .planner {
   display: flex;
-  background: #f5f6f8;
+  background: transparent;
   height: 100%;
   font-family: Inter, system-ui, sans-serif;
 }
@@ -23,8 +23,8 @@
   min-width: 80px;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid #e8eaee;
-  background: #ffffff;
+  border-right: 1px solid var(--col-separator);
+  background: var(--content-page-bg-color);
   z-index: 2;
 }
 
@@ -32,7 +32,7 @@
   height: 40px;
   min-height: 40px;
   border-bottom: 1px solid #eee;
-  background: #fff;
+  background: var(--content-page-bg-color);
 }
 
 
@@ -52,8 +52,13 @@
   display: flex;
   flex-direction: column;
 
-  background: #ffffff;
-  border-right: 1px solid #e8eaee;
+  background: linear-gradient(
+      to bottom,
+      var(--content-page-bg-color),
+      color-mix(in srgb, var(--content-page-bg-color) 92%, black)
+  );
+  border-right: 1px solid var(--col-separator);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
 }
 
 /* header room */
@@ -68,7 +73,7 @@
   letter-spacing: 0.3px;
 
   border-bottom: 1px solid #eceff3;
-  background: #fbfcfd;
+  background: var(--content-page-bg-color);
 
   position: sticky;
   top: 0;
@@ -99,7 +104,7 @@
 }
 
 .room-delete:hover {
-  background: #f3f4f6;
+  background: var(--text-secondary);
   color: #ef4444;
 }
 
@@ -110,10 +115,10 @@
   min-height: 12px;
   background: linear-gradient(
       to bottom,
-      #ffffff,
-      #f4f6f9
+      var(--content-page-bg-color),
+      var(--content-page-bg-color)
   );
-  border-bottom: 1px solid #e8eaee;
+  //border-bottom: 1px solid #e8eaee;
 }
 
 
@@ -127,8 +132,8 @@
     /* 5 min */
     repeating-linear-gradient(
         to bottom,
-        rgba(0,0,0,0.03) 0px,
-        rgba(0,0,0,0.03) 1px,
+        var(--5min-line) 0px,
+        var(--5min-line) 1px,
         transparent 1px,
         transparent 25px
     ),
@@ -136,8 +141,8 @@
       /* 15 minutes - medium */
     repeating-linear-gradient(
         to bottom,
-        rgba(0,0,0,0.08) 0px,
-        rgba(0,0,0,0.08) 1px,
+        var(--15min-line) 0px,
+        var(--15min-line) 1px,
         transparent 1px,
         transparent 75px
     ),
@@ -145,8 +150,8 @@
       /* 60 min */
     repeating-linear-gradient(
         to bottom,
-        rgba(0,0,0,0.08) 0px,
-        rgba(0,0,0,0.08) 2px,
+        var(--60min-line) 0px,
+        var(--60min-line) 2px,
         transparent 2px,
         transparent 300px
     );

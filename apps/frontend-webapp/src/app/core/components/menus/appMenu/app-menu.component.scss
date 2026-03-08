@@ -1,16 +1,12 @@
-@use "tokens" as t;
-
 :host {
   display: flex;
   flex-direction: column;
-  width: t.$main-menus-width;
+  width: var(--w-appMenu);
   height: 100%;
-  color: var(--baseTextColor);
-  background-color: var(--colorPrimaryMenus);
+  color: var(--text-primary);
+  background-color: var(--sidebar-color);
 }
 
-
-
 .active {
-  color: var(--colorPrimary);
+  color: var(--accent-color);
 }

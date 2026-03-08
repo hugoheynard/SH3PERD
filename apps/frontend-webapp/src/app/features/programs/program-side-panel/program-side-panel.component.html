@@ -1,33 +1,80 @@
-<div class="panel-header">
-  Program Tools
-</div>
-
-<!-- Templates -->
 <div class="panel-section">
-  <div class="section-header">
-    <span>Slot Templates</span>
-    <button class="section-action" (click)="openCreateTemplate()">+ New</button>
+
+  <div class="section-header" (click)="toggleTemplates()">
+
+    <div class="section-left">
+      <span class="chevron" [class.collapsed]="templatesCollapsed">
+        ▾
+      </span>
+
+      <div class="section-title">
+        Slot Templates
+      </div>
+    </div>
+
+    <button
+      class="section-action"
+      (click)="openCreateTemplate(); $event.stopPropagation()">
+      + New
+    </button>
+
   </div>
 
-  <div class="template-list">
-    @for (template of config.templates; track template.id) {
-      <app-slot-template-card [template]="template" (pointerdown)="onTemplateDrag(template)" />
-    }
-  </div>
-</div>
-
-
-<div class="panel-section">
-  <div class="section-header">
-    <span>Artists</span>
-  </div>
-
-  @for(artist of config.artists; track artist.id) {
   <div
-    class="template-item"
-    (mousedown)="config.onArtistDragStart(artist)">
-    {{ artist.name }}
+    class="template-list"
+    [class.collapsed]="templatesCollapsed">
+
+    @for (template of config.templates; track template.id) {
+      <app-slot-template-card
+        [template]="template"
+        (pointerdown)="onTemplateDrag(template)" />
+    }
+
   </div>
-  }
 
 </div>
+
+<div class="panel-section">
+
+  <div class="section-header" (click)="toggleArtists()">
+
+    <div class="section-left">
+      <span class="chevron" [class.collapsed]="artistsCollapsed">
+        ▾
+      </span>
+
+      <div class="section-title">
+        Artists
+        <span class="section-count">
+          {{ config.artists.length }}
+        </span>
+      </div>
+    </div>
+
+    <div class="section-actions">
+      <button
+        class="section-add"
+        (click)="$event.stopPropagation()">
+        + Add
+      </button>
+    </div>
+
+  </div>
+
+  <div
+    class="artist-grid"
+    [class.collapsed]="artistsCollapsed">
+
+    @for(item of artistsWithWorkload(); track item.artist.id) {
+      <app-artist-card
+        [artist]="item.artist"
+        [workload]="item.workload"
+        (pointerdown)="config.onArtistDragStart(item.artist)"
+
+      />
+    }
+
+  </div>
+
+</div>
+

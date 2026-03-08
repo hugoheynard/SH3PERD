@@ -1,8 +1,10 @@
 @use '@angular/material' as mat;
 @use 'mixins' as m;
 @use 'index' as sh3;
-@use "tailwindcss";
+@use './styles/index';
 
+@use "tailwindcss";
+@import "./styles/_tokens.css"; /* important */
 
 @include mat.elevation-classes();
 @include mat.app-background();
@@ -108,27 +110,25 @@ sh3-svg-icon {
 }
 
 @theme {
-  --color-background: #ffffff;
-  --color-surface: #f5f5f7;
-  --color-surface-2: #e8e8ea;
+  --color-background: #f6f8fb;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f3f7;
   --color-surface-3: var(--color-surface-2); /* fallback */
   --color-surface-4: var(--color-surface-2);/* fallback */
   --color-menu: var(--color-surface-2);
   --color-baseText: #1c1c1e;
   --color-fadedText: #7d8080;
-  --color-primary: rgb(109, 211, 211);
+  --color-primary: #06a4a4;
   --color-secondary: rgb(78, 141, 141);
   --color-warning: rgb(197, 153, 38);
   --color-alert: rgb(182, 49, 49);
   --spacing-sm: 0.75rem;
   --spacing-md: 1rem;
   --spacing-lg: 2rem;
-  --w-appMenu: 3.5rem;
-  --h-header: 64px;
 }
 
 [data-theme="dark"] {
-  --color-background: #1c1c1e;
+  --color-background: #1f232b;
   --color-surface: #1f2122;
   --color-surface-2: #262829;
   --color-surface-3: #3A3B3C;
@@ -136,9 +136,12 @@ sh3-svg-icon {
   --color-baseText: #e5e5e5;
   --color-fadedText: #7d8080;
   --color-menu: #232526;
-  --color-primary: rgb(6, 164, 164);
+  --color-primary: #06a4a4;
   --color-warning: rgb(197, 153, 38);
   --color-alert: rgb(182, 49, 49);
+
+
+  //--border-color: rgba(255,255,255,0.06);
 }
 
 @layer utilities {

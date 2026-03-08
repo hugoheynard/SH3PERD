@@ -10,7 +10,7 @@
 
   /* Colonnes */
   grid-template-columns:
-    t.$main-menus-width   /* menu left */
+    var(--w-appMenu)   /* menu left */
     1fr;                  /* content */
 
   grid-template-rows:
@@ -42,7 +42,7 @@
 //----------main layout - application content----------//
 //for left and right panels
 .panel{
-  width: t.$app-sidePanel-width;
+  width: var(--sidePanel-w);
   @include m.sidePanels;
 }
 

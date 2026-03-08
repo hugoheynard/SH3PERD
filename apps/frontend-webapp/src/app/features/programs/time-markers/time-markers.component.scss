@@ -6,9 +6,9 @@
 .time-marker {
   position: absolute;
   left: 10px;
-  font-size: 11px;
+  font-size: var(--text-sm);
   font-weight: 500;
-  color: #9aa0a6;
+  color: var(--text-secondary);
   transform: translateY(-50%);
 }
 

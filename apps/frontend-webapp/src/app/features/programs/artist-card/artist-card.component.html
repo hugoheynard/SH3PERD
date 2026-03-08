@@ -1,0 +1,22 @@
+<div class="entity-card artist-card">
+
+  <div class="artist-avatar">
+    {{ initials }}
+  </div>
+
+  <div class="artist-info">
+    <div class="artist-name">
+      {{ artist().name }}
+    </div>
+    <div class="artist-role">
+      Staff
+    </div>
+  </div>
+
+  <app-artist-workload-strip
+    [segments]="workload().segments"
+    [globalScore]="78"/>
+
+  <div class="drag-icon">⠿</div>
+
+</div>
