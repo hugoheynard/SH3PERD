@@ -1,4 +1,4 @@
-<div class="slot-bg" [style.background]="color"></div>
+<div class="slot-bg" [style.background]="color" [style.--slot-color]="color"></div>
 
 <div class="slot-content">
   <div class="slot-top">
@@ -31,10 +31,7 @@
         <div class="staff-label">Staff</div>
         <div class="artist-container">
           @for (artist of slot.artists; track artist.id) {
-            <app-artist-chip
-              [artist]="artist"
-              (remove)="removeArtist($event)">
-            </app-artist-chip>
+            <app-artist-chip [artist]="artist" (remove)="removeArtist($event)" />
           }
         </div>
       </div>

@@ -37,8 +37,8 @@
 /* ---------------- TEMPLATE LIST ---------------- */
 
 .template-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 
   overflow: hidden;
@@ -67,4 +67,50 @@
 
 .panel-section + .panel-section {
   margin-top: 12px;
+}
+
+.section-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  padding: 3px 8px;
+
+  border-radius: var(--radius-sm);
+
+  border: 1px solid transparent;
+
+  font-size: var(--text-sm);
+  font-weight: 500;
+
+  color: var(--text-secondary);
+
+  background: transparent;
+
+  cursor: pointer;
+
+  transition:
+    background .15s ease,
+    color .15s ease,
+    border-color .15s ease;
+}
+
+.section-action-btn:hover {
+  background: var(--hover-color);
+  color: var(--text-primary);
+  border-color: var(--panel-border-color);
+}
+
+.action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 16px;
+  height: 16px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  line-height: 1;
 }

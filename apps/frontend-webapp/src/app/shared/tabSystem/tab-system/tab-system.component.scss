@@ -13,7 +13,7 @@
   display: flex;
   flex-direction: row;
   align-items: flex-end;
-  gap: t.$tab-header-gap;
+  gap: 1.5rem;
 
   // add tab Button
   .add-tab {
@@ -37,11 +37,11 @@
     display: flex;
     flex-direction: row;
     align-items: self-end;
-    gap: t.$tab-header-gap;
+    gap: 1.5rem;
     overflow-y: hidden;
     scrollbar-width: thin;
     white-space: nowrap;
-    border-bottom: 1px solid t.$tab-header-borderBottom-color-dark;
+    border-bottom: 1px solid black;
     scrollbar-color: rgba(253, 255, 255, 0.2) transparent;
     -webkit-overflow-scrolling: touch;
   };
@@ -97,7 +97,7 @@
 
 
 
-  @media (max-width: t.$small-width-trigger) {
+  @media (max-width: 748px) {
     .tab-header-scroll-container {
       gap: 1px;
     }
@@ -194,7 +194,7 @@
 .cdk-drop-list-dragging {
   background: none;
   border: none;
-  border-radius: t.$tab-border-radius;
+  border-radius: var(--radius-md);
   transition: background 0.2s ease, box-shadow 0.2s ease;
 };
 
@@ -204,10 +204,10 @@
   opacity: 0.95;
   pointer-events: none;
   user-select: none;
-  border-radius: t.$tab-border-radius;
+  border-radius: var(--radius-md);
   padding: 0 1rem;
   display: flex;
   align-items: center;
-  font-weight: t.$tab-fontWeight;
+  font-weight: var(--text-md);
   color: var(--baseTextColor);
 }

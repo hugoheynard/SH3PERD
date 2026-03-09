@@ -5,14 +5,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: t.$tab-height;
+  height: 2rem;
   //padding: t.$tab-padding;
-  border-radius: t.$tab-border-radius;
+  border-radius: var(--radius-md);
   color: var(--baseTextColor);
   background: var(--tab-bgColor);
   backdrop-filter: blur(4px);
-  font-size: t.$tab-fontSize;
-  font-weight: t.$tab-fontWeight;
+  font-size: var(--text-md);
+  font-weight: 600;
   flex-shrink: 0;
   cursor: pointer;
 }

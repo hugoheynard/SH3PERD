@@ -41,11 +41,13 @@ export class MainLayoutComponent implements AfterViewInit{
   @ViewChild('leftPanelContainer', { read: ViewContainerRef }) leftPanel!: ViewContainerRef;
   @ViewChild('rightPanelContainer', { read: ViewContainerRef }) rightPanel!: ViewContainerRef;
   @ViewChild('contextMenuContainer', { read: ViewContainerRef }) contextMenu!: ViewContainerRef;
+  @ViewChild('popoverContainer', { read: ViewContainerRef }) popover!: ViewContainerRef;
 
 
   public hasContextMenu = computed(() => this.layoutService.contextMenuComponent() !== null);
   public hasLeftPanel = computed(() => this.layoutService.leftPanelComponent() !== null);
   public hasRightPanel = computed(() => this.layoutService.rightPanelComponent() !== null);
+  public hasPopover = computed(() => this.layoutService.popoverComponent() !== null);
 
 
   ngAfterViewInit() {
@@ -55,10 +57,18 @@ export class MainLayoutComponent implements AfterViewInit{
     runInInjectionContext(this.injector, () => {
       effect(() => {
         this.leftPanel.clear();
-        const comp = this.layoutService.leftPanelComponent();
-        if (comp) {
-          this.leftPanel.createComponent(comp, {injector: this.injector});
+        const panelConfig = this.layoutService.leftPanelComponent();
+
+        if (!panelConfig) {
+          return;
         }
+
+        const customInjector = Injector.create({
+          parent: this.injector,
+          providers: [{ provide: PANEL_DATA, useValue: panelConfig.data }],
+        });
+
+        this.leftPanel.createComponent(panelConfig.component!, { injector: customInjector });
       });
 
       effect(() => {
@@ -83,6 +93,25 @@ export class MainLayoutComponent implements AfterViewInit{
         if (comp) {
           this.contextMenu.createComponent(comp, {injector: this.injector});
         }
+      });
+
+      effect(() => {
+        this.popover.clear();
+
+        const popoverConfig = this.layoutService.popoverComponent();
+
+        if (!popoverConfig) {
+          return;
+        }
+
+        const customInjector = Injector.create({
+          parent: this.injector,
+          providers: [{ provide: PANEL_DATA, useValue: popoverConfig.data }],
+        });
+
+        this.popover.createComponent(popoverConfig.component, {
+          injector: customInjector
+        });
       });
     });
   }

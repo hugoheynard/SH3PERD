@@ -1,0 +1,21 @@
+<div class="popover">
+
+  <div class="popover-header">
+
+    <div class="popover-title">
+      <ng-content select="[popover-title]"></ng-content>
+    </div>
+
+    <button class="popover-close" (click)="close()">×</button>
+
+  </div>
+
+  <div class="popover-body">
+    <ng-content select="[popover-body]"></ng-content>
+  </div>
+
+  <div class="popover-footer">
+    <ng-content select="[popover-footer]"></ng-content>
+  </div>
+
+</div>

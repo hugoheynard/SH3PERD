@@ -78,15 +78,9 @@ export class PerformanceSlotComponent {
     this.slotResizeStart.emit(event);
   }
 
-  @Output() removeArtistFromSlot =
-    new EventEmitter<{ slotId: string; artistId: string }>();
-
-  removeArtist(artistId: string) {
-    this.removeArtistFromSlot.emit({
-      slotId: this.slot.id,
-      artistId
-    });
-  }
+  removeArtist(artistId: string): void {
+    this.state.removeArtistFromSlot(this.slot.id, artistId);
+  };
 
   get panelColor(): string {
     return `${this.slot.color}33`;

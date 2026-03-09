@@ -33,6 +33,10 @@
     <div class="context-menu w-appMenu shadow-md bg-menu sm:none" [ngClass]="{ 'hidden': hasContextMenu() }">
       <ng-template #contextMenuContainer />
     </div>
+
+    <div class="popover-layer" [ngClass]="{ 'hidden': !hasPopover() }">
+      <ng-template #popoverContainer />
+    </div>
   </div>
 
 </div>

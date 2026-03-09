@@ -5,6 +5,8 @@ import { SlotTemplateCardComponent } from '../slot-template-card/slot-template-c
 import { ArtistCardComponent } from '../artist-card/artist-card.component';
 import { type ArtistWorkload, WorkloadService } from '../services/workload.service';
 import { SidePanelSectionComponent } from '../side-panel-section/side-panel-section.component';
+import { LayoutService } from '../../../core/services/layout.service';
+import { EditTemplatePopoverComponent } from '../edit-template-popover/edit-template-popover.component';
 
 export interface ProgramSidePanelConfig {
   templates: PerformanceTemplate[];
@@ -40,6 +42,8 @@ export class ProgramSidePanelComponent {
   ) {}
 
   private workload = inject(WorkloadService);
+  private layout = inject(LayoutService);
+
   artistWorkloads = this.workload.artistWorkloadMap;
 
   artistsWithWorkload = computed(() => {
@@ -50,7 +54,6 @@ export class ProgramSidePanelComponent {
       artist,
       workload: workloads.get(artist.id) ?? emptyWorkload()
     }));
-
   });
 
   openCreateTemplate() {
@@ -63,10 +66,14 @@ export class ProgramSidePanelComponent {
 
   onArtistDragStart(artist: Artist) {
     this.config.onArtistDragStart(artist);
-  }
+  };
 
 
   protected readonly emptyWorkload = emptyWorkload;
+
+  openTemplatePopover(mode: 'edit' | 'create'): void {
+    this.layout.setPopover(EditTemplatePopoverComponent, { mode });
+  };
 }
 
 

@@ -1,5 +1,13 @@
 <app-side-panel-section [title]="'slot templates'">
-  <div section-actions></div>
+  <div section-actions>
+    <button
+      class="section-action-btn"
+      (click)="openTemplatePopover('create'); $event.stopPropagation()">
+
+      <span class="action-icon">+</span>
+      Add
+    </button>
+  </div>
 
   <div section-content class="template-list">
     @for (template of config.templates; track template.id) {

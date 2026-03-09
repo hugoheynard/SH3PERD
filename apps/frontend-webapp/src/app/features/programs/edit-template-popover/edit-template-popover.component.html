@@ -1,0 +1,57 @@
+<app-popover-frame>
+
+  <div popover-title>
+    Create template
+  </div>
+
+  <form popover-body class="form">
+
+    <!-- Title -->
+    <div class="form-field">
+      <label class="form-label">Title</label>
+      <input
+        type="text"
+        class="form-input"
+        placeholder="Opening set"
+      />
+    </div>
+
+    <!-- Duration -->
+    <div class="form-field">
+      <label class="form-label">Duration (minutes)</label>
+      <input
+        type="number"
+        class="form-input"
+        value="60"
+        min="5"
+        step="5"
+      />
+    </div>
+
+    <!-- Color -->
+    <div class="form-field">
+      <label class="form-label">Color</label>
+
+      <div class="color-row">
+        <input
+          type="color"
+          class="color-picker"
+          value="#06a4a4"
+        />
+
+        <input
+          type="text"
+          class="form-input color-code"
+          value="#06a4a4"
+        />
+      </div>
+    </div>
+
+  </form>
+
+  <div popover-footer>
+    <app-button variant="secondary">Cancel</app-button>
+    <app-button type="submit">Create</app-button>
+  </div>
+
+</app-popover-frame>

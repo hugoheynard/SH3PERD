@@ -63,7 +63,7 @@ export class ProgramsPageComponent implements OnInit {
 
   /* ---------------- LIFECYCLE ---------------- */
   ngOnInit() {
-    this.layout.setRightPanel(ProgramSidePanelComponent, {
+    this.layout.setLeftPanel(ProgramSidePanelComponent, {
       templates: mockPerformanceSlotsTemplates,
       artists: mockArtists_external,
       onTemplateDragStart: (t: PerformanceTemplate) =>
