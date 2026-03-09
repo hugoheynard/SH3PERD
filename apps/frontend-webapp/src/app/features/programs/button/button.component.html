@@ -4,7 +4,8 @@
   [class.btn-secondary]="variant() === 'secondary'"
   [class.btn-tertiary]="variant() === 'tertiary'"
   [attr.type]="type()"
-  [disabled]="disabled()">
+  [disabled]="disabled()"
+  (click)="onPointerDown($event)">
 
   <ng-content></ng-content>
 

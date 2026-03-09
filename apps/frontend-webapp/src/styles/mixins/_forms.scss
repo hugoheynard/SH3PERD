@@ -12,7 +12,7 @@
 
 @mixin form-container($display) {
   display: $display;
-  background: t.$form-bgColor;
+  background: black;
   margin: 0 auto;
   backdrop-filter: blur(8px);
 
@@ -23,7 +23,7 @@
 
   @else if $display == grid {
 
-    @media (max-width: t.$small-width-trigger) {
+    @media (max-width: 748px) {
       grid-template-columns: 1fr;
     };
   };
@@ -33,8 +33,8 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  padding: t.$form-block-padding;
-  border-radius: t.$form-block-radius;
+  padding: 0.3rem;
+  border-radius: var(--radius-md);
   color: var(--baseTextColor);
   background: var(--headAndfootBgColor);
   backdrop-filter: blur(8px);
@@ -54,7 +54,7 @@
     grid-column: 1 / -1;
   }
 
-  @media (max-width: t.$small-width-trigger) {
+  @media (max-width: 748px) {
     grid-template-columns: 1fr;
     gap: 1rem;
   }

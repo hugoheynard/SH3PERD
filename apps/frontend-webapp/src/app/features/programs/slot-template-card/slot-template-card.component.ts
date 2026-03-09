@@ -1,11 +1,14 @@
 import { Component, input, output } from '@angular/core';
 import type { PerformanceTemplate } from '../services/program-state.service';
-import { DragIconComponent } from '../drag-icon/drag-icon.component';
+import { CardFrameComponent } from '../card-frame/card-frame.component';
+import { ButtonComponent } from '../button/button.component';
 
 @Component({
-  selector: 'app-slot-template-card',
+  selector: 'ui-slot-template-card',
   imports: [
-    DragIconComponent,
+    CardFrameComponent,
+    ButtonComponent,
+
   ],
   templateUrl: './slot-template-card.component.html',
   styleUrl: './slot-template-card.component.scss'
@@ -16,8 +19,8 @@ export class SlotTemplateCardComponent {
   edit = output<PerformanceTemplate>()
 
   onEdit(event: PointerEvent) {
-    event.stopPropagation();   // 🔥 CRUCIAL
+    event.stopPropagation();
     event.preventDefault();
     this.edit.emit(this.template());
-  }
+  };
 }

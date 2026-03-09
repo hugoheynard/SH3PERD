@@ -1,0 +1,19 @@
+<div class="card-frame">
+
+  <div class="card-left">
+    <ng-content select="[card-left]"></ng-content>
+  </div>
+
+  <div class="card-content">
+    <ng-content select="[card-content]"></ng-content>
+  </div>
+
+  <div class="card-actions">
+    <ng-content select="[card-actions]"></ng-content>
+
+    @if(dragIcon()) {
+      <ui-drag-icon />
+    }
+
+  </div>
+</div>

@@ -1,13 +1,17 @@
-<div class="entity-card artist-card">
+<ui-card-frame class="artist-card" [dragIcon]="true">
 
-  <div class="artist-avatar">{{ initials }}</div>
+  <div card-left class="artist-avatar">{{ initials }}</div>
 
-  <div class="artist-info">
-    <div class="artist-name">{{ artist().name }}</div>
-    <div class="artist-role">Staff</div>
+  <div card-content class="artist-main">
+
+    <div class="artist-meta">
+      <div class="artist-name">{{ artist().name }}</div>
+      <div class="artist-role">Staff</div>
+    </div>
+
+    <app-artist-workload-strip
+      [segments]="workload().segments"
+      [globalScore]="78"/>
+
   </div>
-
-  <app-artist-workload-strip [segments]="workload().segments" [globalScore]="78"/>
-  <app-drag-icon />
-
-</div>
+</ui-card-frame>

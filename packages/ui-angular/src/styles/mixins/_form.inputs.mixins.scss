@@ -58,7 +58,7 @@
 
 @mixin form-field-label {
   color: var(--baseTextColor);
-  font-size: t.$form-field-label-fontSize;
+  font-size: var(--text-sm);
   text-transform: capitalize;
 }
 

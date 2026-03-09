@@ -1,10 +1,14 @@
 <app-popover-frame>
 
   <div popover-title>
-    Create template
+    <span>{{ mode === 'edit' ? 'Edit' : 'Create' }} template</span>
   </div>
 
-  <form popover-body class="form">
+  <form
+    popover-body
+    class="form"
+    [formGroup]="form"
+    (ngSubmit)="submit()">
 
     <!-- Title -->
     <div class="form-field">
@@ -13,6 +17,7 @@
         type="text"
         class="form-input"
         placeholder="Opening set"
+        formControlName="title"
       />
     </div>
 
@@ -22,9 +27,9 @@
       <input
         type="number"
         class="form-input"
-        value="60"
         min="5"
         step="5"
+        formControlName="duration"
       />
     </div>
 
@@ -36,13 +41,13 @@
         <input
           type="color"
           class="color-picker"
-          value="#06a4a4"
+          formControlName="color"
         />
 
         <input
           type="text"
           class="form-input color-code"
-          value="#06a4a4"
+          formControlName="color"
         />
       </div>
     </div>
@@ -50,8 +55,11 @@
   </form>
 
   <div popover-footer>
-    <app-button variant="secondary">Cancel</app-button>
-    <app-button type="submit">Create</app-button>
+    <ui-button variant="secondary">Cancel</ui-button>
+
+    <ui-button type="submit">
+      {{ mode === 'edit' ? 'Save' : 'Create' }}
+    </ui-button>
   </div>
 
 </app-popover-frame>

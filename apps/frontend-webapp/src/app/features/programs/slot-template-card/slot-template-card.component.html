@@ -1,21 +1,17 @@
-<div class="template-card"
-     (pointerdown)="dragStart.emit(template())">
+<ui-card-frame [dragIcon]="true" (pointerdown)="dragStart.emit(template())">
 
-  <div class="template-accent"
-       [style.background]="template().color">
+  <div card-left class="template-accent" [style.background]="template().color"></div>
+
+  <div card-content>
+    <div class="template-title">{{ template().type }}</div>
+    <div class="template-meta">{{ template().duration }} min</div>
   </div>
 
-  <div class="template-content">
-    <div class="template-title">
-      {{ template().type }}
-    </div>
-
-    <div class="template-meta">
-      {{ template().duration }} min
-    </div>
+  <div card-actions>
+    <ui-button
+      [variant]="'tertiary'"
+      type="button"
+      (pointerDown)="onEdit($event)">edit</ui-button>
   </div>
 
-  <button class="edit-btn">✏</button>
-
-  <app-drag-icon />
-</div>
+</ui-card-frame>

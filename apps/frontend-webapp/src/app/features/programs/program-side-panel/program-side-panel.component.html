@@ -1,27 +1,30 @@
+<!--SLOT TEMPLATES-->
 <app-side-panel-section [title]="'slot templates'">
   <div section-actions>
-    <button
-      class="section-action-btn"
-      (click)="openTemplatePopover('create'); $event.stopPropagation()">
-
-      <span class="action-icon">+</span>
-      Add
-    </button>
+    <ui-button
+      [variant]="'tertiary'"
+      [type]="'button'"
+      stopPropagation
+      (pointerDown)="openTemplatePopover('create')">
+      + Add
+    </ui-button>
   </div>
 
   <div section-content class="template-list">
     @for (template of config.templates; track template.id) {
-      <app-slot-template-card
+      <ui-slot-template-card
         [template]="template"
+        (edit)="onEditTemplate($event)"
         (pointerdown)="onTemplateDrag(template)" />
     }
   </div>
 </app-side-panel-section>
 
+<!--ARTISTS-->
 <app-side-panel-section [title]="'artist'" [count]="config.artists ? config.artists.length : 0">
   <div section-content class="artist-grid" >
     @for (item of artistsWithWorkload(); track item.artist.id) {
-      <app-artist-card
+      <ui-artist-card
         [artist]="item.artist"
         [workload]="item.workload"
         (pointerdown)="config.onArtistDragStart(item.artist)"
@@ -30,3 +33,24 @@
   </div>
 </app-side-panel-section>
 
+<!--USERGROUPS-->
+<app-side-panel-section [title]="'usergroups'" [count]="config.artists ? config.artists.length : 0">
+  <div section-actions>
+    <ui-button
+      [variant]="'tertiary'"
+      [type]="'button'"
+      stopPropagation>
+      Create
+    </ui-button>
+  </div>
+
+  <div section-content class="artist-grid" >
+    @for (item of artistsWithWorkload(); track item.artist.id) {
+      <ui-artist-card
+        [artist]="item.artist"
+        [workload]="item.workload"
+        (pointerdown)="config.onArtistDragStart(item.artist)"
+      />
+    }
+  </div>
+</app-side-panel-section>

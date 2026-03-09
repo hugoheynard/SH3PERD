@@ -7,6 +7,8 @@ import { type ArtistWorkload, WorkloadService } from '../services/workload.servi
 import { SidePanelSectionComponent } from '../side-panel-section/side-panel-section.component';
 import { LayoutService } from '../../../core/services/layout.service';
 import { EditTemplatePopoverComponent } from '../edit-template-popover/edit-template-popover.component';
+import { ButtonComponent } from '../button/button.component';
+
 
 export interface ProgramSidePanelConfig {
   templates: PerformanceTemplate[];
@@ -31,6 +33,7 @@ export function emptyWorkload(): ArtistWorkload {
     SlotTemplateCardComponent,
     ArtistCardComponent,
     SidePanelSectionComponent,
+    ButtonComponent,
   ],
   templateUrl: './program-side-panel.component.html',
   styleUrl: './program-side-panel.component.scss'
@@ -66,6 +69,13 @@ export class ProgramSidePanelComponent {
 
   onArtistDragStart(artist: Artist) {
     this.config.onArtistDragStart(artist);
+  };
+
+  onEditTemplate(template: PerformanceTemplate) {
+    this.layout.setPopover(EditTemplatePopoverComponent, {
+      mode: 'edit',
+      template
+    });
   };
 
 

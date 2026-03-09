@@ -1,62 +1,36 @@
-.template-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-
-  padding: 0.75rem;
-  border-radius: var(--radius-md);
-
-  background: var(--card-color);
-  border: 1px solid var(--panel-border-color);
-
-  cursor: grab;
-  transition: all 0.15s ease;
-  user-select: none;
-}
-
-.template-card:hover {
-  background: var(--hover-color);
-  transform: translateY(-2px);
-}
-
 .template-accent {
-  width: 0.5rem;
-  height: 42px;
+  width: 6px;
+  height: 36px;
+
   border-radius: var(--radius-sm);
+
+  flex-shrink: 0;
 }
 
 .template-title {
   font-weight: 600;
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
+
   color: var(--text-primary);
 }
 
 .template-meta {
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
+
   color: var(--text-secondary);
 }
 
-.search-container input {
-  width: 100%;
-  padding: 10px 12px;
+.edit-btn {
+  border: none;
+  background: transparent;
 
-  border-radius: 10px;
-  border: 1px solid var(--panel-border-color);
-  background: var(--panel-surface);
+  color: var(--text-secondary);
 
+  cursor: pointer;
+
+  transition: color .15s ease;
+}
+
+.edit-btn:hover {
   color: var(--text-primary);
-  font-size: 12px;
-}
-
-.search-container input:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-
-* {
-  transition:
-    background 0.15s ease,
-    border 0.15s ease,
-    transform 0.15s ease;
 }
