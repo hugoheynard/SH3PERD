@@ -1,80 +1,24 @@
-<div class="panel-section">
+<app-side-panel-section [title]="'slot templates'">
+  <div section-actions></div>
 
-  <div class="section-header" (click)="toggleTemplates()">
-
-    <div class="section-left">
-      <span class="chevron" [class.collapsed]="templatesCollapsed">
-        ▾
-      </span>
-
-      <div class="section-title">
-        Slot Templates
-      </div>
-    </div>
-
-    <button
-      class="section-action"
-      (click)="openCreateTemplate(); $event.stopPropagation()">
-      + New
-    </button>
-
-  </div>
-
-  <div
-    class="template-list"
-    [class.collapsed]="templatesCollapsed">
-
+  <div section-content class="template-list">
     @for (template of config.templates; track template.id) {
       <app-slot-template-card
         [template]="template"
         (pointerdown)="onTemplateDrag(template)" />
     }
-
   </div>
+</app-side-panel-section>
 
-</div>
-
-<div class="panel-section">
-
-  <div class="section-header" (click)="toggleArtists()">
-
-    <div class="section-left">
-      <span class="chevron" [class.collapsed]="artistsCollapsed">
-        ▾
-      </span>
-
-      <div class="section-title">
-        Artists
-        <span class="section-count">
-          {{ config.artists.length }}
-        </span>
-      </div>
-    </div>
-
-    <div class="section-actions">
-      <button
-        class="section-add"
-        (click)="$event.stopPropagation()">
-        + Add
-      </button>
-    </div>
-
-  </div>
-
-  <div
-    class="artist-grid"
-    [class.collapsed]="artistsCollapsed">
-
-    @for(item of artistsWithWorkload(); track item.artist.id) {
+<app-side-panel-section [title]="'artist'" [count]="config.artists ? config.artists.length : 0">
+  <div section-content class="artist-grid" >
+    @for (item of artistsWithWorkload(); track item.artist.id) {
       <app-artist-card
         [artist]="item.artist"
         [workload]="item.workload"
         (pointerdown)="config.onArtistDragStart(item.artist)"
-
       />
     }
-
   </div>
-
-</div>
+</app-side-panel-section>
 

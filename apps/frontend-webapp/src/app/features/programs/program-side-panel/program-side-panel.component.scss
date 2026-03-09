@@ -1,11 +1,3 @@
-/*:host {
-  --panel-bg: #101318;
-  --panel-surface:  #242a33;
-  --panel-surface-2: #1c2029;
-  --panel-border: rgba(255,255,255,0.06);
-  --panel-hover: #1d222b;
-}*/
-
 /* ---------------- PANEL BASE ---------------- */
 
 .library {
@@ -42,96 +34,6 @@
   margin-bottom: 24px;
 }
 
-/* ---------------- SECTION ---------------- */
-
-.panel-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* ---------------- SECTION HEADER ---------------- */
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  margin-top: 28px;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-
-  border-bottom: 1px solid var(--panel-border-color);
-
-
-  transition: all 0.15s ease;
-}
-
-.section-header:hover {
-  border-bottom-color: rgba(255,255,255,0.12);
-}
-
-/* Left part (chevron + title) */
-
-.section-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-/* Chevron */
-
-.chevron {
-  font-size: 1rem;
-  color: var(--text-secondary);
-  transition: transform 0.2s ease;
-}
-
-.chevron.collapsed {
-  transform: rotate(-90deg);
-}
-
-/* Title */
-
-.section-title {
-  font-size: var(--text-md);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-
-  color: var(--text-secondary);
-}
-
-/* Count */
-
-.section-count {
-  margin-left: 6px;
-  font-weight: 500;
-  opacity: 0.6;
-}
-
-/* ---------------- SECTION ACTIONS ---------------- */
-
-.section-action,
-.section-add {
-  background: none;
-  border: none;
-  font-size: var(--text-sm);
-  color: var(--accent-color);
-  cursor: pointer;
-
-  padding: 4px 6px;
-  border-radius: 6px;
-
-  transition: all 0.15s ease;
-}
-
-.section-action:hover,
-.section-add:hover {
-  background: rgba(108,99,255,0.12);
-}
-
 /* ---------------- TEMPLATE LIST ---------------- */
 
 .template-list {
@@ -153,7 +55,6 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 
-
   overflow: hidden;
   max-height: 2000px;
   transition:
@@ -161,39 +62,6 @@
     opacity 0.2s ease;
 }
 
-/* ---------------- COLLAPSED STATE ---------------- */
-
-.template-list.collapsed,
-.artist-grid.collapsed {
-  max-height: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ---------------- CARD BASE (for template items if needed) ---------------- */
-
-.template-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-
-  padding: 14px;
-  border-radius: var(--radius-md);
-
-  border: 1px solid var(--panel-border-color);
-
-  cursor: grab;
-  transition: all 0.15s ease;
-}
-
-.template-item:hover {
-  background: var(--panel-hover);
-  transform: translateY(-2px);
-}
-
-.template-item:active {
-  cursor: grabbing;
-}
 
 /* ---------------- SUBTLE DEPTH ---------------- */
 

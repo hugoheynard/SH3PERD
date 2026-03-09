@@ -4,7 +4,7 @@ import type { Artist, PerformanceTemplate } from '../services/program-state.serv
 import { SlotTemplateCardComponent } from '../slot-template-card/slot-template-card.component';
 import { ArtistCardComponent } from '../artist-card/artist-card.component';
 import { type ArtistWorkload, WorkloadService } from '../services/workload.service';
-import { JsonPipe } from '@angular/common';
+import { SidePanelSectionComponent } from '../side-panel-section/side-panel-section.component';
 
 export interface ProgramSidePanelConfig {
   templates: PerformanceTemplate[];
@@ -28,7 +28,7 @@ export function emptyWorkload(): ArtistWorkload {
   imports: [
     SlotTemplateCardComponent,
     ArtistCardComponent,
-    JsonPipe,
+    SidePanelSectionComponent,
   ],
   templateUrl: './program-side-panel.component.html',
   styleUrl: './program-side-panel.component.scss'
@@ -59,18 +59,12 @@ export class ProgramSidePanelComponent {
 
   onTemplateDrag(template: PerformanceTemplate) {
     this.config.onTemplateDragStart(template);
+  };
+
+  onArtistDragStart(artist: Artist) {
+    this.config.onArtistDragStart(artist);
   }
 
-  templatesCollapsed = false;
-  artistsCollapsed = false;
-
-  toggleTemplates() {
-    this.templatesCollapsed = !this.templatesCollapsed;
-  }
-
-  toggleArtists() {
-    this.artistsCollapsed = !this.artistsCollapsed;
-  }
 
   protected readonly emptyWorkload = emptyWorkload;
 }

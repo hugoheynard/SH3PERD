@@ -1,9 +1,12 @@
 import { Component, input, output } from '@angular/core';
 import type { PerformanceTemplate } from '../services/program-state.service';
+import { DragIconComponent } from '../drag-icon/drag-icon.component';
 
 @Component({
   selector: 'app-slot-template-card',
-  imports: [],
+  imports: [
+    DragIconComponent,
+  ],
   templateUrl: './slot-template-card.component.html',
   styleUrl: './slot-template-card.component.scss'
 })

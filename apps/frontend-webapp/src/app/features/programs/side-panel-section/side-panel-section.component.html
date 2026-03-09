@@ -1,0 +1,31 @@
+<div class="panel-section">
+
+  <div class="section-header" (click)="toggleSection()">
+    <div class="section-left">
+      <span class="chevron" [class.collapsed]="sectionCollapsed">
+        ▾
+      </span>
+
+      <div class="section-title">
+        {{ title() }}
+
+        @if (count() !== undefined) {
+          <span class="section-count">{{ count() }}</span>
+        }
+
+      </div>
+    </div>
+
+    <div class="section-actions">
+      <ng-content select="[section-actions]"></ng-content>
+    </div>
+
+  </div>
+
+  <div
+    class="section-content"
+    [class.collapsed]="sectionCollapsed">
+
+    <ng-content select="[section-content]"></ng-content>
+  </div>
+</div>
