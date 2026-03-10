@@ -1,4 +1,4 @@
-export interface PerformanceTemplate {
+export interface PlanningSlotTemplate {
   id: string;
   name: string;
   duration: number;
@@ -6,15 +6,42 @@ export interface PerformanceTemplate {
   color: string;
 }
 
-export interface PerformanceSlot {
+/**
+ * A performance template is a planning slot template with additional properties that are used to determine how the performance should be scheduled and displayed in the program.
+ * - playlist: indicates whether the performance is a playlist or not. If true, the performance will be scheduled as a playlist and will be displayed with a playlist icon in the program.
+ * - singleTrack: indicates whether the performance is a single track or not. If true, the performance will be scheduled as a single track and will be displayed with a single track icon in the program.
+ */
+export interface ArtistPerformanceSlotTemplate extends PlanningSlotTemplate {
+  playlist: boolean;
+  song: boolean;
+  technicianRequired: boolean;
+}
+
+
+export interface PlanningSlot {
   id: string;
   startMinutes: number;
   duration: number;
   type: string;
   color: string;
   roomId: string;
+}
+
+
+export interface ArtistPerformanceSlot extends PlanningSlot {
   artists: Artist[];
   loadScore?: number;
+  playlist: boolean;
+  song: boolean;
+  playlist_details?: {
+    id: string;
+    name: string;
+    songList: string[];
+  };
+  song_details?: {
+    id: string;
+    name: string;
+  };
 }
 
 export interface Room {
@@ -27,7 +54,7 @@ export interface ProgramState {
   startTime: string;
   endTime: string;
   rooms: Room[];
-  slots: PerformanceSlot[];
+  slots: ArtistPerformanceSlot[];
 }
 
 export interface Artist {

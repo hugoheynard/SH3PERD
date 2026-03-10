@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { PointerTrackerService } from './pointer-tracker.service';
 import { DragSessionService} from './drag-session.service';
-import type { PerformanceSlot } from '../program-types';
+import type { ArtistPerformanceSlot } from '../program-types';
 import { PlannerResolutionService } from './planner-resolution.service';
 import { ProgramStateService } from './program-state.service';
 
@@ -20,7 +20,7 @@ export class TimelineInteractionService {
 
   /* ------------------ SLOT DRAG ------------------ */
 
-  startSlotDrag(event: PointerEvent, slot: PerformanceSlot) {
+  startSlotDrag(event: PointerEvent, slot: ArtistPerformanceSlot) {
 
     if (!this.startInteraction(event)) {
       return;
@@ -34,7 +34,7 @@ export class TimelineInteractionService {
 
   /* ------------------ SLOT RESIZE ------------------ */
 
-  startSlotResize(event: PointerEvent, slot: PerformanceSlot) {
+  startSlotResize(event: PointerEvent, slot: ArtistPerformanceSlot) {
 
     if (!this.startInteraction(event)) {
       return;

@@ -26,10 +26,10 @@ form {
   height: 10rem;
   padding: 0 0.5rem;
   box-sizing: border-box;
-  font-size: sh3.$form-field-fontSize-sm;
+  font-size: var(--text-sm);
   margin-top: 0.25rem;
   border: 1px solid var(--form-field-borderColor);
-  border-radius: sh3.$form-field-radius-lg;
+  border-radius: var(--radius-md);
   color: var(--baseTextColor);
   outline: none;
   backdrop-filter: blur(4px);
@@ -58,7 +58,6 @@ form {
 
 
 .entry {
-  @include sh3.form-field-base;
 
   &.selected {
     color: white;

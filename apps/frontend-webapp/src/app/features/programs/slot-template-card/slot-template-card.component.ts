@@ -1,7 +1,7 @@
 import { Component, input, output } from '@angular/core';
-import { CardFrameComponent } from '../card-frame/card-frame.component';
+import { CardFrameComponent } from '../ui-frames/card-frame/card-frame.component';
 import { ButtonComponent } from '../button/button.component';
-import type { PerformanceTemplate } from '../program-types';
+import type { ArtistPerformanceSlotTemplate } from '../program-types';
 
 @Component({
   selector: 'ui-slot-template-card',
@@ -11,16 +11,17 @@ import type { PerformanceTemplate } from '../program-types';
 
   ],
   templateUrl: './slot-template-card.component.html',
-  styleUrl: './slot-template-card.component.scss'
+  styleUrl: './slot-template-card.component.scss',
+  host: {
+
+  }
 })
 export class SlotTemplateCardComponent {
-  template = input.required<PerformanceTemplate>()
-  dragStart = output<PerformanceTemplate>()
-  edit = output<PerformanceTemplate>()
+  template = input.required<ArtistPerformanceSlotTemplate>()
+  dragStart = output<ArtistPerformanceSlotTemplate>()
+  edit = output<ArtistPerformanceSlotTemplate>()
 
-  onEdit(event: PointerEvent) {
-    event.stopPropagation();
-    event.preventDefault();
+  onEdit() {
     this.edit.emit(this.template());
   };
 }

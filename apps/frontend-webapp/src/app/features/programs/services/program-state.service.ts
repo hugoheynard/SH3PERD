@@ -1,6 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { minutesToTime, time_functions_utils } from '../utils/time_functions_utils';
-import type { Artist, ArtistGroup, PerformanceSlot, ProgramState, Room } from '../program-types';
+import type { Artist, ArtistGroup, ArtistPerformanceSlot, ProgramState, Room } from '../program-types';
 
 @Injectable({ providedIn: 'root' })
 export class ProgramStateService {
@@ -32,7 +32,7 @@ export class ProgramStateService {
     return end - start;
   });
 
-  slots = signal<PerformanceSlot[]>([]);
+  slots = signal<ArtistPerformanceSlot[]>([]);
   rooms = signal<Room[]>([
     { id: 'r1', name: 'Terrasse' },
     { id: 'r2', name: 'LPC' }
@@ -131,7 +131,7 @@ export class ProgramStateService {
   /* ---------------------------------
     SLOT HANDLING
    ---------------------------------- */
-  addSlot(slot: PerformanceSlot) {
+  addSlot(slot: ArtistPerformanceSlot) {
     this.slots.update(slots => [
       ...slots,
       slot
@@ -144,7 +144,7 @@ export class ProgramStateService {
     );
   };
 
-  updateSlot(slot: PerformanceSlot) {
+  updateSlot(slot: ArtistPerformanceSlot) {
     const index = this.state.slots.findIndex(s => s.id === slot.id);
     if (index !== -1) {
       this.state.slots[index] = slot;
@@ -155,13 +155,13 @@ export class ProgramStateService {
     return this.state.slots.filter(s => s.roomId === roomId);
   };
 
-  getSlotStartTime(slot: PerformanceSlot): string {
+  getSlotStartTime(slot: ArtistPerformanceSlot): string {
     const programStartMinutes = time_functions_utils(this.startTime());
     const absolute = programStartMinutes + slot.startMinutes;
     return minutesToTime(absolute);
   };
 
-  getSlotEndTime(slot: PerformanceSlot): string {
+  getSlotEndTime(slot: ArtistPerformanceSlot): string {
     const programStartMinutes = time_functions_utils(this.startTime());
     const absolute =
       programStartMinutes + slot.startMinutes + slot.duration;

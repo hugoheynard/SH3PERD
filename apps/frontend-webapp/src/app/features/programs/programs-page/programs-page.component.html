@@ -34,7 +34,9 @@
               <app-performance-slot
                 [slot]="slot"
                 (slotPointerDown)="startSlotDrag($event, slot)"
-                (slotResizeStart)="startSlotResize($event, slot)" />
+                (slotResizeStart)="startSlotResize($event, slot)"
+                (editSlot)="openEditPerformanceSlotPopover($event)"
+              />
             }
 
             <!-- Preview -->

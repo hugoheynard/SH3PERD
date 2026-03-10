@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { ArtistWorkloadStripComponent } from '../artist-workload-strip/artist-workload-strip.component';
 import type { ArtistWorkload } from '../services/workload.service';
-import { CardFrameComponent } from '../card-frame/card-frame.component';
+import { CardFrameComponent } from '../ui-frames/card-frame/card-frame.component';
 import type { Artist } from '../program-types';
 
 @Component({

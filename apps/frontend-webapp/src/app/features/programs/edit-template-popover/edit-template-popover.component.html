@@ -1,4 +1,4 @@
-<app-popover-frame>
+<ui-popover-frame>
 
   <div popover-title>
     <span>{{ mode === 'edit' ? 'Edit' : 'Create' }} template</span>
@@ -52,6 +52,38 @@
       </div>
     </div>
 
+    <div class="form-field">
+
+      <label class="form-label">Music</label>
+
+      <div class="checkbox-group">
+
+        <label class="checkbox">
+          <input
+            type="checkbox"
+            formControlName="playlist"
+          />
+          <span>Playlist</span>
+        </label>
+
+        <label class="checkbox">
+          <input
+            type="checkbox"
+            formControlName="singleTrack"
+          />
+          <span>Single Track</span>
+        </label>
+
+      </div>
+
+    </div>
+
+    @if (form.errors?.['musicConflict']) {
+      <div class="form-error">
+        Cannot select playlist and single track at the same time.
+      </div>
+    }
+
   </form>
 
   <div popover-footer>
@@ -62,4 +94,4 @@
     </ui-button>
   </div>
 
-</app-popover-frame>
+</ui-popover-frame>

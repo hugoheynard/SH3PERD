@@ -19,6 +19,20 @@
     </div>
   </div>
 
+  <button
+    class="notification-bell"
+    (click)="openNotifications()">
+
+    🔔
+
+    @if (unreadNotificationsCount() > 0) {
+      <span class="badge">
+      {{ unreadNotificationsCount() }}
+    </span>
+    }
+
+  </button>
+
   <!-- Cercle avec initiale -->
   <div class="profile-circle">
     H

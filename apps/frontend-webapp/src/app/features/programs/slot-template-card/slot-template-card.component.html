@@ -1,17 +1,42 @@
-<ui-card-frame [dragIcon]="true" (pointerdown)="dragStart.emit(template())">
+<ui-card-frame [dragIcon]="true" (pointerdown)="dragStart.emit(template())" (dblclick)="onEdit()">
 
   <div card-left class="template-accent" [style.background]="template().color"></div>
 
-  <div card-content>
-    <div class="template-title">{{ template().type }}</div>
-    <div class="template-meta">{{ template().duration }} min</div>
+  <div class="template-content" card-content>
+    <div class="template-header">
+
+      <div class="template-title">{{ template().type }}</div>
+
+      <div class="template-duration">
+        {{ template().duration }} min
+      </div>
+
+    </div>
+
+    <div class="template-badges">
+
+      @if (template().playlist) {
+        <span class="badge playlist">
+          🎧 Playlist
+        </span>
+      }
+
+      @if (template().song) {
+        <span class="badge song">
+          🎵 Song
+        </span>
+      }
+
+      @if (template().technicianRequired) {
+        <span class="badge tech">
+      🛠 Tech
+    </span>
+      }
+
+    </div>
   </div>
 
   <div card-actions>
-    <ui-button
-      [variant]="'tertiary'"
-      type="button"
-      (pointerDown)="onEdit($event)">edit</ui-button>
   </div>
 
 </ui-card-frame>

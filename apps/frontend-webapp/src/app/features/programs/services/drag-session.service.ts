@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import type { Artist, ArtistGroup, PerformanceSlot, PerformanceTemplate } from '../program-types';
+import type { Artist, ArtistGroup, ArtistPerformanceSlot, ArtistPerformanceSlotTemplate } from '../program-types';
 
 //TODO : rendre générique DragSessionService<T>
 @Injectable({ providedIn: 'root' })
@@ -48,8 +48,8 @@ export class DragSessionService {
    DRAG STATE TYPE
 --------------------------------------------------- */
 export type DragState =
-  | { type: 'template'; template: PerformanceTemplate }
+  | { type: 'template'; template: ArtistPerformanceSlotTemplate }
   | { type: 'artist'; artist: Artist }
   | { type: 'group'; group: ArtistGroup }
-  | { type: 'slot'; slot: PerformanceSlot }
-  | { type: 'resize'; slot: PerformanceSlot };
+  | { type: 'slot'; slot: ArtistPerformanceSlot }
+  | { type: 'resize'; slot: ArtistPerformanceSlot };

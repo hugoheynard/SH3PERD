@@ -7,7 +7,8 @@
   width: 100%;
   backdrop-filter: blur(6px);
   background: #14161a;
-  @include sh3.radiusAndShadow
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 nav {

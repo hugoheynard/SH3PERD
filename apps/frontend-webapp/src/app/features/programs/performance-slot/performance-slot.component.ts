@@ -1,8 +1,8 @@
-import { Component, computed, EventEmitter, inject, input, Output } from '@angular/core';
+import { Component, computed, EventEmitter, inject, input, output, Output } from '@angular/core';
 import { ProgramStateService } from '../services/program-state.service';
 import { ArtistChipComponent } from '../artist-chip/artist-chip.component';
 import { SlotHoverService } from '../services/slot-hover.service';
-import type { PerformanceSlot } from '../program-types';
+import type { ArtistPerformanceSlot } from '../program-types';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 
 @Component({
@@ -20,7 +20,8 @@ import { PlannerResolutionService } from '../services/planner-resolution.service
     '[style.height.px]': 'height()',
     '[style.background]': "color",
 
-    '(pointerdown)': 'onPointerDown($event)'
+    '(pointerdown)': 'onPointerDown($event)',
+    '(dblclick)': 'onDoubleClick(this.slot().id)'
   }
 })
 export class PerformanceSlotComponent {
@@ -28,11 +29,13 @@ export class PerformanceSlotComponent {
   private hover = inject(SlotHoverService);
   private res = inject(PlannerResolutionService);
 
+  editSlot = output<string>()
+
   get isHovered(): boolean {
     return this.hover.hovered()?.id === this.slot().id;
   }
 
-  slot = input.required<PerformanceSlot>();
+  slot = input.required<ArtistPerformanceSlot>();
   @Output() slotPointerDown = new EventEmitter<PointerEvent>();
 
   isExpanded = false;
@@ -83,5 +86,10 @@ export class PerformanceSlotComponent {
     return `${this.slot().color}33`;
     // alpha faible (20% approx)
   }
+
+  onDoubleClick(slot_id: string) {
+    this.editSlot.emit(slot_id)
+  }
+
 
 }

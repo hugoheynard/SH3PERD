@@ -61,3 +61,17 @@
 
   cursor: pointer;
 }
+
+.checkbox-group {
+  display: flex;
+  gap: 14px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}

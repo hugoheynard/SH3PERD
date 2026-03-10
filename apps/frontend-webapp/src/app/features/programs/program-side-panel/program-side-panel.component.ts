@@ -7,15 +7,15 @@ import { SidePanelSectionComponent } from '../side-panel-section/side-panel-sect
 import { LayoutService } from '../../../core/services/layout.service';
 import { EditTemplatePopoverComponent } from '../edit-template-popover/edit-template-popover.component';
 import { ButtonComponent } from '../button/button.component';
-import type { Artist, ArtistGroup, PerformanceTemplate } from '../program-types';
+import type { Artist, ArtistGroup, ArtistPerformanceSlotTemplate } from '../program-types';
 import { GroupCardComponent } from '../group-card/group-card.component';
 
 
 export interface ProgramSidePanelConfig {
-  templates: PerformanceTemplate[];
+  templates: ArtistPerformanceSlotTemplate[];
   artists: Artist[];
   groups: ArtistGroup[];
-  onTemplateDragStart: (template: PerformanceTemplate) => void;
+  onTemplateDragStart: (template: ArtistPerformanceSlotTemplate) => void;
   onArtistDragStart: (artist: Artist) => void;
   onGroupDragStart: (group: ArtistGroup) => void;
 }
@@ -71,7 +71,7 @@ export class ProgramSidePanelComponent {
 
   }
 
-  onTemplateDrag(template: PerformanceTemplate) {
+  onTemplateDrag(template: ArtistPerformanceSlotTemplate) {
     this.config.onTemplateDragStart(template);
   };
 
@@ -79,7 +79,7 @@ export class ProgramSidePanelComponent {
     this.config.onArtistDragStart(artist);
   };
 
-  onEditTemplate(template: PerformanceTemplate) {
+  onEditTemplate(template: ArtistPerformanceSlotTemplate) {
     this.layout.setPopover(EditTemplatePopoverComponent, {
       mode: 'edit',
       template

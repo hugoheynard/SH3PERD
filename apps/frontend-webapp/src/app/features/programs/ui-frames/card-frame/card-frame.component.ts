@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { DragIconComponent } from '../drag-icon/drag-icon.component';
+import { DragIconComponent } from '../../drag-icon/drag-icon.component';
 
 
 /**

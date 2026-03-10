@@ -1,11 +1,11 @@
-import type { PerformanceTemplate } from '../program-types';
+import type { ArtistPerformanceSlotTemplate } from '../program-types';
 
-export const mockPerformanceSlotsTemplates: PerformanceTemplate[] = [
-  { id: 't1', name: 'PBO', duration: 15, type: 'PBO', color: '#73098c',  },
-  { id: 't2', name: 'Cabaret', duration: 15, type: 'CABARET', color: '#f19010' },
-  { id: 't3', name: 'Aerial', duration: 5, type: 'AERIAL', color: '#66eda1' },
-  { id: 't4', name: 'Club', duration: 15, type: 'CLUB_ROTATION', color: '#66b9ed' },
-  { id: 't5', name: 'FINAL', duration: 5, type: 'FINAL', color: '#66ceed' }
+export const mockPerformanceSlotsTemplates: ArtistPerformanceSlotTemplate[] = [
+  { id: 't1', name: 'PBO', duration: 15, type: 'PBO', color: '#73098c', playlist: true, song: false, technicianRequired: false },
+  { id: 't2', name: 'Cabaret', duration: 15, type: 'CABARET', color: '#f19010', playlist: true, song: false, technicianRequired: false },
+  { id: 't3', name: 'Aerial', duration: 5, type: 'AERIAL', color: '#66eda1', playlist: false, song: true, technicianRequired: true },
+  { id: 't4', name: 'Club', duration: 15, type: 'CLUB_ROTATION', color: '#66b9ed', playlist: false, song: false, technicianRequired: false},
+  { id: 't5', name: 'FINAL', duration: 5, type: 'FINAL', color: '#66ceed', playlist: false, song: true, technicianRequired: false }
 ];
 
 

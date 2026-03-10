@@ -26,8 +26,11 @@ import {
 } from '../utils/mockDATAS';
 import { DragSessionService } from '../services/drag-session.service';
 import { SlotHoverService } from '../services/slot-hover.service';
-import type { Artist, ArtistGroup, PerformanceSlot, PerformanceTemplate, Room } from '../program-types';
+import type { Artist, ArtistGroup, ArtistPerformanceSlot, ArtistPerformanceSlotTemplate, Room } from '../program-types';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
+import {
+  EditPerformanceSlotPopoverComponent
+} from '../edit-performance-slot-popover/edit-performance-slot-popover.component';
 
 @Component({
   selector: 'app-programs-page',
@@ -60,7 +63,7 @@ export class ProgramsPageComponent implements OnInit {
       templates: mockPerformanceSlotsTemplates,
       artists: AllMockArtists,
       groups: mockArtistGroups,
-      onTemplateDragStart: (t: PerformanceTemplate) => this.startTemplateDrag(t),
+      onTemplateDragStart: (t: ArtistPerformanceSlotTemplate) => this.startTemplateDrag(t),
       onArtistDragStart: (a: Artist) => this.startArtistDrag(a),
       onGroupDragStart: (g: ArtistGroup) => this.startGroupDrag(g)
     });
@@ -73,7 +76,7 @@ export class ProgramsPageComponent implements OnInit {
   /* ---------------- TIME UTILS ---------------- */
   get timelineHeight(): number {
     return this.res.minuteToPx(this.state.totalMinutes());
-  }
+  };
 
   get gridOffsetPx(): number {
 
@@ -87,7 +90,7 @@ export class ProgramsPageComponent implements OnInit {
   };
 
   /* ---------------- TEMPLATE DRAG ---------------- */
-  startTemplateDrag(template: PerformanceTemplate) {
+  startTemplateDrag(template: ArtistPerformanceSlotTemplate) {
     this.drag.start({ type: 'template', template });
   };
 
@@ -137,7 +140,9 @@ export class ProgramsPageComponent implements OnInit {
       type: drag.template.type,
       color: drag.template.color,
       roomId: this.previewRoomId,
-      artists: []
+      artists: [],
+      playlist: drag.template.playlist,
+      song: drag.template.song
     });
   }
 
@@ -188,10 +193,10 @@ export class ProgramsPageComponent implements OnInit {
 
   /* ---------------- SLOT DRAG / RESIZE ---------------- */
 
-  startSlotDrag(event: PointerEvent, slot: PerformanceSlot): void {
+  startSlotDrag(event: PointerEvent, slot: ArtistPerformanceSlot): void {
 
     if (event.altKey) {
-      const copy: PerformanceSlot = {
+      const copy: ArtistPerformanceSlot = {
         ...slot,
         id: crypto.randomUUID(),
         artists: [...slot.artists]
@@ -205,7 +210,7 @@ export class ProgramsPageComponent implements OnInit {
     this.interaction.startSlotDrag(event, slot);
   }
 
-  startSlotResize(event: PointerEvent, slot: PerformanceSlot): void {
+  startSlotResize(event: PointerEvent, slot: ArtistPerformanceSlot): void {
     this.interaction.startSlotResize(event, slot);
   }
 
@@ -295,7 +300,7 @@ export class ProgramsPageComponent implements OnInit {
    * Returns an array of performance slots that are scheduled in a specific room, identified by the provided roomId.
    * @param roomId
    */
-  getSlotsForRoom(roomId: string): PerformanceSlot[] {
+  getSlotsForRoom(roomId: string): ArtistPerformanceSlot[] {
     return this.slots().filter(s => s.roomId === roomId);
   }
 
@@ -307,16 +312,13 @@ export class ProgramsPageComponent implements OnInit {
     this.state.removeRoom(roomId);
   }
 
-
-  get previewTemplate(): PerformanceTemplate | undefined {
+  get previewTemplate(): ArtistPerformanceSlotTemplate | undefined {
     const drag = this.drag.current();
 
     return drag?.type === 'template'
       ? drag.template
       : undefined;
   }
-
-
 
   //* ---------------- ARTIST GROUP DRAG ---------------- *//
   /**
@@ -325,5 +327,11 @@ export class ProgramsPageComponent implements OnInit {
    */
   startGroupDrag(group: ArtistGroup) {
     this.drag.start({ type: 'group', group });
+  };
+
+
+
+  openEditPerformanceSlotPopover(slot_id: string) {
+    this.layout.setPopover(EditPerformanceSlotPopoverComponent, { id: slot_id });
   };
 }
