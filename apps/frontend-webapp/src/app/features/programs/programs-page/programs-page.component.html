@@ -42,7 +42,7 @@
               <div
                 class="slot preview"
                 [style.top.px]="previewTop"
-                [style.height.px]="previewTemplate.duration * PIXELS_PER_MINUTE"
+                [style.height.px]="getSlotHeight(previewTemplate.duration)"
               >
                 {{ previewTemplate.type }}
               </div>

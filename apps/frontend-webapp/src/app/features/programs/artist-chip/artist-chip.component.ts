@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import type { Artist } from '../services/program-state.service';
+
+import type { Artist } from '../program-types';
 
 @Component({
   selector: 'app-artist-chip',

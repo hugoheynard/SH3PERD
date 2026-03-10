@@ -1,12 +1,12 @@
 <ui-card-frame class="artist-card" [dragIcon]="true">
 
-  <div card-left class="artist-avatar">{{ initials }}</div>
+  <div card-left class="artist-avatar" [style.background]="artist().roleColor">{{ initials }}</div>
 
   <div card-content class="artist-main">
 
     <div class="artist-meta">
       <div class="artist-name">{{ artist().name }}</div>
-      <div class="artist-role">Staff</div>
+      <div class="artist-role">{{ artist().role }}</div>
     </div>
 
     <app-artist-workload-strip

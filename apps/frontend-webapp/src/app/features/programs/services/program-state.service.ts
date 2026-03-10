@@ -1,42 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { minutesToTime, time_functions_utils } from '../utils/time_functions_utils';
-
-export interface PerformanceTemplate {
-  id: string;
-  name: string;
-  duration: number;
-  type: string;
-  color: string;
-}
-
-export interface PerformanceSlot {
-  id: string;
-  startMinutes: number;
-  duration: number;
-  type: string;
-  color: string;
-  roomId: string;
-  artists: Artist[];
-  loadScore?: number;
-}
-
-export interface Room {
-  id: string;
-  name: string;
-}
-
-export interface ProgramState {
-  name: string;
-  startTime: string;
-  endTime: string;
-  rooms: Room[];
-  slots: PerformanceSlot[];
-}
-
-export interface Artist {
-  id: string;
-  name: string;
-}
+import type { Artist, ArtistGroup, PerformanceSlot, ProgramState, Room } from '../program-types';
 
 @Injectable({ providedIn: 'root' })
 export class ProgramStateService {
@@ -260,4 +224,66 @@ export class ProgramStateService {
       })
     );
   }
+
+  updateSlotStart(slotId: string, startMinutes: number) {
+
+    this.slots.update(slots =>
+      slots.map(slot =>
+        slot.id === slotId
+          ? { ...slot, startMinutes }
+          : slot
+      )
+    );
+
+  }
+
+  updateSlotDuration(slotId: string, duration: number) {
+
+    this.slots.update(slots =>
+      slots.map(slot =>
+        slot.id === slotId
+          ? { ...slot, duration }
+          : slot
+      )
+    );
+  };
+
+  updateSlotRoom(slotId: string, roomId: string) {
+
+    this.slots.update(slots =>
+      slots.map(slot =>
+        slot.id === slotId
+          ? { ...slot, roomId }
+          : slot
+      )
+    );
+
+  }
+
+
+  //----GROUPS HANDLING
+  artistGroups = signal<ArtistGroup[]>([]);
+
+  addArtistGroup(group: ArtistGroup) {
+    this.artistGroups.update(groups => [...groups, group]);
+  }
+
+  addGroupToSlot(slotId: string, group: ArtistGroup) {
+    this.slots.update(slots =>
+      slots.map(slot => {
+        if (slot.id !== slotId) return slot;
+
+        const existing = new Set(slot.artists.map(a => a.id));
+
+        const newArtists = group.artists.filter(a => !existing.has(a.id));
+
+        return {
+          ...slot,
+          artists: [...slot.artists, ...newArtists]
+        };
+      })
+    );
+  }
+
+
 }

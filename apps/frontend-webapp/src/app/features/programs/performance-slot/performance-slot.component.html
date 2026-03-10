@@ -2,11 +2,11 @@
 
 <div class="slot-content">
   <div class="slot-top">
-    <div class="slot-title">{{ slot.type }}</div>
+    <div class="slot-title">{{ slot().type }}</div>
     <!-- Artistes en haut si compact -->
     @if (isCompact) {
       <div class="artist-container compact">
-        @for (artist of slot.artists; track artist.id) {
+        @for (artist of slot().artists; track artist.id) {
           <app-artist-chip
             [artist]="artist"
             (remove)="removeArtist($event)">
@@ -30,7 +30,7 @@
       <div class="slot-staff">
         <div class="staff-label">Staff</div>
         <div class="artist-container">
-          @for (artist of slot.artists; track artist.id) {
+          @for (artist of slot().artists; track artist.id) {
             <app-artist-chip [artist]="artist" (remove)="removeArtist($event)" />
           }
         </div>
@@ -48,7 +48,7 @@
 @if (isExpanded) {
   <div class="slot-side-info">
     <div class="info-title">Details</div>
-    <div>Duration: {{ slot.duration }} min</div>
-    <div>Artists: {{ slot.artists.length }}</div>
+    <div>Duration: {{ slot().duration }} min</div>
+    <div>Artists: {{ slot().artists.length }}</div>
   </div>
 }

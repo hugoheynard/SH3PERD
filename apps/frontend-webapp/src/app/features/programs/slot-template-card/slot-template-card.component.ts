@@ -1,7 +1,7 @@
 import { Component, input, output } from '@angular/core';
-import type { PerformanceTemplate } from '../services/program-state.service';
 import { CardFrameComponent } from '../card-frame/card-frame.component';
 import { ButtonComponent } from '../button/button.component';
+import type { PerformanceTemplate } from '../program-types';
 
 @Component({
   selector: 'ui-slot-template-card',

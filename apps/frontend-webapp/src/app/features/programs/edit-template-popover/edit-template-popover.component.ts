@@ -1,9 +1,9 @@
 import { Component, inject} from '@angular/core';
 import { PopoverFrameComponent } from '../popover-frame/popover-frame.component';
 import { ButtonComponent } from '../button/button.component';
-import { PANEL_DATA } from '../../../core/main-layout/main-layout.component';
-import type { PerformanceTemplate } from '../services/program-state.service';
+import { INJECTION_DATA } from '../../../core/main-layout/main-layout.component';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import type { PerformanceTemplate } from '../program-types';
 
 @Component({
   selector: 'app-edit-template-popover',
@@ -20,7 +20,7 @@ export class EditTemplatePopoverComponent {
   private config = inject<{
     mode: 'edit' | 'create';
     template?: PerformanceTemplate;
-  }>(PANEL_DATA);
+  }>(INJECTION_DATA);
 
   private fb = inject(FormBuilder);
 

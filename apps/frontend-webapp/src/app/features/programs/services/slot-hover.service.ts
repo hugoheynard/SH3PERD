@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
-import type { PerformanceSlot } from './program-state.service';
+
+import type { PerformanceSlot } from '../program-types';
 
 @Injectable({
   providedIn: 'root'

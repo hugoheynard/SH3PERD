@@ -1,0 +1,22 @@
+<ui-card-frame
+  class="group-card"
+  [dragIcon]="true"
+  >
+
+  <div card-left class="group-icon">
+    👥
+  </div>
+
+  <div card-content>
+
+    <div class="group-name">
+      {{ group().name }}
+    </div>
+
+    <div class="group-meta">
+      {{ group().artists.length }} artists
+    </div>
+
+  </div>
+
+</ui-card-frame>

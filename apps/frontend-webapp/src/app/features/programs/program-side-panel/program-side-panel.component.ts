@@ -1,6 +1,5 @@
 import { Component, computed, inject, Inject } from '@angular/core';
-import { PANEL_DATA } from '../../../core/main-layout/main-layout.component';
-import type { Artist, PerformanceTemplate } from '../services/program-state.service';
+import { INJECTION_DATA } from '../../../core/main-layout/main-layout.component';
 import { SlotTemplateCardComponent } from '../slot-template-card/slot-template-card.component';
 import { ArtistCardComponent } from '../artist-card/artist-card.component';
 import { type ArtistWorkload, WorkloadService } from '../services/workload.service';
@@ -8,13 +7,17 @@ import { SidePanelSectionComponent } from '../side-panel-section/side-panel-sect
 import { LayoutService } from '../../../core/services/layout.service';
 import { EditTemplatePopoverComponent } from '../edit-template-popover/edit-template-popover.component';
 import { ButtonComponent } from '../button/button.component';
+import type { Artist, ArtistGroup, PerformanceTemplate } from '../program-types';
+import { GroupCardComponent } from '../group-card/group-card.component';
 
 
 export interface ProgramSidePanelConfig {
   templates: PerformanceTemplate[];
   artists: Artist[];
+  groups: ArtistGroup[];
   onTemplateDragStart: (template: PerformanceTemplate) => void;
   onArtistDragStart: (artist: Artist) => void;
+  onGroupDragStart: (group: ArtistGroup) => void;
 }
 
 export function emptyWorkload(): ArtistWorkload {
@@ -34,6 +37,7 @@ export function emptyWorkload(): ArtistWorkload {
     ArtistCardComponent,
     SidePanelSectionComponent,
     ButtonComponent,
+    GroupCardComponent,
   ],
   templateUrl: './program-side-panel.component.html',
   styleUrl: './program-side-panel.component.scss'
@@ -41,11 +45,15 @@ export function emptyWorkload(): ArtistWorkload {
 export class ProgramSidePanelComponent {
 
   constructor(
-    @Inject(PANEL_DATA) public config: ProgramSidePanelConfig
+    @Inject(INJECTION_DATA) public config: ProgramSidePanelConfig
   ) {}
 
   private workload = inject(WorkloadService);
   private layout = inject(LayoutService);
+
+  get groups() {
+    return this.config.groups;
+  }
 
   artistWorkloads = this.workload.artistWorkloadMap;
 
@@ -81,8 +89,15 @@ export class ProgramSidePanelComponent {
 
   protected readonly emptyWorkload = emptyWorkload;
 
-  openTemplatePopover(mode: 'edit' | 'create'): void {
-    this.layout.setPopover(EditTemplatePopoverComponent, { mode });
+  /**
+   * Opens the popover to create a new performance template.
+   */
+  createTemplatePopover( ): void {
+    this.layout.setPopover(EditTemplatePopoverComponent, { mode: 'create' });
+  };
+
+  createUserGroup(): void {
+    `TODO: Implement create user group functionality`
   };
 }
 

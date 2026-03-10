@@ -1,60 +1,44 @@
 import { inject, Injectable } from '@angular/core';
-import type { PerformanceSlot } from './program-state.service';
 import { PointerTrackerService } from './pointer-tracker.service';
-import { DragSessionService, type DragState } from './drag-session.service';
+import { DragSessionService} from './drag-session.service';
+import type { PerformanceSlot } from '../program-types';
+import { PlannerResolutionService } from './planner-resolution.service';
+import { ProgramStateService } from './program-state.service';
+
 
 @Injectable({ providedIn: 'root' })
 export class TimelineInteractionService {
   private pointer = inject(PointerTrackerService);
   private drag = inject(DragSessionService);
-
-  currentDrag?: DragState;
+  private res = inject(PlannerResolutionService);
+  private state = inject(ProgramStateService);
 
   private dragStartY = 0;
-  private originalStartMinutes = 0;
-
   private resizeStartY = 0;
+  private originalStartMinutes = 0;
   private originalDuration = 0;
-
-  readonly PIXELS_PER_MINUTE = 5;
-  readonly SNAP_MINUTES = 5;
 
   /* ------------------ SLOT DRAG ------------------ */
 
   startSlotDrag(event: PointerEvent, slot: PerformanceSlot) {
-    if (this.drag.isDragging()) {
+
+    if (!this.startInteraction(event)) {
       return;
     }
 
-    event.preventDefault();
-    event.stopPropagation();
-
-    this.pointer.start(event);
-
-    // keep to keep tracking the pointer even if it goes outside the slot element
-    (event.target as HTMLElement)?.setPointerCapture(event.pointerId);
-
-    //this.activePointerId = event.pointerId;
-    //this.currentDrag = { type: 'slot', slot };
     this.drag.start({ type: 'slot', slot });
 
     this.dragStartY = event.clientY;
     this.originalStartMinutes = slot.startMinutes;
-  }
+  };
 
   /* ------------------ SLOT RESIZE ------------------ */
 
   startSlotResize(event: PointerEvent, slot: PerformanceSlot) {
-    if (this.drag.isDragging()) {
+
+    if (!this.startInteraction(event)) {
       return;
     }
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    this.pointer.start(event);
-
-    (event.target as HTMLElement)?.setPointerCapture(event.pointerId);
 
     this.drag.start({ type: 'resize', slot });
 
@@ -71,46 +55,50 @@ export class TimelineInteractionService {
     }
 
     const drag = this.drag.current();
+
     if (!drag) {
       return;
     }
 
     switch (drag.type) {
 
+      /* ---------- SLOT MOVE ---------- */
+
       case 'slot': {
-        const slot = drag.slot;
 
         const deltaY = event.clientY - this.dragStartY;
-        const deltaMinutes = deltaY / this.PIXELS_PER_MINUTE;
+        const deltaMinutes = this.res.pxToMinutes(deltaY);
+        const newMinutes = this.originalStartMinutes + deltaMinutes;
+        const snapped = this.res.snap(newMinutes);
 
-        const newMinutes =
-          this.originalStartMinutes + deltaMinutes;
+        this.state.updateSlotStart(
+          drag.slot.id,
+          Math.max(0, snapped)
+        );
 
-        const snapped =
-          Math.round(newMinutes / this.SNAP_MINUTES) * this.SNAP_MINUTES;
-
-        slot.startMinutes = Math.max(0, snapped);
         break;
       }
+
+      /* ---------- SLOT RESIZE ---------- */
 
       case 'resize': {
-        const slot = drag.slot;
 
         const deltaY = event.clientY - this.resizeStartY;
-        const deltaMinutes = deltaY / this.PIXELS_PER_MINUTE;
 
-        const newDuration =
-          this.originalDuration + deltaMinutes;
+        const deltaMinutes = this.res.pxToMinutes(deltaY);
+
+        const newDuration = this.originalDuration + deltaMinutes;
 
         const snapped =
-          Math.round(newDuration / this.SNAP_MINUTES) * this.SNAP_MINUTES;
+          this.res.snap(newDuration);
 
-        slot.duration =
-          Math.max(this.SNAP_MINUTES, snapped);
+        this.state.updateSlotDuration(
+          drag.slot.id,
+          Math.max(this.res.snapMinutes(), snapped)
+        );
+
         break;
       }
-
-      // template / artist sont gérés dans le component
     }
   }
 
@@ -119,5 +107,32 @@ export class TimelineInteractionService {
   stop() {
     this.drag.stop();
     this.pointer.stop();
+  }
+
+  /* ------------------ UTILS ------------------ */
+  /**
+   * Checks if a drag session is already active and returns true if so, preventing the start of a new interaction.
+   * If no drag session is active, it prevents the default behavior and
+   * ->stops propagation of the event,
+   * ->starts tracking the pointer
+   * ->captures the pointer for the event target.
+   * This method is used to ensure that only one interaction (drag or resize) can be active at a time and to set up the necessary pointer tracking for the interaction.
+   * @param event
+   * @private
+   */
+  private startInteraction(event: PointerEvent): boolean {
+
+    if (this.drag.isDragging()) {
+      return false;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.pointer.start(event);
+
+    (event.target as HTMLElement)?.setPointerCapture(event.pointerId);
+
+    return true;
   }
 }

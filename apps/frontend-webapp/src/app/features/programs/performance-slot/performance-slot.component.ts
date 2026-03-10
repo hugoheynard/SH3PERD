@@ -1,8 +1,9 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { type PerformanceSlot, ProgramStateService } from '../services/program-state.service';
-import { PIXELS_PER_MINUTE, SNAP_MINUTES } from '../utils/PROGRAM_CONSTS';
+import { Component, computed, EventEmitter, inject, input, Output } from '@angular/core';
+import { ProgramStateService } from '../services/program-state.service';
 import { ArtistChipComponent } from '../artist-chip/artist-chip.component';
 import { SlotHoverService } from '../services/slot-hover.service';
+import type { PerformanceSlot } from '../program-types';
+import { PlannerResolutionService } from '../services/planner-resolution.service';
 
 @Component({
   selector: 'app-performance-slot',
@@ -12,11 +13,11 @@ import { SlotHoverService } from '../services/slot-hover.service';
   templateUrl: './performance-slot.component.html',
   styleUrl: './performance-slot.component.scss',
   host: {
-    '[attr.data-slot-id]': "slot.id",
+    '[attr.data-slot-id]': "slot().id",
     '[class.hover-artist]':"isHovered",
     '[class.expanded]': 'isExpanded',
-    '[style.top.px]': 'top',
-    '[style.height.px]': 'height',
+    '[style.top.px]': 'top()',
+    '[style.height.px]': 'height()',
     '[style.background]': "color",
 
     '(pointerdown)': 'onPointerDown($event)'
@@ -25,22 +26,23 @@ import { SlotHoverService } from '../services/slot-hover.service';
 export class PerformanceSlotComponent {
   private state = inject(ProgramStateService);
   private hover = inject(SlotHoverService);
+  private res = inject(PlannerResolutionService);
 
   get isHovered(): boolean {
-    return this.hover.hovered()?.id === this.slot.id;
+    return this.hover.hovered()?.id === this.slot().id;
   }
 
-  @Input({ required: true }) slot!: PerformanceSlot;
+  slot = input.required<PerformanceSlot>();
   @Output() slotPointerDown = new EventEmitter<PointerEvent>();
 
   isExpanded = false;
 
   get startTime(): string {
-    return this.state.getSlotStartTime(this.slot);
+    return this.state.getSlotStartTime(this.slot());
   }
 
   get endTime(): string {
-    return this.state.getSlotEndTime(this.slot);
+    return this.state.getSlotEndTime(this.slot());
   }
 
   toggleExpanded(event: PointerEvent) {
@@ -49,19 +51,14 @@ export class PerformanceSlotComponent {
   }
 
   get isCompact(): boolean {
-    return this.slot.duration <= SNAP_MINUTES;
+    return this.slot().duration <= this.res.snapMinutes();
   }
 
-  get top(): number {
-    return this.slot.startMinutes * PIXELS_PER_MINUTE;
-  }
-
-  get height(): number {
-    return this.slot.duration * PIXELS_PER_MINUTE;
-  }
+  top = computed(() => this.res.minuteToPx(this.slot().startMinutes));
+  height = computed(() => this.res.minuteToPx(this.slot().duration));
 
   get color(): string {
-    return this.slot.color;
+    return this.slot().color;
   }
 
   onPointerDown(event: PointerEvent) {
@@ -79,11 +76,11 @@ export class PerformanceSlotComponent {
   }
 
   removeArtist(artistId: string): void {
-    this.state.removeArtistFromSlot(this.slot.id, artistId);
+    this.state.removeArtistFromSlot(this.slot().id, artistId);
   };
 
   get panelColor(): string {
-    return `${this.slot.color}33`;
+    return `${this.slot().color}33`;
     // alpha faible (20% approx)
   }
 

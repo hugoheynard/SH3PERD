@@ -5,7 +5,7 @@ import {
   MultiSelectDropdownComponent, SelectComponent,
 } from '@sh3pherd/ui-angular';
 import { FormBuilder, type FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { PANEL_DATA } from '../../../../core/main-layout/main-layout.component';
+import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
 import type { TUserGroupId } from '@sh3pherd/shared-types';
 import { UserGroupService } from '../../services/user-group.service';
 
@@ -30,7 +30,7 @@ export class CreateGroupComponent implements OnInit {
   private readonly ug = inject(UserGroupService);
   private readonly fb = inject(FormBuilder);
 
-  private readonly data = inject<{ userGroup_id: TUserGroupId }>(PANEL_DATA);
+  private readonly data = inject<{ userGroup_id: TUserGroupId }>(INJECTION_DATA);
   public readonly form: FormGroup = this.buildForm();
 
   public typeOptions: any[] = [];

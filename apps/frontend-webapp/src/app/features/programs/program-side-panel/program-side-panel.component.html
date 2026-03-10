@@ -5,7 +5,7 @@
       [variant]="'tertiary'"
       [type]="'button'"
       stopPropagation
-      (pointerDown)="openTemplatePopover('create')">
+      (pointerDown)="createTemplatePopover()">
       + Add
     </ui-button>
   </div>
@@ -27,30 +27,28 @@
       <ui-artist-card
         [artist]="item.artist"
         [workload]="item.workload"
-        (pointerdown)="config.onArtistDragStart(item.artist)"
-      />
+        (pointerdown)="config.onArtistDragStart(item.artist)" />
     }
   </div>
 </app-side-panel-section>
 
 <!--USERGROUPS-->
-<app-side-panel-section [title]="'usergroups'" [count]="config.artists ? config.artists.length : 0">
+<app-side-panel-section [title]="'usergroups'" [count]="config.groups ? config.groups.length : 0">
   <div section-actions>
     <ui-button
       [variant]="'tertiary'"
       [type]="'button'"
-      stopPropagation>
+      stopPropagation
+      (pointerDown)="createUserGroup()">
       Create
     </ui-button>
   </div>
 
   <div section-content class="artist-grid" >
-    @for (item of artistsWithWorkload(); track item.artist.id) {
-      <ui-artist-card
-        [artist]="item.artist"
-        [workload]="item.workload"
-        (pointerdown)="config.onArtistDragStart(item.artist)"
-      />
+    @for (group of groups; track group.id) {
+      <ui-group-card
+        [group]="group"
+        (pointerdown)="config.onGroupDragStart(group)"/>
     }
   </div>
 </app-side-panel-section>

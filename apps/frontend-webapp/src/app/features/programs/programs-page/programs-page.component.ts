@@ -10,12 +10,6 @@ import {
 
 import { PerformanceSlotComponent } from '../performance-slot/performance-slot.component';
 import { ProgramHeaderComponent } from '../program-header/program-header.component';
-import type {
-  Artist,
-  PerformanceSlot,
-  PerformanceTemplate,
-  Room
-} from '../services/program-state.service';
 import { ProgramStateService } from '../services/program-state.service';
 
 import {
@@ -27,13 +21,13 @@ import { ProgramSidePanelComponent } from '../program-side-panel/program-side-pa
 import { TimeMarkersComponent } from '../time-markers/time-markers.component';
 
 import { time_functions_utils } from '../utils/time_functions_utils';
-import { PIXELS_PER_MINUTE } from '../utils/PROGRAM_CONSTS';
 import {
-  mockArtists_external,
-  mockPerformanceSlotsTemplates
+  mockPerformanceSlotsTemplates, mockArtistGroups, AllMockArtists,
 } from '../utils/mockDATAS';
 import { DragSessionService } from '../services/drag-session.service';
 import { SlotHoverService } from '../services/slot-hover.service';
+import type { Artist, ArtistGroup, PerformanceSlot, PerformanceTemplate, Room } from '../program-types';
+import { PlannerResolutionService } from '../services/planner-resolution.service';
 
 @Component({
   selector: 'app-programs-page',
@@ -49,6 +43,7 @@ export class ProgramsPageComponent implements OnInit {
 
   private state = inject(ProgramStateService);
   private drag = inject(DragSessionService);
+  private res = inject(PlannerResolutionService)
   private interaction = inject(TimelineInteractionService);
   private hover = inject(SlotHoverService);
 
@@ -57,19 +52,17 @@ export class ProgramsPageComponent implements OnInit {
   previewTop = 0;
   previewRoomId?: string;
 
-  readonly SNAP_MINUTES = 5;
-
   @ViewChildren('roomLayer') roomLayers!: QueryList<ElementRef<HTMLDivElement>>;
 
   /* ---------------- LIFECYCLE ---------------- */
   ngOnInit() {
     this.layout.setLeftPanel(ProgramSidePanelComponent, {
       templates: mockPerformanceSlotsTemplates,
-      artists: mockArtists_external,
-      onTemplateDragStart: (t: PerformanceTemplate) =>
-        this.startTemplateDrag(t),
-      onArtistDragStart: (a: Artist) =>
-        this.startArtistDrag(a),
+      artists: AllMockArtists,
+      groups: mockArtistGroups,
+      onTemplateDragStart: (t: PerformanceTemplate) => this.startTemplateDrag(t),
+      onArtistDragStart: (a: Artist) => this.startArtistDrag(a),
+      onGroupDragStart: (g: ArtistGroup) => this.startGroupDrag(g)
     });
   }
 
@@ -79,14 +72,19 @@ export class ProgramsPageComponent implements OnInit {
 
   /* ---------------- TIME UTILS ---------------- */
   get timelineHeight(): number {
-    return this.state.totalMinutes() * PIXELS_PER_MINUTE;
+    return this.res.minuteToPx(this.state.totalMinutes());
   }
 
   get gridOffsetPx(): number {
+
     const startMinutes = time_functions_utils(this.state.startTime());
-    const minuteWithinHour = startMinutes % 60;
-    return minuteWithinHour * PIXELS_PER_MINUTE;
+
+    return this.res.computeGridOffset(startMinutes);
   }
+
+  getSlotHeight(minutes: number): number {
+    return this.res.minuteToPx(minutes);
+  };
 
   /* ---------------- TEMPLATE DRAG ---------------- */
   startTemplateDrag(template: PerformanceTemplate) {
@@ -111,12 +109,7 @@ export class ProgramsPageComponent implements OnInit {
       ) {
         const offsetY = event.clientY - rect.top;
 
-        const rawMinutes = offsetY / PIXELS_PER_MINUTE;
-        const snapped =
-          Math.round(rawMinutes / this.SNAP_MINUTES) * this.SNAP_MINUTES;
-
-        this.previewTop =
-          Math.max(0, snapped * PIXELS_PER_MINUTE);
+        this.previewTop = this.res.computePreviewTop(offsetY);
 
         this.previewRoomId = layer.nativeElement.dataset['roomId'];
       }
@@ -135,8 +128,7 @@ export class ProgramsPageComponent implements OnInit {
       return;
     }
 
-    const startMinutes =
-      this.previewTop / PIXELS_PER_MINUTE;
+    const startMinutes = this.res.pxToMinutes(this.previewTop);
 
     this.state.addSlot({
       id: crypto.randomUUID(),
@@ -239,11 +231,10 @@ export class ProgramsPageComponent implements OnInit {
           newRoomId &&
           drag.slot.roomId !== newRoomId
         ) {
-          drag.slot.roomId = newRoomId;
-        }
+          this.state.updateSlotRoom(drag.slot.id, newRoomId);        }
       }
     }
-  }
+  };
 
   /* ---------------- GLOBAL EVENTS ---------------- */
 
@@ -316,7 +307,6 @@ export class ProgramsPageComponent implements OnInit {
     this.state.removeRoom(roomId);
   }
 
-  protected readonly PIXELS_PER_MINUTE = PIXELS_PER_MINUTE;
 
   get previewTemplate(): PerformanceTemplate | undefined {
     const drag = this.drag.current();
@@ -325,4 +315,15 @@ export class ProgramsPageComponent implements OnInit {
       ? drag.template
       : undefined;
   }
+
+
+
+  //* ---------------- ARTIST GROUP DRAG ---------------- *//
+  /**
+   * Initiates a drag session for an artist group. When a user starts dragging an artist group, this method is called with the group as an argument. It uses the DragSessionService to start a new drag session, passing an object that indicates the type of item being dragged (in this case, 'group') and the group itself. This allows the application to manage the drag state and provide appropriate feedback to the user during the drag operation.
+   * @param group
+   */
+  startGroupDrag(group: ArtistGroup) {
+    this.drag.start({ type: 'group', group });
+  };
 }

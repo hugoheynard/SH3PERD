@@ -13,7 +13,7 @@ import {NgClass} from '@angular/common';
 import {LayoutService} from '../services/layout.service';
 import {CircularMenuComponent} from '../components/circular-menu/circular-menu.component';
 
-export const PANEL_DATA = new InjectionToken<unknown>('PANEL_DATA');
+export const INJECTION_DATA = new InjectionToken<unknown>('PANEL_DATA');
 
 @Component({
   selector: 'app-main-layout',
@@ -65,7 +65,7 @@ export class MainLayoutComponent implements AfterViewInit{
 
         const customInjector = Injector.create({
           parent: this.injector,
-          providers: [{ provide: PANEL_DATA, useValue: panelConfig.data }],
+          providers: [{ provide: INJECTION_DATA, useValue: panelConfig.data }],
         });
 
         this.leftPanel.createComponent(panelConfig.component!, { injector: customInjector });
@@ -81,7 +81,7 @@ export class MainLayoutComponent implements AfterViewInit{
 
         const customInjector = Injector.create({
           parent: this.injector,
-          providers: [{ provide: PANEL_DATA, useValue: panelConfig.data }],
+          providers: [{ provide: INJECTION_DATA, useValue: panelConfig.data }],
         });
 
         this.rightPanel.createComponent(panelConfig.component!, { injector: customInjector });
@@ -106,7 +106,7 @@ export class MainLayoutComponent implements AfterViewInit{
 
         const customInjector = Injector.create({
           parent: this.injector,
-          providers: [{ provide: PANEL_DATA, useValue: popoverConfig.data }],
+          providers: [{ provide: INJECTION_DATA, useValue: popoverConfig.data }],
         });
 
         this.popover.createComponent(popoverConfig.component, {

@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { time_functions_utils } from '../utils/time_functions_utils';
-import { PIXELS_PER_MINUTE } from '../utils/PROGRAM_CONSTS';
 import { ProgramStateService } from '../services/program-state.service';
+import { PlannerResolutionService } from '../services/planner-resolution.service';
 
 @Component({
   selector: 'app-time-markers',
@@ -11,17 +11,35 @@ import { ProgramStateService } from '../services/program-state.service';
 })
 export class TimeMarkersComponent {
   private state = inject(ProgramStateService);
+  private res = inject(PlannerResolutionService);
+
   totalMinutes = this.state.totalMinutes;
   programStart = this.state.startTime;
+  step = this.res.snapMinutes;
 
-  get timeMarkers(): number[] {
-    const steps = Math.ceil(this.totalMinutes() / 5);
-    return Array.from({ length: steps + 1 }, (_, i) => i * 5);
-  }
+  timeMarkers = computed(() => {
 
-  get visibleTimeMarkers(): number[] {
-    return this.timeMarkers.slice(1);
-  }
+    const total = this.totalMinutes();
+    const step = this.step();
+
+    const steps = Math.ceil(total / step);
+
+    return Array.from({ length: steps + 1 }, (_, i) => i * step);
+
+  });
+
+  visibleTimeMarkers = computed(() =>
+    this.timeMarkers().slice(1)
+  );
+
+  /**
+   * Calculate the pixel position for a given time offset in minutes.
+   * This is used to position the time markers correctly on the timeline.
+   * @param offsetMinutes
+   */
+  getPosition(offsetMinutes: number) {
+    return this.res.minuteToPx(offsetMinutes);
+  };
 
   formatTime(offsetMinutes: number): string {
 
@@ -35,14 +53,4 @@ export class TimeMarkersComponent {
 
     return `${hours}:${mins.toString().padStart(2, '0')}`;
   };
-
-  /**
-   * Calculate the pixel position for a given time offset in minutes.
-   * This is used to position the time markers correctly on the timeline.
-   * @param offsetMinutes
-   */
-  getPosition(offsetMinutes: number): number {
-    return offsetMinutes * PIXELS_PER_MINUTE;
-  };
-
 }

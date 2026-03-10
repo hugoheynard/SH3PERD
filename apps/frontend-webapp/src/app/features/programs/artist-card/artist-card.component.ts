@@ -1,8 +1,8 @@
 import { Component, input } from '@angular/core';
-import type { Artist } from '../services/program-state.service';
 import { ArtistWorkloadStripComponent } from '../artist-workload-strip/artist-workload-strip.component';
 import type { ArtistWorkload } from '../services/workload.service';
 import { CardFrameComponent } from '../card-frame/card-frame.component';
+import type { Artist } from '../program-types';
 
 @Component({
   selector: 'ui-artist-card',
