@@ -18,18 +18,18 @@
 
       <div
         class="mode-indicator"
-        [class.assisted]="state.mode() === 'assisted'">
+        [class.assisted]="selector.mode() === 'assisted'">
       </div>
 
       <button
-        (click)="state.changeProgramMode('manual')"
-        [class.active]="state.mode() === 'manual'">
+        (click)="settings.changeProgramMode('manual')"
+        [class.active]="selector.mode() === 'manual'">
         Manual
       </button>
 
       <button
-        (click)="state.changeProgramMode('assisted')"
-        [class.active]="state.mode() === 'assisted'">
+        (click)="settings.changeProgramMode('assisted')"
+        [class.active]="selector.mode() === 'assisted'">
         Assisted
       </button>
 

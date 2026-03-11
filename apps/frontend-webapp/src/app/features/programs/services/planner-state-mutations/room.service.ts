@@ -1,11 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { ProgramStateService } from '../program-state.service';
 import type { Room } from '../../program-types';
+import { PlannerSelectorService } from '../planner-selector.service';
 
 @Injectable({ providedIn: 'root' })
 export class RoomService {
 
   private state = inject(ProgramStateService);
+  private selector = inject(PlannerSelectorService);
 
   /* ---------------------------------
   ROOM HANDLING
@@ -66,6 +68,6 @@ export class RoomService {
   }
 
   isBaseRoom(room: Room): boolean {
-    return this.state.rooms()[0]?.id === room.id;
+    return this.selector.rooms()[0]?.id === room.id;
   };
 }

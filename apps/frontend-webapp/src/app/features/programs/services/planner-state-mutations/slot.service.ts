@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import type { ArtistPerformanceSlot, PlannerArtist } from '../../program-types';
+import type { ArtistPerformanceSlot, PlannerArtist, UserGroup } from '../../program-types';
 import { ProgramStateService } from '../program-state.service';
 
 /**
@@ -151,6 +151,34 @@ export class SlotService {
   };
 
   /* ---------------------------------
+  GROUP HANDLING IN SLOTS
+    -----------------------------------*/
+  /**
+   * Adds all artists from a user group to a specific performance slot. The method locates the slot by its ID and then iterates through the staff members of the provided user group. For each staff member, it checks if they are already associated with the slot to prevent duplicates. If a staff member is not already in the slot's list of artists, they are added to the array of artists for that slot, along with a reference to the source user group ID. This allows for quickly adding multiple artists to a performance slot based on their group affiliation.
+   * @param slotId
+   * @param group
+   */
+  addGroupToSlot(slotId: string, group: UserGroup) {
+
+    this.patchSlot(slotId, slot => {
+
+      const existingIds = new Set(slot.artists.map(a => a.id));
+
+      const newArtists = group.staff
+        .filter(a => !existingIds.has(a.id))
+        .map(artist => ({
+          ...artist,
+          sourceUserGroup_id: group.id
+        }));
+
+      return {
+        ...slot,
+        artists: [...slot.artists, ...newArtists]
+      };
+    });
+  };
+
+  /* ---------------------------------
   HELPER METHODS
   ----------------------------------- */
   /**
@@ -173,9 +201,7 @@ export class SlotService {
           ? updater(slot)
           : slot
       )
-
     }));
-
   }
 
 }

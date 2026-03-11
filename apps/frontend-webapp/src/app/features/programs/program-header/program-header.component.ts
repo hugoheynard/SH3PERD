@@ -1,8 +1,8 @@
 import { Component, inject, output} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ProgramStateService } from '../services/program-state.service';
 import { ProgramActionMenuComponent } from '../program-action-menu/program-action-menu.component';
 import { PlannerSelectorService } from '../services/planner-selector.service';
+import { ProgramSettingsService } from '../services/planner-state-mutations/program-settings.service';
 
 @Component({
   selector: 'app-program-header',
@@ -15,8 +15,12 @@ import { PlannerSelectorService } from '../services/planner-selector.service';
 })
 export class ProgramHeaderComponent {
 
-  state = inject(ProgramStateService);
   selector = inject(PlannerSelectorService);
+  settings = inject(ProgramSettingsService);
+
+  name = this.selector.name;
+  startTime = this.selector.startTime;
+  endTime = this.selector.endTime;
 
   save = output<void>();
   exportPdf = output<void>();

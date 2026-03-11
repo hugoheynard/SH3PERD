@@ -53,9 +53,11 @@ export interface ProgramState {
   name: string;
   startTime: string;
   endTime: string;
+  mode: ProgramMode;
   rooms: Room[];
   slots: ArtistPerformanceSlot[];
   artists: PlannerArtist[];
+  userGroups: UserGroup[];
 }
 
 export interface PlannerArtist {
@@ -73,3 +75,5 @@ export interface UserGroup {
   color?: string;
   staff: PlannerArtist[];
 }
+
+export type ProgramMode = 'manual' | 'assisted';

@@ -10,7 +10,6 @@ import {
 
 import { PerformanceSlotComponent } from '../performance-slot/performance-slot.component';
 import { ProgramHeaderComponent } from '../program-header/program-header.component';
-import { ProgramStateService } from '../services/program-state.service';
 
 import {
   TimelineInteractionService
@@ -22,7 +21,7 @@ import { TimeMarkersComponent } from '../time-markers/time-markers.component';
 
 import { time_functions_utils } from '../utils/time_functions_utils';
 import {
-  mockPerformanceSlotsTemplates, mockArtistGroups,
+  mockPerformanceSlotsTemplates,
 } from '../utils/mockDATAS';
 import { DragSessionService } from '../services/drag-interactions/drag-session.service';
 import { SlotHoverService } from '../services/drag-interactions/slot-hover.service';
@@ -34,6 +33,7 @@ import {
 import { RoomService } from '../services/planner-state-mutations/room.service';
 import { SlotService } from '../services/planner-state-mutations/slot.service';
 import { PlannerSelectorService } from '../services/planner-selector.service';
+
 
 @Component({
   selector: 'app-programs-page',
@@ -47,7 +47,6 @@ import { PlannerSelectorService } from '../services/planner-selector.service';
 })
 export class ProgramsPageComponent implements OnInit {
 
-  private state = inject(ProgramStateService);
   private selector = inject(PlannerSelectorService);
 
   public roomServ = inject(RoomService);
@@ -73,14 +72,11 @@ export class ProgramsPageComponent implements OnInit {
   /* ---------------- LIFECYCLE ---------------- */
 
   ngOnInit() {
-    // hydrate state signals
-    this.state.hydrateGroups(mockArtistGroups);
-
     // set left side panel
     this.layout.setLeftPanel(ProgramSidePanelComponent, {
       templates: mockPerformanceSlotsTemplates,
-      staff: this.state.staff,
-      groups: this.state.userGroups,
+      staff: this.selector.staff,
+      groups: this.selector.userGroups,
       onTemplateDragStart: (t: ArtistPerformanceSlotTemplate) => this.startTemplateDrag(t),
       onArtistDragStart: (a: PlannerArtist) => this.startArtistDrag(a),
       onGroupDragStart: (g: UserGroup) => this.startGroupDrag(g)
@@ -343,7 +339,7 @@ export class ProgramsPageComponent implements OnInit {
       return;
     }
 
-    this.state.addGroupToSlot(hoveredSlot.id, drag.group)
+    this.slotServ.addGroupToSlot(hoveredSlot.id, drag.group)
   };
 
 

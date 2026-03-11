@@ -1,17 +1,15 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { minutesToTime, time_functions_utils } from '../utils/time_functions_utils';
-import type { UserGroup, ArtistPerformanceSlot, ProgramState} from '../program-types';
-import { AllMockArtists } from '../utils/mockDATAS';
+import type { ArtistPerformanceSlot, ProgramState} from '../program-types';
+import { AllMockArtists, mockArtistGroups } from '../utils/mockDATAS';
 
-/*
-TODO: - refacto fonction update des slots
- */
 
 @Injectable({ providedIn: 'root' })
 export class ProgramStateService {
 
   private state = signal<ProgramState>({
     name: this.defaultProgramName,
+    mode: 'manual',
     startTime: '12:00',
     endTime: '19:00',
     rooms: [
@@ -20,9 +18,9 @@ export class ProgramStateService {
     ],
     slots: [],
     artists: AllMockArtists,
+    userGroups: mockArtistGroups,
   });
 
-  mode= signal<'manual' | 'assisted'>('manual');
 
   // SELECTORS
   /**
@@ -41,18 +39,9 @@ export class ProgramStateService {
     this.state.update(updater);
   };
 
-  staff = computed(() => this.state().artists);
-  rooms = computed(() => this.state().rooms);
-  userGroups = signal<UserGroup[]>([]);
-
-  // HYDRATE
-  hydrateGroups(groups: UserGroup[]) {
-    this.userGroups.set(groups);
-  }
-
   hydrateProgram(program: ProgramState) {
     this.state.set(program)
-  }
+  };
 
   // -------- GETTERS --------
   /** Generates a default program name based on the current date, formatted as "Program DD-MM-YYYY". */
@@ -64,36 +53,8 @@ export class ProgramStateService {
     const year = date.getFullYear();
 
     return `Program ${day}-${month}-${year}`;
-  }
-
-
-  // -------- MUTATIONS --------
-  changeProgramName(name: string) {
-    this.state.update(state => ({
-      ...state,
-      name: name
-    }));
   };
 
-  changeStartTime(time: string) {
-
-    this.state.update(state => ({
-      ...state,
-      startTime: time
-    }));
-  };
-
-  changeEndTime(time: string) {
-
-    this.state.update(state => ({
-      ...state,
-      endTime: time
-    }));
-  };
-
-  changeProgramMode(newMode: 'manual' | 'assisted') {
-    this.mode.set(newMode);
-  };
 
   /**
    * Returns an array of performance slots that are scheduled in a specific room, identified by the provided roomId. The method filters the array of slots in the program state and returns only those slots that have a roomId property matching the given roomId. This allows for retrieving all performance slots associated with a particular room in the program.
@@ -115,38 +76,4 @@ export class ProgramStateService {
       programStartMinutes + slot.startMinutes + slot.duration;
     return minutesToTime(absolute);
   };
-
-  //----GROUPS HANDLING---------
-
-  createUserGroup(group: UserGroup) {
-    this.userGroups.update(groups => [...groups, group]);
-  };
-
-  addGroupToSlot(slotId: string, group: UserGroup) {
-
-    this.state.update(state => ({
-
-      ...state,
-
-      slots: state.slots.map(slot => {
-
-        if (slot.id !== slotId) {
-          return slot;
-        }
-
-        const newArtists = group.staff.map(artist => ({
-          ...artist,
-          sourceUserGroup_id: group.id
-        }));
-
-        return {
-          ...slot,
-          artists: [...slot.artists, ...newArtists]
-        };
-
-      })
-
-    }));
-
-  }
 }
