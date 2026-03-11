@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-import type { ArtistPerformanceSlot } from '../program-types';
+import type { ArtistPerformanceSlot } from '../../program-types';
 
 @Injectable({
   providedIn: 'root'

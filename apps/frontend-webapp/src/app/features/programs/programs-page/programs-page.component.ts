@@ -24,13 +24,16 @@ import { time_functions_utils } from '../utils/time_functions_utils';
 import {
   mockPerformanceSlotsTemplates, mockArtistGroups,
 } from '../utils/mockDATAS';
-import { DragSessionService } from '../services/drag-session.service';
-import { SlotHoverService } from '../services/slot-hover.service';
-import type { PlannerArtist, UserGroup, ArtistPerformanceSlot, ArtistPerformanceSlotTemplate, Room } from '../program-types';
+import { DragSessionService } from '../services/drag-interactions/drag-session.service';
+import { SlotHoverService } from '../services/drag-interactions/slot-hover.service';
+import type { PlannerArtist, UserGroup, ArtistPerformanceSlot, ArtistPerformanceSlotTemplate } from '../program-types';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import {
   EditPerformanceSlotPopoverComponent
 } from '../edit-performance-slot-popover/edit-performance-slot-popover.component';
+import { RoomService } from '../services/planner-state-mutations/room.service';
+import { SlotService } from '../services/planner-state-mutations/slot.service';
+import { PlannerSelectorService } from '../services/planner-selector.service';
 
 @Component({
   selector: 'app-programs-page',
@@ -45,6 +48,11 @@ import {
 export class ProgramsPageComponent implements OnInit {
 
   private state = inject(ProgramStateService);
+  private selector = inject(PlannerSelectorService);
+
+  public roomServ = inject(RoomService);
+  public slotServ = inject(SlotService);
+
   private drag = inject(DragSessionService);
   private res = inject(PlannerResolutionService)
   private interaction = inject(TimelineInteractionService);
@@ -52,8 +60,9 @@ export class ProgramsPageComponent implements OnInit {
   private layout = inject(LayoutService);
 
   /* ---------------- STATE SIGNALS FOLLOW---------------- */
-  rooms = this.state.rooms;
-  slots = this.state.slots;
+
+  rooms = this.selector.rooms;
+  slots = this.selector.slots;
 
   /* ---------------- DRAG STATE ---------------- */
   previewTop = 0;
@@ -81,11 +90,11 @@ export class ProgramsPageComponent implements OnInit {
 
   /* ---------------- TIME UTILS ---------------- */
   get timelineHeight(): number {
-    return this.res.minuteToPx(this.state.totalMinutes());
+    return this.res.minuteToPx(this.selector.totalMinutes());
   };
 
   get gridOffsetPx(): number {
-    const startMinutes = time_functions_utils(this.state.startTime());
+    const startMinutes = time_functions_utils(this.selector.startTime());
 
     return this.res.computeGridOffset(startMinutes);
   };
@@ -138,7 +147,7 @@ export class ProgramsPageComponent implements OnInit {
 
     const startMinutes = this.res.pxToMinutes(this.previewTop);
 
-    this.state.addSlot({
+    this.slotServ.addSlot({
       id: crypto.randomUUID(),
       startMinutes,
       duration: drag.template.duration,
@@ -193,7 +202,7 @@ export class ProgramsPageComponent implements OnInit {
       return;
     }
 
-    this.state.addArtistToSlot(hoveredSlot.id, drag.artist);
+    this.slotServ.addArtistToSlot(hoveredSlot.id, drag.artist);
   }
 
   /* ---------------- SLOT DRAG / RESIZE ---------------- */
@@ -207,7 +216,7 @@ export class ProgramsPageComponent implements OnInit {
         artists: [...slot.artists]
       };
 
-      this.state.addSlot(copy);
+      this.slotServ.addSlot(copy);
       this.interaction.startSlotDrag(event, copy);
       return;
     }
@@ -241,7 +250,7 @@ export class ProgramsPageComponent implements OnInit {
           newRoomId &&
           drag.slot.roomId !== newRoomId
         ) {
-          this.state.updateSlotRoom(drag.slot.id, newRoomId);        }
+          this.slotServ.updateSlotRoom(drag.slot.id, newRoomId);        }
       }
     }
   };
@@ -312,14 +321,6 @@ export class ProgramsPageComponent implements OnInit {
     return this.slots().filter(s => s.roomId === roomId);
   }
 
-  isBaseRoom(room: Room): boolean {
-    return this.rooms()[0]?.id === room.id;
-  }
-
-  removeRoom(roomId: string) {
-    this.state.removeRoom(roomId);
-  }
-
   get previewTemplate(): ArtistPerformanceSlotTemplate | undefined {
     const drag = this.drag.current();
 
@@ -353,8 +354,6 @@ export class ProgramsPageComponent implements OnInit {
   startGroupDrag(group: UserGroup) {
     this.drag.start({ type: 'group', group });
   };
-
-
 
   openEditPerformanceSlotPopover(slot_id: string) {
     this.layout.setPopover(EditPerformanceSlotPopoverComponent, { id: slot_id });

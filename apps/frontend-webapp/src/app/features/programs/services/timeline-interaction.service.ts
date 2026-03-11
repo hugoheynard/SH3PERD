@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { PointerTrackerService } from './pointer-tracker.service';
-import { DragSessionService} from './drag-session.service';
+import { PointerTrackerService } from './drag-interactions/pointer-tracker.service';
+import { DragSessionService} from './drag-interactions/drag-session.service';
 import type { ArtistPerformanceSlot } from '../program-types';
 import { PlannerResolutionService } from './planner-resolution.service';
-import { ProgramStateService } from './program-state.service';
+import { SlotService } from './planner-state-mutations/slot.service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -11,7 +11,7 @@ export class TimelineInteractionService {
   private pointer = inject(PointerTrackerService);
   private drag = inject(DragSessionService);
   private res = inject(PlannerResolutionService);
-  private state = inject(ProgramStateService);
+  private slotServ = inject(SlotService);
 
   private dragStartY = 0;
   private resizeStartY = 0;
@@ -71,7 +71,7 @@ export class TimelineInteractionService {
         const newMinutes = this.originalStartMinutes + deltaMinutes;
         const snapped = this.res.snap(newMinutes);
 
-        this.state.updateSlotStart(
+        this.slotServ.updateSlotStart(
           drag.slot.id,
           Math.max(0, snapped)
         );
@@ -92,7 +92,7 @@ export class TimelineInteractionService {
         const snapped =
           this.res.snap(newDuration);
 
-        this.state.updateSlotDuration(
+        this.slotServ.updateSlotDuration(
           drag.slot.id,
           Math.max(this.res.snapMinutes(), snapped)
         );

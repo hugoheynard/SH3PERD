@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { time_functions_utils } from '../utils/time_functions_utils';
-import { ProgramStateService } from '../services/program-state.service';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
+import { PlannerSelectorService } from '../services/planner-selector.service';
 
 @Component({
   selector: 'app-time-markers',
@@ -10,11 +10,11 @@ import { PlannerResolutionService } from '../services/planner-resolution.service
   styleUrl: './time-markers.component.scss'
 })
 export class TimeMarkersComponent {
-  private state = inject(ProgramStateService);
+  private selector = inject(PlannerSelectorService);
   private res = inject(PlannerResolutionService);
 
-  totalMinutes = this.state.totalMinutes;
-  programStart = this.state.startTime;
+  totalMinutes = this.selector.totalMinutes;
+  programStart = this.selector.startTime;
   step = this.res.snapMinutes;
 
   timeMarkers = computed(() => {

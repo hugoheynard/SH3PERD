@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import type { PlannerArtist, UserGroup, ArtistPerformanceSlot, ArtistPerformanceSlotTemplate } from '../program-types';
+import type { PlannerArtist, UserGroup, ArtistPerformanceSlot, ArtistPerformanceSlotTemplate } from '../../program-types';
 
 //TODO : rendre générique DragSessionService<T>
 @Injectable({ providedIn: 'root' })

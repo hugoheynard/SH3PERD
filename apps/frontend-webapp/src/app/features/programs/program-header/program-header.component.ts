@@ -2,6 +2,7 @@ import { Component, inject, output} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProgramStateService } from '../services/program-state.service';
 import { ProgramActionMenuComponent } from '../program-action-menu/program-action-menu.component';
+import { PlannerSelectorService } from '../services/planner-selector.service';
 
 @Component({
   selector: 'app-program-header',
@@ -13,7 +14,9 @@ import { ProgramActionMenuComponent } from '../program-action-menu/program-actio
   styleUrl: './program-header.component.scss'
 })
 export class ProgramHeaderComponent {
+
   state = inject(ProgramStateService);
+  selector = inject(PlannerSelectorService);
 
   save = output<void>();
   exportPdf = output<void>();

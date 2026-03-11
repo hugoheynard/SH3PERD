@@ -17,8 +17,8 @@
           <div class="room-header">
             {{ room.name }}
 
-            @if (!isBaseRoom(room)) {
-              <button class="room-delete" (click)="removeRoom(room.id)">✕</button>
+            @if (!roomServ.isBaseRoom(room)) {
+              <button class="room-delete" (click)="roomServ.removeRoom(room.id)">✕</button>
             }
           </div>
           <div class="header-separator"></div>

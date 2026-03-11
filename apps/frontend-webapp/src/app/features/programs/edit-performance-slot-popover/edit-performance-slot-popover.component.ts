@@ -1,8 +1,8 @@
 import { Component, computed, inject } from '@angular/core';
-import { ProgramStateService } from '../services/program-state.service';
 import { INJECTION_DATA } from '../../../core/main-layout/main-layout.component';
 import { PopoverFrameComponent } from '../ui-frames/popover-frame/popover-frame.component';
 import { ButtonComponent } from '../button/button.component';
+import { PlannerSelectorService } from '../services/planner-selector.service';
 
 
 @Component({
@@ -15,12 +15,12 @@ import { ButtonComponent } from '../button/button.component';
   styleUrl: './edit-performance-slot-popover.component.scss'
 })
 export class EditPerformanceSlotPopoverComponent {
-  private state = inject(ProgramStateService);
+  private selector = inject(PlannerSelectorService)
 
   private config = inject<{ id: string }>(INJECTION_DATA);
 
   slot = computed(() =>
-    this.state.slots().find(s => s.id === this.config.id)
+    this.selector.slots().find(s => s.id === this.config.id)
   );
 
 

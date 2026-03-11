@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SlotHoverService } from '../drag-interactions/slot-hover.service';
+import { RoomService } from '../room.service';
 
-describe('SlotHoverService', () => {
-  let service: SlotHoverService;
+describe('RoomService', () => {
+  let service: RoomService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SlotHoverService);
+    service = TestBed.inject(RoomService);
   });
 
   it('should be created', () => {

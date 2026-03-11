@@ -1,5 +1,6 @@
 import { Component, inject, output } from '@angular/core';
 import { ProgramStateService } from '../services/program-state.service';
+import { RoomService } from '../services/planner-state-mutations/room.service';
 
 @Component({
   selector: 'app-program-action-menu',
@@ -9,6 +10,7 @@ import { ProgramStateService } from '../services/program-state.service';
 })
 export class ProgramActionMenuComponent {
   state = inject(ProgramStateService);
+  roomServ = inject(RoomService);
 
   save = output<void>();
   exportPdf = output<void>();

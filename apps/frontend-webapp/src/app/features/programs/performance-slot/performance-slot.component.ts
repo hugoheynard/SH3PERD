@@ -1,9 +1,10 @@
 import { Component, computed, EventEmitter, inject, input, output, Output } from '@angular/core';
 import { ProgramStateService } from '../services/program-state.service';
 import { ArtistChipComponent } from '../artist-chip/artist-chip.component';
-import { SlotHoverService } from '../services/slot-hover.service';
+import { SlotHoverService } from '../services/drag-interactions/slot-hover.service';
 import type { ArtistPerformanceSlot } from '../program-types';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
+import { SlotService } from '../services/planner-state-mutations/slot.service';
 
 @Component({
   selector: 'app-performance-slot',
@@ -26,6 +27,8 @@ import { PlannerResolutionService } from '../services/planner-resolution.service
 })
 export class PerformanceSlotComponent {
   private state = inject(ProgramStateService);
+  private slotServ = inject(SlotService);
+
   private hover = inject(SlotHoverService);
   private res = inject(PlannerResolutionService);
 
@@ -78,8 +81,10 @@ export class PerformanceSlotComponent {
     this.slotResizeStart.emit(event);
   }
 
+
   removeArtist(artistId: string): void {
-    this.state.removeArtistFromSlot(this.slot().id, artistId);
+
+    this.slotServ.removeArtistFromSlot(this.slot().id, artistId);
   };
 
   get panelColor(): string {

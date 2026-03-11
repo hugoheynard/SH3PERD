@@ -1,6 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
-import { ProgramStateService } from './program-state.service';
 import type { WorkloadSegment } from '../artist-workload-strip/artist-workload-strip.component';
+import { PlannerSelectorService } from './planner-selector.service';
 
 export interface ArtistWorkload {
   segments: WorkloadSegment[];
@@ -13,11 +13,11 @@ export interface ArtistWorkload {
 @Injectable({ providedIn: 'root' })
 export class WorkloadService {
 
-  private state = inject(ProgramStateService);
+  private selector = inject(PlannerSelectorService);
 
   artistWorkloadMap = computed(() => {
 
-    const slots = this.state.slots();
+    const slots = this.selector.slots();
 
     const map = new Map<string, ArtistWorkload>();
 
