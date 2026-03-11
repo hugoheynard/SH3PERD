@@ -7,15 +7,15 @@ import { DragIconComponent } from '../../drag-icon/drag-icon.component';
  * Best use for horizontal layout
  */
 @Component({
-  selector: 'ui-card-frame',
+  selector: 'ui-card-frame-horizontal',
   imports: [
     DragIconComponent,
     DragIconComponent,
   ],
-  templateUrl: './card-frame.component.html',
-  styleUrl: './card-frame.component.scss'
+  templateUrl: './card-frame-horizontal.component.html',
+  styleUrl: './card-frame-horizontal.component.scss'
 })
-export class CardFrameComponent {
+export class CardFrameHorizontalComponent {
   /**
    * Whether to show the drag icon in the top right corner of the card.
    * This is used to indicate that the card can be dragged and dropped to reorder it.

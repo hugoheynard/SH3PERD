@@ -1,4 +1,4 @@
-<ui-card-frame [dragIcon]="true" (pointerdown)="dragStart.emit(template())" (dblclick)="onEdit()">
+<ui-card-frame-horizontal [dragIcon]="true" (pointerdown)="dragStart.emit(template())" (dblclick)="onEdit()">
 
   <div card-left class="template-accent" [style.background]="template().color"></div>
 
@@ -39,4 +39,4 @@
   <div card-actions>
   </div>
 
-</ui-card-frame>
+</ui-card-frame-horizontal>

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CardFrameComponent } from './card-frame.component';
+import { CardFrameHorizontalComponent } from './card-frame-horizontal.component';
 
 describe('CardFrameComponent', () => {
-  let component: CardFrameComponent;
-  let fixture: ComponentFixture<CardFrameComponent>;
+  let component: CardFrameHorizontalComponent;
+  let fixture: ComponentFixture<CardFrameHorizontalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CardFrameComponent]
+      imports: [CardFrameHorizontalComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CardFrameComponent);
+    fixture = TestBed.createComponent(CardFrameHorizontalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

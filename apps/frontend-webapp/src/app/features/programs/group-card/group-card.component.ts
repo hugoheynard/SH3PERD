@@ -1,11 +1,11 @@
 import { Component, input } from '@angular/core';
-import { CardFrameComponent } from '../ui-frames/card-frame/card-frame.component';
+import { CardFrameHorizontalComponent } from '../ui-frames/card-frame/card-frame-horizontal.component';
 import type { UserGroup } from '../program-types';
 
 @Component({
   selector: 'ui-group-card',
   imports: [
-    CardFrameComponent,
+    CardFrameHorizontalComponent,
   ],
   templateUrl: './group-card.component.html',
   styleUrl: './group-card.component.scss'
