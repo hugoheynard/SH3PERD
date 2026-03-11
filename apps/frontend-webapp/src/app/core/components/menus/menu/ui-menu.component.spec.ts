@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Sh3MenuComponent } from './sh3-menu.component';
+import { UiMenuComponent } from './ui-menu.component';
 
 describe('Sh3MenuComponent', () => {
-  let component: Sh3MenuComponent;
-  let fixture: ComponentFixture<Sh3MenuComponent>;
+  let component: UiMenuComponent;
+  let fixture: ComponentFixture<UiMenuComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Sh3MenuComponent]
+      imports: [UiMenuComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Sh3MenuComponent);
+    fixture = TestBed.createComponent(UiMenuComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

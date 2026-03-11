@@ -22,11 +22,11 @@ import { TimeMarkersComponent } from '../time-markers/time-markers.component';
 
 import { time_functions_utils } from '../utils/time_functions_utils';
 import {
-  mockPerformanceSlotsTemplates, mockArtistGroups, AllMockArtists,
+  mockPerformanceSlotsTemplates, mockArtistGroups,
 } from '../utils/mockDATAS';
 import { DragSessionService } from '../services/drag-session.service';
 import { SlotHoverService } from '../services/slot-hover.service';
-import type { Artist, ArtistGroup, ArtistPerformanceSlot, ArtistPerformanceSlotTemplate, Room } from '../program-types';
+import type { PlannerArtist, UserGroup, ArtistPerformanceSlot, ArtistPerformanceSlotTemplate, Room } from '../program-types';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import {
   EditPerformanceSlotPopoverComponent
@@ -49,29 +49,35 @@ export class ProgramsPageComponent implements OnInit {
   private res = inject(PlannerResolutionService)
   private interaction = inject(TimelineInteractionService);
   private hover = inject(SlotHoverService);
-
   private layout = inject(LayoutService);
 
+  /* ---------------- STATE SIGNALS FOLLOW---------------- */
+  rooms = this.state.rooms;
+  slots = this.state.slots;
+
+  /* ---------------- DRAG STATE ---------------- */
   previewTop = 0;
   previewRoomId?: string;
 
   @ViewChildren('roomLayer') roomLayers!: QueryList<ElementRef<HTMLDivElement>>;
 
   /* ---------------- LIFECYCLE ---------------- */
+
   ngOnInit() {
+    // hydrate state signals
+    this.state.hydrateGroups(mockArtistGroups);
+
+    // set left side panel
     this.layout.setLeftPanel(ProgramSidePanelComponent, {
       templates: mockPerformanceSlotsTemplates,
-      artists: AllMockArtists,
-      groups: mockArtistGroups,
+      staff: this.state.staff,
+      groups: this.state.userGroups,
       onTemplateDragStart: (t: ArtistPerformanceSlotTemplate) => this.startTemplateDrag(t),
-      onArtistDragStart: (a: Artist) => this.startArtistDrag(a),
-      onGroupDragStart: (g: ArtistGroup) => this.startGroupDrag(g)
+      onArtistDragStart: (a: PlannerArtist) => this.startArtistDrag(a),
+      onGroupDragStart: (g: UserGroup) => this.startGroupDrag(g)
     });
-  }
+  };
 
-  /* ---------------- STATE SIGNALS ---------------- */
-  rooms = this.state.rooms;
-  slots = this.state.slots;
 
   /* ---------------- TIME UTILS ---------------- */
   get timelineHeight(): number {
@@ -79,11 +85,10 @@ export class ProgramsPageComponent implements OnInit {
   };
 
   get gridOffsetPx(): number {
-
     const startMinutes = time_functions_utils(this.state.startTime());
 
     return this.res.computeGridOffset(startMinutes);
-  }
+  };
 
   getSlotHeight(minutes: number): number {
     return this.res.minuteToPx(minutes);
@@ -147,7 +152,7 @@ export class ProgramsPageComponent implements OnInit {
   }
 
   /* ---------------- ARTIST DRAG ---------------- */
-  startArtistDrag(artist: Artist) {
+  startArtistDrag(artist: PlannerArtist) {
     this.drag.start({ type: 'artist', artist });
   }
 
@@ -286,6 +291,9 @@ export class ProgramsPageComponent implements OnInit {
       case 'artist':
         this.handleArtistDrop();
         break;
+      case 'group':
+        this.handleGroupDrop();
+        break;
     }
 
     this.previewRoomId = undefined;
@@ -321,11 +329,28 @@ export class ProgramsPageComponent implements OnInit {
   }
 
   //* ---------------- ARTIST GROUP DRAG ---------------- *//
+  private handleGroupDrop() {
+    const drag = this.drag.current();
+
+    if (drag?.type !== 'group') {
+      return;
+    }
+
+    const hoveredSlot = this.hover.hovered();
+
+    if (!hoveredSlot) {
+      return;
+    }
+
+    this.state.addGroupToSlot(hoveredSlot.id, drag.group)
+  };
+
+
   /**
    * Initiates a drag session for an artist group. When a user starts dragging an artist group, this method is called with the group as an argument. It uses the DragSessionService to start a new drag session, passing an object that indicates the type of item being dragged (in this case, 'group') and the group itself. This allows the application to manage the drag state and provide appropriate feedback to the user during the drag operation.
    * @param group
    */
-  startGroupDrag(group: ArtistGroup) {
+  startGroupDrag(group: UserGroup) {
     this.drag.start({ type: 'group', group });
   };
 

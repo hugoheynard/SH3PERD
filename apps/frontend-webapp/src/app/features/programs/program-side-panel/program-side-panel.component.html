@@ -21,7 +21,7 @@
 </app-side-panel-section>
 
 <!--ARTISTS-->
-<app-side-panel-section [title]="'artist'" [count]="config.artists ? config.artists.length : 0">
+<app-side-panel-section [title]="'artist'" [count]="config.staff() ? config.staff().length : 0">
   <div section-content class="artist-grid" >
     @for (item of artistsWithWorkload(); track item.artist.id) {
       <ui-artist-card
@@ -33,7 +33,7 @@
 </app-side-panel-section>
 
 <!--USERGROUPS-->
-<app-side-panel-section [title]="'usergroups'" [count]="config.groups ? config.groups.length : 0">
+<app-side-panel-section [title]="'usergroups'" [count]="config.groups() ? config.groups().length : 0">
   <div section-actions>
     <ui-button
       [variant]="'tertiary'"
@@ -45,7 +45,7 @@
   </div>
 
   <div section-content class="artist-grid" >
-    @for (group of groups; track group.id) {
+    @for (group of config.groups(); track group.id) {
       <ui-group-card
         [group]="group"
         (pointerdown)="config.onGroupDragStart(group)"/>

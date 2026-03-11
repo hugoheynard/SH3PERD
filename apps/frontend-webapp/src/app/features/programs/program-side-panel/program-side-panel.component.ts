@@ -1,4 +1,4 @@
-import { Component, computed, inject, Inject } from '@angular/core';
+import { Component, computed, inject, Inject, type WritableSignal } from '@angular/core';
 import { INJECTION_DATA } from '../../../core/main-layout/main-layout.component';
 import { SlotTemplateCardComponent } from '../slot-template-card/slot-template-card.component';
 import { ArtistCardComponent } from '../artist-card/artist-card.component';
@@ -7,17 +7,17 @@ import { SidePanelSectionComponent } from '../side-panel-section/side-panel-sect
 import { LayoutService } from '../../../core/services/layout.service';
 import { EditTemplatePopoverComponent } from '../edit-template-popover/edit-template-popover.component';
 import { ButtonComponent } from '../button/button.component';
-import type { Artist, ArtistGroup, ArtistPerformanceSlotTemplate } from '../program-types';
+import type { PlannerArtist, UserGroup, ArtistPerformanceSlotTemplate } from '../program-types';
 import { GroupCardComponent } from '../group-card/group-card.component';
 
 
 export interface ProgramSidePanelConfig {
   templates: ArtistPerformanceSlotTemplate[];
-  artists: Artist[];
-  groups: ArtistGroup[];
+  staff: WritableSignal<PlannerArtist[]>;
+  groups: WritableSignal<UserGroup[]>;
   onTemplateDragStart: (template: ArtistPerformanceSlotTemplate) => void;
-  onArtistDragStart: (artist: Artist) => void;
-  onGroupDragStart: (group: ArtistGroup) => void;
+  onArtistDragStart: (artist: PlannerArtist) => void;
+  onGroupDragStart: (group: UserGroup) => void;
 }
 
 export function emptyWorkload(): ArtistWorkload {
@@ -44,38 +44,31 @@ export function emptyWorkload(): ArtistWorkload {
 })
 export class ProgramSidePanelComponent {
 
-  constructor(
-    @Inject(INJECTION_DATA) public config: ProgramSidePanelConfig
-  ) {}
-
   private workload = inject(WorkloadService);
   private layout = inject(LayoutService);
 
-  get groups() {
-    return this.config.groups;
-  }
+  constructor(
+    @Inject(INJECTION_DATA) public config: ProgramSidePanelConfig
+  ) {};
 
-  artistWorkloads = this.workload.artistWorkloadMap;
-
+  /**
+   * Computes the list of artists along with their workload information, by mapping over the staff and retrieving the corresponding workload from the workload service.
+   */
   artistsWithWorkload = computed(() => {
 
-    const workloads = this.artistWorkloads();
+    const workloads = this.workload.artistWorkloadMap();
 
-    return this.config.artists.map(artist => ({
+    return this.config.staff().map(artist => ({
       artist,
       workload: workloads.get(artist.id) ?? emptyWorkload()
     }));
   });
 
-  openCreateTemplate() {
-
-  }
-
   onTemplateDrag(template: ArtistPerformanceSlotTemplate) {
     this.config.onTemplateDragStart(template);
   };
 
-  onArtistDragStart(artist: Artist) {
+  onArtistDragStart(artist: PlannerArtist) {
     this.config.onArtistDragStart(artist);
   };
 
@@ -87,8 +80,7 @@ export class ProgramSidePanelComponent {
   };
 
 
-  protected readonly emptyWorkload = emptyWorkload;
-
+  //------------------------ POPOVER ACTIONS ------------------
   /**
    * Opens the popover to create a new performance template.
    */

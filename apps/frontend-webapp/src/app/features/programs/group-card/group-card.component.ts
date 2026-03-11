@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 import { CardFrameComponent } from '../ui-frames/card-frame/card-frame.component';
-import type { ArtistGroup } from '../program-types';
+import type { UserGroup } from '../program-types';
 
 @Component({
   selector: 'ui-group-card',
@@ -11,5 +11,5 @@ import type { ArtistGroup } from '../program-types';
   styleUrl: './group-card.component.scss'
 })
 export class GroupCardComponent {
-    group = input.required<ArtistGroup>();
+    group = input.required<UserGroup>();
 }

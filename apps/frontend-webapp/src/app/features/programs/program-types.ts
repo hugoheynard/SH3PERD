@@ -29,7 +29,7 @@ export interface PlanningSlot {
 
 
 export interface ArtistPerformanceSlot extends PlanningSlot {
-  artists: Artist[];
+  artists: PlannerArtist[];
   loadScore?: number;
   playlist: boolean;
   song: boolean;
@@ -55,19 +55,21 @@ export interface ProgramState {
   endTime: string;
   rooms: Room[];
   slots: ArtistPerformanceSlot[];
+  artists: PlannerArtist[];
 }
 
-export interface Artist {
+export interface PlannerArtist {
   id: string;
   name: string;
   role: string;
   roleColor: string;
+  sourceUserGroup_id?: string;
 }
 
 
-export interface ArtistGroup {
+export interface UserGroup {
   id: string;
   name: string;
-  artists: Artist[];
   color?: string;
+  staff: PlannerArtist[];
 }

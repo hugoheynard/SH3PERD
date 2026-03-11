@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import type { Artist } from '../program-types';
+import type { PlannerArtist } from '../program-types';
 
 @Component({
   selector: 'app-artist-chip',
@@ -9,7 +9,7 @@ import type { Artist } from '../program-types';
   styleUrl: './artist-chip.component.scss'
 })
 export class ArtistChipComponent {
-  @Input({ required: true }) artist!: Artist;
+  @Input({ required: true }) artist!: PlannerArtist;
 
   @Output() remove = new EventEmitter<string>();
 

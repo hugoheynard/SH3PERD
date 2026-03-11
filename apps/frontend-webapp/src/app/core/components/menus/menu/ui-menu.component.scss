@@ -1,0 +1,116 @@
+:host {
+
+  display: flex;
+  flex-direction: column;
+
+  width: 64px;
+  height: 100%;
+
+  background: var(--sidebar-color);
+
+  border-right: 1px solid var(--panel-border-color);
+
+}
+
+.ui-menu {
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 10px 0;
+
+}
+
+.menu-item {
+
+  position: relative;
+
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: transparent;
+
+  border: none;
+
+  cursor: pointer;
+
+  transition: all .15s ease;
+
+}
+
+.menu-item:hover {
+
+  background: var(--hover-color);
+
+  transform: translateY(-1px);
+
+}
+
+.menu-item.active {
+
+  background: var(--accent-color);
+
+}
+
+.icon {
+
+  width: 20px;
+  height: 20px;
+
+  color: var(--text-primary);
+
+}
+
+.badge {
+
+  position: absolute;
+
+  top: 4px;
+  right: 4px;
+
+  min-width: 16px;
+  height: 16px;
+
+  padding: 0 4px;
+
+  border-radius: 10px;
+
+  font-size: 10px;
+
+  background: var(--color-alert);
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.menu-item:hover::after {
+
+  content: attr(data-label);
+
+  position: absolute;
+
+  left: 54px;
+
+  background: var(--floating-panel-color);
+
+  padding: 4px 8px;
+
+  border-radius: 6px;
+
+  font-size: 11px;
+
+}

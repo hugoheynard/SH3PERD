@@ -1,0 +1,30 @@
+<nav>
+
+  @for (item of items(); track item.id) {
+
+    @if (item.route) {
+
+      <a
+        class="menu-item"
+        [routerLink]="item.route"
+        routerLinkActive="active">
+
+        <sh3-svg-icon [name]="item.icon" class="icon"/>
+
+      </a>
+
+    } @else {
+
+      <button
+        class="menu-item"
+        (click)="command.emit(item)">
+
+        <sh3-svg-icon [name]="item.icon" class="icon"/>
+
+      </button>
+
+    }
+
+  }
+
+</nav>

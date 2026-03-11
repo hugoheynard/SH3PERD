@@ -1,8 +1,7 @@
-import { Component, inject, Input } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
-import {IconFlatButtonComponent} from '../icon-flat-button/icon-flat-button.component';
-import { type MenuItem, Sh3MenuComponent } from '../sh3-menu/sh3-menu.component';
+import { type UiMenuItem, UiMenuComponent } from '../menu/ui-menu.component';
 import { AuthService } from '../../../services/auth.service';
 
 
@@ -12,23 +11,34 @@ import { AuthService } from '../../../services/auth.service';
     templateUrl: './app-menu.component.html',
     styleUrl: './app-menu.component.scss',
     standalone: true,
-  imports: [RouterModule, IconFlatButtonComponent, Sh3MenuComponent],
+  imports: [RouterModule, UiMenuComponent],
 })
 export class AppMenuComponent {
-   @Input() menuItems: MenuItem[] = [];
-   private authService = inject(AuthService);
+  private authService = inject(AuthService);
 
-  constructor(private router: Router) {}
 
-  isActive(route: string): boolean {
-    return this.router.url.includes(route);
-  }
+  menuItems: UiMenuItem[] = [
+    { id: 'home', icon: 'home', route: 'home' },
+    { id: 'program', icon: 'program', route: 'program' },
+    { id: 'calendar', icon: 'calendar', route: 'calendar' },
+    { id: 'music', icon: 'notes_2', route: 'musicLibrary' },
+    { id: 'contracts', icon: 'contracts', route: 'contracts' },
+    { id: 'userGroups', icon: 'user-group-menu-icon', route: 'userGroup' },
+    { id: 'settings', icon: 'settings', route: 'settings' },
 
-  private handlers: Record<string, () => void> = {
-    logout: () => this.authService.logout(),
-  };
+    // action item
+    { id: 'logout', icon: 'logout' }
+  ];
 
-  onCommand(it: MenuItem) {
-    this.handlers[it.command ?? '']?.();
+  onCommand(item: UiMenuItem) {
+
+    switch (item.id) {
+
+      case 'logout':
+        this.authService.logout();
+        break;
+
+    }
+
   }
 }

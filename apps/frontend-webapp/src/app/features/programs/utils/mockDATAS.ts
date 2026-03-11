@@ -33,7 +33,7 @@ export const mockArtistGroups = [
   {
     id: 'g1',
     name: 'All Dancers',
-    artists: [
+    staff: [
       ...mockArtists_dancers
     ] },
 ]
