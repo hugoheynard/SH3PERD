@@ -1,11 +1,11 @@
 import type { ArtistPerformanceSlotTemplate } from '../program-types';
 
 export const mockPerformanceSlotsTemplates: ArtistPerformanceSlotTemplate[] = [
-  { id: 't1', name: 'PBO', duration: 15, type: 'PBO', color: '#73098c', playlist: true, song: false, technicianRequired: false },
-  { id: 't2', name: 'Cabaret', duration: 15, type: 'CABARET', color: '#f19010', playlist: true, song: false, technicianRequired: false },
-  { id: 't3', name: 'Aerial', duration: 5, type: 'AERIAL', color: '#66eda1', playlist: false, song: true, technicianRequired: true },
-  { id: 't4', name: 'Club', duration: 15, type: 'CLUB_ROTATION', color: '#66b9ed', playlist: false, song: false, technicianRequired: false},
-  { id: 't5', name: 'FINAL', duration: 5, type: 'FINAL', color: '#66ceed', playlist: false, song: true, technicianRequired: false }
+  { id: 't1', name: 'PBO', duration: 15, type: 'performance', color: '#73098c', playlist: true, song: false, technicianRequired: false },
+  { id: 't2', name: 'Cabaret', duration: 15, type: 'performance', color: '#f19010', playlist: true, song: false, technicianRequired: false },
+  { id: 't3', name: 'Aerial', duration: 5, type: 'performance', color: '#66eda1', playlist: false, song: true, technicianRequired: true },
+  { id: 't4', name: 'Club', duration: 15, type: 'performance', color: '#66b9ed', playlist: false, song: false, technicianRequired: false},
+  { id: 't5', name: 'FINAL', duration: 5, type: 'performance', color: '#66ceed', playlist: false, song: true, technicianRequired: false }
 ];
 
 
@@ -37,3 +37,18 @@ export const mockArtistGroups = [
       ...mockArtists_dancers
     ] },
 ]
+
+export const mockBuffers = [
+  {
+    id: 'buffer-1',
+    roomId: 'r1',
+    atMinutes: 60,
+    delta: 15
+  },
+  {
+    id: 'buffer-2',
+    roomId: 'r1',
+    atMinutes: 120,
+    delta: 5
+  }
+];

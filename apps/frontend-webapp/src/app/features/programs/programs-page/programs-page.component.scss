@@ -187,3 +187,38 @@
   pointer-events: none;
 }
 
+/**
+
+ */
+.insert-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+
+  background: linear-gradient(
+      90deg,
+      transparent,
+      #4da3ff,
+      transparent
+  );
+
+  box-shadow: 0 0 6px rgba(77,163,255,0.6);
+
+  pointer-events: none;
+  z-index: 30;
+}
+
+.insert-line::before,
+.insert-line::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  background: #4da3ff;
+  border-radius: 50%;
+}
+
+.insert-line::before { left: -3px; }
+.insert-line::after { right: -3px; }

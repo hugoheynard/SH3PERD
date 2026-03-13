@@ -30,13 +30,22 @@
             [style.height.px]="timelineHeight"
             [style.background-position]="'0px -' + gridOffsetPx + 'px'">
 
-            @for (slot of getSlotsForRoom(room.id); track slot.id) {
-              <app-performance-slot
-                [slot]="slot"
-                (slotPointerDown)="startSlotDrag($event, slot)"
-                (slotResizeStart)="startSlotResize($event, slot)"
-                (editSlot)="openEditPerformanceSlotPopover($event)"
-              />
+            @for (block of getBlocksForRoom(room.id); track block.id) {
+
+              @if (block.type === 'slot') {
+                <app-performance-slot
+                  [slot]="block.slot"
+                  (slotPointerDown)="startSlotDrag($event, block.slot)"
+                  (slotResizeStart)="startSlotResize($event, block.slot)"
+                  (editSlot)="openEditPerformanceSlotPopover($event)" />
+              }
+
+              @if (block.type === 'buffer') {
+                <ui-buffer-slot
+                  [startMinutes]="block.startMinutes"
+                  [duration]="block.duration" />
+              }
+
             }
 
             <!-- Preview -->

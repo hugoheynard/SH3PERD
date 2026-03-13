@@ -1,7 +1,7 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { minutesToTime, time_functions_utils } from '../utils/time_functions_utils';
 import type { ArtistPerformanceSlot, ProgramState} from '../program-types';
-import { AllMockArtists, mockArtistGroups } from '../utils/mockDATAS';
+import { AllMockArtists, mockArtistGroups, mockBuffers } from '../utils/mockDATAS';
 
 
 @Injectable({ providedIn: 'root' })
@@ -19,7 +19,11 @@ export class ProgramStateService {
     slots: [],
     artists: AllMockArtists,
     userGroups: mockArtistGroups,
+    timelineOffsets: [...mockBuffers]
   });
+
+  private past: ProgramState[] = [];
+  private future: ProgramState[] = [];
 
 
   // SELECTORS
@@ -76,4 +80,38 @@ export class ProgramStateService {
       programStartMinutes + slot.startMinutes + slot.duration;
     return minutesToTime(absolute);
   };
+
+ /* ---------------------------------------------------
+    UNDO / REDO
+    TODO: Limit history size
+  ----------------------------------------*/
+
+
+  undo() {
+    const previous = this.past.pop();
+
+    if (!previous) {
+      return;
+    }
+
+    const current = this.state();
+    this.future.push(current);
+
+    this.state.set(previous);
+  };
+
+  redo() {
+
+    const next = this.future.pop();
+
+    if (!next) {
+      return;
+    }
+
+    const current = this.state();
+    this.past.push(current);
+    this.state.set(next);
+  };
 }
+
+

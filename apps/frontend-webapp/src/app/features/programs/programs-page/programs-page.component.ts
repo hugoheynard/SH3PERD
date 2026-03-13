@@ -5,7 +5,7 @@ import {
   QueryList,
   ViewChildren,
   inject,
-  type OnInit
+  type OnInit,
 } from '@angular/core';
 
 import { PerformanceSlotComponent } from '../performance-slot/performance-slot.component';
@@ -25,7 +25,13 @@ import {
 } from '../utils/mockDATAS';
 import { DragSessionService } from '../services/drag-interactions/drag-session.service';
 import { SlotHoverService } from '../services/drag-interactions/slot-hover.service';
-import type { PlannerArtist, UserGroup, ArtistPerformanceSlot, ArtistPerformanceSlotTemplate } from '../program-types';
+import type {
+  PlannerArtist,
+  UserGroup,
+  ArtistPerformanceSlot,
+  ArtistPerformanceSlotTemplate,
+  TimelineBlock,
+} from '../program-types';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import {
   EditPerformanceSlotPopoverComponent
@@ -33,6 +39,7 @@ import {
 import { RoomService } from '../services/planner-state-mutations/room.service';
 import { SlotService } from '../services/planner-state-mutations/slot.service';
 import { PlannerSelectorService } from '../services/planner-selector.service';
+import { BufferSlotComponent } from '../bufferblock/buffer-slot.component';
 
 
 @Component({
@@ -41,6 +48,7 @@ import { PlannerSelectorService } from '../services/planner-selector.service';
     PerformanceSlotComponent,
     ProgramHeaderComponent,
     TimeMarkersComponent,
+    BufferSlotComponent,
   ],
   templateUrl: './programs-page.component.html',
   styleUrl: './programs-page.component.scss'
@@ -62,6 +70,35 @@ export class ProgramsPageComponent implements OnInit {
 
   rooms = this.selector.rooms;
   slots = this.selector.slots;
+
+  getBlocksForRoom(roomId: string): TimelineBlock[] {
+
+    const slots = this.selector.slots()
+      .filter(s => s.roomId === roomId);
+
+    const buffers = this.selector.timelineOffsets()
+      .filter(o => o.roomId === roomId);
+
+    const slotBlocks = slots.map(s => ({
+      type: "slot" as const,
+      id: s.id,
+      startMinutes: s.startMinutes,
+      duration: s.duration,
+      slot: s
+    }));
+
+    const bufferBlocks = buffers.map(b => ({
+      type: "buffer" as const,
+      id: b.id,
+      startMinutes: b.atMinutes,
+      duration: b.delta
+    }));
+
+    return [...slotBlocks, ...bufferBlocks]
+      .sort((a, b) => a.startMinutes - b.startMinutes);
+
+  }
+
 
   /* ---------------- DRAG STATE ---------------- */
   previewTop = 0;
@@ -145,6 +182,7 @@ export class ProgramsPageComponent implements OnInit {
 
     this.slotServ.addSlot({
       id: crypto.randomUUID(),
+      name: drag.template.name,
       startMinutes,
       duration: drag.template.duration,
       type: drag.template.type,

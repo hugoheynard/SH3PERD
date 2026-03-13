@@ -24,6 +24,7 @@ export class PlannerSelectorService {
   rooms = computed(() => this.state.program().rooms);
   slots = computed(() => this.state.program().slots);
   userGroups = computed(() => this.state.program().userGroups);
+  timelineOffsets = computed(() => this.state.program().timelineOffsets);
 
 
   /* --------------------------------
@@ -45,5 +46,29 @@ export class PlannerSelectorService {
     }
 
     return end - start;
+  });
+
+  /**
+   * Calculates the adjusted start times for each performance slot in the program, taking into account any timeline offsets that may be applied to the slots.
+   * It retrieves the current slots and timeline offsets from the program state, then iterates over each slot to calculate the cumulative time offset (delta) that should be applied to its start time based on the relevant timeline offsets.
+   * The method returns a new array of slots with their start times adjusted by the calculated delta, allowing for dynamic scheduling of performances in the program.
+   * @returns an array of performance slots with adjusted start times based on timeline offsets
+   */
+  timelineSlots = computed(() => {
+
+    const slots = this.slots();
+    const offsets = this.timelineOffsets();
+
+    return slots.map(slot => {
+
+      const delta = offsets
+        .filter(o => o.roomId === slot.roomId && o.atMinutes <= slot.startMinutes)
+        .reduce((sum, o) => sum + o.delta, 0);
+
+      return {
+        ...slot,
+        startMinutes: slot.startMinutes + delta
+      };
+    });
   });
 }

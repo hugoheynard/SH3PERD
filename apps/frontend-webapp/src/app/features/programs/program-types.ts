@@ -2,7 +2,7 @@ export interface PlanningSlotTemplate {
   id: string;
   name: string;
   duration: number;
-  type: string;
+  type: SlotType;
   color: string;
 }
 
@@ -17,12 +17,16 @@ export interface ArtistPerformanceSlotTemplate extends PlanningSlotTemplate {
   technicianRequired: boolean;
 }
 
+export type SlotType =
+  | 'performance'
+  | 'buffer';
 
 export interface PlanningSlot {
   id: string;
+  name: string;
   startMinutes: number;
   duration: number;
-  type: string;
+  type: SlotType;
   color: string;
   roomId: string;
 }
@@ -58,6 +62,7 @@ export interface ProgramState {
   slots: ArtistPerformanceSlot[];
   artists: PlannerArtist[];
   userGroups: UserGroup[];
+  timelineOffsets: TimelineOffset[];
 }
 
 export interface PlannerArtist {
@@ -77,3 +82,32 @@ export interface UserGroup {
 }
 
 export type ProgramMode = 'manual' | 'assisted';
+
+/**
+ * BUFFER SLOTS
+ * A buffer slot represents a time gap in the program schedule that can be used to separate performances or to fill in gaps between performances. Buffer slots are not associated with any artists and are typically displayed as empty slots in the program schedule.
+ * The TimelineOffset interface represents a change in the timeline of the program, which can be caused by inserting or removing buffer slots. It contains the following properties:
+ * - id: a unique identifier for the timeline offset
+ */
+interface TimelineOffset {
+  id: string;
+  roomId: string;
+  atMinutes: number;
+  delta: number;
+}
+
+//type UI only, used to render the timeline with both performance slots and buffer slots
+export type TimelineBlock =
+  | {
+  type: "slot"
+  id: string
+  startMinutes: number
+  duration: number
+  slot: ArtistPerformanceSlot
+}
+  | {
+  type: "buffer"
+  id: string
+  startMinutes: number
+  duration: number
+}
