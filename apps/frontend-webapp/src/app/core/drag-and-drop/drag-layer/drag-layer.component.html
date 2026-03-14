@@ -1,0 +1,15 @@
+@if (preview()) {
+
+  <div
+    class="drag-preview"
+    [style.transform]="'translate3d(' + drag.cursorX() + 'px,' + drag.cursorY() + 'px,0)'">
+    <ng-container
+      *ngComponentOutlet="
+        preview()!.component;
+        inputs: preview()!.inputs
+      ">
+    </ng-container>
+
+  </div>
+
+}

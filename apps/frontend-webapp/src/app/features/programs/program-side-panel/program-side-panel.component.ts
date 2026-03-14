@@ -9,6 +9,7 @@ import { EditTemplatePopoverComponent } from '../edit-template-popover/edit-temp
 import { ButtonComponent } from '../button/button.component';
 import type { PlannerArtist, UserGroup, ArtistPerformanceSlotTemplate } from '../program-types';
 import { GroupCardComponent } from '../group-card/group-card.component';
+import { ArtistWorkloadStripComponent } from '../artist-workload-strip/artist-workload-strip.component';
 
 
 export interface ProgramSidePanelConfig {
@@ -38,6 +39,7 @@ export function emptyWorkload(): ArtistWorkload {
     SidePanelSectionComponent,
     ButtonComponent,
     GroupCardComponent,
+    ArtistWorkloadStripComponent,
   ],
   templateUrl: './program-side-panel.component.html',
   styleUrl: './program-side-panel.component.scss'

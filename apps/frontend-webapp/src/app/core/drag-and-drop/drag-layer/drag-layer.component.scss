@@ -1,0 +1,19 @@
+:host {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.drag-preview {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.drag-preview {
+  opacity: 0.9;
+  transform-origin: top left;
+  scale: 0.96;
+}
+

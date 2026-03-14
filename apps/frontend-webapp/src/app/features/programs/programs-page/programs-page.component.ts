@@ -23,14 +23,13 @@ import { time_functions_utils } from '../utils/time_functions_utils';
 import {
   mockPerformanceSlotsTemplates,
 } from '../utils/mockDATAS';
-import { DragSessionService } from '../services/drag-interactions/drag-session.service';
+import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 import { SlotHoverService } from '../services/drag-interactions/slot-hover.service';
 import type {
   PlannerArtist,
   UserGroup,
   ArtistPerformanceSlot,
   ArtistPerformanceSlotTemplate,
-  TimelineBlock,
 } from '../program-types';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import {
@@ -40,6 +39,9 @@ import { RoomService } from '../services/planner-state-mutations/room.service';
 import { SlotService } from '../services/planner-state-mutations/slot.service';
 import { PlannerSelectorService } from '../services/planner-selector.service';
 import { BufferSlotComponent } from '../bufferblock/buffer-slot.component';
+import { ArtistCardComponent } from '../artist-card/artist-card.component';
+import { GroupCardComponent } from '../group-card/group-card.component';
+import { PlannerDndInitService } from '../services/planner-dn-dinit.service';
 
 
 @Component({
@@ -66,39 +68,22 @@ export class ProgramsPageComponent implements OnInit {
   private hover = inject(SlotHoverService);
   private layout = inject(LayoutService);
 
+  constructor() {
+    void inject(PlannerDndInitService);
+  }
+
   /* ---------------- STATE SIGNALS FOLLOW---------------- */
 
   rooms = this.selector.rooms;
   slots = this.selector.slots;
 
-  getBlocksForRoom(roomId: string): TimelineBlock[] {
-
-    const slots = this.selector.slots()
-      .filter(s => s.roomId === roomId);
-
-    const buffers = this.selector.timelineOffsets()
-      .filter(o => o.roomId === roomId);
-
-    const slotBlocks = slots.map(s => ({
-      type: "slot" as const,
-      id: s.id,
-      startMinutes: s.startMinutes,
-      duration: s.duration,
-      slot: s
-    }));
-
-    const bufferBlocks = buffers.map(b => ({
-      type: "buffer" as const,
-      id: b.id,
-      startMinutes: b.atMinutes,
-      duration: b.delta
-    }));
-
-    return [...slotBlocks, ...bufferBlocks]
-      .sort((a, b) => a.startMinutes - b.startMinutes);
-
-  }
-
+  /**
+   *  Returns an array of timeline blocks that are associated with a specific room, identified by the provided roomId. It uses the blocksByRoom selector from the PlannerSelectorService to retrieve the blocks for the given roomId. If there are no blocks found for the specified roomId, it returns an empty array.
+   * @param roomId
+   */
+  getBlocksForRoom(roomId: string) {
+    return this.selector.blocksByRoom().get(roomId) ?? [];
+  };
 
   /* ---------------- DRAG STATE ---------------- */
   previewTop = 0;
@@ -120,7 +105,6 @@ export class ProgramsPageComponent implements OnInit {
     });
   };
 
-
   /* ---------------- TIME UTILS ---------------- */
   get timelineHeight(): number {
     return this.res.minuteToPx(this.selector.totalMinutes());
@@ -138,7 +122,10 @@ export class ProgramsPageComponent implements OnInit {
 
   /* ---------------- TEMPLATE DRAG ---------------- */
   startTemplateDrag(template: ArtistPerformanceSlotTemplate) {
-    this.drag.start({ type: 'template', template });
+    this.drag.start({
+      type: 'template',
+      data: template
+    });
   };
 
   private handleTemplateMove(event: PointerEvent) {
@@ -182,22 +169,22 @@ export class ProgramsPageComponent implements OnInit {
 
     this.slotServ.addSlot({
       id: crypto.randomUUID(),
-      name: drag.template.name,
+      name: drag.data.name,
       startMinutes,
-      duration: drag.template.duration,
-      type: drag.template.type,
-      color: drag.template.color,
+      duration: drag.data.duration,
+      type: drag.data.type,
+      color: drag.data.color,
       roomId: this.previewRoomId,
       artists: [],
-      playlist: drag.template.playlist,
-      song: drag.template.song
+      playlist: drag.data.playlist,
+      song: drag.data.song
     });
-  }
+  };
 
   /* ---------------- ARTIST DRAG ---------------- */
-  startArtistDrag(artist: PlannerArtist) {
-    this.drag.start({ type: 'artist', artist });
-  }
+  startArtistDrag(data: PlannerArtist) {
+    this.drag.start({ type: 'artist', data, preview: ArtistCardComponent });
+  };
 
   private handleArtistHover(event: PointerEvent) {
 
@@ -212,10 +199,16 @@ export class ProgramsPageComponent implements OnInit {
 
     const slotId = slotElement.getAttribute('data-slot-id');
 
-    const slot = this.slots().find(s => s.id === slotId);
+    if (!slotId) {
+      this.hover.clear();
+      return;
+    }
+
+    const slot = this.selector.slotsById().get(slotId);
 
     this.hover.set(slot ?? null);
-  }
+  };
+
 
   /**
    * Handles dropping an artist onto a performance slot.
@@ -236,8 +229,8 @@ export class ProgramsPageComponent implements OnInit {
       return;
     }
 
-    this.slotServ.addArtistToSlot(hoveredSlot.id, drag.artist);
-  }
+    this.slotServ.addArtistToSlot(hoveredSlot.id, drag.data);
+  };
 
   /* ---------------- SLOT DRAG / RESIZE ---------------- */
 
@@ -256,11 +249,11 @@ export class ProgramsPageComponent implements OnInit {
     }
 
     this.interaction.startSlotDrag(event, slot);
-  }
+  };
 
   startSlotResize(event: PointerEvent, slot: ArtistPerformanceSlot): void {
     this.interaction.startSlotResize(event, slot);
-  }
+  };
 
   private handleRoomChange(event: PointerEvent) {
 
@@ -282,9 +275,9 @@ export class ProgramsPageComponent implements OnInit {
 
         if (
           newRoomId &&
-          drag.slot.roomId !== newRoomId
+          drag.data.roomId !== newRoomId
         ) {
-          this.slotServ.updateSlotRoom(drag.slot.id, newRoomId);        }
+          this.slotServ.updateSlotRoom(drag.data.id, newRoomId);        }
       }
     }
   };
@@ -299,6 +292,8 @@ export class ProgramsPageComponent implements OnInit {
     if (!drag) {
       return;
     }
+
+    this.drag.updatePointer(event);
 
     switch (drag.type) {
 
@@ -351,15 +346,15 @@ export class ProgramsPageComponent implements OnInit {
    * Returns an array of performance slots that are scheduled in a specific room, identified by the provided roomId.
    * @param roomId
    */
-  getSlotsForRoom(roomId: string): ArtistPerformanceSlot[] {
-    return this.slots().filter(s => s.roomId === roomId);
+  getSlotsForRoom(roomId: string) {
+    return this.selector.slotsByRoom().get(roomId) ?? [];
   }
 
   get previewTemplate(): ArtistPerformanceSlotTemplate | undefined {
     const drag = this.drag.current();
 
     return drag?.type === 'template'
-      ? drag.template
+      ? drag.data
       : undefined;
   }
 
@@ -377,16 +372,15 @@ export class ProgramsPageComponent implements OnInit {
       return;
     }
 
-    this.slotServ.addGroupToSlot(hoveredSlot.id, drag.group)
+    this.slotServ.addGroupToSlot(hoveredSlot.id, drag.data)
   };
-
 
   /**
    * Initiates a drag session for an artist group. When a user starts dragging an artist group, this method is called with the group as an argument. It uses the DragSessionService to start a new drag session, passing an object that indicates the type of item being dragged (in this case, 'group') and the group itself. This allows the application to manage the drag state and provide appropriate feedback to the user during the drag operation.
-   * @param group
+   * @param data
    */
-  startGroupDrag(group: UserGroup) {
-    this.drag.start({ type: 'group', group });
+  startGroupDrag(data: UserGroup) {
+    this.drag.start({ type: 'group', data, preview: GroupCardComponent });
   };
 
   openEditPerformanceSlotPopover(slot_id: string) {

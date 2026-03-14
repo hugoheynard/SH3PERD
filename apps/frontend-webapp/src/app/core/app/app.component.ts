@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import {RouterOutlet} from '@angular/router';
+import { DragLayerComponent } from '../drag-and-drop/drag-layer/drag-layer.component';
 
 
 
 @Component({
   selector: 'app-root',
   imports: [
-    RouterOutlet
+    RouterOutlet,
+    DragLayerComponent,
   ],
   templateUrl: './app.component.html',
   standalone: true,

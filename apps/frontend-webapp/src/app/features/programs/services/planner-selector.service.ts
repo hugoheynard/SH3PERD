@@ -1,6 +1,7 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { ProgramStateService } from './program-state.service';
 import { time_functions_utils } from '../utils/time_functions_utils';
+import type { ArtistPerformanceSlot, TimelineBlock } from '../program-types';
 
 
 /**
@@ -70,5 +71,75 @@ export class PlannerSelectorService {
         startMinutes: slot.startMinutes + delta
       };
     });
+  });
+
+  /**
+   * maps the performance slots and timeline offsets to their respective rooms, creating a structured representation of the program's schedule.
+   * It retrieves the current slots and timeline offsets from the program state, then iterates over each slot and buffer to group them by their associated room IDs.
+   * The method returns a Map where each key is a room ID and the corresponding value is an array of TimelineBlock objects representing the slots and buffers scheduled for that room, sorted by their start times.
+   * This allows for easy access to the schedule of each room in the program, facilitating efficient management and organization of performances and timeline adjustments.
+   * @returns a Map of room IDs to arrays of TimelineBlock objects representing the schedule for each room
+   */
+  blocksByRoom = computed(() => {
+
+    const slots = this.slots();
+    const buffers = this.timelineOffsets();
+
+    const map = new Map<string, TimelineBlock[]>();
+
+    for (const slot of slots) {
+      const arr = map.get(slot.roomId) ?? [];
+      arr.push({
+        type: "slot",
+        id: slot.id,
+        startMinutes: slot.startMinutes,
+        duration: slot.duration,
+        slot
+      });
+      map.set(slot.roomId, arr);
+    }
+
+    for (const buffer of buffers) {
+      const arr = map.get(buffer.roomId) ?? [];
+      arr.push({
+        type: "buffer",
+        id: buffer.id,
+        startMinutes: buffer.atMinutes,
+        duration: buffer.delta
+      });
+      map.set(buffer.roomId, arr);
+    }
+
+    for (const arr of map.values()) {
+      arr.sort((a, b) => a.startMinutes - b.startMinutes);
+    }
+
+    return map;
+  });
+
+  slotsById = computed(() => {
+    const map = new Map<string, ArtistPerformanceSlot>();
+
+    for (const slot of this.slots()) {
+      map.set(slot.id, slot);
+    }
+
+    return map;
+  });
+
+  slotsByRoom = computed(() => {
+
+    const map = new Map<string, ArtistPerformanceSlot[]>();
+
+    for (const slot of this.slots()) {
+
+      const arr = map.get(slot.roomId) ?? [];
+
+      arr.push(slot);
+
+      map.set(slot.roomId, arr);
+    }
+
+    return map;
   });
 }

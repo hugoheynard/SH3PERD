@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import type { PlannerArtist, UserGroup, ArtistPerformanceSlot, ArtistPerformanceSlotTemplate } from '../../program-types';
+import type { DragState } from './drag.types';
 
 //TODO : rendre générique DragSessionService<T>
 @Injectable({ providedIn: 'root' })
@@ -7,6 +7,9 @@ export class DragSessionService {
 
   private _current = signal<DragState | null>(null);
   readonly current = this._current.asReadonly();
+
+  cursorX = signal(0);
+  cursorY = signal(0);
 
   /* ---------------- START ---------------- */
 
@@ -28,28 +31,41 @@ export class DragSessionService {
    */
   stop() {
     this._current.set(null);
-  }
+  };
 
   /* ---------------- HELPERS ---------------- */
 
   isDragging(): boolean {
     return this._current() !== null;
-  }
+  };
 
   isType<T extends DragState['type']>(
     type: T
   ): this is { current: () => Extract<DragState, { type: T }> } {
     return this._current()?.type === type;
+  };
+
+
+  updatePointer(event: PointerEvent) {
+    this.cursorX.set(event.clientX);
+    this.cursorY.set(event.clientY);
+  };
+
+
+  /**
+   * for uiDndDrop directive
+   * @private
+   */
+  private _dropTarget = signal<string | null>(null);
+  dropTarget = this._dropTarget.asReadonly();
+
+  setDropTarget(id: string) {
+    this._dropTarget.set(id);
+  }
+
+  clearDropTarget() {
+    this._dropTarget.set(null);
   }
 }
 
 
-/* ---------------------------------------------------
-   DRAG STATE TYPE
---------------------------------------------------- */
-export type DragState =
-  | { type: 'template'; template: ArtistPerformanceSlotTemplate }
-  | { type: 'artist'; artist: PlannerArtist }
-  | { type: 'group'; group: UserGroup }
-  | { type: 'slot'; slot: ArtistPerformanceSlot }
-  | { type: 'resize'; slot: ArtistPerformanceSlot };

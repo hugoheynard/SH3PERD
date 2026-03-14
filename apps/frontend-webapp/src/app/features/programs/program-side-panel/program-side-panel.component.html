@@ -12,10 +12,12 @@
 
   <div section-content class="template-list">
     @for (template of config.templates; track template.id) {
+
       <ui-slot-template-card
         [template]="template"
         (edit)="onEditTemplate($event)"
         (pointerdown)="onTemplateDrag(template)" />
+
     }
   </div>
 </app-side-panel-section>
@@ -24,10 +26,12 @@
 <app-side-panel-section [title]="'artist'" [count]="config.staff() ? config.staff().length : 0">
   <div section-content class="artist-grid" >
     @for (item of artistsWithWorkload(); track item.artist.id) {
-      <ui-artist-card
-        [artist]="item.artist"
-        [workload]="item.workload"
-        (pointerdown)="config.onArtistDragStart(item.artist)" />
+
+      <ui-artist-card [artist]="item.artist" (pointerdown)="config.onArtistDragStart(item.artist)">
+
+        <app-artist-workload-strip artist-extra [segments]="item.workload.segments" [globalScore]="78"/>
+
+      </ui-artist-card>
     }
   </div>
 </app-side-panel-section>
@@ -46,9 +50,9 @@
 
   <div section-content class="artist-grid" >
     @for (group of config.groups(); track group.id) {
-      <ui-group-card
-        [group]="group"
-        (pointerdown)="config.onGroupDragStart(group)"/>
+
+      <ui-group-card [group]="group" (pointerdown)="config.onGroupDragStart(group)"/>
+
     }
   </div>
 </app-side-panel-section>

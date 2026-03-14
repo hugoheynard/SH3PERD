@@ -45,7 +45,6 @@
                   [startMinutes]="block.startMinutes"
                   [duration]="block.duration" />
               }
-
             }
 
             <!-- Preview -->
@@ -53,8 +52,7 @@
               <div
                 class="slot preview"
                 [style.top.px]="previewTop"
-                [style.height.px]="getSlotHeight(previewTemplate.duration)"
-              >
+                [style.height.px]="getSlotHeight(previewTemplate.duration)">
                 {{ previewTemplate.type }}
               </div>
             }

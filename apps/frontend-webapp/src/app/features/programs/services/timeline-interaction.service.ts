@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { PointerTrackerService } from './drag-interactions/pointer-tracker.service';
-import { DragSessionService} from './drag-interactions/drag-session.service';
+import { DragSessionService} from '../../../core/drag-and-drop/drag-session.service';
 import type { ArtistPerformanceSlot } from '../program-types';
 import { PlannerResolutionService } from './planner-resolution.service';
 import { SlotService } from './planner-state-mutations/slot.service';
@@ -20,31 +20,31 @@ export class TimelineInteractionService {
 
   /* ------------------ SLOT DRAG ------------------ */
 
-  startSlotDrag(event: PointerEvent, slot: ArtistPerformanceSlot) {
+  startSlotDrag(event: PointerEvent, data: ArtistPerformanceSlot) {
 
     if (!this.startInteraction(event)) {
       return;
     }
 
-    this.drag.start({ type: 'slot', slot });
+    this.drag.start({ type: 'slot', data });
 
     this.dragStartY = event.clientY;
-    this.originalStartMinutes = slot.startMinutes;
+    this.originalStartMinutes = data.startMinutes;
   };
 
   /* ------------------ SLOT RESIZE ------------------ */
 
-  startSlotResize(event: PointerEvent, slot: ArtistPerformanceSlot) {
+  startSlotResize(event: PointerEvent, data: ArtistPerformanceSlot) {
 
     if (!this.startInteraction(event)) {
       return;
     }
 
-    this.drag.start({ type: 'resize', slot });
+    this.drag.start({ type: 'resize', data });
 
     this.resizeStartY = event.clientY;
-    this.originalDuration = slot.duration;
-  }
+    this.originalDuration = data.duration;
+  };
 
   /* ------------------ POINTER MOVE ------------------ */
 
@@ -72,7 +72,7 @@ export class TimelineInteractionService {
         const snapped = this.res.snap(newMinutes);
 
         this.slotServ.updateSlotStart(
-          drag.slot.id,
+          drag.data.id,
           Math.max(0, snapped)
         );
 
@@ -93,21 +93,21 @@ export class TimelineInteractionService {
           this.res.snap(newDuration);
 
         this.slotServ.updateSlotDuration(
-          drag.slot.id,
+          drag.data.id,
           Math.max(this.res.snapMinutes(), snapped)
         );
 
         break;
       }
     }
-  }
+  };
 
   /* ------------------ STOP ------------------ */
 
   stop() {
     this.drag.stop();
     this.pointer.stop();
-  }
+  };
 
   /* ------------------ UTILS ------------------ */
   /**
@@ -134,5 +134,5 @@ export class TimelineInteractionService {
     (event.target as HTMLElement)?.setPointerCapture(event.pointerId);
 
     return true;
-  }
+  };
 }

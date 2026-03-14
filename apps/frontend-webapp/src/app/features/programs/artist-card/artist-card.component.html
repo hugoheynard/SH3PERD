@@ -9,9 +9,7 @@
       <div class="artist-role">{{ artist().role }}</div>
     </div>
 
-    <app-artist-workload-strip
-      [segments]="workload().segments"
-      [globalScore]="78"/>
+    <ng-content select="[artist-extra]"></ng-content>
 
   </div>
 </ui-card-frame-horizontal>
