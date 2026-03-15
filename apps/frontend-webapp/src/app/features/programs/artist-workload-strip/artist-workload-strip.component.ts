@@ -7,6 +7,9 @@ export interface WorkloadSegment {
   score: number;      // intensité 0–100
 }
 
+/**
+ * graphic representation of the artist workload, related to state slots
+ */
 @Component({
   selector: 'app-artist-workload-strip',
   imports: [],

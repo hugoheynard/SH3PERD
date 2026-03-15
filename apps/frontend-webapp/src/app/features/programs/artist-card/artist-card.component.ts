@@ -60,5 +60,5 @@ export class ArtistCardComponent {
 
     get initials() {
       return this.artist().name[0];
-    }
+    };
 }

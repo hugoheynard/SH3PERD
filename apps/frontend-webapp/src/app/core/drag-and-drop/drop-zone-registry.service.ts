@@ -29,7 +29,9 @@ export class DropZoneRegistryService {
 
       const zone = this.findZoneFromElement(el, dragType);
 
-      if (zone) return zone;
+      if (zone) {
+        return zone;
+      }
     }
 
     return null;

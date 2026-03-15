@@ -1,15 +1,17 @@
+@let a = artist();
+
 <ui-card-frame-horizontal class="artist-card" [dragIcon]="true">
 
-  <div card-left class="artist-avatar" [style.background]="artist().roleColor">{{ initials }}</div>
+  <div card-left class="artist-avatar" [style.background]="a.roleColor">{{ initials }}</div>
 
   <div card-content class="artist-main">
 
     <div class="artist-meta">
-      <div class="artist-name">{{ artist().name }}</div>
-      <div class="artist-role">{{ artist().role }}</div>
+      <div class="artist-name">{{ a.name }}</div>
+      <div class="artist-role">{{ a.role }}</div>
     </div>
 
-    <ng-content select="[artist-extra]"></ng-content>
+    <ng-content select="[artist-extra]" />
 
   </div>
 </ui-card-frame-horizontal>
