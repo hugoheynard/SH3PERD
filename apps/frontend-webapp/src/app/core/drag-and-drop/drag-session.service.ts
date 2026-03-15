@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import type { DragState } from './drag.types';
 
 //TODO : rendre générique DragSessionService<T>
@@ -8,18 +8,20 @@ export class DragSessionService {
   private _current = signal<DragState | null>(null);
   readonly current = this._current.asReadonly();
 
-  cursorX = signal(0);
-  cursorY = signal(0);
+  cursor = signal({ x:0, y:0 });
+
+  readonly cursorX = computed(() => this.cursor().x);
+  readonly cursorY = computed(() => this.cursor().y);
 
   /* ---------------- START ---------------- */
 
   start(drag: DragState) {
-    // 🔒 guard
     if (this._current()) {
-      return;
+      this.stop();
     }
 
     this._current.set(drag);
+    this.clearDropTarget();
   }
 
   /* ---------------- STOP ---------------- */
@@ -39,29 +41,32 @@ export class DragSessionService {
     return this._current() !== null;
   };
 
-  isType<T extends DragState['type']>(
-    type: T
-  ): this is { current: () => Extract<DragState, { type: T }> } {
-    return this._current()?.type === type;
-  };
-
 
   updatePointer(event: PointerEvent) {
-    this.cursorX.set(event.clientX);
-    this.cursorY.set(event.clientY);
-  };
+    this.cursor.set({
+      x: event.clientX,
+      y: event.clientY
+    });
+  }
 
 
   /**
    * for uiDndDrop directive
    * @private
    */
-  private _dropTarget = signal<string | null>(null);
-  dropTarget = this._dropTarget.asReadonly();
+  private _dropTarget = signal<unknown | null>(null);
 
-  setDropTarget(id: string) {
-    this._dropTarget.set(id);
-  }
+  setDropTarget<T>(target_id: T) {
+    this._dropTarget.set(target_id);
+    console.log(this.getDropTarget());
+  };
+
+  /**
+   *
+   */
+  getDropTarget<T>() {
+    return this._dropTarget() as T | null;
+  };
 
   clearDropTarget() {
     this._dropTarget.set(null);

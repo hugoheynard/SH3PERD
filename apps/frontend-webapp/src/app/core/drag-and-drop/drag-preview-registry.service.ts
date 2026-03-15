@@ -21,6 +21,10 @@ export class DragPreviewRegistryService {
     type: K,
     definition: DragPreviewDefinition<DragPayloadMap[K]>
   ) {
+    if (this.registry.has(type)) {
+      console.warn(`Drag preview already registered for type "${type}"`);
+    }
+
     this.registry.set(type, definition);
   };
 

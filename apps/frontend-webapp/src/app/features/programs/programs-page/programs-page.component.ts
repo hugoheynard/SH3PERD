@@ -42,6 +42,7 @@ import { BufferSlotComponent } from '../bufferblock/buffer-slot.component';
 import { ArtistCardComponent } from '../artist-card/artist-card.component';
 import { GroupCardComponent } from '../group-card/group-card.component';
 import { PlannerDndInitService } from '../services/planner-dn-dinit.service';
+import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
 
 
 @Component({
@@ -51,6 +52,7 @@ import { PlannerDndInitService } from '../services/planner-dn-dinit.service';
     ProgramHeaderComponent,
     TimeMarkersComponent,
     BufferSlotComponent,
+    DndDropZoneDirective,
   ],
   templateUrl: './programs-page.component.html',
   styleUrl: './programs-page.component.scss'
@@ -122,10 +124,7 @@ export class ProgramsPageComponent implements OnInit {
 
   /* ---------------- TEMPLATE DRAG ---------------- */
   startTemplateDrag(template: ArtistPerformanceSlotTemplate) {
-    this.drag.start({
-      type: 'template',
-      data: template
-    });
+    this.drag.start({ type: 'template', data: template });
   };
 
   private handleTemplateMove(event: PointerEvent) {
@@ -151,7 +150,7 @@ export class ProgramsPageComponent implements OnInit {
         this.previewRoomId = layer.nativeElement.dataset['roomId'];
       }
     }
-  }
+  };
 
   private handleTemplateDrop() {
 
@@ -186,30 +185,6 @@ export class ProgramsPageComponent implements OnInit {
     this.drag.start({ type: 'artist', data, preview: ArtistCardComponent });
   };
 
-  private handleArtistHover(event: PointerEvent) {
-
-    const element = document.elementFromPoint(event.clientX, event.clientY);
-
-    const slotElement = element?.closest('[data-slot-id]');
-
-    if (!slotElement) {
-      this.hover.clear();
-      return;
-    }
-
-    const slotId = slotElement.getAttribute('data-slot-id');
-
-    if (!slotId) {
-      this.hover.clear();
-      return;
-    }
-
-    const slot = this.selector.slotsById().get(slotId);
-
-    this.hover.set(slot ?? null);
-  };
-
-
   /**
    * Handles dropping an artist onto a performance slot.
    * If the current drag session is of type 'artist' and there is a hovered slot, adds the artist to that slot.
@@ -218,18 +193,13 @@ export class ProgramsPageComponent implements OnInit {
   private handleArtistDrop() {
 
     const drag = this.drag.current();
+    const slotId = this.drag.getDropTarget<string>();
 
-    if (drag?.type !== 'artist') {
+    if (drag?.type !== 'artist' || !slotId) {
       return;
     }
 
-    const hoveredSlot = this.hover.hovered();
-
-    if (!hoveredSlot) {
-      return;
-    }
-
-    this.slotServ.addArtistToSlot(hoveredSlot.id, drag.data);
+    this.slotServ.addArtistToSlot(slotId, drag.data);
   };
 
   /* ---------------- SLOT DRAG / RESIZE ---------------- */
@@ -255,6 +225,7 @@ export class ProgramsPageComponent implements OnInit {
     this.interaction.startSlotResize(event, slot);
   };
 
+  /*
   private handleRoomChange(event: PointerEvent) {
 
     const drag = this.drag.current();
@@ -282,6 +253,27 @@ export class ProgramsPageComponent implements OnInit {
     }
   };
 
+   */
+  private handleRoomChange() {
+
+    const drag = this.drag.current();
+    if (drag?.type !== 'slot') {
+      console.log('error')
+      return;
+    }
+
+    const roomId = this.drag.getDropTarget<string>();
+    console.log('roomId', roomId);
+
+    if (!roomId) {
+      return;
+    }
+
+    if (drag.data.roomId !== roomId) {
+      this.slotServ.updateSlotRoom(drag.data.id, roomId);
+    }
+  };
+
   /* ---------------- GLOBAL EVENTS ---------------- */
 
   @HostListener('document:pointermove', ['$event'])
@@ -297,16 +289,14 @@ export class ProgramsPageComponent implements OnInit {
 
     switch (drag.type) {
 
+      //TODO : se débarrasser de template
       case 'template':
         this.handleTemplateMove(event);
         break;
 
-      case 'artist':
-        this.handleArtistHover(event);
-        break;
-
       case 'slot':
-        this.handleRoomChange(event);
+        //this.handleRoomChange(event);
+        this.handleRoomChange();
         break;
     }
 

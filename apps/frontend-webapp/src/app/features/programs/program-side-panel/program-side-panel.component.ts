@@ -10,6 +10,7 @@ import { ButtonComponent } from '../button/button.component';
 import type { PlannerArtist, UserGroup, ArtistPerformanceSlotTemplate } from '../program-types';
 import { GroupCardComponent } from '../group-card/group-card.component';
 import { ArtistWorkloadStripComponent } from '../artist-workload-strip/artist-workload-strip.component';
+import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 
 
 export interface ProgramSidePanelConfig {
@@ -40,6 +41,7 @@ export function emptyWorkload(): ArtistWorkload {
     ButtonComponent,
     GroupCardComponent,
     ArtistWorkloadStripComponent,
+    DndDragDirective,
   ],
   templateUrl: './program-side-panel.component.html',
   styleUrl: './program-side-panel.component.scss'

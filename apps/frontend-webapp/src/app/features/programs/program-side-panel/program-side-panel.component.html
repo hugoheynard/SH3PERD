@@ -27,7 +27,9 @@
   <div section-content class="artist-grid" >
     @for (item of artistsWithWorkload(); track item.artist.id) {
 
-      <ui-artist-card [artist]="item.artist" (pointerdown)="config.onArtistDragStart(item.artist)">
+      <ui-artist-card
+        [artist]="item.artist"
+        (pointerdown)="config.onArtistDragStart(item.artist)">
 
         <app-artist-workload-strip artist-extra [segments]="item.workload.segments" [globalScore]="78"/>
 
