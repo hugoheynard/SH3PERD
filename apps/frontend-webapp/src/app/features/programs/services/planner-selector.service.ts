@@ -2,6 +2,7 @@ import { computed, inject, Injectable } from '@angular/core';
 import { ProgramStateService } from './program-state.service';
 import { time_functions_utils } from '../utils/time_functions_utils';
 import type { ArtistPerformanceSlot, TimelineBlock } from '../program-types';
+import { PlannerResolutionService } from './planner-resolution.service';
 
 
 /**
@@ -13,6 +14,7 @@ import type { ArtistPerformanceSlot, TimelineBlock } from '../program-types';
 export class PlannerSelectorService {
 
   private state = inject(ProgramStateService);
+  private res = inject(PlannerResolutionService);
 
   /* --------------------------------
             GETTERS / SELECTORS
@@ -26,6 +28,12 @@ export class PlannerSelectorService {
   slots = computed(() => this.state.program().slots);
   userGroups = computed(() => this.state.program().userGroups);
   timelineOffsets = computed(() => this.state.program().timelineOffsets);
+
+  timelineHeight = computed(() => this.res.minuteToPx(this.totalMinutes()));
+  gridOffsetPx = computed(() =>{
+    const startMinutes = time_functions_utils(this.startTime());
+    return this.res.computeGridOffset(startMinutes);
+  });
 
 
   /* --------------------------------

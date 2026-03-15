@@ -17,9 +17,6 @@ export interface ProgramSidePanelConfig {
   templates: ArtistPerformanceSlotTemplate[];
   staff: WritableSignal<PlannerArtist[]>;
   groups: WritableSignal<UserGroup[]>;
-  onTemplateDragStart: (template: ArtistPerformanceSlotTemplate) => void;
-  onArtistDragStart: (artist: PlannerArtist) => void;
-  onGroupDragStart: (group: UserGroup) => void;
 }
 
 export function emptyWorkload(): ArtistWorkload {
@@ -68,13 +65,6 @@ export class ProgramSidePanelComponent {
     }));
   });
 
-  onTemplateDrag(template: ArtistPerformanceSlotTemplate) {
-    this.config.onTemplateDragStart(template);
-  };
-
-  onArtistDragStart(artist: PlannerArtist) {
-    this.config.onArtistDragStart(artist);
-  };
 
   onEditTemplate(template: ArtistPerformanceSlotTemplate) {
     this.layout.setPopover(EditTemplatePopoverComponent, {

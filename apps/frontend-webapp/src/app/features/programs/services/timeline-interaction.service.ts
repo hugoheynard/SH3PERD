@@ -1,14 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import { PointerTrackerService } from './drag-interactions/pointer-tracker.service';
-import { DragSessionService} from '../../../core/drag-and-drop/drag-session.service';
-import type { ArtistPerformanceSlot } from '../program-types';
+import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 import { PlannerResolutionService } from './planner-resolution.service';
 import { SlotService } from './planner-state-mutations/slot.service';
-
+import type { ArtistPerformanceSlot } from '../program-types';
 
 @Injectable({ providedIn: 'root' })
 export class TimelineInteractionService {
-  private pointer = inject(PointerTrackerService);
+
   private drag = inject(DragSessionService);
   private res = inject(PlannerResolutionService);
   private slotServ = inject(SlotService);
@@ -22,53 +20,48 @@ export class TimelineInteractionService {
 
   startSlotDrag(event: PointerEvent, data: ArtistPerformanceSlot) {
 
-    if (!this.startInteraction(event)) {
-      return;
-    }
-
-    this.drag.start({ type: 'slot', data });
-
     this.dragStartY = event.clientY;
     this.originalStartMinutes = data.startMinutes;
-  };
+
+  }
 
   /* ------------------ SLOT RESIZE ------------------ */
 
   startSlotResize(event: PointerEvent, data: ArtistPerformanceSlot) {
 
-    if (!this.startInteraction(event)) {
-      return;
-    }
+    if (this.drag.isDragging()) return;
+
+    event.preventDefault();
+    event.stopPropagation();
 
     this.drag.start({ type: 'resize', data });
 
+    (event.target as HTMLElement)?.setPointerCapture(event.pointerId);
+
     this.resizeStartY = event.clientY;
     this.originalDuration = data.duration;
-  };
+
+  }
 
   /* ------------------ POINTER MOVE ------------------ */
 
-  handlePointerMove(event: PointerEvent) {
-
-    if (!this.pointer.isActivePointer(event)) {
-      return;
-    }
+  handlePointerMove() {
 
     const drag = this.drag.current();
+    if (!drag) return;
 
-    if (!drag) {
-      return;
-    }
+    const cursorY = this.drag.cursorY();
 
     switch (drag.type) {
 
-      /* ---------- SLOT MOVE ---------- */
-
       case 'slot': {
 
-        const deltaY = event.clientY - this.dragStartY;
+        const deltaY = cursorY - this.dragStartY;
+
         const deltaMinutes = this.res.pxToMinutes(deltaY);
+
         const newMinutes = this.originalStartMinutes + deltaMinutes;
+
         const snapped = this.res.snap(newMinutes);
 
         this.slotServ.updateSlotStart(
@@ -79,18 +72,15 @@ export class TimelineInteractionService {
         break;
       }
 
-      /* ---------- SLOT RESIZE ---------- */
-
       case 'resize': {
 
-        const deltaY = event.clientY - this.resizeStartY;
+        const deltaY = cursorY - this.resizeStartY;
 
         const deltaMinutes = this.res.pxToMinutes(deltaY);
 
         const newDuration = this.originalDuration + deltaMinutes;
 
-        const snapped =
-          this.res.snap(newDuration);
+        const snapped = this.res.snap(newDuration);
 
         this.slotServ.updateSlotDuration(
           drag.data.id,
@@ -100,39 +90,12 @@ export class TimelineInteractionService {
         break;
       }
     }
-  };
+  }
 
   /* ------------------ STOP ------------------ */
 
   stop() {
     this.drag.stop();
-    this.pointer.stop();
-  };
+  }
 
-  /* ------------------ UTILS ------------------ */
-  /**
-   * Checks if a drag session is already active and returns true if so, preventing the start of a new interaction.
-   * If no drag session is active, it prevents the default behavior and
-   * ->stops propagation of the event,
-   * ->starts tracking the pointer
-   * ->captures the pointer for the event target.
-   * This method is used to ensure that only one interaction (drag or resize) can be active at a time and to set up the necessary pointer tracking for the interaction.
-   * @param event
-   * @private
-   */
-  private startInteraction(event: PointerEvent): boolean {
-
-    if (this.drag.isDragging()) {
-      return false;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    this.pointer.start(event);
-
-    (event.target as HTMLElement)?.setPointerCapture(event.pointerId);
-
-    return true;
-  };
 }

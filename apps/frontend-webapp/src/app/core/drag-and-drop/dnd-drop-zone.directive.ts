@@ -1,114 +1,36 @@
-import { Directive, HostListener, inject, Input } from '@angular/core';
-import { DragSessionService } from './drag-session.service';
-import type { DragPayloadMap } from './drag.types';
+import { Directive, ElementRef, EventEmitter, inject, Input, type OnDestroy, type OnInit, Output } from '@angular/core';
+import { DropZoneRegistryService } from './drop-zone-registry.service';
+import type { DragState } from './drag.types';
 
-
-/**
- * Directive that marks an element as a valid drop zone for the drag-and-drop system.
- *
- * When a pointer enters the element during an active drag session, the directive checks
- * whether the current drag type is accepted. If so, it registers the drop zone identifier
- * in the {@link DragSessionService}. When the pointer leaves the element, the drop target
- * is cleared.
- *
- * The drop zone identifier (`dropZone_id`) can be any value (string, object, typed id, etc.).
- * The directive itself does not enforce the type; the consumer of the drag session is responsible
- * for retrieving and casting the drop target using `DragSessionService.getDropTarget<T>()`
- * during the drop handling phase.
- *
- * Example usage:
- *
- * ```html
- * <app-performance-slot
- *   [slot]="block.slot"
- *   [uiDndDropZone]
- *   [dropZone_id]="block.slot.id"
- *   [dropZoneAccept]="'artist'">
- * </app-performance-slot>
- * ```
- *
- * Accepted drag types are defined by {@link DragPayloadMap}.
- *
- * @directive
- * @selector [uiDndDropZone]
- */
 @Directive({
-  selector: '[uiDndDropZone]'
+  selector: '[uiDndDropZone]',
+  standalone: true
 })
-export class DndDropZoneDirective {
+export class DndDropZoneDirective implements OnInit, OnDestroy {
 
-  private drag = inject(DragSessionService);
+  private el = inject(ElementRef<HTMLElement>);
+  private registry = inject(DropZoneRegistryService);
 
-  /**
-   * Identifier of the drop zone.
-   *
-   * This value is stored in the drag session when the pointer enters the zone
-   * and can later be retrieved when handling the drop.
-   *
-   * The type is intentionally `unknown` to allow flexibility (string ids,
-   * typed ids, objects, etc.). Consumers should retrieve the value using
-   * `getDropTarget<T>()` and provide the expected type.
-   */
   @Input() dropZone_id!: unknown;
+  @Input() dropZoneAccept!: string | string[];
 
-  /**
-   * List of drag types that are allowed to be dropped on this zone.
-   *
-   * Can be either a single drag type or an array of types.
-   *
-   * The types correspond to the keys of {@link DragPayloadMap}.
-   *
-   * Example:
-   * ```html
-   * [dropZoneAccept]="'artist'"
-   *  [dropZoneAccept]="['artist','group']"
-   * ```
-   */
-  @Input() dropZoneAccept!: (keyof DragPayloadMap) | (keyof DragPayloadMap)[];
+  @Output() uiDndDrop = new EventEmitter<DragState>();
 
-  /**
-   * Triggered when the pointer enters the drop zone during a drag session.
-   *
-   * If the current drag type is accepted by this zone, the zone identifier
-   * is registered as the active drop target in the drag session.
-   */
-  @HostListener('pointerenter')
-  onEnter() {
+  ngOnInit() {
 
-    const drag = this.drag.current();
-    if (!drag) {
-      return;
-    }
+    this.registry.register({
+      el: this.el.nativeElement,
+      id: this.dropZone_id,
+      accept: Array.isArray(this.dropZoneAccept)
+        ? this.dropZoneAccept
+        : [this.dropZoneAccept],
+      onDrop: drag => this.uiDndDrop.emit(drag)
+    });
 
-    const accept = Array.isArray(this.dropZoneAccept)
-      ? this.dropZoneAccept
-      : [this.dropZoneAccept];
-
-    if (!accept.includes(drag.type)) {
-      return;
-    }
-
-    if (this.drag.getDropTarget() === this.dropZone_id) {
-      return;
-    }
-
-    this.drag.setDropTarget(this.dropZone_id);
   }
 
-  /**
-   * Triggered when the pointer leaves the drop zone.
-   *
-   * Clears the current drop target from the drag session.
-   */
-  @HostListener('pointerleave')
-  onLeave() {
-
-    const current = this.drag.getDropTarget();
-
-    if (current === this.dropZone_id) {
-      this.drag.clearDropTarget();
-    }
+  ngOnDestroy() {
+    this.registry.unregister(this.el.nativeElement);
   }
-
 
 }

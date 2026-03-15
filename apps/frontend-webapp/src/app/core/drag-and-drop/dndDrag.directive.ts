@@ -1,49 +1,50 @@
-import { Directive, ElementRef, HostListener, inject, Input } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  Output,
+  inject
+} from '@angular/core';
+
 import { DragSessionService } from './drag-session.service';
 import type { DragPayloadMap, DragState } from './drag.types';
 
-
 @Directive({
-  selector: '[dndDrag]',
+  selector: '[uiDndDrag]',
   standalone: true
 })
-export class DndDragDirective<K extends keyof DragPayloadMap = keyof DragPayloadMap> {
-
+export class DndDragDirective {
+  //TODO : gere le conflit avec resize handle
   private drag = inject(DragSessionService);
   private el = inject(ElementRef<HTMLElement>);
 
-  @Input('dndDrag') data!: DragPayloadMap[K];
-  @Input() dndType!: K;
+  @Input() dndData!: DragPayloadMap[keyof DragPayloadMap];
+  @Input() dndType!: keyof DragPayloadMap;
+
+  @Output() dragStart = new EventEmitter<PointerEvent>();
 
   private pointerId: number | null = null;
+  private startX = 0;
+  private startY = 0;
+  private dragging = false;
 
-  /* ---------------- START DRAG ---------------- */
-
-
-  private startDrag<K extends keyof DragPayloadMap>(
-    type: K,
-    data: DragPayloadMap[K]
-  ) {
-    this.drag.start({ type, data } as DragState);
-  }
+  private readonly DRAG_THRESHOLD = 4;
 
   /* ---------------- POINTER DOWN ---------------- */
 
   @HostListener('pointerdown', ['$event'])
   onPointerDown(event: PointerEvent) {
 
-    if (event.button !== 0) {
-      return;
-    }
-
-    const el = this.el.nativeElement;
+    if (event.button !== 0) return;
 
     this.pointerId = event.pointerId;
+    this.startX = event.clientX;
+    this.startY = event.clientY;
+    this.dragging = false;
 
-    el.setPointerCapture(event.pointerId);
-    event.preventDefault();
-
-    this.startDrag(this.dndType, this.data);
+    this.el.nativeElement.setPointerCapture(event.pointerId);
   }
 
   /* ---------------- POINTER MOVE ---------------- */
@@ -51,11 +52,30 @@ export class DndDragDirective<K extends keyof DragPayloadMap = keyof DragPayload
   @HostListener('pointermove', ['$event'])
   onPointerMove(event: PointerEvent) {
 
-    if (!this.drag.isDragging()) {
-      return;
-    }
+    if (event.pointerId !== this.pointerId) return;
 
-    if (event.pointerId !== this.pointerId) {
+    const dx = event.clientX - this.startX;
+    const dy = event.clientY - this.startY;
+
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // seuil non atteint
+    if (!this.dragging && distance < this.DRAG_THRESHOLD) return;
+
+    // démarrage du drag
+    if (!this.dragging) {
+
+      this.dragging = true;
+
+      const drag: DragState = {
+        type: this.dndType,
+        data: this.dndData as any
+      };
+
+      this.drag.start(drag);
+
+      this.dragStart.emit(event);
+      this.drag.updatePointer(event);
       return;
     }
 
@@ -64,47 +84,34 @@ export class DndDragDirective<K extends keyof DragPayloadMap = keyof DragPayload
 
   /* ---------------- POINTER UP ---------------- */
 
-
   @HostListener('pointerup', ['$event'])
   onPointerUp(event: PointerEvent) {
 
-    if (event.pointerId !== this.pointerId) {
-      return;
-    }
+    if (event.pointerId !== this.pointerId) return;
 
     this.releasePointer(event);
-
-    this.drag.stop();
-  }
-
+  };
 
   /* ---------------- POINTER CANCEL ---------------- */
 
   @HostListener('pointercancel', ['$event'])
   onPointerCancel(event: PointerEvent) {
 
-    if (event.pointerId !== this.pointerId) {
-      return;
-    }
+    if (event.pointerId !== this.pointerId) return;
 
     this.releasePointer(event);
-
-    this.drag.stop();
   }
-
 
   /* ---------------- HELPERS ---------------- */
 
   private releasePointer(event: PointerEvent) {
 
-    const el = this.el.nativeElement;
-
     try {
-      el.releasePointerCapture(event.pointerId);
+      this.el.nativeElement.releasePointerCapture(event.pointerId);
     } catch {}
 
     this.pointerId = null;
+    this.dragging = false;
   }
-
 
 }

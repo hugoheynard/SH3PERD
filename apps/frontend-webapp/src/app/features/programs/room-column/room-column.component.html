@@ -1,0 +1,28 @@
+@let r = room();
+
+<div class="room-column" #roomLayer>
+  <div class="room-header">
+    {{ r.name }}
+
+    @if (!roomServ.isBaseRoom(r)) {
+      <button class="room-delete" (click)="roomServ.removeRoom(r.id)">✕</button>
+    }
+  </div>
+
+  <div class="header-separator"></div>
+
+  <div
+    class="slots-layer"
+    uiDndDropZone
+    [dropZone_id]="r.id"
+    [dropZoneAccept]="['template','slot']"
+    (uiDndDrop)="handleRoomDrop($event)"
+
+    [attr.data-room-id]="r.id"
+    [style.height.px]="timelineHeight()"
+    [style.background-position]="'0px -' + gridOffsetPx() + 'px'">
+
+    <ng-content />
+
+  </div>
+</div>

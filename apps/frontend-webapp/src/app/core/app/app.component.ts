@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import { DragLayerComponent } from '../drag-and-drop/drag-layer/drag-layer.component';
+import { DndRootComponent } from '../drag-and-drop/dnd-root/dnd-root.component';
 
 
 
@@ -9,6 +10,7 @@ import { DragLayerComponent } from '../drag-and-drop/drag-layer/drag-layer.compo
   imports: [
     RouterOutlet,
     DragLayerComponent,
+    DndRootComponent,
   ],
   templateUrl: './app.component.html',
   standalone: true,

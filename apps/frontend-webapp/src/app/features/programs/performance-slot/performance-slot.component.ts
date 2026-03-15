@@ -1,7 +1,6 @@
 import { Component, computed, EventEmitter, inject, input, output, Output } from '@angular/core';
 import { ProgramStateService } from '../services/program-state.service';
 import { ArtistChipComponent } from '../artist-chip/artist-chip.component';
-import { SlotHoverService } from '../services/drag-interactions/slot-hover.service';
 import type { ArtistPerformanceSlot } from '../program-types';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { SlotService } from '../services/planner-state-mutations/slot.service';
@@ -15,7 +14,6 @@ import { SlotService } from '../services/planner-state-mutations/slot.service';
   styleUrl: './performance-slot.component.scss',
   host: {
     '[attr.data-slot-id]': "slot().id",
-    '[class.hover-artist]':"isHovered",
     '[class.expanded]': 'isExpanded',
     '[style.top.px]': 'top()',
     '[style.height.px]': 'height()',
@@ -29,17 +27,13 @@ export class PerformanceSlotComponent {
   private state = inject(ProgramStateService);
   private slotServ = inject(SlotService);
 
-  private hover = inject(SlotHoverService);
   private res = inject(PlannerResolutionService);
 
   editSlot = output<string>()
 
-  get isHovered(): boolean {
-    return this.hover.hovered()?.id === this.slot().id;
-  }
 
   slot = input.required<ArtistPerformanceSlot>();
-  @Output() slotPointerDown = new EventEmitter<PointerEvent>();
+  slotPointerDown = output<PointerEvent>();
 
   isExpanded = false;
 

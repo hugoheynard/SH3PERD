@@ -58,7 +58,6 @@ export class DragSessionService {
 
   setDropTarget<T>(target_id: T) {
     this._dropTarget.set(target_id);
-    console.log(this.getDropTarget());
   };
 
   /**

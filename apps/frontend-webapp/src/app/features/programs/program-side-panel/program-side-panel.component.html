@@ -15,8 +15,12 @@
 
       <ui-slot-template-card
         [template]="template"
-        (edit)="onEditTemplate($event)"
-        (pointerdown)="onTemplateDrag(template)" />
+
+        uiDndDrag
+        [dndType]="'template'"
+        [dndData]="template"
+
+        (edit)="onEditTemplate($event)" />
 
     }
   </div>
@@ -29,7 +33,10 @@
 
       <ui-artist-card
         [artist]="item.artist"
-        (pointerdown)="config.onArtistDragStart(item.artist)">
+
+        uiDndDrag
+        [dndType]="'artist'"
+        [dndData]="item.artist">
 
         <app-artist-workload-strip artist-extra [segments]="item.workload.segments" [globalScore]="78"/>
 
@@ -53,7 +60,11 @@
   <div section-content class="artist-grid" >
     @for (group of config.groups(); track group.id) {
 
-      <ui-group-card [group]="group" (pointerdown)="config.onGroupDragStart(group)"/>
+      <ui-group-card
+        [group]="group"
+        uiDndDrag
+        [dndType]="'group'"
+        [dndData]="group" />
 
     }
   </div>
