@@ -25,6 +25,8 @@
 
               <app-performance-slot
                 [slot]="block.slot"
+                [slotStartTime]="selector.getSlotStartTime(block.slot)"
+                [slotEndTime]="selector.getSlotEndTime(block.slot)"
 
                 uiDndDrag
                 [dndType]="'slot'"
@@ -36,8 +38,9 @@
                 [dropZoneAccept]="['artist','group']"
                 (uiDndDrop)="handleSlotDrop(block.slot.id, $event)"
 
-                (slotPointerDown)="startSlotDrag($event, block.slot)"
+                (slotPointerDown)="handleSlotPointerDown($event)"
                 (slotResizeStart)="startSlotResize($event, block.slot)"
+                (removeArtist)="handleRemoveArtistFromSlot($event)"
                 (editSlot)="openEditPerformanceSlotPopover($event)" />
 
             }

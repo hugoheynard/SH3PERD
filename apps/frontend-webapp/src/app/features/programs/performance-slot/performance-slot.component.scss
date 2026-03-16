@@ -1,7 +1,7 @@
 :host {
   position: absolute;
   width: 100%;
-
+  background-color: var(--slot-color);
   border-radius: var(--radius-md);
 
   overflow: hidden;

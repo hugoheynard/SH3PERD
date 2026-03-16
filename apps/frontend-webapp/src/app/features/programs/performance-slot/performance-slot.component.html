@@ -8,12 +8,12 @@
         @for (artist of slot().artists; track artist.id) {
           <app-artist-chip
             [artist]="artist"
-            (remove)="removeArtist($event)">
+            (remove)="onRemoveArtist($event)">
           </app-artist-chip>
         }
       </div>
     }
-    <div class="slot-time">{{ startTime }} - {{ endTime }}</div>
+    <div class="slot-time">{{ slotStartTime() }} - {{ slotEndTime() }}</div>
 
     <button
       class="expand-btn"
@@ -30,7 +30,7 @@
         <div class="staff-label">Staff</div>
         <div class="artist-container">
           @for (artist of slot().artists; track artist.id) {
-            <app-artist-chip [artist]="artist" (remove)="removeArtist($event)" />
+            <app-artist-chip [artist]="artist" (remove)="onRemoveArtist($event)" />
           }
         </div>
       </div>

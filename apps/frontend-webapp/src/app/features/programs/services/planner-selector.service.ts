@@ -1,6 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { ProgramStateService } from './program-state.service';
-import { time_functions_utils } from '../utils/time_functions_utils';
+import { minutesToTime, time_functions_utils } from '../utils/time_functions_utils';
 import type { ArtistPerformanceSlot, TimelineBlock } from '../program-types';
 import { PlannerResolutionService } from './planner-resolution.service';
 
@@ -154,4 +154,19 @@ export class PlannerSelectorService {
 
     return map;
   });
+
+
+  getSlotStartTime(slot: ArtistPerformanceSlot): string {
+    const programStartMinutes = time_functions_utils(this.startTime());
+    const absolute = programStartMinutes + slot.startMinutes;
+    return minutesToTime(absolute);
+  };
+
+
+  getSlotEndTime(slot: ArtistPerformanceSlot): string {
+    const programStartMinutes = time_functions_utils(this.startTime());
+    const absolute =
+      programStartMinutes + slot.startMinutes + slot.duration;
+    return minutesToTime(absolute);
+  };
 }

@@ -26,7 +26,6 @@ import type {
 } from '../program-types';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { EditPerformanceSlotPopoverComponent } from '../edit-performance-slot-popover/edit-performance-slot-popover.component';
-import { RoomService } from '../services/planner-state-mutations/room.service';
 import { SlotService } from '../services/planner-state-mutations/slot.service';
 import { PlannerSelectorService } from '../services/planner-selector.service';
 import { BufferSlotComponent } from '../bufferblock/buffer-slot.component';
@@ -54,11 +53,8 @@ import { SlotSelectionService } from '../services/slot-selection.service';
 })
 export class ProgramsPageComponent implements OnInit {
 
-  selector = inject(PlannerSelectorService);
-
-  public roomServ = inject(RoomService);
+  public selector = inject(PlannerSelectorService);
   public slotServ = inject(SlotService);
-
   private res = inject(PlannerResolutionService)
   private interaction = inject(TimelineInteractionService);
   private layout = inject(LayoutService);
@@ -186,8 +182,12 @@ export class ProgramsPageComponent implements OnInit {
     }
   };
 
-  //* -------------POPOVERS ---------------------------*//
+  handleRemoveArtistFromSlot(e: { slot_id: string; artist_id: string }):void {
+    this.slotServ.removeArtistFromSlot(e.slot_id, e.artist_id);
+  };
 
+
+  //* -------------POPOVERS ---------------------------*//
   /**
    * Opens the slot edition popover
    * @param slot_id
@@ -199,6 +199,30 @@ export class ProgramsPageComponent implements OnInit {
 
 //* ------------- SLOT SELECTION AND CONTROLS ---------------------------*//
   private selection = inject(SlotSelectionService);
+
+  handleSlotPointerDown(e: {event: PointerEvent, slot: ArtistPerformanceSlot}) {
+
+    const { event, slot } = e;
+
+    const orderedIds = this.selector
+      .blocksByRoom()
+      .get(slot.roomId)
+      ?.filter(b => b.type === 'slot')
+      .map(b => b.slot.id) ?? [];
+
+    const isModifier = event.shiftKey || event.metaKey || event.ctrlKey;
+    const alreadySelected = this.selection.isSelected(slot.id);
+
+    if (isModifier || !alreadySelected) {
+      this.selection.select(
+        slot.id,
+        orderedIds,
+        event
+      );
+    }
+
+    this.startSlotDrag(event, slot);
+  };
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardShortcuts(event: KeyboardEvent) {

@@ -1,6 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { minutesToTime, time_functions_utils } from '../utils/time_functions_utils';
-import type { ArtistPerformanceSlot, ProgramState} from '../program-types';
+import type { ProgramState} from '../program-types';
 import { AllMockArtists, mockArtistGroups, mockBuffers } from '../utils/mockDATAS';
 
 
@@ -59,27 +58,6 @@ export class ProgramStateService {
     return `Program ${day}-${month}-${year}`;
   };
 
-
-  /**
-   * Returns an array of performance slots that are scheduled in a specific room, identified by the provided roomId. The method filters the array of slots in the program state and returns only those slots that have a roomId property matching the given roomId. This allows for retrieving all performance slots associated with a particular room in the program.
-   * @param roomId
-   */
-  getSlotsForRoom(roomId: string) {
-    return this.state().slots.filter(s => s.roomId === roomId);
-  }
-
-  getSlotStartTime(slot: ArtistPerformanceSlot): string {
-    const programStartMinutes = time_functions_utils(this.state().startTime);
-    const absolute = programStartMinutes + slot.startMinutes;
-    return minutesToTime(absolute);
-  };
-
-  getSlotEndTime(slot: ArtistPerformanceSlot): string {
-    const programStartMinutes = time_functions_utils(this.state().startTime);
-    const absolute =
-      programStartMinutes + slot.startMinutes + slot.duration;
-    return minutesToTime(absolute);
-  };
 
  /* ---------------------------------------------------
     UNDO / REDO
