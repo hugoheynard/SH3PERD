@@ -4,6 +4,7 @@ import { ArtistChipComponent } from '../artist-chip/artist-chip.component';
 import type { ArtistPerformanceSlot } from '../program-types';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { SlotService } from '../services/planner-state-mutations/slot.service';
+import { SlotSelectionService } from '../services/slot-selection.service';
 
 @Component({
   selector: 'app-performance-slot',
@@ -13,8 +14,10 @@ import { SlotService } from '../services/planner-state-mutations/slot.service';
   templateUrl: './performance-slot.component.html',
   styleUrl: './performance-slot.component.scss',
   host: {
+    '[style.--slot-color]': "color",
     '[attr.data-slot-id]': "slot().id",
     '[class.expanded]': 'isExpanded',
+    '[class.selected]': 'isSelected',
     '[style.top.px]': 'top()',
     '[style.height.px]': 'height()',
     '[style.background]': "color",
@@ -26,6 +29,12 @@ import { SlotService } from '../services/planner-state-mutations/slot.service';
 export class PerformanceSlotComponent {
   private state = inject(ProgramStateService);
   private slotServ = inject(SlotService);
+
+  private selection = inject(SlotSelectionService);
+
+  get isSelected(): boolean {
+    return this.selection.isSelected(this.slot().id);
+  }
 
   private res = inject(PlannerResolutionService);
 
@@ -63,6 +72,11 @@ export class PerformanceSlotComponent {
 
   onPointerDown(event: PointerEvent) {
     this.slotPointerDown.emit(event);
+    const multi = event.shiftKey || event.metaKey || event.ctrlKey;
+
+    this.selection.select(this.slot().id, multi);
+
+    this.slotPointerDown.emit(event);
   }
 
   /* ---------------------------------
@@ -75,16 +89,10 @@ export class PerformanceSlotComponent {
     this.slotResizeStart.emit(event);
   }
 
-
   removeArtist(artistId: string): void {
 
     this.slotServ.removeArtistFromSlot(this.slot().id, artistId);
   };
-
-  get panelColor(): string {
-    return `${this.slot().color}33`;
-    // alpha faible (20% approx)
-  }
 
   onDoubleClick(slot_id: string) {
     this.editSlot.emit(slot_id)

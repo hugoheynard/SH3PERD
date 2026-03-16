@@ -125,6 +125,10 @@ export class PlannerSelectorService {
     return map;
   });
 
+  /**
+   * The method iterates through the slots to provide a Map <slot_id, slot>
+   * @returns a Map where each key is a slot ID and the corresponding value is the ArtistPerformanceSlot object associated with that ID, allowing for efficient retrieval of performance slot information based on their unique identifiers.
+   */
   slotsById = computed(() => {
     const map = new Map<string, ArtistPerformanceSlot>();
 

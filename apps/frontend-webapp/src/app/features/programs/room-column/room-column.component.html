@@ -1,12 +1,36 @@
 @let r = room();
 
+@if (insertTopPx() !== null) {
+  <ui-insert-line [top]="insertTopPx()!" />
+}
+
 <div class="room-column" #roomLayer>
   <div class="room-header">
-    {{ r.name }}
 
-    @if (!roomServ.isBaseRoom(r)) {
-      <button class="room-delete" (click)="roomServ.removeRoom(r.id)">✕</button>
-    }
+    <div class="room-header-left">
+
+    <span class="room-name">
+      {{ r.name }}
+    </span>
+
+    </div>
+
+    <div class="room-header-actions">
+
+      <button class="room-options">
+        ⋯
+      </button>
+
+      @if (!roomServ.isBaseRoom(r)) {
+        <button
+          class="room-delete"
+          (click)="roomServ.removeRoom(r.id)">
+          ✕
+        </button>
+      }
+
+    </div>
+
   </div>
 
   <div class="header-separator"></div>

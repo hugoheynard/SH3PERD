@@ -21,7 +21,6 @@ import { TimeMarkersComponent } from '../time-markers/time-markers.component';
 import {
   mockPerformanceSlotsTemplates,
 } from '../utils/mockDATAS';
-import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 import type {
   ArtistPerformanceSlot,
 } from '../program-types';
@@ -36,6 +35,7 @@ import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 import { RoomColumnComponent } from '../room-column/room-column.component';
+import { SlotSelectionService } from '../services/slot-selection.service';
 
 
 @Component({
@@ -59,7 +59,6 @@ export class ProgramsPageComponent implements OnInit {
   public roomServ = inject(RoomService);
   public slotServ = inject(SlotService);
 
-  private drag = inject(DragSessionService);
   private res = inject(PlannerResolutionService)
   private interaction = inject(TimelineInteractionService);
   private layout = inject(LayoutService);
@@ -82,8 +81,6 @@ export class ProgramsPageComponent implements OnInit {
   };
 
   /* ---------------- DRAG STATE ---------------- */
-  previewTop = 0;
-  previewRoomId?: string;
 
   @ViewChildren('roomLayer') roomLayers!: QueryList<ElementRef<HTMLDivElement>>;
 
@@ -99,25 +96,15 @@ export class ProgramsPageComponent implements OnInit {
   };
 
   /* ---------------- TIME UTILS ---------------- */
-
-  getSlotHeight(minutes: number): number {
-    return this.res.minuteToPx(minutes);
-  };
-
   @HostListener('document:pointermove', ['$event'])
   onPointerMove() {
-
-    const drag = this.drag.current();
-
-    if (!drag) return;
-
     this.interaction.handlePointerMove();
-  }
+  };
 
   @HostListener('document:pointerup')
   onPointerUp() {
     this.interaction.stop();
-  }
+  };
 
 
   /* ---------------- SLOT DRAG / RESIZE ---------------- */
@@ -140,14 +127,11 @@ export class ProgramsPageComponent implements OnInit {
     }
 
     this.interaction.startSlotDrag(event, slot);
-  }
+  };
 
   startSlotResize(event: PointerEvent, slot: ArtistPerformanceSlot): void {
     this.interaction.startSlotResize(event, slot);
   };
-
-
-
 
   //* ---------------- DROP HANDLERS ---------------- *//
 
@@ -179,9 +163,8 @@ export class ProgramsPageComponent implements OnInit {
       if (drag.data.roomId !== roomId) {
         this.slotServ.updateSlotRoom(drag.data.id, roomId);
       }
-
     }
-  }
+  };
 
   /**
    * Handles dropping an artist onto a performance slot.
@@ -211,5 +194,76 @@ export class ProgramsPageComponent implements OnInit {
    */
   openEditPerformanceSlotPopover(slot_id: string) {
     this.layout.setPopover(EditPerformanceSlotPopoverComponent, { id: slot_id });
+  };
+
+
+//* ------------- SLOT SELECTION AND CONTROLS ---------------------------*//
+  private selection = inject(SlotSelectionService);
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardShortcuts(event: KeyboardEvent) {
+
+    const target = event.target as HTMLElement;
+
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+      return;
+    }
+
+    /* DUPLICATE */
+
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'd') {
+
+      event.preventDefault();
+
+      const ids = this.selection.getSelectedIds();
+
+      ids.forEach(id => {
+
+        const slot = this.selector.slotsById().get(id);
+        if (!slot) {
+          return;
+        }
+
+        this.slotServ.addSlot({
+          ...slot,
+          id: crypto.randomUUID(),
+          startMinutes: slot.startMinutes + slot.duration,
+        });
+
+      });
+
+      return;
+    }
+
+    /* DELETE */
+
+    if (event.key === 'Delete' || event.key === 'Backspace') {
+
+      event.preventDefault();
+
+      const ids = this.selection.getSelectedIds();
+
+      if (!ids.length) {
+        return;
+      }
+
+      ids.forEach(id => this.slotServ.removeSlot(id));
+
+      this.selection.clear();
+    }
+  };
+
+  /**
+   * When clicking on a non slot element, removes selection of slots
+   * @param event
+   */
+  @HostListener('document:pointerdown', ['$event'])
+  clearSelection(event: PointerEvent) {
+
+    const el = event.target as HTMLElement;
+
+    if (!el.closest('[data-slot-id]')) {
+      this.selection.clear();
+    }
   };
 }

@@ -23,47 +23,109 @@
 .room-header {
   height: 40px;
   min-height: 40px;
+
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-weight: 600;
+  justify-content: space-between;
+
+  padding: 0 10px;
+
   font-size: 13px;
+  font-weight: 600;
   letter-spacing: 0.3px;
 
   border-bottom: 1px solid #eceff3;
-  background: var(--content-page-bg-color);
+  background: var(--room-header-bg);
+
 
   position: sticky;
   top: 0;
   z-index: 3;
 }
 
+/* ---------- name ---------- */
 
 .room-name {
-  flex: 1;
-  text-align: center;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-.room-delete {
-  position: absolute;
-  right: 12px;
+/* ---------- actions ---------- */
 
+.room-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---------- options button ---------- */
+
+.room-options {
+  width: 28px;
+  height: 28px;
+
+  border-radius: 6px;
   border: none;
+
   background: transparent;
-  font-size: 14px;
-  color: #9ca3af;
+  color: var(--icon-color);
+
+  font-size: 16px;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
 
-  padding: 4px;
-  border-radius: 6px;
+  opacity: 0.7;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease;
+}
 
-  transition: background 0.15s ease, color 0.15s ease;
+.room-options:hover {
+  background: color-mix(in srgb, var(--icon-hover-bg) 90%, white);
+}
+
+/* show on hover */
+
+.room-column:hover .room-options {
+  opacity: 1;
+}
+
+
+/* ---------- delete ---------- */
+
+.room-delete {
+  width: 28px;
+  height: 28px;
+
+  border-radius: 6px;
+  border: none;
+
+  background: transparent;
+
+  font-size: 13px;
+  color: #9ca3af;
+
+  cursor: pointer;
+
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.room-column:hover .room-delete {
+  opacity: 1;
 }
 
 .room-delete:hover {
-  background: var(--text-secondary);
+  background: rgba(239,68,68,0.1);
   color: #ef4444;
 }
+
 
 .slots-layer {
   flex: 1;

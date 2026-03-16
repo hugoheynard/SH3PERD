@@ -10,6 +10,9 @@
   --card-color: #2c323d;
   --hover-color: #2f3541;
 
+  --room-header-bg: color-mix(in srgb, var(--content-page-bg-color) 94%, white);
+
+
   --accent-color: #06a4a4;
 
   --color-warning: rgb(197, 153, 38);

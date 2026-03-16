@@ -8,6 +8,7 @@
 
   cursor: grab;
 
+
   /* relief plus premium */
   box-shadow:
     0 6px 16px rgba(0,0,0,0.28),
@@ -40,6 +41,21 @@
 :host:active {
   cursor: grabbing;
   transform: scale(1.02);
+}
+
+/**
+Glow when selected
+ */
+:host.selected {
+
+  outline: 1px solid var(--slot-color);
+  outline-offset: 2px;
+
+  box-shadow:
+    0 0 0 1px var(--slot-color),
+    0 0 8px var(--slot-color),
+    0 0 16px var(--slot-color),
+    0 6px 18px rgba(0,0,0,0.45);
 }
 
 

@@ -3,7 +3,7 @@ import { INJECTION_DATA } from '../../../core/main-layout/main-layout.component'
 import { SlotTemplateCardComponent } from '../slot-template-card/slot-template-card.component';
 import { ArtistCardComponent } from '../artist-card/artist-card.component';
 import { type ArtistWorkload, WorkloadService } from '../services/workload.service';
-import { SidePanelSectionComponent } from '../side-panel-section/side-panel-section.component';
+import { SidePanelSectionComponent } from '../ui-frames/side-panel-section/side-panel-section.component';
 import { LayoutService } from '../../../core/services/layout.service';
 import { EditTemplatePopoverComponent } from '../edit-template-popover/edit-template-popover.component';
 import { ButtonComponent } from '../button/button.component';
