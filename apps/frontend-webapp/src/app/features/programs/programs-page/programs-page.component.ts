@@ -29,7 +29,7 @@ import { EditPerformanceSlotPopoverComponent } from '../edit-performance-slot-po
 import { SlotService } from '../services/planner-state-mutations/slot.service';
 import { PlannerSelectorService } from '../services/planner-selector.service';
 import { BufferSlotComponent } from '../bufferblock/buffer-slot.component';
-import { PlannerDndInitService } from '../services/planner-dn-dinit.service';
+import { PlannerDndInitService } from '../services/planner-dnd-init.service';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';

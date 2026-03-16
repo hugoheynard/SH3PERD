@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PlannerDnDInitService } from '../planner-dn-dinit.service';
+import { PlannerDnDInitService } from '../planner-dnd-init.service';
 
 describe('PlannerDnDInitService', () => {
   let service: PlannerDnDInitService;

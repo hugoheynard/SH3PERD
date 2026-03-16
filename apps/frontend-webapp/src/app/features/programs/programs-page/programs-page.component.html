@@ -13,6 +13,7 @@
     <div class="rooms-container">
 
       @for (room of rooms(); track room.id) {
+
         <ui-room-column
           [room]="room"
           [timelineHeight]="selector.timelineHeight()"
