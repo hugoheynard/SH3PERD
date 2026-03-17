@@ -2,7 +2,7 @@
 
   <div
     class="drag-preview"
-    [style.transform]="'translate3d(' + drag.cursorX() + 'px,' + drag.cursorY() + 'px,0) translate(-50%, -50%)'">
+    [style.transform]="'translate3d(' + drag.cursorX() + 'px,' + drag.cursorY() + 'px,0) translate(-50%, 0)'">
     <ng-container
       *ngComponentOutlet="
         preview()!.component;

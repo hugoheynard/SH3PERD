@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { SlotTemplateCardComponent } from '../slot-template-card/slot-template-card.component';
 import { DragPreviewRegistryService } from '../../../core/drag-and-drop/drag-preview-registry.service';
-import { PerformanceSlotComponent } from '../performance-slot/performance-slot.component';
 import { GroupCardComponent } from '../group-card/group-card.component';
 import { ArtistChipComponent } from '../artist-chip/artist-chip.component';
+import { SlotDragPreviewComponent } from '../slot-preview/slot-preview.component';
 
 /**
  * Registers all elements for dnd + their mapping to the preview component. This is required to be able to show a preview of the dragged element.
@@ -24,7 +24,7 @@ export class PlannerDndInitService {
     });
 
     this.registry.register('slot', {
-      component: PerformanceSlotComponent,
+      component: SlotDragPreviewComponent,
       mapInputs: slot => ({ slot })
     })
 

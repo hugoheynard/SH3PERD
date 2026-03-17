@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PerformanceSlotComponent } from './performance-slot.component';
+import { SlotPreviewComponent } from './slot-preview.component';
 
-describe('PerformanceSlotComponent', () => {
-  let component: PerformanceSlotComponent;
-  let fixture: ComponentFixture<PerformanceSlotComponent>;
+describe('SlotPreviewComponent', () => {
+  let component: SlotPreviewComponent;
+  let fixture: ComponentFixture<SlotPreviewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PerformanceSlotComponent]
+      imports: [SlotPreviewComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(PerformanceSlotComponent);
+    fixture = TestBed.createComponent(SlotPreviewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

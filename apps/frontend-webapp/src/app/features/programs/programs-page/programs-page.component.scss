@@ -8,14 +8,17 @@
   background: transparent;
   height: 100%;
   font-family: Inter, system-ui, sans-serif;
+  overflow-y: auto; //new
 }
+
+
 
 /* ---------------- TIMELINE ---------------- */
 
 .timeline {
   flex: 1;
   display: flex;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .time-column {
@@ -42,7 +45,6 @@
   flex: 1;
   display: flex;
   overflow-x: auto;
-  overflow-y: visible;
 }
 
 

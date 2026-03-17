@@ -1,10 +1,10 @@
 import {
   Component,
   inject,
-  type OnInit, HostListener, type AfterViewInit,
+  type OnInit, HostListener, type AfterViewInit, computed, ViewChild, type ElementRef,
 } from '@angular/core';
 
-import { PerformanceSlotComponent } from '../performance-slot/performance-slot.component';
+import { SlotPlannerComponent } from '../slot-planner/slot-planner.component';
 import { ProgramHeaderComponent } from '../program-header/program-header.component';
 
 import {
@@ -33,12 +33,13 @@ import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive'
 import { RoomColumnComponent } from '../room-column/room-column.component';
 import { SlotSelectionService } from '../services/slot-selection.service';
 import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
+import { TimelineInteractionStore } from '../services/timeline-interaction.store';
 
 
 @Component({
   selector: 'ui-programs-page',
   imports: [
-    PerformanceSlotComponent,
+    SlotPlannerComponent,
     ProgramHeaderComponent,
     TimeMarkersComponent,
     BufferSlotComponent,
@@ -55,6 +56,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   public slotServ = inject(SlotService);
   private res = inject(PlannerResolutionService)
   private interaction = inject(TimelineInteractionService);
+  private interactionStore = inject(TimelineInteractionStore);
   private layout = inject(LayoutService);
 
   constructor() {
@@ -76,6 +78,9 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
   /* ---------------- DRAG STATE ---------------- */
 
+  draggingIds = computed(() =>
+    this.interactionStore.draggingSlots()?.map(s => s.slotId) ?? []
+  );
 
   /* ---------------- LIFECYCLE ---------------- */
 
@@ -299,5 +304,11 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     requestAnimationFrame(() => {
       this.roomLayout.refresh();
     });
+    this.plannerEl.nativeElement.addEventListener('scroll', () => {
+      this.roomLayout.refresh();
+    });
   }
+
+  @ViewChild('planner', { static: true })
+  plannerEl!: ElementRef;
 }

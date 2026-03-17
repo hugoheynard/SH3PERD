@@ -57,7 +57,6 @@ export class RoomColumnComponent {
     });
   }
 
-
   /* -------------------INSERT LINE ------------------ */
 
   private insert = inject(InsertLineService);

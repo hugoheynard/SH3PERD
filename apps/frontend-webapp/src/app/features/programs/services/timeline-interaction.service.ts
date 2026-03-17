@@ -218,7 +218,12 @@ export class TimelineInteractionService {
 
   private updateInsertLine() {
 
-    const projection = this.spatial.projectPointer(0);
+    const grabOffset =
+      this.interaction?.type === 'slot'
+        ? this.interaction.grabOffset
+        : 0;
+
+    const projection = this.spatial.projectPointer(grabOffset);
 
     if (!projection) {
       this.insert.clear();

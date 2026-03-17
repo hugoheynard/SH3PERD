@@ -44,17 +44,18 @@ import { SlotSelectionService } from '../services/slot-selection.service';
  * without adding unnecessary bindings inside the template.
  */
 @Component({
-  selector: 'app-performance-slot',
+  selector: 'ui-program-slot',
   imports: [
     ArtistChipComponent,
   ],
-  templateUrl: './performance-slot.component.html',
-  styleUrl: './performance-slot.component.scss',
+  templateUrl: './slot-planner.component.html',
+  styleUrl: './slot-planner.component.scss',
   host: {
     '[style.--slot-color]': "color",
     '[attr.data-slot-id]': "slot().id",
     '[class.expanded]': 'isExpanded',
     '[class.selected]': 'isSelected',
+    '[class.dragging]': 'isDragging()',
     '[style.top.px]': 'top()',
     '[style.height.px]': 'height()',
 
@@ -62,7 +63,7 @@ import { SlotSelectionService } from '../services/slot-selection.service';
     '(dblclick)': 'onDoubleClick(this.slot().id)'
   }
 })
-export class PerformanceSlotComponent {
+export class SlotPlannerComponent {
   private res = inject(PlannerResolutionService);
   private selection = inject(SlotSelectionService);
 
@@ -82,6 +83,7 @@ export class PerformanceSlotComponent {
 
   /*-----------------STATE-------------------------*/
   isExpanded = false;
+  isDragging = input<boolean>(false);
 
   get isSelected(): boolean {
     return this.selection.isSelected(this.slot().id);

@@ -1,0 +1,12 @@
+<div class="preview"
+     [style.height.px]="height()"
+     [style.background]="slot().color">
+
+  <div class="content">
+    <div class="name">{{ slot().name }}</div>
+    <div class="time">
+      {{ slotStart() }} → {{ slotEnd() }}
+    </div>
+  </div>
+
+</div>

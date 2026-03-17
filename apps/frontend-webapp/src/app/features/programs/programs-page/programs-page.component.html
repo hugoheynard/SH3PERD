@@ -1,6 +1,6 @@
 <app-program-header />
 
-<div class="planner">
+<div class="planner" #planner>
   <!-- Timeline -->
   <div class="timeline">
     <div class="time-column">
@@ -24,7 +24,7 @@
 
             @if (block.type === 'slot') {
 
-              <app-performance-slot
+              <ui-program-slot
                 [slot]="block.slot"
                 [slotStartTime]="selector.getSlotStartTime(block.slot)"
                 [slotEndTime]="selector.getSlotEndTime(block.slot)"
@@ -38,6 +38,8 @@
                 [dropZone_id]="block.slot.id"
                 [dropZoneAccept]="['artist','group']"
                 (uiDndDrop)="handleSlotDrop(block.slot.id, $event)"
+
+                [isDragging]="draggingIds().includes(block.slot.id)"
 
                 (slotPointerDown)="handleSlotPointerDown($event)"
                 (slotResizeStart)="startSlotResize($event, block.slot)"
