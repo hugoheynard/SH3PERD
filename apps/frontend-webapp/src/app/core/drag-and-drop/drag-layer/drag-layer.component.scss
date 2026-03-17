@@ -12,8 +12,11 @@
 }
 
 .drag-preview {
-  opacity: 0.9;
-  transform-origin: top left;
-  scale: 0.96;
+  position: fixed;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+
+  transform: translate(-50%, -50%);
 }
 

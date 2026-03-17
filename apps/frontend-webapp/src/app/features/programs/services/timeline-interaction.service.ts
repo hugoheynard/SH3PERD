@@ -101,6 +101,8 @@ export class TimelineInteractionService {
       return;
     }
 
+    this.updateInsertLine();
+
     switch (this.interaction.type) {
 
       case 'slot': {
@@ -162,4 +164,35 @@ export class TimelineInteractionService {
 
     return this.res.snap(baseMinutes + deltaMinutes);
   };
+
+  private updateInsertLine() {
+
+    const x = this.drag.cursorX();
+    const y = this.drag.cursorY();
+
+    const el = document.elementFromPoint(x, y);
+    const roomEl = el?.closest('[data-room-id]') as HTMLElement | null;
+
+    if (!roomEl) {
+      this.insert.clear();
+      return;
+    }
+
+    const roomId = roomEl.dataset['roomId'];
+
+    if (!roomId) {
+      this.insert.clear();
+      return;
+    }
+
+    const rect = roomEl.getBoundingClientRect();
+
+    const offsetY = y - rect.top;
+
+    const minute = this.res.pxToMinutes(offsetY);
+
+    const snapped = this.res.snap(minute);
+
+    this.insert.set(snapped, roomId, false);
+  }
 }

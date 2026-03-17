@@ -50,19 +50,22 @@ export class RoomColumnComponent {
   insert = inject(InsertLineService);
   res = inject(PlannerResolutionService);
 
-  showInsertLine = computed(() => {
+  indicator = computed(() => {
+    const indicator = this.insert.indicator();
 
-    const minutes = this.insert.minutes();
-
-    if (minutes === null) {
-      return false;
+    if (!indicator) {
+      return null;
     }
 
-    if (this.insert.multiRoom()) {
-      return true;
+    if (indicator.multiRoom) {
+      return indicator;
     }
 
-    return this.insert.roomId() === this.room().id;
+    if (indicator.roomId !== this.room().id) {
+      return null;
+    }
+
+    return indicator;
   });
 
 

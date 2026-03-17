@@ -1,10 +1,10 @@
 @let r = room();
 
-@if (insertTopPx() !== null) {
+@if (indicator()) {
   <ui-insert-line [top]="insertTopPx()!" />
 }
 
-<div class="room-column" #roomLayer>
+<div class="room-column" >
   <div class="room-header">
 
     <div class="room-header-left">
@@ -37,6 +37,7 @@
 
   <div
     class="slots-layer"
+    #roomLayer
     uiDndDropZone
     [dropZone_id]="r.id"
     [dropZoneAccept]="['template','slot']"

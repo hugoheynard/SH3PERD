@@ -13,7 +13,9 @@ export class DragEngineService {
   onPointerMove(event: PointerEvent) {
 
     const drag = this.drag.current();
-    if (!drag) return;
+    if (!drag) {
+      return;
+    }
 
     const zone = this.registry.findZone(
       event.clientX,
@@ -37,7 +39,9 @@ export class DragEngineService {
   onPointerUp() {
 
     const drag = this.drag.current();
-    if (!drag) return;
+    if (!drag) {
+      return;
+    }
 
     const target = this.drag.getDropTarget();
 
