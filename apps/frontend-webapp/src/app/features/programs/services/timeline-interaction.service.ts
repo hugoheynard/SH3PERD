@@ -6,6 +6,8 @@ import type { ArtistPerformanceSlot } from '../program-types';
 import { InsertLineService } from './insert-line.service';
 import { SlotSelectionService } from './slot-selection.service';
 import { PlannerSelectorService } from './planner-selector.service';
+import { TimelineInteractionStore } from './timeline-interaction.store';
+import { RoomLayoutRegistry } from './room-layout-registry.service';
 
 type InteractionState =
   | {
@@ -33,6 +35,7 @@ export class TimelineInteractionService {
   private slotServ = inject(SlotService);
   private selection = inject(SlotSelectionService);
   private selector = inject(PlannerSelectorService);
+  private interactionStore = inject(TimelineInteractionStore);
 
   private interaction: InteractionState = null;
 
@@ -58,6 +61,13 @@ export class TimelineInteractionService {
           slotId: slot.id,
           baseMinutes: slot.startMinutes
         }];
+
+    this.interactionStore.start(
+      slots.map(s => ({
+        slotId: s.slotId,
+        base: s.baseMinutes
+      }))
+    );
 
     this.interaction = {
       type: 'slot',
@@ -107,20 +117,26 @@ export class TimelineInteractionService {
 
       case 'slot': {
 
-        const deltaY = this.drag.cursorY() - this.interaction.startY;
+        const x = this.drag.cursorX()
+        const y = this.drag.cursorY();
 
+        const roomId = this.roomLayout.getRoomAt(x);
+
+        const deltaY = y - this.interaction.startY;
         const deltaMinutes = this.res.pxToMinutes(deltaY);
 
-        this.interaction.slots.forEach(s => {
+        const updates = this.interaction.slots.map(s => {
 
           const snapped = this.res.snap(s.baseMinutes + deltaMinutes);
 
-          this.slotServ.updateSlotStart(
-            s.slotId,
-            Math.max(0, snapped)
-          );
-
+          return {
+            slotId: s.slotId,
+            previewStart: Math.max(0, snapped),
+            previewRoomId: roomId
+          };
         });
+
+        this.interactionStore.update(updates);
 
         break;
       }
@@ -146,6 +162,18 @@ export class TimelineInteractionService {
   /* ------------------ STOP ------------------ */
 
   stop() {
+    const dragging = this.interactionStore.draggingSlots();
+
+    if (dragging) {
+      dragging.forEach(s => {
+        this.slotServ.updateSlotStart(
+          s.slotId,
+          s.previewStart
+        );
+      });
+    }
+
+    this.interactionStore.stop();
     this.drag.stop();
     this.insert.clear();
     this.interaction = null;
@@ -165,32 +193,30 @@ export class TimelineInteractionService {
     return this.res.snap(baseMinutes + deltaMinutes);
   };
 
+  private roomLayout = inject(RoomLayoutRegistry);
+
   private updateInsertLine() {
 
     const x = this.drag.cursorX();
     const y = this.drag.cursorY();
 
-    const el = document.elementFromPoint(x, y);
-    const roomEl = el?.closest('[data-room-id]') as HTMLElement | null;
-
-    if (!roomEl) {
-      this.insert.clear();
-      return;
-    }
-
-    const roomId = roomEl.dataset['roomId'];
+    const roomId = this.roomLayout.getRoomAt(x);
 
     if (!roomId) {
       this.insert.clear();
       return;
     }
 
-    const rect = roomEl.getBoundingClientRect();
+    const rect = this.roomLayout.getRect(roomId);
+
+    if (!rect) {
+      this.insert.clear();
+      return;
+    }
 
     const offsetY = y - rect.top;
 
     const minute = this.res.pxToMinutes(offsetY);
-
     const snapped = this.res.snap(minute);
 
     this.insert.set(snapped, roomId, false);

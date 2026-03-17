@@ -4,7 +4,7 @@
   <ui-insert-line [top]="insertTopPx()!" />
 }
 
-<div class="room-column" >
+<div class="room-column"  [class.active]="hoveredRoom() === r.id">
   <div class="room-header">
 
     <div class="room-header-left">
@@ -37,7 +37,10 @@
 
   <div
     class="slots-layer"
-    #roomLayer
+
+    uiRoomLayout
+    [roomId]="r.id"
+
     uiDndDropZone
     [dropZone_id]="r.id"
     [dropZoneAccept]="['template','slot']"

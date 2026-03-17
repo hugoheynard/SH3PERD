@@ -1,10 +1,7 @@
 import {
   Component,
-  ElementRef,
-  QueryList,
-  ViewChildren,
   inject,
-  type OnInit, HostListener,
+  type OnInit, HostListener, type AfterViewInit,
 } from '@angular/core';
 
 import { PerformanceSlotComponent } from '../performance-slot/performance-slot.component';
@@ -35,6 +32,7 @@ import type { DragState } from '../../../core/drag-and-drop/drag.types';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 import { RoomColumnComponent } from '../room-column/room-column.component';
 import { SlotSelectionService } from '../services/slot-selection.service';
+import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
 
 
 @Component({
@@ -51,7 +49,7 @@ import { SlotSelectionService } from '../services/slot-selection.service';
   templateUrl: './programs-page.component.html',
   styleUrl: './programs-page.component.scss'
 })
-export class ProgramsPageComponent implements OnInit {
+export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
   public selector = inject(PlannerSelectorService);
   public slotServ = inject(SlotService);
@@ -78,7 +76,6 @@ export class ProgramsPageComponent implements OnInit {
 
   /* ---------------- DRAG STATE ---------------- */
 
-  @ViewChildren('roomLayer') roomLayers!: QueryList<ElementRef<HTMLDivElement>>;
 
   /* ---------------- LIFECYCLE ---------------- */
 
@@ -290,4 +287,17 @@ export class ProgramsPageComponent implements OnInit {
       this.selection.clear();
     }
   };
+
+
+  private roomLayout = inject(RoomLayoutRegistry)
+  @HostListener('window:resize')
+  onResize() {
+    this.roomLayout.refresh();
+  }
+
+  ngAfterViewInit() {
+    requestAnimationFrame(() => {
+      this.roomLayout.refresh();
+    });
+  }
 }
