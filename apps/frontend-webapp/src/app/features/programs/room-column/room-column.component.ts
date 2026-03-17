@@ -3,13 +3,12 @@ import type { Room } from '../program-types';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
 import { RoomService } from '../services/planner-state-mutations/room.service';
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
-import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 import { InsertLineService } from '../services/insert-line.service';
 import { InsertLineComponent } from '../insert-line/insert-line.component';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { RoomLayoutDirective } from '../services/room-layout-directive.directive';
 import { TimelineInteractionStore } from '../services/timeline-interaction.store';
-import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
+import { TimelineSpatialService } from '../services/timeline-spatial.service';
 
 @Component({
   selector: 'ui-room-column',
@@ -24,43 +23,44 @@ import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
 export class RoomColumnComponent {
 
   private res = inject(PlannerResolutionService);
-  private drag = inject(DragSessionService);
   private interactionStore = inject(TimelineInteractionStore);
-  private roomLayout = inject(RoomLayoutRegistry);
   public roomServ = inject(RoomService);
+  private spatial = inject(TimelineSpatialService);
 
+  /* -----------------------I/O ---------------- */
 
   room = input.required<Room>();
   timelineHeight = input.required<number>();
   gridOffsetPx = input.required<number>();
+  roomDrop = output<{ roomId: string; drag: DragState, offsetY: number }>();
+
+
+  /* ---------------------- STATE ---------------- */
 
   hoveredRoom = this.interactionStore.hoveredRoomId;
 
 
-  roomDrop = output<{ roomId: string; drag: DragState, offsetY: number }>();
-
+  /* -------------------- HANDLERS ---------------- */
 
   handleRoomDrop(drag: DragState) {
 
-    const rect = this.roomLayout.getRect(this.room().id);
+    const projection = this.spatial.projectPointer();
 
-    if (!rect) {
+    if (!projection) {
       return;
     }
 
-    const offsetY = this.drag.cursorY() - rect.top;
-
     this.roomDrop.emit({
-      roomId: this.room().id,
+      roomId: projection.room_id,
       drag,
-      offsetY
+      offsetY: this.res.minuteToPx(projection.minutes)
     });
   }
 
-  /* ------------------------------
-              INSERT LINE
-  ---------------------------------- */
-  insert = inject(InsertLineService);
+
+  /* -------------------INSERT LINE ------------------ */
+
+  private insert = inject(InsertLineService);
 
   indicator = computed(() => {
     const indicator = this.insert.indicator();

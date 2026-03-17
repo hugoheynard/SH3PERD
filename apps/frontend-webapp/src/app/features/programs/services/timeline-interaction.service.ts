@@ -8,6 +8,7 @@ import { SlotSelectionService } from './slot-selection.service';
 import { PlannerSelectorService } from './planner-selector.service';
 import { TimelineInteractionStore } from './timeline-interaction.store';
 import { RoomLayoutRegistry } from './room-layout-registry.service';
+import { TimelineSpatialService } from './timeline-spatial.service';
 
 type InteractionState =
   | {
@@ -15,8 +16,9 @@ type InteractionState =
   startY: number
   slots: {
     slotId: string
-    baseMinutes: number
+    offsetMinutes: number
   }[]
+  grabOffset: number,
 }
   | {
   type: 'resize'
@@ -48,31 +50,53 @@ export class TimelineInteractionService {
     const selectedIds = this.selection.getSelectedIds();
     const slotsById = this.selector.slotsById();
 
+    const baseProjection = this.spatial.projectPointer(0);
+    if (!baseProjection) return;
+
     const slots =
       selectedIds.includes(slot.id)
-        ? selectedIds
-          .flatMap(id => {
-            const s = slotsById.get(id);
-            return s
-              ? [{ slotId: s.id, baseMinutes: s.startMinutes }]
-              : [];
-          })
+        ? selectedIds.flatMap(id => {
+          const s = slotsById.get(id);
+          return s
+            ? [{
+              slotId: s.id,
+              offsetMinutes: s.startMinutes - baseProjection.minutes
+            }]
+            : [];
+        })
         : [{
           slotId: slot.id,
-          baseMinutes: slot.startMinutes
+          offsetMinutes: slot.startMinutes - baseProjection.minutes
         }];
 
     this.interactionStore.start(
-      slots.map(s => ({
-        slotId: s.slotId,
-        base: s.baseMinutes
-      }))
+      slots.map(s => {
+        const current = slotsById.get(s.slotId);
+        return {
+          slotId: s.slotId,
+          base: current?.startMinutes ?? 0
+        };
+      })
     );
+
+    const rect = this.roomLayout.getRect(slot.roomId);
+    if (!rect) {
+      return;
+    }
+
+    const slotTopPx = this.res.minuteToPx(slot.startMinutes);
+
+// 👉 position du slot dans le viewport
+    const absoluteSlotTop = rect.top + slotTopPx;
+
+// 👉 distance entre souris et top du slot
+    const grabOffset = event.clientY - absoluteSlotTop;
 
     this.interaction = {
       type: 'slot',
       startY: event.clientY,
-      slots
+      grabOffset,
+      slots,
     };
 
   }
@@ -104,6 +128,7 @@ export class TimelineInteractionService {
   }
 
   /* ------------------ POINTER MOVE ------------------ */
+  private spatial = inject(TimelineSpatialService);
 
   handlePointerMove() {
 
@@ -117,26 +142,22 @@ export class TimelineInteractionService {
 
       case 'slot': {
 
-        const x = this.drag.cursorX()
-        const y = this.drag.cursorY();
+        const projection = this.spatial.projectPointer(this.interaction.grabOffset);
 
-        const roomId = this.roomLayout.getRoomAt(x);
+        if (!projection) {
+          return;
+        }
 
-        const deltaY = y - this.interaction.startY;
-        const deltaMinutes = this.res.pxToMinutes(deltaY);
-
-        const updates = this.interaction.slots.map(s => {
-
-          const snapped = this.res.snap(s.baseMinutes + deltaMinutes);
-
-          return {
-            slotId: s.slotId,
-            previewStart: Math.max(0, snapped),
-            previewRoomId: roomId
-          };
-        });
+        const updates = this.interaction.slots.map(s => ({
+          slotId: s.slotId,
+          previewStart: projection.minutes + s.offsetMinutes,
+          previewRoomId: projection.room_id
+        }));
 
         this.interactionStore.update(updates);
+
+        // 👉 insert line = même source
+        this.insert.set(projection.minutes, projection.room_id, false);
 
         break;
       }
@@ -197,28 +218,17 @@ export class TimelineInteractionService {
 
   private updateInsertLine() {
 
-    const x = this.drag.cursorX();
-    const y = this.drag.cursorY();
+    const projection = this.spatial.projectPointer(0);
 
-    const roomId = this.roomLayout.getRoomAt(x);
-
-    if (!roomId) {
+    if (!projection) {
       this.insert.clear();
       return;
     }
 
-    const rect = this.roomLayout.getRect(roomId);
-
-    if (!rect) {
-      this.insert.clear();
-      return;
-    }
-
-    const offsetY = y - rect.top;
-
-    const minute = this.res.pxToMinutes(offsetY);
-    const snapped = this.res.snap(minute);
-
-    this.insert.set(snapped, roomId, false);
+    this.insert.set(
+      projection.minutes,
+      projection.room_id,
+      false
+    );
   }
 }

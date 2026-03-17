@@ -30,12 +30,12 @@ export class InsertLineService {
     this._minutes.set(minutes);
     this._roomId.set(roomId);
     this._multiRoom.set(multiRoom);
-  }
+  };
 
   clear() {
     this._minutes.set(null);
     this._roomId.set(null);
     this._multiRoom.set(false);
-  }
+  };
 
 }
