@@ -28,6 +28,23 @@ type InteractionState =
 }
   | null;
 
+
+export type SlotDragInteraction = {
+  startY: number;
+  grabOffset: number;
+  slots: {
+    slotId: string;
+    offsetMinutes: number;
+  }[];
+};
+
+export type ResizeInteraction = {
+  startY: number;
+  baseMinutes: number;
+  slotId: string;
+};
+
+
 @Injectable({ providedIn: 'root' })
 export class TimelineInteractionService {
 
@@ -38,6 +55,8 @@ export class TimelineInteractionService {
   private selection = inject(SlotSelectionService);
   private selector = inject(PlannerSelectorService);
   private interactionStore = inject(TimelineInteractionStore);
+  private spatial = inject(TimelineSpatialService);
+  private roomLayout = inject(RoomLayoutRegistry);
 
   private interaction: InteractionState = null;
 
@@ -92,7 +111,9 @@ export class TimelineInteractionService {
      * 4️⃣ Calcul du grabOffset (ULTRA IMPORTANT)
      */
     const rect = this.roomLayout.getRect(slot.roomId);
-    if (!rect) return;
+    if (!rect) {
+      return;
+    }
 
     const slotTopPx = this.res.minuteToPx(slot.startMinutes);
 
@@ -138,7 +159,6 @@ export class TimelineInteractionService {
   }
 
   /* ------------------ POINTER MOVE ------------------ */
-  private spatial = inject(TimelineSpatialService);
 
   handlePointerMove() {
 
@@ -212,6 +232,9 @@ export class TimelineInteractionService {
   };
 
   /* ------------------ UTILS/HELPERS ------------------ */
+
+
+
   /**
    * helper
    * @param startY
@@ -226,8 +249,6 @@ export class TimelineInteractionService {
 
     return Math.max(this.res.snapMinutes(), snapped);
   }
-
-  private roomLayout = inject(RoomLayoutRegistry);
 
   private updateInsertLine() {
 
@@ -248,5 +269,7 @@ export class TimelineInteractionService {
       projection.room_id,
       false
     );
-  }
+  };
+
+  //NEW
 }

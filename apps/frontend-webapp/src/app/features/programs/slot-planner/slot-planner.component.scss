@@ -7,7 +7,6 @@
   overflow: hidden;
   cursor: grab;
 
-
   /* relief plus premium */
   box-shadow:
     0 6px 16px rgba(0,0,0,0.28),
@@ -19,14 +18,6 @@
   transition:
     transform .14s cubic-bezier(.4,0,.2,1),
     box-shadow .14s ease;
-}
-
-:host:hover {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 12px 26px rgba(0,0,0,0.38),
-    0 4px 10px rgba(0,0,0,0.25);
 }
 
 :host:hover {
@@ -52,13 +43,10 @@
   pointer-events: none;
 }
 
-/**
-Glow when selected
- */
+// Glow when selected
 :host.selected {
-
   outline: 1px solid var(--slot-color);
-  outline-offset: 2px;
+  outline-offset: 1px;
 
   box-shadow:
     0 0 0 1px var(--slot-color),
@@ -67,6 +55,25 @@ Glow when selected
     0 6px 18px rgba(0,0,0,0.45);
 }
 
+:host::before {
+  content: '';
+
+  position: absolute;
+  inset: 0;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.12),
+        rgba(255,255,255,0)
+    );
+
+  opacity: .25;
+
+  pointer-events: none;
+}
 
 
 /* couche couleur */
@@ -206,10 +213,6 @@ Glow when selected
   transform: scaleX(1.25);
 }
 
-:host:hover .resize-handle::after {
-  background: white;
-  transform: scaleX(1.2);
-}
 
 .artist-container {
   display: flex;
@@ -239,24 +242,6 @@ Glow when selected
   text-transform: uppercase;
 }
 
-:host::before {
-  content: '';
 
-  position: absolute;
-  inset: 0;
-
-  border-radius: inherit;
-
-  background:
-    linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.12),
-        rgba(255,255,255,0)
-    );
-
-  opacity: .25;
-
-  pointer-events: none;
-}
 
 

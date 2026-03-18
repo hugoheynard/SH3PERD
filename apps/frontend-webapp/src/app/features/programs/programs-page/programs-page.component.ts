@@ -48,7 +48,10 @@ import { TimelineSpatialService } from '../services/timeline-spatial.service';
     RoomColumnComponent,
   ],
   templateUrl: './programs-page.component.html',
-  styleUrl: './programs-page.component.scss'
+  styleUrl: './programs-page.component.scss',
+  host: {
+    class: 'no-select',
+  }
 })
 export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
