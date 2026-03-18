@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { TimelineSpatialService } from './timeline-spatial.service';
+import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 
 /**
  * Manages the ephemeral interaction state for timeline drag operations.
@@ -71,6 +72,7 @@ import { TimelineSpatialService } from './timeline-spatial.service';
 @Injectable({ providedIn: 'root' })
 export class TimelineInteractionStore {
   private spatial = inject(TimelineSpatialService);
+  private drag = inject(DragSessionService);
 
 
   /**
@@ -101,6 +103,11 @@ export class TimelineInteractionStore {
    *
    */
   hoveredRoomId = computed(() => {
+
+    if (!this.drag.isDragging()) {
+      return null;
+    }
+
     const projection = this.spatial.projectPointer();
     return projection?.room_id ?? null;
   });

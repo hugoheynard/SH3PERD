@@ -107,7 +107,7 @@ export class InsertLineService {
    * Internal signal storing the target room ID.
    * `null` means no active insert line.
    */
-  private _roomId = signal<string | null>(null);
+  private _room_id = signal<string | null>(null);
 
   /**
    * Indicates whether the insert line spans multiple rooms.
@@ -122,7 +122,7 @@ export class InsertLineService {
   /**
    * Read-only signal exposing the target room ID.
    */
-  roomId = this._roomId.asReadonly();
+  roomId = this._room_id.asReadonly();
 
   /**
    * Read-only signal indicating multi-room insertion.
@@ -137,7 +137,7 @@ export class InsertLineService {
    */
   readonly indicator = computed(() => {
     const minutes = this._minutes();
-    const roomId = this._roomId();
+    const roomId = this._room_id();
 
     if (minutes === null || roomId === null) {
       return null;
@@ -145,7 +145,7 @@ export class InsertLineService {
 
     return {
       minutes,
-      roomId,
+      roomId: roomId,
       multiRoom: this._multiRoom()
     };
   });
@@ -154,12 +154,12 @@ export class InsertLineService {
    * Sets the insert line state.
    *
    * @param minutes - Target insertion time (in minutes)
-   * @param roomId - Target room ID
+   * @param room_id - Target room ID
    * @param multiRoom - Whether the insert spans multiple rooms
    */
-  set(minutes: number, roomId: string, multiRoom: boolean) {
+  set(minutes: number, room_id: string, multiRoom: boolean) {
     this._minutes.set(minutes);
-    this._roomId.set(roomId);
+    this._room_id.set(room_id);
     this._multiRoom.set(multiRoom);
   }
 
@@ -170,7 +170,7 @@ export class InsertLineService {
    */
   clear() {
     this._minutes.set(null);
-    this._roomId.set(null);
+    this._room_id.set(null);
     this._multiRoom.set(false);
   }
 }
