@@ -18,7 +18,7 @@
           [room]="room"
           [timelineHeight]="selector.timelineHeight()"
           [gridOffsetPx]="selector.gridOffsetPx()"
-          (roomDrop)="handleRoomDrop($event.roomId, $event.drag, $event.offsetY)">
+          (roomDrop)="handleRoomDrop($event.roomId, $event.drag)">
 
           @for (block of getBlocksForRoom(room.id); track block.id) {
 

@@ -2,7 +2,8 @@ import { computed, Injectable, signal } from '@angular/core';
 import type { ProgramState} from '../program-types';
 import { AllMockArtists, mockArtistGroups, mockBuffers } from '../utils/mockDATAS';
 
-
+//TODO : UNDO/REDO
+//TODO : DOC COMPONENT
 @Injectable({ providedIn: 'root' })
 export class ProgramStateService {
 

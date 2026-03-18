@@ -7,11 +7,8 @@ import { PlannerResolutionService } from './planner-resolution.service';
 /**
  * Centralized spatial computation service for the planner timeline.
  *
- * This service is responsible for converting **pointer coordinates**
- * into **timeline coordinates (room + time)**.
- *
- * It acts as the single source of truth for all spatial calculations,
- * replacing duplicated logic across components and services.
+ * This service converts **pointer coordinates** into **timeline coordinates**
+ * (room + time) and acts as the single source of truth for all spatial logic.
  *
  * ---------------------------------------------------------------------------
  * 🧠 ROLE IN ARCHITECTURE
@@ -31,22 +28,19 @@ import { PlannerResolutionService } from './planner-resolution.service';
  *
  * Given the current pointer position, it computes:
  *
- * - The **target room** (based on X axis)
- * - The **timeline position** (based on Y axis)
- * - A **corrected position** using a grab offset (anchor)
+ * - The **target room** (X axis)
+ * - The **timeline position in minutes** (Y axis)
+ * - A **stable corrected position** using a grab offset
+ *
+ * The conversion pipeline is:
+ *
+ *   px → minutes → snap → px
  *
  * This ensures:
  *
  * - Stable drag (no jump)
- * - Consistent insert line
- * - No duplication of spatial logic
- *
- * ---------------------------------------------------------------------------
- * 🎯 COORDINATE SYSTEM
- * ---------------------------------------------------------------------------
- *
- * X axis → determines the room (column)
- * Y axis → determines the time (vertical timeline)
+ * - Consistent snapping
+ * - Perfect alignment with the timeline grid
  *
  * ---------------------------------------------------------------------------
  * 📦 OUTPUT
@@ -54,9 +48,9 @@ import { PlannerResolutionService } from './planner-resolution.service';
  *
  * Returns a projection object:
  *
- * - roomId → target room
- * - minutes → snapped timeline position
- * - correctedY → pixel position of the slot (after anchor correction)
+ * - `roomId` → target room
+ * - `minutes` → snapped timeline position (clamped ≥ 0)
+ * - `px` → snapped pixel position
  *
  * Returns `null` if no valid room is found.
  *
@@ -65,20 +59,20 @@ import { PlannerResolutionService } from './planner-resolution.service';
  * ---------------------------------------------------------------------------
  *
  * - This service is PURE (no side effects)
- * - It should be the ONLY place performing spatial calculations
- * - Consumers must not recompute rect / offsets manually
+ * - Must be the ONLY place performing spatial calculations
+ * - Consumers must NOT recompute rects or offsets manually
+ * - Values are clamped to prevent negative timeline positions
  *
  * ---------------------------------------------------------------------------
  * 🚀 EXTENSIONS
  * ---------------------------------------------------------------------------
  *
- * This service is the ideal place to add:
+ * Ideal place to implement:
  *
  * - Magnetic snapping
  * - Collision resolution
  * - Zoom-aware positioning
  * - Multi-room projection
- *
  */
 @Injectable({ providedIn: 'root' })
 export class TimelineSpatialService {
@@ -90,8 +84,8 @@ export class TimelineSpatialService {
   /**
    * Projects the current pointer position into timeline coordinates.
    *
-   * @param grabOffset - Distance between pointer and slot top at drag start.
-   * Ensures stable dragging regardless of where the user clicked.
+   * @param grabOffset Distance between pointer and slot top at drag start.
+   * Ensures stable dragging regardless of click position.
    *
    * @returns Projection object or null if no room is detected.
    */

@@ -21,7 +21,6 @@ import {
 import type {
   ArtistPerformanceSlot,
 } from '../program-types';
-import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { EditPerformanceSlotPopoverComponent } from '../edit-performance-slot-popover/edit-performance-slot-popover.component';
 import { SlotService } from '../services/planner-state-mutations/slot.service';
 import { PlannerSelectorService } from '../services/planner-selector.service';
@@ -34,6 +33,7 @@ import { RoomColumnComponent } from '../room-column/room-column.component';
 import { SlotSelectionService } from '../services/slot-selection.service';
 import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
 import { TimelineInteractionStore } from '../services/timeline-interaction.store';
+import { TimelineSpatialService } from '../services/timeline-spatial.service';
 
 
 @Component({
@@ -54,7 +54,6 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
   public selector = inject(PlannerSelectorService);
   public slotServ = inject(SlotService);
-  private res = inject(PlannerResolutionService)
   private interaction = inject(TimelineInteractionService);
   private interactionStore = inject(TimelineInteractionStore);
   private layout = inject(LayoutService);
@@ -91,9 +90,6 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
       staff: this.selector.staff,
       groups: this.selector.userGroups,
     });
-
-    //checks à delete
-    console.log('total minutes', this.selector.totalMinutes());
   };
 
   /* ---------------- TIME UTILS ---------------- */
@@ -136,18 +132,21 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
   //* ---------------- DROP HANDLERS ---------------- *//
 
-  handleRoomDrop(roomId: string, drag: DragState, offsetY: number) {
+  private spatial = inject(TimelineSpatialService);
+  handleRoomDrop(roomId: string, drag: DragState) {
 
     if (drag.type === 'template') {
 
-      const previewTop = this.res.computePreviewTop(offsetY, this.selector.gridOffsetPx());
+      const projection = this.spatial.projectPointer(0);
 
-      const startMinutes = this.res.pxToMinutes(previewTop);
+      if (!projection) {
+        return;
+      }
 
       this.slotServ.addSlot({
         id: crypto.randomUUID(),
         name: drag.data.name,
-        startMinutes,
+        startMinutes: projection.minutes,
         duration: drag.data.duration,
         type: drag.data.type,
         color: drag.data.color,
@@ -165,7 +164,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
         this.slotServ.updateSlotRoom(drag.data.id, roomId);
       }
     }
-  };
+  }
 
   /**
    * Handles dropping an artist onto a performance slot.
