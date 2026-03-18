@@ -32,11 +32,11 @@ export class PlannerSelectorService {
   timelineHeight = computed(() => this.res.minuteToPx(this.totalMinutes()));
 
   /**
-   * Calculates the grid offset
+   * Calculates the grid offset for the view
    */
-  gridOffsetPx = computed(() =>{
+  gridOffsetPx = computed(() => {
     const startMinutes = time_functions_utils(this.startTime());
-    return this.res.computeGridOffset(startMinutes);
+    return (startMinutes % 60) * this.res.pixelsPerMinute();
   });
 
 

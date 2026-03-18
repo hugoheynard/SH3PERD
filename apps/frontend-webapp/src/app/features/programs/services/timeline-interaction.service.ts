@@ -50,55 +50,65 @@ export class TimelineInteractionService {
     const selectedIds = this.selection.getSelectedIds();
     const slotsById = this.selector.slotsById();
 
-    const baseProjection = this.spatial.projectPointer(0);
-    if (!baseProjection) return;
+    /**
+     * 1️⃣ Déterminer les slots concernés
+     */
+    const activeSlots = selectedIds.includes(slot.id)
+      ? selectedIds
+      : [slot.id];
 
-    const slots =
-      selectedIds.includes(slot.id)
-        ? selectedIds.flatMap(id => {
-          const s = slotsById.get(id);
-          return s
-            ? [{
-              slotId: s.id,
-              offsetMinutes: s.startMinutes - baseProjection.minutes
-            }]
-            : [];
-        })
-        : [{
-          slotId: slot.id,
-          offsetMinutes: slot.startMinutes - baseProjection.minutes
-        }];
+    /**
+     * 2️⃣ Construire les offsets RELATIFS AU SLOT LEADER
+     */
+    const leaderStart = slot.startMinutes;
 
+    const slots = activeSlots.flatMap(id => {
+      const s = slotsById.get(id);
+      if (!s) {
+        return [];
+      }
+
+      return [{
+        slotId: s.id,
+        offsetMinutes: s.startMinutes - leaderStart
+      }];
+    });
+
+    /**
+     * 3️⃣ Initialiser le preview store
+     */
     this.interactionStore.start(
       slots.map(s => {
         const current = slotsById.get(s.slotId);
         return {
           slotId: s.slotId,
-          base: current?.startMinutes ?? 0
+          base: current?.startMinutes ?? 0,
+          roomId: current?.roomId ?? slot.roomId // fallback
         };
       })
     );
 
+    /**
+     * 4️⃣ Calcul du grabOffset (ULTRA IMPORTANT)
+     */
     const rect = this.roomLayout.getRect(slot.roomId);
-    if (!rect) {
-      return;
-    }
+    if (!rect) return;
 
     const slotTopPx = this.res.minuteToPx(slot.startMinutes);
 
-// 👉 position du slot dans le viewport
     const absoluteSlotTop = rect.top + slotTopPx;
 
-// 👉 distance entre souris et top du slot
     const grabOffset = event.clientY - absoluteSlotTop;
 
+    /**
+     * 5️⃣ Stock interaction
+     */
     this.interaction = {
       type: 'slot',
       startY: event.clientY,
       grabOffset,
       slots,
     };
-
   }
 
   /* ------------------ SLOT RESIZE ------------------ */
@@ -153,6 +163,7 @@ export class TimelineInteractionService {
           previewStart: projection.minutes + s.offsetMinutes,
           previewRoomId: projection.room_id
         }));
+
 
         this.interactionStore.update(updates);
 
@@ -209,10 +220,12 @@ export class TimelineInteractionService {
    */
   private computeMinutes(startY: number, baseMinutes: number) {
     const deltaY = this.drag.cursorY() - startY;
-    const deltaMinutes = this.res.pxToMinutes(deltaY);
 
-    return this.res.snap(baseMinutes + deltaMinutes);
-  };
+    const raw = baseMinutes + this.res.pxToMinutes(deltaY);
+    const snapped = this.res.snap(raw);
+
+    return Math.max(this.res.snapMinutes(), snapped);
+  }
 
   private roomLayout = inject(RoomLayoutRegistry);
 

@@ -33,7 +33,7 @@ export class PlannerResolutionService {
 
 
 
-
+  //TODO MOVE :
   computePreviewTop(offsetY: number, gridOffsetPx: number): number {
     const correctedPx = offsetY + gridOffsetPx;
 
@@ -41,10 +41,5 @@ export class PlannerResolutionService {
     const snapped = this.snap(rawMinutes);
 
     return this.minuteToPx(snapped) - gridOffsetPx;
-  };
-
-  computeGridOffset(startMinutes: number): number {
-    const minuteWithinHour = startMinutes % 60;
-    return this.minuteToPx(minuteWithinHour);
   };
 }

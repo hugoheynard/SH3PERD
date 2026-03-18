@@ -1,9 +1,5 @@
 @let r = room();
 
-@if (indicator()) {
-  <ui-insert-line [top]="insertTopPx()!" />
-}
-
 <div class="room-column"  [class.active]="hoveredRoom() === r.id">
   <div class="room-header">
 
@@ -51,6 +47,10 @@
     [style.background-position]="'0px -' + gridOffsetPx() + 'px'">
 
     <ng-content />
+
+    @if (indicator()) {
+      <ui-insert-line [top]="insertTopPx()!" />
+    }
 
   </div>
 </div>

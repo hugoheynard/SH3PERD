@@ -86,6 +86,7 @@ export class TimelineInteractionStore {
   private _draggingSlots = signal<{
     slotId: string;
     previewStart: number;
+    previewRoomId: string | null;
   }[] | null>(null);
 
   /**
@@ -116,11 +117,12 @@ export class TimelineInteractionStore {
    *
    * These values are used as the initial preview state.
    */
-  start(slots: { slotId: string; base: number }[]) {
+  start(slots: { slotId: string; base: number; roomId: string }[]) {
     this._draggingSlots.set(
       slots.map(s => ({
         slotId: s.slotId,
-        previewStart: s.base
+        previewStart: s.base,
+        previewRoomId: s.roomId
       }))
     );
   }

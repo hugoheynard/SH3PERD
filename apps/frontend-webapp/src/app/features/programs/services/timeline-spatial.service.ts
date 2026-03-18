@@ -101,11 +101,13 @@ export class TimelineSpatialService {
     const y = this.drag.cursorY();
 
     const room_id = this.layout.getRoomAt(x);
+
     if (!room_id) {
       return null;
     }
 
     const rect = this.layout.getRect(room_id);
+
     if (!rect) {
       return null;
     }
@@ -113,13 +115,15 @@ export class TimelineSpatialService {
     const relativeY = y - rect.top;
     const correctedY = relativeY - grabOffset;
 
-    const minutes = this.res.pxToMinutes(correctedY);
-    const snapped = this.res.snap(minutes);
+    const rawMinutes = this.res.pxToMinutes(correctedY);
+    const snappedMinutes = this.res.snap(rawMinutes);
+
+    const clamped = Math.max(0, snappedMinutes);
 
     return {
       room_id: room_id,
-      minutes: Math.max(0, snapped),
-      correctedY
+      minutes: clamped,
+      px: this.res.minuteToPx(clamped)
     };
   }
 }
