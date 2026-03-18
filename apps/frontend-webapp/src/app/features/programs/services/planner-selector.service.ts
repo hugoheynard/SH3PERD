@@ -30,6 +30,10 @@ export class PlannerSelectorService {
   timelineOffsets = computed(() => this.state.program().timelineOffsets);
 
   timelineHeight = computed(() => this.res.minuteToPx(this.totalMinutes()));
+
+  /**
+   * Calculates the grid offset
+   */
   gridOffsetPx = computed(() =>{
     const startMinutes = time_functions_utils(this.startTime());
     return this.res.computeGridOffset(startMinutes);

@@ -1,28 +1,15 @@
 <app-header class="[grid-area:header]"/>
 
-<appMenu class="[grid-area:menuLeft] sm:none" />
+<appMenu class="[grid-area:menuLeft]" />
 
-<div class="[grid-area:content] flex flex-col flex-1 bg-background overflow-hidden">
-  <div class="relative flex flex-row overflow-hidden h-full">
+<div class="[grid-area:content]">
+  <div class="content">
 
     <div class="panel" [ngClass]="{ 'hidden': !hasLeftPanel() }">
       <ng-template #leftPanelContainer />
     </div>
 
-    <app-circular-menu
-                       [menuItems]="[
-        { label: 'Home', iconName: 'home', route: '/home' },
-        { label: 'Calendar', iconName: 'calendar_today', route: '/profile' },
-        { label: 'Music', iconName: 'library_music', route: '/musicLibrary' },
-        { label: 'Playlists', iconName: 'queue_music', route: '/settings' },
-        { label: 'Settings', iconName: 'settings', route: '/settings' },
-        { label: 'Contracts', iconName: 'contracts', route: '/contracts' },
-        { label: 'Logout', iconName: 'logout', route: '/settings' },
-
-        ]"
-    />
-
-    <div class="p-4 flex-1">
+    <div class="main-content">
       <router-outlet />
     </div>
 

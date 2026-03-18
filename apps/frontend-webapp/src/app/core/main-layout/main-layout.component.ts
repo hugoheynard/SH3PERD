@@ -9,9 +9,9 @@ import {
 import {HeaderComponent} from '../components/header/header.component';
 import {AppMenuComponent} from '../components/menus/appMenu/app-menu.component';
 import {RouterOutlet} from '@angular/router';
-import {NgClass} from '@angular/common';
 import {LayoutService} from '../services/layout.service';
 import {CircularMenuComponent} from '../components/circular-menu/circular-menu.component';
+import { NgClass } from '@angular/common';
 
 export const INJECTION_DATA = new InjectionToken<unknown>('PANEL_DATA');
 
@@ -20,9 +20,9 @@ export const INJECTION_DATA = new InjectionToken<unknown>('PANEL_DATA');
   imports: [
     AppMenuComponent,
     RouterOutlet,
-    NgClass,
     CircularMenuComponent,
     HeaderComponent,
+    NgClass,
   ],
   templateUrl: './main-layout.component.html',
   standalone: true,
@@ -44,10 +44,10 @@ export class MainLayoutComponent implements AfterViewInit{
   @ViewChild('popoverContainer', { read: ViewContainerRef }) popover!: ViewContainerRef;
 
 
-  public hasContextMenu = computed(() => this.layoutService.contextMenuComponent() !== null);
-  public hasLeftPanel = computed(() => this.layoutService.leftPanelComponent() !== null);
-  public hasRightPanel = computed(() => this.layoutService.rightPanelComponent() !== null);
-  public hasPopover = computed(() => this.layoutService.popoverComponent() !== null);
+  hasContextMenu = computed(() => this.layoutService.contextMenuComponent() !== null);
+  hasLeftPanel = computed(() => this.layoutService.leftPanelComponent() !== null);
+  hasRightPanel = computed(() => this.layoutService.rightPanelComponent() !== null);
+  hasPopover = computed(() => this.layoutService.popoverComponent() !== null);
 
 
   ngAfterViewInit() {

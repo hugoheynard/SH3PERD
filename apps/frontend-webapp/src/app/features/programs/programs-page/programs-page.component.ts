@@ -91,6 +91,9 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
       staff: this.selector.staff,
       groups: this.selector.userGroups,
     });
+
+    //checks à delete
+    console.log('total minutes', this.selector.totalMinutes());
   };
 
   /* ---------------- TIME UTILS ---------------- */
@@ -137,7 +140,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
     if (drag.type === 'template') {
 
-      const previewTop = this.res.computePreviewTop(offsetY);
+      const previewTop = this.res.computePreviewTop(offsetY, this.selector.gridOffsetPx());
 
       const startMinutes = this.res.pxToMinutes(previewTop);
 
