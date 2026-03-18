@@ -6,6 +6,7 @@ import { InsertLineService } from './insert-line.service';
 import { TimelineInteractionStore } from './timeline-interaction.store';
 import { SlotResizeInteractionService } from './slot-resize-interaction.service';
 import { SlotDragInteractionService } from './slot-drag-interaction.service';
+import { TimelineSpatialService } from './timeline-spatial.service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -18,6 +19,7 @@ export class TimelineInteractionService {
   private interactionStore = inject(TimelineInteractionStore);
   private resizeInteraction = inject(SlotResizeInteractionService);
   private dragInteraction = inject(SlotDragInteractionService);
+  private spatial = inject(TimelineSpatialService);
 
 
   /* ------------------ SLOT DRAG ------------------ */
@@ -36,19 +38,33 @@ export class TimelineInteractionService {
 
   handlePointerMove() {
 
-    const isDragging = this.dragInteraction.isActive();
-    const isResizing = this.resizeInteraction.isActive();
+    const dragState = this.drag.current();
 
-    if (!isDragging && !isResizing) {
+    const isSlotDrag = this.dragInteraction.isActive();
+    const isResize = this.resizeInteraction.isActive();
+    const isTemplateDrag = dragState?.type === 'template';
+
+    if (!isSlotDrag && !isResize && !isTemplateDrag) {
       return;
     }
 
-    // 👉 DRAG
-    this.dragInteraction.move();
+    // 👉 priorité : slot drag
+    if (isSlotDrag) {
+      this.dragInteraction.move();
+      return;
+    }
 
-    // 👉 RESIZE
-    this.resizeInteraction.move();
-  };
+    // 👉 resize
+    if (isResize) {
+      this.resizeInteraction.move();
+      return;
+    }
+
+    // 👉 template drag
+    if (isTemplateDrag) {
+      this.updateInsertLineForTemplate();
+    }
+  }
 
 
   /* ------------------ STOP ------------------ */
@@ -74,5 +90,21 @@ export class TimelineInteractionService {
 
     this.dragInteraction.stop();
     this.resizeInteraction.stop();
+  }
+
+  private updateInsertLineForTemplate() {
+
+    const projection = this.spatial.projectPointer(0);
+
+    if (!projection) {
+      this.insert.clear();
+      return;
+    }
+
+    this.insert.set(
+      projection.minutes,
+      projection.room_id,
+      false
+    );
   }
 }

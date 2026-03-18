@@ -60,6 +60,8 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   private interaction = inject(TimelineInteractionService);
   private interactionStore = inject(TimelineInteractionStore);
   private layout = inject(LayoutService);
+  private spatial = inject(TimelineSpatialService);
+
 
   constructor() {
     void inject(PlannerDndInitService);
@@ -135,7 +137,6 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
   //* ---------------- DROP HANDLERS ---------------- *//
 
-  private spatial = inject(TimelineSpatialService);
   handleRoomDrop(roomId: string, drag: DragState) {
 
     if (drag.type === 'template') {
