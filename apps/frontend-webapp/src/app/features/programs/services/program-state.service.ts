@@ -2,8 +2,7 @@ import { computed, Injectable, signal } from '@angular/core';
 import type { ProgramState} from '../program-types';
 import { AllMockArtists, mockArtistGroups, mockBuffers } from '../utils/mockDATAS';
 
-//TODO : UNDO/REDO
-//TODO : DOC COMPONENT
+
 @Injectable({ providedIn: 'root' })
 export class ProgramStateService {
 
@@ -22,9 +21,6 @@ export class ProgramStateService {
     timelineOffsets: [...mockBuffers]
   });
 
-  private past: ProgramState[] = [];
-  private future: ProgramState[] = [];
-
 
   // SELECTORS
   /**
@@ -41,7 +37,7 @@ export class ProgramStateService {
     updater: (state: ProgramState) => ProgramState
   ) {
     this.state.update(updater);
-  };
+  }
 
   hydrateProgram(program: ProgramState) {
     this.state.set(program)
@@ -57,39 +53,6 @@ export class ProgramStateService {
     const year = date.getFullYear();
 
     return `Program ${day}-${month}-${year}`;
-  };
-
-
- /* ---------------------------------------------------
-    UNDO / REDO
-    TODO: Limit history size
-  ----------------------------------------*/
-
-
-  undo() {
-    const previous = this.past.pop();
-
-    if (!previous) {
-      return;
-    }
-
-    const current = this.state();
-    this.future.push(current);
-
-    this.state.set(previous);
-  };
-
-  redo() {
-
-    const next = this.future.pop();
-
-    if (!next) {
-      return;
-    }
-
-    const current = this.state();
-    this.past.push(current);
-    this.state.set(next);
   };
 }
 

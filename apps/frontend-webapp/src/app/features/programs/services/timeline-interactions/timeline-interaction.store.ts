@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { TimelineSpatialService } from './timeline-spatial.service';
-import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
+import { TimelineSpatialService } from '../timeline-spatial.service';
+import { DragSessionService } from '../../../../core/drag-and-drop/drag-session.service';
 
 /**
  * Manages the ephemeral interaction state for timeline drag operations.

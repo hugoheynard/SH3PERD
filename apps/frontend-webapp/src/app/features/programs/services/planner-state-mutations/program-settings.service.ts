@@ -1,14 +1,15 @@
 import { inject, Injectable } from '@angular/core';
-import { ProgramStateService } from '../program-state.service';
 import type { ProgramMode } from '../../program-types';
+import { ProgramHistoryService } from '../program-history.service';
 
 @Injectable({ providedIn: 'root' })
 export class ProgramSettingsService {
 
-  private state = inject(ProgramStateService);
+  private history = inject(ProgramHistoryService);
+
 
   changeProgramName(name: string) {
-    this.state.updateState(state => ({
+    this.history.updateState(state => ({
       ...state,
       name
     }));
@@ -20,7 +21,7 @@ export class ProgramSettingsService {
    */
   changeStartTime(time: string) {
 
-    this.state.updateState(state => ({
+    this.history.updateState(state => ({
       ...state,
       startTime: time
     }));
@@ -31,7 +32,7 @@ export class ProgramSettingsService {
    * @param time
    */
   changeEndTime(time: string) {
-    this.state.updateState(state => ({
+    this.history.updateState(state => ({
       ...state,
       endTime: time
     }));
@@ -43,7 +44,7 @@ export class ProgramSettingsService {
    */
   changeProgramMode(newMode: ProgramMode) {
 
-    this.state.updateState(state => ({
+    this.history.updateState(state => ({
       ...state,
       mode: newMode
     }));

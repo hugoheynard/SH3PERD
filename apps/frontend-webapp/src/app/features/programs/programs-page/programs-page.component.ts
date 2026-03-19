@@ -9,7 +9,7 @@ import { ProgramHeaderComponent } from '../program-header/program-header.compone
 
 import {
   TimelineInteractionService
-} from '../services/timeline-interaction.service';
+} from '../services/timeline-interactions/timeline-interaction.service';
 
 import { LayoutService } from '../../../core/services/layout.service';
 import { ProgramSidePanelComponent } from '../program-side-panel/program-side-panel.component';
@@ -30,10 +30,11 @@ import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 import { RoomColumnComponent } from '../room-column/room-column.component';
-import { SlotSelectionService } from '../services/slot-selection.service';
+import { SlotSelectionService } from '../services/timeline-interactions/slot-selection.service';
 import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
-import { TimelineInteractionStore } from '../services/timeline-interaction.store';
+import { TimelineInteractionStore } from '../services/timeline-interactions/timeline-interaction.store';
 import { TimelineSpatialService } from '../services/timeline-spatial.service';
+import { InsertLineService } from '../services/insert-line.service';
 
 
 @Component({
@@ -61,6 +62,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   private interactionStore = inject(TimelineInteractionStore);
   private layout = inject(LayoutService);
   private spatial = inject(TimelineSpatialService);
+  private insert = inject(InsertLineService);
 
 
   constructor() {
@@ -160,6 +162,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
         song: drag.data.song
       });
 
+      this.insert.clear();
     }
 
     if (drag.type === 'slot') {

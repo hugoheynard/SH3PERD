@@ -3,6 +3,7 @@ import { ProgramStateService } from './program-state.service';
 import { minutesToTime, time_functions_utils } from '../utils/time_functions_utils';
 import type { ArtistPerformanceSlot, TimelineBlock } from '../program-types';
 import { PlannerResolutionService } from './planner-resolution.service';
+import { TimelineInteractionStore } from './timeline-interactions/timeline-interaction.store';
 
 
 /**
@@ -15,6 +16,7 @@ export class PlannerSelectorService {
 
   private state = inject(ProgramStateService);
   private res = inject(PlannerResolutionService);
+  private interactionStore = inject(TimelineInteractionStore);
 
   /* --------------------------------
             GETTERS / SELECTORS
@@ -173,4 +175,35 @@ export class PlannerSelectorService {
       programStartMinutes + slot.startMinutes + slot.duration;
     return minutesToTime(absolute);
   };
+
+  /**
+   * Used to display the dragging slots
+   */
+  displaySlots = computed(() => {
+
+    const baseSlots = this.slots();
+    const dragging = this.interactionStore.draggingSlots();
+
+    if (!dragging) return baseSlots;
+
+    const previewMap = new Map(
+      dragging.map(s => [s.slotId, s])
+    );
+
+    return baseSlots.map(slot => {
+
+      const preview = previewMap.get(slot.id);
+
+      if (!preview) return slot;
+
+      return {
+        ...slot,
+        startMinutes: preview.previewStart,
+        roomId: preview.previewRoomId ?? slot.roomId,
+        isPreview: true
+      };
+    });
+  });
+
+
 }

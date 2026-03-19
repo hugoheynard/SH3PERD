@@ -33,3 +33,23 @@
 
 <!-- Floating menu for program actions -->
 <app-program-action-menu />
+
+<div class="program-actions-inline">
+
+  <button
+    class="icon-btn"
+    title="Undo (Ctrl+Z)"
+    [disabled]="!canUndo()"
+    (click)="undo()">
+    ⟲
+  </button>
+
+  <button
+    class="icon-btn"
+    title="Redo (Ctrl+Shift+Z)"
+    [disabled]="!canRedo()"
+    (click)="redo()">
+    ⟳
+  </button>
+
+</div>

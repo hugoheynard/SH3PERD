@@ -3,7 +3,10 @@ import { SlotTemplateCardComponent } from '../slot-template-card/slot-template-c
 import { DragPreviewRegistryService } from '../../../core/drag-and-drop/drag-preview-registry.service';
 import { GroupCardComponent } from '../group-card/group-card.component';
 import { ArtistChipComponent } from '../artist-chip/artist-chip.component';
-import { SlotDragPreviewComponent } from '../slot-preview/slot-preview.component';
+import {
+  type MultiSlotDragPayload,
+  MultiSlotDragPreviewComponent,
+} from '../multi-slot-drag-preview/multi-slot-drag-preview.component';
 
 /**
  * Registers all elements for dnd + their mapping to the preview component.
@@ -24,10 +27,13 @@ export class PlannerDndInitService {
       mapInputs: template => ({ template })
     });
 
-    this.registry.register('slot', {
-      component: SlotDragPreviewComponent,
-      mapInputs: slot => ({ slot })
-    })
+    this.registry.register('slot-multi', {
+      component: MultiSlotDragPreviewComponent,
+      mapInputs: (data: MultiSlotDragPayload) => ({
+        slots: data.slots,
+        offsets: data.offsets
+      })
+    });
 
     this.registry.register('group', {
       component: GroupCardComponent,

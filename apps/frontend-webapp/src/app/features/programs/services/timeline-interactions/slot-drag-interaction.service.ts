@@ -1,13 +1,13 @@
 import { inject, Injectable } from '@angular/core';
-import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
-import { PlannerSelectorService } from './planner-selector.service';
+import { DragSessionService } from '../../../../core/drag-and-drop/drag-session.service';
+import { PlannerSelectorService } from '../planner-selector.service';
 import { SlotSelectionService } from './slot-selection.service';
 import { TimelineInteractionStore } from './timeline-interaction.store';
-import { RoomLayoutRegistry } from './room-layout-registry.service';
-import { PlannerResolutionService } from './planner-resolution.service';
-import type { ArtistPerformanceSlot } from '../program-types';
-import { TimelineSpatialService } from './timeline-spatial.service';
-import { InsertLineService } from './insert-line.service';
+import { RoomLayoutRegistry } from '../room-layout-registry.service';
+import { PlannerResolutionService } from '../planner-resolution.service';
+import type { ArtistPerformanceSlot } from '../../program-types';
+import { TimelineSpatialService } from '../timeline-spatial.service';
+import { InsertLineService } from '../insert-line.service';
 
 
 export type TSlotDragInteraction = {
@@ -40,6 +40,8 @@ export class SlotDragInteractionService {
     this.drag.updatePointer(event);
 
     const slots = this.buildDragSlots(slot);
+
+    this.startMultiDragPreview(slots);
 
     this.initPreviewStore(slots, slot);
 
@@ -97,7 +99,9 @@ export class SlotDragInteractionService {
 
     return activeSlots.flatMap(id => {
       const s = slotsById.get(id);
-      if (!s) return [];
+      if (!s) {
+        return [];
+      }
 
       return [{
         slotId: s.id,
@@ -132,7 +136,9 @@ export class SlotDragInteractionService {
   ): number | null {
 
     const rect = this.layout.getRect(slot.roomId);
-    if (!rect) return null;
+    if (!rect) {
+      return null;
+    }
 
     const slotTopPx = this.res.minuteToPx(slot.startMinutes);
     const absoluteTop = rect.top + slotTopPx;
@@ -152,5 +158,24 @@ export class SlotDragInteractionService {
 
   stop() {
     this.interaction = null;
+  }
+
+  private startMultiDragPreview(
+    slots: { slotId: string; offsetMinutes: number }[]
+  ) {
+
+    const slotsById = this.selector.slotsById();
+
+    const selectedSlots = slots
+      .map(s => slotsById.get(s.slotId))
+      .filter(Boolean) as ArtistPerformanceSlot[];
+
+    this.drag.start({
+      type: 'slot-multi',
+      data: {
+        slots: selectedSlots,
+        offsets: slots
+      }
+    });
   }
 }

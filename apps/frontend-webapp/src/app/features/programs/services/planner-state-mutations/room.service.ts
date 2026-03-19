@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import { ProgramStateService } from '../program-state.service';
 import type { Room } from '../../program-types';
 import { PlannerSelectorService } from '../planner-selector.service';
+import { ProgramHistoryService } from '../program-history.service';
 
 @Injectable({ providedIn: 'root' })
 export class RoomService {
 
-  private state = inject(ProgramStateService);
+  private history = inject(ProgramHistoryService);
   private selector = inject(PlannerSelectorService);
 
   /* ---------------------------------
@@ -19,7 +19,7 @@ export class RoomService {
 
     const id = crypto.randomUUID();
 
-    this.state.updateState(state => ({
+    this.history.updateState(state => ({
 
       ...state,
 
@@ -40,7 +40,7 @@ export class RoomService {
    */
   removeRoom(roomId: string) {
 
-    this.state.updateState(state => {
+    this.history.updateState(state => {
 
       const rooms = state.rooms;
 

@@ -5,6 +5,9 @@ import type {
   PlannerArtist,
   UserGroup,
 } from '../../features/programs/program-types';
+import type {
+  MultiSlotDragPayload,
+} from '../../features/programs/multi-slot-drag-preview/multi-slot-drag-preview.component';
 
 
 /* ---------------------------------------------------
@@ -30,5 +33,6 @@ export type DragPayloadMap = {
   artist: PlannerArtist
   group: UserGroup
   slot: ArtistPerformanceSlot
+  'slot-multi': MultiSlotDragPayload
   resize: ArtistPerformanceSlot
 };

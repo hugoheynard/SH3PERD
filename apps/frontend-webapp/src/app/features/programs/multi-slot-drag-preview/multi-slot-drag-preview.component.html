@@ -1,0 +1,6 @@
+@for (slot of slots(); track slot.id) {
+  <ui-slot-preview
+    [slot]="slot"
+    [style.transform]="computeTransform(slot)"
+  />
+}

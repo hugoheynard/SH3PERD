@@ -7,7 +7,7 @@ import { InsertLineService } from '../services/insert-line.service';
 import { InsertLineComponent } from '../insert-line/insert-line.component';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { RoomLayoutDirective } from '../services/room-layout-directive.directive';
-import { TimelineInteractionStore } from '../services/timeline-interaction.store';
+import { TimelineInteractionStore } from '../services/timeline-interactions/timeline-interaction.store';
 import { TimelineSpatialService } from '../services/timeline-spatial.service';
 
 @Component({

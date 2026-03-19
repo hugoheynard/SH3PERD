@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ProgramActionMenuComponent } from '../program-action-menu/program-action-menu.component';
 import { PlannerSelectorService } from '../services/planner-selector.service';
 import { ProgramSettingsService } from '../services/planner-state-mutations/program-settings.service';
+import { ProgramHistoryService } from '../services/program-history.service';
 
 @Component({
   selector: 'app-program-header',
@@ -17,6 +18,9 @@ export class ProgramHeaderComponent {
 
   selector = inject(PlannerSelectorService);
   settings = inject(ProgramSettingsService);
+  private history = inject(ProgramHistoryService);
+
+
 
   name = this.selector.name;
   startTime = this.selector.startTime;
@@ -36,4 +40,21 @@ export class ProgramHeaderComponent {
       this.isSaved = false;
     }, 2000);
   }
+
+
+  undo() {
+    this.history.undo();
+  };
+
+  redo() {
+    this.history.redo();
+  };
+
+  canUndo() {
+    return this.history.canUndo();
+  };
+
+  canRedo() {
+    return this.history.canRedo();
+  };
 }

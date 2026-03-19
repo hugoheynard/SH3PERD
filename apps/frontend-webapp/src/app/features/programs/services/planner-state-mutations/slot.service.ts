@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import type { ArtistPerformanceSlot, PlannerArtist, UserGroup } from '../../program-types';
-import { ProgramStateService } from '../program-state.service';
+import { ProgramHistoryService } from '../program-history.service';
 
 /**
  * Service responsible for mutating the state of a slot in the planner.
@@ -11,7 +11,7 @@ import { ProgramStateService } from '../program-state.service';
 @Injectable({ providedIn: 'root' })
 export class SlotService {
 
-  private state = inject(ProgramStateService);
+  private history = inject(ProgramHistoryService);
 
 
   /* ---------------------------------
@@ -23,7 +23,7 @@ export class SlotService {
    */
   addSlot(slot: ArtistPerformanceSlot) {
 
-    this.state.updateState(state => ({
+    this.history.updateState(state => ({
       ...state,
       slots: [...state.slots, slot]
     }));
@@ -35,7 +35,7 @@ export class SlotService {
    */
   removeSlot(id: string) {
 
-    this.state.updateState(state => ({
+    this.history.updateState(state => ({
       ...state,
       slots: state.slots.filter(s => s.id !== id)
     }));
@@ -47,7 +47,7 @@ export class SlotService {
    */
   updateSlot(slot: ArtistPerformanceSlot) {
 
-    this.state.updateState(state => ({
+    this.history.updateState(state => ({
 
       ...state,
 
@@ -192,7 +192,7 @@ export class SlotService {
     updater: (slot: ArtistPerformanceSlot) => ArtistPerformanceSlot
   ) {
 
-    this.state.updateState(state => ({
+    this.history.updateState(state => ({
 
       ...state,
 
