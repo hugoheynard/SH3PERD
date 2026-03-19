@@ -1,0 +1,96 @@
+:host {
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  pointer-events: none;
+  z-index: 25;
+}
+
+/* ---------- LINE ---------- */
+
+.cue-line {
+  position: relative;
+  height: 3px;
+
+  transform: translateY(-1.5px);
+
+  background: var(--accent-color);
+
+  /* contraste maximum propre */
+  box-shadow:
+    0 2px 0 rgba(0,0,0,0.7),   /* séparation forte dessous */
+    0 -1px 0 rgba(255,255,255,0.08); /* highlight subtil dessus */
+}
+/* ---------- BADGE ---------- */
+
+.cue-badge {
+  position: absolute;
+  left: 6px;
+  top: -12px;
+
+  padding: 3px 8px;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  color: white;
+
+  background: var(--accent-color); /* 🔥 important */
+  border-radius: var(--radius-sm);
+
+  white-space: nowrap;
+
+  box-shadow:
+    0 3px 8px rgba(0,0,0,0.5);
+
+
+
+  /* transition douce */
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease,
+    opacity 0.15s ease;
+}
+
+/* ---------- TYPE VARIANTS ---------- */
+
+:host[data-type="technical"] .cue-line {
+  background: linear-gradient(
+      to right,
+      rgba(77,163,255,0.5),
+      rgba(77,163,255,0.25),
+      transparent
+  );
+}
+
+:host[data-type="artistic"] .cue-line {
+  background: linear-gradient(
+      to right,
+      rgba(212,106,255,0.5),
+      rgba(212,106,255,0.25),
+      transparent
+  );
+}
+
+:host[data-type="logistic"] .cue-line {
+  background: linear-gradient(
+      to right,
+      rgba(255,170,51,0.5),
+      rgba(255,170,51,0.25),
+      transparent
+  );
+}
+
+/* ---------- HOVER (future-proof si interactive) ---------- */
+
+:host(:hover) .cue-badge {
+  background: var(--hover-color);
+  transform: translateY(-1px);
+}
+
+/* ---------- OPTIONAL: subtle glow when active ---------- */
+
+:host(.active) .cue-line {
+  opacity: 0.9;
+}

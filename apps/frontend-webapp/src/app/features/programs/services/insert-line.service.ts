@@ -129,6 +129,11 @@ export class InsertLineService {
    */
   multiRoom = this._multiRoom.asReadonly();
 
+  private _altMode = signal(false);
+  altMode = this._altMode.asReadonly();
+
+
+
   /**
    * Computed indicator used by UI components.
    *
@@ -172,5 +177,15 @@ export class InsertLineService {
     this._minutes.set(null);
     this._room_id.set(null);
     this._multiRoom.set(false);
+  }
+
+  /* ------------------ ALT MODE ------------------ */
+
+  enableAltMode() {
+    this._altMode.set(true);
+  }
+
+  disableAltMode() {
+    this._altMode.set(false);
   }
 }

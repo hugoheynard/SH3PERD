@@ -1,7 +1,7 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { ProgramStateService } from './program-state.service';
 import { minutesToTime, time_functions_utils } from '../utils/time_functions_utils';
-import type { ArtistPerformanceSlot, TimelineBlock } from '../program-types';
+import type { ArtistPerformanceSlot, TimelineBlock, TimelineCue } from '../program-types';
 import { PlannerResolutionService } from './planner-resolution.service';
 import { TimelineInteractionStore } from './timeline-interactions/timeline-interaction.store';
 
@@ -205,5 +205,18 @@ export class PlannerSelectorService {
     });
   });
 
+  //CUES
 
+  cuesByRoom = computed(() => {
+
+    const map = new Map<string, TimelineCue[]>();
+
+    for (const cue of this.state.program().cues) {
+      const arr = map.get(cue.roomId) ?? [];
+      arr.push(cue);
+      map.set(cue.roomId, arr);
+    }
+
+    return map;
+  });
 }

@@ -9,6 +9,7 @@ import { PlannerResolutionService } from '../services/planner-resolution.service
 import { RoomLayoutDirective } from '../services/room-layout-directive.directive';
 import { TimelineInteractionStore } from '../services/timeline-interactions/timeline-interaction.store';
 import { TimelineSpatialService } from '../services/timeline-spatial.service';
+import { CueService } from '../services/planner-state-mutations/cue.service';
 
 @Component({
   selector: 'ui-room-column',
@@ -86,4 +87,27 @@ export class RoomColumnComponent {
       ? null
       : this.res.minuteToPx(minutes);
   });
+
+
+  isAltMode = this.insert.altMode;
+
+  private cueService = inject(CueService);
+
+  handleInsert() {
+
+    const indicator = this.insert.indicator();
+    if (!indicator) {
+      return;
+    }
+
+    this.cueService.addCue({
+      id: crypto.randomUUID(),
+      roomId: indicator.roomId,
+      atMinutes: indicator.minutes,
+      label: 'New cue',
+      type: 'default'
+    });
+  }
+
+
 }

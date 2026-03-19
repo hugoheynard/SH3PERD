@@ -1,4 +1,20 @@
-<div
-  class="insert-line"
-  [style.top.px]="top()">
+<div class="insert-line">
+
+  @if (showButton()) {
+    <div
+      class="insert-action"
+      (pointerdown)="$event.stopPropagation()">
+
+      <div class="insert-center">
+        <button class="insert-btn" (click)="toggleMenu()">+</button>
+      </div>
+
+      @if (menuOpen()) {
+        <ui-radial-menu
+          [items]="radialItems"
+          (select)="handleSelect($event)" />
+      }
+    </div>
+  }
+
 </div>

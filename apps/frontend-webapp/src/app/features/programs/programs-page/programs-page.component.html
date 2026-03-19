@@ -57,6 +57,13 @@
             }
           }
 
+          @for (cue of selector.cuesByRoom().get(room.id) ?? []; track cue.id) {
+            <ui-timeline-cue
+              [top]="getCueTop(cue)"
+              [label]="cue.label"
+              [type]="cue.type ?? 'default'"/>
+          }
+
         </ui-room-column>
       }
     </div>

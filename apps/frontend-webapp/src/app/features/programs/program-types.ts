@@ -63,6 +63,7 @@ export interface ProgramState {
   artists: PlannerArtist[];
   userGroups: UserGroup[];
   timelineOffsets: TimelineOffset[];
+  cues: TimelineCue[];
 }
 
 export interface PlannerArtist {
@@ -111,3 +112,11 @@ export type TimelineBlock =
   startMinutes: number
   duration: number
 }
+
+export type TimelineCue = {
+  id: string;
+  roomId: string;
+  atMinutes: number;
+  label: string;
+  type?: 'technical' | 'artistic' | 'logistic' | 'default';
+};

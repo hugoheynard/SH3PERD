@@ -19,7 +19,7 @@ import {
   mockPerformanceSlotsTemplates,
 } from '../utils/mockDATAS';
 import type {
-  ArtistPerformanceSlot,
+  ArtistPerformanceSlot, TimelineCue,
 } from '../program-types';
 import { EditPerformanceSlotPopoverComponent } from '../edit-performance-slot-popover/edit-performance-slot-popover.component';
 import { SlotService } from '../services/planner-state-mutations/slot.service';
@@ -35,6 +35,9 @@ import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
 import { TimelineInteractionStore } from '../services/timeline-interactions/timeline-interaction.store';
 import { TimelineSpatialService } from '../services/timeline-spatial.service';
 import { InsertLineService } from '../services/insert-line.service';
+import { TimelineCueComponent } from '../timeline-cue/timeline-cue.component';
+import { PlannerResolutionService } from '../services/planner-resolution.service';
+import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 
 
 @Component({
@@ -47,6 +50,7 @@ import { InsertLineService } from '../services/insert-line.service';
     DndDropZoneDirective,
     DndDragDirective,
     RoomColumnComponent,
+    TimelineCueComponent,
   ],
   templateUrl: './programs-page.component.html',
   styleUrl: './programs-page.component.scss',
@@ -63,6 +67,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   private layout = inject(LayoutService);
   private spatial = inject(TimelineSpatialService);
   private insert = inject(InsertLineService);
+  private res = inject(PlannerResolutionService);
 
 
   constructor() {
@@ -99,10 +104,34 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     });
   };
 
+  private drag = inject(DragSessionService)
   /* ---------------- TIME UTILS ---------------- */
   @HostListener('document:pointermove', ['$event'])
-  onPointerMove() {
+  onPointerMove(event: PointerEvent) {
+
+    this.drag.updatePointer(event);
+
+    // 1 - drag, resize
     this.interaction.handlePointerMove();
+
+    // 2️⃣ ALT mode → insert line libre
+    if (this.insert.altMode()) {
+
+      this.roomLayout.refresh(); // 🔥 IMPORTANT
+
+      const projection = this.spatial.projectPointer(0);
+
+      if (!projection) {
+        this.insert.clear();
+        return;
+      }
+
+      this.insert.set(
+        projection.minutes,
+        projection.room_id,
+        false
+      );
+    }
   };
 
   @HostListener('document:pointerup')
@@ -273,7 +302,6 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     /* DELETE */
 
     if (event.key === 'Delete' || event.key === 'Backspace') {
-
       event.preventDefault();
 
       const ids = this.selection.getSelectedIds();
@@ -286,7 +314,27 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
       this.selection.clear();
     }
+
+    // for insert bar
+    if (event.altKey) {
+      this.insert.enableAltMode();
+    }
   };
+
+  @HostListener('document:keyup', ['$event'])
+  handleKeyUp(event: KeyboardEvent) {
+
+    if (event.key === 'Alt') {
+      this.insert.disableAltMode();
+      this.insert.clear();
+    }
+  };
+
+  @HostListener('window:blur')
+  handleBlur() {
+    this.insert.disableAltMode();
+    this.insert.clear();
+  }
 
   /**
    * When clicking on a non slot element, removes selection of slots
@@ -320,4 +368,15 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
   @ViewChild('planner', { static: true })
   plannerEl!: ElementRef;
+
+
+  // ---------- CUES ---------//
+  getCueTop(cue: TimelineCue) {
+    return this.res.minuteToPx(cue.atMinutes) - this.selector.gridOffsetPx();
+  }
+
+
+
+
+
 }

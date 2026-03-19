@@ -52,3 +52,20 @@ export const mockBuffers = [
     delta: 5
   }
 ];
+
+export const mockCues = [
+  {
+    id: 'cue-1',
+    roomId: 'r1',
+    atMinutes: 60,
+    label: '🎤 Sound check',
+    type: 'technical' as const
+  },
+  {
+    id: 'cue-2',
+    roomId: 'r2',
+    atMinutes: 120,
+    label: '🔥 Drop FX',
+    type: 'artistic' as const
+  }
+];

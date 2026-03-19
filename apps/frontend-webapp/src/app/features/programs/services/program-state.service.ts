@@ -1,6 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import type { ProgramState} from '../program-types';
-import { AllMockArtists, mockArtistGroups, mockBuffers } from '../utils/mockDATAS';
+import { AllMockArtists, mockArtistGroups, mockBuffers, mockCues } from '../utils/mockDATAS';
 
 
 @Injectable({ providedIn: 'root' })
@@ -18,7 +18,8 @@ export class ProgramStateService {
     slots: [],
     artists: AllMockArtists,
     userGroups: mockArtistGroups,
-    timelineOffsets: [...mockBuffers]
+    timelineOffsets: [...mockBuffers],
+    cues: [...mockCues],
   });
 
 
