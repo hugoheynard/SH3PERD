@@ -11,7 +11,10 @@
         <ui-radial-menu
           [items]="RADIAL_MENU_ITEM_CONFIG"
           [open]="menuOpen()"
-          (select)="handleSelect($event)" />
+          (select)="handleSelect($event)"
+          (hover)="handleRadialButtonHover($event)"
+          (leave)="handleRadialButtonLeave()"
+        />
       }
     </div>
   }

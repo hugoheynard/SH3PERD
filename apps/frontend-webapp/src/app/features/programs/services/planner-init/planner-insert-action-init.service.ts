@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { InsertActionRegistry } from '../../insert-interaction-system/actions-services/insert-action-registry.service';
-import { CueService } from '../planner-state-mutations/cue.service';
-import { SlotService } from '../planner-state-mutations/slot.service';
+import { CueService } from '../mutations-layer/cue.service';
+import { SlotService } from '../mutations-layer/slot.service';
 
 /**
  * Initializes and registers all insert actions for the planner.
@@ -134,12 +134,12 @@ export class PlannerInsertActionsInitService {
      * Inserts a timeline cue at the given position.
      */
     this.registry.register('cue', ({ minutes, roomId }) => {
-      this.cueService.addCue({
+      this.cueService.add({
         id: crypto.randomUUID(),
         roomId,
         atMinutes: minutes,
         label: 'New cue',
-        type: 'default'
+        type: 'default',
       });
     });
 
@@ -149,7 +149,7 @@ export class PlannerInsertActionsInitService {
      * Inserts a new performance slot at the given position.
      */
     this.registry.register('slot', ({ minutes, roomId }) => {
-      this.slotService.addSlot({
+      this.slotService.add({
         id: crypto.randomUUID(),
         name: 'New Slot',
         startMinutes: minutes,

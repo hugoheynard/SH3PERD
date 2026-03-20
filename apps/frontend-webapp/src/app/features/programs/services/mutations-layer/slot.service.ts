@@ -1,6 +1,6 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import type { ArtistPerformanceSlot, PlannerArtist, UserGroup } from '../../program-types';
-import { ProgramHistoryService } from '../program-history.service';
+import { BaseTimelineItemCRUD } from './BaseTimelineItemCRUD';
 
 /**
  * Service responsible for mutating the state of a slot in the planner.
@@ -9,37 +9,18 @@ import { ProgramHistoryService } from '../program-history.service';
  * when changes are made to the slots.
  */
 @Injectable({ providedIn: 'root' })
-export class SlotService {
+export class SlotService
+  extends BaseTimelineItemCRUD<'slots'>{
 
-  private history = inject(ProgramHistoryService);
+  constructor() {
+    super('slots');
+  }
 
 
   /* ---------------------------------
     SLOT HANDLING
    ---------------------------------- */
-  /**
-   * Adds a new performance slot to the program state. The method takes an ArtistPerformanceSlot object as a parameter and updates the state by appending this new slot to the existing array of slots. This allows for dynamically adding performance slots to the program as needed.
-   * @param slot
-   */
-  addSlot(slot: ArtistPerformanceSlot) {
 
-    this.history.updateState(state => ({
-      ...state,
-      slots: [...state.slots, slot]
-    }));
-  };
-
-  /**
-   * Removes a performance slot from the program state based on its unique identifier. The method takes the ID of the slot to be removed as a parameter and updates the state by filtering out the slot with the matching ID from the array of slots. This allows for dynamically removing performance slots from the program as needed.
-   * @param id
-   */
-  removeSlot(id: string) {
-
-    this.history.updateState(state => ({
-      ...state,
-      slots: state.slots.filter(s => s.id !== id)
-    }));
-  };
 
   /**
    * Updates an existing performance slot in the program state. The method takes an ArtistPerformanceSlot object as a parameter and updates the state by mapping over the existing array of slots and replacing the slot with the matching ID with the new slot data provided. This allows for dynamically updating performance slots in the program as needed.
@@ -70,7 +51,7 @@ export class SlotService {
    */
   updateSlotStart(slotId: string, startMinutes: number) {
 
-    this.patchSlot(slotId, slot => ({
+    this.patch(slotId, slot => ({
       ...slot,
       startMinutes
     }));
@@ -83,7 +64,7 @@ export class SlotService {
    */
   updateSlotDuration(slotId: string, duration: number) {
 
-    this.patchSlot(slotId, slot => ({
+    this.patch(slotId, slot => ({
       ...slot,
       duration
     }));
@@ -100,7 +81,7 @@ export class SlotService {
    */
   addArtistToSlot(slotId: string, artist: PlannerArtist) {
 
-    this.patchSlot(slotId, slot => {
+    this.patch(slotId, slot => {
 
       if (slot.artists.some(a => a.id === artist.id)) {
         return slot;
@@ -121,7 +102,7 @@ export class SlotService {
    */
   removeArtistFromSlot(slotId: string, artistId: string) {
 
-    this.patchSlot(slotId, slot => {
+    this.patch(slotId, slot => {
 
       if (!slot.artists.some(a => a.id === artistId)) {
         return slot;
@@ -144,7 +125,7 @@ export class SlotService {
    */
   updateSlotRoom(slotId: string, roomId: string) {
 
-    this.patchSlot(slotId, slot => ({
+    this.patch(slotId, slot => ({
       ...slot,
       roomId
     }));
@@ -160,7 +141,7 @@ export class SlotService {
    */
   addGroupToSlot(slotId: string, group: UserGroup) {
 
-    this.patchSlot(slotId, slot => {
+    this.patch(slotId, slot => {
 
       const existingIds = new Set(slot.artists.map(a => a.id));
 
@@ -181,27 +162,30 @@ export class SlotService {
   /* ---------------------------------
   HELPER METHODS
   ----------------------------------- */
+
   /**
-   * A helper method that abstracts the logic of updating a specific slot in the program state. It takes a slot ID and an updater function as parameters. The method updates the state by mapping over the existing array of slots and applying the updater function to the slot with the matching ID, while leaving all other slots unchanged. This allows for a more concise and reusable way to update specific properties of a slot without having to repeat the mapping logic in each individual update method.
-   * @param slotId
-   * @param updater
-   * @private
+   * Creates a default slot
+   * @param p
    */
-  private patchSlot(
-    slotId: string,
-    updater: (slot: ArtistPerformanceSlot) => ArtistPerformanceSlot
-  ) {
-
-    this.history.updateState(state => ({
-
-      ...state,
-
-      slots: state.slots.map(slot =>
-        slot.id === slotId
-          ? updater(slot)
-          : slot
-      )
-    }));
+  createDefault(p: {
+    startMinutes: number;
+    roomId: string;
+    id: string;
+    overrides?: Partial<ArtistPerformanceSlot>;
+  }): ArtistPerformanceSlot {
+    return {
+      id: p.id,
+      name: 'New Slot',
+      startMinutes: p.startMinutes,
+      duration: 15,
+      roomId: p.roomId,
+      type: 'performance',
+      color: '#3b82f6',
+      artists: [],
+      playlist: false,
+      song: false,
+      ...p.overrides
+    };
   }
 
 }

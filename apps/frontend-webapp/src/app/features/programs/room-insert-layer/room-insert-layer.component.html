@@ -1,0 +1,25 @@
+@if (indicator()) {
+  <ui-insert-line
+    [top]="insertTopPx()!"
+    [showButton]="isAltMode()"
+  />
+}
+
+@let slot = ghostSlot();
+
+@if (slot) {
+  <ui-program-slot
+    class="ghost"
+    [slot]="slot"
+  />
+}
+
+@let cue = ghostCue();
+
+@if (cue) {
+  <ui-timeline-cue
+    class="ghost"
+    [top]="getGhostTop(cue.atMinutes)"
+    [label]="cue.label"
+  />
+}

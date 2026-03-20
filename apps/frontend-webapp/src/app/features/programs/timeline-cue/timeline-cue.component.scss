@@ -94,3 +94,11 @@
 :host(.active) .cue-line {
   opacity: 0.9;
 }
+
+
+.selected {
+  box-shadow:
+    0 0 0 2px rgba(59, 130, 246, 0.6),
+    0 0 10px rgba(59, 130, 246, 0.8);
+  z-index: 10;
+}

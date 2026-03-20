@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { DragSessionService } from '../../../../core/drag-and-drop/drag-session.service';
-import { SlotService } from '../planner-state-mutations/slot.service';
+import { SlotService } from '../mutations-layer/slot.service';
 import type { ArtistPerformanceSlot } from '../../program-types';
 import { InsertLineService } from '../../insert-interaction-system/state-services/insert-line.service';
 import { TimelineInteractionStore } from './timeline-interaction.store';

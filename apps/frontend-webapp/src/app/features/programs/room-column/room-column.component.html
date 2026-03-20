@@ -41,13 +41,7 @@
 
     <ng-content />
 
-    @if (indicator()) {
-      <ui-insert-line
-        [top]="insertTopPx()!"
-        [showButton]="isAltMode()"
-        (add)="handleInsert()"
-      />
-    }
+    <ui-room-insert-layer [room]="room()" />
 
   </div>
 </div>

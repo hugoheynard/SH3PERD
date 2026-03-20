@@ -26,4 +26,9 @@ export class TimelineCueComponent {
    * Optional cue type for styling
    */
   type = input<'default' | 'technical' | 'artistic' | 'logistic'>('default');
+
+  /**
+   * Indicates selection state
+   */
+  isSelected = input(false);
 }

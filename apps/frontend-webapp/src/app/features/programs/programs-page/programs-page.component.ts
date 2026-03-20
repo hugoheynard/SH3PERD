@@ -22,7 +22,7 @@ import type {
   ArtistPerformanceSlot, TimelineCue,
 } from '../program-types';
 import { EditPerformanceSlotPopoverComponent } from '../edit-performance-slot-popover/edit-performance-slot-popover.component';
-import { SlotService } from '../services/planner-state-mutations/slot.service';
+import { SlotService } from '../services/mutations-layer/slot.service';
 import { PlannerSelectorService } from '../services/selector-layer/planner-selector.service';
 import { BufferSlotComponent } from '../bufferblock/buffer-slot.component';
 import { PlannerDndInitService } from '../services/planner-init/planner-dnd-init.service';
@@ -39,6 +39,8 @@ import { TimelineCueComponent } from '../timeline-cue/timeline-cue.component';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 import { PlannerInsertActionsInitService } from '../services/planner-init/planner-insert-action-init.service';
+import { CueSelectionService } from '../services/timeline-interactions/cue-selection.service';
+import { TimelineKeyboardController } from '../services/timeline-keyboard-controller.service';
 
 
 @Component({
@@ -62,6 +64,7 @@ import { PlannerInsertActionsInitService } from '../services/planner-init/planne
 export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
   public selector = inject(PlannerSelectorService);
+  private drag = inject(DragSessionService);
   public slotServ = inject(SlotService);
   private interaction = inject(TimelineInteractionService);
   private interactionStore = inject(TimelineInteractionStore);
@@ -70,11 +73,33 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   private insert = inject(InsertLineService);
   private res = inject(PlannerResolutionService);
 
-
   constructor() {
     void inject(PlannerDndInitService);
     void inject(PlannerInsertActionsInitService);
   }
+
+  // --------------- LIFECYCLE -------------//
+
+  ngOnInit() {
+    // set left side panel
+    this.layout.setLeftPanel(ProgramSidePanelComponent, {
+      templates: mockPerformanceSlotsTemplates,
+      staff: this.selector.staff,
+      groups: this.selector.userGroups,
+    });
+  };
+
+  ngAfterViewInit() {
+    requestAnimationFrame(() => {
+      this.roomLayout.refresh();
+    });
+    this.plannerEl.nativeElement.addEventListener('scroll', () => {
+      this.roomLayout.refresh();
+    });
+  }
+
+  @ViewChild('planner', { static: true }) plannerEl!: ElementRef;
+
 
   /* ---------------- STATE SIGNALS FOLLOW---------------- */
 
@@ -95,52 +120,6 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     this.interactionStore.draggingSlots()?.map(s => s.slotId) ?? []
   );
 
-  /* ---------------- LIFECYCLE ---------------- */
-
-  ngOnInit() {
-    // set left side panel
-    this.layout.setLeftPanel(ProgramSidePanelComponent, {
-      templates: mockPerformanceSlotsTemplates,
-      staff: this.selector.staff,
-      groups: this.selector.userGroups,
-    });
-  };
-
-  private drag = inject(DragSessionService)
-  /* ---------------- TIME UTILS ---------------- */
-  @HostListener('document:pointermove', ['$event'])
-  onPointerMove(event: PointerEvent) {
-
-    this.drag.updatePointer(event);
-
-    // 1 - drag, resize
-    this.interaction.handlePointerMove();
-
-    // 2️⃣ ALT mode → insert line libre
-    if (this.insert.altMode()) {
-
-      this.roomLayout.refresh(); // 🔥 IMPORTANT
-
-      const projection = this.spatial.projectPointer(0);
-
-      if (!projection) {
-        this.insert.clear();
-        return;
-      }
-
-      this.insert.set(
-        projection.minutes,
-        projection.room_id,
-        false
-      );
-    }
-  };
-
-  @HostListener('document:pointerup')
-  onPointerUp() {
-    this.interaction.stop();
-  };
-
 
   /* ---------------- SLOT DRAG / RESIZE ---------------- */
 
@@ -154,7 +133,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
         artists: [...slot.artists]
       };
 
-      this.slotServ.addSlot(copy);
+      this.slotServ.add(copy);
 
       this.interaction.startSlotDrag(event, copy);
 
@@ -180,7 +159,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      this.slotServ.addSlot({
+      this.slotServ.add({
         id: crypto.randomUUID(),
         name: drag.data.name,
         startMinutes: projection.minutes,
@@ -266,77 +245,42 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     this.startSlotDrag(event, slot);
   };
 
-  @HostListener('document:keydown', ['$event'])
-  handleKeyboardShortcuts(event: KeyboardEvent) {
 
-    const target = event.target as HTMLElement;
+  /* ---------------- HOST LISTENERS ---------------- */
+  private keyboard = inject(TimelineKeyboardController);
 
-    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-      return;
-    }
+  @HostListener('document:pointermove', ['$event'])
+  onPointerMove(event: PointerEvent) {
 
-    /* DUPLICATE */
+    this.drag.updatePointer(event);
 
-    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'd') {
+    // 1 - drag, resize
+    this.interaction.handlePointerMove();
 
-      event.preventDefault();
+    // 2️⃣ ALT mode → insert line libre
+    if (this.insert.altMode()) {
 
-      const ids = this.selection.getSelectedIds();
+      this.roomLayout.refresh(); // 🔥 IMPORTANT
 
-      ids.forEach(id => {
+      const projection = this.spatial.projectPointer(0);
 
-        const slot = this.selector.slotsById().get(id);
-        if (!slot) {
-          return;
-        }
-
-        this.slotServ.addSlot({
-          ...slot,
-          id: crypto.randomUUID(),
-          startMinutes: slot.startMinutes + slot.duration,
-        });
-
-      });
-
-      return;
-    }
-
-    /* DELETE */
-
-    if (event.key === 'Delete' || event.key === 'Backspace') {
-      event.preventDefault();
-
-      const ids = this.selection.getSelectedIds();
-
-      if (!ids.length) {
+      if (!projection) {
+        this.insert.clear();
         return;
       }
 
-      ids.forEach(id => this.slotServ.removeSlot(id));
-
-      this.selection.clear();
-    }
-
-    // for insert bar
-    if (event.altKey) {
-      this.insert.enableAltMode();
+      this.insert.set(
+        projection.minutes,
+        projection.room_id,
+        false
+      );
     }
   };
 
-  @HostListener('document:keyup', ['$event'])
-  handleKeyUp(event: KeyboardEvent) {
-
-    if (event.key === 'Alt') {
-      this.insert.disableAltMode();
-      this.insert.clear();
-    }
+  @HostListener('document:pointerup')
+  onPointerUp() {
+    this.interaction.stop();
   };
-
-  @HostListener('window:blur')
-  handleBlur() {
-    this.insert.disableAltMode();
-    this.insert.clear();
-  }
 
   /**
    * When clicking on a non slot element, removes selection of slots
@@ -359,17 +303,20 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     this.roomLayout.refresh();
   }
 
-  ngAfterViewInit() {
-    requestAnimationFrame(() => {
-      this.roomLayout.refresh();
-    });
-    this.plannerEl.nativeElement.addEventListener('scroll', () => {
-      this.roomLayout.refresh();
-    });
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboard(event: KeyboardEvent) {
+    this.keyboard.handleKeyDown(event);
   }
 
-  @ViewChild('planner', { static: true })
-  plannerEl!: ElementRef;
+  @HostListener('document:keyup', ['$event'])
+  handleKeyUp(event: KeyboardEvent) {
+    this.keyboard.handleKeyUp(event);
+  }
+
+  @HostListener('window:blur')
+  handleBlur() {
+    this.keyboard.handleBlur();
+  }
 
 
   // ---------- CUES ---------//
@@ -377,6 +324,16 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     return this.res.minuteToPx(cue.atMinutes) - this.selector.gridOffsetPx();
   }
 
+
+  private cueSelection = inject(CueSelectionService);
+
+  selectCue(cue: TimelineCue, event: PointerEvent) {
+    const orderedIds =
+      this.selector.cuesByRoom().get(cue.roomId)?.map(c => c.id) ?? [];
+
+    this.cueSelection.select(cue.id, orderedIds, event);
+    console.log('cueSelection', cue.id);
+  };
 
 
 

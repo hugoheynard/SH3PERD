@@ -130,6 +130,10 @@ export class RadialMenuComponent {
    */
   select = output<InsertActionType>();
 
+  //NEW
+  hover = output<InsertActionType>();
+  leave = output<void>();
+
 
   /* ---------------------------------------------------------------------------
    * ⚙️ CONFIG
@@ -181,5 +185,14 @@ export class RadialMenuComponent {
    */
   onSelect(type: InsertActionType) {
     this.select.emit(type);
+  }
+
+  //
+  onHover(type: InsertActionType) {
+    this.hover.emit(type);
+  }
+
+  onLeave() {
+    this.leave.emit();
   }
 }

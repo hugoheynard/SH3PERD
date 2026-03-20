@@ -1,8 +1,8 @@
 import { Component, inject, output } from '@angular/core';
 import { ProgramStateService } from '../services/program-state.service';
-import { RoomService } from '../services/planner-state-mutations/room.service';
+import { RoomService } from '../services/mutations-layer/room.service';
 import { PlannerSelectorService } from '../services/selector-layer/planner-selector.service';
-import { ProgramSettingsService } from '../services/planner-state-mutations/program-settings.service';
+import { ProgramSettingsService } from '../services/mutations-layer/program-settings.service';
 
 @Component({
   selector: 'app-program-action-menu',

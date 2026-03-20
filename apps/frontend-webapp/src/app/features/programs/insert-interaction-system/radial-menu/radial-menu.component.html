@@ -10,6 +10,8 @@
       '--x': item.x,
       '--y': item.y
       }"
+      (mouseenter)="onHover(item.type)"
+      (mouseleave)="onLeave()"
       (click)="onSelect(item.type)">
       {{ item.label }}
     </button>

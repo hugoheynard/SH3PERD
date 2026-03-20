@@ -1,4 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
+import type { InsertActionType } from '../actions-services/insert-action.types';
 
 /**
  * Represents a valid insert position in the timeline.
@@ -209,5 +210,16 @@ export class InsertLineService {
   /** Disables insert preview mode */
   disableAltMode() {
     this._altMode.set(false);
+  }
+
+
+
+  // NEW
+  private _previewType = signal<InsertActionType | null>(null);
+
+  previewType = this._previewType.asReadonly();
+
+  setPreviewType(type: InsertActionType | null) {
+    this._previewType.set(type);
   }
 }

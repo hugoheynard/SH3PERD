@@ -61,7 +61,9 @@
             <ui-timeline-cue
               [top]="getCueTop(cue)"
               [label]="cue.label"
-              [type]="cue.type ?? 'default'"/>
+              [type]="cue.type ?? 'default'"
+              (click)="selectCue(cue, $event)"
+            />
           }
 
         </ui-room-column>

@@ -165,6 +165,12 @@ export class InsertLineComponent {
         this.menuOpen.set(false);
       }
     });
+
+    effect(() => {
+      if (!this.menuOpen()) {
+        this.insert.setPreviewType(null);
+      }
+    });
   }
 
 
@@ -209,5 +215,14 @@ export class InsertLineComponent {
     this.menuOpen.set(false);
 
     this.insertAction.execute(type);
+  }
+
+  //NEW
+  handleRadialButtonHover(type: InsertActionType) {
+    this.insert.setPreviewType(type);
+  }
+
+  handleRadialButtonLeave() {
+    this.insert.setPreviewType(null);
   }
 }

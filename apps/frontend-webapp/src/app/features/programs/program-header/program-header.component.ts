@@ -2,7 +2,7 @@ import { Component, inject, output} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProgramActionMenuComponent } from '../program-action-menu/program-action-menu.component';
 import { PlannerSelectorService } from '../services/selector-layer/planner-selector.service';
-import { ProgramSettingsService } from '../services/planner-state-mutations/program-settings.service';
+import { ProgramSettingsService } from '../services/mutations-layer/program-settings.service';
 import { ProgramHistoryService } from '../services/program-history.service';
 
 @Component({

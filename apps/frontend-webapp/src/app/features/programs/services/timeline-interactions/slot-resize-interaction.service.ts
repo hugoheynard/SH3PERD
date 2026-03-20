@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { DragSessionService } from '../../../../core/drag-and-drop/drag-session.service';
 import { PlannerResolutionService } from '../planner-resolution.service';
-import { SlotService } from '../planner-state-mutations/slot.service';
+import { SlotService } from '../mutations-layer/slot.service';
 import type { ArtistPerformanceSlot } from '../../program-types';
 
 
