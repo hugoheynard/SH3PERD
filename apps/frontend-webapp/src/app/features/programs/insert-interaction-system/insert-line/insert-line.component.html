@@ -1,9 +1,7 @@
 <div class="insert-line">
 
   @if (showButton()) {
-    <div
-      class="insert-action"
-      (pointerdown)="$event.stopPropagation()">
+    <div class="insert-action">
 
       <div class="insert-center">
         <button class="insert-btn" (click)="toggleMenu()">+</button>
@@ -11,10 +9,10 @@
 
       @if (menuOpen()) {
         <ui-radial-menu
-          [items]="radialItems"
+          [items]="RADIAL_MENU_ITEM_CONFIG"
+          [open]="menuOpen()"
           (select)="handleSelect($event)" />
       }
     </div>
   }
-
 </div>

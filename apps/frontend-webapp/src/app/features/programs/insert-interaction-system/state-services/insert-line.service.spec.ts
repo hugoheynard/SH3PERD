@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { InsertLineService } from '../insert-line.service';
+import { InsertLineService } from './insert-line.service';
 
 describe('InsertLineService', () => {
   let service: InsertLineService;

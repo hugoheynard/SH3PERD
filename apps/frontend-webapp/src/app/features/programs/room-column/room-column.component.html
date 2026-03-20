@@ -4,18 +4,12 @@
   <div class="room-header">
 
     <div class="room-header-left">
-
-    <span class="room-name">
-      {{ r.name }}
-    </span>
-
+      <span class="room-name">{{ r.name }}</span>
     </div>
 
     <div class="room-header-actions">
 
-      <button class="room-options">
-        ⋯
-      </button>
+      <button class="room-options">⋯</button>
 
       @if (!roomServ.isBaseRoom(r)) {
         <button
@@ -26,13 +20,12 @@
       }
 
     </div>
-
   </div>
 
   <div class="header-separator"></div>
 
   <div
-    class="slots-layer"
+    class="room-timeline"
 
     uiRoomLayout
     [roomId]="r.id"

@@ -46,6 +46,10 @@
 
 // --------- INSERT ACTIONS -------------//
 
+ui-radial-menu {
+  pointer-events: auto;
+}
+
 .insert-action {
   position: absolute;
   left: 0;

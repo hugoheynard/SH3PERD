@@ -1,14 +1,24 @@
+/* --------- RADIAL CONTAINER --------- */
+
 .radial-menu {
   position: absolute;
-  top: 0;
+
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+
+  transform: translate(-50%, -50%);
 
   pointer-events: none;
 }
 
+
+/* --------- ITEMS --------- */
+
 .radial-item {
   position: absolute;
+
+  top: 50%;
+  left: 50%;
 
   width: 40px;
   height: 40px;
@@ -30,28 +40,45 @@
 
   pointer-events: auto;
 
+  /* 🔥 état initial centré */
+  opacity: 0;
+  transform:
+    translate(-50%, -50%)
+    scale(0.6);
+
+  transform-origin: center;
+
   transition:
     transform .2s cubic-bezier(.4,0,.2,1),
+    opacity .15s ease,
     background .15s ease,
     box-shadow .15s ease;
 }
+
+
+/* --------- OPEN STATE --------- */
+
+.radial-menu.open .radial-item {
+  opacity: 1;
+
+  transform:
+    translate(-50%, -50%)
+    translate(var(--x), var(--y))
+    scale(1);
+}
+
+
+/* --------- HOVER --------- */
 
 .radial-item:hover {
   background: var(--hover-color);
   box-shadow: var(--shadow-floating-hover);
 }
 
-.radial-item {
-  opacity: 0;
-  transform: scale(0.6);
-}
 
-.radial-menu.open .radial-item {
-  opacity: 1;
-  transform: scale(1) translate(var(--x), var(--y));
-
-}
+/* --------- STAGGER ANIMATION --------- */
 
 .radial-item:nth-child(1) { transition-delay: 0ms; }
 .radial-item:nth-child(2) { transition-delay: 30ms; }
 .radial-item:nth-child(3) { transition-delay: 60ms; }
+.radial-item:nth-child(4) { transition-delay: 90ms; }

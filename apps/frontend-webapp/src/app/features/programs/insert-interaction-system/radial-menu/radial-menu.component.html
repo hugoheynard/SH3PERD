@@ -1,12 +1,21 @@
-<div class="radial-menu">
+<div
+  class="radial-menu"
+  [class.open]="open()">
 
   @for (item of computedItems(); track item.type) {
+
     <button
       class="radial-item"
-      [style.transform]="item.transform"
+      [style]="{
+      '--x': item.x,
+      '--y': item.y
+      }"
       (click)="onSelect(item.type)">
       {{ item.label }}
     </button>
   }
 
 </div>
+
+
+

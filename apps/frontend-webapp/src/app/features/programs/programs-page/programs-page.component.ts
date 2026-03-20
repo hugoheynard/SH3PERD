@@ -25,7 +25,7 @@ import { EditPerformanceSlotPopoverComponent } from '../edit-performance-slot-po
 import { SlotService } from '../services/planner-state-mutations/slot.service';
 import { PlannerSelectorService } from '../services/planner-selector.service';
 import { BufferSlotComponent } from '../bufferblock/buffer-slot.component';
-import { PlannerDndInitService } from '../services/planner-dnd-init.service';
+import { PlannerDndInitService } from '../services/planner-init/planner-dnd-init.service';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
@@ -34,10 +34,11 @@ import { SlotSelectionService } from '../services/timeline-interactions/slot-sel
 import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
 import { TimelineInteractionStore } from '../services/timeline-interactions/timeline-interaction.store';
 import { TimelineSpatialService } from '../services/timeline-spatial.service';
-import { InsertLineService } from '../services/insert-line.service';
+import { InsertLineService } from '../insert-interaction-system/state-services/insert-line.service';
 import { TimelineCueComponent } from '../timeline-cue/timeline-cue.component';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
+import { PlannerInsertActionsInitService } from '../services/planner-init/planner-insert-action-init.service';
 
 
 @Component({
@@ -72,6 +73,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
   constructor() {
     void inject(PlannerDndInitService);
+    void inject(PlannerInsertActionsInitService);
   }
 
   /* ---------------- STATE SIGNALS FOLLOW---------------- */

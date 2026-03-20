@@ -63,7 +63,6 @@ export class RoomService {
         slots: state.slots.filter(s => s.roomId !== roomId)
 
       };
-
     });
   }
 
