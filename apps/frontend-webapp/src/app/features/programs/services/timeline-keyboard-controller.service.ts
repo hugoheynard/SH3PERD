@@ -4,6 +4,7 @@ import { CueSelectionService } from './timeline-interactions/cue-selection.servi
 import { SlotService } from './mutations-layer/slot.service';
 import { PlannerSelectorService } from './selector-layer/planner-selector.service';
 import { InsertLineService } from '../insert-interaction-system/state-services/insert-line.service';
+import { CueService } from './mutations-layer/cue.service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -11,6 +12,7 @@ export class TimelineKeyboardController {
 
   private slotSelection = inject(SlotSelectionService);
   private cueSelection = inject(CueSelectionService);
+  private cueService = inject(CueService);
   private slotServ = inject(SlotService);
   private selector = inject(PlannerSelectorService);
   private insert = inject(InsertLineService);
@@ -37,7 +39,9 @@ export class TimelineKeyboardController {
       ids.forEach(id => {
 
         const slot = this.selector.slotsById().get(id);
-        if (!slot) return;
+        if (!slot) {
+          return;
+        }
 
         this.slotServ.add({
           ...slot,
@@ -59,12 +63,7 @@ export class TimelineKeyboardController {
       const cueIds = this.cueSelection.getSelectedIds();
 
       slotIds.forEach(id => this.slotServ.remove(id));
-
-      cueIds.forEach(id => {
-        console.log(id);
-        // 👉 à implémenter si pas encore fait
-        // this.cueServ.removeCue(id);
-      });
+      cueIds.forEach(id => this.cueService.remove(id));
 
       this.slotSelection.clear();
       this.cueSelection.clear();

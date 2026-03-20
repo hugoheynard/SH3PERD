@@ -332,7 +332,6 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
       this.selector.cuesByRoom().get(cue.roomId)?.map(c => c.id) ?? [];
 
     this.cueSelection.select(cue.id, orderedIds, event);
-    console.log('cueSelection', cue.id);
   };
 
 

@@ -20,13 +20,11 @@ export class SlotService
   /* ---------------------------------
     SLOT HANDLING
    ---------------------------------- */
-
-
   /**
    * Updates an existing performance slot in the program state. The method takes an ArtistPerformanceSlot object as a parameter and updates the state by mapping over the existing array of slots and replacing the slot with the matching ID with the new slot data provided. This allows for dynamically updating performance slots in the program as needed.
    * @param slot
    */
-  updateSlot(slot: ArtistPerformanceSlot) {
+  replaceSlot(slot: ArtistPerformanceSlot) {
 
     this.history.updateState(state => ({
 
@@ -72,8 +70,7 @@ export class SlotService
 
 
   /* ---------------------------------
-    ARTIST HANDLING IN SLOTS
-   ----------------------------------- */
+    ARTIST HANDLING IN SLOTS ---------------- */
   /**
    * Adds an artist to a specific performance slot. The method first checks if the slot with the given ID exists. If it does, it then checks if the artist is already associated with that slot to prevent duplicates. If the artist is not already in the slot's list of artists, they are added to the array of artists for that slot.
    * @param slotId
@@ -115,9 +112,7 @@ export class SlotService
     });
   };
 
-  /* ---------------------------------
-    ROOM HANDLING IN SLOTS
-   ------------------------------------*/
+  // -------ROOM HANDLING IN SLOTS ---------------//
   /**
    * Updates the room assignment of a specific performance slot. It locates the slot by its ID and updates its roomId property to the new value provided. This allows for changing the room in which a performance slot is scheduled.
    * @param slotId
@@ -131,9 +126,7 @@ export class SlotService
     }));
   };
 
-  /* ---------------------------------
-  GROUP HANDLING IN SLOTS
-    -----------------------------------*/
+  // -------- GROUP HANDLING IN SLOT  ----------------//
   /**
    * Adds all artists from a user group to a specific performance slot. The method locates the slot by its ID and then iterates through the staff members of the provided user group. For each staff member, it checks if they are already associated with the slot to prevent duplicates. If a staff member is not already in the slot's list of artists, they are added to the array of artists for that slot, along with a reference to the source user group ID. This allows for quickly adding multiple artists to a performance slot based on their group affiliation.
    * @param slotId
@@ -159,9 +152,7 @@ export class SlotService
     });
   };
 
-  /* ---------------------------------
-  HELPER METHODS
-  ----------------------------------- */
+  // ------------- HELPER METHODS ---------------- //
 
   /**
    * Creates a default slot
@@ -187,5 +178,4 @@ export class SlotService
       ...p.overrides
     };
   }
-
 }

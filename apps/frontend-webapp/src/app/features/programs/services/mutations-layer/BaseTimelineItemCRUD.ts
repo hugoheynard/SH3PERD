@@ -181,7 +181,7 @@ export abstract class BaseTimelineItemCRUD<
         return i;
       }) as ProgramState[K];
 
-      // 🧠 évite un update inutile
+      // avoid useless update
       if (!changed) {
         return state;
       }
@@ -193,7 +193,7 @@ export abstract class BaseTimelineItemCRUD<
     });
   }
 
-  //TODO : patch many ?
+  //TODO : patch many , same type security?
 
   /**
    * Factory method to be implemented by child services.
