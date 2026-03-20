@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { time_functions_utils } from '../utils/time_functions_utils';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
-import { PlannerSelectorService } from '../services/planner-selector.service';
+import { PlannerSelectorService } from '../services/selector-layer/planner-selector.service';
 
 @Component({
   selector: 'app-time-markers',

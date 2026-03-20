@@ -23,7 +23,7 @@ import type {
 } from '../program-types';
 import { EditPerformanceSlotPopoverComponent } from '../edit-performance-slot-popover/edit-performance-slot-popover.component';
 import { SlotService } from '../services/planner-state-mutations/slot.service';
-import { PlannerSelectorService } from '../services/planner-selector.service';
+import { PlannerSelectorService } from '../services/selector-layer/planner-selector.service';
 import { BufferSlotComponent } from '../bufferblock/buffer-slot.component';
 import { PlannerDndInitService } from '../services/planner-init/planner-dnd-init.service';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';

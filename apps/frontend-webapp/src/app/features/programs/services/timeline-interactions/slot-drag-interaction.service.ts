@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { DragSessionService } from '../../../../core/drag-and-drop/drag-session.service';
-import { PlannerSelectorService } from '../planner-selector.service';
+import { PlannerSelectorService } from '../selector-layer/planner-selector.service';
 import { SlotSelectionService } from './slot-selection.service';
 import { TimelineInteractionStore } from './timeline-interaction.store';
 import { RoomLayoutRegistry } from '../room-layout-registry.service';

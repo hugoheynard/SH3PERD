@@ -1,7 +1,7 @@
 import { Component, inject, output } from '@angular/core';
 import { ProgramStateService } from '../services/program-state.service';
 import { RoomService } from '../services/planner-state-mutations/room.service';
-import { PlannerSelectorService } from '../services/planner-selector.service';
+import { PlannerSelectorService } from '../services/selector-layer/planner-selector.service';
 import { ProgramSettingsService } from '../services/planner-state-mutations/program-settings.service';
 
 @Component({

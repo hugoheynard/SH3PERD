@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MultiSlotDragPreviewComponent } from './multi-slot-drag-preview.component';
+import { SlotMultiDragPreviewComponent } from './slot-multi-drag-preview.component';
 
 describe('MultiSlotDragPreviewComponent', () => {
-  let component: MultiSlotDragPreviewComponent;
-  let fixture: ComponentFixture<MultiSlotDragPreviewComponent>;
+  let component: SlotMultiDragPreviewComponent;
+  let fixture: ComponentFixture<SlotMultiDragPreviewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MultiSlotDragPreviewComponent]
+      imports: [SlotMultiDragPreviewComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MultiSlotDragPreviewComponent);
+    fixture = TestBed.createComponent(SlotMultiDragPreviewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

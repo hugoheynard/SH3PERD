@@ -5,8 +5,8 @@ import { GroupCardComponent } from '../../group-card/group-card.component';
 import { ArtistChipComponent } from '../../artist-chip/artist-chip.component';
 import {
   type MultiSlotDragPayload,
-  MultiSlotDragPreviewComponent,
-} from '../../multi-slot-drag-preview/multi-slot-drag-preview.component';
+  SlotMultiDragPreviewComponent,
+} from '../../slot-multi-drag-preview/slot-multi-drag-preview.component';
 
 /**
  * Registers all elements for dnd + their mapping to the preview component.
@@ -28,7 +28,7 @@ export class PlannerDndInitService {
     });
 
     this.registry.register('slot-multi', {
-      component: MultiSlotDragPreviewComponent,
+      component: SlotMultiDragPreviewComponent,
       mapInputs: (data: MultiSlotDragPayload) => ({
         slots: data.slots,
         offsets: data.offsets

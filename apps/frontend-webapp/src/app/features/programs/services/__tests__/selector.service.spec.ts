@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PlannerSelectorService } from '../planner-selector.service';
+import { PlannerSelectorService } from '../selector-layer/planner-selector.service';
 
 describe('SelectorService', () => {
   let service: PlannerSelectorService;

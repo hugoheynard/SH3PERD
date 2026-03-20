@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import type { Room } from '../../program-types';
-import { PlannerSelectorService } from '../planner-selector.service';
+import { PlannerSelectorService } from '../selector-layer/planner-selector.service';
 import { ProgramHistoryService } from '../program-history.service';
 
 @Injectable({ providedIn: 'root' })

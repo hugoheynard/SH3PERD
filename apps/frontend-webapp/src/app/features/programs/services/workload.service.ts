@@ -1,6 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
 import type { WorkloadSegment } from '../artist-workload-strip/artist-workload-strip.component';
-import { PlannerSelectorService } from './planner-selector.service';
+import { PlannerSelectorService } from './selector-layer/planner-selector.service';
 
 export interface ArtistWorkload {
   segments: WorkloadSegment[];

@@ -7,7 +7,7 @@ import type {
 } from '../../features/programs/program-types';
 import type {
   MultiSlotDragPayload,
-} from '../../features/programs/multi-slot-drag-preview/multi-slot-drag-preview.component';
+} from '../../features/programs/slot-multi-drag-preview/slot-multi-drag-preview.component';
 
 
 /* ---------------------------------------------------

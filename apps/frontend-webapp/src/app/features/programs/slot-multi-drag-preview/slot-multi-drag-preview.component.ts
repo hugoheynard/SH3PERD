@@ -16,10 +16,10 @@ export type MultiSlotDragPayload = {
   imports: [
     SlotDragPreviewComponent,
   ],
-  templateUrl: './multi-slot-drag-preview.component.html',
-  styleUrl: './multi-slot-drag-preview.component.scss'
+  templateUrl: './slot-multi-drag-preview.component.html',
+  styleUrl: './slot-multi-drag-preview.component.scss'
 })
-export class MultiSlotDragPreviewComponent {
+export class SlotMultiDragPreviewComponent {
   slots = input.required<ArtistPerformanceSlot[]>();
   offsets = input.required<{ slotId: string; offsetMinutes: number }[]>();
 
