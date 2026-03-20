@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { CueSelectionService } from './cue-selection.service';
+import { CueSelectionService } from '../cue-selection.service';
 
 describe('CueSelectionService', () => {
   let service: CueSelectionService;
