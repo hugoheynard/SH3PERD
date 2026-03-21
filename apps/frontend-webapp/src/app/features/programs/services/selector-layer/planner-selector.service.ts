@@ -42,6 +42,7 @@ export class PlannerSelectorService {
 
   slots = this.slotSelectors.slots;
   slotsById = this.slotSelectors.slotsById;
+  slotsByRoom = this.slotSelectors.slotsByRoom;
 
   getSlotStartTime(slot: ArtistPerformanceSlot): string {
     return this.slotSelectors.getSlotStartTime(slot);

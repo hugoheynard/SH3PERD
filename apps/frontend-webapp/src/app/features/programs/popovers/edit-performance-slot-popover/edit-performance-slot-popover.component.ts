@@ -1,8 +1,8 @@
 import { Component, computed, inject } from '@angular/core';
-import { INJECTION_DATA } from '../../../core/main-layout/main-layout.component';
-import { PopoverFrameComponent } from '../ui-frames/popover-frame/popover-frame.component';
-import { ButtonComponent } from '../button/button.component';
-import { PlannerSelectorService } from '../services/selector-layer/planner-selector.service';
+import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
+import { PopoverFrameComponent } from '../../ui-frames/popover-frame/popover-frame.component';
+import { ButtonComponent } from '../../button/button.component';
+import { PlannerSelectorService } from '../../services/selector-layer/planner-selector.service';
 
 
 @Component({

@@ -1,16 +1,16 @@
 import { Component, computed, inject, Inject, type WritableSignal } from '@angular/core';
-import { INJECTION_DATA } from '../../../core/main-layout/main-layout.component';
-import { SlotTemplateCardComponent } from '../slot-template-card/slot-template-card.component';
-import { ArtistCardComponent } from '../artist-card/artist-card.component';
-import { type ArtistWorkload, WorkloadService } from '../services/workload.service';
-import { SidePanelSectionComponent } from '../ui-frames/side-panel-section/side-panel-section.component';
-import { LayoutService } from '../../../core/services/layout.service';
-import { EditTemplatePopoverComponent } from '../edit-template-popover/edit-template-popover.component';
-import { ButtonComponent } from '../button/button.component';
-import type { PlannerArtist, UserGroup, ArtistPerformanceSlotTemplate } from '../program-types';
-import { GroupCardComponent } from '../group-card/group-card.component';
-import { ArtistWorkloadStripComponent } from '../artist-workload-strip/artist-workload-strip.component';
-import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
+import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
+import { SlotTemplateCardComponent } from '../../draggable-components/slot-template-card/slot-template-card.component';
+import { ArtistCardComponent } from '../../draggable-components/artist-card/artist-card.component';
+import { type ArtistWorkload, WorkloadService } from '../../services/workload.service';
+import { SidePanelSectionComponent } from '../../ui-frames/side-panel-section/side-panel-section.component';
+import { LayoutService } from '../../../../core/services/layout.service';
+import { EditTemplatePopoverComponent } from '../../popovers/edit-template-popover/edit-template-popover.component';
+import { ButtonComponent } from '../../button/button.component';
+import type { PlannerArtist, UserGroup, ArtistPerformanceSlotTemplate } from '../../program-types';
+import { GroupCardComponent } from '../../group-card/group-card.component';
+import { ArtistWorkloadStripComponent } from '../../artist-workload-strip/artist-workload-strip.component';
+import { DndDragDirective } from '../../../../core/drag-and-drop/dndDrag.directive';
 
 
 export interface ProgramSidePanelConfig {

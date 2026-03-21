@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { InsertActionRegistry } from '../../insert-interaction-system/actions-services/insert-action-registry.service';
+import { InsertActionRegistry } from '../../timeline/insert-interaction-system/actions-services/insert-action-registry.service';
 import { CueService } from '../mutations-layer/cue.service';
 import { SlotService } from '../mutations-layer/slot.service';
 

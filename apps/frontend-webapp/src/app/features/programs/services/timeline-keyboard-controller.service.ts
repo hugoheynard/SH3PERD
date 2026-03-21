@@ -3,7 +3,7 @@ import { SlotSelectionService } from './timeline-interactions/slot-selection.ser
 import { CueSelectionService } from './timeline-interactions/cue-selection.service';
 import { SlotService } from './mutations-layer/slot.service';
 import { PlannerSelectorService } from './selector-layer/planner-selector.service';
-import { InsertLineService } from '../insert-interaction-system/state-services/insert-line.service';
+import { InsertLineService } from '../timeline/insert-interaction-system/state-services/insert-line.service';
 import { CueService } from './mutations-layer/cue.service';
 
 

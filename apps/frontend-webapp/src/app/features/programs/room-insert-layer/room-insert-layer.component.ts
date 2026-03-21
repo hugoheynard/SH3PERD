@@ -1,8 +1,8 @@
-import { InsertLineComponent } from '../insert-interaction-system/insert-line/insert-line.component';
+import { InsertLineComponent } from '../timeline/insert-interaction-system/insert-line/insert-line.component';
 import { Component, computed, inject, input } from '@angular/core';
-import { TimelineCueComponent } from '../timeline-cue/timeline-cue.component';
-import { SlotPlannerComponent } from '../slot-planner/slot-planner.component';
-import { InsertLineService } from '../insert-interaction-system/state-services/insert-line.service';
+import { TimelineCueComponent } from '../timeline/elements/timeline-cue/timeline-cue.component';
+import { SlotPlannerComponent } from '../timeline/elements/slot-planner/slot-planner.component';
+import { InsertLineService } from '../timeline/insert-interaction-system/state-services/insert-line.service';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { SlotService } from '../services/mutations-layer/slot.service';
 import { CueService } from '../services/mutations-layer/cue.service';

@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { SlotTemplateCardComponent } from '../../slot-template-card/slot-template-card.component';
+import { SlotTemplateCardComponent } from '../../draggable-components/slot-template-card/slot-template-card.component';
 import { DragPreviewRegistryService } from '../../../../core/drag-and-drop/drag-preview-registry.service';
 import { GroupCardComponent } from '../../group-card/group-card.component';
 import { ArtistChipComponent } from '../../artist-chip/artist-chip.component';

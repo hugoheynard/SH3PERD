@@ -1,5 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { PlannerResolutionService } from '../services/planner-resolution.service';
+import { PlannerResolutionService } from '../../../services/planner-resolution.service';
 
 
 @Component({

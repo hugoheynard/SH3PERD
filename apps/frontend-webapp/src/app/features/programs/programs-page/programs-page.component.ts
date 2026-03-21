@@ -4,7 +4,7 @@ import {
   type OnInit, HostListener, type AfterViewInit, computed, ViewChild, type ElementRef,
 } from '@angular/core';
 
-import { SlotPlannerComponent } from '../slot-planner/slot-planner.component';
+import { SlotPlannerComponent } from '../timeline/elements/slot-planner/slot-planner.component';
 import { ProgramHeaderComponent } from '../program-header/program-header.component';
 
 import {
@@ -12,7 +12,7 @@ import {
 } from '../services/timeline-interactions/timeline-interaction.service';
 
 import { LayoutService } from '../../../core/services/layout.service';
-import { ProgramSidePanelComponent } from '../program-side-panel/program-side-panel.component';
+import { ProgramSidePanelComponent } from '../panels/program-side-panel/program-side-panel.component';
 import { TimeMarkersComponent } from '../time-markers/time-markers.component';
 
 import {
@@ -21,10 +21,10 @@ import {
 import type {
   ArtistPerformanceSlot, TimelineCue,
 } from '../program-types';
-import { EditPerformanceSlotPopoverComponent } from '../edit-performance-slot-popover/edit-performance-slot-popover.component';
+import { EditPerformanceSlotPopoverComponent } from '../popovers/edit-performance-slot-popover/edit-performance-slot-popover.component';
 import { SlotService } from '../services/mutations-layer/slot.service';
 import { PlannerSelectorService } from '../services/selector-layer/planner-selector.service';
-import { BufferSlotComponent } from '../bufferblock/buffer-slot.component';
+import { BufferSlotComponent } from '../timeline/elements/bufferblock/buffer-slot.component';
 import { PlannerDndInitService } from '../services/planner-init/planner-dnd-init.service';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
@@ -34,8 +34,8 @@ import { SlotSelectionService } from '../services/timeline-interactions/slot-sel
 import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
 import { TimelineInteractionStore } from '../services/timeline-interactions/timeline-interaction.store';
 import { TimelineSpatialService } from '../services/timeline-spatial.service';
-import { InsertLineService } from '../insert-interaction-system/state-services/insert-line.service';
-import { TimelineCueComponent } from '../timeline-cue/timeline-cue.component';
+import { InsertLineService } from '../timeline/insert-interaction-system/state-services/insert-line.service';
+import { TimelineCueComponent } from '../timeline/elements/timeline-cue/timeline-cue.component';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 import { PlannerInsertActionsInitService } from '../services/planner-init/planner-insert-action-init.service';

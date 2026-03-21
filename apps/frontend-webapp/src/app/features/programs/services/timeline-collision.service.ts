@@ -3,27 +3,45 @@ import { Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class TimelineCollisionService {
 
-  resolve(slots: {
-    id: string;
-    start: number;
-    duration: number;
-  }[]) {
+  resolve(
+    slots: {
+      id: string;
+      start: number;
+      duration: number;
+    }[],
+    movingIds: Set<string>
+  ) {
 
-    const sorted = [...slots].sort((a, b) => a.start - b.start);
+    const moving = slots
+      .filter(s => movingIds.has(s.id))
+      .sort((a, b) => a.start - b.start);
 
-    for (let i = 1; i < sorted.length; i++) {
+    const staticSlots = slots
+      .filter(s => !movingIds.has(s.id))
+      .sort((a, b) => a.start - b.start);
 
-      const prev = sorted[i - 1];
-      const curr = sorted[i];
+    const result: typeof slots = [];
 
-      const prevEnd = prev.start + prev.duration;
+    let cursor = 0;
 
-      if (curr.start < prevEnd) {
-        curr.start = prevEnd;
-      }
+    const all = [...staticSlots, ...moving]
+      .sort((a, b) => a.start - b.start);
+
+    for (const slot of all) {
+
+      const duration = slot.duration;
+
+      const start = Math.max(slot.start, cursor);
+
+      result.push({
+        ...slot,
+        start
+      });
+
+      cursor = start + duration;
     }
 
-    return sorted;
+    return result;
   }
 
   resolveWithAnticipation(slots: {

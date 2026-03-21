@@ -1,9 +1,9 @@
 import { Component, inject} from '@angular/core';
-import { PopoverFrameComponent } from '../ui-frames/popover-frame/popover-frame.component';
-import { ButtonComponent } from '../button/button.component';
-import { INJECTION_DATA } from '../../../core/main-layout/main-layout.component';
+import { PopoverFrameComponent } from '../../ui-frames/popover-frame/popover-frame.component';
+import { ButtonComponent } from '../../button/button.component';
+import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
 import { type AbstractControl, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import type { ArtistPerformanceSlotTemplate } from '../program-types';
+import type { ArtistPerformanceSlotTemplate } from '../../program-types';
 
 @Component({
   selector: 'app-edit-template-popover',

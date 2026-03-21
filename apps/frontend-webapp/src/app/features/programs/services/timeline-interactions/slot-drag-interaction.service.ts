@@ -7,7 +7,7 @@ import { RoomLayoutRegistry } from '../room-layout-registry.service';
 import { PlannerResolutionService } from '../planner-resolution.service';
 import type { ArtistPerformanceSlot } from '../../program-types';
 import { TimelineSpatialService } from '../timeline-spatial.service';
-import { InsertLineService } from '../../insert-interaction-system/state-services/insert-line.service';
+import { InsertLineService } from '../../timeline/insert-interaction-system/state-services/insert-line.service';
 
 
 export type TSlotDragInteraction = {
@@ -58,13 +58,17 @@ export class SlotDragInteractionService {
 
   move() {
 
-    if (!this.interaction) return;
+    if (!this.interaction) {
+      return;
+    }
 
     const projection = this.spatial.projectPointer(
       this.interaction.grabOffset
     );
 
-    if (!projection) return;
+    if (!projection) {
+      return;
+    }
 
     const updates = this.interaction.slots.map(s => ({
       slotId: s.slotId,

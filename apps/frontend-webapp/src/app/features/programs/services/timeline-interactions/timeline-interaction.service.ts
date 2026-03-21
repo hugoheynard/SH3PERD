@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { DragSessionService } from '../../../../core/drag-and-drop/drag-session.service';
 import { SlotService } from '../mutations-layer/slot.service';
 import type { ArtistPerformanceSlot } from '../../program-types';
-import { InsertLineService } from '../../insert-interaction-system/state-services/insert-line.service';
+import { InsertLineService } from '../../timeline/insert-interaction-system/state-services/insert-line.service';
 import { TimelineInteractionStore } from './timeline-interaction.store';
 import { SlotResizeInteractionService } from './slot-resize-interaction.service';
 import { SlotDragInteractionService } from './slot-drag-interaction.service';
