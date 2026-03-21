@@ -6,8 +6,10 @@ import { TimelineInteractionStore } from './timeline-interaction.store';
 import { RoomLayoutRegistry } from '../room-layout-registry.service';
 import { PlannerResolutionService } from '../planner-resolution.service';
 import type { ArtistPerformanceSlot } from '../../program-types';
-import { TimelineSpatialService } from '../timeline-spatial.service';
 import { InsertLineService } from '../../timeline/insert-interaction-system/state-services/insert-line.service';
+import { SlotDragPreviewService } from './slot-drag-preview.service';
+import { SlotDragBuilderService } from './slot-drag-builder.service';
+import { InteractionContextService } from './interaction-context.service';
 
 
 export type TSlotDragInteraction = {
@@ -28,8 +30,11 @@ export class SlotDragInteractionService {
   private store = inject(TimelineInteractionStore);
   private layout = inject(RoomLayoutRegistry);
   private res = inject(PlannerResolutionService);
-  private spatial = inject(TimelineSpatialService);
   private insertLine = inject(InsertLineService);
+  private ctxService = inject(InteractionContextService);
+
+  private preview = inject(SlotDragPreviewService);
+  private builder = inject(SlotDragBuilderService);
 
   private interaction: TSlotDragInteraction | null = null;
 
@@ -39,7 +44,11 @@ export class SlotDragInteractionService {
 
     this.drag.updatePointer(event);
 
-    const slots = this.buildDragSlots(slot);
+    const slots = this.builder.build(
+      slot,
+      this.selection.getSelectedIds(),
+      this.selector.slotsById()
+    );
 
     this.startMultiDragPreview(slots);
 
@@ -47,7 +56,9 @@ export class SlotDragInteractionService {
 
     const grabOffset = this.computeGrabOffset(event, slot);
 
-    if (grabOffset === null) return;
+    if (grabOffset === null) {
+      return;
+    }
 
     this.interaction = {
       startY: event.clientY,
@@ -58,29 +69,22 @@ export class SlotDragInteractionService {
 
   move() {
 
-    if (!this.interaction) {
+    const ctx = this.ctxService.getContext(this.interaction);
+
+    if (!ctx) {
       return;
     }
 
-    const projection = this.spatial.projectPointer(
-      this.interaction.grabOffset
+    const { interaction, projection } = ctx;
+
+    const updates = this.preview.computePreview(
+      interaction,
+      projection
     );
-
-    if (!projection) {
-      return;
-    }
-
-    const updates = this.interaction.slots.map(s => ({
-      slotId: s.slotId,
-      previewStart: projection.minutes + s.offsetMinutes,
-      previewRoomId: projection.room_id
-    }));
 
     this.store.update(updates);
 
-  /**
-  * 3️⃣ Update insert line (🔥 même source que le drag)
-  */
+
     this.insertLine.set(
       projection.minutes,
       projection.room_id,
@@ -90,29 +94,6 @@ export class SlotDragInteractionService {
 
   /* ------------------ HELPERS ------------------ */
 
-  private buildDragSlots(slot: ArtistPerformanceSlot) {
-
-    const selectedIds = this.selection.getSelectedIds();
-    const slotsById = this.selector.slotsById();
-
-    const activeSlots = selectedIds.includes(slot.id)
-      ? selectedIds
-      : [slot.id];
-
-    const leaderStart = slot.startMinutes;
-
-    return activeSlots.flatMap(id => {
-      const s = slotsById.get(id);
-      if (!s) {
-        return [];
-      }
-
-      return [{
-        slotId: s.id,
-        offsetMinutes: s.startMinutes - leaderStart
-      }];
-    });
-  }
 
   private initPreviewStore(
     slots: { slotId: string; offsetMinutes: number }[],

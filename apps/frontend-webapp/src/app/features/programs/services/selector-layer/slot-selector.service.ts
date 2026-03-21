@@ -1,7 +1,7 @@
 import { computed, inject, Injectable } from '@angular/core';
 import type { ArtistPerformanceSlot } from '../../program-types';
 import { ProgramStateService } from '../program-state.service';
-import { TimelineInteractionStore } from '../timeline-interactions/timeline-interaction.store';
+import { TimelineInteractionStore } from '../timeline-interactions-engine/timeline-interaction.store';
 import { minutesToTime, time_functions_utils } from '../../utils/time_functions_utils';
 
 @Injectable({

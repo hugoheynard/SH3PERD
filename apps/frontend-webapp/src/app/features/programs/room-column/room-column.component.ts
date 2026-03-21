@@ -5,7 +5,7 @@ import { RoomService } from '../services/mutations-layer/room.service';
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { RoomLayoutDirective } from '../services/room-layout-directive.directive';
-import { TimelineInteractionStore } from '../services/timeline-interactions/timeline-interaction.store';
+import { TimelineInteractionStore } from '../services/timeline-interactions-engine/timeline-interaction.store';
 import { TimelineSpatialService } from '../services/timeline-spatial.service';
 import { RoomInsertLayerComponent } from '../room-insert-layer/room-insert-layer.component';
 

@@ -9,7 +9,7 @@ import { ProgramHeaderComponent } from '../program-header/program-header.compone
 
 import {
   TimelineInteractionService
-} from '../services/timeline-interactions/timeline-interaction.service';
+} from '../services/timeline-interactions-engine/timeline-interaction.service';
 
 import { LayoutService } from '../../../core/services/layout.service';
 import { ProgramSidePanelComponent } from '../panels/program-side-panel/program-side-panel.component';
@@ -30,16 +30,16 @@ import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 import { RoomColumnComponent } from '../room-column/room-column.component';
-import { SlotSelectionService } from '../services/timeline-interactions/slot-selection.service';
+import { SlotSelectionService } from '../services/timeline-interactions-engine/slot-selection.service';
 import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
-import { TimelineInteractionStore } from '../services/timeline-interactions/timeline-interaction.store';
+import { TimelineInteractionStore } from '../services/timeline-interactions-engine/timeline-interaction.store';
 import { TimelineSpatialService } from '../services/timeline-spatial.service';
 import { InsertLineService } from '../timeline/insert-interaction-system/state-services/insert-line.service';
 import { TimelineCueComponent } from '../timeline/elements/timeline-cue/timeline-cue.component';
 import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 import { PlannerInsertActionsInitService } from '../services/planner-init/planner-insert-action-init.service';
-import { CueSelectionService } from '../services/timeline-interactions/cue-selection.service';
+import { CueSelectionService } from '../services/timeline-interactions-engine/cue-selection.service';
 import { TimelineKeyboardController } from '../services/timeline-keyboard-controller.service';
 
 

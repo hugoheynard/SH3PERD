@@ -2,7 +2,7 @@ import { Component, computed, inject, input, output} from '@angular/core';
 import { ArtistChipComponent } from '../../../artist-chip/artist-chip.component';
 import type { ArtistPerformanceSlot } from '../../../program-types';
 import { PlannerResolutionService } from '../../../services/planner-resolution.service';
-import { SlotSelectionService } from '../../../services/timeline-interactions/slot-selection.service';
+import { SlotSelectionService } from '../../../services/timeline-interactions-engine/slot-selection.service';
 
 
 /**
