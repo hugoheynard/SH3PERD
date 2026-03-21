@@ -118,5 +118,12 @@ export type TimelineCue = {
   roomId: string;
   atMinutes: number;
   label: string;
-  type?: 'technical' | 'artistic' | 'logistic' | 'default';
+  type?: CueType;
 };
+
+export enum CueType {
+  TECHNICAL = 'technical',
+  ARTISTIC = 'artistic',
+  LOGISTIC = 'logistic',
+  DEFAULT = 'default'
+}

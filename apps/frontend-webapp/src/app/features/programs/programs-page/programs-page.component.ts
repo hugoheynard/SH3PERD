@@ -36,7 +36,6 @@ import { TimelineInteractionStore } from '../services/timeline-interactions-engi
 import { TimelineSpatialService } from '../services/timeline-spatial.service';
 import { InsertLineService } from '../timeline/insert-interaction-system/state-services/insert-line.service';
 import { TimelineCueComponent } from '../timeline/elements/timeline-cue/timeline-cue.component';
-import { PlannerResolutionService } from '../services/planner-resolution.service';
 import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 import { PlannerInsertActionsInitService } from '../services/planner-init/planner-insert-action-init.service';
 import { CueSelectionService } from '../services/timeline-interactions-engine/cue-selection.service';
@@ -71,7 +70,6 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   private layout = inject(LayoutService);
   private spatial = inject(TimelineSpatialService);
   private insert = inject(InsertLineService);
-  private res = inject(PlannerResolutionService);
 
   constructor() {
     void inject(PlannerDndInitService);
@@ -320,9 +318,6 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
 
   // ---------- CUES ---------//
-  getCueTop(cue: TimelineCue) {
-    return this.res.minuteToPx(cue.atMinutes) - this.selector.gridOffsetPx();
-  }
 
 
   private cueSelection = inject(CueSelectionService);

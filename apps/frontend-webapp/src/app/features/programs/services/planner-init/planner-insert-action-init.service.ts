@@ -6,6 +6,7 @@ import { CueService } from '../mutations-layer/cue.service';
 import { SlotService } from '../mutations-layer/slot.service';
 import { BufferService } from '../mutations-layer/buffer.service';
 import { InsertActionType } from '../../timeline/insert-interaction-system/actions-services/insert-action.types';
+import { CueType } from '../../program-types';
 
 /**
  * Initializes and registers all insert actions for the planner.
@@ -144,7 +145,7 @@ export class PlannerInsertActionsInitService {
         roomId,
         atMinutes: minutes,
         label: 'New cue',
-        type: 'default',
+        type: CueType.DEFAULT,
       });
     });
 

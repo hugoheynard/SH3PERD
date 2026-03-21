@@ -1,5 +1,6 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, HostBinding, inject, input } from '@angular/core';
 import { PlannerResolutionService } from '../../../services/planner-resolution.service';
+import type { TimelineBuffer } from '../../../program-types';
 
 
 @Component({
@@ -8,23 +9,32 @@ import { PlannerResolutionService } from '../../../services/planner-resolution.s
   standalone: true,
   templateUrl: './buffer-slot.component.html',
   styleUrl: './buffer-slot.component.scss',
-  host: {
-    '[style.top.px]': 'top()',
-    '[style.height.px]': 'height()',
-  }
 })
 export class BufferSlotComponent {
 
+  // ----------------- DEPS -----------------//
   private res = inject(PlannerResolutionService)
 
-  startMinutes = input.required<number>()
-  duration = input.required<number>();
+  // ----------------- HOST BINDING -----------------//
+  @HostBinding('style.top.px') get topPx() {
+    return this.top();
+  }
 
+  @HostBinding('style.height.px') get heightPx() {
+    return this.height();
+  }
+
+  // ----------------- I/O -----------------//
+  buffer = input.required<TimelineBuffer>();
+
+// ----------------- STATES -----------------//
   top = computed(() =>
-    this.res.minuteToPx(this.startMinutes())
+    this.res.minuteToPx(this.buffer().atMinutes)
   );
 
   height = computed(() =>
-    this.res.minuteToPx(this.duration())
+    this.res.minuteToPx(this.buffer().delta)
   );
+
+  duration = computed(() => this.buffer().delta);
 }

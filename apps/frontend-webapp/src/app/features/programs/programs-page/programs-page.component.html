@@ -50,20 +50,18 @@
 
             @if (block.type === 'buffer') {
 
-              <ui-buffer-slot
-                [startMinutes]="block.startMinutes"
-                [duration]="block.duration" />
+              <ui-buffer-slot [buffer]="{
+              id: block.id,
+              atMinutes: block.startMinutes,
+              delta: block.duration,
+              roomId: 'block.roomId'
+              }" />
 
             }
           }
 
           @for (cue of selector.cuesByRoom().get(room.id) ?? []; track cue.id) {
-            <ui-timeline-cue
-              [top]="getCueTop(cue)"
-              [label]="cue.label"
-              [type]="cue.type ?? 'default'"
-              (click)="selectCue(cue, $event)"
-            />
+            <ui-timeline-cue [cue]="cue" (click)="selectCue(cue, $event)" />
           }
 
         </ui-room-column>

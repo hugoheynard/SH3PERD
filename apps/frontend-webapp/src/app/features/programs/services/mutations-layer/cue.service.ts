@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import type { TimelineCue } from '../../program-types';
+import { CueType, type TimelineCue } from '../../program-types';
 import { BaseTimelineItemCRUD } from './BaseTimelineItemCRUD';
 
 
@@ -112,7 +112,7 @@ export class CueService
       atMinutes: p.minutes,
       roomId: p.roomId,
       label: 'New cue',
-      type: 'default',
+      type: CueType.DEFAULT,
       ...p.overrides
     };
   }

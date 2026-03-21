@@ -91,9 +91,6 @@ export class RoomInsertLayerComponent {
     });
   });
 
-  getGhostTop(min: number) {
-    return this.res.minuteToPx(min)
-  }
 
   //------------------ GHOST BUFFER ------------------//
   private buffer = inject(BufferService);

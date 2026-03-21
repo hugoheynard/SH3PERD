@@ -1,4 +1,4 @@
-import type { ArtistPerformanceSlotTemplate } from '../program-types';
+import { type ArtistPerformanceSlotTemplate, CueType } from '../program-types';
 
 export const mockPerformanceSlotsTemplates: ArtistPerformanceSlotTemplate[] = [
   { id: 't1', name: 'PBO', duration: 15, type: 'performance', color: '#73098c', playlist: true, song: false, technicianRequired: false },
@@ -59,13 +59,13 @@ export const mockCues = [
     roomId: 'r1',
     atMinutes: 60,
     label: '🎤 Sound check',
-    type: 'technical' as const
+    type: CueType.TECHNICAL
   },
   {
     id: 'cue-2',
     roomId: 'r2',
     atMinutes: 120,
     label: '🔥 Drop FX',
-    type: 'artistic' as const
+    type: CueType.ARTISTIC
   }
 ];
