@@ -36,11 +36,14 @@
  * No changes required in UI components.
  *
  */
-export type InsertActionType =
-  | 'cue'
-  | 'buffer'
-  | 'slot'
-  | 'note';
+
+export enum InsertActionType {
+  CUE = 'cue',
+  BUFFER = 'buffer',
+  SLOT = 'slot',
+  NOTE = 'note',
+
+}
 
 
 /**

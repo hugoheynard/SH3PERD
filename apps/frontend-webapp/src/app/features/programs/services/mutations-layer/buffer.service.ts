@@ -1,33 +1,23 @@
-import { inject, Injectable } from '@angular/core';
-import { ProgramHistoryService } from '../program-history.service';
+import { Injectable } from '@angular/core';
+import { BaseTimelineItemCRUD } from './BaseTimelineItemCRUD';
+import type { TimelineBuffer } from '../../program-types';
 
 @Injectable({ providedIn: 'root' })
-export class BufferService {
+export class BufferService
+  extends BaseTimelineItemCRUD<'timelineOffsets'>{
 
-  private history = inject(ProgramHistoryService);
+  constructor() {
+    super('timelineOffsets')
+  }
 
-
-  /**
-   * Adds a buffer to the program timeline, which shifts all subsequent performances in the same room by the specified delta.
-   * @param roomId
-   * @param atMinutes
-   * @param delta
-   */
-  addBuffer(roomId: string, atMinutes: number, delta: number) {
-
-    this.history.updateState(state => ({
-
-      ...state,
-
-      timelineOffsets: [
-        ...state.timelineOffsets,
-        {
-          id: crypto.randomUUID(),
-          roomId,
-          atMinutes,
-          delta
-        }
-      ]
-    }));
-  };
+  createDefault(p: TimelineBuffer & { overrides?: Partial<TimelineBuffer> }
+  ): TimelineBuffer {
+    return {
+      id: p.id,
+      atMinutes: p.atMinutes,
+      delta: p.delta,
+      roomId: p.roomId,
+      ...p.overrides
+    }
+  }
 }

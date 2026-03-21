@@ -3,6 +3,7 @@ import { SlotConstraintsKeys, type SlotConstraintStrategy } from './slot-drag-co
 import type { SlotPreview } from './slot-drag-constraints-engine';
 import type { ArtistPerformanceSlot } from '../../../program-types';
 
+//TODO add group strict case
 
 @Injectable({ providedIn: 'root' })
 export class StrictConstraintStrategy implements SlotConstraintStrategy {

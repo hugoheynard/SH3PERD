@@ -1,4 +1,5 @@
 import type { RadialMenuItem } from './radial-menu.types';
+import { InsertActionType } from './actions-services/insert-action.types';
 
 /**
  * Configuration for the radial insert menu.
@@ -50,7 +51,7 @@ import type { RadialMenuItem } from './radial-menu.types';
  * ⚠️ IMPORTANT
  * ---------------------------------------------------------------------------
  *
- * - `type` MUST match a registered InsertActionType
+ * - `type` MUST come from the {@link InsertActionType} enum and have a registered handler
  * - If no handler is registered → action will be ignored at runtime
  * - Angles are expressed in degrees and control visual distribution
  *
@@ -81,8 +82,8 @@ import type { RadialMenuItem } from './radial-menu.types';
  *
  */
 export const RADIAL_MENU_ITEM_CONFIG: ReadonlyArray<RadialMenuItem> = [
-  { type: 'cue', label: 'Cue', angle: -90 },
-  { type: 'buffer', label: 'Buf', angle: -30 },
-  { type: 'slot', label: 'Slot', angle: 30 },
-  { type: 'note', label: 'Note', angle: 90 },
+  { type: InsertActionType.CUE, label: 'Cue', angle: -90 },
+  { type: InsertActionType.BUFFER, label: 'Buffer', angle: -30 },
+  { type: InsertActionType.SLOT, label: 'Slot', angle: 30 },
+  { type: InsertActionType.NOTE, label: 'Note', angle: 90 },
 ] as const satisfies ReadonlyArray<RadialMenuItem>

@@ -62,7 +62,7 @@ export interface ProgramState {
   slots: ArtistPerformanceSlot[];
   artists: PlannerArtist[];
   userGroups: UserGroup[];
-  timelineOffsets: TimelineOffset[];
+  timelineOffsets: TimelineBuffer[];
   cues: TimelineCue[];
 }
 
@@ -90,7 +90,7 @@ export type ProgramMode = 'manual' | 'assisted';
  * The TimelineOffset interface represents a change in the timeline of the program, which can be caused by inserting or removing buffer slots. It contains the following properties:
  * - id: a unique identifier for the timeline offset
  */
-interface TimelineOffset {
+export interface TimelineBuffer {
   id: string;
   roomId: string;
   atMinutes: number;

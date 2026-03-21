@@ -1,7 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { InsertActionRegistry } from '../../timeline/insert-interaction-system/actions-services/insert-action-registry.service';
+import {
+  InsertActionRegistry,
+} from '../../timeline/insert-interaction-system/actions-services/insert-action-registry.service';
 import { CueService } from '../mutations-layer/cue.service';
 import { SlotService } from '../mutations-layer/slot.service';
+import { BufferService } from '../mutations-layer/buffer.service';
+import { InsertActionType } from '../../timeline/insert-interaction-system/actions-services/insert-action.types';
 
 /**
  * Initializes and registers all insert actions for the planner.
@@ -101,7 +105,7 @@ import { SlotService } from '../mutations-layer/slot.service';
  * ---------------------------------------------------------------------------
  * 🔮 FUTURE IMPROVEMENTS
  * ---------------------------------------------------------------------------
- *
+ * TODO : ->
  * This layer can evolve to support:
  *
  * - Undo/redo transaction grouping
@@ -116,6 +120,7 @@ export class PlannerInsertActionsInitService {
   private registry = inject(InsertActionRegistry);
   private cueService = inject(CueService);
   private slotService = inject(SlotService);
+  private buffer = inject(BufferService)
 
   constructor() {
     this.registerActions();
@@ -133,7 +138,7 @@ export class PlannerInsertActionsInitService {
     /**
      * Inserts a timeline cue at the given position.
      */
-    this.registry.register('cue', ({ minutes, roomId }) => {
+    this.registry.register(InsertActionType.CUE, ({ minutes, roomId }) => {
       this.cueService.add({
         id: crypto.randomUUID(),
         roomId,
@@ -148,7 +153,7 @@ export class PlannerInsertActionsInitService {
     /**
      * Inserts a new performance slot at the given position.
      */
-    this.registry.register('slot', ({ minutes, roomId }) => {
+    this.registry.register(InsertActionType.SLOT, ({ minutes, roomId }) => {
       this.slotService.add({
         id: crypto.randomUUID(),
         name: 'New Slot',
@@ -168,9 +173,12 @@ export class PlannerInsertActionsInitService {
     /**
      * Placeholder for buffer insertion.
      */
-    this.registry.register('buffer', ({ minutes, roomId }) => {
-      console.log('buffer insert', minutes, roomId);
-      // TODO buffer service
+    this.registry.register(InsertActionType.BUFFER, ({ minutes, roomId }) => {
+      this.buffer.add({
+        id: crypto.randomUUID(),
+        atMinutes: minutes,
+        delta: 5, roomId
+      });
     });
 
     /* ---------------- NOTE ---------------- */
@@ -178,7 +186,7 @@ export class PlannerInsertActionsInitService {
     /**
      * Placeholder for note insertion.
      */
-    this.registry.register('note', ({ minutes, roomId }) => {
+    this.registry.register(InsertActionType.NOTE, ({ minutes, roomId }) => {
       console.log('note insert', minutes, roomId);
       // TODO note system
     });

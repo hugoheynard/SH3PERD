@@ -23,3 +23,14 @@
     [label]="cue.label"
   />
 }
+
+@let buffer = ghostBuffer();
+
+@if (buffer) {
+  <ui-buffer-slot
+    class="ghost"
+    [startMinutes]="getGhostTop(buffer.atMinutes)"
+    [duration]="buffer.delta"
+    />
+}
+
