@@ -13,7 +13,7 @@ import {
 
 import { LayoutService } from '../../../core/services/layout.service';
 import { ProgramSidePanelComponent } from '../panels/program-side-panel/program-side-panel.component';
-import { TimeMarkersComponent } from '../time-markers/time-markers.component';
+import { TimeMarkersComponent } from '../timeline/ui/time-markers/time-markers.component';
 
 import {
   mockPerformanceSlotsTemplates,
@@ -29,7 +29,7 @@ import { PlannerDndInitService } from '../services/planner-init/planner-dnd-init
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
-import { RoomColumnComponent } from '../room-column/room-column.component';
+import { RoomColumnComponent } from '../timeline/ui/room-column/room-column.component';
 import { SlotSelectionService } from '../services/timeline-interactions-engine/slot-selection.service';
 import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
 import { TimelineInteractionStore } from '../services/timeline-interactions-engine/timeline-interaction.store';

@@ -12,6 +12,122 @@ import { BufferSlotComponent } from '../../elements/bufferblock/buffer-slot.comp
 import { InsertActionType } from '../../insert-interaction-system/actions-services/insert-action.types';
 
 
+/**
+ * Renders the insert interaction layer for a single room timeline.
+ *
+ * ---------------------------------------------------------------------------
+ * 🧠 ROLE IN ARCHITECTURE
+ * ---------------------------------------------------------------------------
+ *
+ * This component belongs to the **Insert Interaction Render Layer**.
+ *
+ * It is responsible for visualizing **insertion feedback** during user
+ * interactions such as:
+ *
+ * - Dragging templates
+ * - Creating new slots, cues, or buffers
+ * - Using keyboard-driven insert modes (e.g. ALT mode)
+ *
+ * It acts as a **projection layer** between:
+ *
+ * - The interaction state ({@link InsertLineService})
+ * - The visual timeline (slots, cues, buffers)
+ *
+ * ---------------------------------------------------------------------------
+ * ⚡ RESPONSIBILITIES
+ * ---------------------------------------------------------------------------
+ *
+ * - Display the insert line (visual feedback)
+ * - Render ghost previews for:
+ *   - Slots
+ *   - Cues
+ *   - Buffers
+ * - Scope rendering to the current room
+ * - Convert timeline time (minutes) into pixel coordinates
+ *
+ * ---------------------------------------------------------------------------
+ * 🧩 INSERT SYSTEM INTEGRATION
+ * ---------------------------------------------------------------------------
+ *
+ * This component consumes the {@link InsertLineService} which provides:
+ *
+ * - Current insert position (`minutes`)
+ * - Target room (`roomId`)
+ * - Insert type (`previewType`)
+ * - Multi-room support (`multiRoom`)
+ *
+ * Based on this state, it conditionally renders the appropriate ghost preview.
+ *
+ * ---------------------------------------------------------------------------
+ * 👻 GHOST PREVIEW SYSTEM
+ * ---------------------------------------------------------------------------
+ *
+ * Ghost elements are temporary, non-persistent representations of future
+ * timeline elements.
+ *
+ * Each ghost is:
+ *
+ * - Created via its domain service (`SlotService`, `CueService`, `BufferService`)
+ * - Rendered only when the insert context matches:
+ *   - The correct type (slot, cue, buffer)
+ *   - The current room
+ *
+ * These previews provide immediate visual feedback before committing mutations.
+ *
+ * ---------------------------------------------------------------------------
+ * 📍 POSITIONING
+ * ---------------------------------------------------------------------------
+ *
+ * Vertical positioning is derived from timeline minutes using
+ * {@link PlannerResolutionService}.
+ *
+ * - `insertTopPx` → position of the insert line
+ * - Ghost elements use their own time → px conversion
+ *
+ * ⚠️ Must stay consistent with timeline offset system (grid alignment).
+ *
+ * ---------------------------------------------------------------------------
+ * 🧠 ROOM SCOPING
+ * ---------------------------------------------------------------------------
+ *
+ * The component is instantiated per room and ensures that:
+ *
+ * - Insert indicators are only displayed in the correct room
+ * - Multi-room inserts are handled properly
+ *
+ * ---------------------------------------------------------------------------
+ * 🎯 DESIGN PRINCIPLES
+ * ---------------------------------------------------------------------------
+ *
+ * - No mutation logic (pure render layer)
+ * - Fully reactive via Angular signals
+ * - Decoupled from business logic and state mutations
+ * - Scalable for additional insert types
+ *
+ * ---------------------------------------------------------------------------
+ * 🚀 EXTENSIONS
+ * ---------------------------------------------------------------------------
+ *
+ * This layer can evolve to support:
+ *
+ * - Advanced ghost previews (collision-aware)
+ * - Magnetic snapping visualization
+ * - Multi-item insertion previews
+ * - Insert animations / transitions
+ *
+ * ---------------------------------------------------------------------------
+ * 💡 NAMING NOTE
+ * ---------------------------------------------------------------------------
+ *
+ * The method `getInsertIndicatorForType` acts as a contextual resolver:
+ *
+ * - Validates insert state
+ * - Ensures correct type
+ * - Ensures correct room scope
+ *
+ * It is the core utility used to drive ghost rendering.
+ *
+ */
 @Component({
   selector: 'ui-room-insert-layer',
   standalone: true,
