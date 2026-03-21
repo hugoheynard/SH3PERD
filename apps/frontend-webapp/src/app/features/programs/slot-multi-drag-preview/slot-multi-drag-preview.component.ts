@@ -6,7 +6,7 @@ import { SlotDragPreviewComponent } from '../slot-preview/slot-preview.component
 export type MultiSlotDragPayload = {
   slots: ArtistPerformanceSlot[];
   offsets: {
-    slotId: string;
+    slot_id: string;
     offsetMinutes: number;
   }[];
 };

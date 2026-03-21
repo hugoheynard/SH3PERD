@@ -21,7 +21,7 @@ export class SlotDragBuilderService {
       if (!s) return [];
 
       return [{
-        slotId: s.id,
+        slot_id: s.id,
         offsetMinutes: s.startMinutes - leaderStart
       }];
     });

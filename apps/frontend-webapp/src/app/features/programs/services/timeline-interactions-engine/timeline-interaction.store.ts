@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { TimelineSpatialService } from '../timeline-spatial.service';
 import { DragSessionService } from '../../../../core/drag-and-drop/drag-session.service';
+import type { SlotPreview } from './constraints-engine/slot-drag-constraints-engine';
 
 /**
  * Manages the ephemeral interaction state for timeline drag operations.
@@ -85,11 +86,7 @@ export class TimelineInteractionStore {
    *
    * When `null`, no drag interaction is active.
    */
-  private _draggingSlots = signal<{
-    slotId: string;
-    previewStart: number;
-    previewRoomId: string | null;
-  }[] | null>(null);
+  private _draggingSlots = signal<SlotPreview[] | null>(null);
 
   /**
    * Read-only signal exposing the current drag preview state.
@@ -124,12 +121,12 @@ export class TimelineInteractionStore {
    *
    * These values are used as the initial preview state.
    */
-  start(slots: { slotId: string; base: number; roomId: string }[]) {
+  start(slots: SlotPreview[]) {
     this._draggingSlots.set(
       slots.map(s => ({
-        slotId: s.slotId,
-        previewStart: s.base,
-        previewRoomId: s.roomId
+        slot_id: s.slot_id,
+        previewStart: s.previewStart,
+        previewRoomId: s.previewRoomId
       }))
     );
   }
@@ -147,7 +144,7 @@ export class TimelineInteractionStore {
    * This method replaces the entire preview state to ensure consistency
    * and avoid incremental drift errors.
    */
-  update(slots: { slotId: string; previewStart: number, previewRoomId: string | null }[]) {
+  update(slots: SlotPreview[]) {
     this._draggingSlots.set(slots);
   }
 

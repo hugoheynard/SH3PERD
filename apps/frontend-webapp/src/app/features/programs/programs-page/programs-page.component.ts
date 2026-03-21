@@ -117,7 +117,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   /* ---------------- DRAG STATE ---------------- */
 
   draggingIds = computed(() =>
-    this.interactionStore.draggingSlots()?.map(s => s.slotId) ?? []
+    this.interactionStore.draggingSlots()?.map(s => s.slot_id) ?? []
   );
 
 

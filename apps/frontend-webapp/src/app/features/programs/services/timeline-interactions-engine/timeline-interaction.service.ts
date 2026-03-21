@@ -218,13 +218,13 @@ export class TimelineInteractionService {
     for (const s of dragging) {
 
       this.slotServ.updateSlotStart(
-        s.slotId,
+        s.slot_id,
         s.previewStart
       );
 
       if (s.previewRoomId) {
         this.slotServ.updateSlotRoom(
-          s.slotId,
+          s.slot_id,
           s.previewRoomId
         );
       }

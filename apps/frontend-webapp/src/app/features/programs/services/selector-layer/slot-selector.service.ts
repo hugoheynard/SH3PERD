@@ -40,7 +40,7 @@ export class SlotSelectorService {
     if (!dragging) return baseSlots;
 
     const previewMap = new Map(
-      dragging.map(s => [s.slotId, s])
+      dragging.map(s => [s.slot_id, s])
     );
 
     return baseSlots.map(slot => {
@@ -69,6 +69,11 @@ export class SlotSelectorService {
       arr.push(slot);
 
       map.set(slot.roomId, arr);
+    }
+
+    // 🔥 CRITIQUE : tri par startMinutes
+    for (const arr of map.values()) {
+      arr.sort((a, b) => a.startMinutes - b.startMinutes);
     }
 
     return map;

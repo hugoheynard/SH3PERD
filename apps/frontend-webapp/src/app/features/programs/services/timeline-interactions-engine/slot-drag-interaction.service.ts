@@ -10,13 +10,15 @@ import { InsertLineService } from '../../timeline/insert-interaction-system/stat
 import { SlotDragPreviewService } from './slot-drag-preview.service';
 import { SlotDragBuilderService } from './slot-drag-builder.service';
 import { InteractionContextService } from './interaction-context.service';
+import { SlotConstraintEngine } from './constraints-engine/slot-drag-constraints-engine';
+import { SlotConstraintsKeys } from './constraints-engine/slot-drag-constraints-strategy.types';
 
 
 export type TSlotDragInteraction = {
   startY: number;
   grabOffset: number;
   slots: {
-    slotId: string;
+    slot_id: string;
     offsetMinutes: number;
   }[];
 };
@@ -35,6 +37,7 @@ export class SlotDragInteractionService {
 
   private preview = inject(SlotDragPreviewService);
   private builder = inject(SlotDragBuilderService);
+  private constraint = inject(SlotConstraintEngine);
 
   private interaction: TSlotDragInteraction | null = null;
 
@@ -70,33 +73,42 @@ export class SlotDragInteractionService {
   move() {
 
     const ctx = this.ctxService.getContext(this.interaction);
+    if (!ctx) return;
 
-    if (!ctx) {
-      return;
-    }
+    /* ---------- RAW PREVIEW ---------- */
 
-    const { interaction, projection } = ctx;
-
-    const updates = this.preview.computePreview(
-      interaction,
-      projection
+    const raw = this.preview.computePreview(
+      ctx.interaction,
+      ctx.projection
     );
 
-    this.store.update(updates);
+    /* ---------- CONSTRAINTS ---------- */
+    this.constraint.setStrategy(SlotConstraintsKeys.STRICT);
 
+    const constrained = this.constraint.apply(
+      raw, {
+        slotsById: this.selector.slotsById(),
+        roomSlots: this.selector.slotsByRoom().get(ctx.projection.room_id) ?? []
+      }
+    );
+
+
+    /* ---------- APPLY ---------- */
+
+    this.store.update(constrained);
 
     this.insertLine.set(
-      projection.minutes,
-      projection.room_id,
+      ctx.projection.minutes,
+      ctx.projection.room_id,
       false
     );
-  };
+  }
 
   /* ------------------ HELPERS ------------------ */
 
 
   private initPreviewStore(
-    slots: { slotId: string; offsetMinutes: number }[],
+    slots: { slot_id: string; offsetMinutes: number }[],
     leader: ArtistPerformanceSlot
   ) {
 
@@ -104,12 +116,12 @@ export class SlotDragInteractionService {
 
     this.store.start(
       slots.map(s => {
-        const current = slotsById.get(s.slotId);
+        const current = slotsById.get(s.slot_id);
 
         return {
-          slotId: s.slotId,
-          base: current?.startMinutes ?? 0,
-          roomId: current?.roomId ?? leader.roomId
+          slot_id: s.slot_id,
+          previewStart: current?.startMinutes ?? 0,
+          previewRoomId: current?.roomId ?? leader.roomId
         };
       })
     );
@@ -146,13 +158,13 @@ export class SlotDragInteractionService {
   }
 
   private startMultiDragPreview(
-    slots: { slotId: string; offsetMinutes: number }[]
+    slots: { slot_id: string; offsetMinutes: number }[]
   ) {
 
     const slotsById = this.selector.slotsById();
 
     const selectedSlots = slots
-      .map(s => slotsById.get(s.slotId))
+      .map(s => slotsById.get(s.slot_id))
       .filter(Boolean) as ArtistPerformanceSlot[];
 
     this.drag.start({

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import type { TSlotDragInteraction } from './slot-drag-interaction.service';
+import type { SlotPreview } from './constraints-engine/slot-drag-constraints-engine';
 
 
 /**
@@ -114,10 +115,10 @@ export class SlotDragPreviewService {
   computePreview(
     interaction: TSlotDragInteraction,
     projection: { minutes: number; room_id: string }
-  ) {
+  ): SlotPreview[] {
 
     return interaction.slots.map(s => ({
-      slotId: s.slotId,
+      slot_id: s.slot_id,
       previewStart: projection.minutes + s.offsetMinutes,
       previewRoomId: projection.room_id
     }));
