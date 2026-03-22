@@ -34,7 +34,7 @@ export type DragPayloadMap = {
   group: UserGroup
   slot: ArtistPerformanceSlot
   'slot-multi': MultiSlotDragPayload
-  resize: ArtistPerformanceSlot
+  resize: ArtistPerformanceSlot,
 };
 
 

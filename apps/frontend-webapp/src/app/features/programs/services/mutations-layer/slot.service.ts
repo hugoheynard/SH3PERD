@@ -55,6 +55,16 @@ export class SlotService
     }));
   };
 
+  updateManySlotsStart(
+    updates: { id: string; startMinutes: number }[]
+  ) {
+
+    for (const update of updates) {
+      this.updateSlotStart(update.id, update.startMinutes);
+    }
+  }
+
+
   /**
    * Updates the duration of a specific performance slot. It locates the slot by its ID and updates its duration property to the new value provided. This allows for changing the length of time allocated for a performance slot in the program.
    * @param slotId

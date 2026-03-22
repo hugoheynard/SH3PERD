@@ -20,3 +20,5 @@ export type InsertRenderDefinition = {
   }) => unknown;
   mapInputs: (ghost: any) => Record<string, unknown>;
 };
+
+//TODO voir pour meilleure gestion des ghost sur les elements insert

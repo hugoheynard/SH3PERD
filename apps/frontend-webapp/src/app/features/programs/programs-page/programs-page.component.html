@@ -23,26 +23,27 @@
           @for (block of getBlocksForRoom(room.id); track block.id) {
 
             @if (block.type === 'slot') {
+              @let slot = block.slot;
 
               <ui-program-slot
                 [slot]="block.slot"
-                [slotStartTime]="selector.getSlotStartTime(block.slot)"
-                [slotEndTime]="selector.getSlotEndTime(block.slot)"
+                [slotStartTime]="selector.getSlotStartTime(slot)"
+                [slotEndTime]="selector.getSlotEndTime(slot)"
 
                 uiDndDrag
                 [dndType]="'slot'"
                 [dndData]="block.slot"
-                (dragStart)="startSlotDrag($event, block.slot)"
+                (dragStart)="startSlotDrag($event, slot)"
 
                 uiDndDropZone
                 [dropZone_id]="block.slot.id"
                 [dropZoneAccept]="['artist','group']"
-                (uiDndDrop)="handleSlotDrop(block.slot.id, $event)"
+                (uiDndDrop)="handleSlotDrop(slot.id, $event)"
 
-                [isDragging]="draggingIds().includes(block.slot.id)"
+                [isDragging]="draggingIds().includes(slot.id)"
 
                 (slotPointerDown)="handleSlotPointerDown($event)"
-                (slotResizeStart)="startSlotResize($event, block.slot)"
+                (slotResizeStart)="startSlotResize($event, slot)"
                 (removeArtist)="handleRemoveArtistFromSlot($event)"
                 (editSlot)="openEditPerformanceSlotPopover($event)" />
 
@@ -54,7 +55,7 @@
               id: block.id,
               atMinutes: block.startMinutes,
               delta: block.duration,
-              roomId: 'block.roomId'
+              roomId: room.id
               }" />
 
             }
