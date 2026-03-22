@@ -15,12 +15,12 @@ import type {
 --------------------------------------------------- */
 
 export type DragState = {
-  [K in keyof DragPayloadMap]: {
+  [K in DragType]: {
     type: K;
     data: DragPayloadMap[K];
     preview?: Type<any>;
   }
-}[keyof DragPayloadMap];
+}[DragType];
 
 
 /**
@@ -36,3 +36,6 @@ export type DragPayloadMap = {
   'slot-multi': MultiSlotDragPayload
   resize: ArtistPerformanceSlot
 };
+
+
+export type DragType = keyof DragPayloadMap;

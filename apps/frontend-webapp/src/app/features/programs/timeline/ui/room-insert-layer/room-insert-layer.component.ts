@@ -10,6 +10,8 @@ import type { ArtistPerformanceSlot, Room } from '../../../program-types';
 import { BufferService } from '../../../services/mutations-layer/buffer.service';
 import { BufferSlotComponent } from '../../elements/bufferblock/buffer-slot.component';
 import { InsertActionType } from '../../insert-interaction-system/actions-services/insert-action.types';
+import { NgComponentOutlet } from '@angular/common';
+import { InsertRenderRegistry } from '../../insert-interaction-system/InsertElementRenderRegistry';
 
 
 /**
@@ -136,6 +138,7 @@ import { InsertActionType } from '../../insert-interaction-system/actions-servic
     TimelineCueComponent,
     SlotPlannerComponent,
     BufferSlotComponent,
+    NgComponentOutlet,
   ],
   templateUrl: './room-insert-layer.component.html',
   styleUrl: './room-insert-layer.component.scss'
@@ -242,5 +245,29 @@ export class RoomInsertLayerComponent {
 
     return indicator;
   }
+
+  private renderRegistry = inject(InsertRenderRegistry);
+
+  ghostRender = computed(() => {
+
+    const type = this.insert.previewType();
+    if (!type) return null;
+
+    const indicator = this.getInsertIndicatorForType(type);
+    if (!indicator) return null;
+
+    const def = this.renderRegistry.get(type);
+    if (!def) return null;
+
+    const ghost = def.createGhost({
+      minutes: indicator.minutes,
+      roomId: indicator.roomId
+    });
+
+    return {
+      component: def.component,
+      inputs: def.mapInputs(ghost)
+    };
+  });
 
 }

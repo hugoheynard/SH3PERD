@@ -40,6 +40,7 @@ import { DragSessionService } from '../../../core/drag-and-drop/drag-session.ser
 import { PlannerInsertActionsInitService } from '../services/planner-init/planner-insert-action-init.service';
 import { CueSelectionService } from '../services/timeline-interactions-engine/cue-selection.service';
 import { TimelineKeyboardController } from '../services/timeline-keyboard-controller.service';
+import { PlannerInsertRenderInitService } from '../services/planner-init/planner-insert-render-init.service';
 
 
 @Component({
@@ -74,6 +75,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   constructor() {
     void inject(PlannerDndInitService);
     void inject(PlannerInsertActionsInitService);
+    void inject(PlannerInsertRenderInitService);
   }
 
   // --------------- LIFECYCLE -------------//

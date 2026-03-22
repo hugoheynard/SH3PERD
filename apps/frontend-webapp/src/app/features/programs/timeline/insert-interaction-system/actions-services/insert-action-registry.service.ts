@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import type { InsertActionHandler, InsertActionType } from './insert-action.types';
+import { BaseRegistry } from '../../../../../core/utils/base-registry';
 
 
 /**
@@ -93,34 +94,12 @@ import type { InsertActionHandler, InsertActionType } from './insert-action.type
  *
  */
 @Injectable({ providedIn: 'root' })
-export class InsertActionRegistry {
+export class InsertActionRegistry
+  extends BaseRegistry<InsertActionType, InsertActionHandler> {
 
-  /**
-   * Internal map of action handlers indexed by their type.
-   */
-  private actions = new Map<InsertActionType, InsertActionHandler>();
-
-  /**
-   * Registers an insert action handler.
-   *
-   * @param type - Unique identifier of the insert action
-   * @param handler - Function executed when the action is triggered
-   */
-  register(type: InsertActionType, handler: InsertActionHandler) {
-    if (this.actions.has(type)) {
-      console.warn(`Insert action "${type}" already registered`);
-    }
-
-    this.actions.set(type, handler);
-  };
-
-  /**
-   * Retrieves the handler associated with a given insert action type.
-   *
-   * @param type - Insert action identifier
-   * @returns The corresponding handler, or undefined if not registered
-   */
-  get(type: InsertActionType): InsertActionHandler | undefined {
-    return this.actions.get(type);
-  };
+  constructor() {
+    super('InsertActionRegistry');
+  }
 }
+
+
