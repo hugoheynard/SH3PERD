@@ -30,6 +30,7 @@ $shepherd-theme: mat.define-theme((
  */
 html, body {
   height: 100dvh;
+  overflow: hidden;   /* empêche toute scrollbar de page — l'app gère son propre scroll */
   font-size: 14px;
   margin: 0;
   padding: 0;

@@ -1,27 +1,36 @@
 :host {
-  display: block;
+  /* Flex column pour que program-header + planner se partagent la hauteur */
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  overflow: hidden;
 }
 
+
+/* ---------------- PLANNER ---------------- */
+
 .planner {
-  display: flex;
-  background: transparent;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
+  /* PAS de display:flex ici — on veut un block container
+     pour que .timeline prenne sa hauteur de contenu (timelineHeight),
+     et non pas la hauteur du viewport */
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 
 /* ---------------- TIMELINE ---------------- */
 
 .timeline {
-  flex: 1;
-  display: flex;
-  overflow: visible;
+  /* block child du planner → hauteur = hauteur du contenu */
+  display: flex;      /* row flex pour time-column + rooms-container */
 }
 
 .time-column {
   width: 80px;
-  min-width: 80px;
+  min-width: 80px;    /* ne rétrécit pas */
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--col-separator);
@@ -41,8 +50,9 @@
 
 .rooms-container {
   flex: 1;
+  min-width: 0;       /* indispensable : permet le scroll horizontal */
   display: flex;
-  overflow-x: auto;
+  overflow-x: auto;   /* scroll horizontal quand les rooms débordent */
 }
 
 

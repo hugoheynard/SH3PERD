@@ -138,7 +138,10 @@
 
 
 .room-timeline {
-  flex: 1;
+  /* flex: 1 0 auto — flex-basis: auto prend en compte le [style.height.px] inline du template,
+     flex-grow: 1 garantit qu'on remplit au minimum l'espace visible,
+     flex-shrink: 0 empêche la compression en dessous de la hauteur calculée */
+  flex: 1 0 auto;
   position: relative;
 
   background-image:
