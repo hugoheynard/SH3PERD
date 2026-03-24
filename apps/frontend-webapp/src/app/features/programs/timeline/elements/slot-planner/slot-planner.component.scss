@@ -7,25 +7,18 @@
   overflow: hidden;
   cursor: grab;
 
-  /* relief plus premium */
-  box-shadow:
-    0 6px 16px rgba(0,0,0,0.28),
-    0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-slot);
 
-  /* bordure interne très subtile */
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 
   transition:
-    transform .14s cubic-bezier(.4,0,.2,1),
+    transform .14s var(--t-spring),
     box-shadow .14s ease;
 }
 
 :host:hover {
   transform: translateY(-2px);
-
-  box-shadow:
-    0 12px 26px rgba(0,0,0,0.38),
-    0 4px 10px rgba(0,0,0,0.25);
+  box-shadow: var(--shadow-slot-hover);
 }
 
 :host:active {
@@ -38,75 +31,66 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(2px);
   pointer-events: none;
 }
 
-// Glow when selected
+/* Glow when selected */
 :host.selected {
   outline: 1px solid var(--slot-color);
   outline-offset: 1px;
 
   box-shadow:
     0 0 0 1px var(--slot-color),
-    0 0 8px var(--slot-color),
-    0 0 16px var(--slot-color),
-    0 6px 18px rgba(0,0,0,0.45);
+    0 0 8px color-mix(in srgb, var(--slot-color) 60%, transparent),
+    0 0 18px color-mix(in srgb, var(--slot-color) 35%, transparent),
+    var(--shadow-lg);
 }
 
+/* Subtle top sheen */
 :host::before {
   content: '';
-
   position: absolute;
   inset: 0;
-
   border-radius: inherit;
-
-  background:
-    linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.12),
-        rgba(255,255,255,0)
-    );
-
-  opacity: .25;
-
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.10),
+    rgba(255, 255, 255, 0)
+  );
+  opacity: .22;
   pointer-events: none;
 }
 
 
-/* couche couleur */
+/* ── BACKGROUND LAYER ───────────────────────────── */
+
 .slot-bg {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-
   filter: saturate(1.05);
-
   background:
     linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.08),
-        rgba(0,0,0,0.15)
+      to bottom,
+      rgba(255, 255, 255, 0.07),
+      rgba(0, 0, 0, 0.14)
     ),
     var(--slot-color);
 }
 
-/* couche contenu */
+/* ── CONTENT LAYER ──────────────────────────────── */
+
 .slot-content {
   position: relative;
   z-index: 2;
-
   display: flex;
   flex-direction: column;
-
   height: 100%;
-
   color: white;
-
-  font-size: 12px;
+  font-size: var(--text-sm);
 }
 
 .slot-top {
@@ -117,19 +101,18 @@
   padding: 4px 10px;
 
   font-weight: 600;
-  font-size: 11px;
+  font-size: var(--text-xs);
   letter-spacing: .3px;
 
-  background:
-    linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.18),
-        rgba(0,0,0,0.10)
-    );
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.16),
+    rgba(0, 0, 0, 0.08)
+  );
 
   backdrop-filter: blur(2px);
 
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .slot-bottom {
@@ -137,14 +120,13 @@
 
   padding: 8px 10px;
 
-  background:
-    linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.04),
-        rgba(0,0,0,0.12)
-    );
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.03),
+    rgba(0, 0, 0, 0.10)
+  );
 
-  font-size: 11px;
+  font-size: var(--text-xs);
 
   opacity: .95;
 }
@@ -163,18 +145,20 @@
 .slot-type {
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: var(--text-xs);
   letter-spacing: 0.6px;
 }
 
 .slot-time {
-  font-size: 10px;
+  font-size: var(--text-xs);
   opacity: 0.85;
 }
 
 .slot-separator {
-  opacity: 0.6;
+  opacity: 0.5;
 }
+
+/* ── RESIZE HANDLE ──────────────────────────────── */
 
 .resize-handle {
   position: absolute;
@@ -201,23 +185,25 @@
 
   border-radius: 3px;
 
-  background: rgba(255,255,255,0.65);
+  background: rgba(255, 255, 255, 0.5);
 
   transition:
-    transform .15s ease,
-    background .15s ease;
+    transform var(--t-base),
+    background var(--t-base);
 }
 
 :host:hover .resize-handle::after {
-  background: white;
-  transform: scaleX(1.25);
+  background: rgba(255, 255, 255, 0.85);
+  transform: scaleX(1.3);
 }
 
+
+/* ── ARTISTS ────────────────────────────────────── */
 
 .artist-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
 
   max-height: 36px;
   overflow: hidden;
@@ -230,18 +216,15 @@
 .slot-staff {
   margin-top: 6px;
 
-  border-top: 1px solid rgba(255,255,255,0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 
   padding-top: 6px;
 }
 
 .staff-label {
-  font-size: 10px;
-  opacity: 0.6;
+  font-size: var(--text-xs);
+  opacity: 0.55;
   margin-bottom: 4px;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
-
-
-
-

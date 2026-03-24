@@ -7,10 +7,8 @@
   display: flex;
   background: transparent;
   height: 100%;
-  font-family: Inter, system-ui, sans-serif;
-  overflow-y: auto; //new
+  overflow-y: auto;
 }
-
 
 
 /* ---------------- TIMELINE ---------------- */
@@ -28,13 +26,13 @@
   flex-direction: column;
   border-right: 1px solid var(--col-separator);
   background: var(--content-page-bg-color);
-  z-index: 2;
+  z-index: var(--z-sticky);
 }
 
 .time-header {
   height: 40px;
   min-height: 40px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--panel-border-color);
   background: var(--content-page-bg-color);
 }
 
@@ -48,46 +46,26 @@
 }
 
 
-//--------------------------------------
-
-.header-separator {
-  height: 12px;
-  min-height: 12px;
-  background: linear-gradient(
-      to bottom,
-      var(--content-page-bg-color),
-      var(--content-page-bg-color)
-  );
-  //border-bottom: 1px solid #e8eaee;
-}
-
-
-/* layer slots */
-
-
 /* ---------------- SLOTS ---------------- */
 
 .slot {
   position: absolute;
   left: 10px;
   right: 10px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 8px 10px;
-  font-size: 12px;
+  font-size: var(--text-sm);
   box-sizing: border-box;
-
-  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-}
-
-.slot {
   user-select: none;
   touch-action: none;
+
+  box-shadow: var(--shadow-slot);
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
 }
 
 .slot:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+  box-shadow: var(--shadow-slot-hover);
 }
 
 .preview {
@@ -95,9 +73,9 @@
   pointer-events: none;
 }
 
-/**
 
- */
+/* ---------------- INSERT LINE (global layer) ---------------- */
+
 .insert-line {
   position: absolute;
   left: 0;
@@ -105,16 +83,16 @@
   height: 2px;
 
   background: linear-gradient(
-      90deg,
-      transparent,
-      #4da3ff,
-      transparent
+    90deg,
+    transparent,
+    var(--accent-color),
+    transparent
   );
 
-  box-shadow: 0 0 6px rgba(77,163,255,0.6);
+  box-shadow: 0 0 8px var(--accent-color-dim);
 
   pointer-events: none;
-  z-index: 30;
+  z-index: var(--z-insert);
 }
 
 .insert-line::before,
@@ -124,9 +102,9 @@
   top: -3px;
   width: 6px;
   height: 6px;
-  background: #4da3ff;
+  background: var(--accent-color);
   border-radius: 50%;
 }
 
 .insert-line::before { left: -3px; }
-.insert-line::after { right: -3px; }
+.insert-line::after  { right: -3px; }

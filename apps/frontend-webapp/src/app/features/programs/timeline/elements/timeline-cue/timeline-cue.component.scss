@@ -4,7 +4,7 @@
   right: 0;
 
   pointer-events: auto;
-  z-index: 25;
+  z-index: var(--z-timeline);
 }
 
 /* ---------- LINE ---------- */
@@ -17,11 +17,11 @@
 
   background: var(--accent-color);
 
-  /* contraste maximum propre */
   box-shadow:
-    0 2px 0 rgba(0,0,0,0.7),   /* séparation forte dessous */
-    0 -1px 0 rgba(255,255,255,0.08); /* highlight subtil dessus */
+    0 2px 0 rgba(0, 0, 0, 0.7),
+    0 -1px 0 rgba(255, 255, 255, 0.08);
 }
+
 /* ---------- BADGE ---------- */
 
 .cue-badge {
@@ -31,75 +31,77 @@
 
   padding: 3px 8px;
 
-  font-size: 10px;
+  font-size: var(--text-xs);
   font-weight: 600;
 
   color: white;
 
-  background: var(--accent-color); /* 🔥 important */
+  background: var(--accent-color);
   border-radius: var(--radius-sm);
 
   white-space: nowrap;
 
-  box-shadow:
-    0 3px 8px rgba(0,0,0,0.5);
+  box-shadow: var(--shadow-sm);
 
-
-
-  /* transition douce */
   transition:
-    background 0.15s ease,
-    transform 0.1s ease,
-    opacity 0.15s ease;
+    background var(--t-base),
+    transform var(--t-fast),
+    opacity var(--t-base);
 }
 
 /* ---------- TYPE VARIANTS ---------- */
 
 :host[data-type="technical"] .cue-line {
   background: linear-gradient(
-      to right,
-      rgba(77,163,255,0.5),
-      rgba(77,163,255,0.25),
-      transparent
+    to right,
+    rgba(77, 163, 255, 0.5),
+    rgba(77, 163, 255, 0.25),
+    transparent
   );
 }
 
 :host[data-type="artistic"] .cue-line {
   background: linear-gradient(
-      to right,
-      rgba(212,106,255,0.5),
-      rgba(212,106,255,0.25),
-      transparent
+    to right,
+    rgba(212, 106, 255, 0.5),
+    rgba(212, 106, 255, 0.25),
+    transparent
   );
 }
 
 :host[data-type="logistic"] .cue-line {
   background: linear-gradient(
-      to right,
-      rgba(255,170,51,0.5),
-      rgba(255,170,51,0.25),
-      transparent
+    to right,
+    rgba(255, 170, 51, 0.5),
+    rgba(255, 170, 51, 0.25),
+    transparent
   );
 }
 
-/* ---------- HOVER (future-proof si interactive) ---------- */
+/* ---------- HOVER ---------- */
 
 :host(:hover) .cue-badge {
   background: var(--hover-color);
   transform: translateY(-1px);
 }
 
-/* ---------- OPTIONAL: subtle glow when active ---------- */
+/* ---------- ACTIVE ---------- */
 
 :host(.active) .cue-line {
   opacity: 0.9;
 }
 
+/* ---------- SELECTED ---------- */
 
-.selected {
-  background-color: red;
+:host(.selected) .cue-line {
   box-shadow:
-    0 0 0 2px rgba(59, 130, 246, 0.6),
-    0 0 10px rgba(59, 130, 246, 0.8);
-  z-index: 10;
+    0 0 0 1px var(--accent-color),
+    0 0 8px var(--accent-color-dim),
+    0 2px 0 rgba(0, 0, 0, 0.7);
+}
+
+:host(.selected) .cue-badge {
+  box-shadow:
+    0 0 0 2px var(--accent-color),
+    var(--shadow-sm);
 }

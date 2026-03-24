@@ -85,7 +85,8 @@
 
 .section-action:hover,
 .section-add:hover {
-  background: rgba(108,99,255,0.12);
+  background: var(--accent-color-dim);
+  color: var(--accent-color);
 }
 
 /* ---------------- COLLAPSED STATE ---------------- */
