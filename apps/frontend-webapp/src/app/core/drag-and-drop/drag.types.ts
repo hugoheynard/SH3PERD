@@ -3,6 +3,7 @@ import type {
   ArtistPerformanceSlot,
   ArtistPerformanceSlotTemplate,
   PlannerArtist,
+  TimelineCue,
   UserGroup,
 } from '../../features/programs/program-types';
 import type {
@@ -36,6 +37,7 @@ export type DragPayloadMap = {
   slot: ArtistPerformanceSlot
   'slot-multi': MultiSlotDragPayload
   resize: ArtistPerformanceSlot,
+  cue: TimelineCue,
 };
 
 

@@ -1,13 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { DragSessionService } from '../../../../core/drag-and-drop/drag-session.service';
 import { SlotService } from '../mutations-layer/slot.service';
-import type { ArtistPerformanceSlot } from '../../program-types';
+import type { ArtistPerformanceSlot, TimelineCue } from '../../program-types';
 import { InsertLineService } from '../../timeline/insert-interaction-system/state-services/insert-line.service';
 import { TimelineInteractionStore } from './timeline-interaction.store';
 import { ResizeInteractionService } from './resize-interaction.service';
 import { SlotDragInteractionService } from './slot-drag-interaction.service';
 import { TimelineSpatialService } from '../timeline-spatial.service';
 import type { ResizeTarget } from '../../../../core/drag-and-drop/drag.types';
+import { CueDragInteractionService } from './cue-drag-interaction.service';
+import { CueService } from '../mutations-layer/cue.service';
 
 
 /**
@@ -119,6 +121,8 @@ export class TimelineInteractionService {
   private resizeInteraction = inject(ResizeInteractionService);
   private dragInteraction = inject(SlotDragInteractionService);
   private spatial = inject(TimelineSpatialService);
+  private cueDragInteraction = inject(CueDragInteractionService);
+  private cueServ = inject(CueService);
 
 
   /* ------------------ SLOT DRAG ------------------ */
@@ -151,6 +155,10 @@ export class TimelineInteractionService {
     this.resizeInteraction.start(event, target);
   };
 
+  startCueDrag(event: PointerEvent, cue: TimelineCue) {
+    this.cueDragInteraction.start(event, cue);
+  }
+
 
   /* ------------------ POINTER MOVE ------------------ */
 
@@ -174,13 +182,19 @@ export class TimelineInteractionService {
     const isSlotDrag = this.dragInteraction.isActive();
     const isResize = this.resizeInteraction.isActive();
     const isTemplateDrag = dragSession?.type === 'template';
+    const isCueDrag = this.cueDragInteraction.isActive();
 
-    if (!isSlotDrag && !isResize && !isTemplateDrag) {
+    if (!isSlotDrag && !isResize && !isTemplateDrag && !isCueDrag) {
       return;
     }
 
     if (isSlotDrag) {
       this.dragInteraction.move();
+      return;
+    }
+
+    if (isCueDrag) {
+      this.cueDragInteraction.move();
       return;
     }
 
@@ -209,30 +223,26 @@ export class TimelineInteractionService {
    * This is the ONLY place where drag mutations are applied.
    */
   stop() {
+    const draggingSlots = this.interactionStore.draggingSlots();
+    const draggingCues = this.interactionStore.draggingCues();
 
-    const dragging = this.interactionStore.draggingSlots();
-
-    if (!dragging) {
-      this.resetAll();
-      return;
-    }
-
-    for (const s of dragging) {
-
-      this.slotServ.updateSlotStart(
-        s.slot_id,
-        s.previewStart
-      );
-
-      if (s.previewRoomId) {
-        this.slotServ.updateSlotRoom(
-          s.slot_id,
-          s.previewRoomId
-        );
+    if (draggingSlots) {
+      for (const s of draggingSlots) {
+        this.slotServ.updateSlotStart(s.slot_id, s.previewStart);
+        if (s.previewRoomId) {
+          this.slotServ.updateSlotRoom(s.slot_id, s.previewRoomId);
+        }
       }
     }
 
-    this.resetAll()
+    if (draggingCues) {
+      for (const c of draggingCues) {
+        this.cueServ.updateCueTime(c.cue_id, c.previewAtMinutes);
+        this.cueServ.updateCueRoom(c.cue_id, c.previewRoomId);
+      }
+    }
+
+    this.resetAll();
   };
 
 
@@ -280,5 +290,6 @@ export class TimelineInteractionService {
     this.insert.clear();
     this.dragInteraction.stop();
     this.resizeInteraction.stop();
+    this.cueDragInteraction.stop();
   };
 }

@@ -66,9 +66,14 @@
           @for (cue of selector.cuesByRoom().get(room.id) ?? []; track cue.id) {
             <ui-timeline-cue
               [cue]="cue"
+              [previewAtMinutes]="cuePreviewMap().get(cue.id) ?? null"
+              [isDragging]="draggingCueIds().includes(cue.id)"
 
               uiSelectable
-              (click)="selectCue(cue, $event)"
+              uiDndDrag
+              [dndType]="'cue'"
+              [dndData]="cue"
+              (pointerdown)="handleCuePointerDown($event, cue)"
             />
           }
 

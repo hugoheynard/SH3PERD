@@ -47,6 +47,7 @@ import { SelectableDirective } from '../services/timeline-interactions-engine/el
 import { BufferSlotComponent } from '../timeline/elements/bufferblock/buffer-slot.component';
 import { ResizeInteractionService } from '../services/timeline-interactions-engine/resize-interaction.service';
 import { SlotDragInteractionService } from '../services/timeline-interactions-engine/slot-drag-interaction.service';
+import { CueDragInteractionService } from '../services/timeline-interactions-engine/cue-drag-interaction.service';
 
 
 @Component({
@@ -126,6 +127,18 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   draggingIds = computed(() =>
     this.interactionStore.draggingSlots()?.map(s => s.slot_id) ?? []
   );
+
+  draggingCueIds = computed(() =>
+    this.interactionStore.draggingCues()?.map(c => c.cue_id) ?? []
+  );
+
+  cuePreviewMap = computed(() => {
+    const map = new Map<string, number>();
+    for (const c of this.interactionStore.draggingCues() ?? []) {
+      map.set(c.cue_id, c.previewAtMinutes);
+    }
+    return map;
+  });
 
 
   /* ---------------- SLOT DRAG / RESIZE ---------------- */
@@ -252,16 +265,16 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   // --------------------------------------- CUES ----------------------//
   private cueSelectService = inject(CueSelectionService);
 
-  selectCue(cue: TimelineCue, event: PointerEvent) {
+  handleCuePointerDown(event: PointerEvent, cue: TimelineCue) {
     const orderedIds =
       this.selector.cuesByRoom().get(cue.roomId)?.map(c => c.id) ?? [];
+    this.cueSelectService.select(cue.id, orderedIds, event);
+    this.startCueDrag(event, cue);
+  }
 
-    this.cueSelectService.select(
-      cue.id,
-      orderedIds,
-      event
-    );
-  };
+  private startCueDrag(event: PointerEvent, cue: TimelineCue) {
+    this.interaction.startCueDrag(event, cue);
+  }
 
 
   /* ---------------- HOST LISTENERS ---------------- */
@@ -297,6 +310,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
   private dragInteraction = inject(SlotDragInteractionService);
   private resizeInteraction = inject(ResizeInteractionService);
+  private cueDragInteraction = inject(CueDragInteractionService);
 
   @HostListener('document:pointerup')
   onPointerUp() {
@@ -306,6 +320,11 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     }
 
     if (this.resizeInteraction.isActive()) {
+      this.interaction.stop();
+      return;
+    }
+
+    if (this.cueDragInteraction.isActive()) {
       this.interaction.stop();
       return;
     }

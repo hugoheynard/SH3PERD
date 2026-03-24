@@ -101,15 +101,25 @@ export class TimelineCueComponent {
   }
 
   cue = input.required<TimelineCue>();
+
+  previewAtMinutes = input<number | null>(null);
+
+  isDragging = input(false);
+
+  @HostBinding('class.is-dragging') get dragging() { return this.isDragging(); }
+
   /**
    * Vertical position in px (computed from minutes)
    */
-  top = computed(() => this.res.minuteToPx(this.cue().atMinutes));
+  top = computed(() => {
+    const preview = this.previewAtMinutes();
+    return this.res.minuteToPx(preview ?? this.cue().atMinutes);
+  });
 
   /**
    * Display label of the cue
    */
-  label =computed(() => this.cue().label);
+  label = computed(() => this.cue().label);
 
   /**
    * Optional cue type for styling

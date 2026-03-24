@@ -3,6 +3,12 @@ import { TimelineSpatialService } from '../timeline-spatial.service';
 import { DragSessionService } from '../../../../core/drag-and-drop/drag-session.service';
 import type { SlotPreview } from './constraints-engine/slot-drag-constraints-engine';
 
+export type CuePreview = {
+  cue_id: string;
+  previewAtMinutes: number;
+  previewRoomId: string;
+};
+
 /**
  * Manages the ephemeral interaction state for timeline drag operations.
  *
@@ -96,6 +102,9 @@ export class TimelineInteractionStore {
    */
   readonly draggingSlots = this._draggingSlots.asReadonly();
 
+  private _draggingCues = signal<CuePreview[] | null>(null);
+  readonly draggingCues = this._draggingCues.asReadonly();
+
   /**
    *
    */
@@ -148,6 +157,18 @@ export class TimelineInteractionStore {
     this._draggingSlots.set(slots);
   }
 
+  startCues(cues: CuePreview[]) {
+    this._draggingCues.set(cues);
+  }
+
+  updateCues(cues: CuePreview[]) {
+    this._draggingCues.set(cues);
+  }
+
+  stopCues() {
+    this._draggingCues.set(null);
+  }
+
   /**
    * Clears the current drag interaction state.
    *
@@ -158,5 +179,6 @@ export class TimelineInteractionStore {
    */
   stop() {
     this._draggingSlots.set(null);
+    this._draggingCues.set(null);
   }
 }
