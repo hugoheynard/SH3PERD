@@ -146,7 +146,7 @@ export class TimelineInteractionService {
    * @param event - Pointer event that started the resize
    * @param slot - The slot being resized
    */
-  startSlotResize(event: PointerEvent, slot: ArtistPerformanceSlot) {
+  startResize(event: PointerEvent, slot: ArtistPerformanceSlot) {
     this.resizeInteraction.start(event, slot);
   };
 

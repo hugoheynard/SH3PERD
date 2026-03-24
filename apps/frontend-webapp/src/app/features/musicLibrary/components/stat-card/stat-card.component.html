@@ -1,12 +1,15 @@
-<sh3-svg-icon [name]="iconName" class="statIcon iconRoundBg"/>
-<div class="content">
-  <span class="title">{{ label }}</span>
-  <div class="valueContainer">
-    <span class="value">{{ getValue() }}</span>
-    @if (progressBar) {
-      <div class="progress-bar" >
-        <div class="progress-fill" [style.width.%]="getProgressBar()"></div>
-      </div>
-    }
+<ui-card-frame-horizontal>
+  <sh3-svg-icon [name]="iconName" class="statIcon iconRoundBg"/>
+  <div class="content">
+    <span class="title">{{ label }}</span>
+    <div class="valueContainer">
+      <span class="value">{{ getValue() }}</span>
+      @if (progressBar) {
+        <div class="progress-bar" >
+          <div class="progress-fill" [style.width.%]="getProgressBar()"></div>
+        </div>
+      }
+    </div>
   </div>
-</div>
+</ui-card-frame-horizontal>
+

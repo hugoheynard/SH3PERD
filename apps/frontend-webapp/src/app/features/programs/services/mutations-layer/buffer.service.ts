@@ -18,7 +18,7 @@ export class BufferService
       id: p.id,
       atMinutes: p.atMinutes,
       delta: p.delta,
-      roomId: p.roomId,
+      room_id: p.room_id,
       ...p.overrides
     }
   }

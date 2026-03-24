@@ -1,12 +1,14 @@
 import { Component, Input, numberAttribute } from '@angular/core';
 import { SvgIconComponent } from '@sh3pherd/ui-angular';
+import { CardFrameHorizontalComponent } from '../../../programs/ui-frames/card-frame/card-frame-horizontal.component';
 
 
 @Component({
   selector: 'stat-card',
   imports: [
-    SvgIconComponent
-],
+    SvgIconComponent,
+    CardFrameHorizontalComponent,
+  ],
   templateUrl: './stat-card.component.html',
   standalone: true,
   styleUrl: './stat-card.component.scss',

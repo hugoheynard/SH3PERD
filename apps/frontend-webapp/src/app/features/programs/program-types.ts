@@ -92,7 +92,7 @@ export type ProgramMode = 'manual' | 'assisted';
  */
 export interface TimelineBuffer {
   id: string;
-  roomId: string;
+  room_id: string;
   atMinutes: number;
   delta: number;
 }

@@ -19,18 +19,17 @@ import {
   mockPerformanceSlotsTemplates,
 } from '../utils/mockDATAS';
 import type {
-  ArtistPerformanceSlot, TimelineCue,
+  ArtistPerformanceSlot, TimelineBuffer, TimelineCue,
 } from '../program-types';
 import { EditPerformanceSlotPopoverComponent } from '../popovers/edit-performance-slot-popover/edit-performance-slot-popover.component';
 import { SlotService } from '../services/mutations-layer/slot.service';
 import { PlannerSelectorService } from '../services/selector-layer/planner-selector.service';
-import { BufferSlotComponent } from '../timeline/elements/bufferblock/buffer-slot.component';
 import { PlannerDndInitService } from '../services/planner-init/planner-dnd-init.service';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 import { RoomColumnComponent } from '../timeline/ui/room-column/room-column.component';
-import { SlotSelectionService } from '../services/timeline-interactions-engine/slot-selection.service';
+import { SlotSelectionService } from '../services/timeline-interactions-engine/element-selection/slot-selection.service';
 import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
 import { TimelineInteractionStore } from '../services/timeline-interactions-engine/timeline-interaction.store';
 import { TimelineSpatialService } from '../services/timeline-spatial.service';
@@ -38,9 +37,11 @@ import { InsertLineService } from '../timeline/insert-interaction-system/state-s
 import { TimelineCueComponent } from '../timeline/elements/timeline-cue/timeline-cue.component';
 import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 import { PlannerInsertActionsInitService } from '../services/planner-init/planner-insert-action-init.service';
-import { CueSelectionService } from '../services/timeline-interactions-engine/cue-selection.service';
+import { CueSelectionService } from '../services/timeline-interactions-engine/element-selection/cue-selection.service';
 import { TimelineKeyboardController } from '../services/timeline-keyboard-controller.service';
 import { PlannerInsertRenderInitService } from '../services/planner-init/planner-insert-render-init.service';
+import { SelectableDirective } from '../services/timeline-interactions-engine/element-selection/Selectable.directive';
+import { BufferSlotComponent } from '../timeline/elements/bufferblock/buffer-slot.component';
 
 
 @Component({
@@ -54,6 +55,7 @@ import { PlannerInsertRenderInitService } from '../services/planner-init/planner
     DndDragDirective,
     RoomColumnComponent,
     TimelineCueComponent,
+    SelectableDirective,
   ],
   templateUrl: './programs-page.component.html',
   styleUrl: './programs-page.component.scss',
@@ -143,8 +145,8 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     this.interaction.startSlotDrag(event, slot);
   };
 
-  startSlotResize(event: PointerEvent, slot: ArtistPerformanceSlot): void {
-    this.interaction.startSlotResize(event, slot);
+  startElementResize(event: PointerEvent, slot: ArtistPerformanceSlot): void {
+    this.interaction.startResize(event, slot);
   };
 
   //* ---------------- DROP HANDLERS ---------------- *//
@@ -219,30 +221,35 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
 
 //* ------------- SLOT SELECTION AND CONTROLS ---------------------------*//
-  private selection = inject(SlotSelectionService);
+  private slotSelectService = inject(SlotSelectionService);
 
-  handleSlotPointerDown(e: {event: PointerEvent, slot: ArtistPerformanceSlot}) {
-
+  handleSlotPointerDown(e: { event: PointerEvent, slot: ArtistPerformanceSlot }) {
     const { event, slot } = e;
 
-    const orderedIds = this.selector
-      .blocksByRoom()
-      .get(slot.roomId)
-      ?.filter(b => b.type === 'slot')
-      .map(b => b.slot.id) ?? [];
-
-    const isModifier = event.shiftKey || event.metaKey || event.ctrlKey;
-    const alreadySelected = this.selection.isSelected(slot.id);
-
-    if (isModifier || !alreadySelected) {
-      this.selection.select(
-        slot.id,
-        orderedIds,
-        event
-      );
-    }
-
+    this.selectSlot(slot, event);
     this.startSlotDrag(event, slot);
+  }
+
+  private selectSlot(slot: ArtistPerformanceSlot, event: PointerEvent) {
+    this.slotSelectService.handleSlotPointerDown(
+      slot.id,
+      slot.roomId,
+      event
+    );
+  };
+
+  // --------------------------------------- CUES ----------------------//
+  private cueSelectService = inject(CueSelectionService);
+
+  selectCue(cue: TimelineCue, event: PointerEvent) {
+    const orderedIds =
+      this.selector.cuesByRoom().get(cue.roomId)?.map(c => c.id) ?? [];
+
+    this.cueSelectService.select(
+      cue.id,
+      orderedIds,
+      event
+    );
   };
 
 
@@ -291,8 +298,8 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
     const el = event.target as HTMLElement;
 
-    if (!el.closest('[data-slot-id]')) {
-      this.selection.clear();
+    if (!el.closest('[data-selectable]')) {
+      this.slotSelectService.clear();
     }
   };
 
@@ -319,19 +326,10 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   }
 
 
-  // ---------- CUES ---------//
 
-
-  private cueSelection = inject(CueSelectionService);
-
-  selectCue(cue: TimelineCue, event: PointerEvent) {
-    const orderedIds =
-      this.selector.cuesByRoom().get(cue.roomId)?.map(c => c.id) ?? [];
-
-    this.cueSelection.select(cue.id, orderedIds, event);
-  };
-
-
-
+  //BUFFER - WORKFLOW REWORK
+  startBufferResize(event: PointerEvent, buffer: TimelineBuffer) {
+    console.log('startBufferResize', event, buffer);
+  }
 
 }

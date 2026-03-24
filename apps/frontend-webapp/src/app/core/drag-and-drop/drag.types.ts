@@ -39,3 +39,11 @@ export type DragPayloadMap = {
 
 
 export type DragType = keyof DragPayloadMap;
+
+export type ResizeTarget = {
+  id: string;
+  roomId: string;
+  startMinutes: number;
+  duration: number;
+  type: 'slot' | 'buffer';
+};

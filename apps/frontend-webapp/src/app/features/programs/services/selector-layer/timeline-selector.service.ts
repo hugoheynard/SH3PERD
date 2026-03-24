@@ -72,14 +72,14 @@ export class TimelineSelectorsService {
     }
 
     for (const buffer of buffers) {
-      const arr = map.get(buffer.roomId) ?? [];
+      const arr = map.get(buffer.room_id) ?? [];
       arr.push({
         type: "buffer",
         id: buffer.id,
         startMinutes: buffer.atMinutes,
         duration: buffer.delta
       });
-      map.set(buffer.roomId, arr);
+      map.set(buffer.room_id, arr);
     }
 
     for (const arr of map.values()) {
@@ -104,7 +104,7 @@ export class TimelineSelectorsService {
     return slots.map(slot => {
 
       const delta = offsets
-        .filter(o => o.roomId === slot.roomId && o.atMinutes <= slot.startMinutes)
+        .filter(o => o.room_id === slot.roomId && o.atMinutes <= slot.startMinutes)
         .reduce((sum, o) => sum + o.delta, 0);
 
       return {

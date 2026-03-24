@@ -31,7 +31,7 @@ export class RoomColumnComponent {
   room = input.required<Room>();
   timelineHeight = input.required<number>();
   gridOffsetPx = input.required<number>();
-  roomDrop = output<{ roomId: string; drag: DragState, offsetY: number }>();
+  roomDrop = output<{ room_id: string; drag: DragState, offsetY: number }>();
 
 
   /* ---------------------- STATE ---------------- */
@@ -50,7 +50,7 @@ export class RoomColumnComponent {
     }
 
     this.roomDrop.emit({
-      roomId: projection.room_id,
+      room_id: projection.room_id,
       drag,
       offsetY: this.res.minuteToPx(projection.minutes)
     });

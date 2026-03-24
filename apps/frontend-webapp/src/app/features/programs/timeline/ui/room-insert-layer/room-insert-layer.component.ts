@@ -224,7 +224,7 @@ export class RoomInsertLayerComponent {
     return this.buffer.createDefault({
       id: 'ghost',
       atMinutes: indicator.minutes,
-      roomId: indicator.roomId,
+      room_id: indicator.roomId,
       delta: 5
     });
   });

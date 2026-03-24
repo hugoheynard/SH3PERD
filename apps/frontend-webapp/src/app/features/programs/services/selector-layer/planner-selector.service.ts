@@ -4,6 +4,7 @@ import type { ArtistPerformanceSlot } from '../../program-types';
 import { CueSelectorsService } from './cue-selector.service';
 import { SlotSelectorService } from './slot-selector.service';
 import { TimelineSelectorsService } from './timeline-selector.service';
+import { BufferSelectorService } from './buffer-selector.service';
 
 
 /**
@@ -52,10 +53,29 @@ export class PlannerSelectorService {
     return this.slotSelectors.getSlotEndTime(slot);
   };
 
+  getOrderedSlotIdsByRoom(roomId: string): string[] {
+    return this.slotsByRoom().get(roomId)?.map(c => c.id) ?? [];
+  }
+
+  //-------------------- BUFFERS----------------------------------//
+  private bufferSelectors = inject(BufferSelectorService);
+  buffers = this.bufferSelectors.buffers;
+  buffersByRoom = this.bufferSelectors.buffersByRoom;
+
+  getBuffersForRoom(roomId: string){
+    return this.bufferSelectors.getBufferForRoom(roomId);
+  }
+
+
+
 
   //-------------------- CUES ----------------------------------//
   private cueSelectors = inject(CueSelectorsService);
 
   cuesByRoom = this.cueSelectors.cuesByRoom;
   cuesById = this.cueSelectors.cuesById;
+
+  getOrderedCueIdsByRoom(roomId: string): string[] {
+    return this.cuesByRoom().get(roomId)?.map(c => c.id) ?? [];
+  };
 }

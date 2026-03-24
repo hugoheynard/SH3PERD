@@ -231,4 +231,23 @@ export class BaseSelectionService<TId> {
       set.add(orderedIds[i]);
     }
   }
+
+
+  handlePointerDown(
+    id: TId,
+    orderedIds: TId[],
+    event: PointerEvent
+  ) {
+
+    const isMulti = event.metaKey || event.ctrlKey;
+    const isRange = event.shiftKey;
+    const alreadySelected = this.isSelected(id);
+
+    // 👉 click simple sur un élément déjà sélectionné
+    if (!isMulti && !isRange && alreadySelected) {
+      return;
+    }
+
+    this.select(id, orderedIds, event);
+  }
 }

@@ -178,7 +178,7 @@ export class PlannerInsertActionsInitService {
       this.buffer.add({
         id: crypto.randomUUID(),
         atMinutes: minutes,
-        delta: 5, roomId
+        delta: 5, room_id: roomId
       });
     });
 

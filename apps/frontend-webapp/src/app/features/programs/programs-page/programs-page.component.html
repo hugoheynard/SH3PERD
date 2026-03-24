@@ -18,7 +18,7 @@
           [room]="room"
           [timelineHeight]="selector.timelineHeight()"
           [gridOffsetPx]="selector.gridOffsetPx()"
-          (roomDrop)="handleRoomDrop($event.roomId, $event.drag)">
+          (roomDrop)="handleRoomDrop($event.room_id, $event.drag)">
 
           @for (block of getBlocksForRoom(room.id); track block.id) {
 
@@ -30,6 +30,7 @@
                 [slotStartTime]="selector.getSlotStartTime(slot)"
                 [slotEndTime]="selector.getSlotEndTime(slot)"
 
+                uiSelectable
                 uiDndDrag
                 [dndType]="'slot'"
                 [dndData]="block.slot"
@@ -43,26 +44,32 @@
                 [isDragging]="draggingIds().includes(slot.id)"
 
                 (slotPointerDown)="handleSlotPointerDown($event)"
-                (slotResizeStart)="startSlotResize($event, slot)"
+                (slotResizeStart)="startElementResize($event, slot)"
                 (removeArtist)="handleRemoveArtistFromSlot($event)"
                 (editSlot)="openEditPerformanceSlotPopover($event)" />
 
             }
 
-            @if (block.type === 'buffer') {
 
-              <ui-buffer-slot [buffer]="{
-              id: block.id,
-              atMinutes: block.startMinutes,
-              delta: block.duration,
-              roomId: room.id
-              }" />
-
-            }
           }
 
+          @for(buffer of selector.getBuffersForRoom(room.id); track buffer.id) {
+            <ui-buffer-slot
+              uiSelectable
+              [buffer]="buffer"
+              (onResizeStart)="startBufferResize($event, buffer)"
+            />
+          }
+
+
+
           @for (cue of selector.cuesByRoom().get(room.id) ?? []; track cue.id) {
-            <ui-timeline-cue [cue]="cue" (click)="selectCue(cue, $event)" />
+            <ui-timeline-cue
+              [cue]="cue"
+
+              uiSelectable
+              (click)="selectCue(cue, $event)"
+            />
           }
 
         </ui-room-column>

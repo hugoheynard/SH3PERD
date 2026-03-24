@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { SlotSelectionService } from './timeline-interactions-engine/slot-selection.service';
-import { CueSelectionService } from './timeline-interactions-engine/cue-selection.service';
+import { SlotSelectionService } from './timeline-interactions-engine/element-selection/slot-selection.service';
+import { CueSelectionService } from './timeline-interactions-engine/element-selection/cue-selection.service';
 import { SlotService } from './mutations-layer/slot.service';
 import { PlannerSelectorService } from './selector-layer/planner-selector.service';
 import { InsertLineService } from '../timeline/insert-interaction-system/state-services/insert-line.service';

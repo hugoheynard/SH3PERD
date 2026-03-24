@@ -60,7 +60,7 @@ export class PlannerInsertRenderInitService {
         this.buffer.createDefault({
           id: 'ghost',
           atMinutes: minutes,
-          roomId,
+          room_id: roomId,
           delta: 5
         }),
 

@@ -1,4 +1,4 @@
-import { Component, computed, HostBinding, inject, input } from '@angular/core';
+import { Component, computed, HostBinding, inject, input, output } from '@angular/core';
 import { PlannerResolutionService } from '../../../services/planner-resolution.service';
 import type { TimelineBuffer } from '../../../program-types';
 
@@ -37,4 +37,16 @@ export class BufferSlotComponent {
   );
 
   duration = computed(() => this.buffer().delta);
+
+  onResizeStart = output<PointerEvent>();
+
+  emitResizeStart(event: PointerEvent) {
+    this.onResizeStart.emit(event);
+  }
+
+  onPointerDown = output<PointerEvent>();
+
+  emitPointerDown(event: PointerEvent) {
+    this.onPointerDown.emit(event);
+  }
 }

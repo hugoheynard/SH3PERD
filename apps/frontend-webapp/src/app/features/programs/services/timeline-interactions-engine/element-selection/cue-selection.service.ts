@@ -1,5 +1,6 @@
-import { Injectable} from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BaseSelectionService } from './BaseSelectionService';
+import { PlannerSelectorService } from '../../selector-layer/planner-selector.service';
 
 
 /**
@@ -22,4 +23,18 @@ import { BaseSelectionService } from './BaseSelectionService';
  *
  */
 @Injectable({ providedIn: 'root' })
-export class CueSelectionService extends BaseSelectionService<string> {}
+export class CueSelectionService
+  extends BaseSelectionService<string> {
+
+  private selector = inject(PlannerSelectorService);
+
+  handleSlotPointerDown(
+    slot_id: string,
+    room_id: string,
+    event: PointerEvent
+  ) {
+    const ordered = this.selector.getOrderedCueIdsByRoom(room_id);
+
+    super.handlePointerDown(slot_id, ordered, event);
+  }
+}

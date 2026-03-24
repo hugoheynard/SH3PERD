@@ -9,6 +9,7 @@ import {
   TagComponent,
 } from '@sh3pherd/ui-angular';
 import { MusicFileLineComponent } from '../music-file-line/music-file-line.component';
+import { CardFrameHorizontalComponent } from '../../../programs/ui-frames/card-frame/card-frame-horizontal.component';
 
 
 @Component({
@@ -20,8 +21,9 @@ import { MusicFileLineComponent } from '../music-file-line/music-file-line.compo
     TagComponent,
     RepertoireEntryComponent,
     MusicFileLineComponent,
-    ButtonIconComponent
-],
+    ButtonIconComponent,
+    CardFrameHorizontalComponent,
+  ],
   templateUrl: './music-card.component.html',
   standalone: true,
   styleUrl: './music-card.component.scss',
