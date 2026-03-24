@@ -62,7 +62,11 @@ export class ResizeInteractionService {
 
     const raw = baseMinutes + this.res.pxToMinutes(deltaY);
     const snapped = this.res.snap(raw);
-    const duration = Math.max(this.res.snapMinutes(), snapped);
+
+    // Buffers can go negative (compaction) — slots stay strictly positive
+    const duration = target.type === ResizeTargetType.BUFFER
+      ? (snapped === 0 ? this.res.snapMinutes() : snapped)
+      : Math.max(this.res.snapMinutes(), snapped);
 
     this.applyResize(target, duration);
   }

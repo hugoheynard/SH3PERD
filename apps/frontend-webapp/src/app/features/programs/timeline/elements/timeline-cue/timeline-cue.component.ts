@@ -1,6 +1,7 @@
 import { Component, computed, HostBinding, inject, input } from '@angular/core';
 import { type TimelineCue } from '../../../program-types';
 import { PlannerResolutionService } from '../../../services/planner-resolution.service';
+import { TIMELINE_PROJECTOR } from '../../../services/timelineProjectionSystem/TimelineProjector';
 
 
 /**
@@ -90,6 +91,7 @@ import { PlannerResolutionService } from '../../../services/planner-resolution.s
 })
 export class TimelineCueComponent {
   private res = inject(PlannerResolutionService);
+  private projector = inject(TIMELINE_PROJECTOR);
 
 
   @HostBinding('style.top.px') get topPx() {
@@ -113,7 +115,7 @@ export class TimelineCueComponent {
    */
   top = computed(() => {
     const preview = this.previewAtMinutes();
-    return this.res.minuteToPx(preview ?? this.cue().atMinutes);
+    return this.res.minuteToPx(this.projector.project(preview ?? this.cue().atMinutes));
   });
 
   /**

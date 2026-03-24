@@ -4,6 +4,7 @@ import type { ArtistPerformanceSlot } from '../../../program-types';
 import { PlannerResolutionService } from '../../../services/planner-resolution.service';
 import { SlotSelectionService } from '../../../services/timeline-interactions-engine/element-selection/slot-selection.service';
 import { ResizeHandleDirective } from '../../../services/timeline-interactions-engine/resize-handle.directive';
+import { TIMELINE_PROJECTOR } from '../../../services/timelineProjectionSystem/TimelineProjector';
 
 
 /**
@@ -68,6 +69,7 @@ import { ResizeHandleDirective } from '../../../services/timeline-interactions-e
 export class SlotPlannerComponent {
   private res = inject(PlannerResolutionService);
   private selection = inject(SlotSelectionService);
+  private projector = inject(TIMELINE_PROJECTOR);
 
 
   /*--------------I/O----------------------------*/
@@ -75,7 +77,7 @@ export class SlotPlannerComponent {
   slot = input.required<ArtistPerformanceSlot>();
   slotStartTime = input<string>();
   slotEndTime = input<string>();
-  top = computed(() => this.res.minuteToPx(this.slot().startMinutes));
+  top = computed(() => this.res.minuteToPx(this.projector.project(this.slot().startMinutes)));
   height = computed(() => this.res.minuteToPx(this.slot().duration));
   editSlot = output<string>();
   slotResizeStart = output<PointerEvent>();

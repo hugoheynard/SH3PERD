@@ -48,6 +48,8 @@ import { BufferSlotComponent } from '../timeline/elements/bufferblock/buffer-slo
 import { ResizeInteractionService } from '../services/timeline-interactions-engine/resize-interaction.service';
 import { SlotDragInteractionService } from '../services/timeline-interactions-engine/slot-drag-interaction.service';
 import { CueDragInteractionService } from '../services/timeline-interactions-engine/cue-drag-interaction.service';
+import { TimelineProjectionService } from '../services/timelineProjectionSystem/TimelineProjectionService';
+import { BufferTransform } from '../services/timelineProjectionSystem/BufferTransform';
 
 
 @Component({
@@ -84,6 +86,10 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     void inject(PlannerDndInitService);
     void inject(PlannerInsertActionsInitService);
     void inject(PlannerInsertRenderInitService);
+
+    // Register projection hooks
+    const projection = inject(TimelineProjectionService);
+    projection.registerHook(inject(BufferTransform));
   }
 
   // --------------- LIFECYCLE -------------//

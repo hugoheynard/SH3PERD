@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import type { TimelineHook } from './TimelineProjectionService';
-import type { ProgramStateService } from '../program-state.service';
+import { ProgramStateService } from '../program-state.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class BufferTransform implements TimelineHook {
 
-  constructor(private state: ProgramStateService) {}
+  private state = inject(ProgramStateService);
 
   private getBuffers() {
     return this.state.program().timelineOffsets;

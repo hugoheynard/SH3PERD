@@ -93,3 +93,49 @@
   border-radius: 2px;
   background: rgba(255,255,255,0.4);
 }
+
+/* ---- NEGATIVE BUFFER (compaction) ---- */
+
+:host.is-negative {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(220, 38, 38, 0.18),
+    rgba(220, 38, 38, 0.18) 5px,
+    rgba(180, 20, 20, 0.28) 5px,
+    rgba(180, 20, 20, 0.28) 10px,
+    rgba(220, 38, 38, 0.18) 10px,
+    rgba(220, 38, 38, 0.18) 14px,
+    rgba(240, 60, 60, 0.08) 14px,
+    rgba(240, 60, 60, 0.08) 18px
+  );
+
+  border-left: 3px solid rgba(239, 68, 68, 0.6);
+  color: rgba(252, 165, 165, 0.9);
+}
+
+:host.is-negative::before {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+:host.is-negative:hover {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(220, 38, 38, 0.28),
+    rgba(220, 38, 38, 0.28) 5px,
+    rgba(180, 20, 20, 0.40) 5px,
+    rgba(180, 20, 20, 0.40) 10px,
+    rgba(220, 38, 38, 0.28) 10px,
+    rgba(220, 38, 38, 0.28) 14px,
+    rgba(240, 60, 60, 0.15) 14px,
+    rgba(240, 60, 60, 0.15) 18px
+  );
+}
+
+:host.is-negative .buffer-label {
+  background: rgba(127, 29, 29, 0.6);
+  color: rgba(252, 165, 165, 0.95);
+}
+
+:host.is-negative .resize-handle::after {
+  background: rgba(239, 68, 68, 0.5);
+}

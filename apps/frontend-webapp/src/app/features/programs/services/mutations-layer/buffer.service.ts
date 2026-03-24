@@ -56,10 +56,10 @@ export class BufferService
 
   updateBufferDuration(id: string, duration: number) {
 
-    const snapped = Math.max(
-      this.resolution.snapMinutes(),
-      duration
-    );
+    // Allow negative values (compaction) — only block zero
+    const snapped = duration === 0
+      ? this.resolution.snapMinutes()
+      : duration;
 
     this.patch(id, (buffer) => ({
       ...buffer,

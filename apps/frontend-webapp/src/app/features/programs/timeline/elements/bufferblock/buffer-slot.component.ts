@@ -27,16 +27,24 @@ export class BufferSlotComponent {
     return this.height();
   }
 
+  @HostBinding('class.is-negative') get isNegativeClass() {
+    return this.isNegative();
+  }
+
   // ----------------- I/O -----------------//
   buffer = input.required<TimelineBuffer>();
 
-// ----------------- STATES -----------------//
-  top = computed(() =>
-    this.res.minuteToPx(this.buffer().atMinutes)
-  );
+  // ----------------- STATES -----------------//
+  isNegative = computed(() => this.buffer().delta < 0);
+
+  top = computed(() => {
+    const { atMinutes, delta } = this.buffer();
+    // When negative, the block grows upward from atMinutes
+    return this.res.minuteToPx(delta < 0 ? atMinutes + delta : atMinutes);
+  });
 
   height = computed(() =>
-    this.res.minuteToPx(this.buffer().delta)
+    this.res.minuteToPx(Math.abs(this.buffer().delta))
   );
 
   duration = computed(() => this.buffer().delta);

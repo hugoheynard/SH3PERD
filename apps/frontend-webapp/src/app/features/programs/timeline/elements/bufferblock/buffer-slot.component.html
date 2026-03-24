@@ -1,5 +1,5 @@
 <div class="buffer-label">
-  ⏱ +{{ duration() }} min
+  {{ isNegative() ? '⚡' : '⏱' }} {{ isNegative() ? '' : '+' }}{{ duration() }} min
 </div>
 
 <div
