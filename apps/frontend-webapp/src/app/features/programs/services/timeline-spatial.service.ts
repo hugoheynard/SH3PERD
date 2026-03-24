@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 import { RoomLayoutRegistry } from './room-layout-registry.service';
 import { PlannerResolutionService } from './planner-resolution.service';
+import type { InteractionProjection } from './timeline-interactions-engine/interaction-context.types';
 
 
 /**
@@ -89,7 +90,7 @@ export class TimelineSpatialService {
    *
    * @returns Projection object or null if no room is detected.
    */
-  projectPointer(grabOffset = 0) {
+  projectPointer(grabOffset = 0): InteractionProjection | null {
 
     const x = this.drag.cursorX();
     const y = this.drag.cursorY();

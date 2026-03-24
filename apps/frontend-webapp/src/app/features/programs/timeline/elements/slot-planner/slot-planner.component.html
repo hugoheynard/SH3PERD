@@ -41,7 +41,8 @@
 <!-- Resize handle -->
 <div
   class="resize-handle"
-  (pointerdown)="onResizeMouseDown($event)">
+  uiResizeHandle
+  (resizeStart)="onResizeMouseDown($event)">
 </div>
 
 @if (isExpanded) {

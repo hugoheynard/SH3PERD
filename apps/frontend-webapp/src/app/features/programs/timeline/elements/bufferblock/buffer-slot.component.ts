@@ -1,11 +1,14 @@
 import { Component, computed, HostBinding, inject, input, output } from '@angular/core';
 import { PlannerResolutionService } from '../../../services/planner-resolution.service';
 import type { TimelineBuffer } from '../../../program-types';
+import { ResizeHandleDirective } from '../../../services/timeline-interactions-engine/resize-handle.directive';
 
 
 @Component({
   selector: 'ui-buffer-slot',
-  imports: [],
+  imports: [
+    ResizeHandleDirective,
+  ],
   standalone: true,
   templateUrl: './buffer-slot.component.html',
   styleUrl: './buffer-slot.component.scss',

@@ -3,6 +3,7 @@ import { ArtistChipComponent } from '../../../artist-chip/artist-chip.component'
 import type { ArtistPerformanceSlot } from '../../../program-types';
 import { PlannerResolutionService } from '../../../services/planner-resolution.service';
 import { SlotSelectionService } from '../../../services/timeline-interactions-engine/element-selection/slot-selection.service';
+import { ResizeHandleDirective } from '../../../services/timeline-interactions-engine/resize-handle.directive';
 
 
 /**
@@ -47,6 +48,7 @@ import { SlotSelectionService } from '../../../services/timeline-interactions-en
   selector: 'ui-program-slot',
   imports: [
     ArtistChipComponent,
+    ResizeHandleDirective,
   ],
   templateUrl: './slot-planner.component.html',
   styleUrl: './slot-planner.component.scss',
