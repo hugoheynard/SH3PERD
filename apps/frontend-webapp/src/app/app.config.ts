@@ -8,6 +8,8 @@ import { provideClientHydration } from '@angular/platform-browser';
 import {provideHttpClient, withFetch, withInterceptors} from '@angular/common/http';
 import {PlaylistDisplayService} from './features/playlists/playlist-display.service';
 import {authInterceptor} from '../interceptors/auth.interceptor';
+import { TIMELINE_PROJECTOR } from './features/programs/services/timelineProjectionSystem/TimelineProjector';
+import { TimelineProjectionService } from './features/programs/services/timelineProjectionSystem/TimelineProjectionService';
 
 
 
@@ -23,6 +25,11 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([authInterceptor]),
       withFetch()
     ),
-    { provide: PlaylistDisplayService, useClass: PlaylistDisplayService }
+    { provide: PlaylistDisplayService, useClass: PlaylistDisplayService },
+    {
+      provide: TIMELINE_PROJECTOR,
+      useExisting: TimelineProjectionService
+    }
+
   ]
 };

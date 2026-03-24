@@ -5,6 +5,7 @@ import { CueSelectionService } from './cue-selection.service';
 
 /**
  * Façade for element selection
+ * //TODO : use or not?
  */
 @Injectable({
   providedIn: 'root'

@@ -3,6 +3,7 @@ import { DragSessionService } from '../../../core/drag-and-drop/drag-session.ser
 import { RoomLayoutRegistry } from './room-layout-registry.service';
 import { PlannerResolutionService } from './planner-resolution.service';
 import type { InteractionProjection } from './timeline-interactions-engine/interaction-context.types';
+import { TIMELINE_PROJECTOR } from './timelineProjectionSystem/TimelineProjector';
 
 
 /**
@@ -81,6 +82,7 @@ export class TimelineSpatialService {
   private drag = inject(DragSessionService);
   private layout = inject(RoomLayoutRegistry);
   private res = inject(PlannerResolutionService);
+  private projector = inject(TIMELINE_PROJECTOR);
 
   /**
    * Projects the current pointer position into timeline coordinates.
@@ -113,12 +115,16 @@ export class TimelineSpatialService {
     const rawMinutes = this.res.pxToMinutes(correctedY);
     const snappedMinutes = this.res.snap(rawMinutes);
 
-    const clamped = Math.max(0, snappedMinutes);
+    const timelineMinutes = this.projector.unproject(snappedMinutes);
+
+    const clamped = Math.max(0, timelineMinutes);
 
     return {
       room_id: room_id,
       minutes: clamped,
-      px: this.res.minuteToPx(clamped)
+      px: this.res.minuteToPx(
+        this.projector.project(clamped)
+      )
     };
   }
 }

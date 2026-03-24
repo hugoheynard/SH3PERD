@@ -3,6 +3,7 @@ import type { ArtistPerformanceSlot } from '../../program-types';
 import { ProgramStateService } from '../program-state.service';
 import { TimelineInteractionStore } from '../timeline-interactions-engine/timeline-interaction.store';
 import { minutesToTime, time_functions_utils } from '../../utils/time_functions_utils';
+import { TIMELINE_PROJECTOR } from '../timelineProjectionSystem/TimelineProjector';
 
 @Injectable({
   providedIn: 'root'
@@ -79,17 +80,32 @@ export class SlotSelectorService {
     return map;
   });
 
+  private projector = inject(TIMELINE_PROJECTOR);
+
   getSlotStartTime(slot: ArtistPerformanceSlot): string {
-    const programStartMinutes = time_functions_utils(this.state.program().startTime);
-    const absolute = programStartMinutes + slot.startMinutes;
+    const programStartMinutes = time_functions_utils(
+      this.state.program().startTime
+    );
+
+    // 👇 projection ici
+    const projectedStart = this.projector.project(slot.startMinutes);
+
+    const absolute = programStartMinutes + projectedStart;
+
     return minutesToTime(absolute);
-  };
+  }
 
 
   getSlotEndTime(slot: ArtistPerformanceSlot): string {
-    const programStartMinutes = time_functions_utils(this.state.program().startTime);
+    const programStartMinutes = time_functions_utils(
+      this.state.program().startTime
+    );
+
+    const projectedStart = this.projector.project(slot.startMinutes);
+
     const absolute =
-      programStartMinutes + slot.startMinutes + slot.duration;
+      programStartMinutes + projectedStart + slot.duration;
+
     return minutesToTime(absolute);
-  };
+  }
 }
