@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SlotResizeInteractionService } from '../slot-resize-interaction.service';
+import { ResizeInteractionService } from '../resize-interaction.service';
 
 describe('SlotResizeInteractionService', () => {
-  let service: SlotResizeInteractionService;
+  let service: ResizeInteractionService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SlotResizeInteractionService);
+    service = TestBed.inject(ResizeInteractionService);
   });
 
   it('should be created', () => {

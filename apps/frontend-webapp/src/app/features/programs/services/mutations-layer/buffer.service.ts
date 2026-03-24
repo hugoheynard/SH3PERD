@@ -3,6 +3,7 @@ import { BaseTimelineItemCRUD } from './BaseTimelineItemCRUD';
 import type { TimelineBuffer } from '../../program-types';
 import { PlannerSelectorService } from '../selector-layer/planner-selector.service';
 import { SlotService } from './slot.service';
+import { PlannerResolutionService } from '../planner-resolution.service';
 
 @Injectable({ providedIn: 'root' })
 export class BufferService
@@ -11,6 +12,8 @@ export class BufferService
   constructor() {
     super('timelineOffsets')
   }
+
+  private resolution = inject(PlannerResolutionService)
 
   createDefault(p: TimelineBuffer & { overrides?: Partial<TimelineBuffer> }
   ): TimelineBuffer {
@@ -48,6 +51,20 @@ export class BufferService
 
     // 2️⃣ Apply (batch)
     this.slotService.updateManySlotsStart(updates);
+  }
+
+
+  updateBufferDuration(id: string, duration: number) {
+
+    const snapped = Math.max(
+      this.resolution.snapMinutes(),
+      duration
+    );
+
+    this.patch(id, (buffer) => ({
+      ...buffer,
+      delta: snapped
+    }));
   }
 
 }

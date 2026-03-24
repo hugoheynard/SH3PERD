@@ -4,9 +4,10 @@ import { SlotService } from '../mutations-layer/slot.service';
 import type { ArtistPerformanceSlot } from '../../program-types';
 import { InsertLineService } from '../../timeline/insert-interaction-system/state-services/insert-line.service';
 import { TimelineInteractionStore } from './timeline-interaction.store';
-import { SlotResizeInteractionService } from './slot-resize-interaction.service';
+import { ResizeInteractionService } from './resize-interaction.service';
 import { SlotDragInteractionService } from './slot-drag-interaction.service';
 import { TimelineSpatialService } from '../timeline-spatial.service';
+import type { ResizeTarget } from '../../../../core/drag-and-drop/drag.types';
 
 
 /**
@@ -115,7 +116,7 @@ export class TimelineInteractionService {
   private insert = inject(InsertLineService);
   private slotServ = inject(SlotService);
   private interactionStore = inject(TimelineInteractionStore);
-  private resizeInteraction = inject(SlotResizeInteractionService);
+  private resizeInteraction = inject(ResizeInteractionService);
   private dragInteraction = inject(SlotDragInteractionService);
   private spatial = inject(TimelineSpatialService);
 
@@ -144,10 +145,10 @@ export class TimelineInteractionService {
    * Delegates resize logic to SlotResizeInteractionService.
    *
    * @param event - Pointer event that started the resize
-   * @param slot - The slot being resized
+   * @param target - The element being resized
    */
-  startResize(event: PointerEvent, slot: ArtistPerformanceSlot) {
-    this.resizeInteraction.start(event, slot);
+  startResize(event: PointerEvent, target: ResizeTarget) {
+    this.resizeInteraction.start(event, target);
   };
 
 
@@ -212,6 +213,7 @@ export class TimelineInteractionService {
     const dragging = this.interactionStore.draggingSlots();
 
     if (!dragging) {
+      this.resetAll();
       return;
     }
 

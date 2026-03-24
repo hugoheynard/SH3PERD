@@ -1,35 +1,38 @@
 import {
+  type AfterViewInit,
   Component,
+  computed,
+  type ElementRef,
+  HostListener,
   inject,
-  type OnInit, HostListener, type AfterViewInit, computed, ViewChild, type ElementRef,
+  type OnInit,
+  ViewChild,
 } from '@angular/core';
 
 import { SlotPlannerComponent } from '../timeline/elements/slot-planner/slot-planner.component';
 import { ProgramHeaderComponent } from '../program-header/program-header.component';
 
-import {
-  TimelineInteractionService
-} from '../services/timeline-interactions-engine/timeline-interaction.service';
+import { TimelineInteractionService } from '../services/timeline-interactions-engine/timeline-interaction.service';
 
 import { LayoutService } from '../../../core/services/layout.service';
 import { ProgramSidePanelComponent } from '../panels/program-side-panel/program-side-panel.component';
 import { TimeMarkersComponent } from '../timeline/ui/time-markers/time-markers.component';
 
+import { mockPerformanceSlotsTemplates } from '../utils/mockDATAS';
+import type { ArtistPerformanceSlot, TimelineBuffer, TimelineCue } from '../program-types';
 import {
-  mockPerformanceSlotsTemplates,
-} from '../utils/mockDATAS';
-import type {
-  ArtistPerformanceSlot, TimelineBuffer, TimelineCue,
-} from '../program-types';
-import { EditPerformanceSlotPopoverComponent } from '../popovers/edit-performance-slot-popover/edit-performance-slot-popover.component';
+  EditPerformanceSlotPopoverComponent,
+} from '../popovers/edit-performance-slot-popover/edit-performance-slot-popover.component';
 import { SlotService } from '../services/mutations-layer/slot.service';
 import { PlannerSelectorService } from '../services/selector-layer/planner-selector.service';
 import { PlannerDndInitService } from '../services/planner-init/planner-dnd-init.service';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
-import type { DragState } from '../../../core/drag-and-drop/drag.types';
+import { type DragState, ResizeTargetType } from '../../../core/drag-and-drop/drag.types';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 import { RoomColumnComponent } from '../timeline/ui/room-column/room-column.component';
-import { SlotSelectionService } from '../services/timeline-interactions-engine/element-selection/slot-selection.service';
+import {
+  SlotSelectionService,
+} from '../services/timeline-interactions-engine/element-selection/slot-selection.service';
 import { RoomLayoutRegistry } from '../services/room-layout-registry.service';
 import { TimelineInteractionStore } from '../services/timeline-interactions-engine/timeline-interaction.store';
 import { TimelineSpatialService } from '../services/timeline-spatial.service';
@@ -42,6 +45,8 @@ import { TimelineKeyboardController } from '../services/timeline-keyboard-contro
 import { PlannerInsertRenderInitService } from '../services/planner-init/planner-insert-render-init.service';
 import { SelectableDirective } from '../services/timeline-interactions-engine/element-selection/Selectable.directive';
 import { BufferSlotComponent } from '../timeline/elements/bufferblock/buffer-slot.component';
+import { ResizeInteractionService } from '../services/timeline-interactions-engine/resize-interaction.service';
+import { SlotDragInteractionService } from '../services/timeline-interactions-engine/slot-drag-interaction.service';
 
 
 @Component({
@@ -145,8 +150,14 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     this.interaction.startSlotDrag(event, slot);
   };
 
-  startElementResize(event: PointerEvent, slot: ArtistPerformanceSlot): void {
-    this.interaction.startResize(event, slot);
+  startSlotResize(event: PointerEvent, slot: ArtistPerformanceSlot): void {
+    this.interaction.startResize(event, {
+      id: slot.id,
+      roomId: slot.roomId,
+      startMinutes: slot.startMinutes,
+      duration: slot.duration,
+      type: ResizeTargetType.SLOT
+    });
   };
 
   //* ---------------- DROP HANDLERS ---------------- *//
@@ -284,9 +295,20 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     }
   };
 
+  private dragInteraction = inject(SlotDragInteractionService);
+  private resizeInteraction = inject(ResizeInteractionService);
+
   @HostListener('document:pointerup')
   onPointerUp() {
-    this.interaction.stop();
+    if (this.dragInteraction.isActive()) {
+      this.interaction.stop();
+      return;
+    }
+
+    if (this.resizeInteraction.isActive()) {
+      this.interaction.stop();
+      return;
+    }
   };
 
   /**
@@ -329,7 +351,13 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
   //BUFFER - WORKFLOW REWORK
   startBufferResize(event: PointerEvent, buffer: TimelineBuffer) {
-    console.log('startBufferResize', event, buffer);
+    this.interaction.startResize(event, {
+      id: buffer.id,
+      roomId: buffer.id,
+      startMinutes: buffer.atMinutes,
+      duration: buffer.delta,
+      type: ResizeTargetType.BUFFER,
+    });
   }
 
 }

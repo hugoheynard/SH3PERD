@@ -76,6 +76,10 @@ export class DragLayerComponent {
       return null;
     }
 
+    if (drag.type === 'resize') {
+      return null;
+    }
+
     const def = this.registry.get(drag.type);
     if (!def) {
       return null;

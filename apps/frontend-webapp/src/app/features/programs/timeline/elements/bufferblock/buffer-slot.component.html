@@ -2,4 +2,8 @@
   ⏱ +{{ duration() }} min
 </div>
 
-<div class="resize-handle" data-resize-handle></div>
+<div
+  class="resize-handle"
+  data-resize-handle
+  (pointerdown)="emitResizeStart($event)"
+></div>

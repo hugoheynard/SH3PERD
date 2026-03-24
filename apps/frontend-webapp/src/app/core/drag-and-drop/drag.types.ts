@@ -20,7 +20,8 @@ export type DragState = {
     data: DragPayloadMap[K];
     preview?: Type<any>;
   }
-}[DragType];
+}[DragType]
+  | { type: 'resize'; data: ResizeTarget };
 
 
 /**
@@ -45,5 +46,10 @@ export type ResizeTarget = {
   roomId: string;
   startMinutes: number;
   duration: number;
-  type: 'slot' | 'buffer';
+  type: ResizeTargetType;
 };
+
+export enum ResizeTargetType {
+  SLOT = 'slot',
+  BUFFER = 'buffer',
+}

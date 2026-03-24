@@ -62,9 +62,6 @@ export class PlannerSelectorService {
   buffers = this.bufferSelectors.buffers;
   buffersByRoom = this.bufferSelectors.buffersByRoom;
 
-  getBuffersForRoom(roomId: string){
-    return this.bufferSelectors.getBufferForRoom(roomId);
-  }
 
 
 

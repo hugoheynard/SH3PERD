@@ -202,4 +202,5 @@ export abstract class BaseTimelineItemCRUD<
   protected abstract createDefault(
     input: unknown
   ): ProgramState[K][number];
+
 }

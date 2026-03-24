@@ -44,7 +44,7 @@
                 [isDragging]="draggingIds().includes(slot.id)"
 
                 (slotPointerDown)="handleSlotPointerDown($event)"
-                (slotResizeStart)="startElementResize($event, slot)"
+                (slotResizeStart)="startSlotResize($event, slot)"
                 (removeArtist)="handleRemoveArtistFromSlot($event)"
                 (editSlot)="openEditPerformanceSlotPopover($event)" />
 
@@ -53,7 +53,7 @@
 
           }
 
-          @for(buffer of selector.getBuffersForRoom(room.id); track buffer.id) {
+          @for(buffer of selector.buffersByRoom().get(room.id); track buffer.id) {
             <ui-buffer-slot
               uiSelectable
               [buffer]="buffer"

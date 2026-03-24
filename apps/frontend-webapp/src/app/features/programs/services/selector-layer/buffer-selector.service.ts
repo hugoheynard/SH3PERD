@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, effect, inject, Injectable } from '@angular/core';
 import { ProgramStateService } from '../program-state.service';
 import type { TimelineBuffer } from '../../program-types';
 
@@ -7,6 +7,12 @@ import type { TimelineBuffer } from '../../program-types';
 })
 export class BufferSelectorService {
   private state = inject(ProgramStateService);
+
+  constructor() {
+    effect(() => {
+
+    })
+  }
 
   buffers = computed(() => this.state.program().timelineOffsets);
 
@@ -25,7 +31,4 @@ export class BufferSelectorService {
     return map;
   });
 
-  getBufferForRoom = (room_id: string) => {
-    return this.buffersByRoom().get(room_id) ?? [];
-  }
 }
