@@ -19,6 +19,73 @@
   scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
 }
 
+/* ══════════════════════════════════════════════════
+   MOBILE  (≤ 768px)  — top-bar mode
+   Side panel sits above the content instead of
+   beside it. Layout adapts to horizontal space.
+   ══════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  /* Host: let the page's max-height control collapse */
+  :host {
+    height: auto;
+    overflow: visible;
+  }
+
+  .side-panel {
+    height: auto;
+    overflow: visible;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  /* Stats section: horizontal strip instead of vertical column */
+  .panel-section:first-child {
+    padding: 10px 14px;
+  }
+
+  /* Quality badge becomes a compact inline pill */
+  .quality-badge {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+  }
+
+  .quality-value {
+    font-size: 22px;
+  }
+
+  /* Stat cards: horizontal row (3 items side-by-side) */
+  .stat-cards {
+    flex-direction: row;
+    gap: 6px;
+  }
+
+  .stat-card {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 6px;
+    text-align: center;
+  }
+
+  .stat-value { font-size: 16px; }
+
+  .stat-label {
+    font-size: 9px;
+    text-align: center;
+  }
+
+  /* Filter section: tighter */
+  .panel-section:not(:first-child) {
+    padding: 10px 14px 12px;
+  }
+}
+
 /* ── Sections ───────────────────────────────────── */
 
 .panel-section {
@@ -329,3 +396,4 @@
     border-color: rgba(99, 179, 237, 0.2);
   }
 }
+

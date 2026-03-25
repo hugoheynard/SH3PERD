@@ -25,7 +25,16 @@ export interface MusicLibraryState {
   versions: MusicVersion[];
   tabs: MusicTab[];
   activeTabId: string;
+  searchQuery: string;
+  savedTabConfigs: SavedTabConfig[];
 }
+
+export type SavedTabConfig = {
+  id: string;
+  name: string;
+  searchConfig: MusicSearchConfig;
+  createdAt: number;
+};
 
 export type MusicReference = {
   id: string;

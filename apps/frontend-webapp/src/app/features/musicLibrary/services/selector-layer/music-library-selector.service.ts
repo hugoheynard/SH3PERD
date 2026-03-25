@@ -3,6 +3,7 @@ import { ReferenceSelectorService } from './reference-selector.service';
 import { RepertoireSelectorService } from './repertoire-selector.service';
 import { TabSelectorService } from './tab-selector.service';
 import { VersionSelectorService } from './version-selector.service';
+import { MusicLibraryStateService } from '../music-library-state.service';
 
 /**
  * Facade selector service for the Music Library feature.
@@ -15,6 +16,7 @@ import { VersionSelectorService } from './version-selector.service';
 @Injectable({ providedIn: 'root' })
 export class MusicLibrarySelectorService {
 
+  private state = inject(MusicLibraryStateService);
   private referenceSelector = inject(ReferenceSelectorService);
   private repertoireSelector = inject(RepertoireSelectorService);
   private tabSelector = inject(TabSelectorService);
@@ -43,6 +45,7 @@ export class MusicLibrarySelectorService {
   activeTabId = this.tabSelector.activeTabId;
   activeTab = this.tabSelector.activeTab;
   activeResults = this.tabSelector.activeResults;
+  savedTabConfigs = computed(() => this.state.library().savedTabConfigs ?? []);
 
   /* ─── Stats ──────────────────────────────────────────── */
 

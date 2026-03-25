@@ -6,8 +6,8 @@
         <th>Artist</th>
         <th>Version</th>
         <th>Dur</th>
-        <th>BPM</th>
         <th>Genre</th>
+        <th>BPM</th>
         <th>MST</th>
         <th>NRG</th>
         <th>EFF</th>
@@ -64,6 +64,13 @@
                 />
               </td>
               <td>
+                <select class="edit-select" [(ngModel)]="editGenre">
+                  @for (g of genres; track g) {
+                    <option [value]="g">{{ g }}</option>
+                  }
+                </select>
+              </td>
+              <td>
                 <input
                   class="edit-input edit-input--bpm"
                   [(ngModel)]="editBpm"
@@ -72,13 +79,6 @@
                   placeholder="BPM"
                   (keydown.enter)="commitEdit(version.id)"
                 />
-              </td>
-              <td>
-                <select class="edit-select" [(ngModel)]="editGenre">
-                  @for (g of genres; track g) {
-                    <option [value]="g">{{ g }}</option>
-                  }
-                </select>
               </td>
               @for (cfg of editRatingFields; track cfg.field) {
                 <td class="col-rating">
@@ -119,8 +119,8 @@
               }
               <td class="col-versions"><span class="version-label">{{ version.label }}</span></td>
               <td class="col-dur">{{ formatDuration(version.durationSeconds) }}</td>
-              <td class="col-bpm">{{ version.bpm ?? '—' }}</td>
               <td><span class="genre-tag">{{ version.genre }}</span></td>
+              <td class="col-bpm">{{ version.bpm ?? '—' }}</td>
               @for (r of [version.mastery, version.energy, version.effort]; track $index) {
                 <td class="col-rating">
                   <span class="rating-val" [attr.data-level]="ratingLevel(r)">{{ r }}/4</span>
@@ -136,12 +136,16 @@
                     (click)="trackUploadRequested.emit(version.id)"
                   >↑ Upload</button>
                 } @else if (!version.analysisResult) {
-                  <button
-                    class="btn-track-action btn-track-action--analyse"
-                    type="button"
-                    title="Run audio analysis"
-                    (click)="analyzeRequested.emit(version.id)"
-                  >⚡ Analyse</button>
+                  @if (analysingIds().has(version.id)) {
+                    <span class="analysing-indicator">Analysing…</span>
+                  } @else {
+                    <button
+                      class="btn-track-action btn-track-action--analyse"
+                      type="button"
+                      title="Run audio analysis"
+                      (click)="analyzeRequested.emit(version.id)"
+                    >⚡ Analyse</button>
+                  }
                 } @else {
                   <span class="rating-val" [attr.data-level]="ratingLevel(version.analysisResult.quality)">
                     {{ version.analysisResult.quality }}/4

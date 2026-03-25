@@ -1,0 +1,112 @@
+<div class="tab-bar">
+  <div class="tabs-scroll">
+    @for (tab of tabs(); track tab.id) {
+      <button
+        class="tab"
+        [class.active]="tab.id === activeTabId()"
+        (click)="tabSelect.emit(tab.id)"
+        type="button"
+      >
+        @if (editingTabId() === tab.id) {
+          <input
+            class="tab-rename-input"
+            [(ngModel)]="editTitle"
+            (keydown.enter)="commitRename(tab.id)"
+            (keydown.escape)="cancelRename()"
+            (blur)="commitRename(tab.id)"
+            (click)="$event.stopPropagation()"
+            autofocus
+          />
+        } @else {
+          <span class="tab-title" (dblclick)="startRename(tab, $event)">{{ tab.title }}</span>
+        }
+        @if (tabs().length > 1) {
+          <span
+            class="tab-close"
+            (click)="onClose($event, tab.id)"
+            role="button"
+            aria-label="Close tab"
+          >×</span>
+        }
+      </button>
+    }
+  </div>
+
+  <button class="tab-add" (click)="tabAdd.emit()" type="button" aria-label="Add tab">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M12 5v14M5 12h14"/>
+    </svg>
+  </button>
+
+  <!-- Save / recall saved configs -->
+  <div class="tab-config-actions">
+
+    <!-- Save current tab -->
+    <button
+      class="tab-action-btn"
+      [class.active]="showSaveForm()"
+      type="button"
+      title="Save current tab configuration"
+      (click)="toggleSaveForm()"
+    >
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+        <polyline points="17 21 17 13 7 13 7 21"/>
+        <polyline points="7 3 7 8 15 8"/>
+      </svg>
+    </button>
+
+    <!-- Load saved config -->
+    <button
+      class="tab-action-btn"
+      [class.active]="showLoadMenu()"
+      type="button"
+      title="Load saved configuration"
+      (click)="toggleLoadMenu()"
+    >
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+      </svg>
+      @if (savedConfigs().length) {
+        <span class="config-count">{{ savedConfigs().length }}</span>
+      }
+    </button>
+
+    <!-- Inline save form -->
+    @if (showSaveForm()) {
+      <div class="tab-config-panel tab-config-panel--save">
+        <input
+          class="config-name-input"
+          [ngModel]="saveFormName()"
+          (ngModelChange)="saveFormName.set($event)"
+          placeholder="Config name…"
+          (keydown.enter)="submitSaveForm()"
+          (keydown.escape)="toggleSaveForm()"
+          autofocus
+        />
+        <button class="config-save-btn" type="button" (click)="submitSaveForm()">Save</button>
+      </div>
+    }
+
+    <!-- Load dropdown -->
+    @if (showLoadMenu()) {
+      <div class="tab-config-panel tab-config-panel--load">
+        @if (!savedConfigs().length) {
+          <span class="config-empty">No saved configs yet</span>
+        }
+        @for (cfg of savedConfigs(); track cfg.id) {
+          <div class="config-item" (click)="onLoadConfig(cfg)">
+            <span class="config-item-name">{{ cfg.name }}</span>
+            <button
+              class="config-item-delete"
+              type="button"
+              title="Delete"
+              (click)="onDeleteConfig(cfg.id, $event)"
+            >×</button>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>

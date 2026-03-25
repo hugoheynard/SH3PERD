@@ -1,4 +1,14 @@
 import { computed, inject, Injectable } from '@angular/core';
+
+function fuzzyMatch(query: string, target: string): boolean {
+  const q = query.toLowerCase();
+  const t = target.toLowerCase();
+  let qi = 0;
+  for (let i = 0; i < t.length && qi < q.length; i++) {
+    if (t[i] === q[qi]) qi++;
+  }
+  return qi === q.length;
+}
 import { MusicLibraryStateService } from '../music-library-state.service';
 import { ReferenceSelectorService } from './reference-selector.service';
 import { RepertoireSelectorService } from './repertoire-selector.service';
@@ -49,6 +59,13 @@ export class TabSelectorService {
         const versions = versionsByRefId.get(ref.id) ?? [];
         return versions.some(v => this.versionMatchesFilter(v, dataFilter));
       });
+    }
+
+    const query = (this.state.library().searchQuery ?? '').trim();
+    if (query) {
+      results = results.filter(ref =>
+        fuzzyMatch(query, ref.title) || fuzzyMatch(query, ref.originalArtist)
+      );
     }
 
     return results;

@@ -12,9 +12,10 @@ import type { MusicReference, MusicVersion, Rating } from '../../music-library-t
 })
 export class MusicReferenceCardComponent {
 
-  readonly reference = input.required<MusicReference>();
-  readonly versions  = input<MusicVersion[]>([]);
-  readonly entryId   = input<string | null>(null);
+  readonly reference    = input.required<MusicReference>();
+  readonly versions     = input<MusicVersion[]>([]);
+  readonly entryId      = input<string | null>(null);
+  readonly analysingIds = input<Set<string>>(new Set());
 
   readonly versionAdded         = output<AddVersionPayload>();
   readonly trackUploadRequested = output<string>(); // version id

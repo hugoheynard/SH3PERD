@@ -154,7 +154,7 @@
 .version-ratings {
   display: flex;
   gap: 10px;
-  margin-left: auto;  /* push ratings + quality to the right */
+  margin-left: auto;
   flex-shrink: 0;
 }
 
@@ -199,11 +199,21 @@
 /* ── Version quality cell ───────────────────────── */
 
 .version-quality {
+  grid-area: quality;
   display: flex;
   align-items: center;
   flex-shrink: 0;
   padding-left: 10px;
   border-left: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ── Analysing indicator ────────────────────────── */
+
+.analysing-indicator {
+  font-size: 10px;
+  color: #63b3ed;
+  font-style: italic;
+  white-space: nowrap;
 }
 
 /* Upload / Analyse action buttons */
@@ -302,3 +312,4 @@
   color: var(--text-muted, #718096);
   transition: color 0.12s;
 }
+

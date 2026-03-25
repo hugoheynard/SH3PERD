@@ -22,6 +22,8 @@ export class MusicLibraryStateService {
       },
     ],
     activeTabId: 'repertoire_me',
+    searchQuery: '',
+    savedTabConfigs: [],
   });
 
   readonly library = computed(() => this.state());

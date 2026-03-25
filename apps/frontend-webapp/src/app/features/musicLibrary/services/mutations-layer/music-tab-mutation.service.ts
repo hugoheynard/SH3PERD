@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BaseMusicItemCRUD } from './BaseMusicItemCRUD';
-import type { MusicSearchConfig, MusicTab } from '../../music-library-types';
+import type { MusicSearchConfig, MusicTab, SavedTabConfig } from '../../music-library-types';
 
 @Injectable({ providedIn: 'root' })
 export class MusicTabMutationService extends BaseMusicItemCRUD<'tabs'> {
@@ -102,6 +102,38 @@ export class MusicTabMutationService extends BaseMusicItemCRUD<'tabs'> {
           ...patch,
         },
       },
+    } as MusicTab));
+  }
+
+  setSearchQuery(query: string): void {
+    this.state.updateState(state => ({ ...state, searchQuery: query }));
+  }
+
+  saveTabConfig(name: string, searchConfig: MusicSearchConfig): void {
+    const config: SavedTabConfig = {
+      id: crypto.randomUUID(),
+      name,
+      searchConfig,
+      createdAt: Date.now(),
+    };
+    this.state.updateState(state => ({
+      ...state,
+      savedTabConfigs: [...(state.savedTabConfigs ?? []), config],
+    }));
+  }
+
+  deleteTabConfig(id: string): void {
+    this.state.updateState(state => ({
+      ...state,
+      savedTabConfigs: (state.savedTabConfigs ?? []).filter(c => c.id !== id),
+    }));
+  }
+
+  applyTabConfig(tabId: string, searchConfig: MusicSearchConfig): void {
+    this.patch(tabId, item => ({
+      ...item,
+      searchConfig,
+      autoTitle: false,
     } as MusicTab));
   }
 

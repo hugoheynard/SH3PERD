@@ -138,3 +138,189 @@
     color: #63b3ed;
   }
 }
+
+/* ── Rename input ───────────────────────────────── */
+
+.tab-rename-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(99, 179, 237, 0.5);
+  outline: none;
+  color: var(--text-primary, #e2e8f0);
+  font-size: 12px;
+  font-weight: 500;
+  width: 100px;
+  padding: 0 2px;
+  line-height: 1.4;
+}
+
+/* ── Config save/load area ──────────────────────── */
+
+.tab-config-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 6px;
+  flex-shrink: 0;
+  padding-bottom: 2px;
+}
+
+.tab-action-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: var(--text-muted, #718096);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+  &:hover,
+  &.active {
+    background: rgba(99, 179, 237, 0.12);
+    border-color: rgba(99, 179, 237, 0.3);
+    color: #63b3ed;
+  }
+}
+
+.config-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  background: #63b3ed;
+  border-radius: 7px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #1b2028;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ── Floating panels (save form + load menu) ────── */
+
+.tab-config-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 100;
+  background: var(--panel-color, #171c23);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  min-width: 220px;
+
+  /* Save form */
+  &--save {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+  }
+
+  /* Load menu */
+  &--load {
+    padding: 6px;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+}
+
+.config-name-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+  padding: 5px 8px;
+  font-size: 12px;
+  color: var(--text-primary, #e2e8f0);
+  outline: none;
+  transition: border-color 0.15s;
+
+  &::placeholder { color: var(--text-muted, #718096); }
+  &:focus { border-color: rgba(99, 179, 237, 0.4); }
+}
+
+.config-save-btn {
+  padding: 5px 12px;
+  background: rgba(99, 179, 237, 0.15);
+  border: 1px solid rgba(99, 179, 237, 0.3);
+  border-radius: 5px;
+  color: #63b3ed;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s;
+
+  &:hover { background: rgba(99, 179, 237, 0.25); }
+}
+
+.config-empty {
+  display: block;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--text-muted, #718096);
+  font-style: italic;
+  text-align: center;
+}
+
+.config-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.1s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.config-item-name {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary, #a0aec0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.config-item-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-muted, #718096);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.1s, color 0.1s;
+  opacity: 0;
+
+  .config-item:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: rgba(251, 113, 133, 0.15);
+    color: #fb7185;
+  }
+}

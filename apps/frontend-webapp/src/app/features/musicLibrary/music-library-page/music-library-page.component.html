@@ -1,3 +1,6 @@
+<!-- Hidden file input for track upload / analyse -->
+<input type="file" #fileInput accept="audio/*" class="file-input-hidden" (change)="onFileSelected($event)" />
+
 <!-- Add Entry command palette -->
 @if (entryPanelOpen()) {
   <app-add-entry-panel
@@ -8,27 +11,36 @@
 
 <app-music-library-header
   [totalReferences]="selector.totalReferences()"
+  (searchQueryChange)="onSearchQueryChange($event)"
 />
 
 <div class="library">
 
-  <app-music-tab-bar
-    [tabs]="selector.tabs()"
-    [activeTabId]="selector.activeTabId()"
-    (tabSelect)="onTabSelect($event)"
-    (tabAdd)="onTabAdd()"
-    (tabClose)="onTabClose($event)"
+  <!-- Side panel: left sidebar on desktop, collapsible top panel on mobile -->
+  <app-music-library-side-panel
+    class="side-panel"
+    [class.panel-open]="mobilePanelOpen()"
+    [totalReferences]="selector.totalReferences()"
+    [totalRepertoire]="selector.totalRepertoireEntries()"
+    [averageMastery]="selector.averageMastery()"
+    [averageQuality]="selector.averageQuality()"
+    [activeTab]="selector.activeTab()"
   />
 
-  <div class="library-body">
+  <!-- Main content: tab bar + results -->
+  <div class="library-content">
 
-    <app-music-library-side-panel
-      class="side-panel"
-      [totalReferences]="selector.totalReferences()"
-      [totalRepertoire]="selector.totalRepertoireEntries()"
-      [averageMastery]="selector.averageMastery()"
-      [averageQuality]="selector.averageQuality()"
-      [activeTab]="selector.activeTab()"
+    <app-music-tab-bar
+      [tabs]="selector.tabs()"
+      [activeTabId]="selector.activeTabId()"
+      [savedConfigs]="selector.savedTabConfigs()"
+      (tabSelect)="onTabSelect($event)"
+      (tabAdd)="onTabAdd()"
+      (tabClose)="onTabClose($event)"
+      (tabRename)="onTabRename($event)"
+      (configSave)="onConfigSave($event)"
+      (configLoad)="onConfigLoad($event)"
+      (configDelete)="onConfigDelete($event)"
     />
 
     <div class="results-area">
@@ -39,6 +51,17 @@
         </span>
 
         <div class="toolbar-actions">
+          <!-- Mobile only: toggle side panel -->
+          <button class="btn-filters-toggle" type="button"
+                  [class.active]="mobilePanelOpen()"
+                  (click)="toggleMobilePanel()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" y1="6" x2="20" y2="6"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+              <line x1="11" y1="18" x2="13" y2="18"/>
+            </svg>
+            Filtres
+          </button>
           <button class="btn-add-entry" type="button" (click)="entryPanelOpen.set(true)">
             <span>+</span> Add song
           </button>
@@ -67,6 +90,7 @@
                 [reference]="ref"
                 [versions]="selector.versionsByReferenceId().get(ref.id) ?? []"
                 [entryId]="entryIdForRef(ref.id)"
+                [analysingIds]="analysingVersionIds()"
                 (versionAdded)="onVersionAdded($event)"
                 (trackUploadRequested)="onTrackUploadRequested($event)"
                 (analyzeRequested)="onAnalyzeRequested($event)"
@@ -88,6 +112,7 @@
         } @else {
           <app-music-repertoire-table
             [references]="selector.activeResults()"
+            [analysingIds]="analysingVersionIds()"
             (versionAdded)="onVersionAdded($event)"
             (versionUpdated)="onVersionUpdated($event)"
             (trackUploadRequested)="onTrackUploadRequested($event)"

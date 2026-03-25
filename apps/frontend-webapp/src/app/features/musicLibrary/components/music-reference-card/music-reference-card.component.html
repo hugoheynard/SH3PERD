@@ -17,14 +17,14 @@
     @for (version of versions(); track version.id) {
       <div class="version-row">
         <span class="version-label">{{ version.label }}</span>
+
         @if (version.durationSeconds) {
           <span class="version-dur">{{ formatDuration(version.durationSeconds) }}</span>
         }
+        <span class="version-genre">{{ version.genre }}</span>
         @if (version.bpm) {
           <span class="version-bpm">{{ version.bpm }} bpm</span>
         }
-        <span class="version-genre">{{ version.genre }}</span>
-
         <div class="version-ratings">
           @for (row of [
             { key: 'mastery', label: 'MST', val: version.mastery },
@@ -55,12 +55,11 @@
               (click)="trackUploadRequested.emit(version.id)"
             >↑ Upload track</button>
           } @else if (!version.analysisResult) {
-            <button
-              class="btn-track-action btn-track-action--analyse"
-              type="button"
-              title="Run audio analysis"
-              (click)="analyzeRequested.emit(version.id)"
-            >⚡ Analyse</button>
+            @if (analysingIds().has(version.id)) {
+              <span class="analysing-indicator">Analysing…</span>
+            } @else {
+              <button class="btn-track-action btn-track-action--analyse" type="button" title="Run audio analysis" (click)="analyzeRequested.emit(version.id)">⚡ Analyse</button>
+            }
           } @else {
             <div class="rating-group">
               <span class="rating-label">QLT</span>

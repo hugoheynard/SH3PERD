@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { MusicLibrarySelectorService } from '../services/selector-layer/music-library-selector.service';
 import { MusicTabMutationService } from '../services/mutations-layer/music-tab-mutation.service';
 import { MusicReferenceMutationService } from '../services/mutations-layer/music-reference-mutation.service';
@@ -13,6 +13,8 @@ import { AddEntryPanelComponent } from '../components/add-entry-panel/add-entry-
 import type { AddEntryResult } from '../components/add-entry-panel/add-entry-panel.component';
 import type { AddVersionPayload } from '../services/mutations-layer/music-version-mutation.service';
 import type { VersionEditPayload } from '../components/music-repertoire-table/music-repertoire-table.component';
+import { AudioAnalyzerService } from '../../audioAnalyzer/audio-analyzer.service';
+import type { AudioAnalysisSnapshot, Rating, SavedTabConfig, MusicSearchConfig } from '../music-library-types';
 
 @Component({
   selector: 'app-music-library-page',
@@ -30,14 +32,23 @@ import type { VersionEditPayload } from '../components/music-repertoire-table/mu
 })
 export class MusicLibraryPageComponent {
 
-  public selector = inject(MusicLibrarySelectorService);
-  private tabService       = inject(MusicTabMutationService);
-  private refMutation      = inject(MusicReferenceMutationService);
-  private repertoireMut    = inject(MusicRepertoireMutationService);
-  private versionMut       = inject(MusicVersionMutationService);
+  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
 
-  readonly viewMode      = signal<'cards' | 'table'>('cards');
-  readonly entryPanelOpen = signal(false);
+  public selector= inject(MusicLibrarySelectorService);
+  private tabService= inject(MusicTabMutationService);
+  private refMutation= inject(MusicReferenceMutationService);
+  private repertoireMut= inject(MusicRepertoireMutationService);
+  private versionMut= inject(MusicVersionMutationService);
+  private audioAnalyzer= inject(AudioAnalyzerService);
+
+  readonly viewMode            = signal<'cards' | 'table'>('cards');
+  readonly entryPanelOpen      = signal(false);
+  readonly analysingVersionIds = signal<Set<string>>(new Set());
+  readonly mobilePanelOpen     = signal(false);
+
+  private pendingVersionId: string | null = null;
+  private pendingMode: 'upload' | 'analyse' = 'upload';
+  private trackFiles = new Map<string, File>();
 
   /* ── Tabs ── */
 
@@ -45,8 +56,32 @@ export class MusicLibraryPageComponent {
   onTabAdd(): void               { this.tabService.addDefaultTab(); }
   onTabClose(id: string): void   { this.tabService.closeTab(id); }
 
+  onSearchQueryChange(query: string): void {
+    this.tabService.setSearchQuery(query);
+  }
+
+  onTabRename(event: { id: string; title: string }): void {
+    this.tabService.updateTabTitle(event.id, event.title);
+  }
+
+  onConfigSave(event: { name: string; searchConfig: MusicSearchConfig }): void {
+    this.tabService.saveTabConfig(event.name, event.searchConfig);
+  }
+
+  onConfigLoad(config: SavedTabConfig): void {
+    this.tabService.applyTabConfig(this.selector.activeTabId(), config.searchConfig);
+  }
+
+  onConfigDelete(id: string): void {
+    this.tabService.deleteTabConfig(id);
+  }
+
   toggleView(): void {
     this.viewMode.update(v => v === 'cards' ? 'table' : 'cards');
+  }
+
+  toggleMobilePanel(): void {
+    this.mobilePanelOpen.update(v => !v);
   }
 
   /* ── Add entry ── */
@@ -75,15 +110,67 @@ export class MusicLibraryPageComponent {
   /* ── Track upload / analysis ── */
 
   onTrackUploadRequested(versionId: string): void {
-    // TODO: open file picker, upload to storage, then:
-    // this.versionMut.markTrackUploaded(versionId);
-    console.log('[MusicLibrary] Upload track requested for version', versionId);
+    this.pendingVersionId = versionId;
+    this.pendingMode = 'upload';
+    this.fileInputRef.nativeElement.click();
   }
 
   onAnalyzeRequested(versionId: string): void {
-    // TODO: open file picker (or use already-uploaded track), pipe through AudioAnalyzerService, then:
-    // this.versionMut.saveAnalysis(versionId, snapshot);
-    console.log('[MusicLibrary] Analysis requested for version', versionId);
+    const file = this.trackFiles.get(versionId);
+    if (file) {
+      this.startAnalysis(versionId, file);
+    } else {
+      this.pendingVersionId = versionId;
+      this.pendingMode = 'analyse';
+      this.fileInputRef.nativeElement.click();
+    }
+  }
+
+  onFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    (event.target as HTMLInputElement).value = '';
+    if (!file || !this.pendingVersionId) return;
+    const versionId = this.pendingVersionId;
+    this.pendingVersionId = null;
+    this.trackFiles.set(versionId, file);
+    if (this.pendingMode === 'upload') {
+      this.versionMut.markTrackUploaded(versionId);
+    } else {
+      this.startAnalysis(versionId, file);
+    }
+  }
+
+  private startAnalysis(versionId: string, file: File): void {
+    this.analysingVersionIds.update(s => new Set([...s, versionId]));
+    this.audioAnalyzer.analyze(file).subscribe({
+      next: (event) => {
+        if (event.type === 'result') {
+          const snapshot = this.toSnapshot(event.report);
+          this.versionMut.saveAnalysis(versionId, snapshot);
+          this.analysingVersionIds.update(s => { const n = new Set(s); n.delete(versionId); return n; });
+        }
+      },
+      error: (err) => {
+        console.error('[MusicLibrary] Analysis failed for', versionId, err);
+        this.analysingVersionIds.update(s => { const n = new Set(s); n.delete(versionId); return n; });
+      },
+    });
+  }
+
+  private toSnapshot(report: import('../../audioAnalyzer/audio-analysis-types').AudioAnalysisReport): AudioAnalysisSnapshot {
+    let quality: Rating;
+    if (report.clippingRatio < 0.001 && report.SNRdB > 50 && report.truePeakdBTP < -1) quality = 4;
+    else if (report.clippingRatio < 0.005 && report.SNRdB > 35) quality = 3;
+    else if (report.clippingRatio < 0.02 && report.SNRdB > 20) quality = 2;
+    else quality = 1;
+    return {
+      integratedLUFS: report.integratedLUFS,
+      loudnessRange:  report.loudnessRange,
+      truePeakdBTP:   report.truePeakdBTP,
+      SNRdB:          report.SNRdB,
+      clippingRatio:  report.clippingRatio,
+      quality,
+    };
   }
 
   /* ── Helpers ── */

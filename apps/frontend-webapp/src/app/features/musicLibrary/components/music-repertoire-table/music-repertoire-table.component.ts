@@ -28,7 +28,8 @@ export class MusicRepertoireTableComponent {
 
   private selector = inject(MusicLibrarySelectorService);
 
-  readonly references = input<MusicReference[]>([]);
+  readonly references   = input<MusicReference[]>([]);
+  readonly analysingIds = input<Set<string>>(new Set());
 
   readonly versionAdded         = output<AddVersionPayload>();
   readonly versionUpdated       = output<VersionEditPayload>();

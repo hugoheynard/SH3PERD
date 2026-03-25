@@ -10,22 +10,12 @@
 .library {
   flex: 1;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
+  display: flex;           /* row: side-panel | library-content */
   background: var(--content-page-bg-color, #282e39);
   overflow: hidden;
 }
 
-/* ── Body (side-panel + results) ────────────────── */
-
-.library-body {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  overflow: hidden;
-}
-
-/* ── Side panel ─────────────────────────────────── */
+/* ── Side panel (desktop: left sidebar) ─────────── */
 
 .side-panel {
   width: 220px;
@@ -33,17 +23,27 @@
   flex-shrink: 0;
 }
 
-/* ── Results area ───────────────────────────────── */
+/* ── Library content (tab-bar + results) ────────── */
 
-.results-area {
+.library-content {
   flex: 1;
   min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
-/* ── Scroll container (toolbar is sticky above) ─── */
+/* ── Results area ───────────────────────────────── */
+
+.results-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Scroll container ───────────────────────────── */
 
 .results-scroll {
   flex: 1;
@@ -57,9 +57,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 10px 16px 8px;
-
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   flex-shrink: 0;
 }
@@ -74,6 +72,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+/* Mobile filter toggle — hidden on desktop */
+.btn-filters-toggle {
+  display: none;
 }
 
 .btn-add-entry {
@@ -100,17 +103,13 @@
   display: flex;
   align-items: center;
   gap: 5px;
-
   padding: 4px 10px;
-
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
-
   color: var(--text-secondary, #a0aec0);
   font-size: 11px;
   font-weight: 500;
-
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 
@@ -138,23 +137,90 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-
   padding: 80px 0;
-
   color: var(--text-muted, #718096);
 
-  svg {
-    opacity: 0.4;
-  }
-
-  span {
-    font-size: 13px;
-    font-weight: 500;
-  }
+  svg { opacity: 0.4; }
+  span { font-size: 13px; font-weight: 500; }
 }
 
 .empty-hint {
   font-size: 11px !important;
   font-weight: 400 !important;
   opacity: 0.7;
+}
+
+/* ── Hidden file input ──────────────────────────── */
+
+.file-input-hidden { display: none; }
+
+/* ══════════════════════════════════════════════════
+   MOBILE  (≤ 768px)
+   Layout: column — side panel collapses at top,
+   then tab bar, then results
+   ══════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  /* Stack side-panel above library-content */
+  .library {
+    flex-direction: column;
+    overflow: visible;     /* let children own their scroll */
+    overflow-x: hidden;
+  }
+
+  /* Side panel: collapsed by default, slides down when open */
+  .side-panel {
+    width: 100%;
+    min-width: 0;
+    max-height: 0;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: max-height 0.3s ease;
+
+    &.panel-open {
+      max-height: 540px;   /* enough for stats + filters */
+      overflow-y: auto;
+    }
+  }
+
+  /* library-content takes remaining height and scrolls internally */
+  .library-content {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* Toolbar: tighter, show filter toggle */
+  .results-toolbar {
+    padding: 8px 12px 6px;
+  }
+
+  .btn-filters-toggle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: var(--text-secondary, #a0aec0);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+
+    &:hover,
+    &.active {
+      background: rgba(99, 179, 237, 0.1);
+      border-color: rgba(99, 179, 237, 0.3);
+      color: #63b3ed;
+    }
+  }
+
+  /* Cards: tighter padding */
+  .cards-list {
+    padding: 10px;
+    gap: 6px;
+  }
 }
