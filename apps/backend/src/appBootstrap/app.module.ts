@@ -16,6 +16,7 @@ import { MusicModule } from '../music/music.module.js';
 import { UserGroupsModule } from '../userGroups/user-groups.module.js';
 import { UserProfileModule } from '../user/profile/user-profile.module.js';
 import { GlobalCqrsModule } from './global-cqrs.module.js';
+import { CompanyModule } from '../company/company.module.js';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { GlobalCqrsModule } from './global-cqrs.module.js';
     UserModule,
     UserProfileModule,
     ContractModule,
+    CompanyModule,
     ProtectedModule,
     // ⚠️ Prefix split
     RouterModule.register([
@@ -54,6 +56,7 @@ import { GlobalCqrsModule } from './global-cqrs.module.js';
           { path: 'music', module: MusicModule },
           { path: 'contracts', module: ContractModule },
           { path: 'user-groups', module: UserGroupsModule },
+          { path: 'companies', module: CompanyModule },
         ]
       },
     ]),

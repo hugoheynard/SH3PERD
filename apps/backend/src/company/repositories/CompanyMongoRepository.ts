@@ -1,15 +1,20 @@
 import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type { TCompanyRecord } from '@sh3pherd/shared-types';
+import type { TCompanyRecord, TCompanyId } from '@sh3pherd/shared-types';
+import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
+
+export interface ICompanyRepository extends IBaseCRUD<TCompanyRecord> {
+  findById(id: TCompanyId): Promise<TCompanyRecord | null>;
+}
 
 export class CompanyMongoRepository
   extends BaseMongoRepository<TCompanyRecord>
-  //implements ICompanyRepository
+  implements ICompanyRepository
 {
   constructor(input: TBaseMongoRepoDeps) {
     super(input);
-  };
+  }
 
-  async saveOne(doc: TCompanyRecord): Promise<boolean> {
-    return this.save(doc)
-  };
+  async findById(id: TCompanyId): Promise<TCompanyRecord | null> {
+    return this.findOne({ filter: { id } });
+  }
 }

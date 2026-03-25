@@ -83,41 +83,49 @@
       </div>
 
       <div class="results-scroll">
-        @if (viewMode() === 'cards') {
-          <div class="cards-list">
-            @for (ref of selector.activeResults(); track ref.id) {
-              <app-music-reference-card
-                [reference]="ref"
-                [versions]="selector.versionsByReferenceId().get(ref.id) ?? []"
-                [entryId]="entryIdForRef(ref.id)"
-                [analysingIds]="analysingVersionIds()"
-                (versionAdded)="onVersionAdded($event)"
-                (trackUploadRequested)="onTrackUploadRequested($event)"
-                (analyzeRequested)="onAnalyzeRequested($event)"
-              />
-            }
-
-            @if (selector.activeResults().length === 0) {
-              <div class="empty-state">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M9 18V5l12-2v13"/>
-                  <circle cx="6" cy="18" r="3"/>
-                  <circle cx="18" cy="16" r="3"/>
-                </svg>
-                <span>No results found</span>
-                <span class="empty-hint">Try adjusting the tab search configuration</span>
-              </div>
-            }
-          </div>
-        } @else {
-          <app-music-repertoire-table
-            [references]="selector.activeResults()"
-            [analysingIds]="analysingVersionIds()"
-            (versionAdded)="onVersionAdded($event)"
-            (versionUpdated)="onVersionUpdated($event)"
-            (trackUploadRequested)="onTrackUploadRequested($event)"
-            (analyzeRequested)="onAnalyzeRequested($event)"
+        @if (selector.activeTab()?.searchConfig?.searchMode === 'cross' && selector.crossContext()) {
+          @let ctx = selector.crossContext()!;
+          <app-music-cross-table
+            [members]="ctx.members"
+            [results]="ctx.results"
           />
+        } @else {
+          @if (viewMode() === 'cards') {
+            <div class="cards-list">
+              @for (ref of selector.activeResults(); track ref.id) {
+                <app-music-reference-card
+                  [reference]="ref"
+                  [versions]="selector.versionsByReferenceId().get(ref.id) ?? []"
+                  [entryId]="entryIdForRef(ref.id)"
+                  [analysingIds]="analysingVersionIds()"
+                  (versionAdded)="onVersionAdded($event)"
+                  (trackUploadRequested)="onTrackUploadRequested($event)"
+                  (analyzeRequested)="onAnalyzeRequested($event)"
+                />
+              }
+
+              @if (selector.activeResults().length === 0) {
+                <div class="empty-state">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M9 18V5l12-2v13"/>
+                    <circle cx="6" cy="18" r="3"/>
+                    <circle cx="18" cy="16" r="3"/>
+                  </svg>
+                  <span>No results found</span>
+                  <span class="empty-hint">Try adjusting the tab search configuration</span>
+                </div>
+              }
+            </div>
+          } @else {
+            <app-music-repertoire-table
+              [references]="selector.activeResults()"
+              [analysingIds]="analysingVersionIds()"
+              (versionAdded)="onVersionAdded($event)"
+              (versionUpdated)="onVersionUpdated($event)"
+              (trackUploadRequested)="onTrackUploadRequested($event)"
+              (analyzeRequested)="onAnalyzeRequested($event)"
+            />
+          }
         }
       </div>
 

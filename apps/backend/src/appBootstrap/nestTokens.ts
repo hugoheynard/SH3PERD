@@ -25,3 +25,8 @@ export const MUSIC_VERSION_REPO = Symbol('MUSIC_VERSION_REPO');
 export const MUSIC_REPERTOIRE_REPO = Symbol('MUSIC_REPERTOIRE_REPO');
 
 export const CONTRACT_SCOPED_GUARD = Symbol('CONTRACT_SCOPED_GUARD');
+
+// COMPANY
+export const COMPANY_REPO               = Symbol('COMPANY_REPO');
+export const CAST_REPO                  = Symbol('CAST_REPO');
+export const CAST_MEMBERSHIP_EVENT_REPO = Symbol('CAST_MEMBERSHIP_EVENT_REPO');

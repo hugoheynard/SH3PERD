@@ -73,4 +73,8 @@ export class MusicLibrarySelectorService {
     const sum = analysed.reduce((acc, v) => acc + v.analysisResult!.quality, 0);
     return Math.round((sum / analysed.length) * 10) / 10;
   });
+
+  /* ─── Cross context ───────────────────────────────── */
+
+  readonly crossContext = computed(() => this.state.library().crossContext ?? null);
 }

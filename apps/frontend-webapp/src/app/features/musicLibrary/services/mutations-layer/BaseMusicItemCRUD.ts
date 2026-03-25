@@ -4,7 +4,7 @@ import type { MusicLibraryState } from '../../music-library-types';
 
 type ArrayKeys<T> = {
   [K in keyof T]: T[K] extends any[] ? K : never
-}[keyof T];
+}[keyof T] & keyof T;
 
 type Exact<T, U extends T> =
   U & Record<Exclude<keyof U, keyof T>, never>;

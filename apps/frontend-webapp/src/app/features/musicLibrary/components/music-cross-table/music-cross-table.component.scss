@@ -1,0 +1,245 @@
+:host {
+  display: block;
+}
+
+.cross-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Filter bar ──────────────────────────────────────────── */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: var(--text-muted, #718096);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: rgba(99, 179, 237, 0.08);
+    border-color: rgba(99, 179, 237, 0.35);
+    color: #63b3ed;
+  }
+
+  &.active {
+    background: rgba(99, 179, 237, 0.15);
+    border-color: rgba(99, 179, 237, 0.5);
+    color: #63b3ed;
+    font-weight: 600;
+  }
+}
+
+.filter-count {
+  font-size: 11px;
+  color: var(--text-muted, #718096);
+  margin-left: auto;
+}
+
+/* ── Scroll container ────────────────────────────────────── */
+
+.cross-scroll {
+  overflow-x: auto;
+}
+
+/* ── Table ───────────────────────────────────────────────── */
+
+.cross-table {
+  border-collapse: separate;
+  border-spacing: 0 4px;
+  width: 100%;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+
+.header-row th {
+  padding: 2px 8px 8px;
+}
+
+.th-ref {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted, #718096);
+  text-align: left;
+  min-width: 210px;
+}
+
+.th-member {
+  text-align: center;
+  min-width: 96px;
+}
+
+/* ── Member chip — même style qu'artist-chip ─────────────── */
+
+.member-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-lg, 20px);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  transition: background 0.18s ease, transform 0.12s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.6);
+    transform: translateY(-1px);
+  }
+}
+
+/* ── Reference rows ──────────────────────────────────────── */
+
+.ref-row td {
+  background: var(--card-color, #2c323d);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 8px 12px;
+  transition: background 0.12s;
+
+  &:first-child {
+    border-left: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 7px 0 0 7px;
+  }
+
+  &:last-child {
+    border-right: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 0 7px 7px 0;
+  }
+}
+
+.ref-row:hover td {
+  background: color-mix(in srgb, var(--card-color, #2c323d) 85%, white);
+}
+
+/* Trio — accent bleu, comme les ratings max */
+.ref-row.compat-trio td:first-child {
+  border-left: 3px solid #63b3ed;
+}
+
+/* Quartet — amber */
+.ref-row.compat-quartet td:first-child {
+  border-left: 3px solid #f6ad55;
+}
+
+/* ── Reference cell ──────────────────────────────────────── */
+
+.td-ref {
+  min-width: 210px;
+}
+
+.ref-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #e2e8f0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+.ref-artist {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted, #718096);
+  margin-top: 1px;
+  white-space: nowrap;
+}
+
+/* ── Member cell ─────────────────────────────────────────── */
+
+.td-member {
+  text-align: center;
+  vertical-align: middle;
+  padding: 8px;
+}
+
+.version-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+/* ── Ratings (identiques au reference-card) ──────────────── */
+
+.rating-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.rating-label {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted, #718096);
+}
+
+.rating-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.1s ease;
+
+  &.filled {
+    border-color: transparent;
+
+    &[data-level='low']    { background: #fc8181; }
+    &[data-level='medium'] { background: #f6ad55; }
+    &[data-level='high']   { background: #68d391; }
+    &[data-level='max']    { background: #63b3ed; }
+  }
+}
+
+/* ── Quality badge (identique au avg-quality badge) ──────── */
+
+.qlty-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: var(--text-muted, #718096);
+
+  &[data-level='low']    { background: rgba(252, 129, 129, 0.1); border-color: rgba(252, 129, 129, 0.25); color: #fc8181; }
+  &[data-level='medium'] { background: rgba(246, 173, 85, 0.1);  border-color: rgba(246, 173, 85, 0.25);  color: #f6ad55; }
+  &[data-level='high']   { background: rgba(104, 211, 145, 0.1); border-color: rgba(104, 211, 145, 0.25); color: #68d391; }
+  &[data-level='max']    { background: rgba(99, 179, 237, 0.1);  border-color: rgba(99, 179, 237, 0.25);  color: #63b3ed; }
+}
+
+/* ── No version ──────────────────────────────────────────── */
+
+.no-version {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.15);
+}

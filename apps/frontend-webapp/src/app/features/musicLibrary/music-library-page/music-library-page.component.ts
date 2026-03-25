@@ -10,6 +10,7 @@ import { MusicLibrarySidePanelComponent } from '../components/music-library-side
 import { MusicReferenceCardComponent } from '../components/music-reference-card/music-reference-card.component';
 import { MusicRepertoireTableComponent } from '../components/music-repertoire-table/music-repertoire-table.component';
 import { AddEntryPanelComponent } from '../components/add-entry-panel/add-entry-panel.component';
+import { MusicCrossTableComponent } from '../components/music-cross-table/music-cross-table.component';
 import type { AddEntryResult } from '../components/add-entry-panel/add-entry-panel.component';
 import type { AddVersionPayload } from '../services/mutations-layer/music-version-mutation.service';
 import type { VersionEditPayload } from '../components/music-repertoire-table/music-repertoire-table.component';
@@ -26,6 +27,7 @@ import type { AudioAnalysisSnapshot, Rating, SavedTabConfig, MusicSearchConfig }
     MusicReferenceCardComponent,
     MusicRepertoireTableComponent,
     AddEntryPanelComponent,
+    MusicCrossTableComponent,
   ],
   templateUrl: './music-library-page.component.html',
   styleUrl: './music-library-page.component.scss',

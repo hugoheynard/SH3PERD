@@ -27,6 +27,7 @@ export interface MusicLibraryState {
   activeTabId: string;
   searchQuery: string;
   savedTabConfigs: SavedTabConfig[];
+  crossContext?: CrossSearchContext;
 }
 
 export type SavedTabConfig = {
@@ -80,9 +81,10 @@ export type MusicSearchConfig = {
 };
 
 export type MusicSearchTarget = {
-  mode: TargetMode;
+  mode: TargetMode | 'contract';
   userId?: string;
   userIds?: string[];
+  contractId?: string;
 };
 
 export type MusicDataFilter = {
@@ -92,4 +94,29 @@ export type MusicDataFilter = {
   effort?: Rating[];
   /** Filters on analysis-derived quality (only versions with analysisResult are matched). */
   quality?: Rating[];
+};
+
+export type ContractMember = {
+  userId: string;
+  displayName: string;
+  avatarInitials: string;
+};
+
+export type CrossMemberVersion = {
+  hasVersion: boolean;
+  versions: Pick<MusicVersion, 'id' | 'label' | 'mastery' | 'energy' | 'effort' | 'analysisResult'>[];
+};
+
+export type CrossReferenceResult = {
+  referenceId: string;
+  title: string;
+  originalArtist: string;
+  members: Record<string, CrossMemberVersion>;
+  compatibleCount: number;
+};
+
+export type CrossSearchContext = {
+  contractId: string;
+  members: ContractMember[];
+  results: CrossReferenceResult[];
 };

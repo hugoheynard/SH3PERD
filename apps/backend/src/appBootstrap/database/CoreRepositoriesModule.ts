@@ -51,6 +51,10 @@ import {
 } from '../../userGroups/infra/UserGroupsMongoRepository.js';
 import { MONGO_CLIENT } from './db.tokens.js';
 import { ContractReadRepository } from '../../contracts/repositories/ContractReadRepository.js';
+import { CompanyMongoRepository, type ICompanyRepository } from '../../company/repositories/CompanyMongoRepository.js';
+import { CastMongoRepository, type ICastRepository } from '../../company/repositories/CastMongoRepository.js';
+import { CastMembershipEventMongoRepository, type ICastMembershipEventRepository } from '../../company/repositories/CastMembershipEventMongoRepository.js';
+import { COMPANY_REPO, CAST_REPO, CAST_MEMBERSHIP_EVENT_REPO } from '../nestTokens.js';
 
 
 // --- HELPERS ---
@@ -89,6 +93,10 @@ export type TCoreRepositories = {
   musicReference: IMusicReferenceRepository;
   musicVersion: IMusicVersionRepository;
   musicRepertoire: IMusicRepertoireRepository;
+  //COMPANY
+  company: ICompanyRepository;
+  cast: ICastRepository;
+  castMembershipEvent: ICastMembershipEventRepository;
 };
 
 /**
@@ -114,6 +122,9 @@ export type TCoreRepositories = {
     mongoRepoProvider<IMusicReferenceRepository>(MUSIC_REFERENCE_REPO, MusicReferenceMongoRepository, 'music_references'),
     mongoRepoProvider<IMusicVersionRepository>(MUSIC_VERSION_REPO, MusicVersionRepository, 'music_version'),
     mongoRepoProvider<IMusicRepertoireRepository>(MUSIC_REPERTOIRE_REPO, MusicRepertoireMongoRepository, 'music_repertoireEntries'),
+    mongoRepoProvider<ICompanyRepository>(COMPANY_REPO, CompanyMongoRepository, 'companies'),
+    mongoRepoProvider<ICastRepository>(CAST_REPO, CastMongoRepository, 'casts'),
+    mongoRepoProvider<ICastMembershipEventRepository>(CAST_MEMBERSHIP_EVENT_REPO, CastMembershipEventMongoRepository, 'cast_membership_events'),
   ],
   exports: [
     USER_PREFERENCES_REPO,
@@ -126,6 +137,10 @@ export type TCoreRepositories = {
     EVENT_UNIT_REPO,
     MUSIC_REFERENCE_REPO,
     MUSIC_VERSION_REPO,
-    MUSIC_REPERTOIRE_REPO],
+    MUSIC_REPERTOIRE_REPO,
+    COMPANY_REPO,
+    CAST_REPO,
+    CAST_MEMBERSHIP_EVENT_REPO,
+  ],
 })
 export class CoreRepositoriesModule {}
