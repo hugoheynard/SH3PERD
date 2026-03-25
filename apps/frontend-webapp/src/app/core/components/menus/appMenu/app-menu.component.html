@@ -1,4 +1,47 @@
-<ui-menu
-  [items]="menuItems"
-  (command)="onCommand($event)">
-</ui-menu>
+<nav class="app-menu">
+
+  <!-- Brand -->
+  <div class="brand">
+    <span class="brand-logo">S</span>
+    <span class="brand-name">SH3PHERD</span>
+  </div>
+
+  <!-- Main navigation -->
+  <div class="nav-section">
+    @for (item of navItems; track item.id) {
+      <a
+        class="nav-item"
+        [routerLink]="item.route"
+        routerLinkActive="active">
+        <sh3-svg-icon [name]="item.icon" class="nav-icon" />
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    }
+  </div>
+
+  <!-- Spacer -->
+  <div class="spacer"></div>
+
+  <!-- Bottom section: settings + logout -->
+  <div class="nav-section nav-section--bottom">
+    @for (item of bottomItems; track item.id) {
+      @if (item.route) {
+        <a
+          class="nav-item"
+          [routerLink]="item.route"
+          routerLinkActive="active">
+          <sh3-svg-icon [name]="item.icon" class="nav-icon" />
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      } @else {
+        <button
+          class="nav-item nav-item--btn"
+          (click)="onLogout()">
+          <sh3-svg-icon [name]="item.icon" class="nav-icon" />
+          <span class="nav-label">{{ item.label }}</span>
+        </button>
+      }
+    }
+  </div>
+
+</nav>

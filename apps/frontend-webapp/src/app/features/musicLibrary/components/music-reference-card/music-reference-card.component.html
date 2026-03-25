@@ -1,0 +1,103 @@
+<div class="card">
+
+  <div class="card-header">
+    <div class="card-info">
+      <span class="card-title">{{ reference().title }}</span>
+      <span class="card-artist">{{ reference().originalArtist }}</span>
+    </div>
+    @if (avgQuality() !== null) {
+      <div class="avg-quality" [attr.data-level]="avgQualityLevel()">
+        <span class="avg-label">AVG</span>
+        <span class="avg-value">{{ avgQuality()!.toFixed(1) }}</span>
+      </div>
+    }
+  </div>
+
+  <div class="card-versions">
+    @for (version of versions(); track version.id) {
+      <div class="version-row">
+        <span class="version-label">{{ version.label }}</span>
+        @if (version.durationSeconds) {
+          <span class="version-dur">{{ formatDuration(version.durationSeconds) }}</span>
+        }
+        @if (version.bpm) {
+          <span class="version-bpm">{{ version.bpm }} bpm</span>
+        }
+        <span class="version-genre">{{ version.genre }}</span>
+
+        <div class="version-ratings">
+          @for (row of [
+            { key: 'mastery', label: 'MST', val: version.mastery },
+            { key: 'energy',  label: 'NRG', val: version.energy  },
+            { key: 'effort',  label: 'EFF', val: version.effort  }
+          ]; track row.key) {
+            <div class="rating-group">
+              <span class="rating-label">{{ row.label }}</span>
+              <div class="rating-dots">
+                @for (dot of ratingDots; track dot) {
+                  <span class="dot"
+                    [class.filled]="dot <= row.val"
+                    [attr.data-level]="ratingLevel(row.val)"
+                  ></span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Quality cell: upload / analyse / score -->
+        <div class="version-quality">
+          @if (!version.trackUploaded) {
+            <button
+              class="btn-track-action btn-track-action--upload"
+              type="button"
+              title="No audio track attached"
+              (click)="trackUploadRequested.emit(version.id)"
+            >↑ Upload track</button>
+          } @else if (!version.analysisResult) {
+            <button
+              class="btn-track-action btn-track-action--analyse"
+              type="button"
+              title="Run audio analysis"
+              (click)="analyzeRequested.emit(version.id)"
+            >⚡ Analyse</button>
+          } @else {
+            <div class="rating-group">
+              <span class="rating-label">QLT</span>
+              <div class="rating-dots">
+                @for (dot of ratingDots; track dot) {
+                  <span class="dot"
+                    [class.filled]="dot <= version.analysisResult.quality"
+                    [attr.data-level]="ratingLevel(version.analysisResult.quality)"
+                  ></span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+      </div>
+    } @empty {
+      @if (!showForm() && entryId()) {
+        <button class="add-version-btn add-version-btn--empty" type="button" (click)="showForm.set(true)">
+          <span class="add-version-icon">+</span>
+          Add a version
+        </button>
+      }
+    }
+  </div>
+
+  <!-- Inline add-version form -->
+  @if (showForm()) {
+    <app-add-version-form
+      (submitted)="onVersionSubmitted($event)"
+      (cancelled)="showForm.set(false)"
+    />
+  } @else if (versions().length && entryId()) {
+    <button class="add-version-btn" type="button" (click)="showForm.set(true)">
+      <span class="add-version-icon">+</span>
+      Add version
+    </button>
+  }
+
+</div>

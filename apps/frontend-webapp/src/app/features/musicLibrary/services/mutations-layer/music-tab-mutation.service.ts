@@ -76,6 +76,36 @@ export class MusicTabMutationService extends BaseMusicItemCRUD<'tabs'> {
   }
 
   /**
+   * Toggles dataFilterActive on the given tab.
+   */
+  toggleDataFilter(id: string): void {
+    this.patch(id, item => ({
+      ...item,
+      searchConfig: {
+        ...item.searchConfig,
+        dataFilterActive: !item.searchConfig.dataFilterActive,
+      },
+    } as MusicTab));
+  }
+
+  /**
+   * Updates the dataFilter on the given tab.
+   * Accepts a partial patch — only provided keys are updated.
+   */
+  patchDataFilter(id: string, patch: Partial<NonNullable<MusicSearchConfig['dataFilter']>>): void {
+    this.patch(id, item => ({
+      ...item,
+      searchConfig: {
+        ...item.searchConfig,
+        dataFilter: {
+          ...item.searchConfig.dataFilter,
+          ...patch,
+        },
+      },
+    } as MusicTab));
+  }
+
+  /**
    * Closes a tab. If it was active, activates the adjacent tab.
    */
   closeTab(id: string): void {

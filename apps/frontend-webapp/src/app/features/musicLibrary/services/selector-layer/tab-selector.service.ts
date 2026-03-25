@@ -2,7 +2,8 @@ import { computed, inject, Injectable } from '@angular/core';
 import { MusicLibraryStateService } from '../music-library-state.service';
 import { ReferenceSelectorService } from './reference-selector.service';
 import { RepertoireSelectorService } from './repertoire-selector.service';
-import type { MusicReference } from '../../music-library-types';
+import { VersionSelectorService } from './version-selector.service';
+import type { MusicDataFilter, MusicReference, MusicVersion, Rating } from '../../music-library-types';
 
 @Injectable({ providedIn: 'root' })
 export class TabSelectorService {
@@ -10,6 +11,7 @@ export class TabSelectorService {
   private state = inject(MusicLibraryStateService);
   private referenceSelector = inject(ReferenceSelectorService);
   private repertoireSelector = inject(RepertoireSelectorService);
+  private versionSelector = inject(VersionSelectorService);
 
   /** All tabs. */
   tabs = computed(() => this.state.library().tabs);
@@ -33,7 +35,7 @@ export class TabSelectorService {
     const tab = this.activeTab();
     if (!tab) return this.referenceSelector.references();
 
-    const { searchMode, target } = tab.searchConfig;
+    const { searchMode, target, dataFilterActive, dataFilter } = tab.searchConfig;
     let results = this.referenceSelector.references();
 
     if (searchMode === 'repertoire' && target.mode === 'me') {
@@ -41,6 +43,27 @@ export class TabSelectorService {
       results = results.filter(ref => entriesByRefId.has(ref.id));
     }
 
+    if (dataFilterActive && dataFilter) {
+      const versionsByRefId = this.versionSelector.versionsByReferenceId();
+      results = results.filter(ref => {
+        const versions = versionsByRefId.get(ref.id) ?? [];
+        return versions.some(v => this.versionMatchesFilter(v, dataFilter));
+      });
+    }
+
     return results;
   });
+
+  private versionMatchesFilter(v: MusicVersion, f: MusicDataFilter): boolean {
+    if (f.genres?.length  && !f.genres.includes(v.genre))              return false;
+    if (f.mastery?.length && !f.mastery.includes(v.mastery as Rating)) return false;
+    if (f.energy?.length  && !f.energy.includes(v.energy as Rating))   return false;
+    if (f.effort?.length  && !f.effort.includes(v.effort as Rating))   return false;
+    if (f.quality?.length) {
+      // Quality filter only matches versions that have been analysed
+      const q = v.analysisResult?.quality;
+      if (!q || !f.quality.includes(q)) return false;
+    }
+    return true;
+  }
 }

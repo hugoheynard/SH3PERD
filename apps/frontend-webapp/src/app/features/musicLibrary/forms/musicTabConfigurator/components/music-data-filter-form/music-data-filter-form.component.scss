@@ -1,8 +1,0 @@
-@use 'mixins' as m;
-
-
-:host {
-  @include m.form-grid(2);
-}
-
-

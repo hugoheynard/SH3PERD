@@ -4,7 +4,7 @@ import {LoginLayoutComponent} from '../features/login/loginLayout/loginLayout.co
 import {LoginComponent} from '../features/login/login/login.component';
 import {CalendarComponent} from '../features/calendar/components/calendarPage/calendar.component';
 import {authGuard} from '../../guards/auth.guard';
-import {PlaylistManagerComponent} from '../features/playlists/components/playlist-manager/playlist-manager.component';
+import { PlaylistsPageComponent } from '../features/playlists/playlists-page/playlists-page.component';
 import {MainLayoutComponent} from '../core/main-layout/main-layout.component';
 import {HomeComponent} from '../features/home-dashboard/home/home.component';
 import { MusicLibraryPageComponent } from '../features/musicLibrary/music-library-page/music-library-page.component';
@@ -34,7 +34,7 @@ export const routes: Routes = [
       { path: 'program', component: ProgramsPageComponent, data: { pageName: 'program' }},
       { path: 'calendar', component: CalendarComponent,  data: { pageName: 'calendar' }},
       { path: 'musicLibrary', component: MusicLibraryPageComponent,  data: { pageName: 'music' } },
-      { path: 'playlistManager', component: PlaylistManagerComponent, data: { pageName: 'playlists' }},
+      { path: 'playlistManager', component: PlaylistsPageComponent, data: { pageName: 'playlists' }},
       { path: 'contracts', component: ContractPageComponent, data: { pageName: 'contracts' } },
       { path: 'userGroup', component: UserGroupsComponent, data: { pageName: 'userGroups' }},
       { path: 'user-profile', component: UserProfilePageComponent, data: { pageName: 'profile' }},

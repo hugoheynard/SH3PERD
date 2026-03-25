@@ -141,3 +141,223 @@ td {
   color: var(--text-muted, #718096);
   font-size: 12px;
 }
+
+/* ── Version label ───────────────────────────────── */
+
+.version-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary, #a0aec0);
+}
+
+.genre-tag {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(159, 122, 234, 0.1);
+  border: 1px solid rgba(159, 122, 234, 0.18);
+  color: #b794f4;
+  white-space: nowrap;
+}
+
+.no-version {
+  font-size: 11px;
+  color: var(--text-muted, #718096);
+  font-style: italic;
+}
+
+.ref-row--empty {
+  background: rgba(246, 173, 85, 0.03);
+}
+
+.btn-add-first-version {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  background: rgba(246, 173, 85, 0.1);
+  border: 1px solid rgba(246, 173, 85, 0.3);
+  border-radius: 5px;
+  color: #f6ad55;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: rgba(246, 173, 85, 0.2);
+    border-color: rgba(246, 173, 85, 0.5);
+  }
+}
+
+/* ── Action column ───────────────────────────────── */
+
+.col-actions {
+  white-space: nowrap;
+  text-align: right;
+  width: 56px;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.ref-row:hover .col-actions,
+.edit-row .col-actions {
+  opacity: 1;
+}
+
+.btn-edit,
+.btn-add-ver,
+.btn-save,
+.btn-cancel-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.1s, color 0.1s;
+}
+
+.btn-edit {
+  color: var(--text-muted, #718096);
+  &:hover { background: rgba(255, 255, 255, 0.08); color: var(--text-primary); }
+}
+
+.btn-add-ver {
+  color: #63b3ed;
+  font-weight: 700;
+  &:hover { background: rgba(99, 179, 237, 0.12); }
+}
+
+.btn-save {
+  color: #68d391;
+  &:hover { background: rgba(104, 211, 145, 0.12); }
+}
+
+.btn-cancel-edit {
+  color: var(--text-muted, #718096);
+  &:hover { background: rgba(251, 113, 133, 0.12); color: #fb7185; }
+}
+
+/* ── Edit row ────────────────────────────────────── */
+
+.edit-row {
+  background: rgba(99, 179, 237, 0.04);
+  border-bottom: 1px solid rgba(99, 179, 237, 0.1);
+
+  td { padding: 6px 8px; vertical-align: middle; }
+}
+
+.edit-input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: var(--text-primary, #e2e8f0);
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus { border-color: rgba(99, 179, 237, 0.4); }
+
+  &--label { width: 120px; }
+  &--dur   { width: 50px; text-align: center; }
+  &--bpm   { width: 58px; text-align: center; }
+}
+
+.edit-select {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+  padding: 4px 6px;
+  font-size: 11px;
+  color: var(--text-primary, #e2e8f0);
+  outline: none;
+  cursor: pointer;
+  max-width: 110px;
+}
+
+.edit-dots {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: background 0.1s, transform 0.1s;
+
+  &:hover { transform: scale(1.2); }
+
+  &.filled {
+    &[data-level='low']    { background: #fc8181; }
+    &[data-level='medium'] { background: #f6ad55; }
+    &[data-level='high']   { background: #68d391; }
+    &[data-level='max']    { background: #63b3ed; }
+  }
+}
+
+/* ── Quality column — track upload / analyse / score ── */
+
+.col-rating--quality {
+  white-space: nowrap;
+}
+
+.col-quality-placeholder {
+  color: var(--text-muted, #718096);
+  font-size: 12px;
+}
+
+.btn-track-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid;
+  white-space: nowrap;
+  transition: background 0.12s, border-color 0.12s;
+
+  /* ❌ No track — red */
+  &--upload {
+    background: rgba(252, 129, 129, 0.1);
+    border-color: rgba(252, 129, 129, 0.35);
+    color: #fc8181;
+
+    &:hover {
+      background: rgba(252, 129, 129, 0.2);
+      border-color: rgba(252, 129, 129, 0.6);
+    }
+  }
+
+  /* 🔵 Track present, not analysed — accent blue */
+  &--analyse {
+    background: rgba(99, 179, 237, 0.1);
+    border-color: rgba(99, 179, 237, 0.35);
+    color: #63b3ed;
+
+    &:hover {
+      background: rgba(99, 179, 237, 0.2);
+      border-color: rgba(99, 179, 237, 0.6);
+    }
+  }
+}
+
+/* ── Add version form row ────────────────────────── */
+
+.form-row { background: rgba(99, 179, 237, 0.03); }
+
+.form-cell { padding: 10px 16px !important; }

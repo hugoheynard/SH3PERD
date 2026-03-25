@@ -1,5 +1,8 @@
-import { Component, input } from '@angular/core';
-import type { MusicTab } from '../../music-library-types';
+import { Component, inject, input } from '@angular/core';
+import { MusicTabMutationService } from '../../services/mutations-layer/music-tab-mutation.service';
+import { TabSelectorService } from '../../services/selector-layer/tab-selector.service';
+import { MUSIC_GENRES } from '../../music-library-types';
+import type { MusicDataFilter, MusicGenre, MusicTab, Rating } from '../../music-library-types';
 
 @Component({
   selector: 'app-music-library-side-panel',
@@ -12,6 +15,11 @@ import type { MusicTab } from '../../music-library-types';
       <section class="panel-section">
         <h2 class="section-title">Library Stats</h2>
 
+        <div class="quality-badge" [attr.data-level]="qualityLevel()">
+          <span class="quality-value">{{ averageQuality().toFixed(1) }}</span>
+          <span class="quality-label">Avg Quality</span>
+        </div>
+
         <div class="stat-cards">
           <div class="stat-card">
             <span class="stat-value">{{ totalReferences() }}</span>
@@ -21,35 +29,57 @@ import type { MusicTab } from '../../music-library-types';
             <span class="stat-value">{{ totalRepertoire() }}</span>
             <span class="stat-label">In Repertoire</span>
           </div>
-          <div class="stat-card accent">
-            <span class="stat-value">{{ averageMastery() }}</span>
+          <div class="stat-card">
+            <span class="stat-value">{{ averageMastery().toFixed(1) }}</span>
             <span class="stat-label">Avg Mastery</span>
           </div>
         </div>
       </section>
 
-      <!-- ── Active tab config section ── -->
+      <!-- ── Filter section ── -->
       @if (activeTab()) {
         <section class="panel-section">
-          <h2 class="section-title">Active Tab</h2>
+          <div class="filter-header">
+            <h2 class="section-title" style="margin:0">Filters</h2>
+            <button
+              class="filter-toggle"
+              [class.active]="activeTab()!.searchConfig.dataFilterActive"
+              (click)="toggleFilter()"
+              type="button"
+            >{{ activeTab()!.searchConfig.dataFilterActive ? 'On' : 'Off' }}</button>
+          </div>
 
-          <div class="config-block">
-            <div class="config-row">
-              <span class="config-key">Mode</span>
-              <span class="config-val mode-badge" [attr.data-mode]="activeTab()!.searchConfig.searchMode">
-                {{ activeTab()!.searchConfig.searchMode }}
-              </span>
+          <div class="filter-rows" [class.disabled]="!activeTab()!.searchConfig.dataFilterActive">
+
+            <div class="filter-genres">
+              @for (g of allGenres; track g) {
+                <button
+                  class="genre-chip"
+                  [class.selected]="isGenreSelected(g)"
+                  (click)="toggleGenre(g)"
+                  type="button"
+                >{{ g }}</button>
+              }
             </div>
-            <div class="config-row">
-              <span class="config-key">Target</span>
-              <span class="config-val">{{ activeTab()!.searchConfig.target.mode }}</span>
-            </div>
-            <div class="config-row">
-              <span class="config-key">Filter</span>
-              <span class="config-val" [class.active-filter]="activeTab()!.searchConfig.dataFilterActive">
-                {{ activeTab()!.searchConfig.dataFilterActive ? 'Active' : 'Off' }}
-              </span>
-            </div>
+
+            <div class="filter-divider"></div>
+
+            @for (row of filterRows; track row.key) {
+              <div class="filter-row">
+                <span class="filter-row-label">{{ row.label }}</span>
+                <div class="filter-dots">
+                  @for (r of ratings; track r) {
+                    <button
+                      class="filter-dot"
+                      [class.selected]="isRatingSelected(row.key, r)"
+                      [attr.data-level]="levelOf(r)"
+                      (click)="toggleRating(row.key, r)"
+                      type="button"
+                    >{{ r }}</button>
+                  }
+                </div>
+              </div>
+            }
           </div>
         </section>
       }
@@ -62,8 +92,68 @@ import type { MusicTab } from '../../music-library-types';
 })
 export class MusicLibrarySidePanelComponent {
 
+  private tabMutation = inject(MusicTabMutationService);
+  private tabSelector = inject(TabSelectorService);
+
   readonly totalReferences = input<number>(0);
   readonly totalRepertoire = input<number>(0);
   readonly averageMastery = input<number>(0);
+  readonly averageQuality = input<number>(0);
   readonly activeTab = input<MusicTab | undefined>(undefined);
+
+  readonly allGenres = MUSIC_GENRES;
+  readonly ratings: Rating[] = [1, 2, 3, 4];
+
+  readonly filterRows: { key: Exclude<keyof MusicDataFilter, 'genres'>; label: string }[] = [
+    { key: 'mastery', label: 'MST' },
+    { key: 'energy',  label: 'NRG' },
+    { key: 'effort',  label: 'EFF' },
+    { key: 'quality', label: 'QLT' },
+  ];
+
+  qualityLevel(): string {
+    const q = this.averageQuality();
+    if (q <= 1) return 'low';
+    if (q <= 2) return 'medium';
+    if (q <= 3) return 'high';
+    return 'max';
+  }
+
+  levelOf(r: Rating): string {
+    return ['low', 'medium', 'high', 'max'][r - 1];
+  }
+
+  isGenreSelected(g: MusicGenre): boolean {
+    return this.activeTab()?.searchConfig.dataFilter?.genres?.includes(g) ?? false;
+  }
+
+  toggleGenre(g: MusicGenre): void {
+    const id = this.tabSelector.activeTabId();
+    if (!id) return;
+    const current = this.activeTab()?.searchConfig.dataFilter?.genres ?? [];
+    const updated = current.includes(g)
+      ? current.filter(v => v !== g)
+      : [...current, g];
+    this.tabMutation.patchDataFilter(id, { genres: updated });
+  }
+
+  isRatingSelected(key: Exclude<keyof MusicDataFilter, 'genres'>, r: Rating): boolean {
+    const filter = this.activeTab()?.searchConfig.dataFilter;
+    return filter?.[key]?.includes(r) ?? false;
+  }
+
+  toggleFilter(): void {
+    const id = this.tabSelector.activeTabId();
+    if (id) this.tabMutation.toggleDataFilter(id);
+  }
+
+  toggleRating(key: Exclude<keyof MusicDataFilter, 'genres'>, r: Rating): void {
+    const id = this.tabSelector.activeTabId();
+    if (!id) return;
+    const current = (this.activeTab()?.searchConfig.dataFilter?.[key] ?? []) as Rating[];
+    const updated = current.includes(r)
+      ? current.filter(v => v !== r)
+      : [...current, r].sort() as Rating[];
+    this.tabMutation.patchDataFilter(id, { [key]: updated });
+  }
 }

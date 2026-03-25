@@ -1,0 +1,73 @@
+<div class="form" (keydown)="onKeydown($event)">
+
+  <!-- Label + duration + bpm -->
+  <div class="form-row form-row--main">
+    <input
+      class="form-input form-input--label"
+      [ngModel]="label()"
+      (ngModelChange)="label.set($event)"
+      placeholder="Version name…"
+      autofocus
+    />
+    <input
+      class="form-input form-input--dur"
+      [ngModel]="duration()"
+      (ngModelChange)="duration.set($event)"
+      placeholder="min"
+      type="number"
+      min="1"
+    />
+    <input
+      class="form-input form-input--bpm"
+      [ngModel]="bpm()"
+      (ngModelChange)="bpm.set($event)"
+      placeholder="BPM"
+      type="number"
+      min="1"
+    />
+  </div>
+
+  <!-- Genre pills -->
+  <div class="genre-row">
+    @for (g of genres; track g) {
+      <button
+        class="genre-pill"
+        type="button"
+        [class.selected]="genre() === g"
+        (click)="genre.set(g)"
+      >{{ g }}</button>
+    }
+  </div>
+
+  <!-- Ratings -->
+  <div class="ratings-row">
+    @for (row of rows; track row.key) {
+      <div class="rating-col">
+        <span class="rating-label">{{ row.label }}</span>
+        <div class="rating-dots">
+          @for (dot of ratingDots; track dot) {
+            <button
+              class="dot"
+              type="button"
+              [class.filled]="dot <= ratingSignals[row.key]()"
+              [attr.data-level]="ratingLevel(ratingSignals[row.key]())"
+              (click)="setRating(row.key, dot)"
+            ></button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Actions -->
+  <div class="form-actions">
+    <button class="btn-cancel" type="button" (click)="cancel()">Cancel</button>
+    <button
+      class="btn-add"
+      type="button"
+      [disabled]="!canSubmit()"
+      (click)="submit()"
+    >Add version</button>
+  </div>
+
+</div>

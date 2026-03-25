@@ -1,37 +1,174 @@
-<!-- 404 Error -->
-@if (hasError404) {
-  <div class="error-page">
-    <h1>404</h1>
-    <p>Oups ! Something went wrong</p>
-  </div>
-}
+<div class="table-wrap">
+  <table class="ref-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Artist</th>
+        <th>Version</th>
+        <th>Dur</th>
+        <th>BPM</th>
+        <th>Genre</th>
+        <th>MST</th>
+        <th>NRG</th>
+        <th>EFF</th>
+        <th>QLT</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (ref of references(); track ref.id) {
+        @let versions = getVersions(ref.id);
+        @let hasEntry = !!entryIdForRef(ref.id);
 
-<!-- No Match Result -->
-@if (hasNoMatch && !hasError404) {
-  <div class="error-page">
-    <h1>NO MATCH</h1>
-    <span>Try different search parameters.</span>
-    <sh3-button-primary buttonLabel="Back to search" [onClick]="handleBackToConfig"/>
-  </div>
-}
+        @if (versions.length === 0) {
+          <tr class="ref-row ref-row--empty">
+            <td class="col-title">{{ ref.title }}</td>
+            <td class="col-artist">{{ ref.originalArtist }}</td>
+            <td colspan="9">
+              @if (hasEntry) {
+                <button class="btn-add-first-version" type="button" (click)="addingRefId.set(ref.id)">
+                  + Add a version
+                </button>
+              } @else {
+                <span class="no-version">no version</span>
+              }
+            </td>
+          </tr>
+        }
 
-@if (!hasError404 && !hasNoMatch) {
-  <div class="container">
-    <div class="buttons">
-      <sh3-button-secondary buttonLabel="stats" icon="stats" (clicked)="toggleStatContainer()"/>
-      <sh3-button-primary buttonLabel=" + new" (clicked)="createNewVersion()"/>
-    </div>
-    <music-library-stats [isOpen]="statContainerOpen"/>
-    <music-library-filters [(filterValue)]="filter"/>
-    <label class="fadedText">8 songs</label>
-    <div class="listContainer">
-      @for (row of tableData; track row) {
-        <music-card [item]="row"/>
+        @for (version of versions; track version.id; let first = $first) {
+
+          @if (editingVersionId() === version.id) {
+            <tr class="edit-row">
+              @if (first) {
+                <td class="col-title" [attr.rowspan]="versions.length">{{ ref.title }}</td>
+                <td class="col-artist" [attr.rowspan]="versions.length">{{ ref.originalArtist }}</td>
+              }
+              <td>
+                <input
+                  class="edit-input edit-input--label"
+                  [(ngModel)]="editLabel"
+                  (keydown.enter)="commitEdit(version.id)"
+                  (keydown.escape)="cancelEdit()"
+                  autofocus
+                />
+              </td>
+              <td>
+                <input
+                  class="edit-input edit-input--dur"
+                  [(ngModel)]="editDuration"
+                  type="number"
+                  min="1"
+                  placeholder="min"
+                  (keydown.enter)="commitEdit(version.id)"
+                />
+              </td>
+              <td>
+                <input
+                  class="edit-input edit-input--bpm"
+                  [(ngModel)]="editBpm"
+                  type="number"
+                  min="1"
+                  placeholder="BPM"
+                  (keydown.enter)="commitEdit(version.id)"
+                />
+              </td>
+              <td>
+                <select class="edit-select" [(ngModel)]="editGenre">
+                  @for (g of genres; track g) {
+                    <option [value]="g">{{ g }}</option>
+                  }
+                </select>
+              </td>
+              @for (cfg of editRatingFields; track cfg.field) {
+                <td class="col-rating">
+                  <div class="edit-dots">
+                    @for (dot of ratingDots; track dot) {
+                      <button
+                        class="dot"
+                        type="button"
+                        [class.filled]="dot <= this[cfg.field]"
+                        [attr.data-level]="ratingLevel(this[cfg.field])"
+                        (click)="setEditRating(cfg.field, dot)"
+                      ></button>
+                    }
+                  </div>
+                </td>
+              }
+              <!-- QLT: read-only in edit mode (analysis-derived) -->
+              <td class="col-rating col-rating--quality">
+                @if (version.analysisResult) {
+                  <span class="rating-val" [attr.data-level]="ratingLevel(version.analysisResult.quality)">
+                    {{ version.analysisResult.quality }}/4
+                  </span>
+                } @else {
+                  <span class="col-quality-placeholder">—</span>
+                }
+              </td>
+              <td class="col-actions">
+                <button class="btn-save" type="button" (click)="commitEdit(version.id)">✓</button>
+                <button class="btn-cancel-edit" type="button" (click)="cancelEdit()">×</button>
+              </td>
+            </tr>
+
+          } @else {
+            <tr class="ref-row" [class.first-version]="first">
+              @if (first) {
+                <td class="col-title" [attr.rowspan]="versions.length">{{ ref.title }}</td>
+                <td class="col-artist" [attr.rowspan]="versions.length">{{ ref.originalArtist }}</td>
+              }
+              <td class="col-versions"><span class="version-label">{{ version.label }}</span></td>
+              <td class="col-dur">{{ formatDuration(version.durationSeconds) }}</td>
+              <td class="col-bpm">{{ version.bpm ?? '—' }}</td>
+              <td><span class="genre-tag">{{ version.genre }}</span></td>
+              @for (r of [version.mastery, version.energy, version.effort]; track $index) {
+                <td class="col-rating">
+                  <span class="rating-val" [attr.data-level]="ratingLevel(r)">{{ r }}/4</span>
+                </td>
+              }
+              <!-- QLT column: upload / analyse / score -->
+              <td class="col-rating col-rating--quality">
+                @if (!version.trackUploaded) {
+                  <button
+                    class="btn-track-action btn-track-action--upload"
+                    type="button"
+                    title="No audio track attached"
+                    (click)="trackUploadRequested.emit(version.id)"
+                  >↑ Upload</button>
+                } @else if (!version.analysisResult) {
+                  <button
+                    class="btn-track-action btn-track-action--analyse"
+                    type="button"
+                    title="Run audio analysis"
+                    (click)="analyzeRequested.emit(version.id)"
+                  >⚡ Analyse</button>
+                } @else {
+                  <span class="rating-val" [attr.data-level]="ratingLevel(version.analysisResult.quality)">
+                    {{ version.analysisResult.quality }}/4
+                  </span>
+                }
+              </td>
+              <td class="col-actions">
+                <button class="btn-edit" type="button" title="Edit" (click)="startEdit(version)">✎</button>
+                @if ($last && hasEntry) {
+                  <button class="btn-add-ver" type="button" title="Add version" (click)="addingRefId.set(ref.id)">+</button>
+                }
+              </td>
+            </tr>
+          }
+        }
+
+        @if (addingRefId() === ref.id) {
+          <tr class="form-row">
+            <td colspan="11" class="form-cell">
+              <app-add-version-form
+                (submitted)="onVersionSubmitted($event, ref.id)"
+                (cancelled)="addingRefId.set(null)"
+              />
+            </td>
+          </tr>
+        }
       }
-    </div>
-  </div>
-  <paginator />
-}
-
-
-
+    </tbody>
+  </table>
+</div>

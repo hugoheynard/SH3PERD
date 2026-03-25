@@ -12,33 +12,18 @@ export class MusicReferenceMutationService extends BaseMusicItemCRUD<'references
   protected createDefault(_input: unknown): MusicReference {
     return {
       id: crypto.randomUUID(),
-      title: 'New Reference',
+      title: '',
       originalArtist: '',
-      genre: [],
     };
   }
 
-  /**
-   * Adds a new music reference with auto-generated ID.
-   */
-  addReference(reference: Omit<MusicReference, 'id'>): void {
-    this.add({
+  addReference(title: string, originalArtist: string): MusicReference {
+    const ref: MusicReference = {
       id: crypto.randomUUID(),
-      ...reference,
-    });
-  }
-
-  /**
-   * Updates the genres of a reference.
-   */
-  updateGenres(id: string, genre: string[]): void {
-    this.patch(id, item => ({ ...item, genre } as MusicReference));
-  }
-
-  /**
-   * Updates the BPM of a reference.
-   */
-  updateBpm(id: string, bpm: number): void {
-    this.patch(id, item => ({ ...item, bpm } as MusicReference));
+      title: title.trim(),
+      originalArtist: originalArtist.trim(),
+    };
+    this.add(ref);
+    return ref;
   }
 }

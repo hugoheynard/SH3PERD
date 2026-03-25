@@ -1,0 +1,83 @@
+<div class="panel-backdrop" (click)="close()"></div>
+
+<div class="panel" (keydown)="onKeydown($event)">
+
+  <div class="panel-search">
+    <span class="search-icon">⌕</span>
+    <input
+      class="search-input"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event); showNewForm.set(false)"
+      placeholder="Search a song title or artist…"
+      autofocus
+    />
+    @if (query()) {
+      <button class="search-clear" type="button" (click)="query.set(''); showNewForm.set(false)">×</button>
+    }
+  </div>
+
+  <div class="panel-results">
+    @for (ref of filteredRefs(); track ref.id) {
+      <button
+        class="result-row"
+        type="button"
+        [class.in-repertoire]="inRepertoire().has(ref.id)"
+        (click)="selectRef(ref.id)"
+      >
+        <div class="result-info">
+          <span class="result-title">{{ ref.title }}</span>
+          <span class="result-artist">{{ ref.originalArtist }}</span>
+        </div>
+        @if (inRepertoire().has(ref.id)) {
+          <span class="repertoire-badge">In repertoire</span>
+        } @else {
+          <span class="add-badge">+ Add</span>
+        }
+      </button>
+    } @empty {
+      @if (!query()) {
+        <span class="results-hint">Start typing to search…</span>
+      }
+    }
+
+    <!-- Create new -->
+    @if (query() && !hasExactMatch()) {
+      @if (!showNewForm()) {
+        <button class="create-row" type="button" (click)="showNewForm.set(true)">
+          <span class="create-icon">+</span>
+          Create <strong>«&nbsp;{{ query() }}&nbsp;»</strong> as new reference
+        </button>
+      } @else {
+        <div class="new-form">
+          <span class="new-form-title">New reference</span>
+          <div class="new-form-fields">
+            <input
+              class="new-input"
+              [value]="query()"
+              readonly
+              placeholder="Title"
+            />
+            <input
+              class="new-input"
+              [ngModel]="newArtist()"
+              (ngModelChange)="newArtist.set($event)"
+              placeholder="Original artist…"
+              (keydown.enter)="submitNew()"
+              autofocus
+            />
+          </div>
+          <div class="new-form-actions">
+            <button class="btn-cancel" type="button" (click)="showNewForm.set(false)">Cancel</button>
+            <button
+              class="btn-confirm"
+              type="button"
+              [disabled]="!newArtist().trim()"
+              (click)="submitNew()"
+            >Create &amp; add</button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+</div>

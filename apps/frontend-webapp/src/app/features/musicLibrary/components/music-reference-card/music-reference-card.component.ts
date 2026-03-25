@@ -1,80 +1,48 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
+import { AddVersionFormComponent } from '../add-version-form/add-version-form.component';
+import type { AddVersionPayload } from '../../services/mutations-layer/music-version-mutation.service';
 import type { MusicReference, MusicVersion, Rating } from '../../music-library-types';
 
 @Component({
   selector: 'app-music-reference-card',
   standalone: true,
-  imports: [],
-  template: `
-    <div class="card">
-
-      <div class="card-header">
-        <span class="card-title">{{ reference().title }}</span>
-        <span class="card-artist">{{ reference().originalArtist }}</span>
-      </div>
-
-      <div class="card-versions">
-        @for (version of versions(); track version.id) {
-          <div class="version-row">
-
-            <span class="version-label">{{ version.label }}</span>
-
-            @if (version.durationSeconds) {
-              <span class="version-dur">{{ formatDuration(version.durationSeconds) }}</span>
-            }
-
-            <div class="version-ratings">
-              <div class="rating-group">
-                <span class="rating-label">MST</span>
-                <div class="rating-dots">
-                  @for (dot of ratingDots; track dot) {
-                    <span class="dot"
-                      [class.filled]="dot <= version.mastery"
-                      [attr.data-level]="ratingLevel(version.mastery)"
-                    ></span>
-                  }
-                </div>
-              </div>
-              <div class="rating-group">
-                <span class="rating-label">NRG</span>
-                <div class="rating-dots">
-                  @for (dot of ratingDots; track dot) {
-                    <span class="dot"
-                      [class.filled]="dot <= version.energy"
-                      [attr.data-level]="ratingLevel(version.energy)"
-                    ></span>
-                  }
-                </div>
-              </div>
-              <div class="rating-group">
-                <span class="rating-label">EFF</span>
-                <div class="rating-dots">
-                  @for (dot of ratingDots; track dot) {
-                    <span class="dot"
-                      [class.filled]="dot <= version.effort"
-                      [attr.data-level]="ratingLevel(version.effort)"
-                    ></span>
-                  }
-                </div>
-              </div>
-            </div>
-
-          </div>
-        } @empty {
-          <span class="no-version">no version</span>
-        }
-      </div>
-
-    </div>
-  `,
+  imports: [AddVersionFormComponent],
+  templateUrl: './music-reference-card.component.html',
   styleUrl: './music-reference-card.component.scss',
 })
 export class MusicReferenceCardComponent {
 
   readonly reference = input.required<MusicReference>();
-  readonly versions = input<MusicVersion[]>([]);
+  readonly versions  = input<MusicVersion[]>([]);
+  readonly entryId   = input<string | null>(null);
+
+  readonly versionAdded         = output<AddVersionPayload>();
+  readonly trackUploadRequested = output<string>(); // version id
+  readonly analyzeRequested     = output<string>(); // version id
+
+  readonly showForm = signal(false);
+
+  /** Average quality across versions that have an analysisResult. */
+  readonly avgQuality = computed(() => {
+    const analysed = this.versions().filter(v => v.analysisResult);
+    if (!analysed.length) return null;
+    return analysed.reduce((sum, v) => sum + v.analysisResult!.quality, 0) / analysed.length;
+  });
+
+  readonly avgQualityLevel = computed(() => {
+    const q = this.avgQuality();
+    if (q === null) return '';
+    return this.ratingLevel(Math.round(q) as Rating);
+  });
 
   readonly ratingDots = [1, 2, 3, 4] as const;
+
+  onVersionSubmitted(payload: Omit<AddVersionPayload, 'entryId'>): void {
+    const entryId = this.entryId();
+    if (!entryId) return;
+    this.versionAdded.emit({ ...payload, entryId });
+    this.showForm.set(false);
+  }
 
   formatDuration(seconds: number): string {
     const m = Math.floor(seconds / 60);

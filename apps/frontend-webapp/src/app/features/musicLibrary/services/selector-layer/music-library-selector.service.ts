@@ -62,4 +62,12 @@ export class MusicLibrarySelectorService {
     const sum = versions.reduce((acc, v) => acc + v.mastery, 0);
     return Math.round((sum / versions.length) * 10) / 10;
   });
+
+  /** Average quality across versions that have an analysisResult. Returns 0 if none are analysed. */
+  averageQuality = computed(() => {
+    const analysed = this.versions().filter(v => v.analysisResult);
+    if (analysed.length === 0) return 0;
+    const sum = analysed.reduce((acc, v) => acc + v.analysisResult!.quality, 0);
+    return Math.round((sum / analysed.length) * 10) / 10;
+  });
 }

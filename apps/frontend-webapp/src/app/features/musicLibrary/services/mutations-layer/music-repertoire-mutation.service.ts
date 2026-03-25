@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BaseMusicItemCRUD } from './BaseMusicItemCRUD';
-import type { Rating, RepertoireEntry } from '../../music-library-types';
+import type { RepertoireEntry } from '../../music-library-types';
 
 @Injectable({ providedIn: 'root' })
 export class MusicRepertoireMutationService extends BaseMusicItemCRUD<'repertoire'> {
@@ -14,49 +14,29 @@ export class MusicRepertoireMutationService extends BaseMusicItemCRUD<'repertoir
       id: crypto.randomUUID(),
       referenceId: '',
       userId: 'user_me',
-      mastery: 1,
-      energy: 1,
-      effort: 1,
     };
   }
 
   /**
-   * Upserts a repertoire entry for the given referenceId and userId.
-   * If an entry already exists for that pair, it is updated; otherwise a new one is added.
+   * Adds a repertoire entry linking a reference to a user.
+   * No-op if the entry already exists.
    */
-  upsertEntry(
-    referenceId: string,
-    userId: string,
-    ratings: { mastery: Rating; energy: Rating; effort: Rating }
-  ): void {
-    const currentState = this.state.library();
-    const existing = currentState.repertoire.find(
+  addEntry(referenceId: string, userId: string = 'user_me'): RepertoireEntry | null {
+    const existing = this.state.library().repertoire.find(
       e => e.referenceId === referenceId && e.userId === userId
     );
+    if (existing) return null;
 
-    if (existing) {
-      this.patch(existing.id, item => ({
-        ...item,
-        mastery: ratings.mastery,
-        energy: ratings.energy,
-        effort: ratings.effort,
-      } as RepertoireEntry));
-    } else {
-      this.add({
-        id: crypto.randomUUID(),
-        referenceId,
-        userId,
-        mastery: ratings.mastery,
-        energy: ratings.energy,
-        effort: ratings.effort,
-      });
-    }
+    const entry: RepertoireEntry = {
+      id: crypto.randomUUID(),
+      referenceId,
+      userId,
+    };
+    this.add(entry);
+    return entry;
   }
 
-  /**
-   * Removes a repertoire entry for the given referenceId and userId.
-   */
-  removeEntry(referenceId: string, userId: string): void {
+  removeEntry(referenceId: string, userId: string = 'user_me'): void {
     this.state.updateState(state => ({
       ...state,
       repertoire: state.repertoire.filter(
