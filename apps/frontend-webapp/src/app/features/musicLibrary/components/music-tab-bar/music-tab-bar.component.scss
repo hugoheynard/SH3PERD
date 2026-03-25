@@ -1,0 +1,140 @@
+:host {
+  display: block;
+  flex-shrink: 0;
+}
+
+.tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  padding: 6px 16px 0;
+
+  background: var(--content-page-bg-color, #282e39);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Scroll container ──────────────────────────── */
+
+.tabs-scroll {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+
+  overflow-x: auto;
+  overflow-y: visible;
+
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ── Individual Tab ─────────────────────────────── */
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 12px;
+
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+
+  color: var(--text-secondary, #a0aec0);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--text-primary, #e2e8f0);
+  }
+
+  &.active {
+    background: var(--panel-color, #171c23);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary, #e2e8f0);
+
+    position: relative;
+
+    // Active tab underline accent
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #63b3ed;
+      border-radius: 6px 6px 0 0;
+    }
+  }
+}
+
+.tab-title {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 16px;
+  height: 16px;
+
+  border-radius: 4px;
+
+  font-size: 14px;
+  line-height: 1;
+
+  color: var(--text-muted, #718096);
+
+  transition: background 0.1s ease, color 0.1s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-primary, #e2e8f0);
+  }
+}
+
+/* ── Add button ─────────────────────────────────── */
+
+.tab-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 26px;
+  height: 26px;
+
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+
+  color: var(--text-muted, #718096);
+
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 4px;
+  margin-bottom: 2px;
+
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: rgba(99, 179, 237, 0.12);
+    border-color: rgba(99, 179, 237, 0.3);
+    color: #63b3ed;
+  }
+}

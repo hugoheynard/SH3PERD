@@ -1,197 +1,98 @@
-import {
-  Component, effect, EventEmitter, inject, Input, type OnInit, Output, signal,
-} from '@angular/core';
-import { CdkTableModule } from '@angular/cdk/table';
+import { Component, inject, input } from '@angular/core';
+import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
+import type { MusicReference, MusicVersion } from '../../music-library-types';
 
-import {FormsModule} from '@angular/forms';
-import {MusicRepertoireService} from '../../services/music-repertoire.service';
-import type { ITabDefinition } from '../../../../shared/tabSystem/tab-system/ITabDefinition';
-import type { TMusicTabConfiguration } from '../../types/TMusicTabConfiguration';
-import {
-  ButtonPrimaryComponent, ButtonSecondaryComponent,
-} from '@sh3pherd/ui-angular';
-import type { TUserMusicLibraryItem } from '@sh3pherd/shared-types';
-import { MusicCardComponent } from '../music-card/music-card.component';
-import { MusicLibraryStatsComponent } from '../music-library-stats/music-library-stats.component'
-import { type Filters, MusicLibraryFiltersComponent } from '../music-library-filters/music-library-filters.component';
-import { PaginatorComponent } from '../../../../shared/paginator/paginator.component';
-
-
-
+/**
+ * Table view of music references with per-version ratings.
+ * Columns: Title | Original Artist | Versions
+ */
 @Component({
-  selector: 'music-repertoire-table',
+  selector: 'app-music-repertoire-table',
   standalone: true,
-  imports: [CdkTableModule, FormsModule, ButtonPrimaryComponent, MusicCardComponent, MusicLibraryStatsComponent, MusicLibraryFiltersComponent, PaginatorComponent, ButtonSecondaryComponent],
-  templateUrl: './music-repertoire-table.component.html',
-  styleUrl: './music-repertoire-table.component.scss'
+  imports: [],
+  template: `
+    <div class="table-wrap">
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Original Artist</th>
+            <th>Versions</th>
+            <th>Mastery</th>
+            <th>Energy</th>
+            <th>Effort</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ref of references(); track ref.id) {
+            @let versions = getVersions(ref.id);
+
+            @if (versions.length === 0) {
+              <tr class="ref-row">
+                <td class="col-title">{{ ref.title }}</td>
+                <td class="col-artist">{{ ref.originalArtist }}</td>
+                <td class="col-versions"><span class="no-version">no version</span></td>
+                <td class="col-rating"><span class="rating-none">—</span></td>
+                <td class="col-rating"><span class="rating-none">—</span></td>
+                <td class="col-rating"><span class="rating-none">—</span></td>
+                <td class="col-dur"><span class="rating-none">—</span></td>
+              </tr>
+            }
+
+            @for (version of versions; track version.id; let first = $first) {
+              <tr class="ref-row" [class.first-version]="first">
+                @if (first) {
+                  <td class="col-title" [attr.rowspan]="versions.length">{{ ref.title }}</td>
+                  <td class="col-artist" [attr.rowspan]="versions.length">{{ ref.originalArtist }}</td>
+                }
+                <td class="col-versions"><span class="version-label">{{ version.label }}</span></td>
+                <td class="col-rating">
+                  <span class="rating-val" [attr.data-level]="ratingLevel(version.mastery)">
+                    {{ version.mastery }}/4
+                  </span>
+                </td>
+                <td class="col-rating">
+                  <span class="rating-val" [attr.data-level]="ratingLevel(version.energy)">
+                    {{ version.energy }}/4
+                  </span>
+                </td>
+                <td class="col-rating">
+                  <span class="rating-val" [attr.data-level]="ratingLevel(version.effort)">
+                    {{ version.effort }}/4
+                  </span>
+                </td>
+                <td class="col-dur">{{ formatDuration(version.durationSeconds) }}</td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  `,
+  styleUrl: './music-repertoire-table.component.scss',
 })
-export class MusicRepertoireTableComponent implements OnInit {
-  @Output() openTab: EventEmitter<ITabDefinition> = new EventEmitter<ITabDefinition>();
-  @Output() backToConfig: EventEmitter<void> = new EventEmitter<void>();
-  @Input() configuratorData: TMusicTabConfiguration | undefined;
-  public hasError404: boolean = false;
-  public hasNoMatch: boolean = false;
-  private musicRepertoireService: MusicRepertoireService = inject(MusicRepertoireService);
-  public tableData: any[] = [];
-  public columns: { key: string; order: number }[] = [];
-  public columnKeys: string[] = [];
-  public filter: any = signal<Filters>({});
-  //---------- Pagination properties----------//
-  public pageSize = 10;
-  public currentPage = 0;
+export class MusicRepertoireTableComponent {
 
-  public statContainerOpen: boolean = false;
+  private selector = inject(MusicLibrarySelectorService);
 
-  /**
-   * Formats the data for the table display.
-   * @param data
-   */
-  formatTableData(data: TUserMusicLibraryItem[]): any[] {
-    this.defineDisplayedColumns();
+  readonly references = input<MusicReference[]>(this.selector.activeResults());
 
-    return data.map((row: TUserMusicLibraryItem): any => {
-      return {
-        title: row.version?.title || 'N/A',
-        artist: row.version?.artist || 'N/A',
-        type: row.version?.type ? row.version.type : 'N/A',
-        genre: row.version?.genre ? row.version.genre : 'N/A',
-        pitch: row.version?.pitch ? `${row.version.pitch} st` : 'N/A',
-        referenceId: !!row.version?.musicReference_id,
-        //bpm: row.version?.bpm ? `${row.bpm} BPM` : 'N/A',
-        energy: row.repertoireEntry?.energy ? row.repertoireEntry.energy : 'N/A',
-        effort: row.repertoireEntry?.effort ? row.repertoireEntry.effort : 'N/A',
-        mastery: row.repertoireEntry?.mastery ? row.repertoireEntry.mastery : 'N/A',
-        affinity: row.repertoireEntry?.affinity ? row.repertoireEntry.affinity : 'N/A',
-      };
-    })
-  };
-
-  /**
-   * Defines the columns to be displayed in the table.
-   */
-  defineDisplayedColumns(): void {
-    this.columns = [
-      { key: 'title', order: 0 },
-      { key: 'artist', order: 1 },
-      //{ key: 'bpm', order: 2 },
-      { key: 'type', order: 3 },
-      { key: 'genre', order: 2 },
-      { key: 'pitch', order: 3 },
-      { key: 'referenceId', order: 4 },
-      { key: 'energy', order: 4 },
-      { key: 'effort', order: 5 },
-      { key: 'mastery', order: 6 },
-      { key: 'affinity', order: 7 }
-    ];
-    this.columnKeys = this.columns.map(col => col.key);
-  };
-
-
-  // ──────────── LIFECYCLE ────────────
-  async ngOnInit(): Promise<void> {
-    try {
-      if (!this.configuratorData || Object.keys(this.configuratorData).length === 0) {
-        await this.musicRepertoireFallBack();
-        return;
-      }
-
-      const data: TUserMusicLibraryItem[] = Object
-        .values(await this.musicRepertoireService
-          .executeConfigStrategy({ config: this.configuratorData }) ?? [])
-
-      if (!Array.isArray(this.tableData) || this.tableData.length === 0) {
-        this.tableData = [];
-        this.hasNoMatch = true;
-        return;
-      }
-
-      //this.tableData = this.formatTableData(data);
-      this.tableData = data;
-      return;
-
-    } catch (error: any) {
-      if (error.status === 404) {
-        this.hasError404 = true;
-        return;
-      }
-      console.error('Unhandled error:', error);
-    }
-  };
-
-  constructor() {
-    effect(() => {
-      const f = this.filter();
-      console.log('Filter changed:', f);
-    });
+  getVersions(referenceId: string): MusicVersion[] {
+    return this.selector.versionsByReferenceId().get(referenceId) ?? [];
   }
 
-
-  applyFilters(filter: any): any {
-    console.log('Applying filters:', filter);
+  formatDuration(seconds?: number): string {
+    if (!seconds) return '—';
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
-  get filteredData(): any[] {
-    if (!Array.isArray(this.tableData)) {
-      return [];
-    }
-    /*
-    const filterValue = this.filter.toLowerCase().trim();
-    return this.tableData.filter(row =>
-      this.columnKeys.some(key =>
-        (row[key] + '').toLowerCase().includes(filterValue)
-      )
-    );
-
-     */
-    return []
-  };
-
-  async musicRepertoireFallBack(): Promise<void> {
-    console.log('No config provided, falling back to default music repertoire fetch');
-
-    const data: TUserMusicLibraryItem[] = Object
-      .values(await this.musicRepertoireService.getSingleUserMusicLibrary_me());
-    //this.tableData = this.formatTableData(data);
-
-    this.tableData = data;
-  };
-
-
-
-  /**
-   * Opens the details of a track entry in a new tab.
-   * @param row
-   */
-  openDetails(row: any): void {
-    // This method should be implemented to handle opening details of the entry
-    this.openTab.emit({
-      id: `track-${row.id}`,
-      title: `Track #${row.label}`,
-      hasConfigurator: true,
-      configComponentKey: 'music-version-details',
-      displayComponentKey: 'music-version-details',
-      configMode: false,
-      configuratorData: row,
-      isActive: true,
-      isDeletable: true,
-      isSearchable: false,
-      default: false,
-    });
+  ratingLevel(rating: number): string {
+    if (rating <= 1) return 'low';
+    if (rating === 2) return 'medium';
+    if (rating === 3) return 'high';
+    return 'max';
   }
-
-  readonly handleBackToConfig = (): void => {
-    this.backToConfig.emit();
-  };
-
-  createNewVersion(): void {};
-
-
-  // -------------- UI -----------------
-  /**
-   * Toggles the visibility of the general statistics container.
-   */
-  toggleStatContainer(): void {
-    this.statContainerOpen = !this.statContainerOpen;
-    return;
-  };
 }

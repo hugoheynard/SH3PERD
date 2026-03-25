@@ -7,7 +7,7 @@ import {authGuard} from '../../guards/auth.guard';
 import {PlaylistManagerComponent} from '../features/playlists/components/playlist-manager/playlist-manager.component';
 import {MainLayoutComponent} from '../core/main-layout/main-layout.component';
 import {HomeComponent} from '../features/home-dashboard/home/home.component';
-import {MusicLibraryComponent} from '../features/musicLibrary/components/music-library/music-library.component';
+import { MusicLibraryPageComponent } from '../features/musicLibrary/music-library-page/music-library-page.component';
 import { ContractPageComponent } from '../features/contracts/components/contract-page/contract-page.component';
 import { UserGroupsComponent } from '../features/userGroups/components/user-groups/user-groups.component';
 import {
@@ -33,7 +33,7 @@ export const routes: Routes = [
       { path: 'home', component: HomeComponent, data: { pageName: 'dashboard' }},
       { path: 'program', component: ProgramsPageComponent, data: { pageName: 'program' }},
       { path: 'calendar', component: CalendarComponent,  data: { pageName: 'calendar' }},
-      { path: 'musicLibrary', component: MusicLibraryComponent,  data: { pageName: 'music' } },
+      { path: 'musicLibrary', component: MusicLibraryPageComponent,  data: { pageName: 'music' } },
       { path: 'playlistManager', component: PlaylistManagerComponent, data: { pageName: 'playlists' }},
       { path: 'contracts', component: ContractPageComponent, data: { pageName: 'contracts' } },
       { path: 'userGroup', component: UserGroupsComponent, data: { pageName: 'userGroups' }},

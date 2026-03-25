@@ -1,0 +1,131 @@
+:host {
+  display: block;
+}
+
+.card {
+  padding: 10px 16px;
+  background: var(--card-color, #2c323d);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--card-color, #2c323d) 85%, white);
+    border-color: rgba(255, 255, 255, 0.09);
+  }
+}
+
+/* ── Header ─────────────────────────────────────── */
+
+.card-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #e2e8f0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-artist {
+  font-size: 11px;
+  color: var(--text-muted, #718096);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Versions ───────────────────────────────────── */
+
+.card-versions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.version-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 5px;
+}
+
+.version-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary, #a0aec0);
+  min-width: 110px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.version-dur {
+  font-size: 10px;
+  color: var(--text-muted, #718096);
+  font-variant-numeric: tabular-nums;
+  min-width: 36px;
+}
+
+.no-version {
+  font-size: 11px;
+  color: var(--text-muted, #718096);
+  font-style: italic;
+  padding: 4px 0;
+}
+
+/* ── Ratings ────────────────────────────────────── */
+
+.version-ratings {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.rating-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.rating-label {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted, #718096);
+}
+
+.rating-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.1s ease;
+
+  &.filled {
+    border-color: transparent;
+
+    &[data-level='low']    { background: #fc8181; }
+    &[data-level='medium'] { background: #f6ad55; }
+    &[data-level='high']   { background: #68d391; }
+    &[data-level='max']    { background: #63b3ed; }
+  }
+}

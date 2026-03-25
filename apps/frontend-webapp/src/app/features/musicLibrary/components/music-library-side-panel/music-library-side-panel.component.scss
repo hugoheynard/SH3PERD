@@ -1,0 +1,163 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background: var(--panel-color, #171c23);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+/* ── Sections ───────────────────────────────────── */
+
+.panel-section {
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section-title {
+  margin: 0 0 10px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted, #718096);
+}
+
+/* ── Stat cards ─────────────────────────────────── */
+
+.stat-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 10px 12px;
+
+  background: var(--card-color, #2c323d);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+
+  &.accent {
+    background: rgba(99, 179, 237, 0.08);
+    border-color: rgba(99, 179, 237, 0.15);
+
+    .stat-value {
+      color: #63b3ed;
+    }
+  }
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary, #e2e8f0);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-muted, #718096);
+  text-align: right;
+}
+
+/* ── Config block ───────────────────────────────── */
+
+.config-block {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.config-key {
+  font-size: 11px;
+  color: var(--text-muted, #718096);
+  flex-shrink: 0;
+}
+
+.config-val {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary, #a0aec0);
+  text-transform: capitalize;
+
+  &.active-filter {
+    color: #68d391;
+  }
+}
+
+.mode-badge {
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+
+  background: rgba(99, 179, 237, 0.12);
+  color: #63b3ed;
+
+  &[data-mode='cross'] {
+    background: rgba(246, 173, 85, 0.12);
+    color: #f6ad55;
+  }
+
+  &[data-mode='shared'] {
+    background: rgba(104, 211, 145, 0.12);
+    color: #68d391;
+  }
+
+  &[data-mode='match'] {
+    background: rgba(159, 122, 234, 0.12);
+    color: #9f7aea;
+  }
+}
+
+/* ── Genre cloud ────────────────────────────────── */
+
+.genre-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.genre-chip {
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--text-secondary, #a0aec0);
+  cursor: default;
+  transition: background 0.12s ease, color 0.12s ease;
+
+  &:hover {
+    background: rgba(99, 179, 237, 0.1);
+    color: #63b3ed;
+    border-color: rgba(99, 179, 237, 0.2);
+  }
+}
