@@ -115,7 +115,8 @@ export class TimelineCueComponent {
    */
   top = computed(() => {
     const preview = this.previewAtMinutes();
-    return this.res.minuteToPx(this.projector.project(preview ?? this.cue().atMinutes));
+    const cue = this.cue();
+    return this.res.minuteToPx(this.projector.project(preview ?? cue.atMinutes, cue.roomId));
   });
 
   /**

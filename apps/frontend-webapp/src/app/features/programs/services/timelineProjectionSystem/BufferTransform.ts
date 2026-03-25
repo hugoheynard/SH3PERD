@@ -11,8 +11,10 @@ export class BufferTransform implements TimelineHook {
     return this.state.program().timelineOffsets;
   }
 
-  project(min: number): number {
-    const buffers = this.getBuffers();
+  project(min: number, roomId?: string): number {
+    const allBuffers = this.getBuffers();
+    const buffers = allBuffers
+      .filter(b => !roomId || b.room_id === roomId);
 
     const offset = buffers
       .filter(b => b.atMinutes <= min)
@@ -21,8 +23,9 @@ export class BufferTransform implements TimelineHook {
     return min + offset;
   }
 
-  unproject(min: number): number {
-    const buffers = this.getBuffers();
+  unproject(min: number, roomId?: string): number {
+    const buffers = this.getBuffers()
+      .filter(b => !roomId || b.room_id === roomId);
 
     let offset = 0;
 

@@ -132,7 +132,7 @@ export class SlotService
 
     this.patch(slotId, slot => ({
       ...slot,
-      roomId
+      room_id: roomId
     }));
   };
 
@@ -179,7 +179,7 @@ export class SlotService
       name: 'New Slot',
       startMinutes: p.startMinutes,
       duration: 15,
-      roomId: p.roomId,
+      room_id: p.roomId,
       type: 'performance',
       color: '#3b82f6',
       artists: [],

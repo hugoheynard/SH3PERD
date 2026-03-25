@@ -160,7 +160,7 @@ export class PlannerInsertActionsInitService {
         name: 'New Slot',
         startMinutes: minutes,
         duration: 15,
-        roomId,
+        room_id: roomId,
         playlist: false,
         song: false,
         type: 'performance',

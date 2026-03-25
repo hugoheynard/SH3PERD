@@ -121,7 +121,7 @@ export class SlotDragInteractionService {
         return {
           slot_id: s.slot_id,
           previewStart: current?.startMinutes ?? 0,
-          previewRoomId: current?.roomId ?? leader.roomId
+          previewRoomId: current?.room_id ?? leader.room_id
         };
       })
     );
@@ -132,7 +132,7 @@ export class SlotDragInteractionService {
     slot: ArtistPerformanceSlot
   ): number | null {
 
-    const rect = this.layout.getRect(slot.roomId);
+    const rect = this.layout.getRect(slot.room_id);
     if (!rect) {
       return null;
     }

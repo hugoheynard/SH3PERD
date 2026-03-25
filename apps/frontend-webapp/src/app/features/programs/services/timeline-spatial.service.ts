@@ -115,7 +115,7 @@ export class TimelineSpatialService {
     const rawMinutes = this.res.pxToMinutes(correctedY);
     const snappedMinutes = this.res.snap(rawMinutes);
 
-    const timelineMinutes = this.projector.unproject(snappedMinutes);
+    const timelineMinutes = this.projector.unproject(snappedMinutes, room_id);
 
     const clamped = Math.max(0, timelineMinutes);
 
@@ -123,7 +123,7 @@ export class TimelineSpatialService {
       room_id: room_id,
       minutes: clamped,
       px: this.res.minuteToPx(
-        this.projector.project(clamped)
+        this.projector.project(clamped, room_id)
       )
     };
   }

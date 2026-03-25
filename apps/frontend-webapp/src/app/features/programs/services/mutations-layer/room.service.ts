@@ -60,7 +60,7 @@ export class RoomService {
 
         rooms: state.rooms.filter(r => r.id !== roomId),
 
-        slots: state.slots.filter(s => s.roomId !== roomId)
+        slots: state.slots.filter(s => s.room_id !== roomId)
 
       };
     });

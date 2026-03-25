@@ -2,8 +2,8 @@ import { InjectionToken } from '@angular/core';
 
 
 export interface TimelineProjector {
-  project(min: number): number;
-  unproject(min: number): number;
+  project(min: number, roomId?: string): number;
+  unproject(min: number, roomId?: string): number;
 }
 
 

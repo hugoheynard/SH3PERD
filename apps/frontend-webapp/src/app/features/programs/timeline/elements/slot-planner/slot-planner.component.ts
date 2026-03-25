@@ -77,7 +77,7 @@ export class SlotPlannerComponent {
   slot = input.required<ArtistPerformanceSlot>();
   slotStartTime = input<string>();
   slotEndTime = input<string>();
-  top = computed(() => this.res.minuteToPx(this.projector.project(this.slot().startMinutes)));
+  top = computed(() => this.res.minuteToPx(this.projector.project(this.slot().startMinutes, this.slot().room_id)));
   height = computed(() => this.res.minuteToPx(this.slot().duration));
   editSlot = output<string>();
   slotResizeStart = output<PointerEvent>();

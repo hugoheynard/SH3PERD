@@ -53,7 +53,7 @@ export class SlotSelectorService {
       return {
         ...slot,
         startMinutes: preview.previewStart,
-        roomId: preview.previewRoomId ?? slot.roomId,
+        roomId: preview.previewRoomId ?? slot.room_id,
         isPreview: true
       };
     });
@@ -65,11 +65,11 @@ export class SlotSelectorService {
 
     for (const slot of this.slots()) {
 
-      const arr = map.get(slot.roomId) ?? [];
+      const arr = map.get(slot.room_id) ?? [];
 
       arr.push(slot);
 
-      map.set(slot.roomId, arr);
+      map.set(slot.room_id, arr);
     }
 
     // 🔥 CRITIQUE : tri par startMinutes
@@ -88,7 +88,7 @@ export class SlotSelectorService {
     );
 
     // 👇 projection ici
-    const projectedStart = this.projector.project(slot.startMinutes);
+    const projectedStart = this.projector.project(slot.startMinutes, slot.room_id);
 
     const absolute = programStartMinutes + projectedStart;
 
@@ -101,7 +101,7 @@ export class SlotSelectorService {
       this.state.program().startTime
     );
 
-    const projectedStart = this.projector.project(slot.startMinutes);
+    const projectedStart = this.projector.project(slot.startMinutes, slot.room_id);
 
     const absolute =
       programStartMinutes + projectedStart + slot.duration;

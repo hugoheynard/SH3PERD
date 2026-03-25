@@ -172,7 +172,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   startSlotResize(event: PointerEvent, slot: ArtistPerformanceSlot): void {
     this.interaction.startResize(event, {
       id: slot.id,
-      roomId: slot.roomId,
+      roomId: slot.room_id,
       startMinutes: slot.startMinutes,
       duration: slot.duration,
       type: ResizeTargetType.SLOT
@@ -198,7 +198,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
         duration: drag.data.duration,
         type: drag.data.type,
         color: drag.data.color,
-        roomId,
+        room_id: roomId,
         artists: [],
         playlist: drag.data.playlist,
         song: drag.data.song
@@ -209,7 +209,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
     if (drag.type === 'slot') {
 
-      if (drag.data.roomId !== roomId) {
+      if (drag.data.room_id !== roomId) {
         this.slotServ.updateSlotRoom(drag.data.id, roomId);
       }
     }
@@ -263,7 +263,7 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   private selectSlot(slot: ArtistPerformanceSlot, event: PointerEvent) {
     this.slotSelectService.handleSlotPointerDown(
       slot.id,
-      slot.roomId,
+      slot.room_id,
       event
     );
   };

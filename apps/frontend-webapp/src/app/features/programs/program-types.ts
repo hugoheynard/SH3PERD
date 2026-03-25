@@ -28,7 +28,7 @@ export interface PlanningSlot {
   duration: number;
   type: SlotType;
   color: string;
-  roomId: string;
+  room_id: string;
 }
 
 
