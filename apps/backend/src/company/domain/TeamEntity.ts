@@ -1,30 +1,30 @@
 import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
-import type { TCastDomainModel, TCastMember, TContractId, TUserId } from '@sh3pherd/shared-types';
+import type { TTeamDomainModel, TTeamMember, TContractId, TUserId } from '@sh3pherd/shared-types';
 import { DomainError } from '../../utils/errorManagement/errorClasses/DomainError.js';
 
-export class CastEntity extends Entity<TCastDomainModel> {
-  constructor(props: TEntityInput<TCastDomainModel>) {
-    super(props, 'cast');
+export class TeamEntity extends Entity<TTeamDomainModel> {
+  constructor(props: TEntityInput<TTeamDomainModel>) {
+    super(props, 'team');
   }
 
   // ── Member management ──────────────────────────────
 
-  addMember(userId: TUserId, contractId: TContractId, joinedAt: Date = new Date()): TCastMember {
+  addMember(userId: TUserId, contractId: TContractId, joinedAt: Date = new Date()): TTeamMember {
     if (this.hasActiveMember(userId)) {
-      throw new DomainError('Member already active in this cast', {
-        code: 'CAST_MEMBER_ALREADY_EXISTS',
+      throw new DomainError('Member already active in this team', {
+        code: 'TEAM_MEMBER_ALREADY_EXISTS',
         context: { userId },
       });
     }
-    const member: TCastMember = { user_id: userId, contract_id: contractId, joinedAt };
+    const member: TTeamMember = { user_id: userId, contract_id: contractId, joinedAt };
     this.props = { ...this.props, members: [...this.props.members, member] };
     return member;
   }
 
   removeMember(userId: TUserId, leftAt: Date = new Date()): void {
     if (!this.hasActiveMember(userId)) {
-      throw new DomainError('Member not active in this cast', {
-        code: 'CAST_MEMBER_NOT_FOUND',
+      throw new DomainError('Member not active in this team', {
+        code: 'TEAM_MEMBER_NOT_FOUND',
         context: { userId },
       });
     }
@@ -38,13 +38,13 @@ export class CastEntity extends Entity<TCastDomainModel> {
 
   // ── Temporal queries ───────────────────────────────
 
-  getMembersAt(date: Date): TCastMember[] {
+  getMembersAt(date: Date): TTeamMember[] {
     return this.props.members.filter(
       m => m.joinedAt <= date && (!m.leftAt || m.leftAt >= date),
     );
   }
 
-  getActiveMembers(): TCastMember[] {
+  getActiveMembers(): TTeamMember[] {
     return this.props.members.filter(m => !m.leftAt);
   }
 
@@ -56,7 +56,7 @@ export class CastEntity extends Entity<TCastDomainModel> {
 
   archive(): void {
     if (this.props.status === 'archived') {
-      throw new DomainError('Cast is already archived', { code: 'CAST_ALREADY_ARCHIVED' });
+      throw new DomainError('Team is already archived', { code: 'TEAM_ALREADY_ARCHIVED' });
     }
     this.props = { ...this.props, status: 'archived' };
   }

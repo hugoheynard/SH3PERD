@@ -52,7 +52,7 @@ import {
 import { MONGO_CLIENT } from './db.tokens.js';
 import { ContractReadRepository } from '../../contracts/repositories/ContractReadRepository.js';
 import { CompanyMongoRepository, type ICompanyRepository } from '../../company/repositories/CompanyMongoRepository.js';
-import { CastMongoRepository, type ICastRepository } from '../../company/repositories/CastMongoRepository.js';
+import { TeamMongoRepository, type ITeamRepository } from '../../company/repositories/TeamMongoRepository.js';
 import { CastMembershipEventMongoRepository, type ICastMembershipEventRepository } from '../../company/repositories/CastMembershipEventMongoRepository.js';
 import { COMPANY_REPO, CAST_REPO, CAST_MEMBERSHIP_EVENT_REPO } from '../nestTokens.js';
 
@@ -95,7 +95,7 @@ export type TCoreRepositories = {
   musicRepertoire: IMusicRepertoireRepository;
   //COMPANY
   company: ICompanyRepository;
-  cast: ICastRepository;
+  cast: ITeamRepository;
   castMembershipEvent: ICastMembershipEventRepository;
 };
 
@@ -123,7 +123,7 @@ export type TCoreRepositories = {
     mongoRepoProvider<IMusicVersionRepository>(MUSIC_VERSION_REPO, MusicVersionRepository, 'music_version'),
     mongoRepoProvider<IMusicRepertoireRepository>(MUSIC_REPERTOIRE_REPO, MusicRepertoireMongoRepository, 'music_repertoireEntries'),
     mongoRepoProvider<ICompanyRepository>(COMPANY_REPO, CompanyMongoRepository, 'companies'),
-    mongoRepoProvider<ICastRepository>(CAST_REPO, CastMongoRepository, 'casts'),
+    mongoRepoProvider<ITeamRepository>(CAST_REPO, TeamMongoRepository, 'teams'),
     mongoRepoProvider<ICastMembershipEventRepository>(CAST_MEMBERSHIP_EVENT_REPO, CastMembershipEventMongoRepository, 'cast_membership_events'),
   ],
   exports: [

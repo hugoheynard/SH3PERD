@@ -19,6 +19,20 @@ export type TContractListItemViewModel = {
   status: TContractStatusEnum;
 }
 
+/**
+ * Contract as seen from the company side — includes user identity instead of company name.
+ */
+export type TCompanyContractViewModel = {
+  id:              TContractId;
+  user_id:         TUserId;
+  user_first_name?: string;
+  user_last_name?:  string;
+  user_email?:      string;
+  status:          TContractStatusEnum;
+  startDate:       Date;
+  endDate?:        Date;
+};
+
 export const SContractListItemViewModel = z.object({
   id: SContractId,
   company_id: SCompanyId,

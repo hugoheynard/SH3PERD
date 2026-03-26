@@ -5,6 +5,7 @@ import { TokenFunctionsModule } from '../auth/core/TokenFunctions.module.js';
 import { ContractModule } from '../contracts/contract.module.js';
 import { UserModule } from '../user/user.module.js';
 import { UserGroupsModule } from '../userGroups/user-groups.module.js';
+import { CompanyModule } from '../company/company.module.js';
 import { CONTRACT_SCOPED_GUARD } from './nestTokens.js';
 
 
@@ -16,7 +17,8 @@ import { CONTRACT_SCOPED_GUARD } from './nestTokens.js';
     UserModule,
     MusicModule,
     ContractModule,
-    UserGroupsModule
+    UserGroupsModule,
+    CompanyModule,
   ],
   providers: [
     { provide: CONTRACT_SCOPED_GUARD, useClass: ContractContextGuard }

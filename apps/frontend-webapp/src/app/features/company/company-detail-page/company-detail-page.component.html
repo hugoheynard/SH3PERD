@@ -1,0 +1,264 @@
+<div class="page-back-bar">
+  <button class="btn-back" (click)="goBack()" type="button">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M19 12H5M12 5l-7 7 7 7"/>
+    </svg>
+    Companies
+  </button>
+</div>
+
+<!-- Loading state -->
+@if (store.loading()) {
+  <div class="loading-state">
+    <span>Loading company...</span>
+  </div>
+}
+
+<!-- Error state -->
+@if (store.error()) {
+  <div class="error-state">
+    <span>{{ store.error() }}</span>
+  </div>
+}
+
+<!-- Main layout -->
+@if (!store.loading() && store.hasCompany()) {
+  @let company = store.company()!;
+
+  <div class="company-page">
+    <!-- Header -->
+    <header class="company-header">
+      <div class="header-info">
+        <h1 class="company-name">{{ company.name }}</h1>
+        <span class="status-badge" [class]="'status-' + company.status">{{ company.status }}</span>
+      </div>
+      <div class="header-stats">
+        <span class="stat">
+          <span class="stat-value">{{ company.activeTeamCount }}</span>
+          <span class="stat-label">teams</span>
+        </span>
+        <span class="stat">
+          <span class="stat-value">{{ company.activeContractCount }}</span>
+          <span class="stat-label">contracts</span>
+        </span>
+      </div>
+      <div class="header-actions">
+        <button class="btn-settings" (click)="goToSettings()" title="Company settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.14,12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24,0-.43.17-.47.41l-.36,2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47,0-.59.22L2.74,8.87c-.12.21-.08.47.12.61l2.03,1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03,1.58c-.18.14-.23.41-.12.61l1.92,3.32c.12.22.37.29.59.22l2.39-.96c.5.38,1.03.7,1.62.94l.36,2.54c.05.24.24.41.48.41h3.84c.24,0,.44-.17.47-.41l.36-2.54c.59-.24,1.13-.56,1.62-.94l2.39.96c.22.08.47,0,.59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6,3.6,1.62,3.6,3.6-1.62,3.6-3.6,3.6z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="company-body">
+
+      <!-- Side Panel -->
+      <aside class="side-panel">
+
+        <!-- Services section -->
+        <section class="panel-section">
+          <div class="section-header">
+            <span class="section-title">Services</span>
+            <button class="btn-manage" (click)="goToServices()" title="Manage services">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+
+          <ul class="service-list">
+            @for (service of store.services(); track service.id) {
+              <li
+                class="service-item"
+                [style.--service-color]="getServiceColor(service.id)"
+                (click)="goToService(service.id)"
+                role="button"
+                tabindex="0"
+                (keydown.enter)="goToService(service.id)"
+              >
+                <span class="service-dot" [style.background-color]="getServiceColor(service.id)"></span>
+                <span class="service-name">{{ service.name }}</span>
+                <svg class="service-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+              </li>
+            }
+          </ul>
+
+          <button class="btn-add-item" (click)="goToServices()">+ Manage services</button>
+        </section>
+
+        <!-- Staff section -->
+        <section class="panel-section">
+          <div class="section-header">
+            <span class="section-title">Staff</span>
+          </div>
+
+          <ul class="staff-list">
+            @for (member of store.admins(); track member.user_id) {
+              <li class="staff-item">
+                <div class="member-avatar" [style.background-color]="getMemberColor(member.user_id)">
+                  {{ getInitials(member.user_id) }}
+                </div>
+                <div class="member-info">
+                  <span class="member-id">{{ member.user_id | slice: 0:12 }}…</span>
+                  <span class="member-role">{{ member.role }}</span>
+                </div>
+              </li>
+            }
+          </ul>
+        </section>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+
+        <!-- Tab bar -->
+        <div class="tab-bar">
+          <button
+            class="tab-btn"
+            [class.active]="activeTab() === 'teams'"
+            (click)="setTab('teams')"
+          >
+            Teams
+          </button>
+          <button
+            class="tab-btn"
+            [class.active]="activeTab() === 'contracts'"
+            (click)="setTab('contracts')"
+          >
+            Contracts
+          </button>
+        </div>
+
+        <!-- Tab: Teams -->
+        @if (activeTab() === 'teams') {
+          <div class="tab-content">
+            <div class="content-toolbar">
+              <span class="results-count">{{ store.teams().length }} team(s)</span>
+              @if (!addingTeam()) {
+                <button class="btn-add-entry" (click)="startAddTeam()">+ New team</button>
+              }
+            </div>
+
+            @if (addingTeam()) {
+              <div class="add-team-form">
+                <input
+                  class="input-inline"
+                  type="text"
+                  placeholder="Team name..."
+                  [value]="newTeamName()"
+                  (input)="onTeamNameInput($event)"
+                  (keydown.enter)="confirmAddTeam()"
+                  (keydown.escape)="cancelAddTeam()"
+                  autofocus
+                />
+                <button class="btn-confirm" (click)="confirmAddTeam()">Create</button>
+                <button class="btn-cancel" (click)="cancelAddTeam()">Cancel</button>
+              </div>
+            }
+
+            <div class="teams-grid">
+              @for (team of store.teams(); track team.id) {
+                <div class="team-card" [style.--service-color]="getServiceColor(team.service_id)">
+                  <div class="team-card-header">
+                    <div class="team-info">
+                      @if (team.service_id) {
+                        <span class="team-service-dot" [style.background-color]="getServiceColor(team.service_id)"></span>
+                      }
+                      <span class="team-name">{{ team.name }}</span>
+                      @if (team.service_id) {
+                        <span class="service-badge" [style.color]="getServiceColor(team.service_id)" [style.border-color]="getServiceColor(team.service_id) + '44'" [style.background]="getServiceColor(team.service_id) + '18'">
+                          {{ getServiceName(team.service_id) }}
+                        </span>
+                      }
+                    </div>
+                    <span class="team-status-badge" [class]="'team-status-' + team.status">
+                      {{ team.status }}
+                    </span>
+                  </div>
+
+                  <div class="team-members">
+                    <div class="member-chips">
+                      @for (member of team.members.slice(0, 5); track member.user_id) {
+                        @if (!member.leftAt) {
+                          <div
+                            class="member-chip"
+                            [style.background-color]="getMemberColor(member.user_id)"
+                            [title]="member.user_id"
+                          >
+                            {{ getInitials(member.user_id) }}
+                          </div>
+                        }
+                      }
+                      @if (getActiveMemberCount(team) > 5) {
+                        <div class="member-chip chip-overflow">+{{ getActiveMemberCount(team) - 5 }}</div>
+                      }
+                    </div>
+                    <span class="member-count">{{ getActiveMemberCount(team) }} membre(s) actif(s)</span>
+                  </div>
+                </div>
+              }
+
+              @if (store.teams().length === 0) {
+                <div class="empty-state">
+                  <span>No teams yet. Create your first team above.</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Tab: Contracts -->
+        @if (activeTab() === 'contracts') {
+          <div class="tab-content">
+            <div class="content-toolbar">
+              <span class="results-count">{{ store.contracts().length }} contract(s)</span>
+              <button class="btn-add-entry" (click)="showContractPanel.set(true)">+ New contract</button>
+            </div>
+
+            <div class="contracts-list">
+              @for (contract of store.contracts(); track contract.id) {
+                <div class="contract-row">
+                  <div class="contract-user">
+                    <div class="contract-avatar">
+                      {{ (contract.user_first_name?.[0] ?? '?').toUpperCase() }}
+                    </div>
+                    <div class="contract-user-info">
+                      <span class="contract-user-name">
+                        {{ contract.user_first_name }} {{ contract.user_last_name }}
+                      </span>
+                      @if (contract.user_email) {
+                        <span class="contract-user-email">{{ contract.user_email }}</span>
+                      }
+                    </div>
+                  </div>
+                  <div class="contract-meta">
+                    <span class="contract-dates">
+                      {{ contract.startDate | date:'shortDate' }}
+                      @if (contract.endDate) { → {{ contract.endDate | date:'shortDate' }} }
+                    </span>
+                    <span class="contract-status" [class]="'cstatus-' + contract.status">{{ contract.status }}</span>
+                  </div>
+                </div>
+              }
+
+              @if (store.contracts().length === 0) {
+                <div class="empty-state">
+                  <span>No contracts yet. Create the first one.</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+      </main>
+    </div>
+  </div>
+}
+
+<!-- Contract creation panel -->
+@if (showContractPanel()) {
+  <app-contract-creation-panel
+    (closed)="showContractPanel.set(false)"
+    (created)="showContractPanel.set(false)"
+  />
+}

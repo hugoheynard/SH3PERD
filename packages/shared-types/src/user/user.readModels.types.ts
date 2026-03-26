@@ -18,4 +18,14 @@ export type TUserMeViewModel =
   & { profile: Omit<TUserProfileDomainModel, 'user_id'> }
   & { preferences: Omit<TUserPreferencesDomainModel, 'user_id'> };
 
+/**
+ * Lightweight user result returned by email search or invite.
+ */
+export type TUserSearchResult = {
+  user_id: TUserId;
+  email:   string;
+  first_name?: string;
+  last_name?:  string;
+};
+
 

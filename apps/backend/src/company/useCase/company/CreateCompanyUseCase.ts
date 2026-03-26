@@ -15,14 +15,16 @@ export class CreateCompanyUseCase {
   ) {}
 
   async execute(dto: TCreateCompanyDTO, actorId: TUserId): Promise<TCompanyRecord> {
-    const entity = new CompanyEntity({ name: dto.name, services: [] });
+    const entity = new CompanyEntity({ name: dto.name, owner_id: actorId, services: [], admins: [], status: 'active' });
     const metadata = RecordMetadataUtils.create(actorId);
     const record: TCompanyRecord = { ...entity.toDomain, ...metadata };
 
     const saved = await this.companyRepo.save(record);
+
     if (!saved) {
       throw new TechnicalError('Failed to create company', 'COMPANY_CREATE_FAILED', 500);
     }
+
     return record;
   }
 }

@@ -37,7 +37,6 @@ import { CompanyModule } from '../company/company.module.js';
     UserModule,
     UserProfileModule,
     ContractModule,
-    CompanyModule,
     ProtectedModule,
     // ⚠️ Prefix split
     RouterModule.register([

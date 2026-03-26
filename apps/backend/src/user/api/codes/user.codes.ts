@@ -5,6 +5,14 @@ export const USER_CODES_SUCCESS = {
     code: 'GET_USER_ME_SUCCESS',
     message: 'Session User information retrieved successfully',
   },
+  SEARCH_USER: {
+    code: 'USER_SEARCH_SUCCESS',
+    message: 'User search completed.',
+  },
+  INVITE_USER: {
+    code: 'USER_INVITED',
+    message: 'User invited successfully.',
+  },
 } as const satisfies Record<string, TApiMessage>
 
 

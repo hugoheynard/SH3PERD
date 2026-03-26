@@ -1,6 +1,6 @@
-import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, Req } from '@nestjs/common';
 import type { Request } from 'express';
-import type { TCreateContractRequestDTO, TGetContractsByFilterRequestDTO} from '@sh3pherd/shared-types';
+import type { TCompanyId, TCreateContractRequestDTO, TGetContractsByFilterRequestDTO} from '@sh3pherd/shared-types';
 import { CONTRACTS_USE_CASES } from '../contracts.tokens.js';
 import type { TContractsUseCases } from '../useCase/ContractUseCasesFactory.js';
 import { /*ContractScopedContext,*/ UserScopedContext } from '../../utils/nest/decorators/Context.js';
@@ -34,6 +34,14 @@ export class ContractController {
     return this.contractsUC.getCurrentUserContractList({ context, requestDTO });
   };
 
+
+  /**
+   * Returns all contracts for a given company, enriched with user identity.
+   */
+  @Get('company/:companyId')
+  getCompanyContracts(@Param('companyId') companyId: TCompanyId) {
+    return this.contractsUC.getCompanyContracts(companyId);
+  }
 
   /**
    * Endpoint to create a new contract.

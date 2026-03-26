@@ -1,4 +1,5 @@
 // Entry point for @sh3pherd/shared-types
+export * from './ids.js';
 
 
 export * from './api.types.js';

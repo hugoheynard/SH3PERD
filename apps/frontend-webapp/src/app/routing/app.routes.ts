@@ -38,6 +38,47 @@ export const routes: Routes = [
       { path: 'contracts', component: ContractPageComponent, data: { pageName: 'contracts' } },
       { path: 'userGroup', component: UserGroupsComponent, data: { pageName: 'userGroups' }},
       { path: 'user-profile', component: UserProfilePageComponent, data: { pageName: 'profile' }},
+      {
+        path: 'company',
+        data: { pageName: 'company' },
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('../features/company/company-page/company-page.component')
+              .then(m => m.CompanyPageComponent),
+          },
+          {
+            path: ':id',
+            children: [
+              {
+                path: '',
+                loadComponent: () => import('../features/company/company-detail-page/company-detail-page.component')
+                  .then(m => m.CompanyDetailPageComponent),
+              },
+              {
+                path: 'settings',
+                loadComponent: () => import('../features/company/company-settings-page/company-settings-page.component')
+                  .then(m => m.CompanySettingsPageComponent),
+              },
+              {
+                path: 'services',
+                children: [
+                  {
+                    path: '',
+                    loadComponent: () => import('../features/company/service-list-page/service-list-page.component')
+                      .then(m => m.ServiceListPageComponent),
+                  },
+                  {
+                    path: ':serviceId',
+                    loadComponent: () => import('../features/company/service-detail-page/service-detail-page.component')
+                      .then(m => m.ServiceDetailPageComponent),
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ]
   },
   { path: '**', redirectTo: 'login' },

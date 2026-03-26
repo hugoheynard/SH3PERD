@@ -1,9 +1,9 @@
 import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type { TCastMembershipEventRecord, TCastId } from '@sh3pherd/shared-types';
+import type { TCastMembershipEventRecord, TTeamId } from '@sh3pherd/shared-types';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
 export interface ICastMembershipEventRepository extends IBaseCRUD<TCastMembershipEventRecord> {
-  findByCast(castId: TCastId): Promise<TCastMembershipEventRecord[]>;
+  findByCast(castId: TTeamId): Promise<TCastMembershipEventRecord[]>;
 }
 
 export class CastMembershipEventMongoRepository
@@ -14,7 +14,7 @@ export class CastMembershipEventMongoRepository
     super(input);
   }
 
-  async findByCast(castId: TCastId): Promise<TCastMembershipEventRecord[]> {
+  async findByCast(castId: TTeamId): Promise<TCastMembershipEventRecord[]> {
     return this.findMany({ filter: { cast_id: castId } });
   }
 }

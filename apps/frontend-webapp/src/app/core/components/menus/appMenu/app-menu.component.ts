@@ -30,6 +30,7 @@ export class AppMenuComponent {
     { id: 'playlists',  icon: 'play',                 label: 'Playlists',  route: 'playlistManager' },
     { id: 'contracts',  icon: 'contracts',            label: 'Contracts',  route: 'contracts'    },
     { id: 'userGroups', icon: 'user-group-menu-icon', label: 'Groups',     route: 'userGroup'    },
+    { id: 'company',    icon: 'company',              label: 'Company',    route: 'company'      },
   ];
 
   readonly bottomItems: AppMenuItem[] = [

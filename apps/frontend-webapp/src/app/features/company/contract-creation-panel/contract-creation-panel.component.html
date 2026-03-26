@@ -1,0 +1,142 @@
+<div class="panel-overlay" (click)="closed.emit()"></div>
+
+<div class="panel">
+
+  <div class="panel-header">
+    <span class="panel-title">New contract</span>
+    <button class="btn-close" (click)="closed.emit()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Step indicators -->
+  <div class="step-track">
+    <div class="step-dot" [class.active]="step() === 'search' || step() === 'new-user'" [class.done]="step() === 'contract'">1</div>
+    <div class="step-line" [class.done]="step() === 'contract'"></div>
+    <div class="step-dot" [class.active]="step() === 'contract'">2</div>
+  </div>
+
+  <div class="panel-body">
+
+    <!-- ── Step 1: search ─────────────────────────────── -->
+    @if (step() === 'search') {
+      <div class="step-panel">
+        <h3 class="step-title">Find a user</h3>
+        <p class="step-desc">Search by email address. If no account exists you can create one.</p>
+
+        <div class="search-row">
+          <input
+            class="form-input"
+            type="email"
+            placeholder="artist@email.com"
+            [value]="searchEmail()"
+            (input)="onEmailInput($event)"
+            (keydown.enter)="searchUser()"
+          />
+          <button class="btn-search" (click)="searchUser()" [disabled]="!searchEmail() || searching()">
+            {{ searching() ? '…' : 'Search' }}
+          </button>
+        </div>
+
+        <!-- Found -->
+        @if (hasSearchResult) {
+          @let user = searchResult();
+          @if (user && user !== 'not-found') {
+            <div class="user-result found">
+              <div class="user-avatar">{{ (user.first_name?.[0] ?? user.email[0]).toUpperCase() }}</div>
+              <div class="user-info">
+                <span class="user-name">{{ getUserFullName(user) }}</span>
+                <span class="user-email">{{ user.email }}</span>
+              </div>
+              <button class="btn-select" (click)="selectUser(user)">Select →</button>
+            </div>
+          }
+        }
+
+        <!-- Not found -->
+        @if (noResultFound) {
+          <div class="user-result not-found">
+            <span class="not-found-msg">No account found for <strong>{{ searchEmail() }}</strong></span>
+            <button class="btn-create-user" (click)="goToCreateUser()">+ Create account</button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Step 2: new user ───────────────────────────── -->
+    @if (step() === 'new-user') {
+      <div class="step-panel">
+        <button class="btn-back-step" (click)="step.set('search')">← Back</button>
+        <h3 class="step-title">Create account</h3>
+        <p class="step-desc">An inactive account will be created. The user will set their password when they first log in.</p>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" [value]="searchEmail()" disabled/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First name</label>
+            <input class="form-input" type="text" [value]="newFirstName()" (input)="onFirstNameInput($event)" placeholder="Jean"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last name</label>
+            <input class="form-input" type="text" [value]="newLastName()" (input)="onLastNameInput($event)" placeholder="Dupont"/>
+          </div>
+        </div>
+
+        <button
+          class="btn-primary"
+          (click)="inviteAndContinue()"
+          [disabled]="!newFirstName() || !newLastName() || inviting()"
+        >
+          {{ inviting() ? 'Creating…' : 'Create & continue' }}
+        </button>
+      </div>
+    }
+
+    <!-- ── Step 3: contract details ───────────────────── -->
+    @if (step() === 'contract') {
+      @let user = selectedUser()!;
+      <div class="step-panel">
+        <button class="btn-back-step" (click)="step.set('search')">← Back</button>
+        <h3 class="step-title">Contract details</h3>
+
+        <div class="selected-user-chip">
+          <div class="user-avatar sm">{{ (user.first_name?.[0] ?? user.email[0]).toUpperCase() }}</div>
+          <span>{{ getUserFullName(user) }}</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <div class="status-selector">
+            <button class="status-btn" [class.active]="contractStatus() === 'draft'" (click)="setStatus('draft')">Draft</button>
+            <button class="status-btn" [class.active]="contractStatus() === 'active'" (click)="setStatus('active')">Active</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Start date <span class="required">*</span></label>
+            <input class="form-input" type="date" [value]="contractStartDate()" (input)="onStartDateInput($event)"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">End date <span class="optional">(optional)</span></label>
+            <input class="form-input" type="date" [value]="contractEndDate()" (input)="onEndDateInput($event)"/>
+          </div>
+        </div>
+
+        <button
+          class="btn-primary"
+          (click)="submitContract()"
+          [disabled]="!contractStartDate() || submitting()"
+        >
+          {{ submitting() ? 'Creating…' : 'Create contract' }}
+        </button>
+      </div>
+    }
+
+  </div>
+</div>
