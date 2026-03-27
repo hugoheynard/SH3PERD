@@ -1,8 +1,8 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonComponent } from '../../../../shared/buttons/button/button.component';
+import { ButtonComponent } from '../../../../shared/button/button.component';
 import { InputComponent } from '../../../../shared/forms/input/input.component';
-import { BadgeComponent } from '../../../../shared/badges/badge/badge.component';
+import { BadgeComponent } from '../../../../shared/badge/badge.component';
 import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
 import { AddVersionFormComponent } from '../add-version-form/add-version-form.component';
 import { MUSIC_GENRES } from '../../music-library-types';

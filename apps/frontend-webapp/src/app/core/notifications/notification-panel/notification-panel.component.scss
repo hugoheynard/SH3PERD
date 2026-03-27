@@ -1,0 +1,252 @@
+@use "mixins" as m;
+
+/* ═══════════════════════════════════════════════════
+   Notification Panel — Apple-style cards
+═══════════════════════════════════════════════════ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ── Header ──────────────────────────────────────── */
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--panel-border-color);
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-title {
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-lg);
+  background: var(--accent-color);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.close-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+
+  &:hover {
+    background: var(--hover-color);
+    color: var(--text-primary);
+  }
+}
+
+/* ── Notification list ───────────────────────────── */
+
+.notification-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  @include m.scrollbar;
+}
+
+/* ── Card ────────────────────────────────────────── */
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+
+  background: var(--card-color);
+  border: 1px solid var(--panel-border-color);
+  border-radius: var(--radius-md);
+
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+
+  transition:
+    background var(--t-fast),
+    border-color var(--t-fast),
+    box-shadow var(--t-base),
+    transform var(--t-base);
+
+  /* Left accent bar */
+  border-left: 3px solid transparent;
+
+  &:hover {
+    background: var(--hover-color);
+    box-shadow: var(--shadow-xs);
+    transform: translateY(-1px);
+  }
+
+  /* Unread state — slightly brighter */
+  &.unread {
+    background: color-mix(in srgb, var(--card-color) 92%, white);
+    border-color: color-mix(in srgb, var(--panel-border-color) 80%, white);
+  }
+}
+
+/* Accent bar by type */
+.card[data-type='info']    { border-left-color: var(--color-info); }
+.card[data-type='success'] { border-left-color: var(--color-success); }
+.card[data-type='warning'] { border-left-color: var(--color-warning); }
+.card[data-type='error']   { border-left-color: var(--color-alert); }
+
+/* ── Icon ────────────────────────────────────────── */
+
+.card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-md);
+  flex-shrink: 0;
+
+  &[data-type='info'] {
+    background: var(--color-info-dim);
+    color: var(--color-info-light);
+  }
+
+  &[data-type='success'] {
+    background: rgba(26, 158, 106, 0.14);
+    color: #68d391;
+  }
+
+  &[data-type='warning'] {
+    background: var(--color-warning-dim);
+    color: var(--color-warning-light);
+  }
+
+  &[data-type='error'] {
+    background: var(--color-alert-dim);
+    color: var(--color-alert-light);
+  }
+}
+
+/* ── Content ─────────────────────────────────────── */
+
+.card-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-time {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-faded);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.card-message {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.45;
+
+  /* Clamp to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Unread dot ──────────────────────────────────── */
+
+.unread-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-color-light);
+  box-shadow: 0 0 6px var(--accent-color);
+}
+
+/* ── Empty state ─────────────────────────────────── */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px 16px;
+}
+
+.empty-icon {
+  font-size: 28px;
+  opacity: 0.4;
+}
+
+.empty-text {
+  font-size: var(--text-sm);
+  color: var(--text-faded);
+}

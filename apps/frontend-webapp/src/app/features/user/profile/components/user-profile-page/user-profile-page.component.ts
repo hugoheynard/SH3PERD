@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, type OnInit, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { ButtonComponent } from '../../../../../shared/buttons/button/button.component';
+import { ButtonComponent } from '../../../../../shared/button/button.component';
 import { InputComponent } from '../../../../../shared/forms/input/input.component';
 import { UserProfileFormService } from '../../services/user-profile.form.service';
 import { UserProfileApiService } from '../../services/user-profile.api.service';

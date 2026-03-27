@@ -9,8 +9,8 @@ type LayoutPanelConfig<T> = {
 
 @Injectable({ providedIn: 'root' })
 export class LayoutService {
-  private _leftPanelComponent = signal<{ component: Type<unknown>, data?: unknown } | null>(null);
-  private _rightPanelComponent = signal<{ component: Type<unknown>, data?: unknown } | null>(null);
+  private _leftPanelComponent = signal<{ component: Type<unknown>, data?: unknown, mode?: 'over' | 'push' } | null>(null);
+  private _rightPanelComponent = signal<{ component: Type<unknown>, data?: unknown, mode?: 'over' | 'push' } | null>(null);
   private _contextMenuComponent = signal<Type<unknown> | null>(null);
   private _popoverComponent = signal<{ component: Type<unknown>, data?: unknown } | null>(null);
 
@@ -19,12 +19,12 @@ export class LayoutService {
   readonly contextMenuComponent = this._contextMenuComponent.asReadonly();
   readonly popoverComponent = this._popoverComponent.asReadonly();
 
-  setLeftPanel<TComp, TData>(component: Type<TComp>,  data?: TData): void {
-    this._leftPanelComponent.set({ component, data });
+  setLeftPanel<TComp, TData>(component: Type<TComp>, data?: TData, mode: 'over' | 'push' = 'push'): void {
+    this._leftPanelComponent.set({ component, data, mode });
   };
 
-  setRightPanel<TComp, TData>(component: Type<TComp>,  data?: TData): void {
-    this._rightPanelComponent.set({ component, data });
+  setRightPanel<TComp, TData>(component: Type<TComp>, data?: TData, mode: 'over' | 'push' = 'over'): void {
+    this._rightPanelComponent.set({ component, data, mode });
   };
 
   setPopover<TComp, TData>(component: Type<TComp>, data?: TData): void {

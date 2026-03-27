@@ -1,14 +1,6 @@
 <!-- Hidden file input for track upload / analyse -->
 <input type="file" #fileInput accept="audio/*" class="file-input-hidden" (change)="onFileSelected($event)" />
 
-<!-- Add Entry command palette -->
-@if (entryPanelOpen()) {
-  <app-add-entry-panel
-    (confirmed)="onAddEntryConfirmed($event)"
-    (closed)="entryPanelOpen.set(false)"
-  />
-}
-
 <app-music-library-header
   [totalReferences]="selector.totalReferences()"
   (searchQueryChange)="onSearchQueryChange($event)"
@@ -62,7 +54,7 @@
             </svg>
             Filtres
           </button>
-          <sh3-button variant="primary" size="sm" (clicked)="entryPanelOpen.set(true)">
+          <sh3-button variant="primary" size="sm" (clicked)="openAddEntryPanel()">
             <span>+</span> Add song
           </sh3-button>
           <button class="view-toggle" (click)="toggleView()" type="button">

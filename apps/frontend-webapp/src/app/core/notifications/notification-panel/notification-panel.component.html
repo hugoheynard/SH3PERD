@@ -1,31 +1,57 @@
-<div class="notifications-panel">
+<div class="panel">
 
+  <!-- Header -->
   <div class="panel-header">
-
-    <h3>Notifications</h3>
-
+    <div class="header-left">
+      <h3 class="header-title">Notifications</h3>
+      @if (unreadCount() > 0) {
+        <span class="header-badge">{{ unreadCount() }}</span>
+      }
+    </div>
+    <div class="header-actions">
+      @if (unreadCount() > 0) {
+        <sh3-button variant="ghost" size="sm" (clicked)="markAllRead()">Mark all read</sh3-button>
+      }
+      <button class="close-btn" type="button" (click)="close()">×</button>
+    </div>
   </div>
 
-  <div class="notifications-list">
-
+  <!-- Notification list -->
+  <div class="notification-list">
     @for (notif of notifications(); track notif.id) {
+      <button
+        class="card"
+        [class.unread]="!notif.read"
+        [attr.data-type]="notif.type"
+        type="button"
+        (click)="markRead(notif.id)"
+      >
+        <!-- Left accent bar is via CSS border-left -->
 
-      <div
-        class="notification-card"
-        [class.unread]="!notif.read">
-
-        <div class="notification-title">
-          {{ notif.title }}
+        <div class="card-icon" [attr.data-type]="notif.type">
+          {{ iconFor(notif.type) }}
         </div>
 
-        <div class="notification-message">
-          {{ notif.message }}
+        <div class="card-content">
+          <div class="card-top">
+            <span class="card-title">{{ notif.title }}</span>
+            <span class="card-time">{{ timeAgo(notif.createdAt) }}</span>
+          </div>
+          @if (notif.message) {
+            <span class="card-message">{{ notif.message }}</span>
+          }
         </div>
 
+        @if (!notif.read) {
+          <span class="unread-dot"></span>
+        }
+      </button>
+    } @empty {
+      <div class="empty-state">
+        <span class="empty-icon">🔔</span>
+        <span class="empty-text">No notifications</span>
       </div>
-
     }
-
   </div>
 
 </div>

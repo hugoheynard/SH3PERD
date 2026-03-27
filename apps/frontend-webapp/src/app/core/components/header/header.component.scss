@@ -68,6 +68,68 @@
   }
 }
 
+/* ── Notification bell ────────────────────────── */
+
+.notification-bell {
+  all: unset;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--t-fast);
+
+  &:hover {
+    background: var(--hover-color);
+  }
+}
+
+.bell-icon {
+  color: var(--text-secondary);
+  transition: color var(--t-fast);
+
+  .notification-bell:hover & {
+    color: var(--text-primary);
+  }
+}
+
+.notif-badges {
+  position: absolute;
+  top: 2px;
+  right: -6px;
+  display: flex;
+  gap: 2px;
+}
+
+.notif-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--radius-lg);
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.notif-badge--alert {
+  background: var(--color-alert);
+}
+
+.notif-badge--warning {
+  background: var(--color-warning);
+}
+
+.notif-badge--info {
+  background: var(--color-info);
+}
+
 /* ── Profile area (pastille + dropdown) ────────── */
 
 .profile-area {

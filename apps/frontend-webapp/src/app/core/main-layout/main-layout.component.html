@@ -5,7 +5,7 @@
 <div class="[grid-area:content]">
   <div class="content">
 
-    <div class="panel" [ngClass]="{ 'hidden': !hasLeftPanel() }">
+    <div class="panel panel-left" [ngClass]="{ 'hidden': !hasLeftPanel(), 'panel--over': leftPanelMode() === 'over', 'panel--push': leftPanelMode() === 'push' }">
       <ng-template #leftPanelContainer />
     </div>
 
@@ -13,7 +13,7 @@
       <router-outlet />
     </div>
 
-    <div class="panel" [ngClass]="{ 'hidden': !hasRightPanel() }">
+    <div class="panel panel-right" [ngClass]="{ 'hidden': !hasRightPanel(), 'panel--over': rightPanelMode() === 'over', 'panel--push': rightPanelMode() === 'push' }">
       <ng-template #rightPanelContainer />
     </div>
 

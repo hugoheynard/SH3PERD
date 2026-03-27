@@ -69,6 +69,8 @@ export class HeaderComponent {
     return this.notif.unreadCount();
   }
 
+  readonly unreadByType = this.notif.unreadByType;
+
   openNotifications() {
     this.layout.setRightPanel(NotificationPanelComponent);
   }

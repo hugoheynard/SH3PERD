@@ -27,6 +27,7 @@
 }
 
 .content {
+  position: relative; // anchor for over panels
   display: flex;
   height: 100%;
   width: 100%;
@@ -53,8 +54,9 @@
 }
 
 //----------main layout - application content----------//
+
 //for left and right panels
-.panel{
+.panel {
   width: 490px;
   min-width: 450px;
 
@@ -65,23 +67,73 @@
   display: flex;
   flex-direction: column;
 
-  border-left: 1px solid var(--panel-border-color);
-
-  box-shadow:
-    -8px 0 24px rgba(0,0,0,0.35),
-    inset 1px 0 0 rgba(255,255,255,0.02);
-
   overflow: hidden;
 
   @media (max-width: 768px) {
-
     width: 100vw;
     height: 100vh;
-
     border-radius: 0;
-
     box-shadow: none;
   }
+}
+
+// Push mode — panel is in the flex flow, content shrinks
+.panel--push {
+  box-shadow:
+    -8px 0 24px rgba(0,0,0,0.35),
+    inset 1px 0 0 rgba(255,255,255,0.02);
+}
+
+.panel-right.panel--push {
+  border-left: 1px solid var(--panel-border-color);
+}
+
+.panel-left.panel--push {
+  border-right: 1px solid var(--panel-border-color);
+}
+
+// Over mode — panel floats above content with glass effect
+.panel--over {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: var(--z-float);
+
+  background: rgba(20, 25, 32, 0.55);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+
+  border-left: 1px solid var(--floating-border-color);
+
+  box-shadow:
+    -12px 0 40px rgba(0,0,0,0.45),
+    inset 1px 0 0 rgba(255,255,255,0.04);
+}
+
+.panel-right {
+  animation: panel-slide-in-right 0.2s var(--t-spring);
+}
+
+.panel-right.panel--over {
+  right: 0;
+}
+
+.panel-left {
+  animation: panel-slide-in-left 0.2s var(--t-spring);
+}
+
+.panel-left.panel--over {
+  left: 0;
+}
+
+@keyframes panel-slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes panel-slide-in-left {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 .context-menu {

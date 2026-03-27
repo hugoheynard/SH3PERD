@@ -1,4 +1,33 @@
+/// Thin custom scrollbar — matches the dark UI.
+/// @param {Length} $width [4px] — scrollbar width
+/// @param {Color} $thumb [rgba(255,255,255,0.15)] — thumb color
+/// @param {Color} $track [transparent] — track color
+/// @param {Length} $radius [2px] — thumb border-radius
+@mixin scrollbar($width: 4px, $thumb: rgba(255, 255, 255, 0.15), $track: transparent, $radius: 2px) {
+  // Firefox
+  scrollbar-width: thin;
+  scrollbar-color: $thumb $track;
+
+  // Webkit / Blink
+  &::-webkit-scrollbar {
+    width: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb;
+    border-radius: $radius;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+  }
+}
+
+// Legacy alias
 @mixin baseScrollBar {
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-  -webkit-overflow-scrolling: touch;
+  @include scrollbar;
 }

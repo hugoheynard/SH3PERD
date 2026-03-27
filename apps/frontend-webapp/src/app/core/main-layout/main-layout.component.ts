@@ -35,8 +35,12 @@ export class MainLayoutComponent implements AfterViewInit{
   public title: string = 'shepherd';
   public isDark = true;
 
-  public leftPanelMode: 'over' | 'push' = 'over';
-  public rightPanelMode: 'over' | 'push' = 'over';
+  readonly rightPanelMode = computed(() =>
+    this.layoutService.rightPanelComponent()?.mode ?? 'over'
+  );
+  readonly leftPanelMode = computed(() =>
+    this.layoutService.leftPanelComponent()?.mode ?? 'over'
+  );
 
   @ViewChild('leftPanelContainer', { read: ViewContainerRef }) leftPanel!: ViewContainerRef;
   @ViewChild('rightPanelContainer', { read: ViewContainerRef }) rightPanel!: ViewContainerRef;

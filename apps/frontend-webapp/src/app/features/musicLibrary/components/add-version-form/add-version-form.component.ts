@@ -1,6 +1,6 @@
 import { Component, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonComponent } from '../../../../shared/buttons/button/button.component';
+import { ButtonComponent } from '../../../../shared/button/button.component';
 import { InputComponent } from '../../../../shared/forms/input/input.component';
 import { MUSIC_GENRES } from '../../music-library-types';
 import type { AddVersionPayload } from '../../services/mutations-layer/music-version-mutation.service';

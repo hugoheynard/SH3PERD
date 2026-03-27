@@ -74,10 +74,16 @@
             </div>
             <div class="new-form-actions">
               <sh3-button variant="ghost" size="sm" (clicked)="showNewForm.set(false)">Cancel</sh3-button>
-              <sh3-button variant="primary" size="sm" [disabled]="!newArtist().trim()" (clicked)="submitNew()">Create &amp; add</sh3-button>
+              <sh3-button variant="primary" size="sm" [disabled]="!newArtist().trim() || saving()" (clicked)="submitNew()">
+                @if (saving()) { Creating… } @else { Create &amp; add }
+              </sh3-button>
             </div>
           </div>
         }
+      }
+
+      @if (error()) {
+        <span class="panel-error">{{ error() }}</span>
       }
     </div>
 

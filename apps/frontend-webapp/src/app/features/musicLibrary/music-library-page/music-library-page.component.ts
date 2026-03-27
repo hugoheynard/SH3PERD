@@ -1,9 +1,8 @@
 import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { MusicLibrarySelectorService } from '../services/selector-layer/music-library-selector.service';
 import { MusicTabMutationService } from '../services/mutations-layer/music-tab-mutation.service';
-import { MusicReferenceMutationService } from '../services/mutations-layer/music-reference-mutation.service';
-import { MusicRepertoireMutationService } from '../services/mutations-layer/music-repertoire-mutation.service';
 import { MusicVersionMutationService } from '../services/mutations-layer/music-version-mutation.service';
+import { LayoutService } from '../../../core/services/layout.service';
 import { MusicLibraryHeaderComponent } from '../components/music-library-header/music-library-header.component';
 import { MusicTabBarComponent } from '../components/music-tab-bar/music-tab-bar.component';
 import { MusicLibrarySidePanelComponent } from '../components/music-library-side-panel/music-library-side-panel.component';
@@ -11,8 +10,7 @@ import { MusicReferenceCardComponent } from '../components/music-reference-card/
 import { MusicRepertoireTableComponent } from '../components/music-repertoire-table/music-repertoire-table.component';
 import { AddEntryPanelComponent } from '../components/add-entry-panel/add-entry-panel.component';
 import { MusicCrossTableComponent } from '../components/music-cross-table/music-cross-table.component';
-import { ButtonComponent } from '../../../shared/buttons/button/button.component';
-import type { AddEntryResult } from '../components/add-entry-panel/add-entry-panel.component';
+import { ButtonComponent } from '../../../shared/button/button.component';
 import type { AddVersionPayload } from '../services/mutations-layer/music-version-mutation.service';
 import type { VersionEditPayload } from '../components/music-repertoire-table/music-repertoire-table.component';
 import { AudioAnalyzerService } from '../../audioAnalyzer/audio-analyzer.service';
@@ -27,7 +25,6 @@ import type { AudioAnalysisSnapshot, Rating, SavedTabConfig, MusicSearchConfig }
     MusicLibrarySidePanelComponent,
     MusicReferenceCardComponent,
     MusicRepertoireTableComponent,
-    AddEntryPanelComponent,
     MusicCrossTableComponent,
     ButtonComponent,
   ],
@@ -40,13 +37,11 @@ export class MusicLibraryPageComponent {
 
   public selector= inject(MusicLibrarySelectorService);
   private tabService= inject(MusicTabMutationService);
-  private refMutation= inject(MusicReferenceMutationService);
-  private repertoireMut= inject(MusicRepertoireMutationService);
   private versionMut= inject(MusicVersionMutationService);
   private audioAnalyzer= inject(AudioAnalyzerService);
+  private layout= inject(LayoutService);
 
   readonly viewMode            = signal<'cards' | 'table'>('cards');
-  readonly entryPanelOpen      = signal(false);
   readonly analysingVersionIds = signal<Set<string>>(new Set());
   readonly mobilePanelOpen     = signal(false);
 
@@ -90,14 +85,8 @@ export class MusicLibraryPageComponent {
 
   /* ── Add entry ── */
 
-  onAddEntryConfirmed(result: AddEntryResult): void {
-    if (result.type === 'existing') {
-      this.repertoireMut.addEntry(result.referenceId);
-    } else {
-      const ref = this.refMutation.addReference(result.title, result.originalArtist);
-      this.repertoireMut.addEntry(ref.id);
-    }
-    this.entryPanelOpen.set(false);
+  openAddEntryPanel(): void {
+    this.layout.setPopover(AddEntryPanelComponent);
   }
 
   /* ── Add version ── */
