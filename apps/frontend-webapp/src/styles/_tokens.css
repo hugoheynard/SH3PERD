@@ -24,6 +24,9 @@
 
   --room-header-bg: color-mix(in srgb, var(--content-page-bg-color) 90%, white);
 
+  /* Glass surface for overlay panels */
+  --glass-bg: rgba(20, 25, 32, 0.55);
+
 
   /* ═══════════════════════════════════════════════════
      BORDERS
@@ -164,4 +167,97 @@
   --15min-line:    rgba(255, 255, 255, 0.065);
   --60min-line:    rgba(255, 255, 255, 0.13);
   --col-separator: rgba(255, 255, 255, 0.11);
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   LIGHT THEME OVERRIDES
+═══════════════════════════════════════════════════════ */
+
+[data-theme="light"] {
+
+  /* ── Backgrounds ─────────────────────────────────── */
+
+  --content-page-bg-color: #f4f5f7;
+  --header-color:          #ffffff;
+  --panel-color:           #f9fafb;
+  --sidebar-color:         #f0f1f3;
+  --card-color:            #ffffff;
+  --hover-color:           #f0f2f5;
+  --floating-panel-color:  #ffffff;
+  --popover-bg-color:      #ffffff;
+  --room-header-bg:        #f8f9fb;
+  --glass-bg:              rgba(255, 255, 255, 0.65);
+
+
+  /* ── Borders ─────────────────────────────────────── */
+
+  --panel-border-color:    rgba(0, 0, 0, 0.08);
+  --floating-border-color: rgba(0, 0, 0, 0.12);
+
+
+  /* ── Accent — slightly darker for contrast on white ─ */
+
+  --accent-color:        #069090;
+  --accent-color-light:  #06a4a4;
+  --accent-color-dim:    rgba(6, 164, 164, 0.08);
+  --accent-color-border: rgba(6, 164, 164, 0.25);
+
+
+  /* ── Semantic colors ─────────────────────────────── */
+
+  --color-warning:        #b8860b;
+  --color-warning-light:  #d4940e;
+  --color-warning-dim:    rgba(184, 134, 11, 0.08);
+  --color-warning-border: rgba(184, 134, 11, 0.22);
+
+  --color-alert:          #c0392b;
+  --color-alert-light:    #e74c3c;
+  --color-alert-dim:      rgba(192, 57, 43, 0.08);
+  --color-alert-border:   rgba(192, 57, 43, 0.22);
+
+  --color-success:        #1a9e6a;
+
+  --color-info:           #6c4ab6;
+  --color-info-light:     #7c5bbf;
+  --color-info-dim:       rgba(108, 74, 182, 0.08);
+  --color-info-border:    rgba(108, 74, 182, 0.22);
+
+
+  /* ── Text ────────────────────────────────────────── */
+
+  --text-primary:   #1a1d23;
+  --text-secondary: #5f6b7a;
+  --text-faded:     #9ca3af;
+
+
+  /* ── Icons ───────────────────────────────────────── */
+
+  --icon-color:    var(--text-secondary);
+  --icon-hover-bg: rgba(0, 0, 0, 0.05);
+
+
+  /* ── Shadows — lighter for white surfaces ────────── */
+
+  --shadow-xs:   0 1px 2px  rgba(0, 0, 0, 0.06);
+  --shadow-sm:   0 1px 4px  rgba(0, 0, 0, 0.08);
+  --shadow-md:   0 4px 12px rgba(0, 0, 0, 0.10);
+  --shadow-lg:   0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl:   0 16px 40px rgba(0, 0, 0, 0.16);
+
+  --shadow-floating:       0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-floating-hover: 0 12px 32px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  --shadow-slot:       0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-slot-hover: 0 6px 20px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+
+  --shadow-popover: 0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.08);
+
+
+  /* ── Timeline grid lines ─────────────────────────── */
+
+  --5min-line:     rgba(0, 0, 0, 0.04);
+  --15min-line:    rgba(0, 0, 0, 0.08);
+  --60min-line:    rgba(0, 0, 0, 0.14);
+  --col-separator: rgba(0, 0, 0, 0.10);
 }

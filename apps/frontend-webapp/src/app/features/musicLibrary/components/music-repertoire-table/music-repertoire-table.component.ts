@@ -36,6 +36,8 @@ export class MusicRepertoireTableComponent {
 
   readonly versionAdded         = output<AddVersionPayload>();
   readonly versionUpdated       = output<VersionEditPayload>();
+  readonly versionDeleted       = output<string>(); // version id
+  readonly entryDeleted         = output<string>(); // reference id
   readonly trackUploadRequested = output<string>(); // version id
   readonly analyzeRequested     = output<string>(); // version id
 
@@ -43,6 +45,8 @@ export class MusicRepertoireTableComponent {
   readonly addingRefId = signal<string | null>(null);
   /** versionId currently in inline edit mode */
   readonly editingVersionId = signal<string | null>(null);
+  /** id awaiting delete confirmation (version or entry) */
+  readonly confirmingDeleteId = signal<string | null>(null);
 
   readonly genres = MUSIC_GENRES;
   readonly ratingDots = [1, 2, 3, 4] as const;
@@ -116,6 +120,32 @@ export class MusicRepertoireTableComponent {
 
   setEditRating(key: 'editMastery' | 'editEnergy' | 'editEffort', val: Rating): void {
     this[key] = val;
+  }
+
+  /* ── Delete (inline confirm) ── */
+
+  requestDelete(id: string): void {
+    if (this.confirmingDeleteId() === id) {
+      // Second click — confirm
+      this.confirmingDeleteId.set(null);
+      this.versionDeleted.emit(id);
+    } else {
+      this.confirmingDeleteId.set(id);
+    }
+  }
+
+  requestEntryDelete(referenceId: string): void {
+    const key = `entry_${referenceId}`;
+    if (this.confirmingDeleteId() === key) {
+      this.confirmingDeleteId.set(null);
+      this.entryDeleted.emit(referenceId);
+    } else {
+      this.confirmingDeleteId.set(key);
+    }
+  }
+
+  cancelDelete(): void {
+    this.confirmingDeleteId.set(null);
   }
 
   /* ── Utils ── */

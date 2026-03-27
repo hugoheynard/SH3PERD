@@ -91,6 +91,8 @@
                   [entryId]="entryIdForRef(ref.id)"
                   [analysingIds]="analysingVersionIds()"
                   (versionAdded)="onVersionAdded($event)"
+                  (versionDeleted)="onVersionDeleted($event)"
+                  (entryDeleted)="onEntryDeleted($event)"
                   (trackUploadRequested)="onTrackUploadRequested($event)"
                   (analyzeRequested)="onAnalyzeRequested($event)"
                 />
@@ -114,6 +116,8 @@
               [analysingIds]="analysingVersionIds()"
               (versionAdded)="onVersionAdded($event)"
               (versionUpdated)="onVersionUpdated($event)"
+              (versionDeleted)="onVersionDeleted($event)"
+              (entryDeleted)="onEntryDeleted($event)"
               (trackUploadRequested)="onTrackUploadRequested($event)"
               (analyzeRequested)="onAnalyzeRequested($event)"
             />

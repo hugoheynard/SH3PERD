@@ -5,48 +5,69 @@
       <span class="card-title">{{ reference().title }}</span>
       <span class="card-artist">{{ reference().originalArtist }}</span>
     </div>
-    @if (avgQuality() !== null) {
-      <div class="avg-quality" [attr.data-level]="avgQualityLevel()">
-        <span class="avg-label">AVG</span>
-        <span class="avg-value">{{ avgQuality()!.toFixed(1) }}</span>
-      </div>
-    }
+    <div class="card-header-actions">
+      @if (entryId()) {
+        @if (confirmingDeleteId() === 'entry') {
+          <button class="btn-confirm-delete" type="button" (click)="requestDeleteEntry()">Remove?</button>
+          <button class="btn-cancel-delete" type="button" (click)="cancelDelete()">×</button>
+        } @else {
+          <button class="btn-delete-entry" type="button" title="Remove from repertoire" (click)="requestDeleteEntry()">×</button>
+        }
+      }
+    </div>
   </div>
 
   <div class="card-versions">
     @for (version of versions(); track version.id) {
-      <div class="version-row">
-        <span class="version-label">{{ version.label }}</span>
+      <div class="version-block">
 
-        @if (version.durationSeconds) {
-          <span class="version-dur">{{ formatDuration(version.durationSeconds) }}</span>
-        }
-        <span class="version-genre">{{ version.genre }}</span>
-        @if (version.bpm) {
-          <span class="version-bpm">{{ version.bpm }} bpm</span>
-        }
-        <div class="version-ratings">
-          @for (row of [
-            { key: 'mastery', label: 'MST', val: version.mastery },
-            { key: 'energy',  label: 'NRG', val: version.energy  },
-            { key: 'effort',  label: 'EFF', val: version.effort  }
-          ]; track row.key) {
-            <div class="rating-group">
-              <span class="rating-label">{{ row.label }}</span>
-              <div class="rating-dots">
-                @for (dot of ratingDots; track dot) {
-                  <span class="dot"
-                    [class.filled]="dot <= row.val"
-                    [attr.data-level]="ratingLevel(row.val)"
-                  ></span>
-                }
-              </div>
-            </div>
+        <!-- Line 1: data row — always stable layout -->
+        <div class="version-data">
+          <span class="version-label">{{ version.label }}</span>
+          @if (version.durationSeconds) {
+            <span class="version-dur">{{ formatDuration(version.durationSeconds) }}</span>
           }
+          <span class="version-genre">{{ version.genre }}</span>
+          @if (version.bpm) {
+            <span class="version-bpm">{{ version.bpm }} bpm</span>
+          }
+          <div class="version-ratings">
+            @for (row of [
+              { key: 'mastery', label: 'MST', val: version.mastery },
+              { key: 'energy',  label: 'NRG', val: version.energy  },
+              { key: 'effort',  label: 'EFF', val: version.effort  }
+            ]; track row.key) {
+              <div class="rating-group">
+                <span class="rating-label">{{ row.label }}</span>
+                <div class="rating-dots">
+                  @for (dot of ratingDots; track dot) {
+                    <span class="dot"
+                      [class.filled]="dot <= row.val"
+                      [attr.data-level]="ratingLevel(row.val)"
+                    ></span>
+                  }
+                </div>
+              </div>
+            }
+            <!-- QLT dots (always present, no shift) -->
+            @if (version.analysisResult) {
+              <div class="rating-group">
+                <span class="rating-label">QLT</span>
+                <div class="rating-dots">
+                  @for (dot of ratingDots; track dot) {
+                    <span class="dot"
+                      [class.filled]="dot <= version.analysisResult.quality"
+                      [attr.data-level]="ratingLevel(version.analysisResult.quality)"
+                    ></span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
         </div>
 
-        <!-- Quality cell: upload / analyse / score -->
-        <div class="version-quality">
+        <!-- Line 2: actions row — upload/analyse + edit/delete -->
+        <div class="version-actions">
           @if (!version.trackUploaded) {
             <sh3-button variant="critical" size="sm" (clicked)="trackUploadRequested.emit(version.id)">↑ Upload track</sh3-button>
           } @else if (!version.analysisResult) {
@@ -55,19 +76,16 @@
             } @else {
               <sh3-button variant="primary" size="sm" (clicked)="analyzeRequested.emit(version.id)">⚡ Analyse</sh3-button>
             }
-          } @else {
-            <div class="rating-group">
-              <span class="rating-label">QLT</span>
-              <div class="rating-dots">
-                @for (dot of ratingDots; track dot) {
-                  <span class="dot"
-                    [class.filled]="dot <= version.analysisResult.quality"
-                    [attr.data-level]="ratingLevel(version.analysisResult.quality)"
-                  ></span>
-                }
-              </div>
-            </div>
           }
+
+          <div class="version-actions-right">
+            @if (confirmingDeleteId() === version.id) {
+              <button class="btn-confirm-delete" type="button" (click)="requestDeleteVersion(version.id)">Confirm?</button>
+              <button class="btn-cancel-delete" type="button" (click)="cancelDelete()">×</button>
+            } @else {
+              <button class="btn-delete-version" type="button" title="Delete version" (click)="requestDeleteVersion(version.id)">🗑</button>
+            }
+          </div>
         </div>
 
       </div>

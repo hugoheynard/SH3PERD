@@ -2,6 +2,7 @@ import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core'
 import { MusicLibrarySelectorService } from '../services/selector-layer/music-library-selector.service';
 import { MusicTabMutationService } from '../services/mutations-layer/music-tab-mutation.service';
 import { MusicVersionMutationService } from '../services/mutations-layer/music-version-mutation.service';
+import { MusicRepertoireMutationService } from '../services/mutations-layer/music-repertoire-mutation.service';
 import { LayoutService } from '../../../core/services/layout.service';
 import { MusicLibraryHeaderComponent } from '../components/music-library-header/music-library-header.component';
 import { MusicTabBarComponent } from '../components/music-tab-bar/music-tab-bar.component';
@@ -38,6 +39,7 @@ export class MusicLibraryPageComponent {
   public selector= inject(MusicLibrarySelectorService);
   private tabService= inject(MusicTabMutationService);
   private versionMut= inject(MusicVersionMutationService);
+  private repertoireMut= inject(MusicRepertoireMutationService);
   private audioAnalyzer= inject(AudioAnalyzerService);
   private layout= inject(LayoutService);
 
@@ -98,6 +100,21 @@ export class MusicLibraryPageComponent {
   onVersionUpdated(payload: VersionEditPayload): void {
     const { versionId, ...patch } = payload;
     this.versionMut.updateVersion(versionId, patch);
+  }
+
+  /* ── Delete ── */
+
+  onVersionDeleted(versionId: string): void {
+    this.versionMut.removeVersion(versionId);
+  }
+
+  onEntryDeleted(referenceId: string): void {
+    // Remove all versions linked to this entry, then the entry itself
+    const versions = this.selector.versionsByReferenceId().get(referenceId) ?? [];
+    for (const v of versions) {
+      this.versionMut.removeVersion(v.id);
+    }
+    this.repertoireMut.removeEntry(referenceId, 'user_me');
   }
 
   /* ── Track upload / analysis ── */

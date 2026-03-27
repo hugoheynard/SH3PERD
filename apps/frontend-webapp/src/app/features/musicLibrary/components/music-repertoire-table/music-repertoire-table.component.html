@@ -22,7 +22,17 @@
 
         @if (versions.length === 0) {
           <tr class="ref-row ref-row--empty">
-            <td class="col-title">{{ ref.title }}</td>
+            <td class="col-title">
+              <span>{{ ref.title }}</span>
+              @if (hasEntry) {
+                @if (confirmingDeleteId() === 'entry_' + ref.id) {
+                  <button class="btn-confirm-delete btn-confirm-delete--entry" type="button" (click)="requestEntryDelete(ref.id)">Remove?</button>
+                  <button class="btn-cancel-delete" type="button" (click)="cancelDelete()">×</button>
+                } @else {
+                  <button class="btn-delete-entry" type="button" title="Remove from repertoire" (click)="requestEntryDelete(ref.id)">×</button>
+                }
+              }
+            </td>
             <td class="col-artist">{{ ref.originalArtist }}</td>
             <td colspan="9">
               @if (hasEntry) {
@@ -117,7 +127,17 @@
           } @else {
             <tr class="ref-row" [class.first-version]="first">
               @if (first) {
-                <td class="col-title" [attr.rowspan]="versions.length">{{ ref.title }}</td>
+                <td class="col-title" [attr.rowspan]="versions.length">
+                  <span>{{ ref.title }}</span>
+                  @if (hasEntry) {
+                    @if (confirmingDeleteId() === 'entry_' + ref.id) {
+                      <button class="btn-confirm-delete btn-confirm-delete--entry" type="button" (click)="requestEntryDelete(ref.id)">Remove?</button>
+                      <button class="btn-cancel-delete" type="button" (click)="cancelDelete()">×</button>
+                    } @else {
+                      <button class="btn-delete-entry" type="button" title="Remove from repertoire" (click)="requestEntryDelete(ref.id)">×</button>
+                    }
+                  }
+                </td>
                 <td class="col-artist" [attr.rowspan]="versions.length">{{ ref.originalArtist }}</td>
               }
               <td class="col-versions"><span class="version-label">{{ version.label }}</span></td>
@@ -146,9 +166,15 @@
                 }
               </td>
               <td class="col-actions">
-                <button class="btn-edit" type="button" title="Edit" (click)="startEdit(version)">✎</button>
-                @if ($last && hasEntry) {
-                  <button class="btn-add-ver" type="button" title="Add version" (click)="addingRefId.set(ref.id)">+</button>
+                @if (confirmingDeleteId() === version.id) {
+                  <button class="btn-confirm-delete" type="button" (click)="requestDelete(version.id)">Confirm?</button>
+                  <button class="btn-cancel-delete" type="button" (click)="cancelDelete()">×</button>
+                } @else {
+                  <button class="btn-edit" type="button" title="Edit" (click)="startEdit(version)">✎</button>
+                  <button class="btn-delete" type="button" title="Delete version" (click)="requestDelete(version.id)">🗑</button>
+                  @if ($last && hasEntry) {
+                    <button class="btn-add-ver" type="button" title="Add version" (click)="addingRefId.set(ref.id)">+</button>
+                  }
                 }
               </td>
             </tr>

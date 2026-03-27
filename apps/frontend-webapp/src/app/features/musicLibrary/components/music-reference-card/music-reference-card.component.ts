@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { ButtonComponent } from '../../../../shared/button/button.component';
 import { AddVersionFormComponent } from '../add-version-form/add-version-form.component';
 import type { AddVersionPayload } from '../../services/mutations-layer/music-version-mutation.service';
@@ -19,23 +19,13 @@ export class MusicReferenceCardComponent {
   readonly analysingIds = input<Set<string>>(new Set());
 
   readonly versionAdded         = output<AddVersionPayload>();
+  readonly versionDeleted       = output<string>(); // version id
+  readonly entryDeleted         = output<string>(); // reference id
   readonly trackUploadRequested = output<string>(); // version id
   readonly analyzeRequested     = output<string>(); // version id
 
   readonly showForm = signal(false);
-
-  /** Average quality across versions that have an analysisResult. */
-  readonly avgQuality = computed(() => {
-    const analysed = this.versions().filter(v => v.analysisResult);
-    if (!analysed.length) return null;
-    return analysed.reduce((sum, v) => sum + v.analysisResult!.quality, 0) / analysed.length;
-  });
-
-  readonly avgQualityLevel = computed(() => {
-    const q = this.avgQuality();
-    if (q === null) return '';
-    return this.ratingLevel(Math.round(q) as Rating);
-  });
+  readonly confirmingDeleteId = signal<string | null>(null);
 
   readonly ratingDots = [1, 2, 3, 4] as const;
 
@@ -44,6 +34,29 @@ export class MusicReferenceCardComponent {
     if (!entryId) return;
     this.versionAdded.emit({ ...payload, entryId });
     this.showForm.set(false);
+  }
+
+  requestDeleteVersion(id: string): void {
+    if (this.confirmingDeleteId() === id) {
+      this.confirmingDeleteId.set(null);
+      this.versionDeleted.emit(id);
+    } else {
+      this.confirmingDeleteId.set(id);
+    }
+  }
+
+  requestDeleteEntry(): void {
+    const key = 'entry';
+    if (this.confirmingDeleteId() === key) {
+      this.confirmingDeleteId.set(null);
+      this.entryDeleted.emit(this.reference().id);
+    } else {
+      this.confirmingDeleteId.set(key);
+    }
+  }
+
+  cancelDelete(): void {
+    this.confirmingDeleteId.set(null);
   }
 
   formatDuration(seconds: number): string {

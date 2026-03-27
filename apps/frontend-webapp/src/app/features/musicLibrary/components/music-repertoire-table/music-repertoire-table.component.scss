@@ -158,7 +158,7 @@ td {
 .col-actions {
   white-space: nowrap;
   text-align: right;
-  width: 56px;
+  width: 72px;
   opacity: 0;
   transition: opacity 0.12s;
 }
@@ -188,6 +188,61 @@ td {
 
 .btn-cancel-edit {
   &:hover { background: var(--color-alert-dim); color: var(--color-alert-light); }
+}
+
+.btn-delete {
+  @include btn-icon(22);
+  font-size: 12px;
+  opacity: 0.5;
+  &:hover { opacity: 1; background: var(--color-alert-dim); color: var(--color-alert-light); }
+}
+
+.btn-confirm-delete {
+  all: unset;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--color-alert-dim);
+  border: 1px solid var(--color-alert-border);
+  color: var(--color-alert-light);
+  white-space: nowrap;
+  animation: pulse-alert 0.8s ease infinite alternate;
+
+  &--entry {
+    font-size: 10px;
+    margin-left: 6px;
+  }
+}
+
+.btn-cancel-delete {
+  @include btn-icon(18);
+  font-size: 11px;
+  &:hover { background: var(--hover-color); }
+}
+
+.btn-delete-entry {
+  @include btn-icon(18);
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0;
+  margin-left: 4px;
+  color: var(--text-faded);
+  transition: opacity var(--t-fast), color var(--t-fast);
+
+  &:hover { color: var(--color-alert-light); background: var(--color-alert-dim); }
+}
+
+.col-title:hover .btn-delete-entry,
+.ref-row:hover .btn-delete-entry {
+  opacity: 0.6;
+  &:hover { opacity: 1; }
+}
+
+@keyframes pulse-alert {
+  from { opacity: 0.8; }
+  to   { opacity: 1; }
 }
 
 /* ── Edit row ────────────────────────────────────── */
