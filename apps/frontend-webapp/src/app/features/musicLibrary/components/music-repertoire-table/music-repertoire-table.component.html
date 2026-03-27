@@ -122,7 +122,7 @@
               }
               <td class="col-versions"><span class="version-label">{{ version.label }}</span></td>
               <td class="col-dur">{{ formatDuration(version.durationSeconds) }}</td>
-              <td><span class="genre-tag">{{ version.genre }}</span></td>
+              <td><sh3-badge [content]="version.genre" radius="square" variant="info" /></td>
               <td class="col-bpm">{{ version.bpm ?? '—' }}</td>
               @for (r of [version.mastery, version.energy, version.effort]; track $index) {
                 <td class="col-rating">

@@ -2,6 +2,8 @@ import { Component, computed, inject, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../../shared/buttons/button/button.component';
 import { InputComponent } from '../../../../shared/forms/input/input.component';
+import { BadgeComponent } from '../../../../shared/badges/badge/badge.component';
+import { PopoverFrameComponent } from '../../../../shared/ui-frames/popover-frame/popover-frame.component';
 import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
 
 export type AddEntryResult =
@@ -11,7 +13,7 @@ export type AddEntryResult =
 @Component({
   selector: 'app-add-entry-panel',
   standalone: true,
-  imports: [FormsModule, ButtonComponent, InputComponent],
+  imports: [FormsModule, ButtonComponent, InputComponent, BadgeComponent, PopoverFrameComponent],
   templateUrl: './add-entry-panel.component.html',
   styleUrl: './add-entry-panel.component.scss',
 })

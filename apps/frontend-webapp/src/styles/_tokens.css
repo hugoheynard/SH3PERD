@@ -59,6 +59,11 @@
 
   --color-success:       #1a9e6a;
 
+  --color-info:          #7c5bbf;
+  --color-info-light:    #b794f4;
+  --color-info-dim:      rgba(159, 122, 234, 0.12);
+  --color-info-border:   rgba(159, 122, 234, 0.30);
+
 
   /* ═══════════════════════════════════════════════════
      TEXT

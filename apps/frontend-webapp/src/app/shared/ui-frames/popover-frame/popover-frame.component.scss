@@ -1,9 +1,32 @@
-.popover {
-  position: relative;
+/* ── BACKDROP ──────────────────────────────────── */
 
-  width: 340px;
-  max-width: 90vw;
-  max-height: 80vh;
+:host {
+  display: contents;
+}
+
+.popover-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+
+  animation: fade-in 0.15s ease;
+}
+
+/* ── PANEL ─────────────────────────────────────── */
+
+.popover {
+  position: fixed;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: calc(var(--z-modal) + 1);
+
+  width: var(--popover-width, 340px);
+  max-width: calc(100vw - 48px);
+  max-height: 70vh;
 
   display: flex;
   flex-direction: column;
@@ -20,29 +43,9 @@
 
   overflow: hidden;
 
-  animation: popoverIn 0.16s var(--t-spring);
+  animation: popoverIn 0.18s var(--t-spring);
 
   pointer-events: auto;
-}
-
-/* Arrow */
-.popover::before {
-  content: "";
-
-  position: absolute;
-
-  top: -6px;
-  left: 40px;
-
-  width: 12px;
-  height: 12px;
-
-  background: var(--floating-panel-color);
-
-  transform: rotate(45deg);
-
-  border-left: 1px solid var(--floating-border-color);
-  border-top: 1px solid var(--floating-border-color);
 }
 
 /* ── HEADER ─────────────────────────────────────── */
@@ -64,6 +67,10 @@
     rgba(255, 255, 255, 0.035),
     rgba(0, 0, 0, 0.04)
   );
+
+  &:has(.popover-title:empty) {
+    display: none;
+  }
 }
 
 .popover-title {
@@ -101,11 +108,8 @@
 /* ── BODY ───────────────────────────────────────── */
 
 .popover-body {
-  padding: 14px;
-
   display: flex;
   flex-direction: column;
-  gap: 10px;
 
   overflow-y: auto;
 }
@@ -120,18 +124,27 @@
   padding: 11px 14px;
 
   border-top: 1px solid var(--panel-border-color);
+
+  &:empty {
+    display: none;
+  }
 }
 
 /* ── ANIMATION ──────────────────────────────────── */
 
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 @keyframes popoverIn {
   from {
     opacity: 0;
-    transform: translateY(-6px) scale(.97);
+    transform: translateX(-50%) translateY(-8px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateX(-50%) translateY(0);
   }
 }

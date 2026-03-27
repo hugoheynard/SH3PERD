@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { LayoutService } from '../../../core/services/layout.service';
 
 /**
@@ -64,12 +64,21 @@ import { LayoutService } from '../../../core/services/layout.service';
   selector: 'ui-popover-frame',
   imports: [],
   templateUrl: './popover-frame.component.html',
-  styleUrl: './popover-frame.component.scss'
+  styleUrl: './popover-frame.component.scss',
+  host: {
+    '[style.--popover-width]': 'width()',
+  },
 })
 export class PopoverFrameComponent {
   private layout = inject(LayoutService);
 
+  /** Custom width for the popover panel (e.g. '520px'). Defaults to '340px'. */
+  readonly width = input('340px');
+
+  readonly closed = output<void>();
+
   close(): void {
+    this.closed.emit();
     this.layout.clearPopover();
   };
 }
