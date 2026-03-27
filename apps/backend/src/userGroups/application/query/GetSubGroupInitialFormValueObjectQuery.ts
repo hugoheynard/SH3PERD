@@ -35,7 +35,7 @@ export class GetSubGroupInitialFormValueObjectHandler implements IQueryHandler<G
 
     const parentUg = await this.getParentGroupFromDb(parentUserGroupId);
     const contractsWithProfile = await this.ctrReadRepo.getContractWithUserProfile(parentUg.uniqueIds);
-    const aggregate = UserGroupAggregate.create(parentUg, contractsWithProfile.map(c => ContractEntity.fromRecord(c.contract)));
+    const aggregate = UserGroupAggregate.create(parentUg, contractsWithProfile.map(c => new ContractEntity(c.contract as any)));
     const allowedMembers = aggregate.getActionableMembers(actor_id);
     const allowedTypes = aggregate.getAllowedTypes(actor_id);
 

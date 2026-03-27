@@ -3,11 +3,20 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyStore } from '../company.store';
 import { CompanyService } from '../company.service';
-import type { TCompanyId, TServiceId, TServiceDetailViewModel } from '@sh3pherd/shared-types';
+import type { TCompanyId, TServiceId, TServiceDetailViewModel, TCommunicationPlatform, TServiceCommunication } from '@sh3pherd/shared-types';
 
 export const SERVICE_COLORS = [
   '#63b3ed', '#68d391', '#f6ad55', '#fc8181',
   '#b794f4', '#76e4f7', '#fbb6ce', '#f687b3',
+];
+
+export const COMMUNICATION_PLATFORMS: { id: TCommunicationPlatform; label: string; color: string }[] = [
+  { id: 'slack',    label: 'Slack',    color: '#4A154B' },
+  { id: 'whatsapp', label: 'WhatsApp', color: '#25D366' },
+  { id: 'teams',    label: 'Teams',    color: '#6264A7' },
+  { id: 'discord',  label: 'Discord',  color: '#5865F2' },
+  { id: 'telegram', label: 'Telegram', color: '#26A5E4' },
+  { id: 'other',    label: 'Autre',    color: '#718096'  },
 ];
 
 @Component({
@@ -32,8 +41,11 @@ export class ServiceDetailPageComponent implements OnInit {
   readonly editing = signal(false);
   readonly editName = signal('');
   readonly editColor = signal('');
+  readonly editCommPlatform = signal<TCommunicationPlatform | null>(null);
+  readonly editCommUrl = signal('');
   readonly saving = signal(false);
   readonly COLORS = SERVICE_COLORS;
+  readonly PLATFORMS = COMMUNICATION_PLATFORMS;
 
   // ── Add team ───────────────────────────────────────────
   readonly addingTeam = signal(false);
@@ -79,6 +91,8 @@ export class ServiceDetailPageComponent implements OnInit {
     if (!d) return;
     this.editName.set(d.name);
     this.editColor.set(d.color ?? '');
+    this.editCommPlatform.set(d.communication?.platform ?? null);
+    this.editCommUrl.set(d.communication?.url ?? '');
     this.editing.set(true);
   }
 
@@ -86,16 +100,42 @@ export class ServiceDetailPageComponent implements OnInit {
     this.editing.set(false);
   }
 
+  selectPlatform(p: TCommunicationPlatform): void {
+    this.editCommPlatform.set(this.editCommPlatform() === p ? null : p);
+    if (this.editCommPlatform() === null) this.editCommUrl.set('');
+  }
+
+  onCommUrlInput(e: Event): void {
+    this.editCommUrl.set((e.target as HTMLInputElement).value);
+  }
+
+  getCommunicationColor(platform: TCommunicationPlatform): string {
+    return COMMUNICATION_PLATFORMS.find(p => p.id === platform)?.color ?? '#718096';
+  }
+
+  getCommunicationLabel(platform: TCommunicationPlatform): string {
+    return COMMUNICATION_PLATFORMS.find(p => p.id === platform)?.label ?? platform;
+  }
+
   saveEdit(): void {
     const name = this.editName().trim();
     if (!name) return;
     this.saving.set(true);
+
+    const platform = this.editCommPlatform();
+    const url = this.editCommUrl().trim();
+    const communication: TServiceCommunication | null | undefined =
+      platform && url ? { platform, url } :
+      !platform        ? null :   // explicitly remove if platform cleared
+      undefined;
+
     this.companyService.updateService(this.companyId, this.serviceId, {
       name,
       color: this.editColor() || undefined,
+      communication,
     }).subscribe({
       next: (res) => {
-        this.detail.update(d => d ? { ...d, name: res.data.name, color: res.data.color } : d);
+        this.detail.update(d => d ? { ...d, name: res.data.name, color: res.data.color, communication: res.data.communication } : d);
         // Also update company store so the side panel reflects new name/color
         this.store.loadCompanyById(this.companyId);
         this.saving.set(false);

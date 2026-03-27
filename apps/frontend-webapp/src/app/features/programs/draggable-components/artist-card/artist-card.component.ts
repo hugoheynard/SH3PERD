@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { CardFrameHorizontalComponent } from '../../ui-frames/card-frame/card-frame-horizontal.component';
+import { CardFrameHorizontalComponent } from '../../../../shared/ui-frames/card-frame/card-frame-horizontal.component';
 import type { PlannerArtist } from '../../program-types';
 
 

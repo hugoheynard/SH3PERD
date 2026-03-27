@@ -1,75 +1,141 @@
 import { z } from 'zod';
+import type { ZodOutput } from './utils/zod.types.js';
 import type { TRecordMetadata } from './metadata.types.js';
 import {
-  SUserId, type TUserId,
-  SCompanyId, type TCompanyId,
-  SContractId, type TContractId,
-  SContractSignatureId,
-  SSignatureId,
-  SAddendumId, type TAddendumId,
+  SUserId,      type TUserId,
+  SCompanyId,   type TCompanyId,
+  SContractId,  type TContractId,
+  SSignatureId, type TSignatureId,
+  SAddendumId,  type TAddendumId,
 } from './ids.js';
 
 // ─── Enums ─────────────────────────────────────────────────
 
-export const STrialStatusEnum = z.enum(['pending', 'accepted', 'rejected', 'expired']);
-export const SContractStatusEnum = z.enum(['draft', 'active', 'terminated']);
-export type TContractStatusEnum = 'draft' | 'active' | 'terminated';
-export const SSignerTypeEnum = z.enum(['user', 'company']);
+export const SContractStatus = z.enum(['draft', 'active', 'terminated']);
+export type TContractStatus = z.infer<typeof SContractStatus>;
 
-// ─── Signatures ────────────────────────────────────────────
+export const SContractType = z.enum(['CDI', 'CDD', 'freelance', 'stage', 'alternance']);
+export type TContractType = z.infer<typeof SContractType>;
 
-export const SSignedItem = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('contract'), item_id: SContractId }),
-  z.object({ type: z.literal('addendum'), item_id: SAddendumId }),
-]);
-export type TSignedItem =
-  | { type: 'contract'; item_id: TContractId }
-  | { type: 'addendum'; item_id: TAddendumId };
+export const SCompensationPeriod = z.enum(['monthly', 'daily', 'hourly']);
+export type TCompensationPeriod = z.infer<typeof SCompensationPeriod>;
 
-export const SSignerEntity = z.discriminatedUnion('signerType', [
-  z.object({ signerType: z.literal('user'),    signer_id: SUserId }),
-  z.object({ signerType: z.literal('company'), signer_id: SCompanyId }),
-]);
-export type TSignerEntity =
-  | { signerType: 'user';    signer_id: TUserId }
-  | { signerType: 'company'; signer_id: TCompanyId };
+export const SWorkTimeType = z.enum(['full_time', 'part_time']);
+export type TWorkTimeType = z.infer<typeof SWorkTimeType>;
 
-export const SContractSignatureDomainModel = z.object({
-  signature_id: SSignatureId,
-  signedItem:   SSignedItem,
-  signerType:   SSignerEntity,
-  signedAt:     z.date(),
-  signedBy:     SUserId,
+// TODO: wire trial period status into TContractDomainModel once business rules are defined
+export const STrialStatus = z.enum(['pending', 'accepted', 'rejected', 'expired']);
+export type TTrialStatus = z.infer<typeof STrialStatus>;
+
+// ─── Sub-objects ───────────────────────────────────────────
+
+/** Compensation terms */
+export interface TContractCompensation {
+  /** Gross amount */
+  amount: number;
+  /** ISO 4217 currency code, e.g. "EUR" */
+  currency: string;
+  /** Billing / pay period */
+  period: TCompensationPeriod;
+}
+
+export const SContractCompensation: ZodOutput<TContractCompensation> = z.object({
+  amount:   z.number().positive(),
+  currency: z.string().min(1),
+  period:   SCompensationPeriod,
 });
-export type TContractSignatureDomainModel = z.infer<typeof SContractSignatureDomainModel>;
-export type TContractSignatureRecord = TContractSignatureDomainModel & TRecordMetadata;
+
+/** Work time terms */
+export interface TContractWorkTime {
+  type: TWorkTimeType;
+  /** Percentage of full time, e.g. 80 for 80% — only relevant when type is "part_time" */
+  percentage?: number;
+}
+
+export const SContractWorkTime: ZodOutput<TContractWorkTime> = z.object({
+  type:       SWorkTimeType,
+  percentage: z.number().min(1).max(99).optional(),
+});
+
+// ─── Signature ─────────────────────────────────────────────
+
+/** A signature from one party on a contract */
+export interface TContractSignature {
+  signature_id: TSignatureId;
+  signed_at:    Date;
+  /** The user who physically performed the signing */
+  signed_by:    TUserId;
+  /** Which side of the contract this signature represents */
+  signer_role:  'user' | 'company';
+}
+
+export const SContractSignature: ZodOutput<TContractSignature> = z.object({
+  signature_id: SSignatureId,
+  signed_at:    z.date(),
+  signed_by:    SUserId,
+  signer_role:  z.enum(['user', 'company']),
+});
 
 // ─── Contract ──────────────────────────────────────────────
 
-export const SContractDomainModel = z.object({
-  id:         SContractId,
-  user_id:    SUserId,
-  company_id: SCompanyId,
-  status:     SContractStatusEnum,
-  startDate:  z.date(),
-  endDate:    z.date().optional(),
+/** Core contract linking a user (employee/contractor) to a company */
+export interface TContractDomainModel {
+  id:           TContractId;
+  /** The employee or contractor */
+  user_id:      TUserId;
+  /** The employing company */
+  company_id:   TCompanyId;
+  status:       TContractStatus;
+  /** Legal/administrative contract type */
+  contract_type?: TContractType;
+  /** Job title / role label */
+  job_title?:   string;
+  startDate:    Date;
+  /** Required for CDD, stage, alternance */
+  endDate?:     Date;
+  /** Trial period duration in calendar days */
+  trial_period_days?: number;
+  /** Compensation terms */
+  compensation?: TContractCompensation;
+  /** Work time terms */
+  work_time?:   TContractWorkTime;
+  /** Whether the user has pinned this as their active/default contract */
+  is_favorite?: boolean;
+  /** Signatures collected from each party */
+  signatures?:  {
+    user?:    TContractSignature;
+    company?: TContractSignature;
+  };
+}
+
+export const SContractDomainModel: ZodOutput<TContractDomainModel> = z.object({
+  id:                 SContractId,
+  user_id:            SUserId,
+  company_id:         SCompanyId,
+  status:             SContractStatus,
+  contract_type:      SContractType.optional(),
+  job_title:          z.string().optional(),
+  startDate:          z.date(),
+  endDate:            z.date().optional(),
+  trial_period_days:  z.number().int().positive().optional(),
+  compensation:       SContractCompensation.optional(),
+  work_time:          SContractWorkTime.optional(),
+  is_favorite:        z.boolean().optional(),
+  signatures: z.object({
+    user:    SContractSignature.optional(),
+    company: SContractSignature.optional(),
+  }).optional(),
 });
 
-export type TContractDomainModel = {
-  id:         TContractId;
-  user_id:    TUserId;
-  company_id: TCompanyId;
-  status:     TContractStatusEnum;
-  startDate:  Date;
-  endDate?:   Date;
-  signedBy?: {
-    user?:    TContractSignatureDomainModel;
-    company?: TContractSignatureDomainModel;
-  };
-};
 export type TContractRecord = TContractDomainModel & TRecordMetadata;
 
-// ─── Contract Addendum — DONT USE NOW ──────────────────────
+// ─── Contract Addendum ─────────────────────────────────────
+// TODO: implement addendum feature — model below is a draft skeleton, do not use.
+//       Known issues before production use:
+//       · `changes` array is untyped — should be a discriminated union of known contract fields
+//       · `signatures` should embed TContractSignature objects (not IDs) for consistency with TContractDomainModel
+//       · `created_by` should be TUserId (not TCompanyId)
+//       · Clarify whether addendum is embedded in the contract document or a separate collection
 
 export const SContractAddendumDomainModel = z.object({
   id:            SAddendumId,
@@ -81,15 +147,15 @@ export const SContractAddendumDomainModel = z.object({
     oldValue: z.unknown(),
     newValue: z.unknown(),
   })),
-  signedBy: z.object({
-    user:    SContractSignatureId,
-    company: SContractSignatureId,
-  }),
   createdAt: z.date(),
   createdBy: SCompanyId,
 });
 export type TContractAddendumDomainModel = z.infer<typeof SContractAddendumDomainModel>;
 export type TContractAddendumRecord = TContractAddendumDomainModel & TRecordMetadata;
 
-// ─── Re-export IDs for consumers of this domain ───────────
-export { SContractId, type TContractId, SSignatureId, type TSignatureId, SAddendumId, type TAddendumId } from './ids.js';
+// ─── Re-export IDs ────────────────────────────────────────
+export {
+  SContractId,  type TContractId,
+  SSignatureId, type TSignatureId,
+  SAddendumId,  type TAddendumId,
+} from './ids.js';

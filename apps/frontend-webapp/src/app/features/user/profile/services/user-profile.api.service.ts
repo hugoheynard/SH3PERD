@@ -20,4 +20,8 @@ export class UserProfileApiService {
   updateUserProfile(data: TUserProfileViewModel) {
     return this.http.patch<TApiResponse<TUserProfileViewModel>>(`${this.URL}/me`, data);
   };
+
+  changeEmail(newEmail: string) {
+    return this.http.patch<TApiResponse<void>>(`${this.URL}/me/email`, { email: newEmail });
+  };
 }

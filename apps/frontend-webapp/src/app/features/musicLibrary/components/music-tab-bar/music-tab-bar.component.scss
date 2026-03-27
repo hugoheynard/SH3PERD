@@ -72,7 +72,7 @@
       left: 0;
       right: 0;
       height: 2px;
-      background: #63b3ed;
+      background: var(--accent-color);
       border-radius: 6px 6px 0 0;
     }
   }
@@ -133,9 +133,9 @@
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 
   &:hover {
-    background: rgba(99, 179, 237, 0.12);
-    border-color: rgba(99, 179, 237, 0.3);
-    color: #63b3ed;
+    background: var(--accent-color-dim);
+    border-color: var(--accent-color-border);
+    color: var(--accent-color-light);
   }
 }
 
@@ -144,7 +144,7 @@
 .tab-rename-input {
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(99, 179, 237, 0.5);
+  border-bottom: 1px solid var(--accent-color-border);
   outline: none;
   color: var(--text-primary, #e2e8f0);
   font-size: 12px;
@@ -182,9 +182,9 @@
 
   &:hover,
   &.active {
-    background: rgba(99, 179, 237, 0.12);
-    border-color: rgba(99, 179, 237, 0.3);
-    color: #63b3ed;
+    background: var(--accent-color-dim);
+    border-color: var(--accent-color-border);
+    color: var(--accent-color-light);
   }
 }
 
@@ -195,7 +195,7 @@
   min-width: 14px;
   height: 14px;
   padding: 0 3px;
-  background: #63b3ed;
+  background: var(--accent-color-light);
   border-radius: 7px;
   font-size: 9px;
   font-weight: 700;
@@ -237,32 +237,6 @@
 
 .config-name-input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 5px;
-  padding: 5px 8px;
-  font-size: 12px;
-  color: var(--text-primary, #e2e8f0);
-  outline: none;
-  transition: border-color 0.15s;
-
-  &::placeholder { color: var(--text-muted, #718096); }
-  &:focus { border-color: rgba(99, 179, 237, 0.4); }
-}
-
-.config-save-btn {
-  padding: 5px 12px;
-  background: rgba(99, 179, 237, 0.15);
-  border: 1px solid rgba(99, 179, 237, 0.3);
-  border-radius: 5px;
-  color: #63b3ed;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.12s;
-
-  &:hover { background: rgba(99, 179, 237, 0.25); }
 }
 
 .config-empty {

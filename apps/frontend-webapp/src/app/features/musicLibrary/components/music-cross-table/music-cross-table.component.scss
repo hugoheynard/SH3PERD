@@ -29,15 +29,15 @@
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 
   &:hover {
-    background: rgba(99, 179, 237, 0.08);
-    border-color: rgba(99, 179, 237, 0.35);
-    color: #63b3ed;
+    background: var(--accent-color-dim);
+    border-color: var(--accent-color-border);
+    color: var(--accent-color-light);
   }
 
   &.active {
-    background: rgba(99, 179, 237, 0.15);
-    border-color: rgba(99, 179, 237, 0.5);
-    color: #63b3ed;
+    background: var(--accent-color-dim);
+    border-color: var(--accent-color-border);
+    color: var(--accent-color-light);
     font-weight: 600;
   }
 }
@@ -130,9 +130,9 @@
   background: color-mix(in srgb, var(--card-color, #2c323d) 85%, white);
 }
 
-/* Trio — accent bleu, comme les ratings max */
+/* Trio — accent teal */
 .ref-row.compat-trio td:first-child {
-  border-left: 3px solid #63b3ed;
+  border-left: 3px solid var(--accent-color-light);
 }
 
 /* Quartet — amber */
@@ -216,7 +216,7 @@
     &[data-level='low']    { background: #fc8181; }
     &[data-level='medium'] { background: #f6ad55; }
     &[data-level='high']   { background: #68d391; }
-    &[data-level='max']    { background: #63b3ed; }
+    &[data-level='max']    { background: var(--accent-color-light); }
   }
 }
 
@@ -234,7 +234,7 @@
   &[data-level='low']    { background: rgba(252, 129, 129, 0.1); border-color: rgba(252, 129, 129, 0.25); color: #fc8181; }
   &[data-level='medium'] { background: rgba(246, 173, 85, 0.1);  border-color: rgba(246, 173, 85, 0.25);  color: #f6ad55; }
   &[data-level='high']   { background: rgba(104, 211, 145, 0.1); border-color: rgba(104, 211, 145, 0.25); color: #68d391; }
-  &[data-level='max']    { background: rgba(99, 179, 237, 0.1);  border-color: rgba(99, 179, 237, 0.25);  color: #63b3ed; }
+  &[data-level='max']    { background: var(--accent-color-dim);  border-color: var(--accent-color-border);  color: var(--accent-color-light); }
 }
 
 /* ── No version ──────────────────────────────────────────── */

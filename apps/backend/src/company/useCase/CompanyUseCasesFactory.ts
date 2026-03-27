@@ -17,6 +17,7 @@ import {
   GET_MY_COMPANIES_USE_CASE,
   GET_SERVICE_DETAIL_USE_CASE,
   UPDATE_SERVICE_USE_CASE,
+  GET_COMPANY_ORGCHART_USE_CASE,
 } from '../company.tokens.js';
 import type { CreateCompanyUseCase, TCreateCompanyDTO } from './company/CreateCompanyUseCase.js';
 import type { CreateTeamUseCase, TCreateTeamDTO } from './team/CreateTeamUseCase.js';
@@ -35,6 +36,7 @@ import type { GetCompanyTeamsUseCase, TGetCompanyTeamsDTO } from './team/GetComp
 import type { GetMyCompaniesUseCase } from './company/GetMyCompaniesUseCase.js';
 import type { GetServiceDetailUseCase } from './company/GetServiceDetailUseCase.js';
 import type { UpdateServiceUseCase, TUpdateServiceDTO } from './company/UpdateServiceUseCase.js';
+import type { GetCompanyOrgChartUseCase } from './company/GetCompanyOrgChartUseCase.js';
 import type {
   TUserId,
   TCompanyId,
@@ -46,6 +48,7 @@ import type {
   TServiceDetailViewModel,
   TServiceId,
   TService,
+  TCompanyOrgChartViewModel,
 } from '@sh3pherd/shared-types';
 
 export type TCompanyUseCases = {
@@ -66,6 +69,7 @@ export type TCompanyUseCases = {
   getTeamMembers: (dto: TGetTeamMembersDTO) => Promise<TTeamMemberViewModel[]>;
   getServiceDetail: (companyId: TCompanyId, serviceId: TServiceId) => Promise<TServiceDetailViewModel>;
   updateService: (dto: TUpdateServiceDTO) => Promise<TService>;
+  getOrgChart: (companyId: TCompanyId) => Promise<TCompanyOrgChartViewModel>;
 };
 
 @Injectable()
@@ -88,6 +92,7 @@ export class CompanyUseCasesFactory {
     @Inject(REMOVE_ADMIN_USE_CASE) private readonly removeAdminUC: RemoveAdminUseCase,
     @Inject(GET_SERVICE_DETAIL_USE_CASE) private readonly getServiceDetailUC: GetServiceDetailUseCase,
     @Inject(UPDATE_SERVICE_USE_CASE) private readonly updateServiceUC: UpdateServiceUseCase,
+    @Inject(GET_COMPANY_ORGCHART_USE_CASE) private readonly getOrgChartUC: GetCompanyOrgChartUseCase,
   ) {}
 
   create(): TCompanyUseCases {
@@ -109,6 +114,7 @@ export class CompanyUseCasesFactory {
       getTeamMembers: (dto) => this.getMembersUC.execute(dto),
       getServiceDetail: (companyId, serviceId) => this.getServiceDetailUC.execute(companyId, serviceId),
       updateService: (dto) => this.updateServiceUC.execute(dto),
+      getOrgChart: (companyId) => this.getOrgChartUC.execute(companyId),
     };
   }
 }

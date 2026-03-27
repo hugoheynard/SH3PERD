@@ -34,9 +34,9 @@
   width: 30px;
   height: 30px;
 
-  background: rgba(99, 179, 237, 0.15);
+  background: var(--accent-color-dim);
   border-radius: 8px;
-  color: #63b3ed;
+  color: var(--accent-color-light);
 }
 
 .header-title {
@@ -88,8 +88,8 @@
   }
 
   &:focus {
-    border-color: rgba(99, 179, 237, 0.4);
-    background: rgba(99, 179, 237, 0.05);
+    border-color: var(--accent-color-border);
+    background: var(--accent-color-dim);
   }
 }
 
@@ -126,11 +126,11 @@
 .header-badge {
   padding: 3px 9px;
 
-  background: rgba(99, 179, 237, 0.12);
-  border: 1px solid rgba(99, 179, 237, 0.2);
+  background: var(--accent-color-dim);
+  border: 1px solid var(--accent-color-border);
   border-radius: 20px;
 
-  color: #63b3ed;
+  color: var(--accent-color-light);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.3px;

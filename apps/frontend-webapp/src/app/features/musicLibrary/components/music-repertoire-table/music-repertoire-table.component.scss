@@ -1,3 +1,5 @@
+@use '../../../../shared/styles/buttons' as *;
+
 :host {
   display: block;
   width: 100%;
@@ -132,8 +134,8 @@ td {
   }
 
   &[data-level='max'] {
-    background: rgba(99, 179, 237, 0.15);
-    color: #63b3ed;
+    background: var(--accent-color-dim);
+    color: var(--accent-color-light);
   }
 }
 
@@ -171,26 +173,6 @@ td {
   background: rgba(246, 173, 85, 0.03);
 }
 
-.btn-add-first-version {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
-  background: rgba(246, 173, 85, 0.1);
-  border: 1px solid rgba(246, 173, 85, 0.3);
-  border-radius: 5px;
-  color: #f6ad55;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-
-  &:hover {
-    background: rgba(246, 173, 85, 0.2);
-    border-color: rgba(246, 173, 85, 0.5);
-  }
-}
-
 /* ── Action column ───────────────────────────────── */
 
 .col-actions {
@@ -210,65 +192,36 @@ td {
 .btn-add-ver,
 .btn-save,
 .btn-cancel-edit {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border: none;
-  border-radius: 4px;
-  background: transparent;
-  cursor: pointer;
-  font-size: 13px;
-  transition: background 0.1s, color 0.1s;
-}
-
-.btn-edit {
-  color: var(--text-muted, #718096);
-  &:hover { background: rgba(255, 255, 255, 0.08); color: var(--text-primary); }
+  @include btn-icon(22);
 }
 
 .btn-add-ver {
-  color: #63b3ed;
+  color: var(--accent-color-light);
   font-weight: 700;
-  &:hover { background: rgba(99, 179, 237, 0.12); }
+  &:hover { background: var(--accent-color-dim); }
 }
 
 .btn-save {
-  color: #68d391;
+  color: var(--color-success);
   &:hover { background: rgba(104, 211, 145, 0.12); }
 }
 
 .btn-cancel-edit {
-  color: var(--text-muted, #718096);
-  &:hover { background: rgba(251, 113, 133, 0.12); color: #fb7185; }
+  &:hover { background: var(--color-alert-dim); color: var(--color-alert-light); }
 }
 
 /* ── Edit row ────────────────────────────────────── */
 
 .edit-row {
-  background: rgba(99, 179, 237, 0.04);
-  border-bottom: 1px solid rgba(99, 179, 237, 0.1);
+  background: var(--accent-color-dim);
+  border-bottom: 1px solid var(--accent-color-border);
 
   td { padding: 6px 8px; vertical-align: middle; }
 }
 
-.edit-input {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 5px;
-  padding: 4px 8px;
-  font-size: 12px;
-  color: var(--text-primary, #e2e8f0);
-  outline: none;
-  transition: border-color 0.15s;
-
-  &:focus { border-color: rgba(99, 179, 237, 0.4); }
-
-  &--label { width: 120px; }
-  &--dur   { width: 50px; text-align: center; }
-  &--bpm   { width: 58px; text-align: center; }
-}
+.edit-input--label { width: 120px; }
+.edit-input--dur   { width: 50px; }
+.edit-input--bpm   { width: 58px; }
 
 .edit-select {
   background: rgba(255, 255, 255, 0.06);
@@ -303,7 +256,7 @@ td {
     &[data-level='low']    { background: #fc8181; }
     &[data-level='medium'] { background: #f6ad55; }
     &[data-level='high']   { background: #68d391; }
-    &[data-level='max']    { background: #63b3ed; }
+    &[data-level='max']    { background: var(--accent-color); }
   }
 }
 
@@ -320,51 +273,13 @@ td {
 
 .analysing-indicator {
   font-size: 10px;
-  color: #63b3ed;
+  color: var(--accent-color-light);
   font-style: italic;
   white-space: nowrap;
 }
 
-.btn-track-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 2px 7px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid;
-  white-space: nowrap;
-  transition: background 0.12s, border-color 0.12s;
-
-  /* ❌ No track — red */
-  &--upload {
-    background: rgba(252, 129, 129, 0.1);
-    border-color: rgba(252, 129, 129, 0.35);
-    color: #fc8181;
-
-    &:hover {
-      background: rgba(252, 129, 129, 0.2);
-      border-color: rgba(252, 129, 129, 0.6);
-    }
-  }
-
-  /* 🔵 Track present, not analysed — accent blue */
-  &--analyse {
-    background: rgba(99, 179, 237, 0.1);
-    border-color: rgba(99, 179, 237, 0.35);
-    color: #63b3ed;
-
-    &:hover {
-      background: rgba(99, 179, 237, 0.2);
-      border-color: rgba(99, 179, 237, 0.6);
-    }
-  }
-}
-
 /* ── Add version form row ────────────────────────── */
 
-.form-row { background: rgba(99, 179, 237, 0.03); }
+.form-row { background: var(--accent-color-dim); }
 
 .form-cell { padding: 10px 16px !important; }

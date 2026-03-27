@@ -1,47 +1,199 @@
-@use 'tokens' as t;
+// ── Design tokens ────────────────────────────────────────────────────
+$bg:         #090d15;
+$bg-left:    #0b0f1c;
+$bg-right:   #0d1120;
+$accent:     #06a4a4;   // aligned with app --accent-color
+$border:     rgba(255, 255, 255, .06);
+$text-1:     #eef1ff;
+$text-2:     #8892b0;
 
+// ── Host ────────────────────────────────────────────────────────────
 :host {
-  display: flex;
+  display: block;
   height: 100vh;
-  align-items: center;
-  justify-content: center;
-}
-
-#loginContainer {
-  display: flex;
-  flex-direction: row;
-  width: 40rem;
-  height: 25rem;
-  border-radius: 6px;
+  width:  100vw;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 10px 20px rgba(0, 0, 0, 0.1);
+  background: $bg;
+  font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
 }
 
-// Form = 40%
-.login-form {
-  flex: 0 0 40%;
+// ── Page layout ─────────────────────────────────────────────────────
+.login-page {
+  display: flex;
+  height: 100%;
+}
+
+// ── Brand panel (left) ───────────────────────────────────────────────
+.brand-panel {
+  flex: 0 0 56%;
+  position: relative;
+  background: $bg-left;
   display: flex;
   align-items: center;
   justify-content: center;
-}
+  overflow: hidden;
 
-// Image = 60%
-.login-image {
-  flex: 0 0 60%;
-  object-fit: contain;
-  max-width: 100%;
-  max-height: 100%;
-  height: auto;
-  width: auto;
-  align-self: center;
-}
+  // Teal radial glow — centered
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 60% 55% at 50% 48%,
+      rgba(6, 164, 164, .08) 0%,
+      transparent 68%
+    );
+    pointer-events: none;
+  }
 
-.login-image {
-  background-color: #ccc;
-  transition: background-color 2s ease;
-
-  &.valid {
-    background-color: #30aeb2;
+  // Subtle dot grid
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
   }
 }
 
+.brand-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 48px;
+  text-align: center;
+}
+
+// Border Collie illustration
+.bc-svg {
+  width: 180px;
+  height: auto;
+  color: rgba(255, 255, 255, .70);
+  filter: drop-shadow(0 0 28px rgba(6, 164, 164, .18));
+}
+
+// Brand text
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-name {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: .24em;
+  color: $text-1;
+  line-height: 1;
+}
+
+.brand-tagline {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: .16em;
+  color: $text-2;
+  text-transform: lowercase;
+  font-style: italic;
+  opacity: .75;
+}
+
+// ── Auth panel (right) ───────────────────────────────────────────────
+.auth-panel {
+  flex: 0 0 44%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $bg-right;
+  border-left: 1px solid $border;
+  overflow-y: auto;
+}
+
+.auth-inner {
+  width: 100%;
+  max-width: 360px;
+  padding: 52px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+
+  // ── Feed dark-theme CSS variables to sh3-input / sh3-button-primary ──
+  // These vars are consumed by the ui-angular component mixins.
+  // CSS custom props cascade through Angular's emulated encapsulation.
+  --form-field-bgColor:    #141b2e;
+  --form-field-borderColor: rgba(255, 255, 255, .09);
+  --baseTextColor:         #{$text-1};
+  --fadedTextColor:        #6b7896;
+  --baseText:              #{$text-1};
+  --colorPrimary:          #{$accent};
+  --colorPrimary-rawRGB:   6, 164, 164;
+  --text-sm:               0.75rem;
+}
+
+// Mini logo
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: $accent;
+}
+
+.auth-logo-name {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  color: $text-1;
+}
+
+// Form header
+.auth-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: $text-1;
+  letter-spacing: -.02em;
+}
+
+.auth-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: $text-2;
+  line-height: 1.5;
+}
+
+// Footer
+.auth-footer {
+  margin: 0;
+  font-size: 12px;
+  color: $text-2;
+  text-align: center;
+
+  .auth-link {
+    color: $accent;
+    text-decoration: none;
+    transition: opacity .15s;
+    &:hover { opacity: .8; text-decoration: underline; }
+  }
+}
+
+// ── Responsive ──────────────────────────────────────────────────────
+@media (max-width: 860px) {
+  .login-page  { flex-direction: column; overflow-y: auto; height: auto; min-height: 100vh; }
+  .brand-panel { flex: none; padding: 48px 24px 32px; }
+  .bc-svg      { width: 220px; }
+  .brand-name  { font-size: 30px; }
+  .auth-panel  { flex: none; border-left: none; border-top: 1px solid $border; }
+  .auth-inner  { padding: 36px 24px 52px; }
+}

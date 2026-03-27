@@ -1,11 +1,13 @@
 import { Component, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ButtonComponent } from '../../../../shared/buttons/button/button.component';
+import { InputComponent } from '../../../../shared/forms/input/input.component';
 import type { MusicSearchConfig, MusicTab, SavedTabConfig } from '../../music-library-types';
 
 @Component({
   selector: 'app-music-tab-bar',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ButtonComponent, InputComponent],
   templateUrl: './music-tab-bar.component.html',
   styleUrl: './music-tab-bar.component.scss',
 })

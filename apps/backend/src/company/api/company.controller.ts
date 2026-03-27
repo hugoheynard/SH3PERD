@@ -143,9 +143,9 @@ export class CompanyController {
   @Patch('services/:serviceId')
   async updateService(
     @Param('serviceId') serviceId: TServiceId,
-    @Body() body: { company_id: TCompanyId; name?: string; color?: string },
+    @Body() body: { company_id: TCompanyId; name?: string; color?: string; communication?: import('@sh3pherd/shared-types').TServiceCommunication | null },
   ) {
-    const result = await this.uc.updateService({ company_id: body.company_id, service_id: serviceId, name: body.name, color: body.color });
+    const result = await this.uc.updateService({ company_id: body.company_id, service_id: serviceId, name: body.name, color: body.color, communication: body.communication });
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.UPDATE_SERVICE, result);
   }
 
@@ -159,6 +159,15 @@ export class CompanyController {
   ) {
     const result = await this.uc.removeService({ company_id: body.company_id, service_id: serviceId }, ctx.user_scope);
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.REMOVE_SERVICE, result);
+  }
+
+  @ApiOperation({ summary: 'Get company org chart', description: 'Returns the full company hierarchy — services, teams and active members.' })
+  @Get(':id/orgchart')
+  async getOrgChart(
+    @Param('id') id: TCompanyId,
+  ) {
+    const result = await this.uc.getOrgChart(id);
+    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_ORGCHART, result);
   }
 
   @ApiOperation({ summary: 'Get service detail', description: 'Returns a service with its teams and active members.' })

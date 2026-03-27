@@ -10,7 +10,11 @@ import type {
   TCompanyCardViewModel,
   TCompanyId,
   TCompanyAdminRole,
-  TContractStatusEnum,
+  TCompanyOrgChartViewModel,
+  TServiceCommunication,
+  TContractStatus,
+  TContractDetailViewModel,
+  TContractId,
   TTeamRecord,
   TService,
   TServiceId,
@@ -90,10 +94,23 @@ export class CompanyService extends BaseHttpService {
     );
   }
 
-  createContractForUser(dto: { company_id: TCompanyId; user_id: TUserId; status: TContractStatusEnum; startDate: string; endDate?: string }): Observable<TApiResponse<TCompanyContractViewModel>> {
+  createContractForUser(dto: { company_id: TCompanyId; user_id: TUserId; status: TContractStatus; startDate: string; endDate?: string }): Observable<TApiResponse<TCompanyContractViewModel>> {
     return this.http.post<TApiResponse<TCompanyContractViewModel>>(
       this.UrlBuilder.apiProtectedRoute('contracts').build(),
       { requestDTO: dto }
+    );
+  }
+
+  getContractById(contractId: TContractId): Observable<TContractDetailViewModel> {
+    return this.http.get<TContractDetailViewModel>(
+      this.UrlBuilder.apiProtectedRoute('contracts').route(contractId).build()
+    );
+  }
+
+  updateContract(contractId: TContractId, dto: { status?: TContractStatus; startDate?: string; endDate?: string | null }): Observable<TContractDetailViewModel> {
+    return this.http.patch<TContractDetailViewModel>(
+      this.UrlBuilder.apiProtectedRoute('contracts').route(contractId).build(),
+      dto
     );
   }
 
@@ -149,10 +166,16 @@ export class CompanyService extends BaseHttpService {
     );
   }
 
-  updateService(companyId: TCompanyId, serviceId: TServiceId, dto: { name?: string; color?: string }): Observable<TApiResponse<TService>> {
+  updateService(companyId: TCompanyId, serviceId: TServiceId, dto: { name?: string; color?: string; communication?: TServiceCommunication | null }): Observable<TApiResponse<TService>> {
     return this.http.patch<TApiResponse<TService>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`services/${serviceId}`).build(),
       { company_id: companyId, ...dto }
+    );
+  }
+
+  getOrgChart(companyId: TCompanyId): Observable<TApiResponse<TCompanyOrgChartViewModel>> {
+    return this.http.get<TApiResponse<TCompanyOrgChartViewModel>>(
+      this.UrlBuilder.apiProtectedRoute('companies').route(`${companyId}/orgchart`).build()
     );
   }
 }

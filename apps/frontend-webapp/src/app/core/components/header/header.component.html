@@ -33,8 +33,29 @@
 
   </button>
 
-  <!-- Cercle avec initiale -->
-  <div class="profile-circle">
-    H
+  <!-- Profile pastille + dropdown -->
+  <div class="profile-area">
+    <button class="profile-circle" (click)="toggleProfileMenu()" type="button" aria-label="User menu">
+      {{ userInitial() }}
+    </button>
+
+    @if (showProfileMenu()) {
+      <div class="profile-dropdown">
+        @if (userDisplayName()) {
+          <div class="profile-dropdown__header">
+            <span class="profile-dropdown__name">{{ userDisplayName() }}</span>
+          </div>
+        }
+        <button class="profile-dropdown__item" type="button" (click)="goToProfile()">
+          <span class="profile-dropdown__icon">👤</span>
+          Profile
+        </button>
+        <div class="profile-dropdown__divider"></div>
+        <button class="profile-dropdown__item profile-dropdown__item--danger" type="button" (click)="logout()">
+          <span class="profile-dropdown__icon">🚪</span>
+          Log out
+        </button>
+      </div>
+    }
   </div>
 </div>

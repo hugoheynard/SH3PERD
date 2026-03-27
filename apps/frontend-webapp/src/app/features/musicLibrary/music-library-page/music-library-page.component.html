@@ -62,9 +62,9 @@
             </svg>
             Filtres
           </button>
-          <button class="btn-add-entry" type="button" (click)="entryPanelOpen.set(true)">
+          <sh3-button variant="primary" size="sm" (clicked)="entryPanelOpen.set(true)">
             <span>+</span> Add song
-          </button>
+          </sh3-button>
           <button class="view-toggle" (click)="toggleView()" type="button">
             @if (viewMode() === 'cards') {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

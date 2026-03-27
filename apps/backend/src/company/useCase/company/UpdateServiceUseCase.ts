@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { TCompanyId, TServiceId, TService } from '@sh3pherd/shared-types';
+import type { TCompanyId, TServiceId, TService, TServiceCommunication } from '@sh3pherd/shared-types';
 import { COMPANY_REPO } from '../../company.tokens.js';
 import type { ICompanyRepository } from '../../repositories/CompanyMongoRepository.js';
 import { CompanyEntity } from '../../domain/CompanyEntity.js';
@@ -10,6 +10,7 @@ export type TUpdateServiceDTO = {
   service_id: TServiceId;
   name?: string;
   color?: string;
+  communication?: TServiceCommunication | null;
 };
 
 @Injectable()
@@ -22,8 +23,12 @@ export class UpdateServiceUseCase {
     const record = await this.companyRepo.findById(dto.company_id);
     if (!record) throw new TechnicalError('Company not found', 'COMPANY_NOT_FOUND', 404);
 
-    const entity = CompanyEntity.fromRecord(record);
-    const updated = entity.updateService(dto.service_id, { name: dto.name, color: dto.color });
+    const entity = new CompanyEntity(record as any);
+    const updated = entity.updateService(dto.service_id, {
+      name: dto.name,
+      color: dto.color,
+      communication: dto.communication,
+    });
 
     await this.companyRepo.updateOne({
       filter: { id: dto.company_id } as any,

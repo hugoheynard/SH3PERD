@@ -1,5 +1,5 @@
 import { Component, inject} from '@angular/core';
-import { PopoverFrameComponent } from '../../ui-frames/popover-frame/popover-frame.component';
+import { PopoverFrameComponent } from '../../../../shared/ui-frames/popover-frame/popover-frame.component';
 import { ButtonComponent } from '../../button/button.component';
 import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
 import { type AbstractControl, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';

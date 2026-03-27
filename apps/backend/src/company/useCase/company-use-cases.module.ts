@@ -19,6 +19,7 @@ import {
   GET_MY_COMPANIES_USE_CASE,
   GET_SERVICE_DETAIL_USE_CASE,
   UPDATE_SERVICE_USE_CASE,
+  GET_COMPANY_ORGCHART_USE_CASE,
 } from '../company.tokens.js';
 import { CompanyUseCasesFactory } from './CompanyUseCasesFactory.js';
 import { CreateCompanyUseCase } from './company/CreateCompanyUseCase.js';
@@ -38,6 +39,7 @@ import { AddAdminUseCase } from './company/AddAdminUseCase.js';
 import { RemoveAdminUseCase } from './company/RemoveAdminUseCase.js';
 import { GetServiceDetailUseCase } from './company/GetServiceDetailUseCase.js';
 import { UpdateServiceUseCase } from './company/UpdateServiceUseCase.js';
+import { GetCompanyOrgChartUseCase } from './company/GetCompanyOrgChartUseCase.js';
 
 @Module({
   providers: [
@@ -63,7 +65,8 @@ import { UpdateServiceUseCase } from './company/UpdateServiceUseCase.js';
     { provide: ADD_ADMIN_USE_CASE,           useClass: AddAdminUseCase            },
     { provide: REMOVE_ADMIN_USE_CASE,        useClass: RemoveAdminUseCase         },
     { provide: GET_SERVICE_DETAIL_USE_CASE,  useClass: GetServiceDetailUseCase    },
-    { provide: UPDATE_SERVICE_USE_CASE,      useClass: UpdateServiceUseCase       },
+    { provide: UPDATE_SERVICE_USE_CASE,       useClass: UpdateServiceUseCase          },
+    { provide: GET_COMPANY_ORGCHART_USE_CASE, useClass: GetCompanyOrgChartUseCase     },
   ],
   exports: [COMPANY_USE_CASES],
 })

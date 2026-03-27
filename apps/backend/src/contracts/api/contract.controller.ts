@@ -1,68 +1,57 @@
-import { Body, Controller, Get, Inject, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Patch, Post, Req } from '@nestjs/common';
 import type { Request } from 'express';
-import type { TCompanyId, TCreateContractRequestDTO, TGetContractsByFilterRequestDTO} from '@sh3pherd/shared-types';
+import type {
+  TCompanyId,
+  TContractId,
+  TCreateContractRequestDTO,
+  TGetContractsByFilterRequestDTO,
+  TUpdateContractDTO,
+} from '@sh3pherd/shared-types';
 import { CONTRACTS_USE_CASES } from '../contracts.tokens.js';
 import type { TContractsUseCases } from '../useCase/ContractUseCasesFactory.js';
-import { /*ContractScopedContext,*/ UserScopedContext } from '../../utils/nest/decorators/Context.js';
+import { UserScopedContext } from '../../utils/nest/decorators/Context.js';
 import type { TUseCaseContext } from '../../types/useCases.generic.types.js';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { ContractListItemDTO } from '../dto/ContractListItemDTO.js';
 
-
 @Controller()
 export class ContractController {
   constructor(
-    @Inject(CONTRACTS_USE_CASES) private readonly contractsUC: TContractsUseCases
-  ) {};
+    @Inject(CONTRACTS_USE_CASES) private readonly contractsUC: TContractsUseCases,
+  ) {}
 
-
-  /**
-   * Endpoint to get contracts for the current user based on provided filters.
-   * Returns a list of contracts matching the filter criteria, scoped to the current user.
-   * @param context
-   * @param requestDTO
-   */
-  @ApiOkResponse({
-    description: 'Successfully retrieved contracts for the current user.',
-    type: [ContractListItemDTO]
-  })
+  @ApiOkResponse({ description: 'Current user contracts', type: [ContractListItemDTO] })
   @Post('me')
   getCurrentUserContractList(
     @Body() requestDTO: TGetContractsByFilterRequestDTO,
     @UserScopedContext() context: TUseCaseContext<'unscoped'>,
-  ): Promise<any> {
+  ) {
     return this.contractsUC.getCurrentUserContractList({ context, requestDTO });
-  };
+  }
 
-
-  /**
-   * Returns all contracts for a given company, enriched with user identity.
-   */
   @Get('company/:companyId')
   getCompanyContracts(@Param('companyId') companyId: TCompanyId) {
     return this.contractsUC.getCompanyContracts(companyId);
   }
 
-  /**
-   * Endpoint to create a new contract.
-   */
+  @Get(':contractId')
+  getContractById(@Param('contractId') contractId: TContractId) {
+    return this.contractsUC.getContractById(contractId);
+  }
+
+  @Patch(':contractId')
+  updateContract(
+    @Param('contractId') contractId: TContractId,
+    @Body() dto: Omit<TUpdateContractDTO, 'contract_id'>,
+  ) {
+    return this.contractsUC.updateContract({ ...dto, contract_id: contractId });
+  }
+
   @Post()
   createContract(
     @Req() req: Request,
     @Body('requestDTO') requestDTO: TCreateContractRequestDTO,
-    //@ContractScopedContext() context: TUseCaseContext<'scoped'>,
   ) {
     return this.contractsUC.create(requestDTO, req.user_id);
-  };
-
-  /*
-  @Post('favorite')
-  favoriteContract(
-    @Req() req: Request,
-    @Body('contract_id') contract_id: TContractId,
-  ) {
-    return this.uc.favorite(contract_id, req.user_id);
-  };*/
-
-
+  }
 }

@@ -1,4 +1,5 @@
 import { Component, computed, input, output, signal } from '@angular/core';
+import { ButtonComponent } from '../../../../shared/buttons/button/button.component';
 import { AddVersionFormComponent } from '../add-version-form/add-version-form.component';
 import type { AddVersionPayload } from '../../services/mutations-layer/music-version-mutation.service';
 import type { MusicReference, MusicVersion, Rating } from '../../music-library-types';
@@ -6,7 +7,7 @@ import type { MusicReference, MusicVersion, Rating } from '../../music-library-t
 @Component({
   selector: 'app-music-reference-card',
   standalone: true,
-  imports: [AddVersionFormComponent],
+  imports: [AddVersionFormComponent, ButtonComponent],
   templateUrl: './music-reference-card.component.html',
   styleUrl: './music-reference-card.component.scss',
 })

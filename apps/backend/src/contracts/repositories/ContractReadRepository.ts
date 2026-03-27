@@ -81,6 +81,8 @@ export class ContractReadRepository implements IContractReadRepository {
           status: 1,
           startDate: 1,
           endDate: 1,
+          contract_type: 1,
+          job_title: 1,
         },
       },
     ]).toArray();

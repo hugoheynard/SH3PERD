@@ -1,0 +1,207 @@
+// ═══════════════════════════════════════════════════════
+//  SHARED BUTTON MIXINS
+//  Based on _tokens.css custom properties
+//
+//  Variants:
+//    primary      → accent color (teal)  — default actions
+//    recommended  → amber/warning        — suggested actions
+//    critical     → red/alert            — destructive / urgent
+//    ghost        → neutral              — secondary / cancel
+// ═══════════════════════════════════════════════════════
+
+
+// ─── Base reset ──────────────────────────────────────
+@mixin _btn-reset {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  white-space: nowrap;
+  font-family: inherit;
+  transition:
+    background var(--t-fast),
+    border-color var(--t-fast),
+    color var(--t-fast),
+    transform var(--t-fast);
+
+  &:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+
+// ─── Size tokens ─────────────────────────────────────
+@mixin _btn-size-sm {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-xs);
+}
+
+@mixin _btn-size-md {
+  font-size: var(--text-md);
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-sm);
+}
+
+@mixin _btn-size-lg {
+  font-size: var(--text-md);
+  font-weight: 600;
+  padding: 0.6rem 1.3rem;
+  border-radius: var(--radius-sm);
+}
+
+
+// ─── Soft button (outlined + tinted bg) ─────────────
+//  This is the "glass" style used in musicLibrary:
+//  subtle tinted background, colored border, colored text.
+
+@mixin _btn-soft(
+  $color,
+  $bg,
+  $border,
+  $hover-bg,
+  $hover-border
+) {
+  color: $color;
+  background: $bg;
+  border: 1px solid $border;
+
+  &:hover:not(:disabled) {
+    background: $hover-bg;
+    border-color: $hover-border;
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  PUBLIC MIXINS
+// ═══════════════════════════════════════════════════════
+
+/// Primary action — accent teal
+/// @param {String} $size - sm | md | lg
+@mixin btn-primary($size: 'md') {
+  @include _btn-reset;
+
+  @if $size == 'sm'  { @include _btn-size-sm; }
+  @else if $size == 'lg' { @include _btn-size-lg; }
+  @else              { @include _btn-size-md; }
+
+  @include _btn-soft(
+    var(--accent-color-light),
+    var(--accent-color-dim),
+    var(--accent-color-border),
+    rgba(6, 164, 164, 0.24),
+    rgba(6, 164, 164, 0.55)
+  );
+}
+
+
+/// Recommended action — amber / warning
+/// @param {String} $size - sm | md | lg
+@mixin btn-recommended($size: 'md') {
+  @include _btn-reset;
+
+  @if $size == 'sm'  { @include _btn-size-sm; }
+  @else if $size == 'lg' { @include _btn-size-lg; }
+  @else              { @include _btn-size-md; }
+
+  @include _btn-soft(
+    var(--color-warning-light),
+    var(--color-warning-dim),
+    var(--color-warning-border),
+    rgba(246, 173, 85, 0.22),
+    rgba(246, 173, 85, 0.50)
+  );
+}
+
+
+/// Critical / destructive action — red / alert
+/// @param {String} $size - sm | md | lg
+@mixin btn-critical($size: 'md') {
+  @include _btn-reset;
+
+  @if $size == 'sm'  { @include _btn-size-sm; }
+  @else if $size == 'lg' { @include _btn-size-lg; }
+  @else              { @include _btn-size-md; }
+
+  @include _btn-soft(
+    var(--color-alert-light),
+    var(--color-alert-dim),
+    var(--color-alert-border),
+    rgba(252, 129, 129, 0.22),
+    rgba(252, 129, 129, 0.55)
+  );
+}
+
+
+/// Ghost / secondary / cancel — neutral, minimal
+/// @param {String} $size - sm | md | lg
+@mixin btn-ghost($size: 'md') {
+  @include _btn-reset;
+
+  @if $size == 'sm'  { @include _btn-size-sm; }
+  @else if $size == 'lg' { @include _btn-size-lg; }
+  @else              { @include _btn-size-md; }
+
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--panel-border-color);
+
+  &:hover:not(:disabled) {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--floating-border-color);
+  }
+}
+
+
+/// Icon button — small square, transparent bg, for icon-only actions
+/// @param {Number} $size - button size in px (default 24)
+@mixin btn-icon($size: 24) {
+  @include _btn-reset;
+  width: #{$size}px;
+  height: #{$size}px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: #{$size - 8}px;
+  line-height: 1;
+
+  &:hover:not(:disabled) {
+    background: var(--icon-hover-bg);
+    color: var(--text-primary);
+  }
+}
+
+
+/// Solid primary — filled background (for high-emphasis CTAs)
+/// @param {String} $size - sm | md | lg
+@mixin btn-solid($size: 'md') {
+  @include _btn-reset;
+
+  @if $size == 'sm'  { @include _btn-size-sm; }
+  @else if $size == 'lg' { @include _btn-size-lg; }
+  @else              { @include _btn-size-md; }
+
+  color: #fff;
+  background: var(--accent-color);
+  border: 1px solid transparent;
+
+  &:hover:not(:disabled) {
+    background: var(--accent-color-light);
+  }
+}

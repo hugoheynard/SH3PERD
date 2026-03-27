@@ -1,63 +1,168 @@
-import { Component, inject, type OnInit } from '@angular/core';
-import { ButtonPrimaryComponent } from '@sh3pherd/ui-angular';
-import { UserProfileFormService } from '../../services/user-profile.form.service';
-import { ReactiveFormsModule } from '@angular/forms';
-import { UserProfileApiService } from '../../services/user-profile.api.service';
+import { ChangeDetectionStrategy, Component, computed, inject, type OnInit, signal } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ButtonComponent } from '../../../../../shared/buttons/button/button.component';
 import { InputComponent } from '../../../../../shared/forms/input/input.component';
-import { ButtonTertiaryComponent } from '../../../../../shared/buttons/button-tertiary/button-tertiary.component';
+import { UserProfileFormService } from '../../services/user-profile.form.service';
+import { UserProfileApiService } from '../../services/user-profile.api.service';
+import { UserContextService } from '../../../../../core/services/user-context.service';
 
 @Component({
   selector: 'app-user-profile-page',
-  imports: [
-    ReactiveFormsModule,
-    ButtonPrimaryComponent,
-    ButtonTertiaryComponent,
-    InputComponent,
-  ],
+  standalone: true,
+  imports: [ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './user-profile-page.component.html',
-  styleUrl: './user-profile-page.component.scss'
+  styleUrl: './user-profile-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserProfilePageComponent implements OnInit {
-  upForm = inject(UserProfileFormService);
-  upApi = inject(UserProfileApiService);
-  upEditMode = false;
-  passwordEditMode = false;
+  private readonly formService = inject(UserProfileFormService);
+  private readonly api = inject(UserProfileApiService);
+  private readonly userCtx = inject(UserContextService);
+  private readonly fb = inject(FormBuilder);
 
+  readonly form = this.formService.form;
+
+  /** Email change form. */
+  readonly emailForm = this.fb.group({
+    newEmail: ['', [Validators.required, Validators.email]],
+    confirmEmail: ['', [Validators.required, Validators.email]],
+  });
+
+  /** Sections edit state. */
+  readonly editingProfile = signal(false);
+  readonly editingPassword = signal(false);
+  readonly editingEmail = signal(false);
+
+  /** Feedback state. */
+  readonly saving = signal(false);
+  readonly saveSuccess = signal(false);
+  readonly savingEmail = signal(false);
+  readonly emailSuccess = signal(false);
+  readonly emailError = signal('');
+
+  /** User initial for avatar fallback. */
+  readonly userInitial = computed(() => {
+    const user = this.userCtx.userMe();
+    const first = user?.profile?.first_name?.charAt(0) ?? '';
+    const last = user?.profile?.last_name?.charAt(0) ?? '';
+    return (first + last).toUpperCase() || 'U';
+  });
+
+  readonly userFullName = computed(() => {
+    const user = this.userCtx.userMe();
+    if (!user?.profile) return '';
+    return user.profile.display_name
+      ?? `${user.profile.first_name} ${user.profile.last_name}`;
+  });
+
+  readonly userEmail = computed(() => {
+    // Email is not in profile model, placeholder for now
+    return '';
+  });
 
   ngOnInit(): void {
-    this.upApi.getCurrentUserProfile().subscribe({
-      next: (res) => {
-        this.upForm.patchForm(res.data);
-        console.log(this.upForm.form.value);
-      },
-      error: (err: unknown) => {
-        console.error('Error fetching user profile:', err);
-      }
+    this.api.getCurrentUserProfile().subscribe({
+      next: (res) => this.formService.patchForm(res.data),
+      error: (err) => console.error('Failed to load profile', err),
     });
-  };
-
-
-  getProfileForm() {
-    return this.upForm.form;
-  };
-
-  onSubmitProfile() {
-
   }
 
-  onToggleUpEditMode() {
-    if (!this.upEditMode) {
-      this.upEditMode = !this.upEditMode;
+  /* ── Profile edit ── */
+
+  startEditProfile(): void {
+    this.editingProfile.set(true);
+    this.saveSuccess.set(false);
+  }
+
+  cancelEditProfile(): void {
+    this.editingProfile.set(false);
+    // Re-patch from current user context to discard changes
+    const user = this.userCtx.userMe();
+    if (user?.profile) {
+      this.formService.patchForm({
+        first_name: user.profile.first_name,
+        last_name: user.profile.last_name,
+        display_name: user.profile.display_name,
+        phone: user.profile.phone,
+      });
     }
-    this.upEditMode = !this.upEditMode;
-    this.cancelUp();
-  };
-
-  onTogglePasswordEditMode() {
-    this.passwordEditMode = !this.passwordEditMode;
   }
 
-  cancelUp() {
+  submitProfile(): void {
+    if (this.form.invalid || this.saving()) return;
+    this.saving.set(true);
+    this.saveSuccess.set(false);
 
+    const data = this.form.getRawValue() as {
+      first_name: string;
+      last_name: string;
+      display_name?: string;
+      phone?: string;
+    };
+
+    this.api.updateUserProfile(data).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.saveSuccess.set(true);
+        this.editingProfile.set(false);
+        // Refresh user context so header pastille updates
+        this.userCtx.getUser();
+      },
+      error: (err) => {
+        console.error('Failed to update profile', err);
+        this.saving.set(false);
+      },
+    });
+  }
+
+  /* ── Email change ── */
+
+  startEditEmail(): void {
+    this.editingEmail.set(true);
+    this.emailSuccess.set(false);
+    this.emailError.set('');
+    this.emailForm.reset();
+  }
+
+  cancelEditEmail(): void {
+    this.editingEmail.set(false);
+    this.emailForm.reset();
+    this.emailError.set('');
+  }
+
+  /** Returns true if both emails match and form is valid. */
+  emailsMatch(): boolean {
+    const { newEmail, confirmEmail } = this.emailForm.getRawValue();
+    return !!newEmail && newEmail === confirmEmail;
+  }
+
+  submitEmail(): void {
+    if (this.emailForm.invalid || !this.emailsMatch() || this.savingEmail()) return;
+
+    this.savingEmail.set(true);
+    this.emailError.set('');
+    this.emailSuccess.set(false);
+
+    const { newEmail } = this.emailForm.getRawValue();
+
+    this.api.changeEmail(newEmail!).subscribe({
+      next: () => {
+        this.savingEmail.set(false);
+        this.emailSuccess.set(true);
+        this.editingEmail.set(false);
+        this.emailForm.reset();
+      },
+      error: (err) => {
+        console.error('Failed to change email', err);
+        this.savingEmail.set(false);
+        this.emailError.set('Failed to update email. Please try again.');
+      },
+    });
+  }
+
+  /* ── Password (placeholder) ── */
+
+  togglePasswordEdit(): void {
+    this.editingPassword.update(v => !v);
   }
 }

@@ -75,6 +75,17 @@ export const routes: Routes = [
                   },
                 ],
               },
+              {
+                path: 'contracts',
+                children: [
+                  {
+                    path: ':contractId',
+                    loadComponent: () =>
+                      import('../features/company/contract-detail-page/contract-detail-page.component')
+                        .then(m => m.ContractDetailPageComponent),
+                  },
+                ],
+              },
             ],
           },
         ],

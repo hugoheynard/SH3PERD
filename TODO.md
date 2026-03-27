@@ -143,6 +143,14 @@ La conversation sur les composants réutilisables a été mise en pause :
 
 ## 📋 Backlog fonctionnel (non démarré)
 
+### Company — Organigramme
+
+- [ ] **Lazy loading de l'organigramme par service**
+  - Actuellement : 1 appel `GET /companies/:id/orgchart` charge toutes les teams et membres d'un coup
+  - À terme : charger les sous-nœuds (teams + membres) uniquement au clic sur un service
+  - Implique : endpoint `GET /companies/:id/services/:serviceId/orgchart` + skeleton loader par service
+  - Pertinent quand une company dépasse ~10 services / ~200 membres
+
 - [ ] Système de **permissions / rôles** (référencé par `CastPolicy`, `CompanyPolicy`)
 - [ ] **Signing de contrat** — `signedBy` est dans le modèle mais commenté dans l'implémentation
 - [ ] **Addenda de contrat** — type défini dans shared-types, non implémenté (`//DONT USE NOW`)

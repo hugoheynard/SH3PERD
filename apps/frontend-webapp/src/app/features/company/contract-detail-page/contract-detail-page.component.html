@@ -1,0 +1,244 @@
+<div class="page-back-bar">
+  <button class="btn-back" (click)="goBack()" type="button">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M19 12H5M12 5l-7 7 7 7"/>
+    </svg>
+    Contracts
+  </button>
+</div>
+
+@if (loading()) {
+  <div class="loading-state">Loading contract…</div>
+}
+@if (error() && !loading()) {
+  <div class="error-state">{{ error() }}</div>
+}
+
+@if (!loading() && detail(); as c) {
+  <div class="contract-page">
+
+    <!-- ── Header ─────────────────────────────────────────── -->
+    <header class="contract-header">
+      <div class="user-block">
+        <div class="user-avatar">{{ initials(c) }}</div>
+        <div class="user-info">
+          <span class="user-name">{{ fullName(c) }}</span>
+          @if (c.user_email) { <span class="user-email">{{ c.user_email }}</span> }
+        </div>
+      </div>
+      <div class="header-right">
+        <span class="status-badge" [class]="'cstatus-' + c.status">{{ c.status }}</span>
+        @if (!editing()) {
+          <button class="btn-edit" (click)="startEdit()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Edit
+          </button>
+        }
+      </div>
+    </header>
+
+    <!-- ── View mode ──────────────────────────────────────── -->
+    @if (!editing()) {
+      <div class="contract-body">
+
+        <section class="info-section">
+          <h3 class="section-label">Position</h3>
+          <div class="info-grid">
+            <div class="info-row">
+              <span class="info-label">Contract type</span>
+              <span class="info-value">{{ c.contract_type ?? '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Job title</span>
+              <span class="info-value">{{ c.job_title ?? '—' }}</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="info-section">
+          <h3 class="section-label">Dates</h3>
+          <div class="info-grid">
+            <div class="info-row">
+              <span class="info-label">Start date</span>
+              <span class="info-value">{{ c.startDate | date:'mediumDate' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">End date</span>
+              <span class="info-value">{{ c.endDate ? (c.endDate | date:'mediumDate') : 'Open-ended' }}</span>
+            </div>
+            @if (c.trial_period_days) {
+              <div class="info-row">
+                <span class="info-label">Trial period</span>
+                <span class="info-value">{{ c.trial_period_days }} days</span>
+              </div>
+            }
+          </div>
+        </section>
+
+        <section class="info-section">
+          <h3 class="section-label">Terms</h3>
+          <div class="info-grid">
+            <div class="info-row">
+              <span class="info-label">Compensation</span>
+              <span class="info-value">{{ formatCompensation(c) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Work time</span>
+              <span class="info-value">{{ formatWorkTime(c) }}</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="info-section">
+          <h3 class="section-label">Signatures</h3>
+          <div class="signature-grid">
+            <div class="signature-card" [class.signed]="c.signatures?.user">
+              <span class="sig-role">Employee</span>
+              @if (c.signatures?.user) {
+                <span class="sig-date">{{ c.signatures!.user!.signed_at | date:'mediumDate' }}</span>
+                <span class="sig-badge signed">Signed</span>
+              } @else {
+                <span class="sig-badge pending">Pending</span>
+              }
+            </div>
+            <div class="signature-card" [class.signed]="c.signatures?.company">
+              <span class="sig-role">Company</span>
+              @if (c.signatures?.company) {
+                <span class="sig-date">{{ c.signatures!.company!.signed_at | date:'mediumDate' }}</span>
+                <span class="sig-badge signed">Signed</span>
+              } @else {
+                <span class="sig-badge pending">Pending</span>
+              }
+            </div>
+          </div>
+        </section>
+
+        <div class="contract-id">ID: {{ c.id }}</div>
+      </div>
+    }
+
+    <!-- ── Edit mode ──────────────────────────────────────── -->
+    @if (editing()) {
+      @let f = form();
+      <div class="edit-form">
+
+        <section class="form-section">
+          <h3 class="section-label">Status</h3>
+          <div class="pill-selector">
+            @for (s of STATUS_OPTIONS; track s) {
+              <button class="pill" [class.active]="f.status === s" [class]="'pill cstatus-pill-' + s"
+                (click)="patch('status', s)" type="button">{{ s }}</button>
+            }
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h3 class="section-label">Position</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="field-label">Contract type</label>
+              <div class="pill-selector wrap">
+                @for (t of CONTRACT_TYPES; track t) {
+                  @if (t !== '') {
+                    <button class="pill" [class.active]="f.contract_type === t"
+                      (click)="patch('contract_type', t)" type="button">{{ t }}</button>
+                  }
+                }
+                <button class="pill" [class.active]="f.contract_type === ''"
+                  (click)="patch('contract_type', '')" type="button">Not set</button>
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="field-label" for="jobTitle">Job title</label>
+              <input id="jobTitle" class="field-input" type="text" placeholder="e.g. Frontend Developer"
+                [value]="f.job_title" (input)="patch('job_title', $any($event.target).value)"/>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h3 class="section-label">Dates</h3>
+          <div class="form-grid cols-3">
+            <div class="form-field">
+              <label class="field-label" for="startDate">Start date</label>
+              <input id="startDate" class="field-input" type="date"
+                [value]="f.startDate" (input)="patch('startDate', $any($event.target).value)"/>
+            </div>
+            <div class="form-field">
+              <label class="field-label" for="endDate">End date <span class="optional">(optional)</span></label>
+              <input id="endDate" class="field-input" type="date"
+                [value]="f.endDate" (input)="patch('endDate', $any($event.target).value)"/>
+            </div>
+            <div class="form-field">
+              <label class="field-label" for="trialDays">Trial period (days)</label>
+              <input id="trialDays" class="field-input" type="number" min="1" placeholder="e.g. 90"
+                [value]="f.trial_period_days" (input)="patch('trial_period_days', $any($event.target).value)"/>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h3 class="section-label">Compensation</h3>
+          <div class="form-grid cols-3">
+            <div class="form-field">
+              <label class="field-label" for="compAmount">Amount</label>
+              <input id="compAmount" class="field-input" type="number" min="0" placeholder="e.g. 3500"
+                [value]="f.compensation_amount" (input)="patch('compensation_amount', $any($event.target).value)"/>
+            </div>
+            <div class="form-field">
+              <label class="field-label" for="compCurrency">Currency</label>
+              <select id="compCurrency" class="field-input field-select"
+                [value]="f.compensation_currency" (change)="patch('compensation_currency', $any($event.target).value)">
+                @for (cur of CURRENCIES; track cur) {
+                  <option [value]="cur" [selected]="f.compensation_currency === cur">{{ cur }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="field-label">Period</label>
+              <div class="pill-selector">
+                @for (p of PERIOD_OPTIONS; track p) {
+                  <button class="pill sm" [class.active]="f.compensation_period === p"
+                    (click)="patch('compensation_period', p)" type="button">{{ p }}</button>
+                }
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h3 class="section-label">Work time</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="field-label">Type</label>
+              <div class="pill-selector">
+                <button class="pill" [class.active]="f.work_time_type === 'full_time'"
+                  (click)="patch('work_time_type', 'full_time')" type="button">Full time</button>
+                <button class="pill" [class.active]="f.work_time_type === 'part_time'"
+                  (click)="patch('work_time_type', 'part_time')" type="button">Part time</button>
+              </div>
+            </div>
+            @if (f.work_time_type === 'part_time') {
+              <div class="form-field">
+                <label class="field-label" for="wtPct">Percentage (%)</label>
+                <input id="wtPct" class="field-input" type="number" min="1" max="99" placeholder="e.g. 80"
+                  [value]="f.work_time_percentage" (input)="patch('work_time_percentage', $any($event.target).value)"/>
+              </div>
+            }
+          </div>
+        </section>
+
+        <div class="form-actions">
+          <button class="btn-save" (click)="saveEdit()" [disabled]="saving()">
+            {{ saving() ? 'Saving…' : 'Save changes' }}
+          </button>
+          <button class="btn-cancel" (click)="cancelEdit()" [disabled]="saving()">Cancel</button>
+        </div>
+      </div>
+    }
+
+  </div>
+}

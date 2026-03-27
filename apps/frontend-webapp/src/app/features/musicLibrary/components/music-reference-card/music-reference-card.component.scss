@@ -65,7 +65,7 @@
   &[data-level='low']    { border-color: rgba(252, 129, 129, 0.3); background: rgba(252, 129, 129, 0.07); }
   &[data-level='medium'] { border-color: rgba(246, 173, 85, 0.3);  background: rgba(246, 173, 85, 0.07);  }
   &[data-level='high']   { border-color: rgba(104, 211, 145, 0.3); background: rgba(104, 211, 145, 0.07); }
-  &[data-level='max']    { border-color: rgba(99, 179, 237, 0.3);  background: rgba(99, 179, 237, 0.07);  }
+  &[data-level='max']    { border-color: var(--accent-color-border);  background: var(--accent-color-dim);  }
 }
 
 .avg-label {
@@ -84,7 +84,7 @@
   .avg-quality[data-level='low']    & { color: #fc8181; }
   .avg-quality[data-level='medium'] & { color: #f6ad55; }
   .avg-quality[data-level='high']   & { color: #68d391; }
-  .avg-quality[data-level='max']    & { color: #63b3ed; }
+  .avg-quality[data-level='max']    & { color: var(--accent-color-light); }
 }
 
 /* ── Versions ───────────────────────────────────── */
@@ -192,7 +192,7 @@
     &[data-level='low']    { background: #fc8181; }
     &[data-level='medium'] { background: #f6ad55; }
     &[data-level='high']   { background: #68d391; }
-    &[data-level='max']    { background: #63b3ed; }
+    &[data-level='max']    { background: var(--accent-color); }
   }
 }
 
@@ -211,48 +211,9 @@
 
 .analysing-indicator {
   font-size: 10px;
-  color: #63b3ed;
+  color: var(--accent-color-light);
   font-style: italic;
   white-space: nowrap;
-}
-
-/* Upload / Analyse action buttons */
-.btn-track-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid;
-  white-space: nowrap;
-  transition: background 0.12s, border-color 0.12s, color 0.12s;
-
-  /* ❌ No track — red/danger */
-  &--upload {
-    background: rgba(252, 129, 129, 0.1);
-    border-color: rgba(252, 129, 129, 0.35);
-    color: #fc8181;
-
-    &:hover {
-      background: rgba(252, 129, 129, 0.2);
-      border-color: rgba(252, 129, 129, 0.6);
-    }
-  }
-
-  /* 🔵 Track present, not analysed — accent blue */
-  &--analyse {
-    background: rgba(99, 179, 237, 0.1);
-    border-color: rgba(99, 179, 237, 0.35);
-    color: #63b3ed;
-
-    &:hover {
-      background: rgba(99, 179, 237, 0.2);
-      border-color: rgba(99, 179, 237, 0.6);
-    }
-  }
 }
 
 /* ── Add version button ──────────────────────────── */
@@ -274,12 +235,12 @@
   transition: background 0.12s, border-color 0.12s, color 0.12s;
 
   &:hover {
-    background: rgba(99, 179, 237, 0.06);
-    border-color: rgba(99, 179, 237, 0.25);
-    color: #63b3ed;
+    background: var(--accent-color-dim);
+    border-color: var(--accent-color-border);
+    color: var(--accent-color-light);
 
     .add-version-icon {
-      color: #63b3ed;
+      color: var(--accent-color-light);
     }
   }
 

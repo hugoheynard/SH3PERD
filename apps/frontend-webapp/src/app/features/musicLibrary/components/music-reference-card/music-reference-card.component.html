@@ -48,17 +48,12 @@
         <!-- Quality cell: upload / analyse / score -->
         <div class="version-quality">
           @if (!version.trackUploaded) {
-            <button
-              class="btn-track-action btn-track-action--upload"
-              type="button"
-              title="No audio track attached"
-              (click)="trackUploadRequested.emit(version.id)"
-            >↑ Upload track</button>
+            <sh3-button variant="critical" size="sm" (clicked)="trackUploadRequested.emit(version.id)">↑ Upload track</sh3-button>
           } @else if (!version.analysisResult) {
             @if (analysingIds().has(version.id)) {
               <span class="analysing-indicator">Analysing…</span>
             } @else {
-              <button class="btn-track-action btn-track-action--analyse" type="button" title="Run audio analysis" (click)="analyzeRequested.emit(version.id)">⚡ Analyse</button>
+              <sh3-button variant="primary" size="sm" (clicked)="analyzeRequested.emit(version.id)">⚡ Analyse</sh3-button>
             }
           } @else {
             <div class="rating-group">

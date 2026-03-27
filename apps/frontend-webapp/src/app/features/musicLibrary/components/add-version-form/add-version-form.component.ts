@@ -1,5 +1,7 @@
 import { Component, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ButtonComponent } from '../../../../shared/buttons/button/button.component';
+import { InputComponent } from '../../../../shared/forms/input/input.component';
 import { MUSIC_GENRES } from '../../music-library-types';
 import type { AddVersionPayload } from '../../services/mutations-layer/music-version-mutation.service';
 import type { MusicGenre, Rating } from '../../music-library-types';
@@ -7,7 +9,7 @@ import type { MusicGenre, Rating } from '../../music-library-types';
 @Component({
   selector: 'app-add-version-form',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ButtonComponent, InputComponent],
   templateUrl: './add-version-form.component.html',
   styleUrl: './add-version-form.component.scss',
 })

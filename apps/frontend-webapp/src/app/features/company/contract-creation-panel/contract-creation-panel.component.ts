@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, output, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { CompanyStore } from '../company.store';
 import { CompanyService } from '../company.service';
-import type { TContractStatusEnum, TUserSearchResult } from '@sh3pherd/shared-types';
+import type { TContractStatus, TUserSearchResult } from '@sh3pherd/shared-types';
 
 type PanelStep = 'search' | 'new-user' | 'contract';
 
@@ -36,7 +36,7 @@ export class ContractCreationPanelComponent {
   readonly inviting = signal(false);
 
   // ── Step 3: contract ───────────────────────────────────────
-  readonly contractStatus = signal<TContractStatusEnum>('draft');
+  readonly contractStatus = signal<TContractStatus>('draft');
   readonly contractStartDate = signal('');
   readonly contractEndDate = signal('');
   readonly submitting = signal(false);
@@ -94,7 +94,7 @@ export class ContractCreationPanelComponent {
 
   onStartDateInput(e: Event): void { this.contractStartDate.set((e.target as HTMLInputElement).value); }
   onEndDateInput(e: Event): void   { this.contractEndDate.set((e.target as HTMLInputElement).value); }
-  setStatus(s: TContractStatusEnum): void { this.contractStatus.set(s); }
+  setStatus(s: TContractStatus): void { this.contractStatus.set(s); }
 
   submitContract(): void {
     const company = this.store.company();

@@ -34,7 +34,8 @@ export class GetServiceDetailUseCase {
     return {
       service_id: serviceId,
       name: service?.name ?? '',
-      ...(service?.color ? { color: service.color } : {}),
+      ...(service?.color         ? { color: service.color }                 : {}),
+      ...(service?.communication ? { communication: service.communication } : {}),
       teams: teams.map(team => ({
         id: team.id as TTeamId,
         name: team.name,

@@ -1,35 +1,40 @@
-<form #credentials="ngForm" (ngSubmit)="onSubmit(credentials)">
-  <h2>Login</h2>
+<form #credentials="ngForm" (ngSubmit)="onSubmit(credentials)" novalidate>
 
-  <div class="login-form">
-    <div class="form-group">
+  <div class="fields">
+
+    <div class="field-group">
       <sh3-input
         id="email"
-        label="email"
+        label="Email"
         type="email"
         name="email"
         size="large"
-        placeholder="Enter your email"
+        placeholder="you@company.com"
         ngModel
         required />
     </div>
 
-    <div class="form-group">
+    <div class="field-group">
       <sh3-input
         id="password"
         label="Password"
         type="password"
         name="password"
-        placeholder="Enter your password"
+        size="large"
+        placeholder="••••••••••••"
         ngModel
         required />
+      <div class="field-hint">
+        <a href="#" class="forgot-link" tabindex="-1">Forgot password?</a>
+      </div>
     </div>
-  </div>
 
+  </div>
 
   <sh3-button-primary
     [buttonLabel]="'Sign in'"
     [disabled]="!credentials.valid"
     type="submit">
   </sh3-button-primary>
+
 </form>

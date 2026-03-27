@@ -37,19 +37,27 @@
      ACCENT
   ═══════════════════════════════════════════════════ */
 
-  --accent-color:      #06a4a4;
-  --accent-color-dim:  rgba(6, 164, 164, 0.14);
+  --accent-color:        #06a4a4;
+  --accent-color-light:  #2dd4d4;
+  --accent-color-dim:    rgba(6, 164, 164, 0.14);
+  --accent-color-border: rgba(6, 164, 164, 0.35);
 
 
   /* ═══════════════════════════════════════════════════
      SEMANTIC COLORS
   ═══════════════════════════════════════════════════ */
 
-  --color-warning:     #c59926;
-  --color-warning-dim: rgba(197, 153, 38, 0.14);
-  --color-alert:       #b43030;
-  --color-alert-dim:   rgba(182, 49, 49, 0.12);
-  --color-success:     #1a9e6a;
+  --color-warning:       #c59926;
+  --color-warning-light: #f6ad55;
+  --color-warning-dim:   rgba(197, 153, 38, 0.14);
+  --color-warning-border:rgba(246, 173, 85, 0.30);
+
+  --color-alert:         #b43030;
+  --color-alert-light:   #fc8181;
+  --color-alert-dim:     rgba(182, 49, 49, 0.12);
+  --color-alert-border:  rgba(252, 129, 129, 0.35);
+
+  --color-success:       #1a9e6a;
 
 
   /* ═══════════════════════════════════════════════════

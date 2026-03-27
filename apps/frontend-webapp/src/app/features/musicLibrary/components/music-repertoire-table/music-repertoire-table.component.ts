@@ -1,5 +1,7 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ButtonComponent } from '../../../../shared/buttons/button/button.component';
+import { InputComponent } from '../../../../shared/forms/input/input.component';
 import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
 import { AddVersionFormComponent } from '../add-version-form/add-version-form.component';
 import { MUSIC_GENRES } from '../../music-library-types';
@@ -20,7 +22,7 @@ export type VersionEditPayload = {
 @Component({
   selector: 'app-music-repertoire-table',
   standalone: true,
-  imports: [AddVersionFormComponent, FormsModule],
+  imports: [AddVersionFormComponent, FormsModule, ButtonComponent, InputComponent],
   templateUrl: './music-repertoire-table.component.html',
   styleUrl: './music-repertoire-table.component.scss',
 })

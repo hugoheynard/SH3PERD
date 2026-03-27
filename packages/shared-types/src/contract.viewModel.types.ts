@@ -1,45 +1,72 @@
 import {
   SContractId,
-  SContractStatusEnum,
+  SContractStatus,
   type TContractId,
-  type TContractStatusEnum,
+  type TContractStatus,
+  type TContractSignature,
+  type TContractType,
+  type TContractCompensation,
+  type TContractWorkTime,
 } from './contracts.domain.types.js';
-import { z } from 'zod';
+import { z }                from 'zod';
 import { SCompanyId, type TCompanyId } from './company.domain.js';
-import { SUserId, type TUserId } from './user/user.domain.js';
+import { SUserId,    type TUserId }    from './user/user.domain.js';
 
-
+/** Contract as seen from the user side — includes company name */
 export type TContractListItemViewModel = {
-  id: TContractId;
-  user_id: TUserId;
-  company_id: TCompanyId,
+  id:           TContractId;
+  user_id:      TUserId;
+  company_id:   TCompanyId;
   company_name: string;
-  startDate: Date;
-  endDate?: Date;
-  status: TContractStatusEnum;
-}
+  contract_type?: TContractType;
+  job_title?:   string;
+  startDate:    Date;
+  endDate?:     Date;
+  status:       TContractStatus;
+};
 
-/**
- * Contract as seen from the company side — includes user identity instead of company name.
- */
+/** Contract as seen from the company side — includes user identity */
 export type TCompanyContractViewModel = {
-  id:              TContractId;
-  user_id:         TUserId;
+  id:               TContractId;
+  user_id:          TUserId;
   user_first_name?: string;
   user_last_name?:  string;
   user_email?:      string;
-  status:          TContractStatusEnum;
-  startDate:       Date;
-  endDate?:        Date;
+  contract_type?:   TContractType;
+  job_title?:       string;
+  status:           TContractStatus;
+  startDate:        Date;
+  endDate?:         Date;
+};
+
+/** Full contract detail used by the contract detail page */
+export type TContractDetailViewModel = {
+  id:               TContractId;
+  user_id:          TUserId;
+  user_first_name?: string;
+  user_last_name?:  string;
+  user_email?:      string;
+  company_id:       TCompanyId;
+  status:           TContractStatus;
+  contract_type?:   TContractType;
+  job_title?:       string;
+  startDate:        Date;
+  endDate?:         Date;
+  trial_period_days?: number;
+  compensation?:    TContractCompensation;
+  work_time?:       TContractWorkTime;
+  signatures?: {
+    user?:    TContractSignature;
+    company?: TContractSignature;
+  };
 };
 
 export const SContractListItemViewModel = z.object({
-  id: SContractId,
-  company_id: SCompanyId,
-  user_id: SUserId,
+  id:           SContractId,
+  company_id:   SCompanyId,
+  user_id:      SUserId,
   company_name: z.string(),
-  status: SContractStatusEnum,
-  startDate: z.date(),
-  endDate: z.date().optional(),
-
+  status:       SContractStatus,
+  startDate:    z.date(),
+  endDate:      z.date().optional(),
 });

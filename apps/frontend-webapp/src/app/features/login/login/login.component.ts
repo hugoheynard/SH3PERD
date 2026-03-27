@@ -1,7 +1,5 @@
 import {Component, inject} from '@angular/core';
 import {LoginFormComponent} from '../login-form/login-form.component';
-import {NgOptimizedImage} from '@angular/common';
-//import {NavigationService} from '../../../services/navigation.service';
 import {SnackbarService} from '../../../core/services/snackbar.service';
 import {AuthService} from '../../../core/services/auth.service';
 import {firstValueFrom} from 'rxjs';
@@ -10,7 +8,7 @@ import type { TLoginRequestDTO } from '@sh3pherd/shared-types';
 
 @Component({
   selector: 'login',
-  imports: [LoginFormComponent, NgOptimizedImage],
+  imports: [LoginFormComponent],
   templateUrl: './login.component.html',
   standalone: true,
   styleUrl: './login.component.scss'

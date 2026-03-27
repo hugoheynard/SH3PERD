@@ -70,3 +70,171 @@
 .member-count { font-size:11px; color:var(--text-muted,#718096); }
 .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 0; color:var(--text-muted,#718096); font-size:13px; }
 @media (max-width:768px) { .company-body { flex-direction:column; } .side-panel { width:100%; min-width:0; border-right:none; border-bottom:1px solid rgba(255,255,255,.06); padding:12px; } .header-stats { display:none; } }
+.contract-row { cursor:pointer; &:hover { background:var(--bg-hover,#f7fafc); } }
+
+// ── Orgchart ──────────────────────────────────────────────
+.orgchart-tab { overflow-x:auto; }
+.orgchart-loading, .orgchart-error {
+  display:flex; align-items:center; justify-content:center;
+  padding:48px; font-size:13px; color:var(--text-muted,#718096);
+}
+.orgchart-error { color:#fc8181; }
+.orgchart-empty {
+  display:flex; align-items:center; justify-content:center;
+  margin-top:32px; font-size:12px; color:var(--text-muted,#718096); font-style:italic;
+}
+
+.orgchart-tree {
+  display:flex; flex-direction:column; align-items:center;
+  min-width:max-content; padding:32px 40px 48px;
+}
+
+// Root company node
+.oc-root-wrap { display:flex; justify-content:center; }
+.oc-root-card {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:11px 24px; border-radius:12px;
+  background:var(--card-color,#2c323d);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 4px 16px rgba(0,0,0,.22);
+}
+.oc-root-icon { color:var(--text-secondary,#a0aec0); flex-shrink:0; }
+.oc-root-name { font-size:14px; font-weight:700; color:var(--text-primary,#e2e8f0); letter-spacing:-.02em; }
+.oc-root-badge {
+  min-width:20px; height:20px; border-radius:10px; padding:0 7px;
+  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+  color:var(--text-secondary,#a0aec0); font-size:10px; font-weight:600;
+  display:flex; align-items:center; justify-content:center;
+}
+
+// Trunk connector
+.oc-trunk { width:2px; height:28px; background:linear-gradient(to bottom, rgba(255,255,255,.18), rgba(255,255,255,.06)); }
+.oc-teams-trunk { width:1px; height:20px; background:rgba(255,255,255,.1); }
+
+// Services row — horizontal branch line spans from 1st-col-center to last-col-center
+.oc-services-row {
+  position:relative; display:flex; align-items:flex-start; gap:0;
+  &::before {
+    content:''; position:absolute; top:0;
+    left:calc(50% / var(--count,1));
+    right:calc(50% / var(--count,1));
+    height:1px; background:rgba(255,255,255,.14);
+  }
+}
+// Each service column sizes to its widest child (teams row or service card).
+// No flex:1 / max-width constraint so expanded teams never bleed into neighbours.
+.oc-service-col {
+  display:flex; flex-direction:column; align-items:center;
+  padding:0 10px;
+}
+
+// Teams row
+.oc-teams-row {
+  position:relative; display:flex; align-items:flex-start; gap:0;
+  &::before {
+    content:''; position:absolute; top:0;
+    left:calc(50% / var(--count,1));
+    right:calc(50% / var(--count,1));
+    height:1px; background:rgba(255,255,255,.08);
+  }
+}
+.oc-team-col {
+  display:flex; flex-direction:column; align-items:center;
+  padding:0 5px;
+}
+
+// Drop lines — align-self:center keeps them centred inside any col width
+.oc-drop    { align-self:center; width:1px; height:28px; background:rgba(255,255,255,.1); }
+.oc-drop-sm { align-self:center; width:1px; height:20px; background:rgba(255,255,255,.08); }
+
+// Service card — constrained width so it doesn't stretch with the col
+.oc-service-card {
+  --svc: var(--accent-color,#63b3ed);
+  min-width:150px; max-width:220px; width:max-content;
+  border-radius:9px; cursor:pointer; overflow:hidden;
+  background:var(--card-color,#2c323d);
+  border:1px solid rgba(255,255,255,.07);
+  border-left:2px solid color-mix(in srgb, var(--svc) 70%, transparent);
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+  transition:background .15s, border-color .15s;
+  &:hover { background:rgba(255,255,255,.03); }
+  &.is-expanded {
+    background:color-mix(in srgb, var(--svc) 7%, var(--card-color,#2c323d));
+    border-left-color:var(--svc);
+    border-color:rgba(255,255,255,.1);
+  }
+  &--unassigned {
+    --svc: #718096;
+    border-left-color:rgba(255,255,255,.15);
+  }
+}
+.oc-service-card-inner { display:flex; align-items:center; gap:7px; padding:9px 12px; }
+.oc-service-dot {
+  width:6px; height:6px; border-radius:50%; flex-shrink:0;
+  background:var(--svc);
+}
+.oc-service-name {
+  flex:1; font-size:12px; font-weight:600; color:var(--text-primary,#e2e8f0);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.oc-service-count {
+  min-width:18px; height:18px; border-radius:9px; padding:0 5px;
+  background:color-mix(in srgb, var(--svc) 18%, transparent);
+  color:var(--svc); font-size:9px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.oc-chevron {
+  color:var(--text-muted,#718096); flex-shrink:0; transition:transform .2s;
+  &--open { transform:rotate(180deg); }
+}
+
+// Team card — fixed width so all team cards are uniform
+.oc-team-card {
+  --svc: var(--accent-color,#63b3ed);
+  width:140px; border-radius:7px; cursor:pointer;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  border-top:1px solid color-mix(in srgb, var(--svc) 45%, rgba(255,255,255,.08));
+  padding:7px 9px;
+  transition:background .15s, border-top-color .15s;
+  &:hover { background:rgba(255,255,255,.05); }
+  &.is-expanded { border-top-color:color-mix(in srgb, var(--svc) 70%, transparent); }
+  &.is-archived { opacity:.35; }
+}
+.oc-team-header { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+.oc-team-name { flex:1; font-size:11px; font-weight:600; color:var(--text-primary,#e2e8f0); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.oc-team-count {
+  min-width:16px; height:16px; border-radius:8px; padding:0 4px;
+  background:rgba(255,255,255,.08); color:var(--text-muted,#718096);
+  font-size:9px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+
+// Stacked avatars inside team card
+.oc-avatars { display:flex; align-items:center; }
+.oc-avatar {
+  width:20px; height:20px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:7px; font-weight:700; color:#1a202c;
+  border:1.5px solid var(--card-color,#2c323d);
+  margin-left:-5px; flex-shrink:0;
+  &:first-child { margin-left:0; }
+  &--more { background:rgba(255,255,255,.1); color:var(--text-muted,#718096); font-size:7px; }
+}
+
+// Member list below team — same width as team card
+.oc-members-stack { display:flex; flex-direction:column; gap:3px; width:140px; margin-top:4px; }
+.oc-member-card {
+  display:flex; align-items:center; gap:7px; padding:6px 8px; border-radius:7px;
+  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.05);
+  transition:background .12s;
+  &:hover { background:rgba(255,255,255,.06); }
+}
+.oc-member-avatar {
+  width:24px; height:24px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:8px; font-weight:700; color:#1a202c; flex-shrink:0;
+}
+.oc-member-info { display:flex; flex-direction:column; min-width:0; }
+.oc-member-name { font-size:10px; font-weight:600; color:var(--text-primary,#e2e8f0); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.oc-member-since { font-size:9px; color:var(--text-muted,#718096); }

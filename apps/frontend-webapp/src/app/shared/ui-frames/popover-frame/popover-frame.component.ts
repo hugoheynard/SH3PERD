@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { LayoutService } from '../../../../core/services/layout.service';
+import { LayoutService } from '../../../core/services/layout.service';
 
 /**
  * Generic popover container used to display floating UI panels such as

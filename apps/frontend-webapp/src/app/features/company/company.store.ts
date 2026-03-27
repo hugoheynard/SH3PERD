@@ -8,7 +8,7 @@ import type {
   TTeamRecord,
   TCompanyId,
   TCompanyAdminRole,
-  TContractStatusEnum,
+  TContractStatus,
   TServiceId,
   TUserId,
 } from '@sh3pherd/shared-types';
@@ -153,7 +153,7 @@ export class CompanyStore {
   createContractForUser(
     companyId: TCompanyId,
     userId: TUserId,
-    dto: { status: TContractStatusEnum; startDate: string; endDate?: string },
+    dto: { status: TContractStatus; startDate: string; endDate?: string },
     onSuccess?: () => void,
   ): void {
     this.companyService.createContractForUser({ company_id: companyId, user_id: userId, ...dto }).subscribe({

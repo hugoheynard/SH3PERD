@@ -17,4 +17,5 @@ export const COMPANY_CODES_SUCCESS = {
   REMOVE_ADMIN:        { code: 'ADMIN_REMOVED',           message: 'Admin removed successfully.' },
   GET_SERVICE_DETAIL:  { code: 'SERVICE_DETAIL_FOUND',    message: 'Service detail retrieved successfully.' },
   UPDATE_SERVICE:      { code: 'SERVICE_UPDATED',         message: 'Service updated successfully.' },
+  GET_COMPANY_ORGCHART: { code: 'ORGCHART_FOUND',         message: 'Company org chart retrieved.' },
 } as const satisfies Record<string, TApiMessage>;

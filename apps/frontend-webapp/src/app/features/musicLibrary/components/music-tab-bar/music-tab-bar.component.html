@@ -75,16 +75,17 @@
     <!-- Inline save form -->
     @if (showSaveForm()) {
       <div class="tab-config-panel tab-config-panel--save">
-        <input
+        <sh3-input
           class="config-name-input"
+          size="sm"
           [ngModel]="saveFormName()"
           (ngModelChange)="saveFormName.set($event)"
           placeholder="Config name…"
           (keydown.enter)="submitSaveForm()"
           (keydown.escape)="toggleSaveForm()"
-          autofocus
+          [autofocus]="true"
         />
-        <button class="config-save-btn" type="button" (click)="submitSaveForm()">Save</button>
+        <sh3-button variant="primary" size="sm" (clicked)="submitSaveForm()">Save</sh3-button>
       </div>
     }
 

@@ -113,20 +113,9 @@
 
         <!-- Tab bar -->
         <div class="tab-bar">
-          <button
-            class="tab-btn"
-            [class.active]="activeTab() === 'teams'"
-            (click)="setTab('teams')"
-          >
-            Teams
-          </button>
-          <button
-            class="tab-btn"
-            [class.active]="activeTab() === 'contracts'"
-            (click)="setTab('contracts')"
-          >
-            Contracts
-          </button>
+          <button class="tab-btn" [class.active]="activeTab() === 'teams'" (click)="setTab('teams')">Teams</button>
+          <button class="tab-btn" [class.active]="activeTab() === 'contracts'" (click)="setTab('contracts')">Contracts</button>
+          <button class="tab-btn" [class.active]="activeTab() === 'orgchart'" (click)="setTab('orgchart')">Organigramme</button>
         </div>
 
         <!-- Tab: Teams -->
@@ -217,7 +206,7 @@
 
             <div class="contracts-list">
               @for (contract of store.contracts(); track contract.id) {
-                <div class="contract-row">
+                <div class="contract-row" (click)="goToContract(contract.id)" role="button" tabindex="0" (keydown.enter)="goToContract(contract.id)">
                   <div class="contract-user">
                     <div class="contract-avatar">
                       {{ (contract.user_first_name?.[0] ?? '?').toUpperCase() }}
@@ -247,6 +236,164 @@
                 </div>
               }
             </div>
+          </div>
+        }
+
+        <!-- Tab: Organigramme -->
+        @if (activeTab() === 'orgchart') {
+          <div class="tab-content orgchart-tab">
+
+            @if (orgChartLoading()) {
+              <div class="orgchart-loading">Chargement de l'organigramme…</div>
+            }
+            @if (orgChartError()) {
+              <div class="orgchart-error">{{ orgChartError() }}</div>
+            }
+
+            @if (orgChart(); as chart) {
+              <div class="orgchart-tree">
+
+                <!-- Root: Company -->
+                <div class="oc-root-wrap">
+                  <div class="oc-root-card">
+                    <svg class="oc-root-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M3 10l9-7 9 7M5 21V10m14 11V10"/><rect x="9" y="14" width="6" height="7"/></svg>
+                    <span class="oc-root-name">{{ chart.company_name }}</span>
+                    @if (chart.services.length > 0) {
+                      <span class="oc-root-badge">{{ chart.services.length }} service{{ chart.services.length !== 1 ? 's' : '' }}</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Services level -->
+                @if (chart.services.length > 0 || chart.unassignedTeams.length > 0) {
+                  <div class="oc-trunk"></div>
+                  @let totalCols = chart.services.length + (chart.unassignedTeams.length > 0 ? 1 : 0);
+                  <div class="oc-services-row" [style.--count]="totalCols">
+
+                    @for (service of chart.services; track service.service_id) {
+                      <div class="oc-service-col">
+                        <div class="oc-drop"></div>
+
+                        <!-- Service card -->
+                        <div class="oc-service-card"
+                          [style.--svc]="service.color ?? 'var(--accent-color,#63b3ed)'"
+                          [class.is-expanded]="isServiceExpanded(service.service_id)"
+                          (click)="toggleService(service.service_id)"
+                          role="button"
+                          [attr.aria-expanded]="isServiceExpanded(service.service_id)">
+                          <div class="oc-service-card-inner">
+                            <span class="oc-service-dot"></span>
+                            <span class="oc-service-name">{{ service.name }}</span>
+                            <span class="oc-service-count">{{ service.teams.length }}</span>
+                            <svg class="oc-chevron" [class.oc-chevron--open]="isServiceExpanded(service.service_id)" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                          </div>
+                        </div>
+
+                        <!-- Teams level -->
+                        @if (isServiceExpanded(service.service_id) && service.teams.length > 0) {
+                          <div class="oc-teams-trunk"></div>
+                          <div class="oc-teams-row" [style.--count]="service.teams.length">
+                            @for (team of service.teams; track team.id) {
+                              <div class="oc-team-col">
+                                <div class="oc-drop-sm"></div>
+
+                                <!-- Team card -->
+                                <div class="oc-team-card"
+                                  [style.--svc]="service.color ?? 'var(--accent-color,#63b3ed)'"
+                                  [class.is-expanded]="isTeamExpanded(team.id)"
+                                  [class.is-archived]="team.status === 'archived'"
+                                  (click)="toggleTeam(team.id)"
+                                  role="button"
+                                  [attr.aria-expanded]="isTeamExpanded(team.id)">
+                                  <div class="oc-team-header">
+                                    <span class="oc-team-name">{{ team.name }}</span>
+                                    <span class="oc-team-count">{{ orgTeamMemberCount(team) }}</span>
+                                    @if (team.members.length > 0) {
+                                      <svg class="oc-chevron" [class.oc-chevron--open]="isTeamExpanded(team.id)" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                                    }
+                                  </div>
+                                  @if (team.members.length > 0) {
+                                    <div class="oc-avatars">
+                                      @for (m of team.members.slice(0, 4); track m.user_id) {
+                                        <div class="oc-avatar" [style.background]="getMemberColor(m.user_id)" [title]="(m.first_name ?? '') + ' ' + (m.last_name ?? '')">
+                                          {{ (m.first_name?.[0] ?? '?').toUpperCase() }}
+                                        </div>
+                                      }
+                                      @if (team.members.length > 4) {
+                                        <div class="oc-avatar oc-avatar--more">+{{ team.members.length - 4 }}</div>
+                                      }
+                                    </div>
+                                  }
+                                </div>
+
+                                <!-- Members level -->
+                                @if (isTeamExpanded(team.id) && team.members.length > 0) {
+                                  <div class="oc-members-stack">
+                                    @for (member of team.members; track member.user_id) {
+                                      <div class="oc-member-card">
+                                        <div class="oc-member-avatar" [style.background]="getMemberColor(member.user_id)">
+                                          {{ (member.first_name?.[0] ?? '?').toUpperCase() }}
+                                        </div>
+                                        <div class="oc-member-info">
+                                          <span class="oc-member-name">{{ member.first_name }} {{ member.last_name }}</span>
+                                          <span class="oc-member-since">depuis {{ member.joinedAt | date:'MMM yy' }}</span>
+                                        </div>
+                                      </div>
+                                    }
+                                  </div>
+                                }
+
+                              </div>
+                            }
+                          </div>
+                        }
+
+                      </div>
+                    }
+
+                    <!-- Unassigned teams bucket -->
+                    @if (chart.unassignedTeams.length > 0) {
+                      <div class="oc-service-col">
+                        <div class="oc-drop"></div>
+                        <div class="oc-service-card oc-service-card--unassigned"
+                          [class.is-expanded]="isServiceExpanded('__unassigned__')"
+                          (click)="toggleService('__unassigned__')"
+                          role="button">
+                          <div class="oc-service-card-inner">
+                            <span class="oc-service-dot"></span>
+                            <span class="oc-service-name">Non assignés</span>
+                            <span class="oc-service-count">{{ chart.unassignedTeams.length }}</span>
+                            <svg class="oc-chevron" [class.oc-chevron--open]="isServiceExpanded('__unassigned__')" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                          </div>
+                        </div>
+                        @if (isServiceExpanded('__unassigned__')) {
+                          <div class="oc-teams-trunk"></div>
+                          <div class="oc-teams-row" [style.--count]="chart.unassignedTeams.length">
+                            @for (team of chart.unassignedTeams; track team.id) {
+                              <div class="oc-team-col">
+                                <div class="oc-drop-sm"></div>
+                                <div class="oc-team-card" (click)="toggleTeam(team.id)" role="button">
+                                  <div class="oc-team-header">
+                                    <span class="oc-team-name">{{ team.name }}</span>
+                                    <span class="oc-team-count">{{ orgTeamMemberCount(team) }}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    }
+
+                  </div>
+                }
+
+                @if (chart.services.length === 0 && chart.unassignedTeams.length === 0) {
+                  <div class="orgchart-empty">Aucun service ni team pour le moment.</div>
+                }
+
+              </div>
+            }
           </div>
         }
 

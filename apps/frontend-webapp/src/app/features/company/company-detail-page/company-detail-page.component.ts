@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyStore } from '../company.store';
 import { ContractCreationPanelComponent } from '../contract-creation-panel/contract-creation-panel.component';
-import type { TTeamRecord, TCompanyId } from '@sh3pherd/shared-types';
+import { CompanyService } from '../company.service';
+import type { TTeamRecord, TCompanyId, TContractId, TCompanyOrgChartViewModel, TServiceTeamViewModel } from '@sh3pherd/shared-types';
 
-type CompanyTab = 'teams' | 'contracts';
+type CompanyTab = 'teams' | 'contracts' | 'orgchart';
 
 @Component({
   selector: 'app-company-detail-page',
@@ -19,11 +20,19 @@ export class CompanyDetailPageComponent implements OnInit {
   readonly store = inject(CompanyStore);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly companyService = inject(CompanyService);
 
   readonly activeTab = signal<CompanyTab>('teams');
   readonly newTeamName = signal('');
   readonly addingTeam = signal(false);
   readonly showContractPanel = signal(false);
+
+  // Orgchart state
+  readonly orgChart = signal<TCompanyOrgChartViewModel | null>(null);
+  readonly orgChartLoading = signal(false);
+  readonly orgChartError = signal<string | null>(null);
+  readonly expandedServices = signal<Set<string>>(new Set());
+  readonly expandedTeams = signal<Set<string>>(new Set());
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id') as TCompanyId;
@@ -60,6 +69,50 @@ export class CompanyDetailPageComponent implements OnInit {
     if (!company) return;
     if (tab === 'teams') this.store.loadTeams(company.id);
     if (tab === 'contracts') this.store.loadCompanyContracts(company.id);
+    if (tab === 'orgchart') this.loadOrgChart(company.id as TCompanyId);
+  }
+
+  loadOrgChart(companyId: TCompanyId): void {
+    if (this.orgChart()) return; // already loaded
+    this.orgChartLoading.set(true);
+    this.orgChartError.set(null);
+    this.companyService.getOrgChart(companyId).subscribe({
+      next: (res) => {
+        this.orgChart.set(res.data);
+        // expand all services by default
+        const allServiceIds = new Set(res.data.services.map(s => s.service_id));
+        this.expandedServices.set(allServiceIds);
+        this.orgChartLoading.set(false);
+      },
+      error: () => {
+        this.orgChartError.set('Failed to load org chart');
+        this.orgChartLoading.set(false);
+      },
+    });
+  }
+
+  toggleService(serviceId: string): void {
+    const s = new Set(this.expandedServices());
+    s.has(serviceId) ? s.delete(serviceId) : s.add(serviceId);
+    this.expandedServices.set(s);
+  }
+
+  toggleTeam(teamId: string): void {
+    const s = new Set(this.expandedTeams());
+    s.has(teamId) ? s.delete(teamId) : s.add(teamId);
+    this.expandedTeams.set(s);
+  }
+
+  isServiceExpanded(serviceId: string): boolean {
+    return this.expandedServices().has(serviceId);
+  }
+
+  isTeamExpanded(teamId: string): boolean {
+    return this.expandedTeams().has(teamId);
+  }
+
+  orgTeamMemberCount(team: TServiceTeamViewModel): number {
+    return team.members.length;
   }
 
   startAddTeam(): void {
@@ -109,5 +162,11 @@ export class CompanyDetailPageComponent implements OnInit {
   getServiceColor(serviceId: string | undefined): string {
     if (!serviceId) return 'transparent';
     return this.store.services().find(s => s.id === serviceId)?.color ?? 'var(--accent-color)';
+  }
+
+  goToContract(contractId: TContractId): void {
+    const company = this.store.company();
+    if (!company) return;
+    this.router.navigate(['/app/company', company.id, 'contracts', contractId]);
   }
 }

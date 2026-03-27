@@ -45,27 +45,6 @@
     display: flex;
     align-items: center;
     gap: 20px;
-
-    .profile-circle {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background-color: var(--accent-color);
-      color: var(--text-primary);
-      font-weight: bold;
-      font-size: 1rem;
-      text-transform: uppercase;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      cursor: pointer;
-      transition: transform 0.2s ease;
-
-      &:hover {
-        transform: scale(1.05);
-      }
-    }
   }
 
   .mobile-menu-btn {
@@ -89,7 +68,112 @@
   }
 }
 
-//---------Temp Header Design----------//
+/* ── Profile area (pastille + dropdown) ────────── */
+
+.profile-area {
+  position: relative;
+}
+
+.profile-circle {
+  all: unset;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* ── Dropdown menu ─────────────────────────────── */
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: var(--z-popover);
+  min-width: 200px;
+  background: var(--floating-panel-color);
+  border: 1px solid var(--floating-border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-popover);
+  padding: 6px;
+  animation: dropdown-in 0.12s ease;
+}
+
+.profile-dropdown__header {
+  padding: 10px 12px 8px;
+}
+
+.profile-dropdown__name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.profile-dropdown__divider {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--panel-border-color);
+}
+
+.profile-dropdown__item {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+  }
+
+  &--danger:hover {
+    background: var(--color-alert-dim);
+    color: var(--color-alert-light);
+  }
+}
+
+.profile-dropdown__icon {
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Theme switch ──────────────────────────────── */
+
 .theme-switch {
   cursor: pointer;
   .switch-track {

@@ -20,6 +20,7 @@ export const GET_COMPANY_TEAMS_USE_CASE     = Symbol('GET_COMPANY_TEAMS_USE_CASE
 export const GET_MY_COMPANIES_USE_CASE      = Symbol('GET_MY_COMPANIES_USE_CASE');
 export const GET_SERVICE_DETAIL_USE_CASE    = Symbol('GET_SERVICE_DETAIL_USE_CASE');
 export const UPDATE_SERVICE_USE_CASE        = Symbol('UPDATE_SERVICE_USE_CASE');
+export const GET_COMPANY_ORGCHART_USE_CASE  = Symbol('GET_COMPANY_ORGCHART_USE_CASE');
 
 // Repository tokens — sourced from nestTokens to match CoreRepositoriesModule registrations
 export { COMPANY_REPO, CAST_REPO, CAST_MEMBERSHIP_EVENT_REPO, USER_PROFILE_REPO } from '../appBootstrap/nestTokens.js';

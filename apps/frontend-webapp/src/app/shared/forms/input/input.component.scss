@@ -1,0 +1,87 @@
+// ═══════════════════════════════════════════════════════
+//  sh3-input component styles
+//  Uses host class bindings for size + align selection.
+// ═══════════════════════════════════════════════════════
+
+// ─── Base reset ──────────────────────────────────────
+:host {
+  display: inline-flex;
+  min-width: 0;
+}
+
+input {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--card-color);
+  border: 1px solid var(--panel-border-color);
+  transition:
+    border-color var(--t-fast),
+    box-shadow var(--t-fast);
+
+  &::placeholder {
+    color: var(--text-faded);
+  }
+
+  &:hover:not(:disabled):not(:read-only):not(:focus) {
+    border-color: var(--floating-border-color);
+  }
+
+  &:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px var(--accent-color-dim);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &:read-only {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  // Hide native number spinners
+  &[type='number'] {
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      opacity: 0.4;
+    }
+  }
+}
+
+
+// ─── Sizes ──────────────────────────────────────────
+
+:host(.sm) input {
+  height: 1.75rem;
+  font-size: var(--text-sm);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-xs);
+}
+
+:host(.md) input {
+  height: 2.25rem;
+  font-size: var(--text-md);
+  padding: 0.4rem 0.65rem;
+  border-radius: var(--radius-sm);
+}
+
+:host(.lg) input {
+  height: 2.75rem;
+  font-size: var(--text-lg);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+}
+
+
+// ─── Alignment ──────────────────────────────────────
+
+:host(.center) input {
+  text-align: center;
+}

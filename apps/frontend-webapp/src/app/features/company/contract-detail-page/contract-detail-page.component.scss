@@ -1,0 +1,158 @@
+.page-back-bar {
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: none;
+  color: var(--text-secondary, #718096); font-size: 0.85rem; cursor: pointer; padding: 4px 0;
+  &:hover { color: var(--text-primary, #2d3748); }
+}
+
+.loading-state, .error-state {
+  padding: 40px 24px; text-align: center; color: var(--text-secondary, #718096);
+}
+.error-state { color: #e53e3e; }
+
+.contract-page { padding: 24px; max-width: 740px; }
+
+// ── Header ──────────────────────────────────────────────────
+.contract-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 28px;
+}
+.user-block { display: flex; align-items: center; gap: 14px; }
+.user-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--accent-color, #63b3ed); color: #fff;
+  font-size: 1.1rem; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+.user-info { display: flex; flex-direction: column; gap: 2px; }
+.user-name  { font-size: 1.05rem; font-weight: 600; color: var(--text-primary, #2d3748); }
+.user-email { font-size: 0.8rem; color: var(--text-secondary, #718096); }
+
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+.status-badge {
+  padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 500;
+  &.cstatus-draft      { background: #edf2f7; color: #4a5568; }
+  &.cstatus-active     { background: #c6f6d5; color: #276749; }
+  &.cstatus-terminated { background: #fed7d7; color: #9b2c2c; }
+}
+
+.btn-edit {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 6px; background: none; font-size: 0.82rem;
+  color: var(--text-secondary, #718096); cursor: pointer;
+  &:hover { background: var(--bg-hover, #f7fafc); color: var(--text-primary, #2d3748); }
+}
+
+// ── View mode ────────────────────────────────────────────────
+.contract-body { display: flex; flex-direction: column; gap: 20px; }
+
+.info-section {}
+
+.section-label {
+  font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-secondary, #718096);
+  margin: 0 0 8px;
+}
+
+.info-grid {
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px; overflow: hidden;
+}
+.info-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  &:not(:last-child) { border-bottom: 1px solid var(--border-color, #e2e8f0); }
+}
+.info-label { font-size: 0.82rem; color: var(--text-secondary, #718096); }
+.info-value { font-size: 0.88rem; color: var(--text-primary, #2d3748); }
+
+.signature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.signature-card {
+  display: flex; flex-direction: column; gap: 5px;
+  padding: 12px 14px; border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  &.signed { border-color: #9ae6b4; background: #f0fff4; }
+}
+.sig-role  { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary, #718096); }
+.sig-date  { font-size: 0.8rem; color: var(--text-primary, #2d3748); }
+.sig-badge {
+  width: fit-content; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 500;
+  &.signed  { background: #c6f6d5; color: #276749; }
+  &.pending { background: #edf2f7; color: #718096; }
+}
+
+.contract-id {
+  font-size: 0.72rem; color: var(--text-secondary, #a0aec0);
+  font-family: monospace; margin-top: 4px;
+}
+
+// ── Edit form ────────────────────────────────────────────────
+.edit-form { display: flex; flex-direction: column; gap: 24px; }
+
+.form-section {}
+
+.form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  &.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+
+.field-label {
+  font-size: 0.8rem; font-weight: 500; color: var(--text-secondary, #718096);
+  .optional { font-weight: 400; font-style: italic; }
+}
+
+.field-input {
+  padding: 7px 10px; border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 6px; font-size: 0.87rem;
+  color: var(--text-primary, #2d3748); background: var(--bg-input, #fff);
+  &:focus { outline: 2px solid var(--accent-color, #63b3ed); border-color: transparent; }
+}
+.field-select { appearance: auto; }
+
+// pill selector
+.pill-selector {
+  display: flex; gap: 6px; flex-wrap: nowrap;
+  &.wrap { flex-wrap: wrap; }
+}
+.pill {
+  padding: 5px 12px; border-radius: 16px;
+  border: 1.5px solid var(--border-color, #e2e8f0);
+  background: none; font-size: 0.8rem; cursor: pointer;
+  color: var(--text-secondary, #718096); transition: all 0.12s;
+  &.sm { padding: 3px 10px; font-size: 0.78rem; }
+  &:hover:not(.active) { background: var(--bg-hover, #f7fafc); }
+
+  &.active { border-color: transparent; }
+  &.active.cstatus-pill-draft      { background: #edf2f7; color: #4a5568; border-color: #cbd5e0; }
+  &.active.cstatus-pill-active     { background: #c6f6d5; color: #276749; border-color: #9ae6b4; }
+  &.active.cstatus-pill-terminated { background: #fed7d7; color: #9b2c2c; border-color: #feb2b2; }
+  &.active:not([class*="cstatus-pill-"]) {
+    background: var(--accent-color, #63b3ed);
+    color: #fff; border-color: var(--accent-color, #63b3ed);
+  }
+}
+
+.form-actions { display: flex; gap: 10px; padding-top: 4px; }
+
+.btn-save {
+  padding: 8px 20px; background: var(--accent-color, #63b3ed);
+  color: #fff; border: none; border-radius: 6px; font-size: 0.85rem;
+  font-weight: 500; cursor: pointer;
+  &:hover:not(:disabled) { filter: brightness(1.08); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+.btn-cancel {
+  padding: 8px 14px; background: none;
+  border: 1px solid var(--border-color, #e2e8f0); border-radius: 6px;
+  font-size: 0.85rem; color: var(--text-secondary, #718096); cursor: pointer;
+  &:hover:not(:disabled) { background: var(--bg-hover, #f7fafc); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}

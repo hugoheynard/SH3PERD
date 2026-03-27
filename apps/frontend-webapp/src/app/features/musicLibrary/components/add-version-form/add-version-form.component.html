@@ -2,28 +2,33 @@
 
   <!-- Label + duration + bpm -->
   <div class="form-row form-row--main">
-    <input
-      class="form-input form-input--label"
+    <sh3-input
+      class="form-input--label"
+      size="sm"
       [ngModel]="label()"
       (ngModelChange)="label.set($event)"
       placeholder="Version name…"
-      autofocus
+      [autofocus]="true"
     />
-    <input
-      class="form-input form-input--dur"
+    <sh3-input
+      class="form-input--dur"
+      size="sm"
+      align="center"
+      type="number"
+      [min]="1"
       [ngModel]="duration()"
       (ngModelChange)="duration.set($event)"
       placeholder="min"
-      type="number"
-      min="1"
     />
-    <input
-      class="form-input form-input--bpm"
+    <sh3-input
+      class="form-input--bpm"
+      size="sm"
+      align="center"
+      type="number"
+      [min]="1"
       [ngModel]="bpm()"
       (ngModelChange)="bpm.set($event)"
       placeholder="BPM"
-      type="number"
-      min="1"
     />
   </div>
 
@@ -61,13 +66,8 @@
 
   <!-- Actions -->
   <div class="form-actions">
-    <button class="btn-cancel" type="button" (click)="cancel()">Cancel</button>
-    <button
-      class="btn-add"
-      type="button"
-      [disabled]="!canSubmit()"
-      (click)="submit()"
-    >Add version</button>
+    <sh3-button variant="ghost" size="sm" (clicked)="cancel()">Cancel</sh3-button>
+    <sh3-button variant="primary" size="sm" [disabled]="!canSubmit()" (clicked)="submit()">Add version</sh3-button>
   </div>
 
 </div>

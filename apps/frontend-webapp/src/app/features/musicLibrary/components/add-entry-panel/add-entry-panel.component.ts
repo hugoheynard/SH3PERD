@@ -1,5 +1,7 @@
 import { Component, computed, inject, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ButtonComponent } from '../../../../shared/buttons/button/button.component';
+import { InputComponent } from '../../../../shared/forms/input/input.component';
 import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
 
 export type AddEntryResult =
@@ -9,7 +11,7 @@ export type AddEntryResult =
 @Component({
   selector: 'app-add-entry-panel',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ButtonComponent, InputComponent],
   templateUrl: './add-entry-panel.component.html',
   styleUrl: './add-entry-panel.component.scss',
 })
