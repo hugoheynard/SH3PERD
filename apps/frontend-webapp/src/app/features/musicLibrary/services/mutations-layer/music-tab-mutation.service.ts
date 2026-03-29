@@ -1,163 +1,98 @@
-import { Injectable } from '@angular/core';
-import { BaseMusicItemCRUD } from './BaseMusicItemCRUD';
+import { inject, Injectable } from '@angular/core';
+import { MusicLibraryStateService } from '../music-library-state.service';
 import type { MusicSearchConfig, MusicTab, SavedTabConfig } from '../../music-library-types';
 
 @Injectable({ providedIn: 'root' })
-export class MusicTabMutationService extends BaseMusicItemCRUD<'tabs'> {
+export class MusicTabMutationService {
 
-  constructor() {
-    super('tabs');
-  }
+  private state = inject(MusicLibraryStateService);
 
-  protected createDefault(_input: unknown): MusicTab {
-    return {
-      id: crypto.randomUUID(),
-      title: 'New Tab',
-      autoTitle: true,
-      searchConfig: {
-        searchMode: 'repertoire',
-        target: { mode: 'me' },
-        dataFilterActive: false,
-      },
-    };
-  }
-
-  /**
-   * Sets the active tab by ID.
-   */
   setActiveTab(id: string): void {
-    this.state.updateState(state => ({
-      ...state,
-      activeTabId: id,
-    }));
+    this.state.updateState(s => ({ ...s, activeTabId: id }));
   }
 
-  /**
-   * Adds a new default tab and sets it as active.
-   */
   addDefaultTab(): void {
-    const newTab: MusicTab = {
+    const tab: MusicTab = {
       id: crypto.randomUUID(),
       title: 'New Tab',
       autoTitle: true,
-      searchConfig: {
-        searchMode: 'repertoire',
-        target: { mode: 'me' },
-        dataFilterActive: false,
-      },
+      searchQuery: '',
+      searchConfig: { searchMode: 'repertoire', target: { mode: 'me' }, dataFilterActive: false },
     };
+    this.state.updateState(s => ({ ...s, tabs: [...s.tabs, tab], activeTabId: tab.id }));
+  }
 
-    this.state.updateState(state => ({
-      ...state,
-      tabs: [...state.tabs, newTab],
-      activeTabId: newTab.id,
+  closeTab(id: string): void {
+    this.state.updateState(s => {
+      const tabs = s.tabs.filter(t => t.id !== id);
+      if (tabs.length === 0) return s;
+      let activeTabId = s.activeTabId;
+      if (activeTabId === id) {
+        const idx = Math.min(s.tabs.findIndex(t => t.id === id), tabs.length - 1);
+        activeTabId = tabs[idx].id;
+      }
+      return { ...s, tabs, activeTabId };
+    });
+  }
+
+  updateTabTitle(id: string, title: string): void {
+    this.patchTab(id, t => ({ ...t, title, autoTitle: false }));
+  }
+
+  updateTabSearchConfig(id: string, config: MusicSearchConfig): void {
+    this.patchTab(id, t => ({ ...t, searchConfig: config }));
+  }
+
+  toggleDataFilter(id: string): void {
+    this.patchTab(id, t => ({
+      ...t,
+      searchConfig: { ...t.searchConfig, dataFilterActive: !t.searchConfig.dataFilterActive },
     }));
   }
 
-  /**
-   * Updates the title of a tab and disables auto-titling.
-   */
-  updateTabTitle(id: string, title: string): void {
-    this.patch(id, item => ({
-      ...item,
-      title,
-      autoTitle: false,
-    } as MusicTab));
-  }
-
-  /**
-   * Updates the search configuration of a tab.
-   */
-  updateTabSearchConfig(id: string, config: MusicSearchConfig): void {
-    this.patch(id, item => ({
-      ...item,
-      searchConfig: config,
-    } as MusicTab));
-  }
-
-  /**
-   * Toggles dataFilterActive on the given tab.
-   */
-  toggleDataFilter(id: string): void {
-    this.patch(id, item => ({
-      ...item,
-      searchConfig: {
-        ...item.searchConfig,
-        dataFilterActive: !item.searchConfig.dataFilterActive,
-      },
-    } as MusicTab));
-  }
-
-  /**
-   * Updates the dataFilter on the given tab.
-   * Accepts a partial patch — only provided keys are updated.
-   */
   patchDataFilter(id: string, patch: Partial<NonNullable<MusicSearchConfig['dataFilter']>>): void {
-    this.patch(id, item => ({
-      ...item,
-      searchConfig: {
-        ...item.searchConfig,
-        dataFilter: {
-          ...item.searchConfig.dataFilter,
-          ...patch,
-        },
-      },
-    } as MusicTab));
+    this.patchTab(id, t => ({
+      ...t,
+      searchConfig: { ...t.searchConfig, dataFilter: { ...t.searchConfig.dataFilter, ...patch } },
+    }));
   }
 
-  setSearchQuery(query: string): void {
-    this.state.updateState(state => ({ ...state, searchQuery: query }));
+  setSearchQuery(tabId: string, query: string): void {
+    this.patchTab(tabId, t => ({ ...t, searchQuery: query }));
+  }
+
+  setTabColor(id: string, color: string): void {
+    this.patchTab(id, t => ({ ...t, color: color || undefined }));
+  }
+
+  reorderTab(tabId: string, newIndex: number): void {
+    this.state.updateState(s => {
+      const tabs = [...s.tabs];
+      const oldIdx = tabs.findIndex(t => t.id === tabId);
+      if (oldIdx === -1 || oldIdx === newIndex) return s;
+      const [tab] = tabs.splice(oldIdx, 1);
+      tabs.splice(newIndex, 0, tab);
+      return { ...s, tabs };
+    });
   }
 
   saveTabConfig(name: string, searchConfig: MusicSearchConfig): void {
-    const config: SavedTabConfig = {
-      id: crypto.randomUUID(),
-      name,
-      searchConfig,
-      createdAt: Date.now(),
-    };
-    this.state.updateState(state => ({
-      ...state,
-      savedTabConfigs: [...(state.savedTabConfigs ?? []), config],
-    }));
+    const config: SavedTabConfig = { id: crypto.randomUUID(), name, searchConfig, createdAt: Date.now() };
+    this.state.updateState(s => ({ ...s, savedTabConfigs: [...(s.savedTabConfigs ?? []), config] }));
   }
 
   deleteTabConfig(id: string): void {
-    this.state.updateState(state => ({
-      ...state,
-      savedTabConfigs: (state.savedTabConfigs ?? []).filter(c => c.id !== id),
-    }));
+    this.state.updateState(s => ({ ...s, savedTabConfigs: (s.savedTabConfigs ?? []).filter(c => c.id !== id) }));
   }
 
   applyTabConfig(tabId: string, searchConfig: MusicSearchConfig): void {
-    this.patch(tabId, item => ({
-      ...item,
-      searchConfig,
-      autoTitle: false,
-    } as MusicTab));
+    this.patchTab(tabId, t => ({ ...t, searchConfig, autoTitle: false }));
   }
 
-  /**
-   * Closes a tab. If it was active, activates the adjacent tab.
-   */
-  closeTab(id: string): void {
-    this.state.updateState(state => {
-      const tabs = state.tabs.filter(t => t.id !== id);
-
-      if (tabs.length === 0) {
-        // Keep at least one tab
-        return state;
-      }
-
-      let activeTabId = state.activeTabId;
-
-      if (activeTabId === id) {
-        const removedIndex = state.tabs.findIndex(t => t.id === id);
-        const newIndex = Math.min(removedIndex, tabs.length - 1);
-        activeTabId = tabs[newIndex].id;
-      }
-
-      return { ...state, tabs, activeTabId };
-    });
+  private patchTab(id: string, updater: (tab: MusicTab) => MusicTab): void {
+    this.state.updateState(s => ({
+      ...s,
+      tabs: s.tabs.map(t => t.id === id ? updater(t) : t),
+    }));
   }
 }

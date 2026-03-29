@@ -1,9 +1,11 @@
-/// Thin custom scrollbar — matches the dark UI.
+/// Thin custom scrollbar — accent-tinted by default.
+/// Uses CSS custom properties so it adapts to light/dark mode.
 /// @param {Length} $width [4px] — scrollbar width
-/// @param {Color} $thumb [rgba(255,255,255,0.15)] — thumb color
+/// @param {Color} $thumb [var(--accent-color-faded)] — thumb color
+/// @param {Color} $thumb-hover [var(--accent-color-border)] — thumb hover color
 /// @param {Color} $track [transparent] — track color
 /// @param {Length} $radius [2px] — thumb border-radius
-@mixin scrollbar($width: 4px, $thumb: rgba(255, 255, 255, 0.15), $track: transparent, $radius: 2px) {
+@mixin scrollbar($width: 4px, $thumb: var(--accent-color-faded), $thumb-hover: var(--accent-color-border), $track: transparent, $radius: 2px) {
   // Firefox
   scrollbar-width: thin;
   scrollbar-color: $thumb $track;
@@ -22,7 +24,7 @@
     border-radius: $radius;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.25);
+      background: $thumb-hover;
     }
   }
 }

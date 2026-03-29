@@ -2,32 +2,30 @@
 
   <div class="card-header">
     <div class="card-info">
-      <span class="card-title">{{ reference().title }}</span>
-      <span class="card-artist">{{ reference().originalArtist }}</span>
+      <span class="card-title">{{ entry().reference.title }}</span>
+      <span class="card-artist">{{ entry().reference.originalArtist }}</span>
     </div>
     <div class="card-header-actions">
-      @if (entryId()) {
-        @if (confirmingDeleteId() === 'entry') {
-          <button class="btn-confirm-delete" type="button" (click)="requestDeleteEntry()">Remove?</button>
-          <button class="btn-cancel-delete" type="button" (click)="cancelDelete()">×</button>
-        } @else {
-          <button class="btn-delete-entry" type="button" title="Remove from repertoire" (click)="requestDeleteEntry()">×</button>
-        }
+      @if (confirmingDeleteId() === 'entry') {
+        <button class="btn-confirm-delete" type="button" (click)="requestDeleteEntry()">Remove?</button>
+        <button class="btn-cancel-delete" type="button" aria-label="Cancel" (click)="cancelDelete()">×</button>
+      } @else {
+        <button class="btn-delete-entry" type="button" aria-label="Remove from repertoire" title="Remove from repertoire" (click)="requestDeleteEntry()">×</button>
       }
     </div>
   </div>
 
   <div class="card-versions">
-    @for (version of versions(); track version.id) {
-      <div class="version-block">
+    @for (version of entry().versions; track version.id) {
+      <div class="version-block" [class.expanded]="expandedVersionId() === version.id">
 
-        <!-- Line 1: data row — always stable layout -->
+        <!-- Line 1: data row -->
         <div class="version-data">
           <span class="version-label">{{ version.label }}</span>
-          @if (version.durationSeconds) {
-            <span class="version-dur">{{ formatDuration(version.durationSeconds) }}</span>
+          @if (favoriteDuration(version); as dur) {
+            <span class="version-dur">{{ formatDuration(dur) }}</span>
           }
-          <span class="version-genre">{{ version.genre }}</span>
+          <sh3-badge [content]="version.genre" radius="square" variant="info" />
           @if (version.bpm) {
             <span class="version-bpm">{{ version.bpm }} bpm</span>
           }
@@ -49,15 +47,14 @@
                 </div>
               </div>
             }
-            <!-- QLT dots (always present, no shift) -->
-            @if (version.analysisResult) {
+            @if (favoriteQuality(version); as q) {
               <div class="rating-group">
                 <span class="rating-label">QLT</span>
                 <div class="rating-dots">
                   @for (dot of ratingDots; track dot) {
                     <span class="dot"
-                      [class.filled]="dot <= version.analysisResult.quality"
-                      [attr.data-level]="ratingLevel(version.analysisResult.quality)"
+                      [class.filled]="dot <= q"
+                      [attr.data-level]="ratingLevel($any(q))"
                     ></span>
                   }
                 </div>
@@ -66,31 +63,67 @@
           </div>
         </div>
 
-        <!-- Line 2: actions row — upload/analyse + edit/delete -->
+        <!-- Line 2: actions row -->
         <div class="version-actions">
-          @if (!version.trackUploaded) {
-            <sh3-button variant="critical" size="sm" (clicked)="trackUploadRequested.emit(version.id)">↑ Upload track</sh3-button>
-          } @else if (!version.analysisResult) {
-            @if (analysingIds().has(version.id)) {
-              <span class="analysing-indicator">Analysing…</span>
-            } @else {
-              <sh3-button variant="primary" size="sm" (clicked)="analyzeRequested.emit(version.id)">⚡ Analyse</sh3-button>
-            }
+          @if (hasTrack(version)) {
+            <button class="btn-track-count" type="button" (click)="toggleExpanded(version.id)">
+              {{ version.tracks.length }} track{{ version.tracks.length > 1 ? 's' : '' }}
+              <span class="expand-chevron" [class.open]="expandedVersionId() === version.id">›</span>
+            </button>
+          }
+
+          @if (analysingIds().has(version.id)) {
+            <span class="analysing-indicator">Analysing…</span>
           }
 
           <div class="version-actions-right">
             @if (confirmingDeleteId() === version.id) {
-              <button class="btn-confirm-delete" type="button" (click)="requestDeleteVersion(version.id)">Confirm?</button>
-              <button class="btn-cancel-delete" type="button" (click)="cancelDelete()">×</button>
+              <button class="btn-confirm-delete" type="button" aria-label="Confirm delete" (click)="requestDeleteVersion(version.id)">Confirm?</button>
+              <button class="btn-cancel-delete" type="button" aria-label="Cancel" (click)="cancelDelete()">×</button>
             } @else {
-              <button class="btn-delete-version" type="button" title="Delete version" (click)="requestDeleteVersion(version.id)">🗑</button>
+              <sh3-button [variant]="hasTrack(version) ? 'ghost' : 'critical'" size="sm" (clicked)="trackUploadRequested.emit({ entryId: entry().id, versionId: version.id })">+ Track</sh3-button>
+              <button class="btn-edit-version" type="button" aria-label="Edit version" title="Edit version" (click)="editRequested.emit(version.id)">✎</button>
+              <button class="btn-delete-version" type="button" aria-label="Delete version" title="Delete version" (click)="requestDeleteVersion(version.id)">🗑</button>
             }
           </div>
         </div>
 
+        <!-- Track list (expanded) -->
+        @if (expandedVersionId() === version.id && version.tracks.length) {
+          <div class="track-list">
+            @for (track of version.tracks; track track.id) {
+              <div class="track-row" [class.is-favorite]="track.favorite">
+                <button
+                  class="btn-favorite"
+                  type="button"
+                  [attr.aria-label]="track.favorite ? 'Current favorite' : 'Set as favorite'"
+                  [attr.title]="track.favorite ? 'Current favorite' : 'Set as favorite'"
+                  [class.active]="track.favorite"
+                  (click)="favoriteChanged.emit({ entryId: entry().id, versionId: version.id, trackId: track.id })"
+                >★</button>
+                <span class="track-name" [title]="track.fileName">{{ track.fileName }}</span>
+                @if (track.durationSeconds) {
+                  <span class="track-dur">{{ formatDuration(track.durationSeconds) }}</span>
+                }
+                @if (track.analysisResult) {
+                  <span class="track-quality" [attr.data-level]="ratingLevel(track.analysisResult.quality)">
+                    Q{{ track.analysisResult.quality }}
+                  </span>
+                } @else if (analysingIds().has(version.id)) {
+                  <span class="analysing-indicator">…</span>
+                } @else {
+                  <span class="track-pending">pending</span>
+                }
+                <button class="btn-track-action" type="button" aria-label="Download track" title="Download"
+                  (click)="trackDownloadRequested.emit({ versionId: version.id, trackId: track.id })">↓</button>
+              </div>
+            }
+          </div>
+        }
+
       </div>
     } @empty {
-      @if (!showForm() && entryId()) {
+      @if (!showForm()) {
         <button class="add-version-btn add-version-btn--empty" type="button" (click)="showForm.set(true)">
           <span class="add-version-icon">+</span>
           Add a version
@@ -105,7 +138,7 @@
       (submitted)="onVersionSubmitted($event)"
       (cancelled)="showForm.set(false)"
     />
-  } @else if (versions().length && entryId()) {
+  } @else if (entry().versions.length) {
     <button class="add-version-btn" type="button" (click)="showForm.set(true)">
       <span class="add-version-icon">+</span>
       Add version

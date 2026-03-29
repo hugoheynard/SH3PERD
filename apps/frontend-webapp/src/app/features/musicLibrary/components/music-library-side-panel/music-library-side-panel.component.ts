@@ -1,6 +1,6 @@
 import { Component, inject, input } from '@angular/core';
 import { MusicTabMutationService } from '../../services/mutations-layer/music-tab-mutation.service';
-import { TabSelectorService } from '../../services/selector-layer/tab-selector.service';
+import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
 import { MUSIC_GENRES } from '../../music-library-types';
 import type { MusicDataFilter, MusicGenre, MusicTab, Rating } from '../../music-library-types';
 
@@ -40,7 +40,7 @@ import type { MusicDataFilter, MusicGenre, MusicTab, Rating } from '../../music-
       @if (activeTab()) {
         <section class="panel-section">
           <div class="filter-header">
-            <h2 class="section-title" style="margin:0">Filters</h2>
+            <h2 class="section-title section-title--no-margin">Filters</h2>
             <button
               class="filter-toggle"
               [class.active]="activeTab()!.searchConfig.dataFilterActive"
@@ -93,7 +93,7 @@ import type { MusicDataFilter, MusicGenre, MusicTab, Rating } from '../../music-
 export class MusicLibrarySidePanelComponent {
 
   private tabMutation = inject(MusicTabMutationService);
-  private tabSelector = inject(TabSelectorService);
+  private selector = inject(MusicLibrarySelectorService);
 
   readonly totalReferences = input<number>(0);
   readonly totalRepertoire = input<number>(0);
@@ -128,7 +128,7 @@ export class MusicLibrarySidePanelComponent {
   }
 
   toggleGenre(g: MusicGenre): void {
-    const id = this.tabSelector.activeTabId();
+    const id = this.selector.activeTabId();
     if (!id) return;
     const current = this.activeTab()?.searchConfig.dataFilter?.genres ?? [];
     const updated = current.includes(g)
@@ -143,12 +143,12 @@ export class MusicLibrarySidePanelComponent {
   }
 
   toggleFilter(): void {
-    const id = this.tabSelector.activeTabId();
+    const id = this.selector.activeTabId();
     if (id) this.tabMutation.toggleDataFilter(id);
   }
 
   toggleRating(key: Exclude<keyof MusicDataFilter, 'genres'>, r: Rating): void {
-    const id = this.tabSelector.activeTabId();
+    const id = this.selector.activeTabId();
     if (!id) return;
     const current = (this.activeTab()?.searchConfig.dataFilter?.[key] ?? []) as Rating[];
     const updated = current.includes(r)

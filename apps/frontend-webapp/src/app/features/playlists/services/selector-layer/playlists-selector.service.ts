@@ -43,7 +43,9 @@ export class PlaylistsSelectorService {
    */
   selectedPlaylistTracks = computed(() => {
     const id = this.selectedPlaylistId();
-    if (!id) return [];
+    if (!id) {
+      return [];
+    }
     return this.tracksByPlaylistId().get(id) ?? [];
   });
 
@@ -53,13 +55,17 @@ export class PlaylistsSelectorService {
    */
   resolvedSelectedTracks = computed((): PlaylistTrackView[] => {
     const tracks = this.selectedPlaylistTracks();
-    const lib = this.musicLibrary.library();
-    const refsById = new Map(lib.references.map(r => [r.id, r]));
-    const versionsById = new Map(lib.versions.map(v => [v.id, v]));
+    const entries = this.musicLibrary.library().entries;
+
+    // Build lookup maps from the entry-centric state
+    const refsById = new Map(entries.map(e => [e.reference.id, e.reference]));
+    const versionsById = new Map(
+      entries.flatMap(e => e.versions.map(v => [v.id, v] as const)),
+    );
 
     return tracks.map(t => {
-      const ref = refsById.get(t.referenceId);
-      const version = t.versionId ? versionsById.get(t.versionId) : undefined;
+      const ref = refsById.get(t.referenceId as any);
+      const version = t.versionId ? versionsById.get(t.versionId as any) : undefined;
       return {
         id: t.id,
         position: t.position,

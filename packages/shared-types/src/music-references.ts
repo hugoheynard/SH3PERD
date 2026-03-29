@@ -1,30 +1,41 @@
 import { z } from 'zod';
+import { SMusicReferenceId, SUserId, type TMusicReferenceId, type TUserId } from './ids.js';
 import type { TApiResponse } from './api.types.js';
-import { SRecordMetadata } from './metadata.types.js';
 
-/**
- * Domain types for music references.
- */
-export const SMusicReferenceId = z.string().regex(
-  /^musicReference_[a-zA-Z0-9_-]+$/,
-  { message: 'Invalid musicReferenceId format' },
-);
+// ─── Domain model ──────────────────────────────────────────
 
-export type TMusicReferenceId = z.infer<typeof SMusicReferenceId>;
+/** A canonical music reference (song) — shared across all users. */
+export interface TMusicReferenceDomainModel {
+  id:       TMusicReferenceId;
+  title:    string;
+  artist:   string;
+  owner_id: TUserId;
+}
+
+export const SMusicReferenceDomainModel = z.object({
+  id:       SMusicReferenceId,
+  title:    z.string().min(1),
+  artist:   z.string().min(1),
+  owner_id: SUserId,
+});
 
 
-export const SMusicReferenceDetails = z.object({
-  title: z.string(),
-  artist: z.string(),
-})
+// ─── DTOs ──────────────────────────────────────────────────
 
-export type TCreateMusicReferenceRequestDTO = z.infer<typeof SMusicReferenceDetails>;
-export type TMusicReferenceCreationResponseDTO = TApiResponse<TMusicReferenceDomainModel>
+export interface TCreateMusicReferenceRequestDTO {
+  title:  string;
+  artist: string;
+}
 
-export const SMusicReferenceDomainModel = SMusicReferenceDetails
-  .extend({
-    musicReference_id: SMusicReferenceId,
-    metadata: SRecordMetadata,
-  });
+export const SCreateMusicReferencePayload = z.object({
+  title:  z.string().min(1),
+  artist: z.string().min(1),
+});
 
-export type TMusicReferenceDomainModel = z.infer<typeof SMusicReferenceDomainModel>;
+export type TMusicReferenceCreationResponseDTO = TApiResponse<TMusicReferenceDomainModel>;
+
+
+// ─── Backward compat re-exports (used by music.domain.schemas) ──
+
+/** @deprecated Use SMusicReferenceId from ids.ts instead */
+export const SMusicReferenceId_legacy = SMusicReferenceId;

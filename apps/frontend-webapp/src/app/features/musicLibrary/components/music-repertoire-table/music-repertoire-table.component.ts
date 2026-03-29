@@ -1,18 +1,18 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../../shared/button/button.component';
 import { InputComponent } from '../../../../shared/forms/input/input.component';
 import { BadgeComponent } from '../../../../shared/badge/badge.component';
-import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
 import { AddVersionFormComponent } from '../add-version-form/add-version-form.component';
-import { MUSIC_GENRES } from '../../music-library-types';
-import type { AddVersionPayload } from '../../services/mutations-layer/music-version-mutation.service';
-import type { MusicGenre, MusicReference, MusicVersion, Rating } from '../../music-library-types';
+import { Genre, MUSIC_GENRES } from '../../music-library-types';
+import type { AddVersionPayload } from '../../services/mutations-layer/music-library-mutation.service';
+import type { LibraryEntry, MusicGenre, MusicVersion, Rating } from '../../music-library-types';
+import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
 
 export type VersionEditPayload = {
+  entryId: string;
   versionId: string;
   label: string;
-  durationSeconds?: number;
   bpm?: number;
   genre: MusicGenre;
   mastery: Rating;
@@ -29,23 +29,19 @@ export type VersionEditPayload = {
 })
 export class MusicRepertoireTableComponent {
 
-  private selector = inject(MusicLibrarySelectorService);
-
-  readonly references   = input<MusicReference[]>([]);
+  readonly entries      = input<LibraryEntry[]>([]);
   readonly analysingIds = input<Set<string>>(new Set());
 
-  readonly versionAdded         = output<AddVersionPayload>();
-  readonly versionUpdated       = output<VersionEditPayload>();
-  readonly versionDeleted       = output<string>(); // version id
-  readonly entryDeleted         = output<string>(); // reference id
-  readonly trackUploadRequested = output<string>(); // version id
-  readonly analyzeRequested     = output<string>(); // version id
+  readonly versionAdded           = output<AddVersionPayload>();
+  readonly versionUpdated         = output<VersionEditPayload>();
+  readonly versionDeleted         = output<{ entryId: string; versionId: string }>();
+  readonly entryDeleted           = output<string>();
+  readonly trackUploadRequested   = output<{ entryId: string; versionId: string }>();
+  readonly trackDownloadRequested = output<{ versionId: string; trackId: string }>();
+  readonly favoriteChanged        = output<{ entryId: string; versionId: string; trackId: string }>();
 
-  /** refId currently showing the add-version form row */
-  readonly addingRefId = signal<string | null>(null);
-  /** versionId currently in inline edit mode */
+  readonly addingEntryId = signal<string | null>(null);
   readonly editingVersionId = signal<string | null>(null);
-  /** id awaiting delete confirmation (version or entry) */
   readonly confirmingDeleteId = signal<string | null>(null);
 
   readonly genres = MUSIC_GENRES;
@@ -59,28 +55,17 @@ export class MusicRepertoireTableComponent {
 
   /* Edit state */
   editLabel    = '';
-  editDuration = '';
   editBpm      = '';
-  editGenre: MusicGenre = 'Pop';
+  editGenre: MusicGenre = Genre.Pop;
   editMastery: Rating = 1;
   editEnergy:  Rating = 1;
   editEffort:  Rating = 1;
 
-  getVersions(referenceId: string): MusicVersion[] {
-    return this.selector.versionsByReferenceId().get(referenceId) ?? [];
-  }
-
-  entryIdForRef(refId: string): string | null {
-    return this.selector.entriesByReferenceId().get(refId)?.id ?? null;
-  }
-
   /* ── Add version ── */
 
-  onVersionSubmitted(payload: Omit<AddVersionPayload, 'entryId'>, refId: string): void {
-    const entryId = this.entryIdForRef(refId);
-    if (!entryId) return;
+  onVersionSubmitted(payload: Omit<AddVersionPayload, 'entryId'>, entryId: string): void {
     this.versionAdded.emit({ ...payload, entryId });
-    this.addingRefId.set(null);
+    this.addingEntryId.set(null);
   }
 
   /* ── Edit version ── */
@@ -88,9 +73,6 @@ export class MusicRepertoireTableComponent {
   startEdit(version: MusicVersion): void {
     this.editingVersionId.set(version.id);
     this.editLabel    = version.label;
-    this.editDuration = version.durationSeconds
-      ? String(Math.round(version.durationSeconds / 60))
-      : '';
     this.editBpm      = version.bpm ? String(version.bpm) : '';
     this.editGenre    = version.genre;
     this.editMastery  = version.mastery;
@@ -98,18 +80,17 @@ export class MusicRepertoireTableComponent {
     this.editEffort   = version.effort;
   }
 
-  commitEdit(versionId: string): void {
-    const dur = parseInt(this.editDuration, 10);
+  commitEdit(entryId: string, versionId: string): void {
     const bpm = parseInt(this.editBpm, 10);
     this.versionUpdated.emit({
+      entryId,
       versionId,
-      label:           this.editLabel.trim() || 'Version',
-      durationSeconds: isNaN(dur) ? undefined : dur * 60,
-      bpm:             isNaN(bpm) ? undefined : bpm,
-      genre:           this.editGenre,
-      mastery:         this.editMastery,
-      energy:          this.editEnergy,
-      effort:          this.editEffort,
+      label:   this.editLabel.trim() || 'Version',
+      bpm:     isNaN(bpm) ? undefined : bpm,
+      genre:   this.editGenre,
+      mastery: this.editMastery,
+      energy:  this.editEnergy,
+      effort:  this.editEffort,
     });
     this.editingVersionId.set(null);
   }
@@ -124,21 +105,20 @@ export class MusicRepertoireTableComponent {
 
   /* ── Delete (inline confirm) ── */
 
-  requestDelete(id: string): void {
-    if (this.confirmingDeleteId() === id) {
-      // Second click — confirm
+  requestDeleteVersion(entryId: string, versionId: string): void {
+    if (this.confirmingDeleteId() === versionId) {
       this.confirmingDeleteId.set(null);
-      this.versionDeleted.emit(id);
+      this.versionDeleted.emit({ entryId, versionId });
     } else {
-      this.confirmingDeleteId.set(id);
+      this.confirmingDeleteId.set(versionId);
     }
   }
 
-  requestEntryDelete(referenceId: string): void {
-    const key = `entry_${referenceId}`;
+  requestEntryDelete(entryId: string): void {
+    const key = `entry_${entryId}`;
     if (this.confirmingDeleteId() === key) {
       this.confirmingDeleteId.set(null);
-      this.entryDeleted.emit(referenceId);
+      this.entryDeleted.emit(entryId);
     } else {
       this.confirmingDeleteId.set(key);
     }
@@ -162,5 +142,23 @@ export class MusicRepertoireTableComponent {
     if (r === 2) return 'medium';
     if (r === 3) return 'high';
     return 'max';
+  }
+
+  /* ── Track helpers ── */
+
+  favoriteQuality(v: MusicVersion): number | undefined {
+    return MusicLibrarySelectorService.favoriteQuality(v);
+  }
+
+  favoriteDuration(v: MusicVersion): number | undefined {
+    return MusicLibrarySelectorService.favoriteDuration(v);
+  }
+
+  hasTrack(v: MusicVersion): boolean {
+    return MusicLibrarySelectorService.hasTrack(v);
+  }
+
+  trackCount(v: MusicVersion): number {
+    return v.tracks.length;
   }
 }

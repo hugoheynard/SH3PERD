@@ -49,9 +49,9 @@
                         }
                       </div>
                     </div>
-                    @if (mv.versions[0].analysisResult) {
-                      <span class="qlty-badge" [attr.data-level]="ratingLevel(mv.versions[0].analysisResult.quality)">
-                        Q{{ mv.versions[0].analysisResult.quality }}
+                    @if (versionQuality(mv); as q) {
+                      <span class="qlty-badge" [attr.data-level]="ratingLevel(q)">
+                        Q{{ q }}
                       </span>
                     }
                   </div>

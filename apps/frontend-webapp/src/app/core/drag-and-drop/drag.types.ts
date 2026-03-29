@@ -30,6 +30,8 @@ export type DragState = {
  * Each type of draggable item (template, artist, group, slot, resize) has its own specific data structure, which is captured in the DragPayloadMap.
  * The DragState type is a discriminated union that allows for type-safe handling of different drag operations based on the 'type' property.
  */
+export type TabDragPayload = { tabId: string; title: string };
+
 export type DragPayloadMap = {
   template: ArtistPerformanceSlotTemplate
   artist: PlannerArtist
@@ -38,6 +40,7 @@ export type DragPayloadMap = {
   'slot-multi': MultiSlotDragPayload
   resize: ArtistPerformanceSlot,
   cue: TimelineCue,
+  tab: TabDragPayload,
 };
 
 

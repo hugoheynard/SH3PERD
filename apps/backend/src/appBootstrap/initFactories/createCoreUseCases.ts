@@ -1,27 +1,19 @@
 import type { TAuthUseCases } from '../../auth/types/auth.core.useCase.js';
-import type { TMusicRepertoireUseCases } from '../../music/types/musicRepertoire.useCases.types.js';
-import type { TMusicReferencesUseCases } from '../../music/useCases/references/createMusicReferencesUseCases.js';
-import {  type TMusicVersionsUseCases } from '../../music/useCases/versions/createMusicVersionsUseCases.js';
-import {  type TMusicLibraryUseCases } from '../../music/useCases/library/MusicLibraryUseCasesFactory.js';
 import { type TContractsUseCases } from '../../contracts/useCase/ContractUseCasesFactory.js';
 
 
+/**
+ * Legacy use-case registry.
+ * Music use cases have been migrated to CQRS handlers (CommandBus/QueryBus).
+ * Remaining domains (auth, contracts) still use this factory pattern.
+ */
 export type TCoreUseCases = {
   auth?: TAuthUseCases;
   user?: any;
   contracts?: TContractsUseCases;
-  musicReferences?: TMusicReferencesUseCases;
-  musicVersions?: TMusicVersionsUseCases;
-  musicRepertoireEntries?: TMusicRepertoireUseCases;
-  musicLibrary?: TMusicLibraryUseCases;
 };
 
-/**
- * Creates core use cases for the application.
-
- */
-export const createCoreUseCases = (
-): TCoreUseCases => {
+export const createCoreUseCases = (): TCoreUseCases => {
   try {
     return {};
   } catch (err: unknown) {

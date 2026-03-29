@@ -42,6 +42,11 @@
   transition: color var(--t-fast);
 
   &:hover { color: var(--text-secondary); }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+  }
 }
 
 /* ── Results ────────────────────────────────────────── */

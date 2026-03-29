@@ -7,6 +7,7 @@ import { NavigationService } from '../../services/navigation.service';
 import { NotificationService } from '../../notifications/notification.service';
 import { LayoutService } from '../../services/layout.service';
 import { NotificationPanelComponent } from '../../notifications/notification-panel/notification-panel.component';
+import { HelpPanelComponent } from '../../../shared/help/help-panel.component';
 import { UserContextService } from '../../services/user-context.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -73,6 +74,10 @@ export class HeaderComponent {
 
   openNotifications() {
     this.layout.setRightPanel(NotificationPanelComponent);
+  }
+
+  openHelp() {
+    this.layout.setRightPanel(HelpPanelComponent);
   }
 
   /* ── Profile dropdown ── */

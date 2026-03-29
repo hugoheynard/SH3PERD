@@ -1,7 +1,9 @@
+@use '../../../../shared/styles/rating-dots' as rd;
+
 .form {
   padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -33,9 +35,9 @@
   font-size: 10px;
   font-weight: 500;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--text-muted, #718096);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
   transition: background 0.1s, color 0.1s, border-color 0.1s;
 
   &.selected {
@@ -45,8 +47,13 @@
   }
 
   &:hover:not(.selected) {
-    background: rgba(255, 255, 255, 0.09);
-    color: var(--text-secondary, #a0aec0);
+    background: var(--border-light);
+    color: var(--text-secondary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
   }
 }
 
@@ -69,7 +76,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
 }
 
 .rating-dots {
@@ -78,23 +85,11 @@
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
+  @include rd.dot(10px);
   cursor: pointer;
-  transition: background 0.1s, transform 0.1s;
 
   &:hover {
     transform: scale(1.2);
-  }
-
-  &.filled {
-    &[data-level='low']    { background: #fc8181; }
-    &[data-level='medium'] { background: #f6ad55; }
-    &[data-level='high']   { background: #68d391; }
-    &[data-level='max']    { background: var(--accent-color); }
   }
 }
 
@@ -106,4 +101,3 @@
   gap: 6px;
   padding-top: 2px;
 }
-

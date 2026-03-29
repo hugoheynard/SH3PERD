@@ -21,6 +21,11 @@ export class MusicReferenceMongoRepository
     return await this.collection.find().toArray();
   }
 
+  async findByIds(ids: TMusicReferenceDomainModel['id'][]): Promise<TMusicReferenceDomainModel[]> {
+    if (ids.length === 0) return [];
+    return this.collection.find({ id: { $in: ids } } as any).toArray() as Promise<TMusicReferenceDomainModel[]>;
+  }
+
   /**
    * Search music references by text.
    * related to an atlas search index created on the cluster.

@@ -1,11 +1,30 @@
+<!-- Hidden color input -->
+<input
+  type="color"
+  class="hidden-color-input"
+  #colorInput
+  (input)="onColorSelected($event)"
+/>
+
 <div class="tab-bar">
-  <div class="tabs-scroll">
-    @for (tab of tabs(); track tab.id) {
+  <div
+    class="tabs-scroll"
+    uiDndDropZone
+    [dropZone_id]="'tab-bar'"
+    [dropZoneAccept]="['tab']"
+    (uiDndDrop)="onTabDrop($event)"
+  >
+    @for (tab of tabs(); track tab.id; let idx = $index) {
       <button
         class="tab"
         [class.active]="tab.id === activeTabId()"
+        [style.border-left-color]="tab.color || 'transparent'"
+        [style.border-left-width]="tab.color ? '3px' : '0'"
         (click)="tabSelect.emit(tab.id)"
         type="button"
+        uiDndDrag
+        [dndType]="'tab'"
+        [dndData]="{ tabId: tab.id, title: tab.title }"
       >
         @if (editingTabId() === tab.id) {
           <input
@@ -20,6 +39,14 @@
         } @else {
           <span class="tab-title" (dblclick)="startRename(tab, $event)">{{ tab.title }}</span>
         }
+
+        <!-- Color picker trigger (hover) -->
+        <span
+          class="tab-color-btn"
+          title="Set color"
+          (click)="openColorPicker(tab.id, $event)"
+        >●</span>
+
         @if (tabs().length > 1) {
           <span
             class="tab-close"
@@ -37,6 +64,23 @@
       <path d="M12 5v14M5 12h14"/>
     </svg>
   </button>
+
+  <!-- Search input for active tab -->
+  <div class="tab-search">
+    <svg class="tab-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+    </svg>
+    <input
+      class="tab-search-input"
+      [ngModel]="activeSearchQuery()"
+      (ngModelChange)="searchQueryChange.emit($event)"
+      placeholder="Search…"
+      type="text"
+    />
+    @if (activeSearchQuery()) {
+      <button class="tab-search-clear" type="button" (click)="searchQueryChange.emit('')">×</button>
+    }
+  </div>
 
   <!-- Save / recall saved configs -->
   <div class="tab-config-actions">

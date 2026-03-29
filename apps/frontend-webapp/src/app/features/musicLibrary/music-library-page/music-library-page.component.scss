@@ -3,6 +3,8 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* ── Library container ──────────────────────────── */
@@ -11,7 +13,7 @@
   flex: 1;
   min-height: 0;
   display: flex;           /* row: side-panel | library-content */
-  background: var(--content-page-bg-color, #282e39);
+  background: var(--content-page-bg-color);
   overflow: hidden;
 }
 
@@ -58,13 +60,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 16px 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--surface-raised);
   flex-shrink: 0;
 }
 
 .results-count {
   font-size: 11px;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -77,6 +79,11 @@
 /* Mobile filter toggle — hidden on desktop */
 .btn-filters-toggle {
   display: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+  }
 }
 
 .view-toggle {
@@ -84,10 +91,10 @@
   align-items: center;
   gap: 5px;
   padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-light);
   border-radius: 6px;
-  color: var(--text-secondary, #a0aec0);
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
@@ -97,6 +104,11 @@
     background: var(--accent-color-dim);
     border-color: var(--accent-color-border);
     color: var(--accent-color-light);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
   }
 }
 
@@ -118,16 +130,16 @@
   justify-content: center;
   gap: 10px;
   padding: 80px 0;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
 
   svg { opacity: 0.4; }
   span { font-size: 13px; font-weight: 500; }
-}
 
-.empty-hint {
-  font-size: 11px !important;
-  font-weight: 400 !important;
-  opacity: 0.7;
+  .empty-hint {
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.7;
+  }
 }
 
 /* ── Hidden file input ──────────────────────────── */
@@ -181,10 +193,10 @@
     align-items: center;
     gap: 4px;
     padding: 4px 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
-    color: var(--text-secondary, #a0aec0);
+    color: var(--text-secondary);
     font-size: 11px;
     font-weight: 500;
     cursor: pointer;

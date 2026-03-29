@@ -12,6 +12,7 @@ import {RouterOutlet} from '@angular/router';
 import {LayoutService} from '../services/layout.service';
 import {CircularMenuComponent} from '../components/circular-menu/circular-menu.component';
 import { NgClass } from '@angular/common';
+import { ToastContainerComponent } from '../../shared/toast/toast-container.component';
 
 export const INJECTION_DATA = new InjectionToken<unknown>('PANEL_DATA');
 
@@ -23,6 +24,7 @@ export const INJECTION_DATA = new InjectionToken<unknown>('PANEL_DATA');
     CircularMenuComponent,
     HeaderComponent,
     NgClass,
+    ToastContainerComponent,
   ],
   templateUrl: './main-layout.component.html',
   standalone: true,

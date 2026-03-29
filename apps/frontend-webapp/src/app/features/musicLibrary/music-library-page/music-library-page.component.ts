@@ -1,10 +1,8 @@
 import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { MusicLibrarySelectorService } from '../services/selector-layer/music-library-selector.service';
 import { MusicTabMutationService } from '../services/mutations-layer/music-tab-mutation.service';
-import { MusicVersionMutationService } from '../services/mutations-layer/music-version-mutation.service';
-import { MusicRepertoireMutationService } from '../services/mutations-layer/music-repertoire-mutation.service';
+import { MusicLibraryMutationService } from '../services/mutations-layer/music-library-mutation.service';
 import { LayoutService } from '../../../core/services/layout.service';
-import { MusicLibraryHeaderComponent } from '../components/music-library-header/music-library-header.component';
 import { MusicTabBarComponent } from '../components/music-tab-bar/music-tab-bar.component';
 import { MusicLibrarySidePanelComponent } from '../components/music-library-side-panel/music-library-side-panel.component';
 import { MusicReferenceCardComponent } from '../components/music-reference-card/music-reference-card.component';
@@ -12,22 +10,24 @@ import { MusicRepertoireTableComponent } from '../components/music-repertoire-ta
 import { AddEntryPanelComponent } from '../components/add-entry-panel/add-entry-panel.component';
 import { MusicCrossTableComponent } from '../components/music-cross-table/music-cross-table.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
-import type { AddVersionPayload } from '../services/mutations-layer/music-version-mutation.service';
+import type { AddVersionPayload } from '../services/mutations-layer/music-library-mutation.service';
 import type { VersionEditPayload } from '../components/music-repertoire-table/music-repertoire-table.component';
 import { AudioAnalyzerService } from '../../audioAnalyzer/audio-analyzer.service';
 import type { AudioAnalysisSnapshot, Rating, SavedTabConfig, MusicSearchConfig } from '../music-library-types';
+import { ToastService } from '../../../shared/toast/toast.service';
+import { InfoDirective } from '../../../shared/help/info.directive';
 
 @Component({
   selector: 'app-music-library-page',
   standalone: true,
   imports: [
-    MusicLibraryHeaderComponent,
     MusicTabBarComponent,
     MusicLibrarySidePanelComponent,
     MusicReferenceCardComponent,
     MusicRepertoireTableComponent,
     MusicCrossTableComponent,
     ButtonComponent,
+    InfoDirective,
   ],
   templateUrl: './music-library-page.component.html',
   styleUrl: './music-library-page.component.scss',
@@ -36,19 +36,20 @@ export class MusicLibraryPageComponent {
 
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
 
-  public selector= inject(MusicLibrarySelectorService);
-  private tabService= inject(MusicTabMutationService);
-  private versionMut= inject(MusicVersionMutationService);
-  private repertoireMut= inject(MusicRepertoireMutationService);
-  private audioAnalyzer= inject(AudioAnalyzerService);
-  private layout= inject(LayoutService);
+  public selector    = inject(MusicLibrarySelectorService);
+  private tabService = inject(MusicTabMutationService);
+  private mutation   = inject(MusicLibraryMutationService);
+  private audioAnalyzer = inject(AudioAnalyzerService);
+  private layout     = inject(LayoutService);
+  private toast      = inject(ToastService);
 
   readonly viewMode            = signal<'cards' | 'table'>('cards');
   readonly analysingVersionIds = signal<Set<string>>(new Set());
   readonly mobilePanelOpen     = signal(false);
 
+  /** Pending upload context. */
+  private pendingEntryId: string | null = null;
   private pendingVersionId: string | null = null;
-  private pendingMode: 'upload' | 'analyse' = 'upload';
   private trackFiles = new Map<string, File>();
 
   /* ── Tabs ── */
@@ -58,11 +59,19 @@ export class MusicLibraryPageComponent {
   onTabClose(id: string): void   { this.tabService.closeTab(id); }
 
   onSearchQueryChange(query: string): void {
-    this.tabService.setSearchQuery(query);
+    this.tabService.setSearchQuery(this.selector.activeTabId(), query);
   }
 
   onTabRename(event: { id: string; title: string }): void {
     this.tabService.updateTabTitle(event.id, event.title);
+  }
+
+  onTabReorder(event: { tabId: string; newIndex: number }): void {
+    this.tabService.reorderTab(event.tabId, event.newIndex);
+  }
+
+  onTabColorChange(event: { id: string; color: string }): void {
+    this.tabService.setTabColor(event.id, event.color);
   }
 
   onConfigSave(event: { name: string; searchConfig: MusicSearchConfig }): void {
@@ -94,75 +103,88 @@ export class MusicLibraryPageComponent {
   /* ── Add version ── */
 
   onVersionAdded(payload: AddVersionPayload): void {
-    this.versionMut.addVersion(payload);
+    this.mutation.addVersion(payload);
+    this.toast.show(`Version "${payload.label}" added`, 'success');
   }
 
   onVersionUpdated(payload: VersionEditPayload): void {
-    const { versionId, ...patch } = payload;
-    this.versionMut.updateVersion(versionId, patch);
+    const { entryId, versionId, ...patch } = payload;
+    this.mutation.updateVersion(entryId, versionId, patch);
+  }
+
+  onEditVersionFromCard(_versionId: string): void {
+    this.viewMode.set('table');
+    this.toast.show('Switched to table view for editing', 'info');
   }
 
   /* ── Delete ── */
 
-  onVersionDeleted(versionId: string): void {
-    this.versionMut.removeVersion(versionId);
+  onVersionDeleted(event: { entryId: string; versionId: string }): void {
+    this.mutation.removeVersion(event.entryId, event.versionId);
+    this.toast.show('Version deleted', 'info');
   }
 
-  onEntryDeleted(referenceId: string): void {
-    // Remove all versions linked to this entry, then the entry itself
-    const versions = this.selector.versionsByReferenceId().get(referenceId) ?? [];
-    for (const v of versions) {
-      this.versionMut.removeVersion(v.id);
-    }
-    this.repertoireMut.removeEntry(referenceId, 'user_me');
+  onEntryDeleted(entryId: string): void {
+    this.mutation.removeEntry(entryId);
+    this.toast.show('Entry removed from repertoire', 'info');
   }
 
   /* ── Track upload / analysis ── */
 
-  onTrackUploadRequested(versionId: string): void {
-    this.pendingVersionId = versionId;
-    this.pendingMode = 'upload';
+  onTrackUploadRequested(event: { entryId: string; versionId: string }): void {
+    this.pendingEntryId = event.entryId;
+    this.pendingVersionId = event.versionId;
     this.fileInputRef.nativeElement.click();
   }
 
-  onAnalyzeRequested(versionId: string): void {
-    const file = this.trackFiles.get(versionId);
-    if (file) {
-      this.startAnalysis(versionId, file);
-    } else {
-      this.pendingVersionId = versionId;
-      this.pendingMode = 'analyse';
-      this.fileInputRef.nativeElement.click();
+  onTrackDownloadRequested(event: { versionId: string; trackId: string }): void {
+    const file = this.trackFiles.get(event.trackId);
+    if (!file) {
+      console.warn('[MusicLibrary] No local track file for track', event.trackId);
+      return;
     }
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = file.name;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  onFavoriteChanged(event: { entryId: string; versionId: string; trackId: string }): void {
+    this.mutation.setFavoriteTrack(event.entryId, event.versionId, event.trackId);
   }
 
   onFileSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     (event.target as HTMLInputElement).value = '';
-    if (!file || !this.pendingVersionId) return;
+    if (!file || !this.pendingVersionId || !this.pendingEntryId) return;
+    const entryId = this.pendingEntryId;
     const versionId = this.pendingVersionId;
+    this.pendingEntryId = null;
     this.pendingVersionId = null;
-    this.trackFiles.set(versionId, file);
-    if (this.pendingMode === 'upload') {
-      this.versionMut.markTrackUploaded(versionId);
-    } else {
-      this.startAnalysis(versionId, file);
-    }
+
+    const track = this.mutation.addTrack(entryId, versionId, file.name);
+    this.trackFiles.set(track.id, file);
+    this.toast.show(`Track "${file.name}" uploaded`, 'success');
+    this.startAnalysis(entryId, versionId, track.id, file);
   }
 
-  private startAnalysis(versionId: string, file: File): void {
+  private startAnalysis(entryId: string, versionId: string, trackId: string, file: File): void {
     this.analysingVersionIds.update(s => new Set([...s, versionId]));
     this.audioAnalyzer.analyze(file).subscribe({
       next: (event) => {
         if (event.type === 'result') {
           const snapshot = this.toSnapshot(event.report);
-          this.versionMut.saveAnalysis(versionId, snapshot);
+          this.mutation.saveTrackAnalysis(entryId, versionId, trackId, snapshot);
           this.analysingVersionIds.update(s => { const n = new Set(s); n.delete(versionId); return n; });
+          this.toast.show(`Analysis complete — Quality ${snapshot.quality}/4`, 'success');
         }
       },
       error: (err) => {
-        console.error('[MusicLibrary] Analysis failed for', versionId, err);
+        console.error('[MusicLibrary] Analysis failed for track', trackId, err);
         this.analysingVersionIds.update(s => { const n = new Set(s); n.delete(versionId); return n; });
+        this.toast.show('Analysis failed', 'error');
       },
     });
   }
@@ -181,11 +203,5 @@ export class MusicLibraryPageComponent {
       clippingRatio:  report.clippingRatio,
       quality,
     };
-  }
-
-  /* ── Helpers ── */
-
-  entryIdForRef(refId: string): string | null {
-    return this.selector.entriesByReferenceId().get(refId)?.id ?? null;
   }
 }

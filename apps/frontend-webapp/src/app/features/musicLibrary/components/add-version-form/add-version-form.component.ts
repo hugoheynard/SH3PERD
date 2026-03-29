@@ -2,8 +2,8 @@ import { Component, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../../shared/button/button.component';
 import { InputComponent } from '../../../../shared/forms/input/input.component';
-import { MUSIC_GENRES } from '../../music-library-types';
-import type { AddVersionPayload } from '../../services/mutations-layer/music-version-mutation.service';
+import { Genre, MUSIC_GENRES } from '../../music-library-types';
+import type { AddVersionPayload } from '../../services/mutations-layer/music-library-mutation.service';
 import type { MusicGenre, Rating } from '../../music-library-types';
 
 @Component({
@@ -22,7 +22,7 @@ export class AddVersionFormComponent {
   readonly ratingDots = [1, 2, 3, 4] as const;
 
   readonly label    = signal('');
-  readonly genre    = signal<MusicGenre>('Pop');
+  readonly genre    = signal<MusicGenre>(Genre.Pop);
   readonly mastery  = signal<Rating>(1);
   readonly energy   = signal<Rating>(1);
   readonly effort   = signal<Rating>(1);
@@ -55,16 +55,14 @@ export class AddVersionFormComponent {
 
   submit(): void {
     if (!this.canSubmit()) return;
-    const durationRaw = parseInt(this.duration(), 10);
-    const bpmRaw      = parseInt(this.bpm(), 10);
+    const bpmRaw = parseInt(this.bpm(), 10);
     this.submitted.emit({
-      label:           this.label().trim(),
-      durationSeconds: isNaN(durationRaw) ? undefined : durationRaw * 60,
-      bpm:             isNaN(bpmRaw) ? undefined : bpmRaw,
-      genre:           this.genre(),
-      mastery:         this.mastery(),
-      energy:          this.energy(),
-      effort:          this.effort(),
+      label:   this.label().trim(),
+      bpm:     isNaN(bpmRaw) ? undefined : bpmRaw,
+      genre:   this.genre(),
+      mastery: this.mastery(),
+      energy:  this.energy(),
+      effort:  this.effort(),
     });
     this.reset();
   }
@@ -81,7 +79,7 @@ export class AddVersionFormComponent {
 
   private reset(): void {
     this.label.set('');
-    this.genre.set('Pop');
+    this.genre.set(Genre.Pop);
     this.mastery.set(1);
     this.energy.set(1);
     this.effort.set(1);

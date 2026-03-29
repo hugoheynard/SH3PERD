@@ -42,7 +42,7 @@ import {
   type IMusicVersionRepository,
   MusicVersionRepository,
 } from '../../music/repositories/MusicVersionRepository.js';
-import type { IMusicRepertoireRepository } from '../../music/types/musicRepertoire.core.types.js';
+import type { IMusicRepertoireRepository } from '../../music/repositories/MusicRepertoireRepository.js';
 import { MusicReferenceMongoRepository } from '../../music/repositories/MusicReferenceRepository.js';
 import { MusicRepertoireMongoRepository } from '../../music/repositories/MusicRepertoireRepository.js';
 import {

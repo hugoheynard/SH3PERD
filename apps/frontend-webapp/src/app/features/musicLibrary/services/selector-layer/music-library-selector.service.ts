@@ -1,80 +1,149 @@
 import { computed, inject, Injectable } from '@angular/core';
-import { ReferenceSelectorService } from './reference-selector.service';
-import { RepertoireSelectorService } from './repertoire-selector.service';
-import { TabSelectorService } from './tab-selector.service';
-import { VersionSelectorService } from './version-selector.service';
 import { MusicLibraryStateService } from '../music-library-state.service';
+import type {
+  LibraryEntry,
+  MusicDataFilter,
+  MusicVersion,
+  Rating,
+  VersionTrack,
+} from '../../music-library-types';
+
+function fuzzyMatch(query: string, target: string): boolean {
+  const q = query.toLowerCase();
+  const t = target.toLowerCase();
+  let qi = 0;
+  for (let i = 0; i < t.length && qi < q.length; i++) {
+    if (t[i] === q[qi]) qi++;
+  }
+  return qi === q.length;
+}
 
 /**
- * Facade selector service for the Music Library feature.
- *
- * Injects all sub-selectors and re-exposes their signals as a unified API.
- * Components should inject this service rather than individual selectors.
- *
- * Also computes aggregated stats across the library.
+ * Unified selector service for the Music Library feature.
+ * Works with the entry-centric state shape (LibraryEntry[]).
  */
 @Injectable({ providedIn: 'root' })
 export class MusicLibrarySelectorService {
 
   private state = inject(MusicLibraryStateService);
-  private referenceSelector = inject(ReferenceSelectorService);
-  private repertoireSelector = inject(RepertoireSelectorService);
-  private tabSelector = inject(TabSelectorService);
-  private versionSelector = inject(VersionSelectorService);
 
-  /* ─── References ────────────────────────────────────── */
+  /* ─── Raw state ─────────────────────────────────────── */
 
-  references = this.referenceSelector.references;
-  referencesById = this.referenceSelector.referencesById;
+  readonly entries = computed(() => this.state.library().entries);
 
-  /* ─── Repertoire ─────────────────────────────────────── */
+  /* ─── Tabs ──────────────────────────────────────────── */
 
-  repertoire = this.repertoireSelector.repertoire;
-  entriesByReferenceId = this.repertoireSelector.entriesByReferenceId;
-  entriesByUserId = this.repertoireSelector.entriesByUserId;
+  readonly tabs = computed(() => this.state.library().tabs);
+  readonly activeTabId = computed(() => this.state.library().activeTabId);
+  readonly activeTab = computed(() => {
+    const id = this.activeTabId();
+    return this.tabs().find(t => t.id === id);
+  });
+  readonly savedTabConfigs = computed(() => this.state.library().savedTabConfigs ?? []);
 
-  /* ─── Versions ───────────────────────────────────────── */
-
-  versions = this.versionSelector.versions;
-  versionsByEntryId = this.versionSelector.versionsByEntryId;
-  versionsByReferenceId = this.versionSelector.versionsByReferenceId;
-
-  /* ─── Tabs ───────────────────────────────────────────── */
-
-  tabs = this.tabSelector.tabs;
-  activeTabId = this.tabSelector.activeTabId;
-  activeTab = this.tabSelector.activeTab;
-  activeResults = this.tabSelector.activeResults;
-  savedTabConfigs = computed(() => this.state.library().savedTabConfigs ?? []);
-
-  /* ─── Stats ──────────────────────────────────────────── */
-
-  /** Total number of music references in the library. */
-  totalReferences = computed(() => this.references().length);
-
-  /** Total number of repertoire entries across all users. */
-  totalRepertoireEntries = computed(() => this.repertoire().length);
+  /* ─── Filtered results (entry-centric) ─────────────── */
 
   /**
-   * Average mastery rating across all repertoire entries.
-   * Returns 0 if no entries exist.
+   * Returns the filtered list of library entries based on the active tab's config.
+   * Each entry contains reference + versions — no re-joining needed.
    */
-  averageMastery = computed(() => {
-    const versions = this.versions();
-    if (versions.length === 0) return 0;
-    const sum = versions.reduce((acc, v) => acc + v.mastery, 0);
-    return Math.round((sum / versions.length) * 10) / 10;
+  readonly activeEntries = computed((): LibraryEntry[] => {
+    const tab = this.activeTab();
+    let results = this.entries();
+
+    if (!tab) return results;
+
+    const { dataFilterActive, dataFilter } = tab.searchConfig;
+
+    // Apply data filters on versions within each entry
+    if (dataFilterActive && dataFilter) {
+      results = results.filter(entry =>
+        entry.versions.some(v => this.versionMatchesFilter(v, dataFilter)),
+      );
+    }
+
+    // Apply text search on reference title/artist
+    const query = (tab.searchQuery ?? '').trim();
+    if (query) {
+      results = results.filter(entry =>
+        fuzzyMatch(query, entry.reference.title) ||
+        fuzzyMatch(query, entry.reference.originalArtist),
+      );
+    }
+
+    return results;
   });
 
-  /** Average quality across versions that have an analysisResult. Returns 0 if none are analysed. */
-  averageQuality = computed(() => {
-    const analysed = this.versions().filter(v => v.analysisResult);
-    if (analysed.length === 0) return 0;
-    const sum = analysed.reduce((acc, v) => acc + v.analysisResult!.quality, 0);
-    return Math.round((sum / analysed.length) * 10) / 10;
+  /* ─── Lookup helpers ────────────────────────────────── */
+
+  /** Find a specific entry by its id. */
+  findEntry(entryId: string): LibraryEntry | undefined {
+    return this.entries().find(e => e.id === entryId);
+  }
+
+  /** Find entry by reference id. */
+  findEntryByRefId(refId: string): LibraryEntry | undefined {
+    return this.entries().find(e => e.reference.id === refId);
+  }
+
+  /* ─── Stats ─────────────────────────────────────────── */
+
+  readonly totalEntries = computed(() => this.entries().length);
+
+  readonly totalVersions = computed(() =>
+    this.entries().reduce((sum, e) => sum + e.versions.length, 0),
+  );
+
+  readonly averageMastery = computed(() => {
+    const all = this.entries().flatMap(e => e.versions);
+    if (all.length === 0) return 0;
+    const sum = all.reduce((acc, v) => acc + v.mastery, 0);
+    return Math.round((sum / all.length) * 10) / 10;
   });
 
-  /* ─── Cross context ───────────────────────────────── */
+  readonly averageQuality = computed(() => {
+    const qualities = this.entries()
+      .flatMap(e => e.versions)
+      .map(v => MusicLibrarySelectorService.favoriteQuality(v))
+      .filter((q): q is number => q !== undefined);
+    if (qualities.length === 0) return 0;
+    const sum = qualities.reduce((acc, q) => acc + q, 0);
+    return Math.round((sum / qualities.length) * 10) / 10;
+  });
+
+  /* ─── Cross context ─────────────────────────────────── */
 
   readonly crossContext = computed(() => this.state.library().crossContext ?? null);
+
+  /* ─── Track helpers (static, usable in templates) ──── */
+
+  static favoriteTrack(version: MusicVersion): VersionTrack | undefined {
+    return version.tracks.find(t => t.favorite);
+  }
+
+  static favoriteQuality(version: MusicVersion): number | undefined {
+    return MusicLibrarySelectorService.favoriteTrack(version)?.analysisResult?.quality;
+  }
+
+  static favoriteDuration(version: MusicVersion): number | undefined {
+    return MusicLibrarySelectorService.favoriteTrack(version)?.durationSeconds;
+  }
+
+  static hasTrack(version: MusicVersion): boolean {
+    return version.tracks.length > 0;
+  }
+
+  /* ─── Private ───────────────────────────────────────── */
+
+  private versionMatchesFilter(v: MusicVersion, f: MusicDataFilter): boolean {
+    if (f.genres?.length  && !f.genres.includes(v.genre))              return false;
+    if (f.mastery?.length && !f.mastery.includes(v.mastery as Rating)) return false;
+    if (f.energy?.length  && !f.energy.includes(v.energy as Rating))   return false;
+    if (f.effort?.length  && !f.effort.includes(v.effort as Rating))   return false;
+    if (f.quality?.length) {
+      const q = MusicLibrarySelectorService.favoriteQuality(v);
+      if (!q || !f.quality.includes(q as Rating)) return false;
+    }
+    return true;
+  }
 }

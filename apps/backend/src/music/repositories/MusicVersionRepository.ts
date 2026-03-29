@@ -1,13 +1,25 @@
 import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type { TMusicVersionDomainModel, TUserId, TUserMusicLibraryItem } from '@sh3pherd/shared-types';
+import type {
+  TMusicVersionDomainModel,
+  TMusicVersionId,
+  TVersionTrackDomainModel,
+  TVersionTrackId,
+  TUserId,
+} from '@sh3pherd/shared-types';
 import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
 import type { ClientSession } from 'mongodb';
 import { apiCodes } from '../codes.js';
 
 
 export interface IMusicVersionRepository {
-  saveOne: (document: TMusicVersionDomainModel, session?: ClientSession) => Promise<boolean>;
-  findVersionsByUserId: (userId: TUserId) => Promise<TUserMusicLibraryItem[]>;
+  saveOne(document: TMusicVersionDomainModel, session?: ClientSession): Promise<boolean>;
+  findOneByVersionId(versionId: TMusicVersionId): Promise<TMusicVersionDomainModel | null>;
+  updateVersion(versionId: TMusicVersionId, patch: Record<string, unknown>): Promise<TMusicVersionDomainModel | null>;
+  deleteOneByVersionId(versionId: TMusicVersionId): Promise<boolean>;
+  pushTrack(versionId: TMusicVersionId, track: TVersionTrackDomainModel): Promise<boolean>;
+  pullTrack(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean>;
+  setTrackFavorite(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean>;
+  findByOwnerId(userId: TUserId): Promise<TMusicVersionDomainModel[]>;
 }
 
 export class MusicVersionRepository
@@ -16,145 +28,87 @@ export class MusicVersionRepository
 
   constructor(input: TBaseMongoRepoDeps) {
     super(input);
-  };
+  }
 
   @technicalFailThrows500(
     apiCodes.music.MUSIC_VERSION_CREATION_REPO_FAIL.code,
-    apiCodes.music.MUSIC_VERSION_CREATION_REPO_FAIL.message
+    apiCodes.music.MUSIC_VERSION_CREATION_REPO_FAIL.message,
   )
   async saveOne(document: TMusicVersionDomainModel, session?: ClientSession): Promise<boolean> {
-    const result = await this.collection.insertOne(document, session);
+    const result = await this.collection.insertOne(document as any, { session });
+    return result.acknowledged;
+  }
 
-    if (!result.acknowledged) {
-      return false;
-    }
+  async findOneByVersionId(versionId: TMusicVersionId): Promise<TMusicVersionDomainModel | null> {
+    return this.collection.findOne({ id: versionId } as any) as Promise<TMusicVersionDomainModel | null>;
+  }
 
-    return true;
-  };
+  async updateVersion(
+    versionId: TMusicVersionId,
+    patch: Record<string, unknown>,
+  ): Promise<TMusicVersionDomainModel | null> {
+    const result = await this.collection.findOneAndUpdate(
+      { id: versionId } as any,
+      { $set: patch },
+      { returnDocument: 'after' },
+    );
+    return result as TMusicVersionDomainModel | null;
+  }
 
-  async findVersionsByUserId(userId: TUserId): Promise<TUserMusicLibraryItem[]> {
-    const result = await this.collection.aggregate<TUserMusicLibraryItem>([
-      /**
-       * Match versions that are either owned by the user or borrowed through repertoireEntries
-       */
+  async deleteOneByVersionId(versionId: TMusicVersionId): Promise<boolean> {
+    const result = await this.collection.deleteOne({ id: versionId } as any);
+    return result.deletedCount === 1;
+  }
+
+  /* ── Track subdocument operations ── */
+
+  async pushTrack(versionId: TMusicVersionId, track: TVersionTrackDomainModel): Promise<boolean> {
+    const result = await this.collection.updateOne(
+      { id: versionId } as any,
       {
-        $match: {
-          owner_id: userId,
-          musicVersion_id: { $exists: true, $ne: null }
-        }
+        $push: { tracks: track as any },
+        $set: { 'metadata.updated_at': new Date() },
       },
+    );
+    return result.modifiedCount === 1;
+  }
+
+  async pullTrack(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean> {
+    const result = await this.collection.updateOne(
+      { id: versionId } as any,
       {
-        $lookup: {
-          from: 'music_versions',
-          localField: 'musicVersion_id',
-          foreignField: 'musicVersion_id',
-          as: 'version'
-        }
+        $pull: { tracks: { id: trackId } as any },
+        $set: { 'metadata.updated_at': new Date() },
       },
-      { $unwind: '$version' },
+    );
+    return result.modifiedCount === 1;
+  }
+
+  /**
+   * Sets a track as favorite and unsets all others.
+   * Two-step: first unset all, then set the target.
+   */
+  async setTrackFavorite(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean> {
+    // Step 1: unset all favorites
+    await this.collection.updateOne(
+      { id: versionId } as any,
+      { $set: { 'tracks.$[].favorite': false } },
+    );
+    // Step 2: set target favorite
+    const result = await this.collection.updateOne(
+      { id: versionId, 'tracks.id': trackId } as any,
       {
-        $lookup: {
-          from: 'music_repertoireEntries',
-          let: { versionId: '$musicVersion_id' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ['$musicVersion_id', '$$versionId'] },
-                    { $eq: ['$user_id', { $literal: userId }] }
-                  ]
-                }
-              }
-            },
-            { $limit: 1 }
-          ],
-          as: 'repertoireEntry'
-        }
-      },
-      { $unwind: { path: '$repertoireEntry', preserveNullAndEmptyArrays: true } },
-      {
-        $lookup: {
-          from: 'music_references',
-          localField: 'musicReference_id',
-          foreignField: 'musicReference_id',
-          as: 'reference'
-        }
-      },
-      { $unwind: { path: '$reference', preserveNullAndEmptyArrays: true } },
-      { $project: {
-          version: '$version',
-          repertoireEntry: '$repertoireEntry',
-          reference: '$reference',
-          source: 'owned'
-        }
-      },
-      /**
-       * Union with repertoireEntries to include borrowed versions
-       * This will add the versions that are borrowed by the user through repertoireEntries
-       * and will not duplicate the owned versions.
-       */
-      {
-        $unionWith: {
-          coll: 'music_repertoireEntries',
-          pipeline: [
-            { $match: {
-              user_id: userId ,
-                musicVersion_id: { $exists: true, $ne: null }
-            }
-            },
-            {
-              $lookup: {
-                from: 'music_versions',
-                localField: 'musicVersion_id',
-                foreignField: 'musicVersion_id',
-                as: 'version'
-              }
-            },
-            { $unwind: '$version' },
-            {
-              $match: {
-                'version.owner_id': { $ne: userId } // ⛔ Excludes owned versions
-              }
-            },
-            {
-              $lookup: {
-                from: 'musicReferences',
-                localField: 'version.musicReference_id',
-                foreignField: 'musicReference_id',
-                as: 'musicReference'
-              }
-            },
-            { $unwind: { path: '$musicReference', preserveNullAndEmptyArrays: true } },
-            {
-              $project: {
-                version: {
-                  musicVersion_id: '$version.musicVersion_id',
-                  title: '$version.title',
-                  artist: '$version.artist',
-                  bpm: '$version.bpm',
-                  pitch: '$version.pitch',
-                  genre: '$version.genre',
-                  type: '$version.type',
-                  musicReference_id: '$version.musicReference_id'
-                },
-                repertoireEntry: {
-                  user_id: '$user_id',
-                  energy: '$energy',
-                  effort: '$effort',
-                  mastery: '$mastery',
-                  affinity: '$affinity'
-                },
-                musicReference: '$musicReference',
-                source: 'borrowed'
-              }
-            }
-          ]
+        $set: {
+          'tracks.$.favorite': true,
+          'metadata.updated_at': new Date(),
         },
       },
-      { $unset: ['_id', 'version._id', 'repertoireEntry._id', 'reference._id'] }
-    ]).toArray();
+    );
+    return result.modifiedCount === 1;
+  }
 
-    return result;
-  };
+  async findByOwnerId(userId: TUserId): Promise<TMusicVersionDomainModel[]> {
+    return this.collection.find({ owner_id: userId } as any).toArray() as Promise<TMusicVersionDomainModel[]>;
+  }
+
 }

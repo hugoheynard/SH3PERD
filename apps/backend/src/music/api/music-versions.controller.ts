@@ -1,34 +1,49 @@
-import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
-import type { TApiResponse, TMusicVersionCreationFormPayload, TMusicVersionDomainModel } from '@sh3pherd/shared-types';
-import { apiCodes, buildApiResponseDTO } from '../codes.js';
-import type { Request } from 'express';
+import { Controller, Post, Patch, Delete, Body, Param } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
+import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
-import { SMusicVersionCreationFormPayloadSchema } from '@sh3pherd/shared-types';
-import { MUSIC_VERSIONS_USE_CASES } from '../music.tokens.js';
-import type { TMusicVersionsUseCases } from '../useCases/versions/createMusicVersionsUseCases.js';
+import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
+import { CreateMusicVersionCommand } from '../application/commands/CreateMusicVersionCommand.js';
+import { UpdateMusicVersionCommand } from '../application/commands/UpdateMusicVersionCommand.js';
+import { DeleteMusicVersionCommand } from '../application/commands/DeleteMusicVersionCommand.js';
+import type { TUserId, TApiResponse, TMusicVersionDomainModel, TMusicVersionId } from '@sh3pherd/shared-types';
+import { SCreateMusicVersionPayload, SUpdateMusicVersionPayload } from '@sh3pherd/shared-types';
 
-
-/**
- * Controller for managing music versions.
- */
 @Controller('music-version')
 export class MusicVersionsController {
-  constructor(
-    @Inject(MUSIC_VERSIONS_USE_CASES) private readonly uc: TMusicVersionsUseCases,
-  ) {};
+  constructor(private readonly cmdBus: CommandBus) {}
 
   @Post()
-  async createOne(
-    @Req() req: Request,
-    @Body('payload',
-      new ZodValidationPipe(SMusicVersionCreationFormPayloadSchema))
-      payload: TMusicVersionCreationFormPayload
+  async createVersion(
+    @ActorId() actorId: TUserId,
+    @Body('payload', new ZodValidationPipe(SCreateMusicVersionPayload)) payload: any,
   ): Promise<TApiResponse<TMusicVersionDomainModel>> {
-
-    const result = await this.uc.createOne({ payload, asker_id: req.user_id });
     return buildApiResponseDTO(
-      apiCodes.music.MUSIC_VERSION_CREATED,
-      result
+      MusicApiCodes.MUSIC_VERSION_CREATED,
+      await this.cmdBus.execute(new CreateMusicVersionCommand(actorId, payload)),
     );
-  };
+  }
+
+  @Patch(':id')
+  async updateVersion(
+    @ActorId() actorId: TUserId,
+    @Param('id') versionId: TMusicVersionId,
+    @Body('payload', new ZodValidationPipe(SUpdateMusicVersionPayload)) payload: any,
+  ): Promise<TApiResponse<TMusicVersionDomainModel>> {
+    return buildApiResponseDTO(
+      MusicApiCodes.MUSIC_VERSION_CREATED, // TODO: add VERSION_UPDATED code
+      await this.cmdBus.execute(new UpdateMusicVersionCommand(actorId, versionId, payload)),
+    );
+  }
+
+  @Delete(':id')
+  async deleteVersion(
+    @ActorId() actorId: TUserId,
+    @Param('id') versionId: TMusicVersionId,
+  ): Promise<TApiResponse<boolean>> {
+    return buildApiResponseDTO(
+      MusicApiCodes.MUSIC_VERSION_CREATED, // TODO: add VERSION_DELETED code
+      await this.cmdBus.execute(new DeleteMusicVersionCommand(actorId, versionId)),
+    );
+  }
 }

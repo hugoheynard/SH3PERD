@@ -42,7 +42,7 @@
     scrollbar-width: thin;
     white-space: nowrap;
     border-bottom: 1px solid black;
-    scrollbar-color: rgba(253, 255, 255, 0.2) transparent;
+    scrollbar-color: var(--accent-color-faded) transparent;
     -webkit-overflow-scrolling: touch;
   };
 

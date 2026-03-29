@@ -1,3 +1,5 @@
+@use '../../../../shared/styles/rating-dots' as *;
+
 :host {
   display: block;
 }
@@ -40,7 +42,7 @@
 .card-title {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-primary, #e2e8f0);
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -48,7 +50,7 @@
 
 .card-artist {
   font-size: 11px;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   margin-top: 1px;
   white-space: nowrap;
   overflow: hidden;
@@ -65,8 +67,8 @@
 
 .version-block {
   padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
   border-radius: 5px;
   display: flex;
   flex-direction: column;
@@ -98,6 +100,7 @@
 
 /* Show actions row on hover or when action is needed (upload/analyse) */
 .version-block:hover .version-actions,
+.version-block.expanded .version-actions,
 .version-actions:has(sh3-button),
 .version-actions:has(.analysing-indicator),
 .version-actions:has(.btn-confirm-delete) {
@@ -115,35 +118,25 @@
 .version-label {
   font-size: 11px;
   font-weight: 500;
-  color: var(--text-secondary, #a0aec0);
+  color: var(--text-secondary);
   min-width: 110px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.version-genre {
-  font-size: 10px;
-  font-weight: 500;
-  padding: 1px 6px;
-  border-radius: 3px;
-  background: rgba(159, 122, 234, 0.12);
-  border: 1px solid rgba(159, 122, 234, 0.2);
-  color: #b794f4;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
+/* Genre badge — uses <sh3-badge variant="info"> */
 
 .version-dur {
   font-size: 10px;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   min-width: 36px;
 }
 
 .version-bpm {
   font-size: 10px;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   flex-shrink: 0;
@@ -151,7 +144,7 @@
 
 .no-version {
   font-size: 11px;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   font-style: italic;
   padding: 4px 0;
 }
@@ -165,43 +158,10 @@
   flex-shrink: 0;
 }
 
-.rating-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-}
-
-.rating-label {
-  font-size: 8px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted, #718096);
-}
-
-.rating-dots {
-  display: flex;
-  gap: 3px;
-}
-
-.dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: background 0.1s ease;
-
-  &.filled {
-    border-color: transparent;
-
-    &[data-level='low']    { background: #fc8181; }
-    &[data-level='medium'] { background: #f6ad55; }
-    &[data-level='high']   { background: #68d391; }
-    &[data-level='max']    { background: var(--accent-color); }
-  }
-}
+.rating-group { @include rating-group; }
+.rating-label { @include rating-label; }
+.rating-dots  { @include rating-dots; }
+.dot          { @include dot; }
 
 /* ── Analysing indicator ────────────────────────── */
 
@@ -215,6 +175,7 @@
 /* ── Add version button ──────────────────────────── */
 
 .add-version-btn {
+  all: unset;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -222,13 +183,15 @@
   margin-top: 2px;
   width: 100%;
   background: transparent;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border: 1px dashed var(--panel-border-color);
   border-radius: 5px;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.12s, border-color 0.12s, color 0.12s;
+
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
 
   &:hover {
     background: var(--accent-color-dim);
@@ -266,7 +229,7 @@
 .add-version-icon {
   font-size: 14px;
   line-height: 1;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   transition: color 0.12s;
 }
 
@@ -287,6 +250,7 @@
   opacity: 0;
   transition: opacity var(--t-fast), color var(--t-fast), background var(--t-fast);
 
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
   &:hover { color: var(--color-alert-light); background: var(--color-alert-dim); }
 }
 
@@ -295,6 +259,30 @@
   &:hover { opacity: 1; }
 }
 
+.btn-track-action {
+  all: unset;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  opacity: 0.5;
+  transition: opacity var(--t-fast), background var(--t-fast);
+
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
+
+  &:hover {
+    opacity: 1;
+    background: var(--accent-color-dim);
+    color: var(--accent-color-light);
+  }
+}
+
+.btn-edit-version,
 .btn-delete-version {
   all: unset;
   cursor: pointer;
@@ -302,6 +290,7 @@
   opacity: 0.5;
   transition: opacity var(--t-fast);
 
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
   &:hover { opacity: 1; }
 }
 
@@ -316,6 +305,8 @@
   border: 1px solid var(--color-alert-border);
   color: var(--color-alert-light);
   white-space: nowrap;
+
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
 }
 
 .btn-cancel-delete {
@@ -330,6 +321,99 @@
   font-size: 11px;
   color: var(--text-faded);
 
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
   &:hover { background: var(--hover-color); }
 }
 
+/* ── Track count toggle ──────────────────────── */
+
+.btn-track-count {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--accent-color-light);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transition: background var(--t-fast);
+
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
+  &:hover { background: var(--accent-color-dim); }
+}
+
+.expand-chevron {
+  display: inline-block;
+  font-size: 11px;
+  transition: transform var(--t-fast);
+  &.open { transform: rotate(90deg); }
+}
+
+/* ── Track list (expanded) ───────────────────── */
+
+.track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0 2px;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 2px;
+}
+
+.track-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 6px;
+  border-radius: var(--radius-sm);
+  transition: background var(--t-fast);
+
+  &:hover { background: var(--surface-subtle); }
+
+  &.is-favorite {
+    background: var(--accent-color-dim);
+  }
+}
+
+.btn-favorite {
+  all: unset;
+  cursor: pointer;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.15);
+  transition: color var(--t-fast);
+  flex-shrink: 0;
+
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
+  &:hover { color: var(--accent-color-light); }
+  &.active { color: var(--accent-color); }
+}
+
+.track-name {
+  font-size: 10px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+.track-dur {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.track-quality {
+  @include quality-badge;
+}
+
+.track-pending {
+  font-size: 9px;
+  font-style: italic;
+  color: var(--text-faded);
+  flex-shrink: 0;
+}

@@ -12,67 +12,51 @@
         <th>NRG</th>
         <th>EFF</th>
         <th>QLT</th>
+        <th>Tracks</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
-      @for (ref of references(); track ref.id) {
-        @let versions = getVersions(ref.id);
-        @let hasEntry = !!entryIdForRef(ref.id);
+      @for (entry of entries(); track entry.id) {
 
-        @if (versions.length === 0) {
+        @if (entry.versions.length === 0) {
           <tr class="ref-row ref-row--empty">
             <td class="col-title">
-              <span>{{ ref.title }}</span>
-              @if (hasEntry) {
-                @if (confirmingDeleteId() === 'entry_' + ref.id) {
-                  <button class="btn-confirm-delete btn-confirm-delete--entry" type="button" (click)="requestEntryDelete(ref.id)">Remove?</button>
-                  <button class="btn-cancel-delete" type="button" (click)="cancelDelete()">×</button>
-                } @else {
-                  <button class="btn-delete-entry" type="button" title="Remove from repertoire" (click)="requestEntryDelete(ref.id)">×</button>
-                }
+              <span>{{ entry.reference.title }}</span>
+              @if (confirmingDeleteId() === 'entry_' + entry.id) {
+                <button class="btn-confirm-delete btn-confirm-delete--entry" type="button" (click)="requestEntryDelete(entry.id)">Remove?</button>
+                <button class="btn-cancel-delete" type="button" aria-label="Cancel" (click)="cancelDelete()">×</button>
+              } @else {
+                <button class="btn-delete-entry" type="button" aria-label="Remove from repertoire" title="Remove from repertoire" (click)="requestEntryDelete(entry.id)">×</button>
               }
             </td>
-            <td class="col-artist">{{ ref.originalArtist }}</td>
-            <td colspan="9">
-              @if (hasEntry) {
-                <sh3-button variant="recommended" size="sm" (clicked)="addingRefId.set(ref.id)">+ Add a version</sh3-button>
-              } @else {
-                <span class="no-version">no version</span>
-              }
+            <td class="col-artist">{{ entry.reference.originalArtist }}</td>
+            <td colspan="10">
+              <sh3-button variant="recommended" size="sm" (clicked)="addingEntryId.set(entry.id)">+ Add a version</sh3-button>
             </td>
           </tr>
         }
 
-        @for (version of versions; track version.id; let first = $first) {
+        @for (version of entry.versions; track version.id; let first = $first; let last = $last) {
 
           @if (editingVersionId() === version.id) {
             <tr class="edit-row">
               @if (first) {
-                <td class="col-title" [attr.rowspan]="versions.length">{{ ref.title }}</td>
-                <td class="col-artist" [attr.rowspan]="versions.length">{{ ref.originalArtist }}</td>
+                <td class="col-title" [attr.rowspan]="entry.versions.length">{{ entry.reference.title }}</td>
+                <td class="col-artist" [attr.rowspan]="entry.versions.length">{{ entry.reference.originalArtist }}</td>
               }
               <td>
                 <sh3-input
                   class="edit-input--label"
                   size="sm"
                   [(ngModel)]="editLabel"
-                  (keydown.enter)="commitEdit(version.id)"
+                  (keydown.enter)="commitEdit(entry.id, version.id)"
                   (keydown.escape)="cancelEdit()"
                   [autofocus]="true"
                 />
               </td>
-              <td>
-                <sh3-input
-                  class="edit-input--dur"
-                  size="sm"
-                  align="center"
-                  type="number"
-                  [min]="1"
-                  placeholder="min"
-                  [(ngModel)]="editDuration"
-                  (keydown.enter)="commitEdit(version.id)"
-                />
+              <td class="col-dur">
+                {{ formatDuration(favoriteDuration(version)) }}
               </td>
               <td>
                 <select class="edit-select" [(ngModel)]="editGenre">
@@ -90,7 +74,7 @@
                   [min]="1"
                   placeholder="BPM"
                   [(ngModel)]="editBpm"
-                  (keydown.enter)="commitEdit(version.id)"
+                  (keydown.enter)="commitEdit(entry.id, version.id)"
                 />
               </td>
               @for (cfg of editRatingFields; track cfg.field) {
@@ -108,40 +92,36 @@
                   </div>
                 </td>
               }
-              <!-- QLT: read-only in edit mode (analysis-derived) -->
               <td class="col-rating col-rating--quality">
-                @if (version.analysisResult) {
-                  <span class="rating-val" [attr.data-level]="ratingLevel(version.analysisResult.quality)">
-                    {{ version.analysisResult.quality }}/4
-                  </span>
+                @if (favoriteQuality(version); as q) {
+                  <span class="rating-val" [attr.data-level]="ratingLevel(q)">{{ q }}/4</span>
                 } @else {
                   <span class="col-quality-placeholder">—</span>
                 }
               </td>
+              <td class="col-tracks">{{ trackCount(version) }}</td>
               <td class="col-actions">
-                <button class="btn-save" type="button" (click)="commitEdit(version.id)">✓</button>
-                <button class="btn-cancel-edit" type="button" (click)="cancelEdit()">×</button>
+                <button class="btn-save" type="button" aria-label="Save changes" (click)="commitEdit(entry.id, version.id)">✓</button>
+                <button class="btn-cancel-edit" type="button" aria-label="Cancel edit" (click)="cancelEdit()">×</button>
               </td>
             </tr>
 
           } @else {
             <tr class="ref-row" [class.first-version]="first">
               @if (first) {
-                <td class="col-title" [attr.rowspan]="versions.length">
-                  <span>{{ ref.title }}</span>
-                  @if (hasEntry) {
-                    @if (confirmingDeleteId() === 'entry_' + ref.id) {
-                      <button class="btn-confirm-delete btn-confirm-delete--entry" type="button" (click)="requestEntryDelete(ref.id)">Remove?</button>
-                      <button class="btn-cancel-delete" type="button" (click)="cancelDelete()">×</button>
-                    } @else {
-                      <button class="btn-delete-entry" type="button" title="Remove from repertoire" (click)="requestEntryDelete(ref.id)">×</button>
-                    }
+                <td class="col-title" [attr.rowspan]="entry.versions.length">
+                  <span>{{ entry.reference.title }}</span>
+                  @if (confirmingDeleteId() === 'entry_' + entry.id) {
+                    <button class="btn-confirm-delete btn-confirm-delete--entry" type="button" (click)="requestEntryDelete(entry.id)">Remove?</button>
+                    <button class="btn-cancel-delete" type="button" aria-label="Cancel" (click)="cancelDelete()">×</button>
+                  } @else {
+                    <button class="btn-delete-entry" type="button" aria-label="Remove from repertoire" title="Remove from repertoire" (click)="requestEntryDelete(entry.id)">×</button>
                   }
                 </td>
-                <td class="col-artist" [attr.rowspan]="versions.length">{{ ref.originalArtist }}</td>
+                <td class="col-artist" [attr.rowspan]="entry.versions.length">{{ entry.reference.originalArtist }}</td>
               }
               <td class="col-versions"><span class="version-label">{{ version.label }}</span></td>
-              <td class="col-dur">{{ formatDuration(version.durationSeconds) }}</td>
+              <td class="col-dur">{{ formatDuration(favoriteDuration(version)) }}</td>
               <td><sh3-badge [content]="version.genre" radius="square" variant="info" /></td>
               <td class="col-bpm">{{ version.bpm ?? '—' }}</td>
               @for (r of [version.mastery, version.energy, version.effort]; track $index) {
@@ -149,31 +129,32 @@
                   <span class="rating-val" [attr.data-level]="ratingLevel(r)">{{ r }}/4</span>
                 </td>
               }
-              <!-- QLT column: upload / analyse / score -->
               <td class="col-rating col-rating--quality">
-                @if (!version.trackUploaded) {
-                  <sh3-button variant="critical" size="sm" (clicked)="trackUploadRequested.emit(version.id)">↑ Upload</sh3-button>
-                } @else if (!version.analysisResult) {
-                  @if (analysingIds().has(version.id)) {
-                    <span class="analysing-indicator">Analysing…</span>
-                  } @else {
-                    <sh3-button variant="primary" size="sm" (clicked)="analyzeRequested.emit(version.id)">⚡ Analyse</sh3-button>
-                  }
+                @if (analysingIds().has(version.id)) {
+                  <span class="analysing-indicator">Analysing…</span>
+                } @else if (favoriteQuality(version); as q) {
+                  <span class="rating-val" [attr.data-level]="ratingLevel(q)">{{ q }}/4</span>
                 } @else {
-                  <span class="rating-val" [attr.data-level]="ratingLevel(version.analysisResult.quality)">
-                    {{ version.analysisResult.quality }}/4
-                  </span>
+                  <span class="col-quality-placeholder">—</span>
+                }
+              </td>
+              <td class="col-tracks">
+                @if (hasTrack(version)) {
+                  <span class="track-count">{{ trackCount(version) }}</span>
+                } @else {
+                  <span class="col-quality-placeholder">—</span>
                 }
               </td>
               <td class="col-actions">
                 @if (confirmingDeleteId() === version.id) {
-                  <button class="btn-confirm-delete" type="button" (click)="requestDelete(version.id)">Confirm?</button>
-                  <button class="btn-cancel-delete" type="button" (click)="cancelDelete()">×</button>
+                  <button class="btn-confirm-delete" type="button" (click)="requestDeleteVersion(entry.id, version.id)">Confirm?</button>
+                  <button class="btn-cancel-delete" type="button" aria-label="Cancel" (click)="cancelDelete()">×</button>
                 } @else {
-                  <button class="btn-edit" type="button" title="Edit" (click)="startEdit(version)">✎</button>
-                  <button class="btn-delete" type="button" title="Delete version" (click)="requestDelete(version.id)">🗑</button>
-                  @if ($last && hasEntry) {
-                    <button class="btn-add-ver" type="button" title="Add version" (click)="addingRefId.set(ref.id)">+</button>
+                  <sh3-button [variant]="hasTrack(version) ? 'ghost' : 'critical'" size="sm" (clicked)="trackUploadRequested.emit({ entryId: entry.id, versionId: version.id })">+ Track</sh3-button>
+                  <button class="btn-edit" type="button" aria-label="Edit version" title="Edit" (click)="startEdit(version)">✎</button>
+                  <button class="btn-delete" type="button" aria-label="Delete version" title="Delete version" (click)="requestDeleteVersion(entry.id, version.id)">🗑</button>
+                  @if (last) {
+                    <button class="btn-add-ver" type="button" aria-label="Add version" title="Add version" (click)="addingEntryId.set(entry.id)">+</button>
                   }
                 }
               </td>
@@ -181,12 +162,12 @@
           }
         }
 
-        @if (addingRefId() === ref.id) {
+        @if (addingEntryId() === entry.id) {
           <tr class="form-row">
-            <td colspan="11" class="form-cell">
+            <td colspan="12" class="form-cell">
               <app-add-version-form
-                (submitted)="onVersionSubmitted($event, ref.id)"
-                (cancelled)="addingRefId.set(null)"
+                (submitted)="onVersionSubmitted($event, entry.id)"
+                (cancelled)="addingEntryId.set(null)"
               />
             </td>
           </tr>

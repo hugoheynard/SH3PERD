@@ -1,31 +1,39 @@
+/**
+ * Music Library feature types.
+ *
+ * Data types (Rating, Genre, VersionTrack, etc.) are re-exported from @sh3pherd/shared-types.
+ * Only UI-specific types (state, tabs, search, cross-search) are defined here.
+ */
+
+// ─── Re-exports from shared-types (data) ────────────────────
+import { Genre, VersionType } from '@sh3pherd/shared-types';
+export { Genre, VersionType };
+export type { TRating, TGenreEnum, TTypeEnum } from '@sh3pherd/shared-types';
+export type { TAudioAnalysisSnapshot } from '@sh3pherd/shared-types';
+export type { TVersionTrackDomainModel } from '@sh3pherd/shared-types';
+export type { TReferenceView, TVersionView, TRepertoireEntryViewModel } from '@sh3pherd/shared-types';
+
+// ─── Aliases for brevity in templates ───────────────────────
+export type Rating = import('@sh3pherd/shared-types').TRating;
+export type MusicGenre = import('@sh3pherd/shared-types').TGenreEnum;
+export type AudioAnalysisSnapshot = import('@sh3pherd/shared-types').TAudioAnalysisSnapshot;
+export type VersionTrack = import('@sh3pherd/shared-types').TVersionTrackDomainModel;
+export type MusicVersion = import('@sh3pherd/shared-types').TVersionView;
+export type MusicReference = import('@sh3pherd/shared-types').TReferenceView;
+export type LibraryEntry = import('@sh3pherd/shared-types').TRepertoireEntryViewModel;
+
+/** All genre values as an array — for iteration in templates. */
+export const MUSIC_GENRES = Object.values(Genre) as MusicGenre[];
+
+// ─── UI-specific types ──────────────────────────────────────
+
 export type SearchMode = 'repertoire' | 'cross' | 'shared' | 'match';
 export type TargetMode = 'me' | 'single-user' | 'multiple-users';
-export type Rating = 1 | 2 | 3 | 4;
-
-export const MUSIC_GENRES = ['Pop', 'Rock', 'EDM', 'Jazz/Soul', 'Hip-Hop', 'R&B', 'Classical', 'Folk/Acoustic'] as const;
-export type MusicGenre = typeof MUSIC_GENRES[number];
-
-/**
- * Lightweight summary of an audio analysis run stored on a version.
- * Populated by AudioAnalyzerService; absent until the user analyses the track.
- * `quality` is auto-scored 1–4 from the measured metrics.
- */
-export type AudioAnalysisSnapshot = {
-  integratedLUFS: number;
-  loudnessRange:  number;
-  truePeakdBTP:   number;
-  SNRdB:          number;
-  clippingRatio:  number;
-  quality:        Rating;
-};
 
 export interface MusicLibraryState {
-  references: MusicReference[];
-  repertoire: RepertoireEntry[];
-  versions: MusicVersion[];
+  entries: LibraryEntry[];
   tabs: MusicTab[];
   activeTabId: string;
-  searchQuery: string;
   savedTabConfigs: SavedTabConfig[];
   crossContext?: CrossSearchContext;
 }
@@ -37,40 +45,13 @@ export type SavedTabConfig = {
   createdAt: number;
 };
 
-export type MusicReference = {
-  id: string;
-  title: string;
-  originalArtist: string;
-};
-
-export type RepertoireEntry = {
-  id: string;
-  referenceId: string;
-  userId: string;
-};
-
-export type MusicVersion = {
-  id: string;
-  entryId: string;   // links to RepertoireEntry (encodes userId + referenceId)
-  label: string;
-  durationSeconds?: number;
-  bpm?: number;
-  genre: MusicGenre;
-  notes?: string;
-  mastery: Rating;
-  energy: Rating;
-  effort: Rating;
-  /** True once the user has attached an audio file to this version. */
-  trackUploaded: boolean;
-  /** Populated by AudioAnalyzerService after the user runs analysis. */
-  analysisResult?: AudioAnalysisSnapshot;
-};
-
 export type MusicTab = {
   id: string;
   title: string;
   autoTitle: boolean;
   searchConfig: MusicSearchConfig;
+  searchQuery: string;
+  color?: string;
 };
 
 export type MusicSearchConfig = {
@@ -92,9 +73,10 @@ export type MusicDataFilter = {
   mastery?: Rating[];
   energy?: Rating[];
   effort?: Rating[];
-  /** Filters on analysis-derived quality (only versions with analysisResult are matched). */
   quality?: Rating[];
 };
+
+/* ── Cross search ── */
 
 export type ContractMember = {
   userId: string;
@@ -104,7 +86,7 @@ export type ContractMember = {
 
 export type CrossMemberVersion = {
   hasVersion: boolean;
-  versions: Pick<MusicVersion, 'id' | 'label' | 'mastery' | 'energy' | 'effort' | 'analysisResult'>[];
+  versions: Pick<MusicVersion, 'id' | 'label' | 'mastery' | 'energy' | 'effort' | 'tracks'>[];
 };
 
 export type CrossReferenceResult = {

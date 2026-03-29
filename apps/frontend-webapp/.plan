@@ -1,0 +1,105 @@
+# Plan : Multi-tracks par version + favorite
+
+## Contexte
+Actuellement `MusicVersion` a un seul track (`trackUploaded: boolean` + `analysisResult?: AudioAnalysisSnapshot`).
+On veut : chaque version peut avoir **plusieurs tracks**, avec un seul marqué **favorite** (= celui qu'on utilise).
+Le seul indicateur d'un track est sa **quality** (issue de l'analyse audio).
+
+## 1. Nouveau type `VersionTrack`
+
+```ts
+export type VersionTrack = {
+  id: string;
+  fileName: string;          // nom du fichier uploadé
+  uploadedAt: number;        // timestamp
+  analysisResult?: AudioAnalysisSnapshot;
+  favorite: boolean;         // un seul true par version
+};
+```
+
+## 2. Modifier `MusicVersion`
+
+```ts
+export type MusicVersion = {
+  id: string;
+  entryId: string;
+  label: string;
+  durationSeconds?: number;
+  bpm?: number;
+  genre: MusicGenre;
+  notes?: string;
+  mastery: Rating;
+  energy: Rating;
+  effort: Rating;
+  tracks: VersionTrack[];    // remplace trackUploaded + analysisResult
+};
+```
+
+- Suppression de `trackUploaded` et `analysisResult`
+- `trackUploaded` → dérivé : `version.tracks.length > 0`
+- `analysisResult` au niveau version → dérivé : `version.tracks.find(t => t.favorite)?.analysisResult`
+- Quality affichée = celle du track favorite
+
+## 3. Mutation service (`music-version-mutation.service.ts`)
+
+Nouvelles méthodes :
+- `addTrack(versionId, fileName)` → push un VersionTrack, si premier track → auto favorite
+- `removeTrack(versionId, trackId)` → supprime, si c'était le favorite → promote le suivant
+- `setFavoriteTrack(versionId, trackId)` → met favorite=true, les autres à false
+- `saveTrackAnalysis(versionId, trackId, snapshot)` → met l'analysis sur le track
+
+Méthodes supprimées/modifiées :
+- `markTrackUploaded` → supprimé (remplacé par addTrack)
+- `saveAnalysis` → renommé en `saveTrackAnalysis`
+
+## 4. Selector layer (`version-selector.service.ts`)
+
+Ajouter des computed helpers :
+- `favoriteTrack(version)` → retourne le track favorite ou undefined
+- `versionQuality(version)` → quality du favorite track
+- `hasTrack(version)` → tracks.length > 0
+
+## 5. Mock data
+
+Mettre à jour `MOCK_VERSIONS` pour inclure des `tracks[]` :
+- Certaines versions avec 2-3 tracks (différentes qualités)
+- Un track marqué favorite par version
+- Certaines versions sans tracks (array vide)
+
+## 6. Templates (card + table)
+
+### Card (`music-reference-card`)
+- Remplacer le bouton "Upload" par "Add track"
+- Afficher le nombre de tracks : `3 tracks` avec icône
+- La quality affichée = celle du favorite
+- Ajouter une icône étoile à côté du nombre pour indiquer le favorite
+- Au hover/expand d'une version : liste des tracks avec quality badge + bouton étoile pour changer le favorite
+
+### Table (`music-repertoire-table`)
+- Colonne quality = quality du favorite track
+- Colonne tracks = nombre de tracks
+- En mode edit : pouvoir voir les tracks, changer le favorite, supprimer un track
+
+## 7. Fichiers impactés
+
+1. `music-library-types.ts` — nouveau type + modif MusicVersion
+2. `music-version-mutation.service.ts` — nouvelles méthodes track
+3. `version-selector.service.ts` — helpers computed
+4. `mock-music-data.ts` — données avec tracks[]
+5. `music-reference-card.component.html` — UI tracks
+6. `music-reference-card.component.ts` — logique tracks
+7. `music-reference-card.component.scss` — styles tracks
+8. `music-repertoire-table.component.html` — UI tracks colonne
+9. `music-repertoire-table.component.ts` — logique
+10. `music-repertoire-table.component.scss` — styles
+11. `CrossMemberVersion` type — adapter le pick pour tracks
+
+## Ordre d'exécution
+
+1. Types (VersionTrack + MusicVersion)
+2. Mock data
+3. Mutation service
+4. Selector service
+5. Card template + TS
+6. Table template + TS
+7. Build check

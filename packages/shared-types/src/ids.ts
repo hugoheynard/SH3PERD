@@ -41,6 +41,19 @@ export const STeamId = createIdSchema<TTeamId>('team');
 export type TCastMembershipEventId = `castevt_${string}`;
 export const SCastMembershipEventId = createIdSchema<TCastMembershipEventId>('castevt');
 
-// ─── Event / Calendar ─────────────────────────────────────
+// ─── Music ─────────────────────────────────────────────────
+export type TMusicReferenceId = `musicRef_${string}`;
+export const SMusicReferenceId = createIdSchema<TMusicReferenceId>('musicRef');
+
+export type TMusicVersionId = `musicVer_${string}`;
+export const SMusicVersionId = createIdSchema<TMusicVersionId>('musicVer');
+
+export type TRepertoireEntryId = `repEntry_${string}`;
+export const SRepertoireEntryId = createIdSchema<TRepertoireEntryId>('repEntry');
+
+export type TVersionTrackId = `track_${string}`;
+export const SVersionTrackId = createIdSchema<TVersionTrackId>('track');
+
+// ─── Event / Calendar ──────────────────────────────────────
 export type TEventId = `event_${string}`;
 export const SEventId = createIdSchema<TEventId>('event');

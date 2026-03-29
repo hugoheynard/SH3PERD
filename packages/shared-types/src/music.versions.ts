@@ -1,36 +1,96 @@
 import { z } from 'zod';
-import { SUserId } from './user/user.domain.js';
-import { SGenreEnum, SMusicReference_id, STypeEnum } from './music.domain.schemas.js';
-import { SRecordMetadata } from './metadata.types.js';
+import { SMusicVersionId, SMusicReferenceId, SUserId } from './ids.js';
+import type { TMusicVersionId, TMusicReferenceId, TUserId } from './ids.js';
+import { SGenreEnum, STypeEnum, SRating } from './music.domain.schemas.js';
+import type { TGenreEnum, TTypeEnum, TRating } from './music.domain.schemas.js';
+import { SVersionTrackDomainModel } from './music-tracks.js';
+import type { TVersionTrackDomainModel } from './music-tracks.js';
 
+// ─── Domain model ──────────────────────────────────────────
 
-export const SMusicVersion_id = z.string().regex(
-  /^musicVersion_[a-zA-Z0-9_-]+$/,
-  { message: 'Invalid musicVersion_id format' },
-);
+/** A user's rendition of a music reference (cover, pitch variant, acoustic…). */
+export interface TMusicVersionDomainModel {
+  id:                TMusicVersionId;
+  musicReference_id: TMusicReferenceId;
+  owner_id:          TUserId;
+  label:             string;
+  genre:             TGenreEnum;
+  type:              TTypeEnum;
+  bpm:               number | null;
+  pitch:             number | null;
+  notes?:            string;
+  mastery:           TRating;
+  energy:            TRating;
+  effort:            TRating;
+  tracks:            TVersionTrackDomainModel[];
+}
 
-export type TMusicVersionId = z.infer<typeof SMusicVersion_id>;
-
-export const SMusicVersionDomainModel = z.object({
-  title: z.string().min(1),
-  artist: z.string().min(1),
-  owner_id: SUserId,
-  genre: SGenreEnum,
-  type: STypeEnum,
-  bpm: z.number().nullable(),
-  pitch: z.number().nullable(),
-  musicReference_id: SMusicReference_id.nullable(),
-  metadata: SRecordMetadata,
+const _SMusicVersionDomainModel = z.object({
+  id:                SMusicVersionId,
+  musicReference_id: SMusicReferenceId,
+  owner_id:          SUserId,
+  label:             z.string().min(1),
+  genre:             SGenreEnum,
+  type:              STypeEnum,
+  bpm:               z.number().nullable(),
+  pitch:             z.number().nullable(),
+  notes:             z.string().optional(),
+  mastery:           SRating,
+  energy:            SRating,
+  effort:            SRating,
+  tracks:            z.array(SVersionTrackDomainModel),
 });
 
-export type TMusicVersionDomainModel = z.infer<typeof SMusicVersionDomainModel>;
+export const SMusicVersionDomainModel = _SMusicVersionDomainModel;
 
 
-/** 🎛️ Form Payload */
-export const SMusicVersionCreationFormPayloadSchema = SMusicVersionDomainModel
-  .omit({
-    owner_id: true,
-    metadata: true,
-  });
+// ─── DTOs ──────────────────────────────────────────────────
 
-export type TMusicVersionCreationFormPayload = z.infer<typeof SMusicVersionCreationFormPayloadSchema>;
+export interface TCreateMusicVersionPayload {
+  musicReference_id: TMusicReferenceId;
+  label:             string;
+  genre:             TGenreEnum;
+  type:              TTypeEnum;
+  bpm:               number | null;
+  pitch:             number | null;
+  notes?:            string;
+  mastery:           TRating;
+  energy:            TRating;
+  effort:            TRating;
+}
+
+export const SCreateMusicVersionPayload = _SMusicVersionDomainModel.omit({
+  id: true,
+  owner_id: true,
+  tracks: true,
+});
+
+export interface TUpdateMusicVersionPayload {
+  label?:   string;
+  genre?:   TGenreEnum;
+  type?:    TTypeEnum;
+  bpm?:     number | null;
+  pitch?:   number | null;
+  notes?:   string;
+  mastery?: TRating;
+  energy?:  TRating;
+  effort?:  TRating;
+}
+
+export const SUpdateMusicVersionPayload = _SMusicVersionDomainModel
+  .pick({
+    label: true,
+    genre: true,
+    type: true,
+    bpm: true,
+    pitch: true,
+    notes: true,
+    mastery: true,
+    energy: true,
+    effort: true,
+  })
+  .partial();
+
+
+/** @deprecated Use TMusicVersionId from ids.ts */
+export const SMusicVersion_id = SMusicVersionId;

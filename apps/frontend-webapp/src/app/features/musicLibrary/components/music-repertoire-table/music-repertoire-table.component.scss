@@ -1,4 +1,5 @@
 @use '../../../../shared/styles/buttons' as *;
+@use '../../../../shared/styles/rating-dots' as rd;
 
 :host {
   display: block;
@@ -16,13 +17,13 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 12px;
-  color: var(--text-primary, #e2e8f0);
+  color: var(--text-primary);
 }
 
-/* ── Header ─────────────────────────────────────── */
+/* -- Header ------------------------------------------------- */
 
 thead tr {
-  background: var(--header-color, #1b2028);
+  background: var(--header-color);
   position: sticky;
   top: 0;
   z-index: 1;
@@ -35,24 +36,24 @@ th {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.6px;
-  color: var(--text-muted, #718096);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--panel-border-color);
   white-space: nowrap;
 }
 
-/* ── Body ───────────────────────────────────────── */
+/* -- Body --------------------------------------------------- */
 
 .ref-row {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--border-subtle);
   transition: background 0.12s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--surface-subtle);
   }
 
   &.has-entry {
     .col-title {
-      color: var(--text-primary, #e2e8f0);
+      color: var(--text-primary);
     }
   }
 }
@@ -62,7 +63,7 @@ td {
   vertical-align: middle;
 }
 
-/* ── Specific columns ───────────────────────────── */
+/* -- Specific columns --------------------------------------- */
 
 .col-title {
   font-weight: 600;
@@ -88,7 +89,7 @@ td {
   white-space: nowrap;
 }
 
-/* ── Genre tags ─────────────────────────────────── */
+/* -- Genre tags --------------------------------------------- */
 
 .genre-list {
   display: flex;
@@ -96,46 +97,22 @@ td {
   gap: 3px;
 }
 
-/* ── Rating cells ───────────────────────────────── */
+/* -- Rating cells ------------------------------------------- */
 
 .col-rating {
   text-align: center;
 }
 
 .rating-val {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-
-  &[data-level='low'] {
-    background: rgba(252, 129, 129, 0.15);
-    color: #fc8181;
-  }
-
-  &[data-level='medium'] {
-    background: rgba(246, 173, 85, 0.15);
-    color: #f6ad55;
-  }
-
-  &[data-level='high'] {
-    background: rgba(104, 211, 145, 0.15);
-    color: #68d391;
-  }
-
-  &[data-level='max'] {
-    background: var(--accent-color-dim);
-    color: var(--accent-color-light);
-  }
+  @include rd.rating-val;
 }
 
 .rating-none {
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   font-size: 12px;
 }
 
-/* ── Version label ───────────────────────────────── */
+/* -- Version label ------------------------------------------ */
 
 .version-label {
   font-size: 11px;
@@ -145,7 +122,7 @@ td {
 
 .no-version {
   font-size: 11px;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -153,7 +130,24 @@ td {
   background: rgba(246, 173, 85, 0.03);
 }
 
-/* ── Action column ───────────────────────────────── */
+/* -- Tracks column ------------------------------------------ */
+
+.col-tracks {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.track-count {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--accent-color-dim);
+  color: var(--accent-color-light);
+}
+
+/* -- Action column ------------------------------------------ */
 
 .col-actions {
   white-space: nowrap;
@@ -171,8 +165,16 @@ td {
 .btn-edit,
 .btn-add-ver,
 .btn-save,
-.btn-cancel-edit {
+.btn-cancel-edit,
+.btn-track-action {
   @include btn-icon(22);
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
+}
+
+.btn-track-action {
+  opacity: 0.5;
+  font-weight: 700;
+  &:hover { opacity: 1; background: var(--accent-color-dim); color: var(--accent-color-light); }
 }
 
 .btn-add-ver {
@@ -183,7 +185,7 @@ td {
 
 .btn-save {
   color: var(--color-success);
-  &:hover { background: rgba(104, 211, 145, 0.12); }
+  &:hover { background: var(--color-rating-high-dim); }
 }
 
 .btn-cancel-edit {
@@ -195,6 +197,7 @@ td {
   font-size: 12px;
   opacity: 0.5;
   &:hover { opacity: 1; background: var(--color-alert-dim); color: var(--color-alert-light); }
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
 }
 
 .btn-confirm-delete {
@@ -210,6 +213,8 @@ td {
   white-space: nowrap;
   animation: pulse-alert 0.8s ease infinite alternate;
 
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
+
   &--entry {
     font-size: 10px;
     margin-left: 6px;
@@ -220,6 +225,7 @@ td {
   @include btn-icon(18);
   font-size: 11px;
   &:hover { background: var(--hover-color); }
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
 }
 
 .btn-delete-entry {
@@ -232,6 +238,7 @@ td {
   transition: opacity var(--t-fast), color var(--t-fast);
 
   &:hover { color: var(--color-alert-light); background: var(--color-alert-dim); }
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
 }
 
 .col-title:hover .btn-delete-entry,
@@ -245,7 +252,7 @@ td {
   to   { opacity: 1; }
 }
 
-/* ── Edit row ────────────────────────────────────── */
+/* -- Edit row ----------------------------------------------- */
 
 .edit-row {
   background: var(--accent-color-dim);
@@ -259,12 +266,12 @@ td {
 .edit-input--bpm   { width: 58px; }
 
 .edit-select {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--divider-color);
+  border: 1px solid var(--border-light);
   border-radius: 5px;
   padding: 4px 6px;
   font-size: 11px;
-  color: var(--text-primary, #e2e8f0);
+  color: var(--text-primary);
   outline: none;
   cursor: pointer;
   max-width: 110px;
@@ -277,32 +284,24 @@ td {
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
+  @include rd.dot(10px);
   cursor: pointer;
-  transition: background 0.1s, transform 0.1s;
 
   &:hover { transform: scale(1.2); }
-
-  &.filled {
-    &[data-level='low']    { background: #fc8181; }
-    &[data-level='medium'] { background: #f6ad55; }
-    &[data-level='high']   { background: #68d391; }
-    &[data-level='max']    { background: var(--accent-color); }
-  }
 }
 
-/* ── Quality column — track upload / analyse / score ── */
+.edit-dots .dot {
+  cursor: pointer;
+}
+
+/* -- Quality column -- track upload / analyse / score ------- */
 
 .col-rating--quality {
   white-space: nowrap;
 }
 
 .col-quality-placeholder {
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   font-size: 12px;
 }
 
@@ -313,8 +312,8 @@ td {
   white-space: nowrap;
 }
 
-/* ── Add version form row ────────────────────────── */
+/* -- Add version form row ----------------------------------- */
 
 .form-row { background: var(--accent-color-dim); }
 
-.form-cell { padding: 10px 16px !important; }
+.form-row .form-cell { padding: 10px 16px; }

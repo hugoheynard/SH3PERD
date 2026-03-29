@@ -1,51 +1,39 @@
-import type { TUserId } from './user/user.domain.js';
-import type {
-  TEffortLevel,
-  TMasteryLevel,
-  TMusicGenres,
-  TMusicKeys,
-  TVersionEnergy,
-  TVersionType,
-} from './music.domain.types.js';
-import type { TMusicVersionId } from './music.versions.js';
+import { z } from 'zod';
+import { SRepertoireEntryId, SMusicReferenceId, SUserId } from './ids.js';
+import type { TRepertoireEntryId, TMusicReferenceId, TUserId } from './ids.js';
+import type { TApiResponse } from './api.types.js';
 
-export type TMusicRepertoireEntryDomainModel = {
-  musicVersion_id: TMusicVersionId;
-  user_id: TUserId;
-  performer_id: TUserId;
-  effort: TEffortLevel;
-  energy: 1 | 2 | 3 | 4;
-  mastery: TMasteryLevel;
-  affinity: 1 | 2 | 3 | 4;
-  created_at: Date;
-  updated_at: Date;
-  created_by: TUserId;
-};
+// ─── Domain model ──────────────────────────────────────────
 
-export type TUserRepertoireTableRow = {
-  musicVersion_id: TMusicVersionId;
-  title: string;
-  artist: string;
-  title_override?: string;
-  artist_override?: string;
-  type: TVersionType;
-  genre: TMusicGenres;
-  duration?: number;
-  key?: TMusicKeys;
-  pitch?: number;
-  bpm?: number;
-  energy?: TVersionEnergy;
-  effort: TEffortLevel;
-  mastery: TMasteryLevel;
-};
-
-
-
-//--- DTOs ---//
-export type TGetMusicRepertoireByFilterRequestDTO = {
-  asker_user_id: TUserId;
-  target_user_id: TUserId | TUserId[];
-  filter: any;
+/** Links a user to a music reference — "this song is in my repertoire". */
+export interface TMusicRepertoireEntryDomainModel {
+  id:                TRepertoireEntryId;
+  musicReference_id: TMusicReferenceId;
+  user_id:           TUserId;
 }
 
-export type TGetMusicRepertoireByFilterResponseDTO = Map<TUserId, TUserRepertoireTableRow[]>
+export const SMusicRepertoireEntryDomainModel = z.object({
+  id:                 SRepertoireEntryId,
+  musicReference_id:  SMusicReferenceId,
+  user_id:            SUserId,
+});
+
+
+// ─── DTOs ──────────────────────────────────────────────────
+
+export interface TCreateRepertoireEntryPayload {
+  musicReference_id: TMusicReferenceId;
+}
+
+export const SCreateRepertoireEntryPayload = z.object({
+  musicReference_id: SMusicReferenceId,
+});
+
+
+export interface TGetMusicRepertoireByFilterRequestDTO {
+  asker_user_id:  TUserId;
+  target_user_id: TUserId | TUserId[];
+  filter?:        Record<string, unknown>;
+}
+
+export type TGetMusicRepertoireByFilterResponseDTO = TApiResponse<TMusicRepertoireEntryDomainModel[]>;

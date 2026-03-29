@@ -11,5 +11,6 @@ export type TFindMusicReferenceByTextSearchFn = (searchValue: string) => Promise
 
 export interface IMusicReferenceRepository extends IBaseCRUD<any> {
   findAll: () => Promise<TMusicReferenceDomainModel[]>;
+  findByIds: (ids: TMusicReferenceDomainModel['id'][]) => Promise<TMusicReferenceDomainModel[]>;
   findByTextSearch: TFindMusicReferenceByTextSearchFn;
 }

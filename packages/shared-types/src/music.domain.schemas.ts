@@ -1,18 +1,64 @@
 import { z } from 'zod';
 
-/** KEY */
-export const SMusicNoteEnum = z.enum(['C', 'D', 'E', 'F', 'G', 'A', 'B']);
-export const SAlterationEnum = z.enum(['#', 'b']);
-export const SToneEnum = z.enum(['major', 'minor']);
+// ─── Enums ──────────────────────────────────────────────────
 
-export const ALTERATION_KEY_MAP: Record<TMusicNoteEnum, TAlterationEnum[]> = {
-  'C': ['#'],
-  'D': ['#', 'b'],
-  'E': ['#'],
-  'F': ['#'],
-  'G': ['#', 'b'],
-  'A': ['#', 'b'],
-  'B': ['b']
+/** Musical key root note. */
+export enum MusicNote { C = 'C', D = 'D', E = 'E', F = 'F', G = 'G', A = 'A', B = 'B' }
+export const SMusicNoteEnum = z.nativeEnum(MusicNote);
+export type TMusicNoteEnum = MusicNote;
+
+/** Alteration (sharp / flat). */
+export enum Alteration { Sharp = '#', Flat = 'b' }
+export const SAlterationEnum = z.nativeEnum(Alteration);
+export type TAlterationEnum = Alteration;
+
+/** Major / minor tone. */
+export enum Tone { Major = 'major', Minor = 'minor' }
+export const SToneEnum = z.nativeEnum(Tone);
+export type TToneEnum = Tone;
+
+/** Music genre. */
+export enum Genre {
+  Pop        = 'pop',
+  Rock       = 'rock',
+  Jazz       = 'jazz',
+  Edm        = 'edm',
+  SoulDisco  = 'soul-disco',
+  Ethnic     = 'ethnic',
+  Various    = 'various',
+}
+export const SGenreEnum = z.nativeEnum(Genre);
+export type TGenreEnum = Genre;
+
+/** Version type (original, cover…). */
+export enum VersionType {
+  Original = 'original',
+  Cover    = 'cover',
+  Remix    = 'remix',
+  Acoustic = 'acoustic',
+}
+export const STypeEnum = z.nativeEnum(VersionType);
+export type TTypeEnum = VersionType;
+
+/** Rating 1–4, used for mastery, energy, effort, quality. */
+export type TRating = 1 | 2 | 3 | 4;
+export const SRating = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]);
+
+/** Nullable grade (legacy compat). */
+export const SMusicGrade = SRating.nullable();
+export type TMusicGrade = TRating | null;
+
+
+// ─── Key schema ─────────────────────────────────────────────
+
+export const ALTERATION_KEY_MAP: Record<MusicNote, Alteration[]> = {
+  [MusicNote.C]: [Alteration.Sharp],
+  [MusicNote.D]: [Alteration.Sharp, Alteration.Flat],
+  [MusicNote.E]: [Alteration.Sharp],
+  [MusicNote.F]: [Alteration.Sharp],
+  [MusicNote.G]: [Alteration.Sharp, Alteration.Flat],
+  [MusicNote.A]: [Alteration.Sharp, Alteration.Flat],
+  [MusicNote.B]: [Alteration.Flat],
 };
 
 export const SKeySchema = z
@@ -35,48 +81,4 @@ export const SKeySchema = z
         });
       }
     }
-  })
-
-export type TMusicNoteEnum = z.infer<typeof SMusicNoteEnum>;
-export type TAlterationEnum = z.infer<typeof SAlterationEnum>;
-export type TToneEnum = z.infer<typeof SToneEnum>;
-
-// MUSIC DATAS
-export const SGenreEnum = z.enum(['pop', 'rock', 'jazz', 'edm', 'soul-disco', 'ethnic', 'various']);
-export const STypeEnum = z.enum(['original', 'cover', 'remix', 'acoustic']);
-
-export type TGenreEnum = z.infer<typeof SGenreEnum>;
-export type TTypeEnum = z.infer<typeof STypeEnum>;
-
-export const MUSIC_GRADE_VALUES = [1, 2, 3, 4] as const;
-export const SMusicGrade = z
-  .union([
-    z.literal(1),
-    z.literal(2),
-    z.literal(3),
-    z.literal(4),
-  ])
-  .nullable();
-
-export type TMusicGrade = z.infer<typeof SMusicGrade>;
-
-export const SMusicReference_id = z.string().regex(
-  /^musicReference_[a-zA-Z0-9_-]+$/,
-  { message: 'Invalid musicReference_id format' }
-);
-
-
-
-
-
-export const MusicRepertoireEntryPayloadSchema = z.object({
-  musicVersion_id: z.string().min(1),
-  repertoireEntryData: z.object({
-    effort: SMusicGrade,
-    energy: SMusicGrade,
-    mastery: SMusicGrade,
-    affinity: SMusicGrade
-  })
-})
-
-
+  });

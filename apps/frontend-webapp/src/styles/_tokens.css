@@ -42,6 +42,7 @@
 
   --accent-color:        #06a4a4;
   --accent-color-light:  #2dd4d4;
+  --accent-color-faded:  rgba(6, 164, 164, 0.25);
   --accent-color-dim:    rgba(6, 164, 164, 0.14);
   --accent-color-border: rgba(6, 164, 164, 0.35);
 
@@ -67,6 +68,24 @@
   --color-info-dim:      rgba(159, 122, 234, 0.12);
   --color-info-border:   rgba(159, 122, 234, 0.30);
 
+  /* Rating scale */
+  --color-rating-low:        #fc8181;
+  --color-rating-low-dim:    rgba(252, 129, 129, 0.15);
+  --color-rating-medium:     #f6ad55;
+  --color-rating-medium-dim: rgba(246, 173, 85, 0.15);
+  --color-rating-high:       #68d391;
+  --color-rating-high-dim:   rgba(104, 211, 145, 0.15);
+  --color-rating-max:        var(--accent-color);
+  --color-rating-max-dim:    var(--accent-color-dim);
+  --color-rating-max-light:  var(--accent-color-light);
+
+  /* Subtle surface overlays */
+  --surface-subtle:      rgba(255, 255, 255, 0.03);
+  --surface-raised:      rgba(255, 255, 255, 0.05);
+  --border-subtle:       rgba(255, 255, 255, 0.04);
+  --border-light:        rgba(255, 255, 255, 0.08);
+  --divider-color:       rgba(255, 255, 255, 0.06);
+
 
   /* ═══════════════════════════════════════════════════
      TEXT
@@ -74,6 +93,7 @@
 
   --text-primary:   #f5f7fa;
   --text-secondary: #9aa3b2;
+  --text-muted:     #718096;
   --text-faded:     #7d8080;
 
 
@@ -223,11 +243,30 @@
   --color-info-dim:       rgba(108, 74, 182, 0.08);
   --color-info-border:    rgba(108, 74, 182, 0.22);
 
+  /* Rating scale */
+  --color-rating-low:        #e53e3e;
+  --color-rating-low-dim:    rgba(229, 62, 62, 0.10);
+  --color-rating-medium:     #d4940e;
+  --color-rating-medium-dim: rgba(212, 148, 14, 0.10);
+  --color-rating-high:       #38a169;
+  --color-rating-high-dim:   rgba(56, 161, 105, 0.10);
+  --color-rating-max:        var(--accent-color);
+  --color-rating-max-dim:    var(--accent-color-dim);
+  --color-rating-max-light:  var(--accent-color-light);
+
+  /* Subtle surface overlays */
+  --surface-subtle:      rgba(0, 0, 0, 0.02);
+  --surface-raised:      rgba(0, 0, 0, 0.04);
+  --border-subtle:       rgba(0, 0, 0, 0.04);
+  --border-light:        rgba(0, 0, 0, 0.08);
+  --divider-color:       rgba(0, 0, 0, 0.06);
+
 
   /* ── Text ────────────────────────────────────────── */
 
   --text-primary:   #1a1d23;
   --text-secondary: #5f6b7a;
+  --text-muted:     #6b7280;
   --text-faded:     #9ca3af;
 
 

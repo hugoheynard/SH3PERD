@@ -1,63 +1,66 @@
-import type { TUserId } from './user/user.domain.js';
-import type { TMusicReferenceDomainModel  } from './music-references.js';
-import type { TApiResponse } from './api.types.js';
+
+import type { TMusicReferenceDomainModel } from './music-references.js';
 import type { TMusicVersionDomainModel } from './music.versions.js';
 import type { TMusicRepertoireEntryDomainModel } from './music-repertoire.js';
+import type { TRepertoireEntryId, TMusicReferenceId, TMusicVersionId } from './ids.js';
+import type { TVersionTrackDomainModel, TRating } from './music-tracks.js';
+import type { TGenreEnum, TTypeEnum } from './music.domain.schemas.js';
 
 
-export type TMusicGenres = 'jazz' | 'pop' | 'rock' | 'soul' | 'EDM';
-export type TMusicKeys =
-  | 'C'
-  | 'C#'
-  | 'D'
-  | 'D#'
-  | 'E'
-  | 'F'
-  | 'F#'
-  | 'G'
-  | 'G#'
-  | 'A'
-  | 'A#'
-  | 'B'
-  | 'Cm'
-  | 'C#m'
-  | 'Dm'
-  | 'D#m'
-  | 'Em'
-  | 'Fm'
-  | 'F#m'
-  | 'Gm'
-  | 'G#m'
-  | 'Am'
-  | 'A#m'
-  | 'Bm';
-export type TVersionEnergy = 1 | 2 | 3 | 4;
-export type TVersionType = 'original' | 'cover' | 'remix';
-export type TMasteryLevel = 1 | 2 | 3 | 4;
-export type TEffortLevel = 1 | 2 | 3 | 4;
+// ─── View model sub-types (frontend-friendly, no backend fields) ──
+
+/** Reference as seen by the frontend — no owner_id. */
+export interface TReferenceView {
+  id:             TMusicReferenceId;
+  title:          string;
+  originalArtist: string;
+}
+
+/** Version as seen by the frontend — no owner_id, no musicReference_id. */
+export interface TVersionView {
+  id:       TMusicVersionId;
+  label:    string;
+  genre:    TGenreEnum;
+  type:     TTypeEnum;
+  bpm:      number | null;
+  pitch:    number | null;
+  notes?:   string;
+  mastery:  TRating;
+  energy:   TRating;
+  effort:   TRating;
+  tracks:   TVersionTrackDomainModel[];
+}
 
 
+// ─── Aggregated view models ────────────────────────────────
+
+/**
+ * Entry-centric view model — one item per repertoire entry.
+ * This is what the frontend consumes: a reference + all its versions grouped.
+ */
+export interface TRepertoireEntryViewModel {
+  id:        TRepertoireEntryId;
+  reference: TReferenceView;
+  versions:  TVersionView[];
+}
+
+/** The full user library — array of entry view models. */
+export interface TUserMusicLibraryViewModel {
+  entries:        TRepertoireEntryViewModel[];
+  totalEntries:   number;
+  totalVersions:  number;
+}
 
 
+// ─── Deprecated ─────────────────────────────────────────────
 
-
-
+/**
+ * Flat view — one row per version, used by the MongoDB aggregation pipeline.
+ * @deprecated Prefer TRepertoireEntryViewModel for frontend consumption.
+ */
 export type TUserMusicLibraryItem = {
   version: TMusicVersionDomainModel;
   repertoireEntry?: TMusicRepertoireEntryDomainModel;
   reference?: TMusicReferenceDomainModel;
   source: 'owned' | 'borrowed';
-}
-
-export type TMusicLibraryFilter = {
-  version?: Partial<TMusicVersionDomainModel>
-  repertoireEntry?: Partial<TMusicRepertoireEntryDomainModel>;
-}
-
-export type TSingleUserMusicLibraryRequestDTO = {
-  target_id: TUserId;
-  filter?: TMusicLibraryFilter;
-}
-
-export type TUserMusicLibrary = Record<TUserId, TUserMusicLibraryItem[]>;
-export type TUserMusicLibraryResponseDTO = TApiResponse<TUserMusicLibrary>;
+};

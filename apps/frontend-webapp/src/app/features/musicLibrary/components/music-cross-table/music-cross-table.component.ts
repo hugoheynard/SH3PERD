@@ -1,5 +1,5 @@
 import { Component, computed, input, signal } from '@angular/core';
-import type { ContractMember, CrossReferenceResult } from '../../music-library-types';
+import type { ContractMember, CrossReferenceResult, CrossMemberVersion } from '../../music-library-types';
 
 type CompatFilter = 'all' | 'duo' | 'trio' | 'quartet';
 
@@ -31,5 +31,12 @@ export class MusicCrossTableComponent {
     if (val >= 3) return 'high';
     if (val >= 2) return 'medium';
     return 'low';
+  }
+
+  /** Get the quality from the favorite track of the first version. */
+  versionQuality(mv: CrossMemberVersion): number | undefined {
+    if (!mv.versions.length) return undefined;
+    const favTrack = mv.versions[0].tracks.find(t => t.favorite);
+    return favTrack?.analysisResult?.quality;
   }
 }
