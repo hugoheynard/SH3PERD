@@ -9,7 +9,6 @@
     "emitDeclarationOnly": false,
     "declarationMap": true,
     //"noUncheckedIndexedAccess": true, // OMG NO !!
-    "baseUrl": ".",
     "paths": {
       "@sh3pherd/shared-types": ["./packages/shared-types/src"]
     }

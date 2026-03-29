@@ -7,8 +7,7 @@
     "composite": true,
     "declaration": true,
     "emitDeclarationOnly": false,
-    "noEmit": false,
-    "baseUrl": "."
+    "noEmit": false
   },
   "include": ["src"],
   "exclude": [
