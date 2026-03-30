@@ -130,7 +130,7 @@
           <div class="pill-selector">
             @for (s of STATUS_OPTIONS; track s) {
               <button class="pill" [class.active]="f.status === s" [class]="'pill cstatus-pill-' + s"
-                (click)="patch('status', s)" type="button">{{ s }}</button>
+                (click)="patch('status', $any(s))" type="button">{{ s }}</button>
             }
           </div>
         </section>
@@ -144,7 +144,7 @@
                 @for (t of CONTRACT_TYPES; track t) {
                   @if (t !== '') {
                     <button class="pill" [class.active]="f.contract_type === t"
-                      (click)="patch('contract_type', t)" type="button">{{ t }}</button>
+                      (click)="patch('contract_type', $any(t))" type="button">{{ t }}</button>
                   }
                 }
                 <button class="pill" [class.active]="f.contract_type === ''"
@@ -202,7 +202,7 @@
               <div class="pill-selector">
                 @for (p of PERIOD_OPTIONS; track p) {
                   <button class="pill sm" [class.active]="f.compensation_period === p"
-                    (click)="patch('compensation_period', p)" type="button">{{ p }}</button>
+                    (click)="patch('compensation_period', $any(p))" type="button">{{ p }}</button>
                 }
               </div>
             </div>

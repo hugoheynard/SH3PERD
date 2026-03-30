@@ -155,12 +155,12 @@ export class ContractDetailPageComponent implements OnInit {
   formatCompensation(d: TContractDetailViewModel): string {
     if (!d.compensation) return '—';
     const { amount, currency, period } = d.compensation;
-    const periodLabel: Record<TCompensationPeriod, string> = {
+    const periodLabel: Record<string, string> = {
       monthly: '/ month',
       daily:   '/ day',
       hourly:  '/ hour',
     };
-    return `${amount.toLocaleString()} ${currency} ${periodLabel[period]}`;
+    return `${amount.toLocaleString()} ${currency} ${periodLabel[period as string] ?? ''}`;
   }
 
   formatWorkTime(d: TContractDetailViewModel): string {

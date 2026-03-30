@@ -18,11 +18,11 @@
     "test": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js --config=jest.config.ts"
   },
   "peerDependencies": {
-    "@angular/cli": "^20.2.1",
-    "@angular/common": "^20.2.3",
-    "@angular/core": "^20.2.3",
-    "@angular/forms": "^20.0.3",
-    "@angular/platform-browser": "^20.2.3"
+    "@angular/cli": "^21.2.5",
+    "@angular/common": "^21.2.6",
+    "@angular/core": "^21.2.6",
+    "@angular/forms": "^21.2.6",
+    "@angular/platform-browser": "^21.2.6"
   },
   "dependencies": {
     "tslib": "^2.3.0"
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^20.0.3",
-    "@angular/language-service": "^20.2.3",
+    "@angular/language-service": "^21.2.6",
     "@storybook/addon-actions": "^8.6.14",
     "@storybook/addon-controls": "^8.6.14",
     "@storybook/addon-docs": "^8.6.14",

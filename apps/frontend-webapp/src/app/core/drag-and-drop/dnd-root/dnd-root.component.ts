@@ -128,7 +128,7 @@ export class DndRootComponent {
     this.engine.onPointerMove(event);
   };
 
-  @HostListener('document:pointerup', ['$event'])
+  @HostListener('document:pointerup')
   onPointerUp() {
 
     if (!this.drag.isDragging()) {
