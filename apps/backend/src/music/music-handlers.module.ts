@@ -12,12 +12,15 @@ import { DeleteRepertoireEntryHandler } from './application/commands/DeleteReper
 import { UploadTrackHandler } from './application/commands/UploadTrackCommand.js';
 import { DeleteTrackHandler } from './application/commands/DeleteTrackCommand.js';
 import { SetTrackFavoriteHandler } from './application/commands/SetTrackFavoriteCommand.js';
+import { SaveMusicTabConfigsHandler } from './application/commands/SaveMusicTabConfigsCommand.js';
+import { DeleteMusicTabConfigsHandler } from './application/commands/DeleteMusicTabConfigsCommand.js';
 
 // Queries
 import { SearchMusicReferencesHandler } from './application/queries/SearchMusicReferencesQuery.js';
 import { GetUserRepertoireHandler } from './application/queries/GetUserRepertoireQuery.js';
 import { GetUserMusicLibraryHandler } from './application/queries/GetUserMusicLibraryQuery.js';
 import { GetTrackDownloadUrlHandler } from './application/queries/GetTrackDownloadUrlQuery.js';
+import { GetMusicTabConfigsHandler } from './application/queries/GetMusicTabConfigsQuery.js';
 
 const CommandHandlers = [
   CreateMusicReferenceHandler,
@@ -29,6 +32,8 @@ const CommandHandlers = [
   UploadTrackHandler,
   DeleteTrackHandler,
   SetTrackFavoriteHandler,
+  SaveMusicTabConfigsHandler,
+  DeleteMusicTabConfigsHandler,
 ];
 
 const QueryHandlers = [
@@ -36,6 +41,7 @@ const QueryHandlers = [
   GetUserRepertoireHandler,
   GetUserMusicLibraryHandler,
   GetTrackDownloadUrlHandler,
+  GetMusicTabConfigsHandler,
 ];
 
 @Module({

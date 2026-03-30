@@ -15,13 +15,15 @@
     (uiDndDrop)="onTabDrop($event)"
   >
     @for (tab of tabs(); track tab.id; let idx = $index) {
-      <button
+      <div
         class="tab"
         [class.active]="tab.id === activeTabId()"
         [style.border-left-color]="tab.color || 'transparent'"
         [style.border-left-width]="tab.color ? '3px' : '0'"
-        (click)="tabSelect.emit(tab.id)"
-        type="button"
+        (pointerup)="onTabPointerUp(tab, $event)"
+        (dblclick)="onTabDblClick(tab, $event)"
+        role="button"
+        tabindex="0"
         uiDndDrag
         [dndType]="'tab'"
         [dndData]="{ tabId: tab.id, title: tab.title }"
@@ -33,29 +35,48 @@
             (keydown.enter)="commitRename(tab.id)"
             (keydown.escape)="cancelRename()"
             (blur)="commitRename(tab.id)"
-            (click)="$event.stopPropagation()"
+            (pointerup)="$event.stopPropagation()"
             autofocus
           />
         } @else {
-          <span class="tab-title" (dblclick)="startRename(tab, $event)">{{ tab.title }}</span>
+          <span class="tab-title">{{ tab.title }}</span>
         }
 
-        <!-- Color picker trigger (hover) -->
-        <span
-          class="tab-color-btn"
-          title="Set color"
-          (click)="openColorPicker(tab.id, $event)"
-        >●</span>
+        <!-- Tab menu toggle + inline actions -->
+        <button
+          class="tab-menu-toggle"
+          type="button"
+          title="Tab actions"
+          (click)="toggleTabMenu(tab.id, $event)"
+          (pointerup)="$event.stopPropagation()"
+        >⋮</button>
 
-        @if (tabs().length > 1) {
-          <span
-            class="tab-close"
-            (click)="onClose($event, tab.id)"
-            role="button"
-            aria-label="Close tab"
-          >×</span>
+        @if (openTabMenuId() === tab.id) {
+          <span class="tab-inline-actions" (pointerup)="$event.stopPropagation()">
+            <button class="tab-inline-btn" type="button" title="Color" (click)="openColorPicker(tab.id, $event); openTabMenuId.set(null)">●</button>
+            @if (savedConfigs().length) {
+              <span class="tab-move-wrapper">
+                <button class="tab-inline-btn" type="button" title="Move to config" #moveBtn (click)="toggleTabMoveMenu(tab.id, $event, moveBtn)">⇥</button>
+                @if (tabMoveMenuId() === tab.id) {
+                  <div class="tab-move-dropdown" [style.top.px]="moveDropdownPos().top" [style.left.px]="moveDropdownPos().left">
+                    <span class="tab-move-label">Move to</span>
+                    @for (cfg of savedConfigs(); track cfg.id) {
+                      <button
+                        class="tab-move-option"
+                        type="button"
+                        (click)="onMoveActiveTabToConfig(tab, cfg.id, $event)"
+                      >{{ cfg.name }}</button>
+                    }
+                  </div>
+                }
+              </span>
+            }
+            @if (tabs().length > 1) {
+              <button class="tab-inline-btn tab-inline-btn--danger" type="button" title="Close" (click)="onClose($event, tab.id); openTabMenuId.set(null)">×</button>
+            }
+          </span>
         }
-      </button>
+      </div>
     }
   </div>
 
@@ -85,20 +106,38 @@
   <!-- Save / recall saved configs -->
   <div class="tab-config-actions">
 
-    <!-- Save current tab -->
-    <button
-      class="tab-action-btn"
-      [class.active]="showSaveForm()"
-      type="button"
-      title="Save current tab configuration"
-      (click)="toggleSaveForm()"
-    >
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-        <polyline points="17 21 17 13 7 13 7 21"/>
-        <polyline points="7 3 7 8 15 8"/>
-      </svg>
-    </button>
+    <!-- Save / New config button -->
+    @if (activeConfigId()) {
+      <!-- Currently on a saved config → "New" to start fresh -->
+      <button
+        class="tab-action-btn"
+        type="button"
+        title="New configuration"
+        (click)="configNew.emit()"
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="12" y1="18" x2="12" y2="12"/>
+          <line x1="9" y1="15" x2="15" y2="15"/>
+        </svg>
+      </button>
+    } @else {
+      <!-- Not on a saved config → "Save" -->
+      <button
+        class="tab-action-btn"
+        [class.active]="showSaveForm()"
+        type="button"
+        title="Save current tab configuration"
+        (click)="toggleSaveForm()"
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+      </button>
+    }
 
     <!-- Load saved config -->
     <button
@@ -140,14 +179,116 @@
           <span class="config-empty">No saved configs yet</span>
         }
         @for (cfg of savedConfigs(); track cfg.id) {
-          <div class="config-item" (click)="onLoadConfig(cfg)">
-            <span class="config-item-name">{{ cfg.name }}</span>
-            <button
-              class="config-item-delete"
-              type="button"
-              title="Delete"
-              (click)="onDeleteConfig(cfg.id, $event)"
-            >×</button>
+          <div class="config-item-wrapper">
+            <div class="config-item" [class.config-item--active]="cfg.id === activeConfigId()">
+              <!-- Expand toggle -->
+              <button
+                class="config-item-expand"
+                type="button"
+                title="Show tabs"
+                (click)="toggleConfigExpand(cfg.id, $event)"
+              >{{ expandedConfigId() === cfg.id ? '▾' : '▸' }}</button>
+
+              <!-- Config name (editable) -->
+              @if (editingConfigNameId() === cfg.id) {
+                <input
+                  class="config-rename-input"
+                  [(ngModel)]="editConfigName"
+                  (keydown.enter)="commitConfigRename(cfg.id)"
+                  (keydown.escape)="editingConfigNameId.set(null)"
+                  (blur)="commitConfigRename(cfg.id)"
+                  (click)="$event.stopPropagation()"
+                  autofocus
+                />
+              } @else {
+                <span class="config-item-name" (click)="onLoadConfig(cfg)">
+                  {{ cfg.name }} <small>({{ cfg.tabs.length }})</small>
+                </span>
+              }
+
+              <!-- Config actions -->
+              <div class="config-item-actions">
+                <button
+                  class="config-action-btn"
+                  type="button"
+                  title="Rename config"
+                  (click)="startConfigRename(cfg.id, cfg.name, $event)"
+                >✎</button>
+                <button
+                  class="config-action-btn config-action-btn--danger"
+                  type="button"
+                  title="Delete config"
+                  (click)="onDeleteConfig(cfg.id, $event)"
+                >×</button>
+              </div>
+            </div>
+
+            <!-- Expanded tab list -->
+            @if (expandedConfigId() === cfg.id) {
+              <div class="config-tabs-list">
+                @for (tab of cfg.tabs; track tab.id) {
+                  <div class="config-tab-item">
+                    @if (editingConfigTabId()?.configId === cfg.id && editingConfigTabId()?.tabId === tab.id) {
+                      <input
+                        class="config-tab-rename-input"
+                        [(ngModel)]="editConfigTabTitle"
+                        (keydown.enter)="commitConfigTabRename()"
+                        (keydown.escape)="editingConfigTabId.set(null)"
+                        (blur)="commitConfigTabRename()"
+                        (click)="$event.stopPropagation()"
+                        autofocus
+                      />
+                    } @else {
+                      <span
+                        class="config-tab-name"
+                        [style.border-left-color]="tab.color || 'transparent'"
+                        [style.border-left-width]="tab.color ? '3px' : '0'"
+                      >{{ tab.title }}</span>
+                    }
+
+                    <!-- Tab actions -->
+                    <div class="config-tab-actions">
+                      <button
+                        class="config-action-btn"
+                        type="button"
+                        title="Rename tab"
+                        (click)="startConfigTabRename(cfg.id, tab.id, tab.title, $event)"
+                      >✎</button>
+                      @if (savedConfigs().length > 1 && cfg.tabs.length > 1) {
+                        <button
+                          class="config-action-btn"
+                          type="button"
+                          title="Move to another config"
+                          (click)="toggleMoveMenu(cfg.id, tab.id, $event)"
+                        >⇥</button>
+                      }
+                      @if (cfg.tabs.length > 1) {
+                        <button
+                          class="config-action-btn config-action-btn--danger"
+                          type="button"
+                          title="Remove tab"
+                          (click)="onRemoveTabFromConfig(cfg.id, tab.id, $event)"
+                        >×</button>
+                      }
+                    </div>
+
+                    <!-- Move-to submenu -->
+                    @if (moveMenuTabCtx()?.configId === cfg.id && moveMenuTabCtx()?.tabId === tab.id) {
+                      <div class="config-move-menu">
+                        <span class="config-move-label">Move to:</span>
+                        @for (target of moveTargetConfigs(cfg.id); track target.id) {
+                          <button
+                            class="config-move-target"
+                            type="button"
+                            (click)="onMoveTabToConfig(target.id, $event)"
+                          >{{ target.name }}</button>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
           </div>
         }
       </div>

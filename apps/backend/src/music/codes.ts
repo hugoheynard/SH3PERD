@@ -51,6 +51,18 @@ export const MusicApiCodes = {
     code: 'MUSIC_403_S',
     message: 'Repertoire entries fetched successfully',
   },
+  TAB_CONFIGS_FETCHED: {
+    code: 'MUSIC_501_S',
+    message: 'Tab configs fetched successfully',
+  },
+  TAB_CONFIGS_SAVED: {
+    code: 'MUSIC_502_S',
+    message: 'Tab configs saved successfully',
+  },
+  TAB_CONFIGS_DELETED: {
+    code: 'MUSIC_503_S',
+    message: 'Tab configs deleted successfully',
+  },
 } as const satisfies Record<string, TApiMessage>;
 
 

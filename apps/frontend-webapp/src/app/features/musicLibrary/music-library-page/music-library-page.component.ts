@@ -5,6 +5,7 @@ import { MusicTabMutationService } from '../services/mutations-layer/music-tab-m
 import { MusicLibraryMutationService } from '../services/mutations-layer/music-library-mutation.service';
 import { LayoutService } from '../../../core/services/layout.service';
 import { MusicTabBarComponent } from '../components/music-tab-bar/music-tab-bar.component';
+import type { MusicTab } from '../music-library-types';
 import { MusicLibrarySidePanelComponent } from '../components/music-library-side-panel/music-library-side-panel.component';
 import { MusicReferenceCardComponent } from '../components/music-reference-card/music-reference-card.component';
 import { MusicRepertoireTableComponent } from '../components/music-repertoire-table/music-repertoire-table.component';
@@ -17,7 +18,7 @@ import { AudioAnalyzerService } from '../../audioAnalyzer/audio-analyzer.service
 import { MusicVersionApiService } from '../services/music-version-api.service';
 import { MusicRepertoireApiService } from '../services/music-repertoire-api.service';
 import { VersionType } from '../music-library-types';
-import type { AudioAnalysisSnapshot, Rating, SavedTabConfig, MusicSearchConfig } from '../music-library-types';
+import type { AudioAnalysisSnapshot, Rating, SavedTabConfig } from '../music-library-types';
 import type { TCreateMusicVersionPayload, TMusicReferenceId } from '@sh3pherd/shared-types';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { InfoDirective } from '../../../shared/help/info.directive';
@@ -86,16 +87,44 @@ export class MusicLibraryPageComponent implements OnInit {
     this.tabService.setTabColor(event.id, event.color);
   }
 
-  onConfigSave(event: { name: string; searchConfig: MusicSearchConfig }): void {
-    this.tabService.saveTabConfig(event.name, event.searchConfig);
+  onConfigSave(name: string): void {
+    this.tabService.saveTabConfig(name);
+    this.toast.show(`Config "${name}" saved`, 'success');
+  }
+
+  onConfigNew(): void {
+    this.tabService.newConfig();
+    this.toast.show('New configuration started', 'info');
   }
 
   onConfigLoad(config: SavedTabConfig): void {
-    this.tabService.applyTabConfig(this.selector.activeTabId(), config.searchConfig);
+    this.tabService.applyTabConfig(config);
+    this.toast.show(`Config "${config.name}" applied (${config.tabs.length} tabs)`, 'success');
   }
 
   onConfigDelete(id: string): void {
     this.tabService.deleteTabConfig(id);
+    this.toast.show('Config deleted', 'info');
+  }
+
+  onConfigRename(event: { configId: string; name: string }): void {
+    this.tabService.renameTabConfig(event.configId, event.name);
+  }
+
+  onConfigTabRemove(event: { configId: string; tabId: string }): void {
+    this.tabService.removeTabFromConfig(event.configId, event.tabId);
+  }
+
+  onConfigTabRename(event: { configId: string; tabId: string; title: string }): void {
+    this.tabService.renameTabInConfig(event.configId, event.tabId, event.title);
+  }
+
+  onConfigTabMove(event: { sourceConfigId: string; targetConfigId: string; tabId: string }): void {
+    this.tabService.moveTabToConfig(event.sourceConfigId, event.targetConfigId, event.tabId);
+  }
+
+  onTabMoveToConfig(event: { tab: MusicTab; targetConfigId: string }): void {
+    this.tabService.addActiveTabToConfig(event.tab, event.targetConfigId);
   }
 
   toggleView(): void {

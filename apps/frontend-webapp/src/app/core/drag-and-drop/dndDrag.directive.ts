@@ -200,6 +200,10 @@ export class DndDragDirective {
 
     if (event.button !== 0) return;
 
+    // Don't capture pointer if click originates from an interactive child (button, input, a)
+    const target = event.target as HTMLElement;
+    if (target.closest('button, input, a, [role="button"].tab-action-btn')) return;
+
     this.pointerId = event.pointerId;
     this.startX = event.clientX;
     this.startY = event.clientY;

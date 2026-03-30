@@ -46,6 +46,7 @@
     <app-music-tab-bar
       [tabs]="selector.tabs()"
       [activeTabId]="selector.activeTabId()"
+      [activeConfigId]="selector.activeConfigId()"
       [savedConfigs]="selector.savedTabConfigs()"
       (tabSelect)="onTabSelect($event)"
       (tabAdd)="onTabAdd()"
@@ -55,8 +56,14 @@
       (tabColorChange)="onTabColorChange($event)"
       (searchQueryChange)="onSearchQueryChange($event)"
       (configSave)="onConfigSave($event)"
+      (configNew)="onConfigNew()"
       (configLoad)="onConfigLoad($event)"
       (configDelete)="onConfigDelete($event)"
+      (configRename)="onConfigRename($event)"
+      (configTabRemove)="onConfigTabRemove($event)"
+      (configTabRename)="onConfigTabRename($event)"
+      (configTabMove)="onConfigTabMove($event)"
+      (tabMoveToConfig)="onTabMoveToConfig($event)"
     />
 
     <div class="results-area">

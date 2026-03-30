@@ -5,7 +5,7 @@ import { InputComponent } from '../../../../shared/forms/input/input.component';
 import { DndDragDirective } from '../../../../core/drag-and-drop/dndDrag.directive';
 import { DndDropZoneDirective } from '../../../../core/drag-and-drop/dnd-drop-zone.directive';
 import type { DragState } from '../../../../core/drag-and-drop/drag.types';
-import type { MusicSearchConfig, MusicTab, SavedTabConfig } from '../../music-library-types';
+import type { MusicTab, SavedTabConfig } from '../../music-library-types';
 
 @Component({
   selector: 'app-music-tab-bar',
@@ -18,6 +18,7 @@ export class MusicTabBarComponent {
 
   readonly tabs = input.required<MusicTab[]>();
   readonly activeTabId = input.required<string>();
+  readonly activeConfigId = input<string | null>(null);
   readonly savedConfigs = input<SavedTabConfig[]>([]);
 
   readonly tabSelect = output<string>();
@@ -27,9 +28,14 @@ export class MusicTabBarComponent {
   readonly tabReorder = output<{ tabId: string; newIndex: number }>();
   readonly tabColorChange = output<{ id: string; color: string }>();
   readonly searchQueryChange = output<string>();
-  readonly configSave = output<{ name: string; searchConfig: MusicSearchConfig }>();
+  readonly configSave = output<string>();
+  readonly configNew = output<void>();
   readonly configLoad = output<SavedTabConfig>();
   readonly configDelete = output<string>();
+  readonly configRename = output<{ configId: string; name: string }>();
+  readonly configTabRemove = output<{ configId: string; tabId: string }>();
+  readonly configTabRename = output<{ configId: string; tabId: string; title: string }>();
+  readonly configTabMove = output<{ sourceConfigId: string; targetConfigId: string; tabId: string }>();
 
   readonly activeSearchQuery = computed(() => {
     const tab = this.tabs().find(t => t.id === this.activeTabId());
@@ -45,15 +51,54 @@ export class MusicTabBarComponent {
   @ViewChild('colorInput', { static: true }) colorInputRef!: ElementRef<HTMLInputElement>;
   private colorTargetTabId: string | null = null;
 
+  openTabMenuId = signal<string | null>(null);
+  tabMoveMenuId = signal<string | null>(null);
+
+  readonly tabMoveToConfig = output<{ tab: MusicTab; targetConfigId: string }>();
+
+  toggleTabMenu(tabId: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.tabMoveMenuId.set(null);
+    this.openTabMenuId.update(id => id === tabId ? null : tabId);
+  }
+
+  moveDropdownPos = signal<{ top: number; left: number }>({ top: 0, left: 0 });
+
+  toggleTabMoveMenu(tabId: string, event: MouseEvent, btnEl: HTMLElement): void {
+    event.stopPropagation();
+    const opening = this.tabMoveMenuId() !== tabId;
+    this.tabMoveMenuId.update(id => id === tabId ? null : tabId);
+    if (opening) {
+      const rect = btnEl.getBoundingClientRect();
+      this.moveDropdownPos.set({ top: rect.bottom + 4, left: rect.left });
+    }
+  }
+
+  onMoveActiveTabToConfig(tab: MusicTab, targetConfigId: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.tabMoveToConfig.emit({ tab, targetConfigId });
+    this.tabMoveMenuId.set(null);
+    this.openTabMenuId.set(null);
+  }
+
+  onTabPointerUp(tab: MusicTab, event: PointerEvent): void {
+    const target = event.target as HTMLElement;
+    if (target.closest('button, input')) return;
+    this.openTabMenuId.set(null);
+    this.tabSelect.emit(tab.id);
+  }
+
+  onTabDblClick(tab: MusicTab, event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (target.closest('button, input')) return;
+    this.openTabMenuId.set(null);
+    this.editingTabId.set(tab.id);
+    this.editTitle = tab.title;
+  }
+
   onClose(event: MouseEvent, tabId: string): void {
     event.stopPropagation();
     this.tabClose.emit(tabId);
-  }
-
-  startRename(tab: MusicTab, event: MouseEvent): void {
-    event.stopPropagation();
-    this.editingTabId.set(tab.id);
-    this.editTitle = tab.title;
   }
 
   commitRename(tabId: string): void {
@@ -116,9 +161,7 @@ export class MusicTabBarComponent {
   submitSaveForm(): void {
     const name = this.saveFormName().trim();
     if (!name) return;
-    const activeTab = this.tabs().find(t => t.id === this.activeTabId());
-    if (!activeTab) return;
-    this.configSave.emit({ name, searchConfig: activeTab.searchConfig });
+    this.configSave.emit(name);
     this.showSaveForm.set(false);
     this.saveFormName.set('');
   }
@@ -131,5 +174,72 @@ export class MusicTabBarComponent {
   onDeleteConfig(id: string, event: MouseEvent): void {
     event.stopPropagation();
     this.configDelete.emit(id);
+  }
+
+  /* ── Config editing ── */
+
+  expandedConfigId = signal<string | null>(null);
+  editingConfigNameId = signal<string | null>(null);
+  editConfigName = '';
+  editingConfigTabId = signal<{ configId: string; tabId: string } | null>(null);
+  editConfigTabTitle = '';
+  moveMenuTabCtx = signal<{ configId: string; tabId: string } | null>(null);
+
+  toggleConfigExpand(configId: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.expandedConfigId.update(id => id === configId ? null : configId);
+  }
+
+  startConfigRename(configId: string, name: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.editingConfigNameId.set(configId);
+    this.editConfigName = name;
+  }
+
+  commitConfigRename(configId: string): void {
+    const name = this.editConfigName.trim();
+    if (name) this.configRename.emit({ configId, name });
+    this.editingConfigNameId.set(null);
+  }
+
+  startConfigTabRename(configId: string, tabId: string, title: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.editingConfigTabId.set({ configId, tabId });
+    this.editConfigTabTitle = title;
+  }
+
+  commitConfigTabRename(): void {
+    const ctx = this.editingConfigTabId();
+    if (!ctx) return;
+    const title = this.editConfigTabTitle.trim();
+    if (title) this.configTabRename.emit({ configId: ctx.configId, tabId: ctx.tabId, title });
+    this.editingConfigTabId.set(null);
+  }
+
+  onRemoveTabFromConfig(configId: string, tabId: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.configTabRemove.emit({ configId, tabId });
+  }
+
+  toggleMoveMenu(configId: string, tabId: string, event: MouseEvent): void {
+    event.stopPropagation();
+    const ctx = this.moveMenuTabCtx();
+    if (ctx?.configId === configId && ctx?.tabId === tabId) {
+      this.moveMenuTabCtx.set(null);
+    } else {
+      this.moveMenuTabCtx.set({ configId, tabId });
+    }
+  }
+
+  onMoveTabToConfig(targetConfigId: string, event: MouseEvent): void {
+    event.stopPropagation();
+    const ctx = this.moveMenuTabCtx();
+    if (!ctx) return;
+    this.configTabMove.emit({ sourceConfigId: ctx.configId, targetConfigId, tabId: ctx.tabId });
+    this.moveMenuTabCtx.set(null);
+  }
+
+  moveTargetConfigs(sourceConfigId: string): SavedTabConfig[] {
+    return this.savedConfigs().filter(c => c.id !== sourceConfigId);
   }
 }

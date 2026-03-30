@@ -10,6 +10,7 @@ import type { TUserId, TApiResponse, TUserMusicLibraryViewModel } from '@sh3pher
 export class MusicLibraryController {
   constructor(private readonly qryBus: QueryBus) {}
 
+
   @Get('me')
   async getMyLibrary(
     @ActorId() actorId: TUserId,
@@ -18,5 +19,5 @@ export class MusicLibraryController {
       MusicApiCodes.MUSIC_LIBRARY_SINGLE_USER_SUCCESS,
       await this.qryBus.execute(new GetUserMusicLibraryQuery(actorId)),
     );
-  }
+  };
 }

@@ -5,6 +5,7 @@ import { MusicReferenceController } from './api/music-reference.controller.js';
 import { MusicVersionsController } from './api/music-versions.controller.js';
 import { MusicTrackController } from './api/music-track.controller.js';
 import { MusicLibraryController } from './api/music-library.controller.js';
+import { MusicTabConfigsController } from './api/music-tab-configs.controller.js';
 
 @Module({
   imports: [MusicHandlersModule],
@@ -14,6 +15,7 @@ import { MusicLibraryController } from './api/music-library.controller.js';
     MusicRepertoireController,
     MusicTrackController,
     MusicLibraryController,
+    MusicTabConfigsController,
   ],
 })
 export class MusicModule {}

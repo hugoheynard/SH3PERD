@@ -34,6 +34,7 @@ export interface MusicLibraryState {
   entries: LibraryEntry[];
   tabs: MusicTab[];
   activeTabId: string;
+  activeConfigId: string | null;
   savedTabConfigs: SavedTabConfig[];
   crossContext?: CrossSearchContext;
 }
@@ -41,7 +42,8 @@ export interface MusicLibraryState {
 export type SavedTabConfig = {
   id: string;
   name: string;
-  searchConfig: MusicSearchConfig;
+  tabs: MusicTab[];
+  activeTabId: string;
   createdAt: number;
 };
 

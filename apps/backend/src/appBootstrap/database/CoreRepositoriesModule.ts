@@ -6,6 +6,7 @@ import {
   MUSIC_REFERENCE_REPO,
   MUSIC_REPERTOIRE_REPO,
   MUSIC_VERSION_REPO,
+  MUSIC_TAB_CONFIGS_REPO,
   REFRESH_TOKEN_REPO,
   USER_CREDENTIALS_REPO, USER_GROUPS_REPO,
   USER_PREFERENCES_REPO,
@@ -42,6 +43,10 @@ import {
   type IMusicVersionRepository,
   MusicVersionRepository,
 } from '../../music/repositories/MusicVersionRepository.js';
+import {
+  type IMusicTabConfigsRepository,
+  MusicTabConfigsRepository,
+} from '../../music/repositories/MusicTabConfigsRepository.js';
 import type { IMusicRepertoireRepository } from '../../music/repositories/MusicRepertoireRepository.js';
 import { MusicReferenceMongoRepository } from '../../music/repositories/MusicReferenceRepository.js';
 import { MusicRepertoireMongoRepository } from '../../music/repositories/MusicRepertoireRepository.js';
@@ -122,6 +127,7 @@ export type TCoreRepositories = {
     mongoRepoProvider<IMusicReferenceRepository>(MUSIC_REFERENCE_REPO, MusicReferenceMongoRepository, 'music_references'),
     mongoRepoProvider<IMusicVersionRepository>(MUSIC_VERSION_REPO, MusicVersionRepository, 'music_version'),
     mongoRepoProvider<IMusicRepertoireRepository>(MUSIC_REPERTOIRE_REPO, MusicRepertoireMongoRepository, 'music_repertoireEntries'),
+    mongoRepoProvider<IMusicTabConfigsRepository>(MUSIC_TAB_CONFIGS_REPO, MusicTabConfigsRepository, 'music_tab_configs'),
     mongoRepoProvider<ICompanyRepository>(COMPANY_REPO, CompanyMongoRepository, 'companies'),
     mongoRepoProvider<ITeamRepository>(CAST_REPO, TeamMongoRepository, 'teams'),
     mongoRepoProvider<ICastMembershipEventRepository>(CAST_MEMBERSHIP_EVENT_REPO, CastMembershipEventMongoRepository, 'cast_membership_events'),
@@ -138,6 +144,7 @@ export type TCoreRepositories = {
     MUSIC_REFERENCE_REPO,
     MUSIC_VERSION_REPO,
     MUSIC_REPERTOIRE_REPO,
+    MUSIC_TAB_CONFIGS_REPO,
     COMPANY_REPO,
     CAST_REPO,
     CAST_MEMBERSHIP_EVENT_REPO,

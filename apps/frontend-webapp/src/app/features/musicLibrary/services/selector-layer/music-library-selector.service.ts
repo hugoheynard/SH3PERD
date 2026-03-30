@@ -39,6 +39,7 @@ export class MusicLibrarySelectorService {
     const id = this.activeTabId();
     return this.tabs().find(t => t.id === id);
   });
+  readonly activeConfigId = computed(() => this.state.library().activeConfigId);
   readonly savedTabConfigs = computed(() => this.state.library().savedTabConfigs ?? []);
 
   /* ─── Filtered results (entry-centric) ─────────────── */

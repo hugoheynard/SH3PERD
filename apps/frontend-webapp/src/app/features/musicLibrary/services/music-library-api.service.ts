@@ -1,23 +1,29 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, catchError, throwError } from 'rxjs';
+import { Observable, map, catchError, throwError, of } from 'rxjs';
 import { BaseHttpService } from '../../../core/services/BaseHttpService';
-import type { TApiResponse, TUserMusicLibraryViewModel } from '@sh3pherd/shared-types';
+import type {
+  TApiResponse,
+  TUserMusicLibraryViewModel,
+  TMusicTabConfigsDomainModel,
+  TMusicTabConfig,
+  TMusicSavedTabConfig,
+} from '@sh3pherd/shared-types';
 
 /**
- * API service for fetching the user's full music library.
+ * API service for the music library.
  *
- * Endpoint:
- * - `GET /api/protected/music/library/me` → user's library (entries + refs + versions)
+ * Endpoints:
+ * - `GET    /api/protected/music/library/me`          → user's library
+ * - `GET    /api/protected/music/tab-configs`          → user's tab configs
+ * - `PUT    /api/protected/music/tab-configs`          → save tab configs
+ * - `DELETE /api/protected/music/tab-configs`          → delete tab configs
  */
 @Injectable({ providedIn: 'root' })
 export class MusicLibraryApiService extends BaseHttpService {
 
   private readonly URL = this.UrlBuilder.apiProtectedRoute('music/library').build();
+  private readonly TAB_CONFIGS_URL = this.UrlBuilder.apiProtectedRoute('music/tab-configs').build();
 
-  /**
-   * Fetch the authenticated user's full music library.
-   * Returns the entry-centric view model with references and versions pre-joined.
-   */
   getMyLibrary(): Observable<TUserMusicLibraryViewModel> {
     return this.http
       .get<TApiResponse<TUserMusicLibraryViewModel>>(
@@ -32,6 +38,57 @@ export class MusicLibraryApiService extends BaseHttpService {
         catchError(err => {
           console.error('[MusicLibraryApi] getMyLibrary failed', err);
           return throwError(() => err);
+        }),
+      );
+  }
+
+  getTabConfigs(): Observable<TMusicTabConfigsDomainModel | null> {
+    return this.http
+      .get<TApiResponse<TMusicTabConfigsDomainModel | null>>(
+        this.TAB_CONFIGS_URL,
+        { withCredentials: true },
+      )
+      .pipe(
+        map(res => res?.data ?? null),
+        catchError(err => {
+          console.error('[MusicLibraryApi] getTabConfigs failed', err);
+          return of(null);
+        }),
+      );
+  }
+
+  saveTabConfigs(payload: {
+    tabs: TMusicTabConfig[];
+    activeTabId: string;
+    activeConfigId?: string;
+    savedTabConfigs: TMusicSavedTabConfig[];
+  }): Observable<boolean> {
+    return this.http
+      .put<TApiResponse<boolean>>(
+        this.TAB_CONFIGS_URL,
+        { payload },
+        { withCredentials: true },
+      )
+      .pipe(
+        map(res => res?.data ?? false),
+        catchError(err => {
+          console.error('[MusicLibraryApi] saveTabConfigs failed', err);
+          return of(false);
+        }),
+      );
+  }
+
+  deleteTabConfigs(): Observable<boolean> {
+    return this.http
+      .delete<TApiResponse<boolean>>(
+        this.TAB_CONFIGS_URL,
+        { withCredentials: true },
+      )
+      .pipe(
+        map(res => res?.data ?? false),
+        catchError(err => {
+          console.error('[MusicLibraryApi] deleteTabConfigs failed', err);
+          return of(false);
         }),
       );
   }
