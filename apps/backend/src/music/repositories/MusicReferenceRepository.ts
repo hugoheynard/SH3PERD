@@ -1,11 +1,7 @@
-
 import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type {
-  IMusicReferenceRepository,
-} from '../types/musicReferences.types.js';
+import type { IMusicReferenceRepository } from '../types/musicReferences.types.js';
 import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
-import type { TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
-
+import type { TMusicReferenceDomainModel, TMusicReferenceId } from '@sh3pherd/shared-types';
 
 export class MusicReferenceMongoRepository
   extends BaseMongoRepository<TMusicReferenceDomainModel>
@@ -13,28 +9,30 @@ export class MusicReferenceMongoRepository
 {
   constructor(input: TBaseMongoRepoDeps) {
     super(input);
-  };
-
-
-
-  async findAll(): Promise<TMusicReferenceDomainModel[]> {
-    return await this.collection.find().toArray();
   }
 
-  async findByIds(ids: TMusicReferenceDomainModel['id'][]): Promise<TMusicReferenceDomainModel[]> {
+  async findAll(): Promise<TMusicReferenceDomainModel[]> {
+    return this.collection.find().toArray() as Promise<TMusicReferenceDomainModel[]>;
+  }
+
+  async findByExactTitleAndArtist(title: string, artist: string): Promise<TMusicReferenceDomainModel | null> {
+    return this.collection.findOne({ title, artist } as any) as Promise<TMusicReferenceDomainModel | null>;
+  }
+
+  async findByIds(ids: TMusicReferenceId[]): Promise<TMusicReferenceDomainModel[]> {
     if (ids.length === 0) return [];
-    return this.collection.find({ id: { $in: ids } } as any).toArray() as Promise<TMusicReferenceDomainModel[]>;
+    return this.collection
+      .find({ id: { $in: ids } } as any)
+      .toArray() as Promise<TMusicReferenceDomainModel[]>;
   }
 
   /**
-   * Search music references by text.
-   * related to an atlas search index created on the cluster.
-   * @param searchValue
+   * Fuzzy text search via Atlas Search index.
+   * Index 'default' must exist on the collection with paths ['title', 'artist'].
    */
   @technicalFailThrows500('MUSIC_REFERENCE_TEXT_SEARCH_ERROR', 'Error while searching music references by text')
   async findByTextSearch(searchValue: string): Promise<TMusicReferenceDomainModel[]> {
-
-    return await this.collection
+    return this.collection
       .aggregate([
         {
           $search: {
@@ -45,14 +43,14 @@ export class MusicReferenceMongoRepository
               fuzzy: {
                 maxEdits: 2,
                 prefixLength: 1,
-                maxExpansions: 50
+                maxExpansions: 50,
               },
-              matchCriteria: 'any',
-              score: { boost: { value: 1 } }
-            }
-          }
-        }
+            },
+          },
+        },
+        { $limit: 20 },
+        { $project: { _id: 0 } },
       ])
-      .toArray() as TMusicReferenceDomainModel[];
-  };
+      .toArray() as Promise<TMusicReferenceDomainModel[]>;
+  }
 }

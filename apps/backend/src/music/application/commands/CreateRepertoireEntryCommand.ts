@@ -3,6 +3,7 @@ import { Inject } from '@nestjs/common';
 import { MUSIC_REPERTOIRE_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IMusicRepertoireRepository } from '../../repositories/MusicRepertoireRepository.js';
 import type { TUserId, TCreateRepertoireEntryPayload, TMusicRepertoireEntryDomainModel } from '@sh3pherd/shared-types';
+import { RepertoireEntryEntity } from '../../domain/entities/RepertoireEntryEntity.js';
 
 export class CreateRepertoireEntryCommand {
   constructor(
@@ -18,15 +19,23 @@ export class CreateRepertoireEntryHandler implements ICommandHandler<CreateReper
   ) {}
 
   async execute(cmd: CreateRepertoireEntryCommand): Promise<TMusicRepertoireEntryDomainModel> {
-    const entry: TMusicRepertoireEntryDomainModel = {
-      id: `repEntry_${crypto.randomUUID()}`,
+    // Idempotent: if the user already has this reference, return the existing entry
+    const existing = await this.repRepo.findByOwnerAndReference(cmd.actorId, cmd.payload.musicReference_id);
+
+    if (existing) {
+      return existing;
+    }
+
+    const entry = new RepertoireEntryEntity({
       musicReference_id: cmd.payload.musicReference_id,
-      user_id: cmd.actorId,
-    };
+      owner_id: cmd.actorId,
+    });
 
-    const saved = await this.repRepo.saveOne(entry);
-    if (!saved) throw new Error('REPERTOIRE_ENTRY_CREATION_FAILED');
+    const saved = await this.repRepo.saveOne(entry.toDomain);
+    if (!saved) {
+      throw new Error('REPERTOIRE_ENTRY_CREATION_FAILED');
+    }
 
-    return entry;
-  }
+    return entry.toDomain;
+  };
 }

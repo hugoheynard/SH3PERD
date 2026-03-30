@@ -3,11 +3,12 @@ import { MusicTabMutationService } from '../../services/mutations-layer/music-ta
 import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
 import { MUSIC_GENRES } from '../../music-library-types';
 import type { MusicDataFilter, MusicGenre, MusicTab, Rating } from '../../music-library-types';
+import { RangeSliderComponent, type RangeValue } from '../../../../shared/range-slider/range-slider.component';
 
 @Component({
   selector: 'app-music-library-side-panel',
   standalone: true,
-  imports: [],
+  imports: [RangeSliderComponent],
   template: `
     <aside class="side-panel">
 
@@ -80,6 +81,23 @@ import type { MusicDataFilter, MusicGenre, MusicTab, Rating } from '../../music-
                 </div>
               </div>
             }
+
+            <div class="filter-divider"></div>
+
+            <sh3-range-slider
+              label="BPM"
+              [min]="60" [max]="220" [step]="5"
+              [value]="activeTab()!.searchConfig.dataFilter?.bpm"
+              (valueChange)="onRangeChange('bpm', $event)"
+            />
+
+            <sh3-range-slider
+              label="Duration"
+              unit="duration"
+              [min]="0" [max]="600" [step]="10"
+              [value]="activeTab()!.searchConfig.dataFilter?.duration"
+              (valueChange)="onRangeChange('duration', $event)"
+            />
           </div>
         </section>
       }
@@ -104,7 +122,7 @@ export class MusicLibrarySidePanelComponent {
   readonly allGenres = MUSIC_GENRES;
   readonly ratings: Rating[] = [1, 2, 3, 4];
 
-  readonly filterRows: { key: Exclude<keyof MusicDataFilter, 'genres'>; label: string }[] = [
+  readonly filterRows: { key: 'mastery' | 'energy' | 'effort' | 'quality'; label: string }[] = [
     { key: 'mastery', label: 'MST' },
     { key: 'energy',  label: 'NRG' },
     { key: 'effort',  label: 'EFF' },
@@ -137,7 +155,7 @@ export class MusicLibrarySidePanelComponent {
     this.tabMutation.patchDataFilter(id, { genres: updated });
   }
 
-  isRatingSelected(key: Exclude<keyof MusicDataFilter, 'genres'>, r: Rating): boolean {
+  isRatingSelected(key: 'mastery' | 'energy' | 'effort' | 'quality', r: Rating): boolean {
     const filter = this.activeTab()?.searchConfig.dataFilter;
     return filter?.[key]?.includes(r) ?? false;
   }
@@ -145,6 +163,12 @@ export class MusicLibrarySidePanelComponent {
   toggleFilter(): void {
     const id = this.selector.activeTabId();
     if (id) this.tabMutation.toggleDataFilter(id);
+  }
+
+  onRangeChange(key: 'bpm' | 'duration', range: RangeValue): void {
+    const id = this.selector.activeTabId();
+    if (!id) return;
+    this.tabMutation.patchDataFilter(id, { [key]: range });
   }
 
   toggleRating(key: Exclude<keyof MusicDataFilter, 'genres'>, r: Rating): void {

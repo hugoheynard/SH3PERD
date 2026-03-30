@@ -144,6 +144,13 @@ export class MusicLibrarySelectorService {
       const q = MusicLibrarySelectorService.favoriteQuality(v);
       if (!q || !f.quality.includes(q as Rating)) return false;
     }
+    if (f.bpm && v.bpm != null) {
+      if (v.bpm < f.bpm.min || v.bpm > f.bpm.max) return false;
+    }
+    if (f.duration) {
+      const dur = MusicLibrarySelectorService.favoriteDuration(v);
+      if (dur != null && (dur < f.duration.min || dur > f.duration.max)) return false;
+    }
     return true;
   }
 }

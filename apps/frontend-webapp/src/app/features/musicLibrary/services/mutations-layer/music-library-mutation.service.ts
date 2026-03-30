@@ -79,6 +79,14 @@ export class MusicLibraryMutationService {
     return version;
   }
 
+  /** Add a version from a backend API response (already has a real id). */
+  addVersionFromApi(entryId: string, version: MusicVersion): void {
+    this.patchEntry(entryId, entry => ({
+      ...entry,
+      versions: [...entry.versions, version],
+    }));
+  }
+
   /** Update version metadata within an entry. */
   updateVersion(entryId: string, versionId: string, patch: Partial<Omit<MusicVersion, 'id' | 'tracks'>>): void {
     this.patchVersion(entryId, versionId, v => ({ ...v, ...patch }));

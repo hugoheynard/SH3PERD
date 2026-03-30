@@ -4,52 +4,75 @@
 
   <div popover-body (keydown)="onKeydown($event)">
 
-    <!-- Search bar -->
-    <div class="panel-search">
-      <span class="search-icon">⌕</span>
-      <input
-        class="search-input"
-        [ngModel]="query()"
-        (ngModelChange)="query.set($event); showNewForm.set(false)"
-        placeholder="Search a song title or artist…"
-        autofocus
-      />
-      @if (query()) {
-        <button class="search-clear" type="button" (click)="query.set(''); showNewForm.set(false)">×</button>
-      }
-    </div>
+    @if (pendingRef(); as ref) {
 
-    <!-- Results -->
-    <div class="panel-results">
-      @for (ref of filteredRefs(); track ref.id) {
-        <button
-          class="result-row"
-          type="button"
-          [class.in-repertoire]="inRepertoire().has(ref.id)"
-          (click)="selectRef(ref.id)"
-        >
-          <div class="result-info">
-            <span class="result-title">{{ ref.title }}</span>
-            <span class="result-artist">{{ ref.originalArtist }}</span>
-          </div>
-          @if (inRepertoire().has(ref.id)) {
-            <sh3-badge content="In repertoire" />
-          } @else {
-            <span class="add-badge">+ Add</span>
-          }
-        </button>
-      } @empty {
-        @if (!query()) {
-          <span class="results-hint">Start typing to search…</span>
+      <!-- ── Confirmation dialog ── -->
+      <div class="confirm-dialog">
+        <span class="confirm-title capitalize">{{ ref.title }}</span>
+        <span class="confirm-artist capitalize">{{ ref.artist }}</span>
+        <p class="confirm-message">Do you want to add this song to your repertoire?</p>
+        <div class="confirm-actions">
+          <sh3-button variant="ghost" size="sm" (clicked)="dismissPending()">Not now</sh3-button>
+          <sh3-button variant="solid" size="sm" [disabled]="saving()" (clicked)="confirmAdd()">
+            @if (saving()) { Adding… } @else { Add }
+          </sh3-button>
+        </div>
+      </div>
+
+    } @else {
+
+      <!-- ── Search bar ── -->
+      <div class="panel-search">
+        <span class="search-icon">⌕</span>
+        <input
+          class="search-input"
+          [ngModel]="query()"
+          (ngModelChange)="onQueryChange($event); showNewForm.set(false)"
+          placeholder="Search a song title or artist…"
+          autofocus
+        />
+        @if (searching()) {
+          <span class="search-spinner">…</span>
         }
-      }
+        @if (query()) {
+          <button class="search-clear" type="button" (click)="onQueryChange(''); showNewForm.set(false)">×</button>
+        }
+      </div>
 
-      <!-- Create new -->
-      @if (query() && !hasExactMatch()) {
+      <!-- ── Results from API ── -->
+      <div class="panel-results">
+        @for (ref of searchResults(); track ref.id) {
+          <button
+            class="result-row"
+            type="button"
+            [class.in-repertoire]="inRepertoire().has(ref.id)"
+            (click)="selectRef(ref)"
+          >
+            <div class="result-info">
+              <span class="result-title capitalize">{{ ref.title }}</span>
+              <span class="result-artist capitalize">{{ ref.artist }}</span>
+            </div>
+            @if (inRepertoire().has(ref.id)) {
+              <sh3-badge content="In repertoire" />
+            } @else {
+              <span class="add-badge">+ Add</span>
+            }
+          </button>
+        } @empty {
+          @if (!query()) {
+            <span class="results-hint">Start typing to search…</span>
+          } @else if (searching()) {
+            <span class="results-hint">Searching…</span>
+          } @else if (query().length >= 2) {
+            <span class="results-hint">No results found</span>
+          }
+        }
+
+        <!-- ── Create new ── -->
         @if (!showNewForm()) {
           <button class="create-row" type="button" (click)="showNewForm.set(true)">
             <span class="create-icon">+</span>
-            Create <strong>«&nbsp;{{ query() }}&nbsp;»</strong> as new reference
+            Create new reference
           </button>
         } @else {
           <div class="new-form">
@@ -58,9 +81,10 @@
               <sh3-input
                 class="new-input"
                 size="sm"
-                [ngModel]="query()"
-                [readonly]="true"
+                [ngModel]="newTitle()"
+                (ngModelChange)="newTitle.set($event)"
                 placeholder="Title"
+                [autofocus]="true"
               />
               <sh3-input
                 class="new-input"
@@ -69,23 +93,23 @@
                 (ngModelChange)="newArtist.set($event)"
                 placeholder="Original artist…"
                 (keydown.enter)="submitNew()"
-                [autofocus]="true"
               />
             </div>
             <div class="new-form-actions">
               <sh3-button variant="ghost" size="sm" (clicked)="showNewForm.set(false)">Cancel</sh3-button>
-              <sh3-button variant="primary" size="sm" [disabled]="!newArtist().trim() || saving()" (clicked)="submitNew()">
-                @if (saving()) { Creating… } @else { Create &amp; add }
+              <sh3-button variant="primary" size="sm" [disabled]="!newTitle().trim() || !newArtist().trim() || saving()" (clicked)="submitNew()">
+                @if (saving()) { Creating… } @else { Create }
               </sh3-button>
             </div>
           </div>
         }
-      }
 
-      @if (error()) {
-        <span class="panel-error">{{ error() }}</span>
-      }
-    </div>
+        @if (error()) {
+          <span class="panel-error">{{ error() }}</span>
+        }
+      </div>
+
+    }
 
   </div>
 

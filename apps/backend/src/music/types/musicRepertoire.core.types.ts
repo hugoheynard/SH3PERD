@@ -6,12 +6,12 @@ import type { TUserId, TMusicRepertoireEntryDomainModel } from '@sh3pherd/shared
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
 export type TMusicRepertoireByUserIdPipelineResult = {
-  user_id: TUserId;
+  owner_id: TUserId;
   repertoire: TMusicRepertoireEntryDomainModel[];
 };
 
 export type TFindMusicRepertoireByUserIdFn = (input: {
-  user_id: TUserId | TUserId[];
+  owner_id: TUserId | TUserId[];
 }) => Promise<TMusicRepertoireByUserIdPipelineResult[]>;
 
 export interface IMusicRepertoireRepository extends IBaseCRUD<TMusicRepertoireEntryDomainModel> {

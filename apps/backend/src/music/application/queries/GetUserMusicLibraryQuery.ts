@@ -8,7 +8,7 @@ import {
 import type { IMusicVersionRepository } from '../../repositories/MusicVersionRepository.js';
 import type { IMusicRepertoireRepository } from '../../repositories/MusicRepertoireRepository.js';
 import type { IMusicReferenceRepository } from '../../types/musicReferences.types.js';
-import type { TUserId, TRepertoireEntryViewModel, TUserMusicLibraryViewModel } from '@sh3pherd/shared-types';
+import type { TUserId, TRepertoireEntryViewModel, TUserMusicLibraryViewModel, TVersionView, TMusicVersionDomainModel } from '@sh3pherd/shared-types';
 
 export class GetUserMusicLibraryQuery {
   constructor(public readonly userId: TUserId) {}
@@ -53,8 +53,8 @@ export class GetUserMusicLibraryHandler implements IQueryHandler<GetUserMusicLib
       const reference = refMap.get(entry.musicReference_id);
       if (!reference) continue; // orphaned entry — skip
 
-      const entryVersions = versionsByRefId.get(entry.musicReference_id) ?? [];
-      totalVersions += entryVersions.length;
+      const rawVersions = versionsByRefId.get(entry.musicReference_id) ?? [];
+      totalVersions += rawVersions.length;
 
       entryViewModels.push({
         id: entry.id,
@@ -63,7 +63,7 @@ export class GetUserMusicLibraryHandler implements IQueryHandler<GetUserMusicLib
           title: reference.title,
           originalArtist: reference.artist,
         },
-        versions: entryVersions,
+        versions: rawVersions.map(this.toVersionView),
       });
     }
 
@@ -71,6 +71,22 @@ export class GetUserMusicLibraryHandler implements IQueryHandler<GetUserMusicLib
       entries: entryViewModels,
       totalEntries: entryViewModels.length,
       totalVersions,
+    };
+  }
+
+  private toVersionView(v: TMusicVersionDomainModel): TVersionView {
+    return {
+      id: v.id,
+      label: v.label,
+      genre: v.genre,
+      type: v.type,
+      bpm: v.bpm,
+      pitch: v.pitch,
+      notes: v.notes,
+      mastery: v.mastery,
+      energy: v.energy,
+      effort: v.effort,
+      tracks: v.tracks,
     };
   }
 }

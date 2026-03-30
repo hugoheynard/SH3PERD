@@ -38,7 +38,7 @@ export class RepertoireEntryAggregate extends AggregateRoot {
 
   get id(): TRepertoireEntryId { return this.entry.id; }
   get musicReference_id(): TMusicReferenceId { return this.entry.musicReference_id; }
-  get user_id(): TUserId { return this.entry.user_id; }
+  get owner_id(): TUserId { return this.entry.owner_id; }
 
   /* ── Query ── */
 

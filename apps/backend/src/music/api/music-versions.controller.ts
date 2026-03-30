@@ -9,7 +9,32 @@ import { DeleteMusicVersionCommand } from '../application/commands/DeleteMusicVe
 import type { TUserId, TApiResponse, TMusicVersionDomainModel, TMusicVersionId } from '@sh3pherd/shared-types';
 import { SCreateMusicVersionPayload, SUpdateMusicVersionPayload } from '@sh3pherd/shared-types';
 
-@Controller('music-version')
+/**
+ * MusicVersionsController
+ *
+ * REST controller for music version CRUD.
+ * Mounted under `music/versions` via the MusicModule RouterModule.
+ *
+ * A **version** is a user's rendition of a music reference
+ * (cover, pitch variant, acoustic…). Versions hold tracks (audio files).
+ *
+ * ────────────────────────────────────────────────────────────────
+ * Endpoints
+ * ────────────────────────────────────────────────────────────────
+ *
+ * POST   /music/versions
+ *   Creates a new version linked to a music reference.
+ *   Body: { payload: TCreateMusicVersionPayload }
+ *
+ * PATCH  /music/versions/:id
+ *   Partial update of a version's metadata (label, genre, ratings…).
+ *   Ownership is verified in the command handler.
+ *
+ * DELETE /music/versions/:id
+ *   Deletes a version and all its tracks (S3 + DB).
+ *   Ownership is verified in the command handler.
+ */
+@Controller('versions')
 export class MusicVersionsController {
   constructor(private readonly cmdBus: CommandBus) {}
 
@@ -31,7 +56,7 @@ export class MusicVersionsController {
     @Body('payload', new ZodValidationPipe(SUpdateMusicVersionPayload)) payload: any,
   ): Promise<TApiResponse<TMusicVersionDomainModel>> {
     return buildApiResponseDTO(
-      MusicApiCodes.MUSIC_VERSION_CREATED, // TODO: add VERSION_UPDATED code
+      MusicApiCodes.MUSIC_VERSION_UPDATED,
       await this.cmdBus.execute(new UpdateMusicVersionCommand(actorId, versionId, payload)),
     );
   }
@@ -42,7 +67,7 @@ export class MusicVersionsController {
     @Param('id') versionId: TMusicVersionId,
   ): Promise<TApiResponse<boolean>> {
     return buildApiResponseDTO(
-      MusicApiCodes.MUSIC_VERSION_CREATED, // TODO: add VERSION_DELETED code
+      MusicApiCodes.MUSIC_VERSION_DELETED,
       await this.cmdBus.execute(new DeleteMusicVersionCommand(actorId, versionId)),
     );
   }

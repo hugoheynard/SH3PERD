@@ -5,14 +5,15 @@ import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
 import { GetUserMusicLibraryQuery } from '../application/queries/GetUserMusicLibraryQuery.js';
 import type { TUserId, TApiResponse, TUserMusicLibraryViewModel } from '@sh3pherd/shared-types';
 
-@Controller('music-library')
+
+@Controller('library')
 export class MusicLibraryController {
   constructor(private readonly qryBus: QueryBus) {}
 
   @Get('me')
   async getMyLibrary(
     @ActorId() actorId: TUserId,
-  ): Promise<TApiResponse<TUserMusicLibraryViewModel[]>> {
+  ): Promise<TApiResponse<TUserMusicLibraryViewModel>> {
     return buildApiResponseDTO(
       MusicApiCodes.MUSIC_LIBRARY_SINGLE_USER_SUCCESS,
       await this.qryBus.execute(new GetUserMusicLibraryQuery(actorId)),

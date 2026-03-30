@@ -15,7 +15,8 @@ export class SearchMusicReferencesHandler implements IQueryHandler<SearchMusicRe
   ) {}
 
   async execute(query: SearchMusicReferencesQuery): Promise<TMusicReferenceDomainModel[]> {
-    if (!query.searchValue?.trim()) return [];
-    return this.refRepo.findByTextSearch(query.searchValue.trim());
+    const q = query.searchValue?.trim().toLowerCase();
+    if (!q) return [];
+    return this.refRepo.findByTextSearch(q);
   }
 }

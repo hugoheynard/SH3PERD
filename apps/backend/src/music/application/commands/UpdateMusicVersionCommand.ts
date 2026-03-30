@@ -3,6 +3,7 @@ import { Inject } from '@nestjs/common';
 import { MUSIC_VERSION_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IMusicVersionRepository } from '../../repositories/MusicVersionRepository.js';
 import type { TUserId, TMusicVersionId, TUpdateMusicVersionPayload, TMusicVersionDomainModel } from '@sh3pherd/shared-types';
+import { MusicVersionEntity } from '../../domain/entities/MusicVersionEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 
 export class UpdateMusicVersionCommand {
@@ -21,15 +22,22 @@ export class UpdateMusicVersionHandler implements ICommandHandler<UpdateMusicVer
 
   async execute(cmd: UpdateMusicVersionCommand): Promise<TMusicVersionDomainModel> {
     const existing = await this.versionRepo.findOneByVersionId(cmd.versionId);
-    if (!existing) throw new Error('MUSIC_VERSION_NOT_FOUND');
-    if (existing.owner_id !== cmd.actorId) throw new Error('MUSIC_VERSION_NOT_OWNED');
+
+    if (!existing) {
+      throw new Error('MUSIC_VERSION_NOT_FOUND');
+    }
+
+    const version = new MusicVersionEntity(existing);
+    version.ensureOwnedBy(cmd.actorId);
 
     const updated = await this.versionRepo.updateVersion(cmd.versionId, {
       ...cmd.patch,
       ...RecordMetadataUtils.patchUpdate(),
     });
 
-    if (!updated) throw new Error('MUSIC_VERSION_UPDATE_FAILED');
+    if (!updated) {
+      throw new Error('MUSIC_VERSION_UPDATE_FAILED');
+    }
     return updated;
   }
 }

@@ -29,7 +29,9 @@ export class MusicVersionEntity extends Entity<TMusicVersionDomainModel> {
   }
 
   ensureOwnedBy(userId: TUserId): void {
-    if (!this.isOwnedBy(userId)) throw new Error('MUSIC_VERSION_NOT_OWNED');
+    if (!this.isOwnedBy(userId)) {
+      throw new Error('MUSIC_VERSION_NOT_OWNED');
+    }
   }
 
   /* ── Version metadata mutation ── */
@@ -46,7 +48,9 @@ export class MusicVersionEntity extends Entity<TMusicVersionDomainModel> {
     effort?: Rating;
   }): void {
     if (patch.label !== undefined) {
-      if (!patch.label.trim()) throw new Error('MUSIC_VERSION_LABEL_REQUIRED');
+      if (!patch.label.trim()) {
+        throw new Error('MUSIC_VERSION_LABEL_REQUIRED');
+      }
       this.props.label = patch.label.trim();
     }
     if (patch.genre !== undefined)   this.props.genre = patch.genre;

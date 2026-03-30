@@ -13,7 +13,7 @@ import {PlvSectionContainerComponent} from '../plv-section-container/plv-section
 import {PlaylistService} from '../../playlistService/playlist.service';
 import {PlaylistFormService} from '../../formsServices/playlist-form.service';
 import {StyledInputDirective} from '../../../../../Directives/styled-input.directive';
-import {SnackbarService} from '../../../../core/services/snackbar.service';
+import { ToastService } from '../../../../shared/toast/toast.service';
 import {
   FormBlockComponent
 } from '../../../musicLibrary/forms/musicTabConfigurator/components/form-block/form-block.component';
@@ -40,7 +40,7 @@ export class PlaylistViewComponent implements OnInit {
   private plServ: PlaylistService = inject(PlaylistService);
   public playlistFormService: PlaylistFormService =  inject(PlaylistFormService);
   public playlistDisplayService: PlaylistDisplayService = inject(PlaylistDisplayService);
-  private snackBarService: SnackbarService = inject(SnackbarService);
+  private readonly toast = inject(ToastService);
   public playlistForm: FormGroup = this.fb.group({});
   public submitButtonLabel: string = 'Save';
   @Input() playlist: any = {};
@@ -66,30 +66,30 @@ export class PlaylistViewComponent implements OnInit {
   async savePlaylist(): Promise<void> {
     try {
       if (!this.playlistForm.valid) {
-        this.snackBarService.show('Invalid form');
+        this.toast.show('Invalid form');
         return;
       }
 
       const response = await this.plServ.savePlaylist({ playlistData: this.playlistFormService.getValues() });
 
       if (response.ok) {
-        this.snackBarService.show('New Playlist saved');
+        this.toast.show('New Playlist saved');
       }
     } catch(error) {
       console.error(error);
-      this.snackBarService.show('Error saving playlist');
+      this.toast.show('Error saving playlist');
     }
   };
 
   async updatePlaylist(input:{ playlist_id: string }): Promise<void> {
     try {
       if (!this.playlistForm.valid) {
-        this.snackBarService.show('Invalid form');
+        this.toast.show('Invalid form');
         return;
       }
 
       if (!input.playlist_id) {
-        this.snackBarService.show("Can't update: Invalid playlist id");
+        this.toast.show("Can't update: Invalid playlist id");
         return;
       }
 
@@ -100,11 +100,11 @@ export class PlaylistViewComponent implements OnInit {
         });
 
       if (response.ok) {
-        this.snackBarService.show('Playlist updated');
+        this.toast.show('Playlist updated');
       }
     } catch (error) {
       console.error(error);
-      this.snackBarService.show('Error updating playlist');
+      this.toast.show('Error updating playlist');
     }
   };
 

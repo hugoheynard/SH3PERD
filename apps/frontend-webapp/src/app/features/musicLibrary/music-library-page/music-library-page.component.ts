@@ -1,5 +1,6 @@
-import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, type OnInit, signal, ViewChild } from '@angular/core';
 import { MusicLibrarySelectorService } from '../services/selector-layer/music-library-selector.service';
+import { MusicLibraryStateService } from '../services/music-library-state.service';
 import { MusicTabMutationService } from '../services/mutations-layer/music-tab-mutation.service';
 import { MusicLibraryMutationService } from '../services/mutations-layer/music-library-mutation.service';
 import { LayoutService } from '../../../core/services/layout.service';
@@ -13,7 +14,11 @@ import { ButtonComponent } from '../../../shared/button/button.component';
 import type { AddVersionPayload } from '../services/mutations-layer/music-library-mutation.service';
 import type { VersionEditPayload } from '../components/music-repertoire-table/music-repertoire-table.component';
 import { AudioAnalyzerService } from '../../audioAnalyzer/audio-analyzer.service';
+import { MusicVersionApiService } from '../services/music-version-api.service';
+import { MusicRepertoireApiService } from '../services/music-repertoire-api.service';
+import { VersionType } from '../music-library-types';
 import type { AudioAnalysisSnapshot, Rating, SavedTabConfig, MusicSearchConfig } from '../music-library-types';
+import type { TCreateMusicVersionPayload, TMusicReferenceId } from '@sh3pherd/shared-types';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { InfoDirective } from '../../../shared/help/info.directive';
 
@@ -32,16 +37,23 @@ import { InfoDirective } from '../../../shared/help/info.directive';
   templateUrl: './music-library-page.component.html',
   styleUrl: './music-library-page.component.scss',
 })
-export class MusicLibraryPageComponent {
+export class MusicLibraryPageComponent implements OnInit {
 
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
 
-  public selector    = inject(MusicLibrarySelectorService);
-  private tabService = inject(MusicTabMutationService);
-  private mutation   = inject(MusicLibraryMutationService);
-  private audioAnalyzer = inject(AudioAnalyzerService);
-  private layout     = inject(LayoutService);
-  private toast      = inject(ToastService);
+  public selector         = inject(MusicLibrarySelectorService);
+  private stateService    = inject(MusicLibraryStateService);
+  private tabService      = inject(MusicTabMutationService);
+  private mutation        = inject(MusicLibraryMutationService);
+  private versionApi      = inject(MusicVersionApiService);
+  private repertoireApi   = inject(MusicRepertoireApiService);
+  private audioAnalyzer   = inject(AudioAnalyzerService);
+  private layout          = inject(LayoutService);
+  private toast           = inject(ToastService);
+
+  ngOnInit(): void {
+    this.stateService.loadLibrary();
+  }
 
   readonly viewMode            = signal<'cards' | 'table'>('cards');
   readonly analysingVersionIds = signal<Set<string>>(new Set());
@@ -103,13 +115,56 @@ export class MusicLibraryPageComponent {
   /* ── Add version ── */
 
   onVersionAdded(payload: AddVersionPayload): void {
-    this.mutation.addVersion(payload);
-    this.toast.show(`Version "${payload.label}" added`, 'success');
+    const entry = this.selector.findEntry(payload.entryId);
+    if (!entry) return;
+
+    const apiPayload: TCreateMusicVersionPayload = {
+      musicReference_id: entry.reference.id as TMusicReferenceId,
+      label: payload.label,
+      genre: payload.genre,
+      type: VersionType.Original,
+      bpm: payload.bpm ?? null,
+      pitch: null,
+      mastery: payload.mastery,
+      energy: payload.energy,
+      effort: payload.effort,
+      notes: payload.notes,
+    };
+
+    this.versionApi.create(apiPayload).subscribe({
+      next: (created) => {
+        this.mutation.addVersionFromApi(payload.entryId, {
+          id: created.id,
+          label: created.label,
+          genre: created.genre,
+          type: created.type,
+          bpm: created.bpm,
+          pitch: created.pitch,
+          notes: created.notes,
+          mastery: created.mastery,
+          energy: created.energy,
+          effort: created.effort,
+          tracks: created.tracks,
+        });
+        this.toast.show(`Version "${payload.label}" added`, 'success');
+      },
+      error: () => {
+        this.toast.show('Failed to create version', 'error');
+      },
+    });
   }
 
   onVersionUpdated(payload: VersionEditPayload): void {
     const { entryId, versionId, ...patch } = payload;
-    this.mutation.updateVersion(entryId, versionId, patch);
+    this.versionApi.update(versionId as any, patch).subscribe({
+      next: () => {
+        this.mutation.updateVersion(entryId, versionId, patch);
+        this.toast.show('Version updated', 'success');
+      },
+      error: () => {
+        this.toast.show('Failed to update version', 'error');
+      },
+    });
   }
 
   onEditVersionFromCard(_versionId: string): void {
@@ -120,12 +175,27 @@ export class MusicLibraryPageComponent {
   /* ── Delete ── */
 
   onVersionDeleted(event: { entryId: string; versionId: string }): void {
-    this.mutation.removeVersion(event.entryId, event.versionId);
-    this.toast.show('Version deleted', 'info');
+    this.versionApi.delete(event.versionId as any).subscribe({
+      next: () => {
+        this.mutation.removeVersion(event.entryId, event.versionId);
+        this.toast.show('Version deleted', 'info');
+      },
+      error: () => {
+        this.toast.show('Failed to delete version', 'error');
+      },
+    });
   }
 
   onEntryDeleted(entryId: string): void {
-    this.mutation.removeEntry(entryId);
+    this.repertoireApi.deleteEntry(entryId as any).subscribe({
+      next: () => {
+        this.mutation.removeEntry(entryId);
+        this.toast.show('Entry removed from repertoire', 'info');
+      },
+      error: () => {
+        this.toast.show('Failed to remove entry', 'error');
+      },
+    });
     this.toast.show('Entry removed from repertoire', 'info');
   }
 

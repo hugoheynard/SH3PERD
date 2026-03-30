@@ -3,7 +3,11 @@ import type { TMusicReferenceDomainModel, TUserId } from '@sh3pherd/shared-types
 
 export class MusicReferenceEntity extends Entity<TMusicReferenceDomainModel> {
   constructor(props: TEntityInput<TMusicReferenceDomainModel>) {
-    super(props, 'musicRef');
+    super({
+      ...props,
+      title:  props.title.trim().toLowerCase(),
+      artist: props.artist.trim().toLowerCase(),
+    }, 'musicRef');
   }
 
   get title(): string { return this.props.title; }
@@ -17,7 +21,7 @@ export class MusicReferenceEntity extends Entity<TMusicReferenceDomainModel> {
   rename(title: string, artist: string): void {
     if (!title.trim()) throw new Error('MUSIC_REFERENCE_TITLE_REQUIRED');
     if (!artist.trim()) throw new Error('MUSIC_REFERENCE_ARTIST_REQUIRED');
-    this.props.title = title.trim();
-    this.props.artist = artist.trim();
+    this.props.title = title.trim().toLowerCase();
+    this.props.artist = artist.trim().toLowerCase();
   }
 }

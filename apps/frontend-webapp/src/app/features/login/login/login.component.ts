@@ -1,8 +1,8 @@
-import {Component, inject} from '@angular/core';
-import {LoginFormComponent} from '../login-form/login-form.component';
-import {SnackbarService} from '../../../core/services/snackbar.service';
-import {AuthService} from '../../../core/services/auth.service';
-import {firstValueFrom} from 'rxjs';
+import { Component, inject } from '@angular/core';
+import { LoginFormComponent } from '../login-form/login-form.component';
+import { ToastService } from '../../../shared/toast/toast.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import type { TLoginRequestDTO } from '@sh3pherd/shared-types';
 
@@ -14,27 +14,25 @@ import type { TLoginRequestDTO } from '@sh3pherd/shared-types';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  //private navigationService = inject(NavigationService);
-  private snackbarService = inject(SnackbarService);
-  private authService = inject(AuthService);
+  private readonly toast = inject(ToastService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   public isFormValid: boolean = false;
 
-  constructor(private router: Router) {}
-
   onValidityChange(valid: boolean): void {
     this.isFormValid = valid;
-  };
+  }
 
   async onLogin(credentials: TLoginRequestDTO): Promise<void> {
     const success = await firstValueFrom(this.authService.login$(credentials));
 
     if (!success) {
-      this.snackbarService.show('Login failed', 'Close', 3000);
+      this.toast.show('Login failed', 'error');
       return;
     }
 
     await this.router.navigateByUrl('/app/program');
-    this.snackbarService.show('Welcome to SH3PHERD', 'Close', 3000);
-  };
+    this.toast.show('Welcome to SH3PHERD', 'success');
+  }
 }

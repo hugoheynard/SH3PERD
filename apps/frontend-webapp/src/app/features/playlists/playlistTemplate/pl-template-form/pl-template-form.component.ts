@@ -3,7 +3,7 @@ import {PlaylistTemplateFormService} from '../../formsServices/playlist-template
 import {ReactiveFormsModule} from '@angular/forms';
 
 import {PlTemplateService} from '../../playlistService/pl-template.service';
-import {SnackbarService} from '../../../../core/services/snackbar.service';
+import { ToastService } from '../../../../shared/toast/toast.service';
 
 @Component({
   selector: 'pl-template-form',
@@ -17,7 +17,7 @@ import {SnackbarService} from '../../../../core/services/snackbar.service';
 export class PlTemplateFormComponent {
    private playlistTemplateFormService: PlaylistTemplateFormService = inject(PlaylistTemplateFormService);
    private playlistTemplateService: PlTemplateService = inject(PlTemplateService);
-   private snackBar: SnackbarService = inject(SnackbarService);
+   private readonly toast = inject(ToastService);
    public templateForm = this.playlistTemplateFormService.createTemplateFormGroup();
    public editMode: boolean = false;
 
@@ -45,10 +45,10 @@ export class PlTemplateFormComponent {
     const result = await this.playlistTemplateService.postPlTemplate({ formData: input.formData });
 
     if (result.status !== 201) {
-      this.snackBar.show('Failed to create template');
+      this.toast.show('Failed to create template');
       return result;
     }
-    this.snackBar.show('Template created successfully');
+    this.toast.show('Template created successfully');
     return result;
   };
 
@@ -56,10 +56,10 @@ export class PlTemplateFormComponent {
     const result = await this.playlistTemplateService.updatePlTemplate({ formData: input.formData });
 
      if (result.status !== 204) {
-       this.snackBar.show('Failed to update template');
+       this.toast.show('Failed to update template');
        return result;
      }
-     this.snackBar.show('Template updated successfully');
+     this.toast.show('Template updated successfully');
      return result;
    };
 }

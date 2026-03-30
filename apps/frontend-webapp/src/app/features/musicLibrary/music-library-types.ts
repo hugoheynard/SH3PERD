@@ -68,12 +68,16 @@ export type MusicSearchTarget = {
   contractId?: string;
 };
 
+export type NumberRange = { min: number; max: number };
+
 export type MusicDataFilter = {
   genres?: MusicGenre[];
   mastery?: Rating[];
   energy?: Rating[];
   effort?: Rating[];
   quality?: Rating[];
+  bpm?: NumberRange;
+  duration?: NumberRange;
 };
 
 /* ── Cross search ── */

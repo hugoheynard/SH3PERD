@@ -18,7 +18,10 @@ export class DeleteRepertoireEntryHandler implements ICommandHandler<DeleteReper
   ) {}
 
   async execute(cmd: DeleteRepertoireEntryCommand): Promise<boolean> {
-    // TODO: verify ownership (entry.user_id === actorId) before deleting
+    const entry = await this.repRepo.findOneByEntryId(cmd.entryId);
+    if (!entry) throw new Error('REPERTOIRE_ENTRY_NOT_FOUND');
+    if (entry.owner_id !== cmd.actorId) throw new Error('REPERTOIRE_ENTRY_NOT_OWNED');
+
     return this.repRepo.deleteOneByEntryId(cmd.entryId);
   }
 }

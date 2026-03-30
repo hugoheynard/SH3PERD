@@ -9,7 +9,7 @@ import { SetTrackFavoriteCommand } from '../application/commands/SetTrackFavorit
 import { GetTrackDownloadUrlQuery } from '../application/queries/GetTrackDownloadUrlQuery.js';
 import type { TUserId, TApiResponse, TMusicVersionId, TVersionTrackId, TVersionTrackDomainModel } from '@sh3pherd/shared-types';
 
-@Controller('music-version/:versionId/tracks')
+@Controller('versions/:versionId/tracks')
 export class MusicTrackController {
   constructor(
     private readonly cmdBus: CommandBus,

@@ -7,15 +7,15 @@ import type { TApiResponse } from './api.types.js';
 
 /** Links a user to a music reference — "this song is in my repertoire". */
 export interface TMusicRepertoireEntryDomainModel {
-  id:                TRepertoireEntryId;
+  id: TRepertoireEntryId;
   musicReference_id: TMusicReferenceId;
-  user_id:           TUserId;
+  owner_id: TUserId;
 }
 
 export const SMusicRepertoireEntryDomainModel = z.object({
   id:                 SRepertoireEntryId,
   musicReference_id:  SMusicReferenceId,
-  user_id:            SUserId,
+  owner_id:           SUserId,
 });
 
 

@@ -7,10 +7,10 @@ export class RepertoireEntryEntity extends Entity<TMusicRepertoireEntryDomainMod
   }
 
   get musicReference_id(): TMusicReferenceId { return this.props.musicReference_id; }
-  get user_id(): TUserId { return this.props.user_id; }
+  get owner_id(): TUserId { return this.props.owner_id; }
 
   /** Check if this entry belongs to the given user. */
   isOwnedBy(userId: TUserId): boolean {
-    return this.props.user_id === userId;
+    return this.props.owner_id === userId;
   }
 }

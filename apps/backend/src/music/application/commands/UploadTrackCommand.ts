@@ -11,6 +11,9 @@ import type {
   TUploadTrackPayload,
   TVersionTrackDomainModel,
 } from '@sh3pherd/shared-types';
+import { MusicVersionEntity } from '../../domain/entities/MusicVersionEntity.js';
+
+const MAX_TRACKS_PER_VERSION = 2;
 
 export class UploadTrackCommand {
   constructor(
@@ -30,9 +33,15 @@ export class UploadTrackHandler implements ICommandHandler<UploadTrackCommand, T
   ) {}
 
   async execute(cmd: UploadTrackCommand): Promise<TVersionTrackDomainModel> {
-    const version = await this.versionRepo.findOneByVersionId(cmd.versionId);
-    if (!version) throw new Error('MUSIC_VERSION_NOT_FOUND');
-    if (version.owner_id !== cmd.actorId) throw new Error('MUSIC_VERSION_NOT_OWNED');
+    const existing = await this.versionRepo.findOneByVersionId(cmd.versionId);
+    if (!existing) throw new Error('MUSIC_VERSION_NOT_FOUND');
+
+    const version = new MusicVersionEntity(existing);
+    version.ensureOwnedBy(cmd.actorId);
+
+    if (version.tracks.length >= MAX_TRACKS_PER_VERSION) {
+      throw new Error('MAX_TRACKS_REACHED');
+    }
 
     const trackId = `track_${crypto.randomUUID()}` as const;
     const isFirstTrack = version.tracks.length === 0;
