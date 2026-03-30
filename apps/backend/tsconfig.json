@@ -3,16 +3,14 @@
   "compilerOptions": {
     "declaration": true,
     "sourceMap": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "baseUrl": "."
   },
   "include": ["src"],
   "exclude": [
     "dist",
     "dist/types",
-    "node_modules",
-    "**/*.test.ts",
-    "**/*.spec.ts",
-    "**/__tests__/**"
+    "node_modules"
   ],
   "references": [
     { "path": "../../packages/shared-types" }

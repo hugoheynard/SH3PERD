@@ -21,8 +21,7 @@ export class MusicTrackController {
   async uploadTrack(
     @ActorId() actorId: TUserId,
     @Param('versionId') versionId: TMusicVersionId,
-    // TODO: fix Multer typing after TS6 migration — @types/multer namespace augmentation broken
-    @UploadedFile() file: { buffer: Buffer; originalname: string; mimetype: string; size: number },
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<TApiResponse<TVersionTrackDomainModel>> {
     return buildApiResponseDTO(
       MusicApiCodes.MUSIC_VERSION_CREATED, // TODO: add TRACK_UPLOADED code
