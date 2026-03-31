@@ -1,94 +1,80 @@
-import { Component, computed, ElementRef, input, output, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, input, output, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonComponent } from '../../../../shared/button/button.component';
-import { InputComponent } from '../../../../shared/forms/input/input.component';
-import { DndDragDirective } from '../../../../core/drag-and-drop/dndDrag.directive';
-import { DndDropZoneDirective } from '../../../../core/drag-and-drop/dnd-drop-zone.directive';
-import type { DragState } from '../../../../core/drag-and-drop/drag.types';
-import type { MusicTab, SavedTabConfig } from '../../music-library-types';
+import { ButtonComponent } from '../button/button.component';
+import { InputComponent } from '../forms/input/input.component';
+import { DndDragDirective } from '../../core/drag-and-drop/dndDrag.directive';
+import { DndDropZoneDirective } from '../../core/drag-and-drop/dnd-drop-zone.directive';
+import type { DragState } from '../../core/drag-and-drop/drag.types';
+import type { TabItem, SavedTabConfig } from './configurable-tab-bar.types';
 
 @Component({
-  selector: 'app-music-tab-bar',
+  selector: 'sh3-configurable-tab-bar',
   standalone: true,
   imports: [FormsModule, ButtonComponent, InputComponent, DndDragDirective, DndDropZoneDirective],
-  templateUrl: './music-tab-bar.component.html',
-  styleUrl: './music-tab-bar.component.scss',
+  templateUrl: './configurable-tab-bar.component.html',
+  styleUrl: './configurable-tab-bar.component.scss',
 })
-export class MusicTabBarComponent {
+export class ConfigurableTabBarComponent {
 
-  readonly tabs = input.required<MusicTab[]>();
+  /* ── Inputs ────────────────────────────────────── */
+  readonly tabs = input.required<TabItem<any>[]>();
   readonly activeTabId = input.required<string>();
   readonly activeConfigId = input<string | null>(null);
-  readonly savedConfigs = input<SavedTabConfig[]>([]);
+  readonly savedConfigs = input<SavedTabConfig<any>[]>([]);
 
+  /* ── Outputs ───────────────────────────────────── */
   readonly tabSelect = output<string>();
   readonly tabAdd = output<void>();
   readonly tabClose = output<string>();
   readonly tabRename = output<{ id: string; title: string }>();
   readonly tabReorder = output<{ tabId: string; newIndex: number }>();
   readonly tabColorChange = output<{ id: string; color: string }>();
-  readonly searchQueryChange = output<string>();
   readonly configSave = output<string>();
   readonly configNew = output<void>();
-  readonly configLoad = output<SavedTabConfig>();
+  readonly configLoad = output<SavedTabConfig<any>>();
   readonly configDelete = output<string>();
   readonly configRename = output<{ configId: string; name: string }>();
   readonly configTabRemove = output<{ configId: string; tabId: string }>();
   readonly configTabRename = output<{ configId: string; tabId: string; title: string }>();
   readonly configTabMove = output<{ sourceConfigId: string; targetConfigId: string; tabId: string }>();
+  readonly tabMoveToConfig = output<{ tab: TabItem<any>; targetConfigId: string }>();
 
-  readonly activeSearchQuery = computed(() => {
-    const tab = this.tabs().find(t => t.id === this.activeTabId());
-    return tab?.searchQuery ?? '';
-  });
-
+  /* ── Tab editing state ─────────────────────────── */
   editingTabId = signal<string | null>(null);
   editTitle = '';
+
+  /* ── Config save/load UI ───────────────────────── */
   showSaveForm = signal(false);
   showLoadMenu = signal(false);
   saveFormName = signal('');
 
-  @ViewChild('colorInput', { static: true }) colorInputRef!: ElementRef<HTMLInputElement>;
+  /* ── Color picker ──────────────────────────────── */
+  @ViewChild('colorInput') colorInputRef!: ElementRef<HTMLInputElement>;
   private colorTargetTabId: string | null = null;
 
+  /* ── Tab inline menu ───────────────────────────── */
   openTabMenuId = signal<string | null>(null);
   tabMoveMenuId = signal<string | null>(null);
-
-  readonly tabMoveToConfig = output<{ tab: MusicTab; targetConfigId: string }>();
-
-  toggleTabMenu(tabId: string, event: MouseEvent): void {
-    event.stopPropagation();
-    this.tabMoveMenuId.set(null);
-    this.openTabMenuId.update(id => id === tabId ? null : tabId);
-  }
-
   moveDropdownPos = signal<{ top: number; left: number }>({ top: 0, left: 0 });
 
-  toggleTabMoveMenu(tabId: string, event: MouseEvent, btnEl: HTMLElement): void {
-    event.stopPropagation();
-    const opening = this.tabMoveMenuId() !== tabId;
-    this.tabMoveMenuId.update(id => id === tabId ? null : tabId);
-    if (opening) {
-      const rect = btnEl.getBoundingClientRect();
-      this.moveDropdownPos.set({ top: rect.bottom + 4, left: rect.left });
-    }
-  }
+  /* ── Config editing state ──────────────────────── */
+  expandedConfigId = signal<string | null>(null);
+  editingConfigNameId = signal<string | null>(null);
+  editConfigName = '';
+  editingConfigTabId = signal<{ configId: string; tabId: string } | null>(null);
+  editConfigTabTitle = '';
+  moveMenuTabCtx = signal<{ configId: string; tabId: string } | null>(null);
 
-  onMoveActiveTabToConfig(tab: MusicTab, targetConfigId: string, event: MouseEvent): void {
-    event.stopPropagation();
-    this.tabMoveToConfig.emit({ tab, targetConfigId });
-    this.tabMoveMenuId.set(null);
-    this.openTabMenuId.set(null);
-  }
+  /* ── Tab interactions ──────────────────────────── */
 
-  onTabPointerUp(tab: MusicTab, event: PointerEvent): void {
+  onTabPointerUp(tab: TabItem<any>, event: PointerEvent): void {
     const target = event.target as HTMLElement;
     if (target.closest('button, input')) return;
     this.openTabMenuId.set(null);
     this.tabSelect.emit(tab.id);
   }
 
-  onTabDblClick(tab: MusicTab, event: MouseEvent): void {
+  onTabDblClick(tab: TabItem<any>, event: MouseEvent): void {
     const target = event.target as HTMLElement;
     if (target.closest('button, input')) return;
     this.openTabMenuId.set(null);
@@ -111,7 +97,32 @@ export class MusicTabBarComponent {
     this.editingTabId.set(null);
   }
 
-  /* ── Color picker ── */
+  /* ── Tab inline menu ───────────────────────────── */
+
+  toggleTabMenu(tabId: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.tabMoveMenuId.set(null);
+    this.openTabMenuId.update(id => id === tabId ? null : tabId);
+  }
+
+  toggleTabMoveMenu(tabId: string, event: MouseEvent, btnEl: HTMLElement): void {
+    event.stopPropagation();
+    const opening = this.tabMoveMenuId() !== tabId;
+    this.tabMoveMenuId.update(id => id === tabId ? null : tabId);
+    if (opening) {
+      const rect = btnEl.getBoundingClientRect();
+      this.moveDropdownPos.set({ top: rect.bottom + 4, left: rect.left });
+    }
+  }
+
+  onMoveActiveTabToConfig(tab: TabItem<any>, targetConfigId: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.tabMoveToConfig.emit({ tab, targetConfigId });
+    this.tabMoveMenuId.set(null);
+    this.openTabMenuId.set(null);
+  }
+
+  /* ── Color picker ──────────────────────────────── */
 
   openColorPicker(tabId: string, event: MouseEvent): void {
     event.stopPropagation();
@@ -127,17 +138,14 @@ export class MusicTabBarComponent {
     }
   }
 
-  /* ── DnD reorder ── */
+  /* ── DnD reorder ───────────────────────────────── */
 
   onTabDrop(drag: DragState): void {
     if (drag.type !== 'tab') return;
     const tabId = drag.data.tabId;
-    // Find the drop target index based on the current tab order
-    // The drop resolves to the zone itself; we calculate index from pointer position
     const tabs = this.tabs();
     const currentIndex = tabs.findIndex(t => t.id === tabId);
     if (currentIndex === -1) return;
-    // For simplicity, move to end if no specific position resolved
     this.tabReorder.emit({ tabId, newIndex: tabs.length - 1 });
   }
 
@@ -145,7 +153,14 @@ export class MusicTabBarComponent {
     this.tabReorder.emit({ tabId, newIndex: targetIndex });
   }
 
-  /* ── Config save/load ── */
+  /* ── Config save/load ──────────────────────────── */
+
+  onNewConfig(event: MouseEvent): void {
+    event.stopPropagation();
+    this.showLoadMenu.set(false);
+    this.showSaveForm.set(false);
+    this.configNew.emit();
+  }
 
   toggleSaveForm(): void {
     this.showSaveForm.update(v => !v);
@@ -166,7 +181,7 @@ export class MusicTabBarComponent {
     this.saveFormName.set('');
   }
 
-  onLoadConfig(config: SavedTabConfig): void {
+  onLoadConfig(config: SavedTabConfig<any>): void {
     this.configLoad.emit(config);
     this.showLoadMenu.set(false);
   }
@@ -176,14 +191,7 @@ export class MusicTabBarComponent {
     this.configDelete.emit(id);
   }
 
-  /* ── Config editing ── */
-
-  expandedConfigId = signal<string | null>(null);
-  editingConfigNameId = signal<string | null>(null);
-  editConfigName = '';
-  editingConfigTabId = signal<{ configId: string; tabId: string } | null>(null);
-  editConfigTabTitle = '';
-  moveMenuTabCtx = signal<{ configId: string; tabId: string } | null>(null);
+  /* ── Config editing ────────────────────────────── */
 
   toggleConfigExpand(configId: string, event: MouseEvent): void {
     event.stopPropagation();
@@ -239,7 +247,7 @@ export class MusicTabBarComponent {
     this.moveMenuTabCtx.set(null);
   }
 
-  moveTargetConfigs(sourceConfigId: string): SavedTabConfig[] {
+  moveTargetConfigs(sourceConfigId: string): SavedTabConfig<any>[] {
     return this.savedConfigs().filter(c => c.id !== sourceConfigId);
   }
 }

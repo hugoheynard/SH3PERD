@@ -1,10 +1,11 @@
-import { Component, ElementRef, inject, type OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, type OnInit, signal, ViewChild } from '@angular/core';
 import { MusicLibrarySelectorService } from '../services/selector-layer/music-library-selector.service';
 import { MusicLibraryStateService } from '../services/music-library-state.service';
 import { MusicTabMutationService } from '../services/mutations-layer/music-tab-mutation.service';
 import { MusicLibraryMutationService } from '../services/mutations-layer/music-library-mutation.service';
 import { LayoutService } from '../../../core/services/layout.service';
-import { MusicTabBarComponent } from '../components/music-tab-bar/music-tab-bar.component';
+import { ConfigurableTabBarComponent } from '../../../shared/configurable-tab-bar/configurable-tab-bar.component';
+import { FormsModule } from '@angular/forms';
 import type { MusicTab } from '../music-library-types';
 import { MusicLibrarySidePanelComponent } from '../components/music-library-side-panel/music-library-side-panel.component';
 import { MusicReferenceCardComponent } from '../components/music-reference-card/music-reference-card.component';
@@ -27,7 +28,8 @@ import { InfoDirective } from '../../../shared/help/info.directive';
   selector: 'app-music-library-page',
   standalone: true,
   imports: [
-    MusicTabBarComponent,
+    ConfigurableTabBarComponent,
+    FormsModule,
     MusicLibrarySidePanelComponent,
     MusicReferenceCardComponent,
     MusicRepertoireTableComponent,
@@ -52,7 +54,13 @@ export class MusicLibraryPageComponent implements OnInit {
   private layout          = inject(LayoutService);
   private toast           = inject(ToastService);
 
+  readonly activeSearchQuery = computed(() => {
+    const tab = this.selector.activeTab();
+    return tab?.config.searchQuery ?? '';
+  });
+
   ngOnInit(): void {
+    this.tabService.init();
     this.stateService.loadLibrary();
   }
 
@@ -93,7 +101,7 @@ export class MusicLibraryPageComponent implements OnInit {
   }
 
   onConfigNew(): void {
-    this.tabService.newConfig();
+this.tabService.newConfig();
     this.toast.show('New configuration started', 'info');
   }
 
@@ -124,7 +132,7 @@ export class MusicLibraryPageComponent implements OnInit {
   }
 
   onTabMoveToConfig(event: { tab: MusicTab; targetConfigId: string }): void {
-    this.tabService.addActiveTabToConfig(event.tab, event.targetConfigId);
+    this.tabService.moveActiveTabToConfig(event.tab.id, event.targetConfigId);
   }
 
   toggleView(): void {
@@ -225,7 +233,6 @@ export class MusicLibraryPageComponent implements OnInit {
         this.toast.show('Failed to remove entry', 'error');
       },
     });
-    this.toast.show('Entry removed from repertoire', 'info');
   }
 
   /* ── Track upload / analysis ── */

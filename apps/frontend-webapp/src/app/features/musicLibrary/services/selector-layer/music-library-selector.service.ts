@@ -54,7 +54,7 @@ export class MusicLibrarySelectorService {
 
     if (!tab) return results;
 
-    const { dataFilterActive, dataFilter } = tab.searchConfig;
+    const { dataFilterActive, dataFilter } = tab.config.searchConfig;
 
     // Apply data filters on versions within each entry
     if (dataFilterActive && dataFilter) {
@@ -64,7 +64,7 @@ export class MusicLibrarySelectorService {
     }
 
     // Apply text search on reference title/artist
-    const query = (tab.searchQuery ?? '').trim();
+    const query = (tab.config.searchQuery ?? '').trim();
     if (query) {
       results = results.filter(entry =>
         fuzzyMatch(query, entry.reference.title) ||

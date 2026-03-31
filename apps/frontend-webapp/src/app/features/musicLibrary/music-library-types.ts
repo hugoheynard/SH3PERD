@@ -25,10 +25,26 @@ export type LibraryEntry = import('@sh3pherd/shared-types').TRepertoireEntryView
 /** All genre values as an array — for iteration in templates. */
 export const MUSIC_GENRES = Object.values(Genre) as MusicGenre[];
 
+// ─── Generic tab system re-exports ────────────────────────────
+import type { TabItem, SavedTabConfig as GenericSavedTabConfig } from '../../shared/configurable-tab-bar';
+export type { TabItem } from '../../shared/configurable-tab-bar';
+
 // ─── UI-specific types ──────────────────────────────────────
 
 export type SearchMode = 'repertoire' | 'cross' | 'shared' | 'match';
 export type TargetMode = 'me' | 'single-user' | 'multiple-users';
+
+/** Music-specific config stored inside each generic TabItem */
+export type MusicTabConfig = {
+  searchConfig: MusicSearchConfig;
+  searchQuery: string;
+};
+
+/** Music tab = generic TabItem parameterized with MusicTabConfig */
+export type MusicTab = TabItem<MusicTabConfig>;
+
+/** Music saved config = generic SavedTabConfig parameterized with MusicTabConfig */
+export type SavedTabConfig = GenericSavedTabConfig<MusicTabConfig>;
 
 export interface MusicLibraryState {
   entries: LibraryEntry[];
@@ -38,23 +54,6 @@ export interface MusicLibraryState {
   savedTabConfigs: SavedTabConfig[];
   crossContext?: CrossSearchContext;
 }
-
-export type SavedTabConfig = {
-  id: string;
-  name: string;
-  tabs: MusicTab[];
-  activeTabId: string;
-  createdAt: number;
-};
-
-export type MusicTab = {
-  id: string;
-  title: string;
-  autoTitle: boolean;
-  searchConfig: MusicSearchConfig;
-  searchQuery: string;
-  color?: string;
-};
 
 export type MusicSearchConfig = {
   searchMode: SearchMode;

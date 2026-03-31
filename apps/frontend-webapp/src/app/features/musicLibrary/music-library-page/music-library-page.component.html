@@ -43,7 +43,7 @@
   <!-- Main content: tab bar + results -->
   <div class="library-content">
 
-    <app-music-tab-bar
+    <sh3-configurable-tab-bar
       [tabs]="selector.tabs()"
       [activeTabId]="selector.activeTabId()"
       [activeConfigId]="selector.activeConfigId()"
@@ -54,7 +54,6 @@
       (tabRename)="onTabRename($event)"
       (tabReorder)="onTabReorder($event)"
       (tabColorChange)="onTabColorChange($event)"
-      (searchQueryChange)="onSearchQueryChange($event)"
       (configSave)="onConfigSave($event)"
       (configNew)="onConfigNew()"
       (configLoad)="onConfigLoad($event)"
@@ -64,7 +63,24 @@
       (configTabRename)="onConfigTabRename($event)"
       (configTabMove)="onConfigTabMove($event)"
       (tabMoveToConfig)="onTabMoveToConfig($event)"
-    />
+    >
+      <!-- Music-specific: search input -->
+      <div tabBarTrailing class="tab-search">
+        <svg class="tab-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+        </svg>
+        <input
+          class="tab-search-input"
+          [ngModel]="activeSearchQuery()"
+          (ngModelChange)="onSearchQueryChange($event)"
+          placeholder="Search…"
+          type="text"
+        />
+        @if (activeSearchQuery()) {
+          <button class="tab-search-clear" type="button" (click)="onSearchQueryChange('')">×</button>
+        }
+      </div>
+    </sh3-configurable-tab-bar>
 
     <div class="results-area">
 
@@ -106,7 +122,7 @@
       </div>
 
       <div class="results-scroll">
-        @if (selector.activeTab()?.searchConfig?.searchMode === 'cross' && selector.crossContext()) {
+        @if (selector.activeTab()?.config?.searchConfig?.searchMode === 'cross' && selector.crossContext()) {
           @let ctx = selector.crossContext()!;
           <app-music-cross-table
             [members]="ctx.members"

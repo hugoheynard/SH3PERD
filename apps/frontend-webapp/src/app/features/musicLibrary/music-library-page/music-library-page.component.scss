@@ -142,6 +142,54 @@
   }
 }
 
+/* ── Tab search (projected into generic tab bar) ── */
+
+.tab-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 0 8px 2px;
+  flex-shrink: 0;
+}
+
+.tab-search-icon {
+  color: var(--text-faded);
+  flex-shrink: 0;
+}
+
+.tab-search-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--panel-border-color);
+  outline: none;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  padding: 3px 4px;
+  width: 140px;
+  transition: border-color var(--t-fast);
+
+  &::placeholder { color: var(--text-faded); }
+  &:focus { border-color: var(--accent-color); }
+}
+
+.tab-search-clear {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text-faded);
+  transition: color var(--t-fast), background var(--t-fast);
+
+  &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
+  &:hover { color: var(--text-primary); background: var(--hover-color); }
+}
+
 /* ── Hidden file input ──────────────────────────── */
 
 .file-input-hidden { display: none; }

@@ -44,13 +44,13 @@ import { RangeSliderComponent, type RangeValue } from '../../../../shared/range-
             <h2 class="section-title section-title--no-margin">Filters</h2>
             <button
               class="filter-toggle"
-              [class.active]="activeTab()!.searchConfig.dataFilterActive"
+              [class.active]="activeTab()!.config.searchConfig.dataFilterActive"
               (click)="toggleFilter()"
               type="button"
-            >{{ activeTab()!.searchConfig.dataFilterActive ? 'On' : 'Off' }}</button>
+            >{{ activeTab()!.config.searchConfig.dataFilterActive ? 'On' : 'Off' }}</button>
           </div>
 
-          <div class="filter-rows" [class.disabled]="!activeTab()!.searchConfig.dataFilterActive">
+          <div class="filter-rows" [class.disabled]="!activeTab()!.config.searchConfig.dataFilterActive">
 
             <div class="filter-genres">
               @for (g of allGenres; track g) {
@@ -87,7 +87,7 @@ import { RangeSliderComponent, type RangeValue } from '../../../../shared/range-
             <sh3-range-slider
               label="BPM"
               [min]="60" [max]="220" [step]="5"
-              [value]="activeTab()!.searchConfig.dataFilter?.bpm"
+              [value]="activeTab()!.config.searchConfig.dataFilter?.bpm"
               (valueChange)="onRangeChange('bpm', $event)"
             />
 
@@ -95,7 +95,7 @@ import { RangeSliderComponent, type RangeValue } from '../../../../shared/range-
               label="Duration"
               unit="duration"
               [min]="0" [max]="600" [step]="10"
-              [value]="activeTab()!.searchConfig.dataFilter?.duration"
+              [value]="activeTab()!.config.searchConfig.dataFilter?.duration"
               (valueChange)="onRangeChange('duration', $event)"
             />
           </div>
@@ -142,21 +142,21 @@ export class MusicLibrarySidePanelComponent {
   }
 
   isGenreSelected(g: MusicGenre): boolean {
-    return this.activeTab()?.searchConfig.dataFilter?.genres?.includes(g) ?? false;
+    return this.activeTab()?.config.searchConfig.dataFilter?.genres?.includes(g) ?? false;
   }
 
   toggleGenre(g: MusicGenre): void {
     const id = this.selector.activeTabId();
     if (!id) return;
-    const current = this.activeTab()?.searchConfig.dataFilter?.genres ?? [];
+    const current = this.activeTab()?.config.searchConfig.dataFilter?.genres ?? [];
     const updated = current.includes(g)
-      ? current.filter(v => v !== g)
+      ? current.filter((v: MusicGenre) => v !== g)
       : [...current, g];
     this.tabMutation.patchDataFilter(id, { genres: updated });
   }
 
   isRatingSelected(key: 'mastery' | 'energy' | 'effort' | 'quality', r: Rating): boolean {
-    const filter = this.activeTab()?.searchConfig.dataFilter;
+    const filter = this.activeTab()?.config.searchConfig.dataFilter;
     return filter?.[key]?.includes(r) ?? false;
   }
 
@@ -174,7 +174,7 @@ export class MusicLibrarySidePanelComponent {
   toggleRating(key: Exclude<keyof MusicDataFilter, 'genres'>, r: Rating): void {
     const id = this.selector.activeTabId();
     if (!id) return;
-    const current = (this.activeTab()?.searchConfig.dataFilter?.[key] ?? []) as Rating[];
+    const current = (this.activeTab()?.config.searchConfig.dataFilter?.[key] ?? []) as Rating[];
     const updated = current.includes(r)
       ? current.filter(v => v !== r)
       : [...current, r].sort() as Rating[];

@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Subject, debounceTime, switchMap } from 'rxjs';
-import type { MusicLibraryState, LibraryEntry, MusicTab, SavedTabConfig } from '../music-library-types';
+import type { MusicLibraryState, LibraryEntry, MusicTab, MusicTabConfig, SavedTabConfig } from '../music-library-types';
+import type { TabStateAccessor, TabSystemState } from '../../../shared/configurable-tab-bar';
 import { mockCrossContext } from '../utils/mock-music-data';
 import { MusicLibraryApiService } from './music-library-api.service';
 import { ToastService } from '../../../shared/toast/toast.service';
@@ -8,8 +9,11 @@ import type { TMusicTabConfig, TMusicSavedTabConfig } from '@sh3pherd/shared-typ
 
 const DEFAULT_TABS: MusicTab[] = [
   {
-    id: 'repertoire_me', title: 'My Repertoire', autoTitle: false, searchQuery: '',
-    searchConfig: { searchMode: 'repertoire', target: { mode: 'me' }, dataFilterActive: false },
+    id: 'repertoire_me', title: 'My Repertoire', autoTitle: false,
+    config: {
+      searchConfig: { searchMode: 'repertoire', target: { mode: 'me' }, dataFilterActive: false },
+      searchQuery: '',
+    },
   },
 ];
 
@@ -33,17 +37,45 @@ export class MusicLibraryStateService {
 
   readonly library = computed(() => this.state());
 
+  /**
+   * Accessor for the generic TabMutationService.
+   * Reads/writes the tab-system slice of the full state.
+   */
+  readonly tabStateAccessor: TabStateAccessor<MusicTabConfig> = {
+    get: () => {
+      const s = this.state();
+      return { tabs: s.tabs, activeTabId: s.activeTabId, activeConfigId: s.activeConfigId, savedTabConfigs: s.savedTabConfigs };
+    },
+    update: (updater: (s: TabSystemState<MusicTabConfig>) => TabSystemState<MusicTabConfig>) => {
+      this.state.update(s => {
+        const slice: TabSystemState<MusicTabConfig> = { tabs: s.tabs, activeTabId: s.activeTabId, activeConfigId: s.activeConfigId, savedTabConfigs: s.savedTabConfigs };
+        const updated = updater(slice);
+        return { ...s, ...updated };
+      });
+    },
+  };
+
   constructor() {
     this.saveSubject.pipe(
       debounceTime(1000),
       switchMap(() => {
         const s = this.state();
-        const tabs: TMusicTabConfig[] = s.tabs.map(t => ({ ...t }));
+        // Map from generic TabItem<MusicTabConfig> → flat TMusicTabConfig for backend
+        const mapTab = (t: MusicTab): TMusicTabConfig => ({
+          id: t.id, title: t.title, autoTitle: t.autoTitle, color: t.color,
+          searchConfig: t.config?.searchConfig ?? { searchMode: 'repertoire', target: { mode: 'me' }, dataFilterActive: false },
+          searchQuery: t.config?.searchQuery ?? '',
+        });
+        const tabs: TMusicTabConfig[] = s.tabs.map(mapTab);
+        const savedTabConfigs: TMusicSavedTabConfig[] = (s.savedTabConfigs ?? []).map(cfg => ({
+          ...cfg,
+          tabs: cfg.tabs.map(mapTab),
+        }));
         return this.libraryApi.saveTabConfigs({
           tabs,
           activeTabId: s.activeTabId,
           activeConfigId: s.activeConfigId ?? undefined,
-          savedTabConfigs: s.savedTabConfigs as TMusicSavedTabConfig[],
+          savedTabConfigs,
         });
       }),
     ).subscribe({
@@ -54,20 +86,13 @@ export class MusicLibraryStateService {
     });
   }
 
-  /**
-   * Load the user's library and tab configs from the backend.
-   * Called once on first access (e.g. from the music library page).
-   */
   loadLibrary(): void {
     if (this.loaded) return;
     this.loaded = true;
 
     this.libraryApi.getMyLibrary().subscribe({
       next: (result) => {
-        this.state.update(s => ({
-          ...s,
-          entries: result.entries as LibraryEntry[],
-        }));
+        this.state.update(s => ({ ...s, entries: result.entries as LibraryEntry[] }));
       },
       error: (err) => {
         console.error('[MusicLibraryState] Failed to load library', err);
@@ -78,21 +103,36 @@ export class MusicLibraryStateService {
     this.libraryApi.getTabConfigs().subscribe({
       next: (configs) => {
         if (!configs) return;
-        const tabs = configs.tabs.map(t => ({ ...t, searchQuery: t.searchQuery ?? '' })) as MusicTab[];
+        // Map from flat backend TMusicTabConfig → generic TabItem<MusicTabConfig>
+        const rawTabs: MusicTab[] = configs.tabs.map(t => ({
+          id: t.id, title: t.title, autoTitle: t.autoTitle, color: t.color,
+          config: { searchConfig: t.searchConfig as any, searchQuery: t.searchQuery ?? '' },
+        }));
+        // Deduplicate by id
+        const seen = new Set<string>();
+        const tabs = rawTabs.filter(t => { if (seen.has(t.id)) return false; seen.add(t.id); return true; });
+
+        const savedTabConfigs: SavedTabConfig[] = ((configs.savedTabConfigs ?? []) as any[]).map(cfg => {
+          const seenIds = new Set<string>();
+          const cfgTabs: MusicTab[] = (cfg.tabs ?? []).map((t: any) => ({
+            id: t.id, title: t.title, autoTitle: t.autoTitle, color: t.color,
+            config: { searchConfig: t.searchConfig ?? t.config?.searchConfig, searchQuery: t.searchQuery ?? t.config?.searchQuery ?? '' },
+          })).filter((t: MusicTab) => { if (seenIds.has(t.id)) return false; seenIds.add(t.id); return true; });
+          return { ...cfg, tabs: cfgTabs };
+        });
+
         this.state.update(s => ({
           ...s,
           tabs,
           activeTabId: configs.activeTabId,
           activeConfigId: (configs as any).activeConfigId ?? null,
-          savedTabConfigs: configs.savedTabConfigs as SavedTabConfig[],
+          savedTabConfigs,
         }));
-        this.toast.show('Tab configs loaded', 'success');
       },
       error: () => this.toast.show('Failed to load tab configs', 'error'),
     });
   }
 
-  /** Return the current state value (for imperative reads). */
   snapshot(): MusicLibraryState {
     return this.state();
   }
@@ -101,7 +141,6 @@ export class MusicLibraryStateService {
     this.state.update(updater);
   }
 
-  /** Schedule a debounced save of tab configs to the backend. */
   scheduleTabSave(): void {
     this.saveSubject.next();
   }

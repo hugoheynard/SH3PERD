@@ -105,12 +105,12 @@ export const MOCK_ENTRIES: LibraryEntry[] = [
 
 export const MOCK_TABS: MusicTab[] = [
   {
-    id: 'repertoire_me', title: 'My Repertoire', autoTitle: false, searchQuery: '',
-    searchConfig: { searchMode: 'repertoire', target: { mode: 'me' }, dataFilterActive: false },
+    id: 'repertoire_me', title: 'My Repertoire', autoTitle: false,
+    config: { searchQuery: '', searchConfig: { searchMode: 'repertoire', target: { mode: 'me' }, dataFilterActive: false } },
   },
   {
-    id: 'cross_contract_001', title: 'Croisement équipe', autoTitle: false, searchQuery: '',
-    searchConfig: { searchMode: 'cross', target: { mode: 'contract', contractId: 'contract_001' }, dataFilterActive: false },
+    id: 'cross_contract_001', title: 'Croisement équipe', autoTitle: false,
+    config: { searchQuery: '', searchConfig: { searchMode: 'cross', target: { mode: 'contract', contractId: 'contract_001' }, dataFilterActive: false } },
   },
 ];
 
