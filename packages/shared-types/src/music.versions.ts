@@ -6,39 +6,49 @@ import type { TGenreEnum, TTypeEnum, TRating } from './music.domain.schemas.js';
 import { SVersionTrackDomainModel } from './music-tracks.js';
 import type { TVersionTrackDomainModel } from './music-tracks.js';
 
+// ─── Version derivation ─────────────────────────────────────
+
+/** How a version was derived from another version (automated process). */
+export const SVersionDerivationType = z.enum(['pitch_shift', 'tempo_change']);
+export type TVersionDerivationType = z.infer<typeof SVersionDerivationType>;
+
 // ─── Domain model ──────────────────────────────────────────
 
 /** A user's rendition of a music reference (cover, pitch variant, acoustic…). */
 export interface TMusicVersionDomainModel {
-  id:                TMusicVersionId;
-  musicReference_id: TMusicReferenceId;
-  owner_id:          TUserId;
-  label:             string;
-  genre:             TGenreEnum;
-  type:              TTypeEnum;
-  bpm:               number | null;
-  pitch:             number | null;
-  notes?:            string;
-  mastery:           TRating;
-  energy:            TRating;
-  effort:            TRating;
-  tracks:            TVersionTrackDomainModel[];
+  id:                  TMusicVersionId;
+  musicReference_id:   TMusicReferenceId;
+  owner_id:            TUserId;
+  label:               string;
+  genre:               TGenreEnum;
+  type:                TTypeEnum;
+  bpm:                 number | null;
+  pitch:               number | null;
+  notes?:              string;
+  mastery:             TRating;
+  energy:              TRating;
+  effort:              TRating;
+  tracks:              TVersionTrackDomainModel[];
+  parentVersionId?:    TMusicVersionId;
+  derivationType?:     TVersionDerivationType;
 }
 
 const _SMusicVersionDomainModel = z.object({
-  id:                SMusicVersionId,
-  musicReference_id: SMusicReferenceId,
-  owner_id:          SUserId,
-  label:             z.string().min(1),
-  genre:             SGenreEnum,
-  type:              STypeEnum,
-  bpm:               z.number().nullable(),
-  pitch:             z.number().nullable(),
-  notes:             z.string().optional(),
-  mastery:           SRating,
-  energy:            SRating,
-  effort:            SRating,
-  tracks:            z.array(SVersionTrackDomainModel),
+  id:                  SMusicVersionId,
+  musicReference_id:   SMusicReferenceId,
+  owner_id:            SUserId,
+  label:               z.string().min(1),
+  genre:               SGenreEnum,
+  type:                STypeEnum,
+  bpm:                 z.number().nullable(),
+  pitch:               z.number().nullable(),
+  notes:               z.string().optional(),
+  mastery:             SRating,
+  energy:              SRating,
+  effort:              SRating,
+  tracks:              z.array(SVersionTrackDomainModel),
+  parentVersionId:     SMusicVersionId.optional(),
+  derivationType:      SVersionDerivationType.optional(),
 });
 
 export const SMusicVersionDomainModel = _SMusicVersionDomainModel;

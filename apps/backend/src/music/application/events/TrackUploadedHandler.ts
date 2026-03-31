@@ -5,7 +5,7 @@ import { firstValueFrom, timeout, catchError, of } from 'rxjs';
 import { TrackUploadedEvent } from './TrackUploadedEvent.js';
 import { MUSIC_VERSION_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IMusicVersionRepository } from '../../repositories/MusicVersionRepository.js';
-import type { TAudioAnalysisSnapshot, TAnalyzeTrackPayload } from '@sh3pherd/shared-types';
+import { MicroservicePatterns, type TAudioAnalysisSnapshot, type TAnalyzeTrackPayload } from '@sh3pherd/shared-types';
 
 /**
  * Handles TrackUploadedEvent by dispatching an analysis request
@@ -32,7 +32,7 @@ export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
     try {
       const snapshot = await firstValueFrom(
         this.audioClient
-          .send<TAudioAnalysisSnapshot | null>('analyze_track', payload)
+          .send<TAudioAnalysisSnapshot | null>(MicroservicePatterns.AudioProcessor.ANALYZE_TRACK, payload)
           .pipe(
             timeout(120_000), // 2 min max for analysis
             catchError(err => {

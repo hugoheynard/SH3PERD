@@ -6,7 +6,7 @@ import {
   SCompanyId,   type TCompanyId,
   SContractId,  type TContractId,
   SSignatureId, type TSignatureId,
-  SAddendumId,  type TAddendumId,
+  SAddendumId,
 } from './ids.js';
 
 // ─── Enums ─────────────────────────────────────────────────
