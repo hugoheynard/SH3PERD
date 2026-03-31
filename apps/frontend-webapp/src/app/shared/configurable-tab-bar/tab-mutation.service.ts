@@ -1,28 +1,34 @@
-import type { TabItem, SavedTabConfig, TabSystemState } from './configurable-tab-bar.types';
-
-export interface TabStateAccessor<TConfig> {
-  get(): TabSystemState<TConfig>;
-  update(updater: (s: TabSystemState<TConfig>) => TabSystemState<TConfig>): void;
-}
+import type { TabItem, SavedTabConfig, TabSystemState, TabStateSignal } from './configurable-tab-bar.types';
 
 /**
- * Generic tab mutation service — not @Injectable.
- * Instantiated by the consumer (e.g. MusicTabMutationService) with domain-specific config.
+ * Abstract tab mutation service — extend with domain-specific mutations.
+ *
+ * Usage:
+ * ```
+ * @Injectable()
+ * class MyTabService extends TabMutationService<MyConfig> {
+ *   constructor() {
+ *     const state = inject(MyStateService);
+ *     super(state.tabState, () => DEFAULT, () => state.scheduleTabSave());
+ *   }
+ *   // domain-specific mutations using this.patchTabConfig()
+ * }
+ * ```
  */
-export class TabMutationService<TConfig> {
+export abstract class TabMutationService<TConfig> {
 
   constructor(
-    private accessor: TabStateAccessor<TConfig>,
-    private defaultConfigFactory: () => TConfig,
-    private onChanged: () => void,
+    protected state: TabStateSignal<TConfig>,
+    protected defaultConfigFactory: () => TConfig,
+    protected onChanged: () => void,
   ) {}
 
-  private snapshot(): TabSystemState<TConfig> {
-    return this.accessor.get();
+  protected snapshot(): TabSystemState<TConfig> {
+    return this.state();
   }
 
-  private update(updater: (s: TabSystemState<TConfig>) => TabSystemState<TConfig>): void {
-    this.accessor.update(s => {
+  protected update(updater: (s: TabSystemState<TConfig>) => TabSystemState<TConfig>): void {
+    this.state.update(s => {
       const updated = updater(s);
       return this.syncActiveConfig(updated);
     });
@@ -180,16 +186,14 @@ export class TabMutationService<TConfig> {
         if (c.id === targetConfigId) {
           return { ...c, tabs: [...c.tabs, savedTab] };
         }
-        // Remove from source config (same IDs since applyTabConfig preserves them)
         if (activeConfigId && c.id === activeConfigId) {
           const remaining = c.tabs.filter(t => t.id !== tabId);
-          if (remaining.length === 0) return c; // Don't empty
+          if (remaining.length === 0) return c;
           return { ...c, tabs: remaining, activeTabId: c.activeTabId === tabId ? remaining[0].id : c.activeTabId };
         }
         return c;
       });
 
-      // Remove from active tabs
       const remainingTabs = s.tabs.filter(t => t.id !== tabId);
 
       if (remainingTabs.length === 0) {

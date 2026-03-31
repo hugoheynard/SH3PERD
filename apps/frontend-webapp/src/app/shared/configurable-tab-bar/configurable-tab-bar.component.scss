@@ -207,6 +207,8 @@
   flex-shrink: 0;
   margin-left: 4px;
   margin-bottom: 2px;
+  position: relative;
+  z-index: 2;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 
   &:focus-visible {

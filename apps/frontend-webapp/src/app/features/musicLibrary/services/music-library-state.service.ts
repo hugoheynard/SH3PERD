@@ -1,11 +1,11 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Subject, debounceTime, switchMap } from 'rxjs';
-import type { MusicLibraryState, LibraryEntry, MusicTab, MusicTabConfig, SavedTabConfig } from '../music-library-types';
-import type { TabStateAccessor, TabSystemState } from '../../../shared/configurable-tab-bar';
+import type { MusicLibraryState, LibraryEntry, MusicTab, MusicTabConfig, MusicSearchConfig, MusicDataFilter, MusicGenre, Rating, SavedTabConfig } from '../music-library-types';
+import type { TabStateSignal, TabSystemState } from '../../../shared/configurable-tab-bar';
 import { mockCrossContext } from '../utils/mock-music-data';
 import { MusicLibraryApiService } from './music-library-api.service';
 import { ToastService } from '../../../shared/toast/toast.service';
-import type { TMusicTabConfig, TMusicSavedTabConfig } from '@sh3pherd/shared-types';
+import type { TMusicTabConfig, TMusicSavedTabConfig, TMusicSearchConfig } from '@sh3pherd/shared-types';
 
 const DEFAULT_TABS: MusicTab[] = [
   {
@@ -37,30 +37,27 @@ export class MusicLibraryStateService {
 
   readonly library = computed(() => this.state());
 
-  /**
-   * Accessor for the generic TabMutationService.
-   * Reads/writes the tab-system slice of the full state.
-   */
-  readonly tabStateAccessor: TabStateAccessor<MusicTabConfig> = {
-    get: () => {
+  /** Signal-like view over the tab-system slice of the full state */
+  readonly tabState: TabStateSignal<MusicTabConfig> = Object.assign(
+    () => {
       const s = this.state();
       return { tabs: s.tabs, activeTabId: s.activeTabId, activeConfigId: s.activeConfigId, savedTabConfigs: s.savedTabConfigs };
     },
-    update: (updater: (s: TabSystemState<MusicTabConfig>) => TabSystemState<MusicTabConfig>) => {
-      this.state.update(s => {
-        const slice: TabSystemState<MusicTabConfig> = { tabs: s.tabs, activeTabId: s.activeTabId, activeConfigId: s.activeConfigId, savedTabConfigs: s.savedTabConfigs };
-        const updated = updater(slice);
-        return { ...s, ...updated };
-      });
+    {
+      update: (updater: (s: TabSystemState<MusicTabConfig>) => TabSystemState<MusicTabConfig>) => {
+        this.state.update(s => {
+          const slice: TabSystemState<MusicTabConfig> = { tabs: s.tabs, activeTabId: s.activeTabId, activeConfigId: s.activeConfigId, savedTabConfigs: s.savedTabConfigs };
+          return { ...s, ...updater(slice) };
+        });
+      },
     },
-  };
+  );
 
   constructor() {
     this.saveSubject.pipe(
       debounceTime(1000),
       switchMap(() => {
         const s = this.state();
-        // Map from generic TabItem<MusicTabConfig> → flat TMusicTabConfig for backend
         const mapTab = (t: MusicTab): TMusicTabConfig => ({
           id: t.id, title: t.title, autoTitle: t.autoTitle, color: t.color,
           searchConfig: t.config?.searchConfig ?? { searchMode: 'repertoire', target: { mode: 'me' }, dataFilterActive: false },
@@ -103,29 +100,49 @@ export class MusicLibraryStateService {
     this.libraryApi.getTabConfigs().subscribe({
       next: (configs) => {
         if (!configs) return;
-        // Map from flat backend TMusicTabConfig → generic TabItem<MusicTabConfig>
-        const rawTabs: MusicTab[] = configs.tabs.map(t => ({
-          id: t.id, title: t.title, autoTitle: t.autoTitle, color: t.color,
-          config: { searchConfig: t.searchConfig as any, searchQuery: t.searchQuery ?? '' },
-        }));
-        // Deduplicate by id
-        const seen = new Set<string>();
-        const tabs = rawTabs.filter(t => { if (seen.has(t.id)) return false; seen.add(t.id); return true; });
 
-        const savedTabConfigs: SavedTabConfig[] = ((configs.savedTabConfigs ?? []) as any[]).map(cfg => {
-          const seenIds = new Set<string>();
-          const cfgTabs: MusicTab[] = (cfg.tabs ?? []).map((t: any) => ({
-            id: t.id, title: t.title, autoTitle: t.autoTitle, color: t.color,
-            config: { searchConfig: t.searchConfig ?? t.config?.searchConfig, searchQuery: t.searchQuery ?? t.config?.searchQuery ?? '' },
-          })).filter((t: MusicTab) => { if (seenIds.has(t.id)) return false; seenIds.add(t.id); return true; });
-          return { ...cfg, tabs: cfgTabs };
+        const mapDataFilter = (df: NonNullable<TMusicSearchConfig['dataFilter']>): MusicDataFilter => ({
+          genres: df.genres as MusicGenre[] | undefined,
+          mastery: df.mastery as Rating[] | undefined,
+          energy: df.energy as Rating[] | undefined,
+          effort: df.effort as Rating[] | undefined,
+          quality: df.quality as Rating[] | undefined,
+          bpm: df.bpm,
+          duration: df.duration,
         });
+
+        const mapSearchConfig = (sc: TMusicSearchConfig): MusicSearchConfig => ({
+          searchMode: sc.searchMode,
+          target: sc.target,
+          dataFilterActive: sc.dataFilterActive,
+          dataFilter: sc.dataFilter ? mapDataFilter(sc.dataFilter) : undefined,
+        });
+
+        const mapTab = (t: TMusicTabConfig): MusicTab => ({
+          id: t.id, title: t.title, autoTitle: t.autoTitle, color: t.color,
+          config: { searchConfig: mapSearchConfig(t.searchConfig), searchQuery: t.searchQuery ?? '' },
+        });
+
+        const dedup = <T extends { id: string }>(items: T[]): T[] => {
+          const seen = new Set<string>();
+          return items.filter(t => { if (seen.has(t.id)) return false; seen.add(t.id); return true; });
+        };
+
+        const tabs = dedup(configs.tabs.map(mapTab));
+
+        const savedTabConfigs: SavedTabConfig[] = (configs.savedTabConfigs ?? []).map((cfg: TMusicSavedTabConfig) => ({
+          id: cfg.id,
+          name: cfg.name,
+          activeTabId: cfg.activeTabId,
+          createdAt: cfg.createdAt,
+          tabs: dedup(cfg.tabs.map(mapTab)),
+        }));
 
         this.state.update(s => ({
           ...s,
           tabs,
           activeTabId: configs.activeTabId,
-          activeConfigId: (configs as any).activeConfigId ?? null,
+          activeConfigId: configs.activeConfigId ?? null,
           savedTabConfigs,
         }));
       },
