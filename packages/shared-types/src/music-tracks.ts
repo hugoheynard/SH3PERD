@@ -127,3 +127,22 @@ export interface TMasteringResult {
   /** ffmpeg loudnorm report (stderr). */
   report:        string;
 }
+
+// ─── Pitch shift microservice payload ────────────────────
+
+/** Sent from backend to audio-processor via TCP to request pitch shifting. */
+export interface TPitchShiftTrackPayload {
+  s3Key:       string;
+  outputS3Key: string;
+  trackId:     TVersionTrackId;
+  versionId:   TMusicVersionId;
+  ownerId:     TUserId;
+  /** Number of semitones to shift (positive = up, negative = down). */
+  semitones:   number;
+}
+
+/** Returned by audio-processor after pitch shifting. */
+export interface TPitchShiftResult {
+  shiftedS3Key: string;
+  sizeBytes:    number;
+}
