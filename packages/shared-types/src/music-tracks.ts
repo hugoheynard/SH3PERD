@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SVersionTrackId, type TVersionTrackId } from './ids.js';
+import { SVersionTrackId, type TVersionTrackId, type TMusicVersionId, type TUserId } from './ids.js';
 import { SRating, type TRating } from './music.domain.schemas.js';
 export type { TRating } from './music.domain.schemas.js';
 
@@ -57,3 +57,14 @@ export const SUploadTrackPayload = z.object({
   fileName:        z.string().min(1),
   durationSeconds: z.number().positive().optional(),
 });
+
+
+// ─── Audio analysis microservice payload ────────────────
+
+/** Sent from backend to audio-processor via TCP to request analysis. */
+export interface TAnalyzeTrackPayload {
+  s3Key:     string;
+  trackId:   TVersionTrackId;
+  versionId: TMusicVersionId;
+  ownerId:   TUserId;
+}

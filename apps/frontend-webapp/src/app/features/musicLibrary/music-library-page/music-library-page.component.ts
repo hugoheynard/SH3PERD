@@ -14,11 +14,10 @@ import { MusicCrossTableComponent } from '../components/music-cross-table/music-
 import { ButtonComponent } from '../../../shared/button/button.component';
 import type { AddVersionPayload } from '../services/mutations-layer/music-library-mutation.service';
 import type { VersionEditPayload } from '../components/music-repertoire-table/music-repertoire-table.component';
-import { AudioAnalyzerService } from '../../audioAnalyzer/audio-analyzer.service';
 import { MusicVersionApiService } from '../services/music-version-api.service';
+import { MusicTrackApiService } from '../services/music-track-api.service';
 import { MusicRepertoireApiService } from '../services/music-repertoire-api.service';
 import { VersionType } from '../music-library-types';
-import type { AudioAnalysisSnapshot, Rating } from '../music-library-types';
 import type { TCreateMusicVersionPayload, TMusicReferenceId } from '@sh3pherd/shared-types';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { InfoDirective } from '../../../shared/help/info.directive';
@@ -49,8 +48,8 @@ export class MusicLibraryPageComponent implements OnInit {
   private tabService      = inject(MusicTabMutationService);
   private mutation        = inject(MusicLibraryMutationService);
   private versionApi      = inject(MusicVersionApiService);
+  private trackApi        = inject(MusicTrackApiService);
   private repertoireApi   = inject(MusicRepertoireApiService);
-  private audioAnalyzer   = inject(AudioAnalyzerService);
   private layout          = inject(LayoutService);
   private toast           = inject(ToastService);
 
@@ -187,21 +186,53 @@ export class MusicLibraryPageComponent implements OnInit {
   }
 
   onTrackDownloadRequested(event: { versionId: string; trackId: string }): void {
+    // Try local cache first (freshly uploaded files)
     const file = this.trackFiles.get(event.trackId);
-    if (!file) {
-      console.warn('[MusicLibrary] No local track file for track', event.trackId);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.name;
+      a.click();
+      URL.revokeObjectURL(url);
       return;
     }
-    const url = URL.createObjectURL(file);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = file.name;
-    a.click();
-    URL.revokeObjectURL(url);
+
+    // Otherwise fetch presigned URL from backend
+    this.trackApi.getDownloadUrl(event.versionId as any, event.trackId as any).subscribe({
+      next: (url) => {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '';
+        a.target = '_blank';
+        a.click();
+      },
+      error: () => {
+        // Toast already shown by trackApi
+      },
+    });
   }
 
   onFavoriteChanged(event: { entryId: string; versionId: string; trackId: string }): void {
     this.mutation.setFavoriteTrack(event.entryId, event.versionId, event.trackId);
+    this.trackApi.setFavorite(event.versionId as any, event.trackId as any).subscribe({
+      error: () => {
+        // Revert optimistic update on failure — toast already shown
+      },
+    });
+  }
+
+  onTrackDeleteRequested(event: { entryId: string; versionId: string; trackId: string }): void {
+    this.trackApi.delete(event.versionId as any, event.trackId as any).subscribe({
+      next: () => {
+        this.mutation.removeTrack(event.entryId, event.versionId, event.trackId);
+        this.trackFiles.delete(event.trackId);
+        this.toast.show('Track deleted', 'success');
+      },
+      error: () => {
+        // Toast already shown by trackApi
+      },
+    });
   }
 
   onFileSelected(event: Event): void {
@@ -209,48 +240,20 @@ export class MusicLibraryPageComponent implements OnInit {
     (event.target as HTMLInputElement).value = '';
     if (!file || !this.pendingVersionId || !this.pendingEntryId) return;
     const entryId = this.pendingEntryId;
-    const versionId = this.pendingVersionId;
+    const versionId = this.pendingVersionId as any;
     this.pendingEntryId = null;
     this.pendingVersionId = null;
 
-    const track = this.mutation.addTrack(entryId, versionId, file.name);
-    this.trackFiles.set(track.id, file);
-    this.toast.show(`Track "${file.name}" uploaded`, 'success');
-    this.startAnalysis(entryId, versionId, track.id, file);
-  }
-
-  private startAnalysis(entryId: string, versionId: string, trackId: string, file: File): void {
-    this.analysingVersionIds.update(s => new Set([...s, versionId]));
-    this.audioAnalyzer.analyze(file).subscribe({
-      next: (event) => {
-        if (event.type === 'result') {
-          const snapshot = this.toSnapshot(event.report);
-          this.mutation.saveTrackAnalysis(entryId, versionId, trackId, snapshot);
-          this.analysingVersionIds.update(s => { const n = new Set(s); n.delete(versionId); return n; });
-          this.toast.show(`Analysis complete — Quality ${snapshot.quality}/4`, 'success');
-        }
+    this.trackApi.upload(versionId, file).subscribe({
+      next: (track) => {
+        this.mutation.addTrackFromApi(entryId, versionId, track);
+        this.trackFiles.set(track.id, file);
+        this.toast.show(`Track "${file.name}" uploaded — analysis in progress`, 'success');
       },
-      error: (err) => {
-        console.error('[MusicLibrary] Analysis failed for track', trackId, err);
-        this.analysingVersionIds.update(s => { const n = new Set(s); n.delete(versionId); return n; });
-        this.toast.show('Analysis failed', 'error');
+      error: () => {
+        // Toast already shown by trackApi
       },
     });
   }
 
-  private toSnapshot(report: import('../../audioAnalyzer/audio-analysis-types').AudioAnalysisReport): AudioAnalysisSnapshot {
-    let quality: Rating;
-    if (report.clippingRatio < 0.001 && report.SNRdB > 50 && report.truePeakdBTP < -1) quality = 4;
-    else if (report.clippingRatio < 0.005 && report.SNRdB > 35) quality = 3;
-    else if (report.clippingRatio < 0.02 && report.SNRdB > 20) quality = 2;
-    else quality = 1;
-    return {
-      integratedLUFS: report.integratedLUFS,
-      loudnessRange:  report.loudnessRange,
-      truePeakdBTP:   report.truePeakdBTP,
-      SNRdB:          report.SNRdB,
-      clippingRatio:  report.clippingRatio,
-      quality,
-    };
-  }
 }

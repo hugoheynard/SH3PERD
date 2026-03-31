@@ -1,5 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Dev all" type="CompoundRunConfigurationType">
+    <toRun name="audio-processor &gt; start:dev" type="js.build_tools.npm" />
     <toRun name="backend &gt; start:dev" type="js.build_tools.npm" />
     <toRun name="frontend-webapp &gt; start" type="js.build_tools.npm" />
     <toRun name="shared-types &gt; dev:watch" type="js.build_tools.npm" />

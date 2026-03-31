@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TrackStorageModule } from './infra/storage/TrackStorageModule.js';
 
 // Commands
@@ -14,6 +15,9 @@ import { DeleteTrackHandler } from './application/commands/DeleteTrackCommand.js
 import { SetTrackFavoriteHandler } from './application/commands/SetTrackFavoriteCommand.js';
 import { SaveMusicTabConfigsHandler } from './application/commands/SaveMusicTabConfigsCommand.js';
 import { DeleteMusicTabConfigsHandler } from './application/commands/DeleteMusicTabConfigsCommand.js';
+
+// Events
+import { TrackUploadedHandler } from './application/events/TrackUploadedHandler.js';
 
 // Queries
 import { SearchMusicReferencesHandler } from './application/queries/SearchMusicReferencesQuery.js';
@@ -44,9 +48,21 @@ const QueryHandlers = [
   GetMusicTabConfigsHandler,
 ];
 
+const EventHandlers = [
+  TrackUploadedHandler,
+];
+
 @Module({
-  imports: [CqrsModule, TrackStorageModule],
-  providers: [...CommandHandlers, ...QueryHandlers],
+  imports: [
+    CqrsModule,
+    TrackStorageModule,
+    ClientsModule.register([{
+      name: 'AUDIO_PROCESSOR',
+      transport: Transport.TCP,
+      options: { host: 'localhost', port: 3001 },
+    }]),
+  ],
+  providers: [...CommandHandlers, ...QueryHandlers, ...EventHandlers],
   exports: [...CommandHandlers, ...QueryHandlers],
 })
 export class MusicHandlersModule {}

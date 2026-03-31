@@ -123,6 +123,22 @@ export class MusicLibraryMutationService {
     return track;
   }
 
+  /** Add a track from a backend API response (already has a real id and metadata). */
+  addTrackFromApi(entryId: string, versionId: string, track: VersionTrack): void {
+    this.patchVersion(entryId, versionId, version => ({
+      ...version,
+      tracks: [...version.tracks, track],
+    }));
+  }
+
+  /** Remove a track from a version. */
+  removeTrack(entryId: string, versionId: string, trackId: string): void {
+    this.patchVersion(entryId, versionId, version => ({
+      ...version,
+      tracks: version.tracks.filter(t => t.id !== trackId),
+    }));
+  }
+
   /** Set a track as favorite (unsets all others). */
   setFavoriteTrack(entryId: string, versionId: string, trackId: string): void {
     this.patchVersion(entryId, versionId, version => ({

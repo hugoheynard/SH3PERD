@@ -4,6 +4,7 @@ import type {
   TMusicVersionId,
   TVersionTrackDomainModel,
   TVersionTrackId,
+  TAudioAnalysisSnapshot,
   TUserId,
 } from '@sh3pherd/shared-types';
 import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
@@ -19,6 +20,7 @@ export interface IMusicVersionRepository {
   pushTrack(versionId: TMusicVersionId, track: TVersionTrackDomainModel): Promise<boolean>;
   pullTrack(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean>;
   setTrackFavorite(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean>;
+  setTrackAnalysis(versionId: TMusicVersionId, trackId: TVersionTrackId, analysis: TAudioAnalysisSnapshot): Promise<boolean>;
   findByOwnerId(userId: TUserId): Promise<TMusicVersionDomainModel[]>;
 }
 
@@ -100,6 +102,24 @@ export class MusicVersionRepository
       {
         $set: {
           'tracks.$.favorite': true,
+          'metadata.updated_at': new Date(),
+        },
+      },
+    );
+    return result.modifiedCount === 1;
+  }
+
+  /** Persist audio analysis results on a specific track. */
+  async setTrackAnalysis(
+    versionId: TMusicVersionId,
+    trackId: TVersionTrackId,
+    analysis: TAudioAnalysisSnapshot,
+  ): Promise<boolean> {
+    const result = await this.collection.updateOne(
+      { id: versionId, 'tracks.id': trackId } as any,
+      {
+        $set: {
+          'tracks.$.analysisResult': analysis,
           'metadata.updated_at': new Date(),
         },
       },
