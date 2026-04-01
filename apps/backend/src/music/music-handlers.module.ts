@@ -2,6 +2,16 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TrackStorageModule } from './infra/storage/TrackStorageModule.js';
+import {
+  REPERTOIRE_ENTRY_AGGREGATE_REPO,
+  MUSIC_VERSION_REPO,
+  MUSIC_REPERTOIRE_REPO,
+  MUSIC_REFERENCE_REPO,
+} from '../appBootstrap/nestTokens.js';
+import { RepertoireEntryAggregateRepository } from './repositories/RepertoireEntryAggregateRepository.js';
+import type { IMusicVersionRepository } from './repositories/MusicVersionRepository.js';
+import type { IMusicRepertoireRepository } from './repositories/MusicRepertoireRepository.js';
+import type { IMusicReferenceRepository } from './types/musicReferences.types.js';
 
 // Commands
 import { CreateMusicReferenceHandler } from './application/commands/CreateMusicReferenceCommand.js';
@@ -66,7 +76,20 @@ const EventHandlers = [
       options: { host: 'localhost', port: 3001 },
     }]),
   ],
-  providers: [...CommandHandlers, ...QueryHandlers, ...EventHandlers],
+  providers: [
+    ...CommandHandlers,
+    ...QueryHandlers,
+    ...EventHandlers,
+    {
+      provide: REPERTOIRE_ENTRY_AGGREGATE_REPO,
+      useFactory: (
+        versionRepo: IMusicVersionRepository,
+        repertoireRepo: IMusicRepertoireRepository,
+        referenceRepo: IMusicReferenceRepository,
+      ) => new RepertoireEntryAggregateRepository(versionRepo, repertoireRepo, referenceRepo),
+      inject: [MUSIC_VERSION_REPO, MUSIC_REPERTOIRE_REPO, MUSIC_REFERENCE_REPO],
+    },
+  ],
   exports: [...CommandHandlers, ...QueryHandlers],
 })
 export class MusicHandlersModule {}

@@ -3,14 +3,14 @@ import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout, catchError, of } from 'rxjs';
 import { TrackUploadedEvent } from './TrackUploadedEvent.js';
-import { MUSIC_VERSION_REPO } from '../../../appBootstrap/nestTokens.js';
-import type { IMusicVersionRepository } from '../../repositories/MusicVersionRepository.js';
+import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
+import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
 import { MicroservicePatterns, type TAudioAnalysisSnapshot, type TAnalyzeTrackPayload } from '@sh3pherd/shared-types';
 
 /**
  * Handles TrackUploadedEvent by dispatching an analysis request
  * to the audio-processor microservice via TCP, then persisting
- * the result in MongoDB.
+ * the result via the aggregate.
  */
 @EventsHandler(TrackUploadedEvent)
 export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
@@ -19,7 +19,7 @@ export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
 
   constructor(
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
-    @Inject(MUSIC_VERSION_REPO) private readonly versionRepo: IMusicVersionRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
   ) {}
 
   async handle(event: TrackUploadedEvent): Promise<void> {
@@ -34,7 +34,7 @@ export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
         this.audioClient
           .send<TAudioAnalysisSnapshot | null>(MicroservicePatterns.AudioProcessor.ANALYZE_TRACK, payload)
           .pipe(
-            timeout(120_000), // 2 min max for analysis
+            timeout(120_000),
             catchError(err => {
               this.logger.error(`Analysis failed for track ${trackId}: ${err.message}`);
               return of(null as TAudioAnalysisSnapshot | null);
@@ -47,12 +47,11 @@ export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
         return;
       }
 
-      const saved = await this.versionRepo.setTrackAnalysis(versionId, trackId, snapshot);
-      if (saved) {
-        this.logger.log(`Analysis saved for track ${trackId} — quality=${snapshot.quality}/4`);
-      } else {
-        this.logger.warn(`Failed to persist analysis for track ${trackId}`);
-      }
+      const aggregate = await this.aggregateRepo.loadByVersionId(versionId);
+      aggregate.setTrackAnalysis(versionId, trackId, snapshot);
+      await this.aggregateRepo.save(aggregate);
+
+      this.logger.log(`Analysis saved for track ${trackId} — quality=${snapshot.quality}/4`);
     } catch (err: any) {
       this.logger.error(`Unexpected error during analysis of track ${trackId}: ${err.message}`);
     }

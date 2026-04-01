@@ -1,35 +1,22 @@
-export type Playlist = {
-  id: string;
-  name: string;
-  description?: string;
-  color: PlaylistColor;
-  createdAt: string;
-};
+// Re-export shared types for convenience within the playlists feature
+export type {
+  TPlaylistDomainModel as Playlist,
+  TPlaylistTrackDomainModel as PlaylistTrack,
+  TPlaylistColor as PlaylistColor,
+  TPlaylistTrackView as PlaylistTrackView,
+  TPlaylistSummaryViewModel,
+  TPlaylistDetailViewModel,
+  TCreatePlaylistPayload,
+  TUpdatePlaylistPayload,
+  TAddPlaylistTrackPayload,
+  TReorderPlaylistTrackPayload,
+} from '@sh3pherd/shared-types';
 
-export const PLAYLIST_COLORS = ['indigo', 'emerald', 'rose', 'amber', 'sky', 'violet'] as const;
-export type PlaylistColor = typeof PLAYLIST_COLORS[number];
+export { PlaylistColors as PLAYLIST_COLORS } from '@sh3pherd/shared-types';
 
-export type PlaylistTrack = {
-  id: string;
-  playlistId: string;
-  referenceId: string;   // links to MusicReference in music library
-  versionId?: string;    // optional: links to MusicVersion
-  position: number;      // 1-based sort order
-  notes?: string;
-};
-
-/** A track resolved with its reference title/artist and optional version label — display-only. */
-export type PlaylistTrackView = {
-  id: string;
-  position: number;
-  notes?: string;
-  title: string;
-  originalArtist: string;
-  versionLabel?: string;
-};
-
+/** Frontend-only state shape. */
 export interface PlaylistsState {
-  playlists: Playlist[];
-  tracks: PlaylistTrack[];
+  playlists: import('@sh3pherd/shared-types').TPlaylistSummaryViewModel[];
+  tracks: import('@sh3pherd/shared-types').TPlaylistTrackDomainModel[];
   selectedPlaylistId: string | null;
 }

@@ -59,7 +59,15 @@ import { ContractReadRepository } from '../../contracts/repositories/ContractRea
 import { CompanyMongoRepository, type ICompanyRepository } from '../../company/repositories/CompanyMongoRepository.js';
 import { TeamMongoRepository, type ITeamRepository } from '../../company/repositories/TeamMongoRepository.js';
 import { CastMembershipEventMongoRepository, type ICastMembershipEventRepository } from '../../company/repositories/CastMembershipEventMongoRepository.js';
-import { COMPANY_REPO, CAST_REPO, CAST_MEMBERSHIP_EVENT_REPO } from '../nestTokens.js';
+import { COMPANY_REPO, CAST_REPO, CAST_MEMBERSHIP_EVENT_REPO, PLAYLIST_REPO, PLAYLIST_TRACK_REPO } from '../nestTokens.js';
+import {
+  type IPlaylistRepository,
+  PlaylistMongoRepository,
+} from '../../playlists-v2/repositories/PlaylistRepository.js';
+import {
+  type IPlaylistTrackRepository,
+  PlaylistTrackMongoRepository,
+} from '../../playlists-v2/repositories/PlaylistTrackRepository.js';
 
 
 // --- HELPERS ---
@@ -98,6 +106,9 @@ export type TCoreRepositories = {
   musicReference: IMusicReferenceRepository;
   musicVersion: IMusicVersionRepository;
   musicRepertoire: IMusicRepertoireRepository;
+  //PLAYLISTS
+  playlist: IPlaylistRepository;
+  playlistTrack: IPlaylistTrackRepository;
   //COMPANY
   company: ICompanyRepository;
   cast: ITeamRepository;
@@ -128,6 +139,8 @@ export type TCoreRepositories = {
     mongoRepoProvider<IMusicVersionRepository>(MUSIC_VERSION_REPO, MusicVersionRepository, 'music_version'),
     mongoRepoProvider<IMusicRepertoireRepository>(MUSIC_REPERTOIRE_REPO, MusicRepertoireMongoRepository, 'music_repertoireEntries'),
     mongoRepoProvider<IMusicTabConfigsRepository>(MUSIC_TAB_CONFIGS_REPO, MusicTabConfigsRepository, 'music_tab_configs'),
+    mongoRepoProvider<IPlaylistRepository>(PLAYLIST_REPO, PlaylistMongoRepository, 'playlists'),
+    mongoRepoProvider<IPlaylistTrackRepository>(PLAYLIST_TRACK_REPO, PlaylistTrackMongoRepository, 'playlist_tracks'),
     mongoRepoProvider<ICompanyRepository>(COMPANY_REPO, CompanyMongoRepository, 'companies'),
     mongoRepoProvider<ITeamRepository>(CAST_REPO, TeamMongoRepository, 'teams'),
     mongoRepoProvider<ICastMembershipEventRepository>(CAST_MEMBERSHIP_EVENT_REPO, CastMembershipEventMongoRepository, 'cast_membership_events'),
@@ -145,6 +158,8 @@ export type TCoreRepositories = {
     MUSIC_VERSION_REPO,
     MUSIC_REPERTOIRE_REPO,
     MUSIC_TAB_CONFIGS_REPO,
+    PLAYLIST_REPO,
+    PLAYLIST_TRACK_REPO,
     COMPANY_REPO,
     CAST_REPO,
     CAST_MEMBERSHIP_EVENT_REPO,

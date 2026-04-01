@@ -1,9 +1,9 @@
 
-import type { TMusicReferenceDomainModel } from './music-references.js';
-import type { TMusicVersionDomainModel, TVersionDerivationType } from './music.versions.js';
-import type { TMusicRepertoireEntryDomainModel } from './music-repertoire.js';
+import type { TMusicReferenceDomainModel } from './music-references.types.js';
+import type { TMusicVersionDomainModel, TVersionDerivationType } from './music-versions.types.js';
+import type { TMusicRepertoireEntryDomainModel } from './music-repertoire.types.js';
 import type { TRepertoireEntryId, TMusicReferenceId, TMusicVersionId } from './ids.js';
-import type { TVersionTrackDomainModel, TRating } from './music-tracks.js';
+import type { TVersionTrackDomainModel, TMusicRating } from './music-tracks.js';
 import type { TGenreEnum, TTypeEnum } from './music.domain.schemas.js';
 
 
@@ -25,9 +25,9 @@ export interface TVersionView {
   bpm:               number | null;
   pitch:             number | null;
   notes?:            string;
-  mastery:           TRating;
-  energy:            TRating;
-  effort:            TRating;
+  mastery:           TMusicRating;
+  energy:            TMusicRating;
+  effort:            TMusicRating;
   tracks:            TVersionTrackDomainModel[];
   parentVersionId?:  TMusicVersionId;
   derivationType?:   TVersionDerivationType;

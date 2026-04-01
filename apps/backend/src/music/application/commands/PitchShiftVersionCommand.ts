@@ -2,8 +2,8 @@ import { Inject, Logger } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
-import { MUSIC_VERSION_REPO } from '../../../appBootstrap/nestTokens.js';
-import type { IMusicVersionRepository } from '../../repositories/MusicVersionRepository.js';
+import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
+import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
 import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
 import { MusicVersionEntity } from '../../domain/entities/MusicVersionEntity.js';
 import {
@@ -32,30 +32,21 @@ export class PitchShiftVersionHandler implements ICommandHandler<PitchShiftVersi
   private readonly logger = new Logger(PitchShiftVersionHandler.name);
 
   constructor(
-    @Inject(MUSIC_VERSION_REPO) private readonly versionRepo: IMusicVersionRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
   ) {}
 
   async execute(cmd: PitchShiftVersionCommand): Promise<TMusicVersionDomainModel> {
-    // 1. Load source version and validate
-    const existing = await this.versionRepo.findOneByVersionId(cmd.versionId);
-    if (!existing) throw new Error('MUSIC_VERSION_NOT_FOUND');
+    // 1. Load and validate via aggregate
+    const aggregate = await this.aggregateRepo.loadByVersionId(cmd.versionId);
+    const source = aggregate.ensureCanDeriveVersion(cmd.actorId, cmd.versionId, cmd.trackId);
+    const sourceTrack = source.findTrack(cmd.trackId)!;
+    const sourceDomain = source.toDomain;
 
-    const source = new MusicVersionEntity(existing);
-    source.ensureOwnedBy(cmd.actorId);
-
-    const sourceTrack = source.tracks.find(t => t.id === cmd.trackId);
-    if (!sourceTrack) throw new Error('TRACK_NOT_FOUND');
-    if (!sourceTrack.analysisResult) throw new Error('TRACK_NOT_ANALYZED');
-    if (!sourceTrack.s3Key) throw new Error('TRACK_NOT_IN_STORAGE');
-
-    // 2. Prepare new version + track IDs and S3 key
-    const newTrackId = `track_${crypto.randomUUID()}` as TVersionTrackId;
+    // 2. Build new version entity
     const sign = cmd.semitones >= 0 ? '+' : '';
     const pitchLabel = `${sign}${cmd.semitones}st`;
 
-    // Build a temporary version entity to get the ID
-    const sourceDomain = source.toDomain;
     const newVersion = new MusicVersionEntity({
       owner_id: cmd.actorId,
       musicReference_id: sourceDomain.musicReference_id,
@@ -73,13 +64,14 @@ export class PitchShiftVersionHandler implements ICommandHandler<PitchShiftVersi
       derivationType: 'pitch_shift',
     });
 
+    const newTrackId = `track_${crypto.randomUUID()}` as TVersionTrackId;
     const outputS3Key = buildTrackS3Key(
       cmd.actorId, newVersion.id, newTrackId, `pitched_${sourceTrack.fileName}`,
     );
 
     // 3. Send to audio-processor
     const payload: TPitchShiftTrackPayload = {
-      s3Key: sourceTrack.s3Key,
+      s3Key: sourceTrack.s3Key!,
       outputS3Key,
       trackId: cmd.trackId,
       versionId: cmd.versionId,
@@ -92,12 +84,12 @@ export class PitchShiftVersionHandler implements ICommandHandler<PitchShiftVersi
     const result = await firstValueFrom(
       this.audioClient
         .send<TPitchShiftResult>(MicroservicePatterns.AudioProcessor.PITCH_SHIFT_TRACK, payload)
-        .pipe(timeout(300_000)), // 5 min max
+        .pipe(timeout(300_000)),
     );
 
     this.logger.log(`Pitch shift complete — ${result.sizeBytes} bytes`);
 
-    // 4. Create track for the new version and persist
+    // 4. Add track to new version and register in aggregate
     const newTrack: TVersionTrackDomainModel = {
       id: newTrackId,
       fileName: `pitched_${sourceTrack.fileName}`,
@@ -108,9 +100,8 @@ export class PitchShiftVersionHandler implements ICommandHandler<PitchShiftVersi
     };
 
     newVersion.addTrack(newTrack);
-
-    const saved = await this.versionRepo.saveOne(newVersion.toDomain);
-    if (!saved) throw new Error('PITCH_SHIFT_VERSION_CREATION_FAILED');
+    aggregate.createDerivedVersion(newVersion);
+    await this.aggregateRepo.save(aggregate);
 
     return newVersion.toDomain;
   }

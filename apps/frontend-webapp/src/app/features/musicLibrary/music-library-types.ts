@@ -8,13 +8,13 @@
 // ─── Re-exports from shared-types (data) ────────────────────
 import { Genre, VersionType } from '@sh3pherd/shared-types';
 export { Genre, VersionType };
-export type { TRating, TGenreEnum, TTypeEnum } from '@sh3pherd/shared-types';
+export type { TMusicRating, TGenreEnum, TTypeEnum } from '@sh3pherd/shared-types';
 export type { TAudioAnalysisSnapshot } from '@sh3pherd/shared-types';
 export type { TVersionTrackDomainModel } from '@sh3pherd/shared-types';
 export type { TReferenceView, TVersionView, TRepertoireEntryViewModel } from '@sh3pherd/shared-types';
 
 // ─── Aliases for brevity in templates ───────────────────────
-export type Rating = import('@sh3pherd/shared-types').TRating;
+export type Rating = import('@sh3pherd/shared-types').TMusicRating;
 export type MusicGenre = import('@sh3pherd/shared-types').TGenreEnum;
 export type AudioAnalysisSnapshot = import('@sh3pherd/shared-types').TAudioAnalysisSnapshot;
 export type VersionTrack = import('@sh3pherd/shared-types').TVersionTrackDomainModel;

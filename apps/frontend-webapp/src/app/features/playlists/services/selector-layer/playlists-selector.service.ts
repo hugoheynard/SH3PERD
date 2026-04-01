@@ -30,7 +30,18 @@ export class PlaylistsSelectorService {
 
   tracks = this.trackSelector.tracks;
   tracksByPlaylistId = this.trackSelector.tracksByPlaylistId;
-  trackCount = this.trackSelector.trackCount;
+
+  /**
+   * Track count per playlist.
+   * Uses the summary's trackCount from the backend; falls back to local track count.
+   */
+  trackCount = computed(() => {
+    const map = new Map<string, number>();
+    for (const pl of this.playlists()) {
+      map.set(pl.id, pl.trackCount);
+    }
+    return map;
+  });
 
   /* ─── Stats ──────────────────────────────────────────── */
 
@@ -65,14 +76,16 @@ export class PlaylistsSelectorService {
 
     return tracks.map(t => {
       const ref = refsById.get(t.referenceId as any);
-      const version = t.versionId ? versionsById.get(t.versionId as any) : undefined;
+      const version = versionsById.get(t.versionId as any);
       return {
         id: t.id,
         position: t.position,
         notes: t.notes,
-        title: ref?.title ?? t.referenceId,
+        referenceId: t.referenceId,
+        versionId: t.versionId,
+        title: ref?.title ?? (t.referenceId as string),
         originalArtist: ref?.originalArtist ?? '—',
-        versionLabel: version?.label,
+        versionLabel: version?.label ?? '',
       };
     });
   });

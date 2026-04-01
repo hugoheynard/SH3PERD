@@ -54,6 +54,13 @@ export const SRepertoireEntryId = createIdSchema<TRepertoireEntryId>('repEntry')
 export type TVersionTrackId = `track_${string}`;
 export const SVersionTrackId = createIdSchema<TVersionTrackId>('track');
 
+// ─── Playlist ─────────────────────────────────────────────
+export type TPlaylistId = `playlist_${string}`;
+export const SPlaylistId = createIdSchema<TPlaylistId>('playlist');
+
+export type TPlaylistTrackId = `plTrack_${string}`;
+export const SPlaylistTrackId = createIdSchema<TPlaylistTrackId>('plTrack');
+
 // ─── Event / Calendar ──────────────────────────────────────
 export type TEventId = `event_${string}`;
 export const SEventId = createIdSchema<TEventId>('event');

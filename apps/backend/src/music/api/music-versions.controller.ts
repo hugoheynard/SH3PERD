@@ -12,6 +12,7 @@ import { MusicVersionPayload } from '../dto/music.dto.js';
 import type { TUserId, TApiResponse, TMusicVersionDomainModel, TMusicVersionId } from '@sh3pherd/shared-types';
 import { SCreateMusicVersionPayload, SUpdateMusicVersionPayload } from '@sh3pherd/shared-types';
 
+
 @ApiTags('music / versions')
 @ApiBearerAuth('bearer')
 @ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })

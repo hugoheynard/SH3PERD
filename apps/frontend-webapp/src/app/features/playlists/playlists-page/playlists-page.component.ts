@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import type { OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { PlaylistsStateService } from '../services/playlists-state.service';
 import { PlaylistsSelectorService } from '../services/selector-layer/playlists-selector.service';
 import { PlaylistMutationService } from '../services/mutations-layer/playlist-mutation.service';
 import { TrackMutationService } from '../services/mutations-layer/track-mutation.service';
@@ -14,8 +16,9 @@ import type { PlaylistColor } from '../playlist-types';
   styleUrl: './playlists-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlaylistsPageComponent {
+export class PlaylistsPageComponent implements OnInit {
 
+  private stateService = inject(PlaylistsStateService);
   public selector = inject(PlaylistsSelectorService);
   private playlistMutation = inject(PlaylistMutationService);
   private trackMutation = inject(TrackMutationService);
@@ -25,6 +28,10 @@ export class PlaylistsPageComponent {
   /** ID of the playlist currently being renamed inline. */
   readonly editingId = signal<string | null>(null);
   readonly editingName = signal('');
+
+  ngOnInit(): void {
+    this.stateService.loadPlaylists();
+  }
 
   selectPlaylist(id: string): void {
     this.playlistMutation.selectPlaylist(id);
@@ -62,6 +69,9 @@ export class PlaylistsPageComponent {
   }
 
   removeTrack(trackId: string): void {
-    this.trackMutation.removeTrack(trackId);
+    const playlistId = this.selector.selectedPlaylistId();
+    if (playlistId) {
+      this.trackMutation.removeTrack(playlistId, trackId);
+    }
   }
 }

@@ -1,8 +1,8 @@
 import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { MUSIC_VERSION_REPO } from '../../../appBootstrap/nestTokens.js';
+import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
 import { TRACK_STORAGE_SERVICE } from '../../infra/storage/storage.tokens.js';
-import type { IMusicVersionRepository } from '../../repositories/MusicVersionRepository.js';
+import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
 import type { ITrackStorageService } from '../../infra/storage/ITrackStorageService.js';
 import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
 import type {
@@ -11,10 +11,7 @@ import type {
   TUploadTrackPayload,
   TVersionTrackDomainModel,
 } from '@sh3pherd/shared-types';
-import { MusicVersionEntity } from '../../domain/entities/MusicVersionEntity.js';
 import { TrackUploadedEvent } from '../events/TrackUploadedEvent.js';
-
-const MAX_TRACKS_PER_VERSION = 2;
 
 export class UploadTrackCommand {
   constructor(
@@ -29,24 +26,23 @@ export class UploadTrackCommand {
 @CommandHandler(UploadTrackCommand)
 export class UploadTrackHandler implements ICommandHandler<UploadTrackCommand, TVersionTrackDomainModel> {
   constructor(
-    @Inject(MUSIC_VERSION_REPO) private readonly versionRepo: IMusicVersionRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject(TRACK_STORAGE_SERVICE) private readonly storage: ITrackStorageService,
     private readonly eventBus: EventBus,
   ) {}
 
   async execute(cmd: UploadTrackCommand): Promise<TVersionTrackDomainModel> {
-    const existing = await this.versionRepo.findOneByVersionId(cmd.versionId);
-    if (!existing) throw new Error('MUSIC_VERSION_NOT_FOUND');
+    const aggregate = await this.aggregateRepo.loadByVersionId(cmd.versionId);
 
-    const version = new MusicVersionEntity(existing);
-    version.ensureOwnedBy(cmd.actorId);
-
-    if (version.tracks.length >= MAX_TRACKS_PER_VERSION) {
-      throw new Error('MAX_TRACKS_REACHED');
-    }
+    // Validate before uploading to S3
+    const version = aggregate.ensureCanAddTrack(cmd.actorId, cmd.versionId);
+    const isFirstTrack = version.tracks.length === 0;
 
     const trackId = `track_${crypto.randomUUID()}` as const;
-    const isFirstTrack = version.tracks.length === 0;
+    const s3Key = buildTrackS3Key(cmd.actorId, cmd.versionId, trackId, cmd.payload.fileName);
+
+    // Upload to S3 first
+    await this.storage.upload(s3Key, cmd.file, cmd.contentType);
 
     const track: TVersionTrackDomainModel = {
       id: trackId,
@@ -54,21 +50,21 @@ export class UploadTrackHandler implements ICommandHandler<UploadTrackCommand, T
       durationSeconds: cmd.payload.durationSeconds,
       uploadedAt: Date.now(),
       favorite: isFirstTrack,
+      s3Key,
     };
 
-    // Upload to S3 first
-    const s3Key = buildTrackS3Key(cmd.actorId, cmd.versionId, trackId, cmd.payload.fileName);
-    await this.storage.upload(s3Key, cmd.file, cmd.contentType);
+    // Mutate aggregate
+    aggregate.addTrack(cmd.actorId, cmd.versionId, track);
 
-    // Then persist in MongoDB
-    const pushed = await this.versionRepo.pushTrack(cmd.versionId, track);
-    if (!pushed) {
+    try {
+      await this.aggregateRepo.save(aggregate);
+    } catch (e) {
       // Compensate: delete orphaned S3 object
       await this.storage.delete(s3Key).catch(() => {});
-      throw new Error('TRACK_UPLOAD_DB_FAILED');
+      throw e;
     }
 
-    // Async: trigger audio analysis via microservice
+    // Async: trigger audio analysis
     this.eventBus.publish(new TrackUploadedEvent(cmd.actorId, cmd.versionId, trackId, s3Key));
 
     return track;

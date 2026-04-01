@@ -1,10 +1,16 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { MUSIC_VERSION_REPO } from '../../../appBootstrap/nestTokens.js';
-import type { IMusicVersionRepository } from '../../repositories/MusicVersionRepository.js';
+import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
+import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
 import type { TUserId, TCreateMusicVersionPayload, TMusicVersionDomainModel } from '@sh3pherd/shared-types';
 import { MusicVersionEntity } from '../../domain/entities/MusicVersionEntity.js';
 
+/**
+ * Command to create a new version of a song in a user's repertoire.
+ *
+ * A version represents a user's specific rendition: cover, acoustic, pitch variant, etc.
+ * It starts with zero tracks — audio files are uploaded separately via UploadTrackCommand.
+ */
 export class CreateMusicVersionCommand {
   constructor(
     public readonly actorId: TUserId,
@@ -12,13 +18,33 @@ export class CreateMusicVersionCommand {
   ) {}
 }
 
+/**
+ * Creates a new MusicVersionEntity and adds it to the RepertoireEntryAggregate.
+ *
+ * Flow:
+ * 1. Load aggregate by owner + reference (ensures the user has this song in their repertoire)
+ * 2. Construct a new MusicVersionEntity (validates label, owner_id, reference_id via entity invariants)
+ * 3. Aggregate.addVersion() → Policy.ensureCanMutateEntry + Policy.ensureCanCreateVersion (max versions check)
+ * 4. Persist via aggregate repo (dirty tracking detects the new version)
+ *
+ * @throws REPERTOIRE_ENTRY_NOT_FOUND — user doesn't have this reference in their repertoire
+ * @throws MUSIC_VERSION_LABEL_REQUIRED — empty label (entity invariant)
+ * @throws MUSIC_VERSION_OWNER_REQUIRED — missing owner (entity invariant)
+ * @throws MUSIC_VERSION_REFERENCE_REQUIRED — missing reference (entity invariant)
+ * @throws REPERTOIRE_ENTRY_NOT_OWNED — actor doesn't own the entry (policy)
+ * @throws MAX_VERSIONS_PER_REFERENCE_REACHED — version limit exceeded (policy)
+ */
 @CommandHandler(CreateMusicVersionCommand)
 export class CreateMusicVersionHandler implements ICommandHandler<CreateMusicVersionCommand, TMusicVersionDomainModel> {
   constructor(
-    @Inject(MUSIC_VERSION_REPO) private readonly versionRepo: IMusicVersionRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
   ) {}
 
   async execute(cmd: CreateMusicVersionCommand): Promise<TMusicVersionDomainModel> {
+    const aggregate = await this.aggregateRepo.loadByOwnerAndReference(
+      cmd.actorId, cmd.payload.musicReference_id,
+    );
+
     const version = new MusicVersionEntity({
       owner_id: cmd.actorId,
       musicReference_id: cmd.payload.musicReference_id,
@@ -34,8 +60,8 @@ export class CreateMusicVersionHandler implements ICommandHandler<CreateMusicVer
       tracks: [],
     });
 
-    const saved = await this.versionRepo.saveOne(version.toDomain);
-    if (!saved) throw new Error('MUSIC_VERSION_CREATION_FAILED');
+    aggregate.addVersion(version);
+    await this.aggregateRepo.save(aggregate);
 
     return version.toDomain;
   }

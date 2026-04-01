@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { SVersionTrackId, type TVersionTrackId, type TMusicVersionId, type TUserId } from './ids.js';
-import { SRating, type TRating } from './music.domain.schemas.js';
-export type { TRating } from './music.domain.schemas.js';
+import { SRating, type TMusicRating } from './music.domain.schemas.js';
+export type { TMusicRating } from './music.domain.schemas.js';
 
 // ─── Audio analysis snapshot ───────────────────────────────
 
@@ -11,7 +11,7 @@ export interface TAudioAnalysisSnapshot {
   truePeakdBTP:    number;
   SNRdB:           number;
   clippingRatio:   number;
-  quality:         TRating;
+  quality:         TMusicRating;
   bpm:             number | null;
   key:             string | null;
   keyScale:        string | null;

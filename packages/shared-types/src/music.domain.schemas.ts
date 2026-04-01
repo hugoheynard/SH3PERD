@@ -41,12 +41,12 @@ export const STypeEnum = z.nativeEnum(VersionType);
 export type TTypeEnum = VersionType;
 
 /** Rating 1–4, used for mastery, energy, effort, quality. */
-export type TRating = 1 | 2 | 3 | 4;
+export type TMusicRating = 1 | 2 | 3 | 4;
 export const SRating = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]);
 
 /** Nullable grade (legacy compat). */
 export const SMusicGrade = SRating.nullable();
-export type TMusicGrade = TRating | null;
+export type TMusicGrade = TMusicRating | null;
 
 
 // ─── Key schema ─────────────────────────────────────────────

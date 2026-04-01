@@ -5,7 +5,16 @@ import type { IMusicReferenceRepository } from '../../types/musicReferences.type
 import type { TUserId, TCreateMusicReferenceRequestDTO, TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
 import { MusicReferenceEntity } from '../../domain/entities/MusicReferenceEntity.js';
 
-
+/**
+ * Command to create a music reference (the canonical song entry).
+ *
+ * A reference is shared across all users — it represents "the song itself"
+ * (e.g. "Bohemian Rhapsody" by Queen), not a user's rendition of it.
+ *
+ * @note This does NOT go through the RepertoireEntryAggregate because a
+ *       reference exists independently of any user's repertoire. The aggregate
+ *       only manages the user ↔ reference link (entry) and versions.
+ */
 export class CreateMusicReferenceCommand {
   constructor(
     public readonly actor_id: TUserId,
@@ -13,6 +22,19 @@ export class CreateMusicReferenceCommand {
   ) {}
 }
 
+/**
+ * Creates a new music reference, or returns the existing one if an exact
+ * title + artist match is found (case-insensitive deduplication).
+ *
+ * Flow:
+ * 1. Normalize title/artist to lowercase for comparison
+ * 2. Check if an identical reference already exists → return it (idempotent)
+ * 3. Otherwise, create a new MusicReferenceEntity, validate via entity invariants, persist
+ *
+ * @throws MUSIC_REFERENCE_TITLE_REQUIRED — empty title (entity invariant)
+ * @throws MUSIC_REFERENCE_ARTIST_REQUIRED — empty artist (entity invariant)
+ * @throws MUSIC_REFERENCE_CREATION_FAILED — persistence error
+ */
 @CommandHandler(CreateMusicReferenceCommand)
 export class CreateMusicReferenceHandler
   implements ICommandHandler<CreateMusicReferenceCommand, TMusicReferenceDomainModel> {
@@ -27,9 +49,7 @@ export class CreateMusicReferenceHandler
 
     // Deduplicate: return existing if exact match found
     const existing = await this.refRepo.findByExactTitleAndArtist(title, artist);
-    if (existing) {
-      return existing;
-    }
+    if (existing) return existing;
 
     const ref = new MusicReferenceEntity({
       title: cmd.payload.title,
@@ -38,6 +58,7 @@ export class CreateMusicReferenceHandler
     });
 
     const saved = await this.refRepo.save(ref.toDomain);
+
     if (!saved) {
       throw new Error('MUSIC_REFERENCE_CREATION_FAILED');
     }

@@ -157,8 +157,9 @@ export class MusicLibrarySelectorService {
       const q = MusicLibrarySelectorService.favoriteQuality(v);
       if (!q || !f.quality.includes(q as Rating)) return false;
     }
-    if (f.bpm && v.bpm != null) {
-      if (v.bpm < f.bpm.min || v.bpm > f.bpm.max) return false;
+    if (f.bpm) {
+      const bpm = MusicLibrarySelectorService.favoriteBpm(v) ?? v.bpm;
+      if (bpm != null && (bpm < f.bpm.min || bpm > f.bpm.max)) return false;
     }
     if (f.duration) {
       const dur = MusicLibrarySelectorService.favoriteDuration(v);

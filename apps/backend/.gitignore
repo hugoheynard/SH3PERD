@@ -2,6 +2,11 @@
 /dist
 /node_modules
 /build
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts.map
+# Keep legitimate .d.ts (type augmentations) — only ignore generated ones
+!src/types/**/*.d.ts
 
 # Never commit private keys
 /keys

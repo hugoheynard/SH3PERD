@@ -2,6 +2,7 @@ import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAd
 import type {
   TMusicVersionDomainModel,
   TMusicVersionId,
+  TMusicReferenceId,
   TVersionTrackDomainModel,
   TVersionTrackId,
   TAudioAnalysisSnapshot,
@@ -22,6 +23,7 @@ export interface IMusicVersionRepository {
   setTrackFavorite(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean>;
   setTrackAnalysis(versionId: TMusicVersionId, trackId: TVersionTrackId, analysis: TAudioAnalysisSnapshot): Promise<boolean>;
   findByOwnerId(userId: TUserId): Promise<TMusicVersionDomainModel[]>;
+  findByOwnerAndReference(userId: TUserId, referenceId: TMusicReferenceId): Promise<TMusicVersionDomainModel[]>;
 }
 
 export class MusicVersionRepository
@@ -131,4 +133,7 @@ export class MusicVersionRepository
     return this.collection.find({ owner_id: userId } as any).toArray() as Promise<TMusicVersionDomainModel[]>;
   }
 
+  async findByOwnerAndReference(userId: TUserId, referenceId: TMusicReferenceId): Promise<TMusicVersionDomainModel[]> {
+    return this.collection.find({ owner_id: userId, musicReference_id: referenceId } as any).toArray() as Promise<TMusicVersionDomainModel[]>;
+  }
 }

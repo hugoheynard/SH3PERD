@@ -1,6 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { PlaylistsStateService } from '../playlists-state.service';
-import type { Playlist } from '../../playlist-types';
+import type { TPlaylistSummaryViewModel } from '../../playlist-types';
 
 @Injectable({ providedIn: 'root' })
 export class PlaylistSelectorService {
@@ -12,7 +12,7 @@ export class PlaylistSelectorService {
 
   /** Map of playlist ID to Playlist for O(1) lookup. */
   playlistsById = computed(() => {
-    const map = new Map<string, Playlist>();
+    const map = new Map<string, TPlaylistSummaryViewModel>();
     for (const pl of this.playlists()) {
       map.set(pl.id, pl);
     }
@@ -23,7 +23,7 @@ export class PlaylistSelectorService {
   selectedPlaylistId = computed(() => this.state.playlists().selectedPlaylistId);
 
   /** The selected Playlist object, or null if none selected. */
-  selectedPlaylist = computed((): Playlist | null => {
+  selectedPlaylist = computed((): TPlaylistSummaryViewModel | null => {
     const id = this.selectedPlaylistId();
     if (!id) return null;
     return this.playlistsById().get(id) ?? null;

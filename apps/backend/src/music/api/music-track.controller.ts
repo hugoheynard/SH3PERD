@@ -17,6 +17,7 @@ import type {
   TVersionTrackDomainModel, TMusicVersionDomainModel, TMasteringTargetSpecs,
 } from '@sh3pherd/shared-types';
 
+
 @ApiTags('music / tracks')
 @ApiBearerAuth('bearer')
 @ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
