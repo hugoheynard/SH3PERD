@@ -36,6 +36,7 @@
     "@nestjs/platform-express": "^11.1.9",
     "@nestjs/swagger": "^11.2.1",
     "@sh3pherd/shared-types": "workspace:*",
+    "@sh3pherd/storage": "workspace:*",
     "fuse.js": "^7.1.0",
     "nestjs-zod": "^5.0.1",
     "reflect-metadata": "^0.2.2",

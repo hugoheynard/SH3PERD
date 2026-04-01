@@ -183,6 +183,9 @@ importers:
       '@sh3pherd/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
+      '@sh3pherd/storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
       audiobuffer-to-wav:
         specifier: ^1.0.0
         version: 1.0.0
@@ -322,6 +325,9 @@ importers:
       '@sh3pherd/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
+      '@sh3pherd/storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
       fuse.js:
         specifier: ^7.1.0
         version: 7.1.0
@@ -537,6 +543,15 @@ importers:
       zod:
         specifier: ^3.23.0
         version: 3.25.76
+
+  packages/storage:
+    dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.0.0
+        version: 3.1019.0
+      '@aws-sdk/s3-request-presigner':
+        specifier: ^3.0.0
+        version: 3.1019.0
 
   packages/ui-angular:
     dependencies:

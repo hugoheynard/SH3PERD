@@ -1,12 +1,9 @@
-import type { Readable } from 'stream';
+import type { IStorageService } from '@sh3pherd/storage';
 
-export interface ITrackStorageService {
-  upload(key: string, body: Buffer | Readable, contentType: string): Promise<void>;
-  delete(key: string): Promise<void>;
-  getSignedDownloadUrl(key: string, expiresInSeconds?: number): Promise<string>;
-}
+/** @deprecated Use IStorageService from @sh3pherd/storage directly */
+export type ITrackStorageService = IStorageService;
 
-/** Builds the S3 object key for a track file. */
+/** Builds the S3 object key for a track file. Music-domain specific. */
 export function buildTrackS3Key(
   ownerId: string,
   versionId: string,

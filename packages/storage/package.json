@@ -1,0 +1,26 @@
+{
+  "name": "@sh3pherd/storage",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": ["src/*"]
+    }
+  },
+  "private": true,
+  "scripts": {
+    "dev:watch": "tsc -b tsconfig.json --watch",
+    "build": "tsc -b tsconfig.json"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/s3-request-presigner": "^3.0.0"
+  }
+}

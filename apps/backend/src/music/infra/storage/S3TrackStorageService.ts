@@ -1,74 +1,54 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  S3Client,
-  PutObjectCommand,
-  DeleteObjectCommand,
-  GetObjectCommand,
-} from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { S3StorageService } from '@sh3pherd/storage';
+import type { IStorageService } from '@sh3pherd/storage';
 import type { Readable } from 'stream';
-import type { ITrackStorageService } from './ITrackStorageService.js';
 
+/**
+ * NestJS-injectable wrapper around the shared S3StorageService.
+ * Reads config from environment via ConfigService.
+ *
+ * When S3_BUCKET_NAME is not set, all operations are no-ops (dev mode).
+ */
 @Injectable()
-export class S3TrackStorageService implements ITrackStorageService {
-  private readonly client: S3Client;
-  private readonly bucket: string;
-
-  private readonly enabled: boolean;
+export class S3TrackStorageService implements IStorageService {
+  private readonly inner: S3StorageService | null;
 
   constructor(private readonly config: ConfigService) {
     const bucket = this.config.get<string>('S3_BUCKET_NAME');
 
     if (!bucket) {
-      console.warn('[TrackStorage] S3_BUCKET_NAME not set — file operations will be no-ops');
-      this.bucket = '';
-      this.client = null as any;
-      this.enabled = false;
+      console.warn('[Storage] S3_BUCKET_NAME not set — file operations will be no-ops');
+      this.inner = null;
       return;
     }
 
-    this.bucket = bucket;
-    this.enabled = true;
-    this.client = new S3Client({
-      region: this.config.get<string>('S3_REGION', 'us-east-1'),
+    this.inner = new S3StorageService({
+      bucket,
+      region: this.config.get<string>('S3_REGION', 'auto'),
       endpoint: this.config.get<string>('S3_ENDPOINT'),
-      forcePathStyle: true, // Required for MinIO
-      credentials: {
-        accessKeyId: this.config.get<string>('S3_ACCESS_KEY_ID', ''),
-        secretAccessKey: this.config.get<string>('S3_SECRET_ACCESS_KEY', ''),
-      },
+      accessKeyId: this.config.get<string>('S3_ACCESS_KEY_ID', ''),
+      secretAccessKey: this.config.get<string>('S3_SECRET_ACCESS_KEY', ''),
     });
   }
 
   async upload(key: string, body: Buffer | Readable, contentType: string): Promise<void> {
-    if (!this.enabled) { console.warn('[TrackStorage] upload skipped (S3 not configured)'); return; }
-    await this.client.send(
-      new PutObjectCommand({
-        Bucket: this.bucket,
-        Key: key,
-        Body: body,
-        ContentType: contentType,
-      }),
-    );
+    if (!this.inner) return;
+    return this.inner.upload(key, body, contentType);
   }
 
   async delete(key: string): Promise<void> {
-    if (!this.enabled) return;
-    await this.client.send(
-      new DeleteObjectCommand({
-        Bucket: this.bucket,
-        Key: key,
-      }),
-    );
+    if (!this.inner) return;
+    return this.inner.delete(key);
+  }
+
+  async downloadToBuffer(key: string): Promise<Buffer> {
+    if (!this.inner) throw new Error('S3 not configured');
+    return this.inner.downloadToBuffer(key);
   }
 
   async getSignedDownloadUrl(key: string, expiresInSeconds = 3600): Promise<string> {
-    if (!this.enabled) return `[no-s3]/${key}`;
-    const command = new GetObjectCommand({
-      Bucket: this.bucket,
-      Key: key,
-    });
-    return getSignedUrl(this.client as any, command as any, { expiresIn: expiresInSeconds });
+    if (!this.inner) return `[no-s3]/${key}`;
+    return this.inner.getSignedDownloadUrl(key, expiresInSeconds);
   }
 }

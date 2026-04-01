@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.backend.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "dist",
+    "declarationDir": "dist/types",
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "noEmit": false
+  },
+  "include": ["src"],
+  "exclude": [
+    "dist",
+    "dist/types",
+    "node_modules"
+  ]
+}
