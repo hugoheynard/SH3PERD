@@ -1,0 +1,89 @@
+@use '../../styles/index' as sh3;
+
+:host {
+  @include sh3.form-field-root();
+  @include sh3.form-field-color-vars();
+  height: 100%;
+  cursor: pointer;
+  user-select: none;
+}
+
+sh3-svg-icon {
+  fill: var(--fadedTextColor);
+}
+
+.custom-select {
+  @include sh3.field-baseStyle();
+  @include sh3.field-focus();
+  width: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  // Custom select display
+  .select-label {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--fadedTextColor);
+
+    .select-label-text {
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: 50px; //adjust as needed for ...
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; // truncate "…"
+    }
+  }
+
+  .dropdown {
+    position: absolute;
+    top: 100%;
+    margin-top: 1px;
+    left: 0;
+    right: 0;
+    border: 1px solid var(--field-border);
+    border-radius: var(--field-radius);
+    background: var(--field-bg);
+    padding:var(--field-padding);
+    overflow-y: auto;
+    animation: dropdownEnter 200ms ease-out;
+    transform-origin: top center;
+    z-index: 1000;
+
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: sh3.$form-field-fontSize-sm;
+    }
+
+    .dropdown-placeholder {
+      font-style: italic;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+
+    .dropdown-select-all {
+      font-weight: normal;
+      margin-bottom: 0.25rem;
+    }
+
+    @keyframes dropdownEnter {
+      from {
+        opacity: 0;
+        transform: translateY(-5px) scale(0.80);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    };
+  };
+};
+

@@ -1,0 +1,7 @@
+<button
+  [disabled]="disabled"
+  (click)="handleClick()"
+>
+  <sh3-svg-icon *ngIf="icon?.trim()" [name]="icon" />
+  {{ buttonLabel }}
+</button>

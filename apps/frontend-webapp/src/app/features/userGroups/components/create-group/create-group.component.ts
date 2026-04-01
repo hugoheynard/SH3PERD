@@ -3,7 +3,7 @@ import {
   ButtonPrimaryComponent,
   InputComponent,
   MultiSelectDropdownComponent, SelectComponent,
-} from '@sh3pherd/ui-angular';
+} from '../../../../legacy/ui';
 import { FormBuilder, type FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
 import type { TUserGroupId } from '@sh3pherd/shared-types';

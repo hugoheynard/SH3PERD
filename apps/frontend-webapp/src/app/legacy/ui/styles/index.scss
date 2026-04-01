@@ -1,0 +1,134 @@
+//@use 'tokens' as t;
+//@use 'mixins' as m;
+@forward "./mixins";
+@forward "./tokens";
+
+
+:root,
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  box-sizing: border-box;
+  background-color: var(--pageBgColor);
+  --colorPrimary: rgb(6, 164, 164);
+  --colorPrimary-rawRGB: 6, 164, 164;
+  --colorSecondary: rgb(78, 141, 141);
+  --colorSecondary-rawRGB: 78, 141, 141;
+  --colorAlert: rgb(182, 49, 49);
+  --colorAlert-rawRGB: 182, 49, 49;
+  --colorWarning: rgb(197, 153, 38);
+  --colorWarning-rawRGB: 197, 153, 38;
+
+  // --- Table container ---
+  --dataList-bg: var(--surface1-bgColor);
+  --dataList-border: color-mix(in srgb, var(--colorSecondary) 25%, transparent);
+  --dataList-shadow: 0 2px 6px rgba(var(--colorSecondary-rawRGB), 0.05);
+
+  // --- Header ---
+  --dataList-header-bg: color-mix(in srgb, var(--colorSecondary) 70%, var(--pageBgColor));
+  --dataList-header-color: var(--accentTextColor);
+  --dataList-header-border: color-mix(in srgb, var(--colorSecondary) 30%, transparent);
+
+  // --- Rows ---
+  --dataList-row-bg: var(--surface1-bgColor);
+  --dataList-row-alt-bg: color-mix(in srgb, var(--surface1-bgColor) 80%, #1c1e1e);
+  --dataList-row-hover-bg: color-mix(in srgb, var(--colorSecondary) 15%, #2b2f2f);
+  --dataList-row-border: color-mix(in srgb, var(--colorSecondary) 25%, transparent);
+
+  // --- Cells ---
+  --dataList-cell-text: var(--baseTextColor);
+  --dataList-cell-text-muted: var(--fadedTextColor);
+  --dataList-cell-border: color-mix(in srgb, var(--colorSecondary) 20%, transparent);
+
+  // --- Actions column ---
+  --dataList-actions-bg: color-mix(in srgb, var(--colorSecondary) 8%, transparent);
+  --dataList-actions-hover-bg: color-mix(in srgb, var(--colorSecondary) 25%, transparent);
+
+  // --- States ---
+  --dataList-row-active-bg: color-mix(in srgb, var(--colorPrimary) 20%, #2c3030);
+  --dataList-row-active-border: var(--colorPrimary);
+  --dataList-row-error-bg: color-mix(in srgb, var(--colorAlert) 10%, #2e2222);
+  --dataList-row-warning-bg: color-mix(in srgb, var(--colorWarning) 10%, #2f2a1a);
+}
+
+
+
+//THEMES
+[data-theme='dark'] {
+  --baseTextColor: #e5e5e5;
+  --fadedTextColor: #7d8080; //#9b9b9b
+  --accentTextColor: white;
+
+  //----------Structural elements color------------//
+  /*
+  These vars are used to set the background color of the principal elements of the app,
+  main menu, header, footer, and side panels.
+   */
+  --colorPrimaryMenus: #232526;
+  --pageBgColor: #1f2122;
+  --headAndfootBgColor: #262829;
+  --sidePanelsPrimaryBgColor: #292b2c;
+  //old colors
+  --snackbarBgColor: #2d3131;
+  --dialogBgColor: #383d3d;
+  --calendarSideBgColor: #292c2c;
+
+  //SURFACE LAYERS
+  --surface1-bgColor: #2c2f30;
+  --surface2-bgColor: #333637;
+
+
+  //----------Form ------------//
+  --form-field-borderColor: #FDFFFF26;
+  --form-field-bgColor: #3d4242;
+  --form-field-focus-outlineColor: var;
+  --form-block-bgColor:  #333838;
+
+
+  //----------Tabs ------------//
+  --tab-bgColor: rgba(253, 255, 255, 0.03);
+  --tab-bgColor-active: rgba(253, 255, 255, 0.20);
+
+
+}
+
+
+
+
+
+
+/*
+LIGHT THEME
+*/
+
+
+[data-theme='light'] {
+  --pageTitleColor: rgba(18, 69, 221, 0.05);
+  --baseTextColor: #2a2a2a;
+
+
+  --surface1-bgColor: var(--colorPrimaryMenus);
+
+
+  //----------Structural elements color------------//
+  --colorPrimaryMenus: white;
+  --pageBgColor: #F5F7FA;
+  --headAndfootBgColor: #F5F7FA;
+  --sidePanelsPrimaryBgColor: #DDE3EB;
+
+  //----------Form ------------//
+  --form-field-borderColor: color-mix(in oklab, currentColor 12%, transparent);
+  --form-field-bgColor: #FFF; //OK
+  --form-field-focus-outlineColor: red;//#{t.$primaryColor-rgb};
+  --form-block-bgColor:  rgb(51, 56, 56);
+
+
+  //----------Tabs ------------//
+  --tab-bgColor: rgba(253, 255, 255, 0.03);
+  --tab-bgColor-active: rgba(253, 255, 255, 0.20);
+
+
+
+}
+
+
+

@@ -41,7 +41,7 @@
             "stylePreprocessorOptions": {
               "includePaths": [
                 "src/styles",
-                "../../packages/ui-angular/src/styles"              ]
+                "src/app/legacy/ui/styles"              ]
             },
             "scripts": [],
             "server": "src/main.server.ts",
@@ -115,20 +115,6 @@
         }
       }
     },
-    "@sh3pherd/ui-angular": {
-      "root": "packages/ui-angular",
-      "sourceRoot": "packages/ui-angular/src/",
-      "projectType": "library",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:ng-packagr",
-          "options": {
-            "tsConfig": "packages/ui-angular/tsconfig.lib.json",
-            "project": "packages/ui-angular/ng-package.json"
-          }
-        }
-      }
-    }
   },
   "schematics": {
     "@schematics/angular:component": {

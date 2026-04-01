@@ -1,0 +1,112 @@
+@use '../../styles/tokens' as t;
+
+
+/**
+    * Mixin to define color variables for form fields.
+    * This is used to ensure consistent styling across different form inputs.
+ */
+@mixin form-field-color-vars {
+  --field-bg: var(--form-field-bgColor);
+  --field-border: color-mix(in oklab, var(--fadedTextColor) 20%, transparent);
+  --field-text: var(--baseText, #111);
+  --field-placeholder: var(--fadedTextColor);
+  --field-focus: color-mix(in oklab, var(--fadedTextColor) 25%, var(--colorPrimary) 65%);
+}
+
+/**
+    * Mixin to define the size of form fields.
+    * This is used to ensure consistent sizing across different form inputs.
+    * @param {string} $size - The size of the form field, can be 'small' or 'large'.
+ */
+@mixin form-field-size-vars($size) {
+  @if $size == 'small' {
+    --field-height: #{t.$form-field-height-sm};
+    --field-font-size: #{t.$form-field-fontSize-sm};
+    --field-radius: #{t.$form-field-radius-sm};
+    --field-padding: #{t.$form-field-padding};
+  } @else if $size == 'large' {
+    --field-height: #{t.$form-field-height-lg};
+    --field-font-size: #{t.$form-field-fontSize-lg};
+    --field-radius: #{t.$form-field-radius-lg};
+    --field-padding: #{t.$form-field-padding};
+  }
+}
+
+@mixin form-field-base {
+  padding: t.$form-field-padding;
+  font-size: t.$form-field-fontSize-sm;
+  border-radius: 7px;
+  background: var(--form-field-bgColor);
+  color: var(--baseTextColor);
+  outline: none;
+  backdrop-filter: blur(4px);
+  transition: border-color 0.4s ease;
+
+
+  &::placeholder {
+    color: var(--fadedTextColor);
+  };
+
+  &:hover {
+    border-color: rgba(var(--colorPrimary-rawRGB), 0.5);
+  }
+
+  &:focus {
+    border-color: rgb(var(--colorPrimary-rawRGB));
+  }
+};
+
+@mixin form-field-label {
+  color: var(--baseTextColor);
+  font-size: var(--text-sm);
+  text-transform: capitalize;
+}
+
+
+/**
+    * Mixin to define the root styles for form fields.
+    * This is used to ensure consistent styling across different form inputs.
+    put in host
+ */
+@mixin form-field-root() {
+  width: 100%;
+  box-sizing: border-box;
+  text-transform: capitalize;
+
+  &[data-size='small'] {
+    @include form-field-size-vars('small');
+
+    sh3-svg-icon {
+      font-size: t.$form-field-fontSize-sm;
+    };
+  };
+
+  &[data-size='large'] {
+    @include form-field-size-vars('large');
+
+    sh3-svg-icon {
+      font-size: t.$form-field-fontSize-lg;
+    };
+  };
+};
+
+@mixin field-baseStyle {
+  width: 100%;
+  height: var(--field-height);
+  font-size: var(--field-font-size);
+  border-radius: var(--field-radius);
+  padding: var(--field-padding);
+  border: 1px solid var(--field-border);
+  color: var(--field-placeholder);
+  background-color: var(--field-bg);
+
+  &:focus {
+    border-color: var(--field-focus);
+  }
+}
+
+@mixin field-focus{
+  &:focus {
+    border-color: var(--field-focus);
+  }
+}

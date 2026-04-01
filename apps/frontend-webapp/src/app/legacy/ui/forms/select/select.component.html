@@ -1,0 +1,45 @@
+
+<label class="form-field-label">{{ label() }}</label>
+
+  <div class="custom-select-wrapper"  [class.open]="isOpen">
+    <select class="native-select" [value]="value" (change)="onNativeChange($event)" [attr.aria-label]="label || placeholder">
+      @if (placeholder()) {
+        <option [value]="null" disabled hidden>
+          {{ placeholder() }}
+        </option>
+      }
+
+      @for (opt of options(); track opt) {
+        <option [value]="opt.value">
+          {{ opt.label }}
+        </option>
+      }
+    </select>
+
+    <div class="custom-select-display"
+         [attr.data-size]="size()"
+         [attr.data-empty]="hasValue()"
+         tabindex="0"
+         (click)="toggleDropdown()">
+      <span class="display-label" [class.placeholder]="hasValue()">{{ selectedLabel }}</span>
+
+      @if (allowClear() && hasValue()) {
+        <sh3-button-icon [icon]="'reset'"
+                         type="neutral"
+                         (clicked)="clear($event)"/>
+      }
+      <sh3-svg-icon [name]=" isOpen? 'caret-up': 'caret-down'" />
+    </div>
+
+    @if (isOpen) {
+      <ul class="custom-select-options">
+        @for ( opt of options(); track opt) {
+          <li [attr.data-size]="size()"
+              (click)="selectOption(opt.value)">
+            {{ opt.label }}
+          </li>
+        }
+      </ul>
+    }
+  </div>
+

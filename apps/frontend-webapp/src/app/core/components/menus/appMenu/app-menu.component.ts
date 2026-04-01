@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { SvgIconComponent } from '@sh3pherd/ui-angular';
+import { SvgIconComponent } from '../../../../legacy/ui';
 import { AuthService } from '../../../services/auth.service';
 
 interface AppMenuItem {

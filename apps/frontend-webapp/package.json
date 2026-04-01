@@ -25,7 +25,6 @@
     "@angular/router": "^21.2.6",
     "@angular/ssr": "^21.2.5",
     "@sh3pherd/shared-types": "workspace:*",
-    "@sh3pherd/ui-angular": "workspace:*",
     "@tailwindcss/postcss": "^4.1.17",
     "angular-gridster2": "^20.0.0",
     "avj": "^0.0.0",

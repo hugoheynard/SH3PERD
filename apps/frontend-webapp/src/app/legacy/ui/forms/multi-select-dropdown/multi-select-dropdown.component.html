@@ -1,0 +1,33 @@
+
+<div tabindex="0" class="custom-select">
+  <div class="select-label" (click)="toggleDropdown()">
+     <span class="select-label-text">
+    {{ selectedLabels.length ? selectedLabels : placeholder() }}
+  </span>
+    <sh3-svg-icon [name]=" dropdownOpen? 'caret-up': 'caret-down'" />
+  </div>
+
+  @if(dropdownOpen) {
+    <div class="dropdown" [class.open]="dropdownOpen" (click)="$event.stopPropagation()">
+      <label class="dropdown-select-all">
+        <input
+          type="checkbox"
+          [disabled]="disabled"
+          [checked]="isAllSelected()"
+          (change)="onSelectAllCheckboxChange($event)" />
+        {{ isAllSelected() ? 'Unselect all' : 'Select all' }}
+      </label>
+
+      @for(option of options(); track option) {
+        <label>
+          <input
+            type="checkbox"
+            [disabled]="disabled"
+            [checked]="isSelected(option[valueKey()])"
+            (change)="onCheckboxChange($event, option[valueKey()])" />
+          {{ option[labelKey()] }}
+        </label>
+      }
+    </div>
+  }
+</div>

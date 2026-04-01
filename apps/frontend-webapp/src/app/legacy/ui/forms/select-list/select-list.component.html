@@ -1,0 +1,23 @@
+<div
+  class="selectList"
+  tabindex="0"
+  aria-label="Selectable list">
+
+  @for (item of items; track item) {
+    <div
+      class="entry"
+      [class.selected]="isSelected(item)"
+      [class.disabled]="isDisabled(item)"
+      (click)="!isDisabled(item) && onSelect(item)"
+    >
+      {{ labelFn(item) }}
+    </div>
+  } @empty {
+    @if (emptyTemplate) {
+      <ng-container *ngTemplateOutlet="emptyTemplate" />
+    } @else {
+      <div class="empty-state">No Match found.</div>
+    }
+  }
+
+</div>

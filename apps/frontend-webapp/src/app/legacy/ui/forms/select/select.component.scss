@@ -1,0 +1,103 @@
+@use '../../styles/index' as sh3;
+
+
+:host {
+  @include sh3.form-field-root();
+  @include sh3.form-field-color-vars();
+  user-select: none;
+  cursor: pointer;
+
+  .form-field-label {
+    @include sh3.form-field-label();
+  }
+
+  .custom-select-wrapper {
+    position: relative;
+    background: none;
+
+    /**
+     * Native select element
+     * This is hidden but still accessible for screen readers and form submission
+     */
+    .native-select {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      background: none;
+      opacity: 0;
+      z-index: 1;
+    };
+
+    .custom-select-display {
+      //@include sh3.form-field-base();
+      @include sh3.field-baseStyle();
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: .4rem;
+
+
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      z-index: 2;
+
+      .display-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+      }
+    };
+
+
+     //Options dropdown
+    .custom-select-options {
+      width: 100%;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      background: var(--field-bg);
+      border: 1px solid var(--field-border);
+      color: var(--fadedTextColor);
+      border-radius: var(--field-radius);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 2000;
+
+      // Display options as a list
+      li {
+        @include sh3.field-baseStyle();
+        border: none;
+        padding: var(--field-padding);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover {
+          background-color: rgba(var(--colorPrimary-rawRGB), 0.1);
+        };
+      };
+    }
+
+    &.open .custom-select-options {
+      display: block;
+    }
+  }
+}
+
+/**
+* Size management
+*/
+sh3-button-icon {
+  width: var(--field-font-size);
+  height: var(--field-font-size);
+};
+
+sh3-svg-icon {
+  font-size: var(--field-font-size);
+  fill: var(--fadedTextColor);
+};

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { SvgIconComponent } from '@sh3pherd/ui-angular';
+import { SvgIconComponent } from '../../../../legacy/ui';
 
 export interface UiMenuItem {
   id: string

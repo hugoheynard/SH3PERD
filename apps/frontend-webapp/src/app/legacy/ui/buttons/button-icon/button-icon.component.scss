@@ -1,0 +1,51 @@
+@use '../../styles/index' as sh3;
+
+:host {
+  width: 100%;
+  height: 100%;
+}
+
+sh3-svg-icon {
+  font-size: 1rem;
+  transition: fill 0.2s ease;
+}
+
+button {
+  @include sh3.eraseDefault();
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+  --btn-color: var(--colorPrimary);
+  --btn-color-bg: color-mix(in oklab, var(--btn-color) 12%, transparent);
+
+  &[type='critical'] {
+    --btn-color: var(--colorAlert);
+  }
+
+  &[type='neutral'] {
+    --btn-color: var(--fadedTextColor);
+  }
+
+  &:hover:not(:disabled) {
+    sh3-svg-icon {
+      fill: color-mix(in oklab, var(--btn-color) 12%, transparent);
+    }
+  }
+
+  &.active {
+    sh3-svg-icon {
+      fill: var(--btn-color);
+      background: color-mix(in oklab, var(--btn-color) 12%, transparent);
+      border-radius: 2px;
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+
+    sh3-svg-icon {
+      fill: var(--fadedTextColor);
+    }
+  }
+}

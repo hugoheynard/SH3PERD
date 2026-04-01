@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonPrimaryComponent, InputComponent } from '@sh3pherd/ui-angular';
+import { ButtonPrimaryComponent, InputComponent } from '../../../legacy/ui';
 //import { TUserCredentialsDTO } from '@sh3pherd/shared-types';
 
 @Component({
