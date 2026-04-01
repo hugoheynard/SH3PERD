@@ -8,6 +8,7 @@
         <th>Dur</th>
         <th>Genre</th>
         <th>BPM</th>
+        <th>Key</th>
         <th>MST</th>
         <th>NRG</th>
         <th>EFF</th>
@@ -123,7 +124,8 @@
               <td class="col-versions"><span class="version-label">{{ version.label }}</span></td>
               <td class="col-dur">{{ formatDuration(favoriteDuration(version)) }}</td>
               <td><sh3-badge [content]="version.genre" radius="square" variant="info" /></td>
-              <td class="col-bpm">{{ version.bpm ?? '—' }}</td>
+              <td class="col-bpm">{{ version.bpm ?? favoriteBpm(version) ?? '—' }}</td>
+              <td class="col-key">{{ favoriteKey(version) ?? '—' }}</td>
               @for (r of [version.mastery, version.energy, version.effort]; track $index) {
                 <td class="col-rating">
                   <span class="rating-val" [attr.data-level]="ratingLevel(r)">{{ r }}/4</span>

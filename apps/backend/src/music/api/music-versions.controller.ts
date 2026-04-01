@@ -1,43 +1,26 @@
 import { Controller, Post, Patch, Delete, Body, Param } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
 import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
+import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { CreateMusicVersionCommand } from '../application/commands/CreateMusicVersionCommand.js';
 import { UpdateMusicVersionCommand } from '../application/commands/UpdateMusicVersionCommand.js';
 import { DeleteMusicVersionCommand } from '../application/commands/DeleteMusicVersionCommand.js';
+import { MusicVersionPayload } from '../dto/music.dto.js';
 import type { TUserId, TApiResponse, TMusicVersionDomainModel, TMusicVersionId } from '@sh3pherd/shared-types';
 import { SCreateMusicVersionPayload, SUpdateMusicVersionPayload } from '@sh3pherd/shared-types';
 
-/**
- * MusicVersionsController
- *
- * REST controller for music version CRUD.
- * Mounted under `music/versions` via the MusicModule RouterModule.
- *
- * A **version** is a user's rendition of a music reference
- * (cover, pitch variant, acoustic…). Versions hold tracks (audio files).
- *
- * ────────────────────────────────────────────────────────────────
- * Endpoints
- * ────────────────────────────────────────────────────────────────
- *
- * POST   /music/versions
- *   Creates a new version linked to a music reference.
- *   Body: { payload: TCreateMusicVersionPayload }
- *
- * PATCH  /music/versions/:id
- *   Partial update of a version's metadata (label, genre, ratings…).
- *   Ownership is verified in the command handler.
- *
- * DELETE /music/versions/:id
- *   Deletes a version and all its tracks (S3 + DB).
- *   Ownership is verified in the command handler.
- */
+@ApiTags('music / versions')
+@ApiBearerAuth('bearer')
+@ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
 @Controller('versions')
 export class MusicVersionsController {
   constructor(private readonly cmdBus: CommandBus) {}
 
+  @ApiOperation({ summary: 'Create a version', description: 'Creates a new version linked to a music reference (cover, acoustic, remix…).' })
+  @ApiResponse(apiSuccessDTO(MusicApiCodes.MUSIC_VERSION_CREATED, MusicVersionPayload, 200))
   @Post()
   async createVersion(
     @ActorId() actorId: TUserId,
@@ -49,6 +32,9 @@ export class MusicVersionsController {
     );
   }
 
+  @ApiOperation({ summary: 'Update a version', description: 'Partial update of a version\'s metadata (label, genre, ratings…). Ownership is verified.' })
+  @ApiParam({ name: 'id', description: 'Version ID to update' })
+  @ApiResponse(apiSuccessDTO(MusicApiCodes.MUSIC_VERSION_UPDATED, MusicVersionPayload, 200))
   @Patch(':id')
   async updateVersion(
     @ActorId() actorId: TUserId,
@@ -61,6 +47,9 @@ export class MusicVersionsController {
     );
   }
 
+  @ApiOperation({ summary: 'Delete a version', description: 'Deletes a version and all its tracks (storage + DB). Ownership is verified.' })
+  @ApiParam({ name: 'id', description: 'Version ID to delete' })
+  @ApiResponse(apiSuccessDTO(MusicApiCodes.MUSIC_VERSION_DELETED, undefined as any, 200))
   @Delete(':id')
   async deleteVersion(
     @ActorId() actorId: TUserId,

@@ -1,0 +1,478 @@
+[
+  {
+    "title": "I Want to Hold Your Hand",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Hey Jude",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Let It Be",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Yesterday",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Come Together",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Here Comes the Sun",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Twist and Shout",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Help!",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "A Hard Day's Night",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "She Loves You",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Eleanor Rigby",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Strawberry Fields Forever",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "All You Need Is Love",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Penny Lane",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Get Back",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Blackbird",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "Norwegian Wood",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "In My Life",
+    "originalArtist": "The Beatles"
+  },
+  {
+    "title": "(I Can't Get No) Satisfaction",
+    "originalArtist": "The Rolling Stones"
+  },
+  {
+    "title": "Paint It Black",
+    "originalArtist": "The Rolling Stones"
+  },
+  {
+    "title": "Sympathy for the Devil",
+    "originalArtist": "The Rolling Stones"
+  },
+  {
+    "title": "Gimme Shelter",
+    "originalArtist": "The Rolling Stones"
+  },
+  {
+    "title": "Jumpin' Jack Flash",
+    "originalArtist": "The Rolling Stones"
+  },
+  {
+    "title": "Ruby Tuesday",
+    "originalArtist": "The Rolling Stones"
+  },
+  {
+    "title": "Respect",
+    "originalArtist": "Aretha Franklin"
+  },
+  {
+    "title": "(You Make Me Feel Like) A Natural Woman",
+    "originalArtist": "Aretha Franklin"
+  },
+  {
+    "title": "Chain of Fools",
+    "originalArtist": "Aretha Franklin"
+  },
+  {
+    "title": "Think",
+    "originalArtist": "Aretha Franklin"
+  },
+  {
+    "title": "I Say a Little Prayer",
+    "originalArtist": "Aretha Franklin"
+  },
+  {
+    "title": "My Girl",
+    "originalArtist": "The Temptations"
+  },
+  {
+    "title": "Ain't Too Proud to Beg",
+    "originalArtist": "The Temptations"
+  },
+  {
+    "title": "I Heard It Through the Grapevine",
+    "originalArtist": "Marvin Gaye"
+  },
+  {
+    "title": "Ain't No Mountain High Enough",
+    "originalArtist": "Marvin Gaye & Tammi Terrell"
+  },
+  {
+    "title": "Stand by Me",
+    "originalArtist": "Ben E. King"
+  },
+  {
+    "title": "What a Wonderful World",
+    "originalArtist": "Louis Armstrong"
+  },
+  {
+    "title": "Unchained Melody",
+    "originalArtist": "The Righteous Brothers"
+  },
+  {
+    "title": "You've Lost That Lovin' Feelin'",
+    "originalArtist": "The Righteous Brothers"
+  },
+  {
+    "title": "River Deep - Mountain High",
+    "originalArtist": "Ike & Tina Turner"
+  },
+  {
+    "title": "Proud Mary",
+    "originalArtist": "Creedence Clearwater Revival"
+  },
+  {
+    "title": "Bad Moon Rising",
+    "originalArtist": "Creedence Clearwater Revival"
+  },
+  {
+    "title": "Fortunate Son",
+    "originalArtist": "Creedence Clearwater Revival"
+  },
+  {
+    "title": "House of the Rising Sun",
+    "originalArtist": "The Animals"
+  },
+  {
+    "title": "California Dreamin'",
+    "originalArtist": "The Mamas & the Papas"
+  },
+  {
+    "title": "Monday Monday",
+    "originalArtist": "The Mamas & the Papas"
+  },
+  {
+    "title": "God Only Knows",
+    "originalArtist": "The Beach Boys"
+  },
+  {
+    "title": "Good Vibrations",
+    "originalArtist": "The Beach Boys"
+  },
+  {
+    "title": "Surfin' USA",
+    "originalArtist": "The Beach Boys"
+  },
+  {
+    "title": "Fun, Fun, Fun",
+    "originalArtist": "The Beach Boys"
+  },
+  {
+    "title": "Barbara Ann",
+    "originalArtist": "The Beach Boys"
+  },
+  {
+    "title": "The Sound of Silence",
+    "originalArtist": "Simon & Garfunkel"
+  },
+  {
+    "title": "Mrs. Robinson",
+    "originalArtist": "Simon & Garfunkel"
+  },
+  {
+    "title": "Bridge Over Troubled Water",
+    "originalArtist": "Simon & Garfunkel"
+  },
+  {
+    "title": "The Boxer",
+    "originalArtist": "Simon & Garfunkel"
+  },
+  {
+    "title": "Blowin' in the Wind",
+    "originalArtist": "Bob Dylan"
+  },
+  {
+    "title": "Like a Rolling Stone",
+    "originalArtist": "Bob Dylan"
+  },
+  {
+    "title": "The Times They Are a-Changin'",
+    "originalArtist": "Bob Dylan"
+  },
+  {
+    "title": "Knockin' on Heaven's Door",
+    "originalArtist": "Bob Dylan"
+  },
+  {
+    "title": "Mr. Tambourine Man",
+    "originalArtist": "The Byrds"
+  },
+  {
+    "title": "Turn! Turn! Turn!",
+    "originalArtist": "The Byrds"
+  },
+  {
+    "title": "Be My Baby",
+    "originalArtist": "The Ronettes"
+  },
+  {
+    "title": "Baby Love",
+    "originalArtist": "The Supremes"
+  },
+  {
+    "title": "Stop! In the Name of Love",
+    "originalArtist": "The Supremes"
+  },
+  {
+    "title": "Where Did Our Love Go",
+    "originalArtist": "The Supremes"
+  },
+  {
+    "title": "You Can't Hurry Love",
+    "originalArtist": "The Supremes"
+  },
+  {
+    "title": "Dancing in the Street",
+    "originalArtist": "Martha and the Vandellas"
+  },
+  {
+    "title": "Reach Out I'll Be There",
+    "originalArtist": "Four Tops"
+  },
+  {
+    "title": "I Can't Help Myself",
+    "originalArtist": "Four Tops"
+  },
+  {
+    "title": "Sittin' On The Dock of the Bay",
+    "originalArtist": "Otis Redding"
+  },
+  {
+    "title": "Try a Little Tenderness",
+    "originalArtist": "Otis Redding"
+  },
+  {
+    "title": "When a Man Loves a Woman",
+    "originalArtist": "Percy Sledge"
+  },
+  {
+    "title": "People Get Ready",
+    "originalArtist": "The Impressions"
+  },
+  {
+    "title": "A Change Is Gonna Come",
+    "originalArtist": "Sam Cooke"
+  },
+  {
+    "title": "You Send Me",
+    "originalArtist": "Sam Cooke"
+  },
+  {
+    "title": "Cupid",
+    "originalArtist": "Sam Cooke"
+  },
+  {
+    "title": "Purple Haze",
+    "originalArtist": "Jimi Hendrix"
+  },
+  {
+    "title": "All Along the Watchtower",
+    "originalArtist": "Jimi Hendrix"
+  },
+  {
+    "title": "Hey Joe",
+    "originalArtist": "Jimi Hendrix"
+  },
+  {
+    "title": "Voodoo Child",
+    "originalArtist": "Jimi Hendrix"
+  },
+  {
+    "title": "Light My Fire",
+    "originalArtist": "The Doors"
+  },
+  {
+    "title": "Riders on the Storm",
+    "originalArtist": "The Doors"
+  },
+  {
+    "title": "Break On Through",
+    "originalArtist": "The Doors"
+  },
+  {
+    "title": "People Are Strange",
+    "originalArtist": "The Doors"
+  },
+  {
+    "title": "Somebody to Love",
+    "originalArtist": "Jefferson Airplane"
+  },
+  {
+    "title": "White Rabbit",
+    "originalArtist": "Jefferson Airplane"
+  },
+  {
+    "title": "For What It's Worth",
+    "originalArtist": "Buffalo Springfield"
+  },
+  {
+    "title": "My Generation",
+    "originalArtist": "The Who"
+  },
+  {
+    "title": "I Can See for Miles",
+    "originalArtist": "The Who"
+  },
+  {
+    "title": "Pinball Wizard",
+    "originalArtist": "The Who"
+  },
+  {
+    "title": "Space Oddity",
+    "originalArtist": "David Bowie"
+  },
+  {
+    "title": "Sunshine of Your Love",
+    "originalArtist": "Cream"
+  },
+  {
+    "title": "White Room",
+    "originalArtist": "Cream"
+  },
+  {
+    "title": "Brown Eyed Girl",
+    "originalArtist": "Van Morrison"
+  },
+  {
+    "title": "Gloria",
+    "originalArtist": "Them"
+  },
+  {
+    "title": "Wild Thing",
+    "originalArtist": "The Troggs"
+  },
+  {
+    "title": "Louie Louie",
+    "originalArtist": "The Kingsmen"
+  },
+  {
+    "title": "These Boots Are Made for Walkin'",
+    "originalArtist": "Nancy Sinatra"
+  },
+  {
+    "title": "Somethin' Stupid",
+    "originalArtist": "Frank & Nancy Sinatra"
+  },
+  {
+    "title": "Son of a Preacher Man",
+    "originalArtist": "Dusty Springfield"
+  },
+  {
+    "title": "You Don't Own Me",
+    "originalArtist": "Lesley Gore"
+  },
+  {
+    "title": "It's My Party",
+    "originalArtist": "Lesley Gore"
+  },
+  {
+    "title": "Downtown",
+    "originalArtist": "Petula Clark"
+  },
+  {
+    "title": "The Loco-Motion",
+    "originalArtist": "Little Eva"
+  },
+  {
+    "title": "Da Doo Ron Ron",
+    "originalArtist": "The Crystals"
+  },
+  {
+    "title": "Then He Kissed Me",
+    "originalArtist": "The Crystals"
+  },
+  {
+    "title": "Will You Love Me Tomorrow",
+    "originalArtist": "The Shirelles"
+  },
+  {
+    "title": "Under the Boardwalk",
+    "originalArtist": "The Drifters"
+  },
+  {
+    "title": "Save the Last Dance for Me",
+    "originalArtist": "The Drifters"
+  },
+  {
+    "title": "Up on the Roof",
+    "originalArtist": "The Drifters"
+  },
+  {
+    "title": "Sherry",
+    "originalArtist": "The Four Seasons"
+  },
+  {
+    "title": "Big Girls Don't Cry",
+    "originalArtist": "The Four Seasons"
+  },
+  {
+    "title": "Can't Take My Eyes Off You",
+    "originalArtist": "Frankie Valli"
+  },
+  {
+    "title": "I Got You Babe",
+    "originalArtist": "Sonny & Cher"
+  },
+  {
+    "title": "The Beat Goes On",
+    "originalArtist": "Sonny & Cher"
+  },
+  {
+    "title": "Happy Together",
+    "originalArtist": "The Turtles"
+  },
+  {
+    "title": "Sugar, Sugar",
+    "originalArtist": "The Archies"
+  },
+  {
+    "title": "Build Me Up Buttercup",
+    "originalArtist": "The Foundations"
+  },
+  {
+    "title": "Crimson and Clover",
+    "originalArtist": "Tommy James & the Shondells"
+  },
+  {
+    "title": "I'm a Believer",
+    "originalArtist": "The Monkees"
+  },
+  {
+    "title": "Daydream Believer",
+    "originalArtist": "The Monkees"
+  }
+]

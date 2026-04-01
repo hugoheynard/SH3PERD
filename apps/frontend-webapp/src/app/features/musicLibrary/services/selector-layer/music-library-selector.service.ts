@@ -127,7 +127,19 @@ export class MusicLibrarySelectorService {
   }
 
   static favoriteDuration(version: MusicVersion): number | undefined {
-    return MusicLibrarySelectorService.favoriteTrack(version)?.durationSeconds;
+    const track = MusicLibrarySelectorService.favoriteTrack(version);
+    return track?.analysisResult?.durationSeconds ?? track?.durationSeconds ?? undefined;
+  }
+
+  static favoriteBpm(version: MusicVersion): number | undefined {
+    const bpm = MusicLibrarySelectorService.favoriteTrack(version)?.analysisResult?.bpm;
+    return bpm != null ? Math.round(bpm) : undefined;
+  }
+
+  static favoriteKey(version: MusicVersion): string | undefined {
+    const a = MusicLibrarySelectorService.favoriteTrack(version)?.analysisResult;
+    if (!a?.key) return undefined;
+    return `${a.key}${a.keyScale === 'minor' ? 'm' : ''}`;
   }
 
   static hasTrack(version: MusicVersion): boolean {

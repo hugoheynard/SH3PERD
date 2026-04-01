@@ -26,8 +26,11 @@
             <span class="version-dur">{{ formatDuration(dur) }}</span>
           }
           <sh3-badge [content]="version.genre" radius="square" variant="info" />
-          @if (version.bpm) {
-            <span class="version-bpm">{{ version.bpm }} bpm</span>
+          @if (version.bpm || favoriteBpm(version); as bpm) {
+            <span class="version-bpm">{{ bpm }} bpm</span>
+          }
+          @if (favoriteKey(version); as key) {
+            <span class="version-key">{{ key }}</span>
           }
           <div class="version-ratings">
             @for (row of [

@@ -1,0 +1,634 @@
+[
+  {
+    "title": "Last Nite",
+    "originalArtist": "The Strokes"
+  },
+  {
+    "title": "Reptilia",
+    "originalArtist": "The Strokes"
+  },
+  {
+    "title": "Someday",
+    "originalArtist": "The Strokes"
+  },
+  {
+    "title": "Is This It",
+    "originalArtist": "The Strokes"
+  },
+  {
+    "title": "Juicebox",
+    "originalArtist": "The Strokes"
+  },
+  {
+    "title": "Hard to Explain",
+    "originalArtist": "The Strokes"
+  },
+  {
+    "title": "You Only Live Once",
+    "originalArtist": "The Strokes"
+  },
+  {
+    "title": "Seven Nation Army",
+    "originalArtist": "The White Stripes"
+  },
+  {
+    "title": "Fell in Love with a Girl",
+    "originalArtist": "The White Stripes"
+  },
+  {
+    "title": "Icky Thump",
+    "originalArtist": "The White Stripes"
+  },
+  {
+    "title": "Dead Leaves and the Dirty Ground",
+    "originalArtist": "The White Stripes"
+  },
+  {
+    "title": "Ball and Biscuit",
+    "originalArtist": "The White Stripes"
+  },
+  {
+    "title": "I Bet You Look Good on the Dancefloor",
+    "originalArtist": "Arctic Monkeys"
+  },
+  {
+    "title": "Do I Wanna Know?",
+    "originalArtist": "Arctic Monkeys"
+  },
+  {
+    "title": "R U Mine?",
+    "originalArtist": "Arctic Monkeys"
+  },
+  {
+    "title": "505",
+    "originalArtist": "Arctic Monkeys"
+  },
+  {
+    "title": "Fluorescent Adolescent",
+    "originalArtist": "Arctic Monkeys"
+  },
+  {
+    "title": "When the Sun Goes Down",
+    "originalArtist": "Arctic Monkeys"
+  },
+  {
+    "title": "Crying Lightning",
+    "originalArtist": "Arctic Monkeys"
+  },
+  {
+    "title": "Mardy Bum",
+    "originalArtist": "Arctic Monkeys"
+  },
+  {
+    "title": "Arabella",
+    "originalArtist": "Arctic Monkeys"
+  },
+  {
+    "title": "Why'd You Only Call Me When You're High?",
+    "originalArtist": "Arctic Monkeys"
+  },
+  {
+    "title": "Body Paint",
+    "originalArtist": "Arctic Monkeys"
+  },
+  {
+    "title": "There'd Better Be a Mirrorball",
+    "originalArtist": "Arctic Monkeys"
+  },
+  {
+    "title": "Numb",
+    "originalArtist": "Linkin Park"
+  },
+  {
+    "title": "In the End",
+    "originalArtist": "Linkin Park"
+  },
+  {
+    "title": "Crawling",
+    "originalArtist": "Linkin Park"
+  },
+  {
+    "title": "One Step Closer",
+    "originalArtist": "Linkin Park"
+  },
+  {
+    "title": "Breaking the Habit",
+    "originalArtist": "Linkin Park"
+  },
+  {
+    "title": "Faint",
+    "originalArtist": "Linkin Park"
+  },
+  {
+    "title": "Somewhere I Belong",
+    "originalArtist": "Linkin Park"
+  },
+  {
+    "title": "What I've Done",
+    "originalArtist": "Linkin Park"
+  },
+  {
+    "title": "New Divide",
+    "originalArtist": "Linkin Park"
+  },
+  {
+    "title": "Papercut",
+    "originalArtist": "Linkin Park"
+  },
+  {
+    "title": "The Emptiness Machine",
+    "originalArtist": "Linkin Park"
+  },
+  {
+    "title": "Last Resort",
+    "originalArtist": "Papa Roach"
+  },
+  {
+    "title": "Scars",
+    "originalArtist": "Papa Roach"
+  },
+  {
+    "title": "Down with the Sickness",
+    "originalArtist": "Disturbed"
+  },
+  {
+    "title": "Stupify",
+    "originalArtist": "Disturbed"
+  },
+  {
+    "title": "The Sound of Silence",
+    "originalArtist": "Disturbed"
+  },
+  {
+    "title": "Inside the Fire",
+    "originalArtist": "Disturbed"
+  },
+  {
+    "title": "Toxicity",
+    "originalArtist": "System of a Down"
+  },
+  {
+    "title": "Chop Suey!",
+    "originalArtist": "System of a Down"
+  },
+  {
+    "title": "B.Y.O.B.",
+    "originalArtist": "System of a Down"
+  },
+  {
+    "title": "Aerials",
+    "originalArtist": "System of a Down"
+  },
+  {
+    "title": "Sugar",
+    "originalArtist": "System of a Down"
+  },
+  {
+    "title": "Lonely Day",
+    "originalArtist": "System of a Down"
+  },
+  {
+    "title": "My Own Worst Enemy",
+    "originalArtist": "Lit"
+  },
+  {
+    "title": "Absolutely (Story of a Girl)",
+    "originalArtist": "Nine Days"
+  },
+  {
+    "title": "Kryptonite",
+    "originalArtist": "3 Doors Down"
+  },
+  {
+    "title": "Here Without You",
+    "originalArtist": "3 Doors Down"
+  },
+  {
+    "title": "It's Been Awhile",
+    "originalArtist": "Staind"
+  },
+  {
+    "title": "How You Remind Me",
+    "originalArtist": "Nickelback"
+  },
+  {
+    "title": "Photograph",
+    "originalArtist": "Nickelback"
+  },
+  {
+    "title": "Rockstar",
+    "originalArtist": "Nickelback"
+  },
+  {
+    "title": "Someday",
+    "originalArtist": "Nickelback"
+  },
+  {
+    "title": "Far Away",
+    "originalArtist": "Nickelback"
+  },
+  {
+    "title": "The Reason",
+    "originalArtist": "Hoobastank"
+  },
+  {
+    "title": "Crawling Back to You",
+    "originalArtist": "Daughtry"
+  },
+  {
+    "title": "It's Not Over",
+    "originalArtist": "Daughtry"
+  },
+  {
+    "title": "Misery Business",
+    "originalArtist": "Paramore"
+  },
+  {
+    "title": "Decode",
+    "originalArtist": "Paramore"
+  },
+  {
+    "title": "The Only Exception",
+    "originalArtist": "Paramore"
+  },
+  {
+    "title": "Still into You",
+    "originalArtist": "Paramore"
+  },
+  {
+    "title": "Hard Times",
+    "originalArtist": "Paramore"
+  },
+  {
+    "title": "Ain't It Fun",
+    "originalArtist": "Paramore"
+  },
+  {
+    "title": "crushcrushcrush",
+    "originalArtist": "Paramore"
+  },
+  {
+    "title": "This Is Why",
+    "originalArtist": "Paramore"
+  },
+  {
+    "title": "Welcome to the Black Parade",
+    "originalArtist": "My Chemical Romance"
+  },
+  {
+    "title": "I'm Not Okay (I Promise)",
+    "originalArtist": "My Chemical Romance"
+  },
+  {
+    "title": "Helena",
+    "originalArtist": "My Chemical Romance"
+  },
+  {
+    "title": "Teenagers",
+    "originalArtist": "My Chemical Romance"
+  },
+  {
+    "title": "Famous Last Words",
+    "originalArtist": "My Chemical Romance"
+  },
+  {
+    "title": "The Ghost of You",
+    "originalArtist": "My Chemical Romance"
+  },
+  {
+    "title": "Sugar, We're Goin Down",
+    "originalArtist": "Fall Out Boy"
+  },
+  {
+    "title": "Thnks fr th Mmrs",
+    "originalArtist": "Fall Out Boy"
+  },
+  {
+    "title": "Dance, Dance",
+    "originalArtist": "Fall Out Boy"
+  },
+  {
+    "title": "Centuries",
+    "originalArtist": "Fall Out Boy"
+  },
+  {
+    "title": "My Songs Know What You Did in the Dark",
+    "originalArtist": "Fall Out Boy"
+  },
+  {
+    "title": "The Taste of Ink",
+    "originalArtist": "The Used"
+  },
+  {
+    "title": "I Caught Fire",
+    "originalArtist": "The Used"
+  },
+  {
+    "title": "Flavor of the Weak",
+    "originalArtist": "American Hi-Fi"
+  },
+  {
+    "title": "Fat Lip",
+    "originalArtist": "Sum 41"
+  },
+  {
+    "title": "In Too Deep",
+    "originalArtist": "Sum 41"
+  },
+  {
+    "title": "Still Waiting",
+    "originalArtist": "Sum 41"
+  },
+  {
+    "title": "The Middle",
+    "originalArtist": "Jimmy Eat World"
+  },
+  {
+    "title": "Sweetness",
+    "originalArtist": "Jimmy Eat World"
+  },
+  {
+    "title": "Ocean Avenue",
+    "originalArtist": "Yellowcard"
+  },
+  {
+    "title": "Hands Down",
+    "originalArtist": "Dashboard Confessional"
+  },
+  {
+    "title": "Vindicated",
+    "originalArtist": "Dashboard Confessional"
+  },
+  {
+    "title": "Take Me Out",
+    "originalArtist": "Franz Ferdinand"
+  },
+  {
+    "title": "Do You Want To",
+    "originalArtist": "Franz Ferdinand"
+  },
+  {
+    "title": "Steady, as She Goes",
+    "originalArtist": "The Raconteurs"
+  },
+  {
+    "title": "Lonely Boy",
+    "originalArtist": "The Black Keys"
+  },
+  {
+    "title": "Tighten Up",
+    "originalArtist": "The Black Keys"
+  },
+  {
+    "title": "Gold on the Ceiling",
+    "originalArtist": "The Black Keys"
+  },
+  {
+    "title": "Howlin' for You",
+    "originalArtist": "The Black Keys"
+  },
+  {
+    "title": "Fever",
+    "originalArtist": "The Black Keys"
+  },
+  {
+    "title": "Little Black Submarines",
+    "originalArtist": "The Black Keys"
+  },
+  {
+    "title": "Are You Gonna Be My Girl",
+    "originalArtist": "Jet"
+  },
+  {
+    "title": "Rebellion (Lies)",
+    "originalArtist": "Arcade Fire"
+  },
+  {
+    "title": "Wake Up",
+    "originalArtist": "Arcade Fire"
+  },
+  {
+    "title": "Ready to Start",
+    "originalArtist": "Arcade Fire"
+  },
+  {
+    "title": "Sprawl II",
+    "originalArtist": "Arcade Fire"
+  },
+  {
+    "title": "Reflektor",
+    "originalArtist": "Arcade Fire"
+  },
+  {
+    "title": "No Cars Go",
+    "originalArtist": "Arcade Fire"
+  },
+  {
+    "title": "Obstacle 1",
+    "originalArtist": "Interpol"
+  },
+  {
+    "title": "Evil",
+    "originalArtist": "Interpol"
+  },
+  {
+    "title": "Slow Hands",
+    "originalArtist": "Interpol"
+  },
+  {
+    "title": "Slow Motion",
+    "originalArtist": "Third Eye Blind"
+  },
+  {
+    "title": "Semi-Charmed Life",
+    "originalArtist": "Third Eye Blind"
+  },
+  {
+    "title": "Jumper",
+    "originalArtist": "Third Eye Blind"
+  },
+  {
+    "title": "Sympathy",
+    "originalArtist": "Goo Goo Dolls"
+  },
+  {
+    "title": "Slide",
+    "originalArtist": "Goo Goo Dolls"
+  },
+  {
+    "title": "Black Sheep",
+    "originalArtist": "Metric"
+  },
+  {
+    "title": "Help I'm Alive",
+    "originalArtist": "Metric"
+  },
+  {
+    "title": "Uprising",
+    "originalArtist": "Muse"
+  },
+  {
+    "title": "Supermassive Black Hole",
+    "originalArtist": "Muse"
+  },
+  {
+    "title": "Hysteria",
+    "originalArtist": "Muse"
+  },
+  {
+    "title": "Starlight",
+    "originalArtist": "Muse"
+  },
+  {
+    "title": "Knights of Cydonia",
+    "originalArtist": "Muse"
+  },
+  {
+    "title": "Time Is Running Out",
+    "originalArtist": "Muse"
+  },
+  {
+    "title": "Madness",
+    "originalArtist": "Muse"
+  },
+  {
+    "title": "Plug In Baby",
+    "originalArtist": "Muse"
+  },
+  {
+    "title": "Resistance",
+    "originalArtist": "Muse"
+  },
+  {
+    "title": "Psycho",
+    "originalArtist": "Muse"
+  },
+  {
+    "title": "Chelsea Dagger",
+    "originalArtist": "The Fratellis"
+  },
+  {
+    "title": "Lazy Eye",
+    "originalArtist": "Silversun Pickups"
+  },
+  {
+    "title": "Two Weeks",
+    "originalArtist": "Grizzly Bear"
+  },
+  {
+    "title": "Electric Feel",
+    "originalArtist": "MGMT"
+  },
+  {
+    "title": "Kids",
+    "originalArtist": "MGMT"
+  },
+  {
+    "title": "Time to Pretend",
+    "originalArtist": "MGMT"
+  },
+  {
+    "title": "Somebody Else",
+    "originalArtist": "The 1975"
+  },
+  {
+    "title": "The Sound",
+    "originalArtist": "The 1975"
+  },
+  {
+    "title": "Chocolate",
+    "originalArtist": "The 1975"
+  },
+  {
+    "title": "Love It If We Made It",
+    "originalArtist": "The 1975"
+  },
+  {
+    "title": "It's Not Living (If It's Not with You)",
+    "originalArtist": "The 1975"
+  },
+  {
+    "title": "Robbers",
+    "originalArtist": "The 1975"
+  },
+  {
+    "title": "Tongue Tied",
+    "originalArtist": "Grouplove"
+  },
+  {
+    "title": "Sweater Weather",
+    "originalArtist": "The Neighbourhood"
+  },
+  {
+    "title": "Afraid",
+    "originalArtist": "The Neighbourhood"
+  },
+  {
+    "title": "Come a Little Closer",
+    "originalArtist": "Cage the Elephant"
+  },
+  {
+    "title": "Ain't No Rest for the Wicked",
+    "originalArtist": "Cage the Elephant"
+  },
+  {
+    "title": "Trouble",
+    "originalArtist": "Cage the Elephant"
+  },
+  {
+    "title": "Cigarette Daydreams",
+    "originalArtist": "Cage the Elephant"
+  },
+  {
+    "title": "Heatstroke",
+    "originalArtist": "Royal Blood"
+  },
+  {
+    "title": "Figure It Out",
+    "originalArtist": "Royal Blood"
+  },
+  {
+    "title": "Little Monster",
+    "originalArtist": "Royal Blood"
+  },
+  {
+    "title": "Out of the Black",
+    "originalArtist": "Royal Blood"
+  },
+  {
+    "title": "Are We Still Friends?",
+    "originalArtist": "Tyler, the Creator"
+  },
+  {
+    "title": "Where It's At",
+    "originalArtist": "Beck"
+  },
+  {
+    "title": "Weight of Love",
+    "originalArtist": "The Black Keys"
+  },
+  {
+    "title": "Broken",
+    "originalArtist": "lovelytheband"
+  },
+  {
+    "title": "Heat Above",
+    "originalArtist": "Greta Van Fleet"
+  },
+  {
+    "title": "Highway Tune",
+    "originalArtist": "Greta Van Fleet"
+  },
+  {
+    "title": "Safari Song",
+    "originalArtist": "Greta Van Fleet"
+  },
+  {
+    "title": "When the Curtain Falls",
+    "originalArtist": "Greta Van Fleet"
+  },
+  {
+    "title": "My Way, Soon",
+    "originalArtist": "Greta Van Fleet"
+  }
+]

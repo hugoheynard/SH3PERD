@@ -1,0 +1,806 @@
+[
+  {
+    "title": "Take Five",
+    "originalArtist": "Dave Brubeck"
+  },
+  {
+    "title": "So What",
+    "originalArtist": "Miles Davis"
+  },
+  {
+    "title": "Blue in Green",
+    "originalArtist": "Miles Davis"
+  },
+  {
+    "title": "All Blues",
+    "originalArtist": "Miles Davis"
+  },
+  {
+    "title": "Freddie Freeloader",
+    "originalArtist": "Miles Davis"
+  },
+  {
+    "title": "Summertime",
+    "originalArtist": "Ella Fitzgerald"
+  },
+  {
+    "title": "My Funny Valentine",
+    "originalArtist": "Chet Baker"
+  },
+  {
+    "title": "Almost Blue",
+    "originalArtist": "Chet Baker"
+  },
+  {
+    "title": "Let's Get Lost",
+    "originalArtist": "Chet Baker"
+  },
+  {
+    "title": "I Fall in Love Too Easily",
+    "originalArtist": "Chet Baker"
+  },
+  {
+    "title": "A Love Supreme",
+    "originalArtist": "John Coltrane"
+  },
+  {
+    "title": "My Favorite Things",
+    "originalArtist": "John Coltrane"
+  },
+  {
+    "title": "Giant Steps",
+    "originalArtist": "John Coltrane"
+  },
+  {
+    "title": "Naima",
+    "originalArtist": "John Coltrane"
+  },
+  {
+    "title": "Impressions",
+    "originalArtist": "John Coltrane"
+  },
+  {
+    "title": "Blue Train",
+    "originalArtist": "John Coltrane"
+  },
+  {
+    "title": "Round Midnight",
+    "originalArtist": "Thelonious Monk"
+  },
+  {
+    "title": "Straight, No Chaser",
+    "originalArtist": "Thelonious Monk"
+  },
+  {
+    "title": "Blue Monk",
+    "originalArtist": "Thelonious Monk"
+  },
+  {
+    "title": "Moanin'",
+    "originalArtist": "Art Blakey & The Jazz Messengers"
+  },
+  {
+    "title": "The Sidewinder",
+    "originalArtist": "Lee Morgan"
+  },
+  {
+    "title": "Song for My Father",
+    "originalArtist": "Horace Silver"
+  },
+  {
+    "title": "Cantaloupe Island",
+    "originalArtist": "Herbie Hancock"
+  },
+  {
+    "title": "Watermelon Man",
+    "originalArtist": "Herbie Hancock"
+  },
+  {
+    "title": "Chameleon",
+    "originalArtist": "Herbie Hancock"
+  },
+  {
+    "title": "Maiden Voyage",
+    "originalArtist": "Herbie Hancock"
+  },
+  {
+    "title": "Rockit",
+    "originalArtist": "Herbie Hancock"
+  },
+  {
+    "title": "Headhunters",
+    "originalArtist": "Herbie Hancock"
+  },
+  {
+    "title": "Spain",
+    "originalArtist": "Chick Corea"
+  },
+  {
+    "title": "La Fiesta",
+    "originalArtist": "Chick Corea"
+  },
+  {
+    "title": "Birdland",
+    "originalArtist": "Weather Report"
+  },
+  {
+    "title": "Teen Town",
+    "originalArtist": "Weather Report"
+  },
+  {
+    "title": "Portrait of Tracy",
+    "originalArtist": "Jaco Pastorius"
+  },
+  {
+    "title": "Donna Lee",
+    "originalArtist": "Jaco Pastorius"
+  },
+  {
+    "title": "Bright Size Life",
+    "originalArtist": "Pat Metheny"
+  },
+  {
+    "title": "Last Train Home",
+    "originalArtist": "Pat Metheny"
+  },
+  {
+    "title": "Phase Dance",
+    "originalArtist": "Pat Metheny"
+  },
+  {
+    "title": "Misty",
+    "originalArtist": "Erroll Garner"
+  },
+  {
+    "title": "Autumn Leaves",
+    "originalArtist": "Bill Evans"
+  },
+  {
+    "title": "Waltz for Debby",
+    "originalArtist": "Bill Evans"
+  },
+  {
+    "title": "Peace Piece",
+    "originalArtist": "Bill Evans"
+  },
+  {
+    "title": "Blue Rondo à la Turk",
+    "originalArtist": "Dave Brubeck"
+  },
+  {
+    "title": "Sing, Sing, Sing",
+    "originalArtist": "Benny Goodman"
+  },
+  {
+    "title": "In a Sentimental Mood",
+    "originalArtist": "Duke Ellington"
+  },
+  {
+    "title": "Take the 'A' Train",
+    "originalArtist": "Duke Ellington"
+  },
+  {
+    "title": "It Don't Mean a Thing",
+    "originalArtist": "Duke Ellington"
+  },
+  {
+    "title": "Caravan",
+    "originalArtist": "Duke Ellington"
+  },
+  {
+    "title": "Satin Doll",
+    "originalArtist": "Duke Ellington"
+  },
+  {
+    "title": "Fly Me to the Moon",
+    "originalArtist": "Frank Sinatra"
+  },
+  {
+    "title": "The Girl from Ipanema",
+    "originalArtist": "Stan Getz & Astrud Gilberto"
+  },
+  {
+    "title": "Desafinado",
+    "originalArtist": "Stan Getz & Charlie Byrd"
+  },
+  {
+    "title": "Mas Que Nada",
+    "originalArtist": "Sergio Mendes"
+  },
+  {
+    "title": "Wave",
+    "originalArtist": "Antonio Carlos Jobim"
+  },
+  {
+    "title": "Corcovado",
+    "originalArtist": "Antonio Carlos Jobim"
+  },
+  {
+    "title": "Feeling Good",
+    "originalArtist": "Nina Simone"
+  },
+  {
+    "title": "I Put a Spell on You",
+    "originalArtist": "Nina Simone"
+  },
+  {
+    "title": "Sinnerman",
+    "originalArtist": "Nina Simone"
+  },
+  {
+    "title": "My Baby Just Cares for Me",
+    "originalArtist": "Nina Simone"
+  },
+  {
+    "title": "Don't Let Me Be Misunderstood",
+    "originalArtist": "Nina Simone"
+  },
+  {
+    "title": "Ne Me Quitte Pas",
+    "originalArtist": "Nina Simone"
+  },
+  {
+    "title": "Ain't Got No, I Got Life",
+    "originalArtist": "Nina Simone"
+  },
+  {
+    "title": "At Last",
+    "originalArtist": "Etta James"
+  },
+  {
+    "title": "I'd Rather Go Blind",
+    "originalArtist": "Etta James"
+  },
+  {
+    "title": "Something's Got a Hold on Me",
+    "originalArtist": "Etta James"
+  },
+  {
+    "title": "All I Could Do Was Cry",
+    "originalArtist": "Etta James"
+  },
+  {
+    "title": "Tell Mama",
+    "originalArtist": "Etta James"
+  },
+  {
+    "title": "Dr. Feelgood",
+    "originalArtist": "Aretha Franklin"
+  },
+  {
+    "title": "Rock Steady",
+    "originalArtist": "Aretha Franklin"
+  },
+  {
+    "title": "I Never Loved a Man",
+    "originalArtist": "Aretha Franklin"
+  },
+  {
+    "title": "Spanish Harlem",
+    "originalArtist": "Aretha Franklin"
+  },
+  {
+    "title": "These Arms of Mine",
+    "originalArtist": "Otis Redding"
+  },
+  {
+    "title": "I've Been Loving You Too Long",
+    "originalArtist": "Otis Redding"
+  },
+  {
+    "title": "Mercy Mercy Me",
+    "originalArtist": "Marvin Gaye"
+  },
+  {
+    "title": "Inner City Blues",
+    "originalArtist": "Marvin Gaye"
+  },
+  {
+    "title": "Just My Imagination",
+    "originalArtist": "The Temptations"
+  },
+  {
+    "title": "Papa Was a Rollin' Stone",
+    "originalArtist": "The Temptations"
+  },
+  {
+    "title": "I Wish It Would Rain",
+    "originalArtist": "The Temptations"
+  },
+  {
+    "title": "Signed, Sealed, Delivered",
+    "originalArtist": "Stevie Wonder"
+  },
+  {
+    "title": "Overjoyed",
+    "originalArtist": "Stevie Wonder"
+  },
+  {
+    "title": "Lately",
+    "originalArtist": "Stevie Wonder"
+  },
+  {
+    "title": "Ribbon in the Sky",
+    "originalArtist": "Stevie Wonder"
+  },
+  {
+    "title": "For Once in My Life",
+    "originalArtist": "Stevie Wonder"
+  },
+  {
+    "title": "A Song for You",
+    "originalArtist": "Donny Hathaway"
+  },
+  {
+    "title": "This Christmas",
+    "originalArtist": "Donny Hathaway"
+  },
+  {
+    "title": "Where Is the Love",
+    "originalArtist": "Donny Hathaway & Roberta Flack"
+  },
+  {
+    "title": "The Closer I Get to You",
+    "originalArtist": "Donny Hathaway & Roberta Flack"
+  },
+  {
+    "title": "Use Me",
+    "originalArtist": "Bill Withers"
+  },
+  {
+    "title": "Just the Two of Us",
+    "originalArtist": "Grover Washington Jr. & Bill Withers"
+  },
+  {
+    "title": "The First Time Ever I Saw Your Face",
+    "originalArtist": "Roberta Flack"
+  },
+  {
+    "title": "Bring It on Home to Me",
+    "originalArtist": "Sam Cooke"
+  },
+  {
+    "title": "Wonderful World",
+    "originalArtist": "Sam Cooke"
+  },
+  {
+    "title": "Fantasy",
+    "originalArtist": "Earth, Wind & Fire"
+  },
+  {
+    "title": "Reasons",
+    "originalArtist": "Earth, Wind & Fire"
+  },
+  {
+    "title": "Let's Stay Together",
+    "originalArtist": "Al Green"
+  },
+  {
+    "title": "Tired of Being Alone",
+    "originalArtist": "Al Green"
+  },
+  {
+    "title": "Love and Happiness",
+    "originalArtist": "Al Green"
+  },
+  {
+    "title": "I'm Still in Love with You",
+    "originalArtist": "Al Green"
+  },
+  {
+    "title": "Take Me to the River",
+    "originalArtist": "Al Green"
+  },
+  {
+    "title": "Green Onions",
+    "originalArtist": "Booker T. & the M.G.'s"
+  },
+  {
+    "title": "Soul Man",
+    "originalArtist": "Sam & Dave"
+  },
+  {
+    "title": "Hold On, I'm Comin'",
+    "originalArtist": "Sam & Dave"
+  },
+  {
+    "title": "Midnight Train to Georgia",
+    "originalArtist": "Gladys Knight & the Pips"
+  },
+  {
+    "title": "Neither One of Us",
+    "originalArtist": "Gladys Knight & the Pips"
+  },
+  {
+    "title": "I'll Be There",
+    "originalArtist": "The Jackson 5"
+  },
+  {
+    "title": "ABC",
+    "originalArtist": "The Jackson 5"
+  },
+  {
+    "title": "I Want You Back",
+    "originalArtist": "The Jackson 5"
+  },
+  {
+    "title": "Nightshift",
+    "originalArtist": "Commodores"
+  },
+  {
+    "title": "Kiss of Life",
+    "originalArtist": "Sade"
+  },
+  {
+    "title": "Smooth Operator",
+    "originalArtist": "Sade"
+  },
+  {
+    "title": "No Ordinary Love",
+    "originalArtist": "Sade"
+  },
+  {
+    "title": "By Your Side",
+    "originalArtist": "Sade"
+  },
+  {
+    "title": "The Sweetest Taboo",
+    "originalArtist": "Sade"
+  },
+  {
+    "title": "Your Love Is King",
+    "originalArtist": "Sade"
+  },
+  {
+    "title": "Kissing You",
+    "originalArtist": "Des'ree"
+  },
+  {
+    "title": "You Gotta Be",
+    "originalArtist": "Des'ree"
+  },
+  {
+    "title": "End of the Road",
+    "originalArtist": "Boyz II Men"
+  },
+  {
+    "title": "I'll Make Love to You",
+    "originalArtist": "Boyz II Men"
+  },
+  {
+    "title": "One Sweet Day",
+    "originalArtist": "Mariah Carey & Boyz II Men"
+  },
+  {
+    "title": "On Bended Knee",
+    "originalArtist": "Boyz II Men"
+  },
+  {
+    "title": "Vision of Love",
+    "originalArtist": "Mariah Carey"
+  },
+  {
+    "title": "Hero",
+    "originalArtist": "Mariah Carey"
+  },
+  {
+    "title": "Always Be My Baby",
+    "originalArtist": "Mariah Carey"
+  },
+  {
+    "title": "Emotions",
+    "originalArtist": "Mariah Carey"
+  },
+  {
+    "title": "Exhale (Shoop Shoop)",
+    "originalArtist": "Whitney Houston"
+  },
+  {
+    "title": "I'm Every Woman",
+    "originalArtist": "Whitney Houston"
+  },
+  {
+    "title": "I Have Nothing",
+    "originalArtist": "Whitney Houston"
+  },
+  {
+    "title": "Cruisin'",
+    "originalArtist": "Smokey Robinson"
+  },
+  {
+    "title": "Tracks of My Tears",
+    "originalArtist": "Smokey Robinson & the Miracles"
+  },
+  {
+    "title": "Ooo Baby Baby",
+    "originalArtist": "Smokey Robinson & the Miracles"
+  },
+  {
+    "title": "Being with You",
+    "originalArtist": "Smokey Robinson"
+  },
+  {
+    "title": "You've Really Got a Hold on Me",
+    "originalArtist": "Smokey Robinson & the Miracles"
+  },
+  {
+    "title": "Girl on Fire",
+    "originalArtist": "Alicia Keys"
+  },
+  {
+    "title": "Unbreak My Heart",
+    "originalArtist": "Toni Braxton"
+  },
+  {
+    "title": "Breathe Again",
+    "originalArtist": "Toni Braxton"
+  },
+  {
+    "title": "Another Sad Love Song",
+    "originalArtist": "Toni Braxton"
+  },
+  {
+    "title": "You Oughta Know",
+    "originalArtist": "Alanis Morissette"
+  },
+  {
+    "title": "Ironic",
+    "originalArtist": "Alanis Morissette"
+  },
+  {
+    "title": "Love Is a Losing Game",
+    "originalArtist": "Amy Winehouse"
+  },
+  {
+    "title": "Tears Dry on Their Own",
+    "originalArtist": "Amy Winehouse"
+  },
+  {
+    "title": "Stronger Than Me",
+    "originalArtist": "Amy Winehouse"
+  },
+  {
+    "title": "Swim Good",
+    "originalArtist": "Frank Ocean"
+  },
+  {
+    "title": "Nights",
+    "originalArtist": "Frank Ocean"
+  },
+  {
+    "title": "Pyramids",
+    "originalArtist": "Frank Ocean"
+  },
+  {
+    "title": "Ivy",
+    "originalArtist": "Frank Ocean"
+  },
+  {
+    "title": "Pink + White",
+    "originalArtist": "Frank Ocean"
+  },
+  {
+    "title": "Self Control",
+    "originalArtist": "Frank Ocean"
+  },
+  {
+    "title": "Nikes",
+    "originalArtist": "Frank Ocean"
+  },
+  {
+    "title": "Chanel",
+    "originalArtist": "Frank Ocean"
+  },
+  {
+    "title": "Adorn",
+    "originalArtist": "Miguel"
+  },
+  {
+    "title": "Sure Thing",
+    "originalArtist": "Miguel"
+  },
+  {
+    "title": "Coffee",
+    "originalArtist": "Miguel"
+  },
+  {
+    "title": "Best Part",
+    "originalArtist": "Daniel Caesar ft. H.E.R."
+  },
+  {
+    "title": "Get You",
+    "originalArtist": "Daniel Caesar"
+  },
+  {
+    "title": "Japanese Denim",
+    "originalArtist": "Daniel Caesar"
+  },
+  {
+    "title": "Focus",
+    "originalArtist": "H.E.R."
+  },
+  {
+    "title": "Best Part",
+    "originalArtist": "H.E.R. ft. Daniel Caesar"
+  },
+  {
+    "title": "Damage",
+    "originalArtist": "H.E.R."
+  },
+  {
+    "title": "Cranes in the Sky",
+    "originalArtist": "Solange"
+  },
+  {
+    "title": "Losing You",
+    "originalArtist": "Solange"
+  },
+  {
+    "title": "Don't Touch My Hair",
+    "originalArtist": "Solange"
+  },
+  {
+    "title": "Blinding",
+    "originalArtist": "Florence + The Machine"
+  },
+  {
+    "title": "Dog Days Are Over",
+    "originalArtist": "Florence + The Machine"
+  },
+  {
+    "title": "Shake It Out",
+    "originalArtist": "Florence + The Machine"
+  },
+  {
+    "title": "Like a Star",
+    "originalArtist": "Corinne Bailey Rae"
+  },
+  {
+    "title": "Green Light",
+    "originalArtist": "John Legend"
+  },
+  {
+    "title": "Glory",
+    "originalArtist": "John Legend"
+  },
+  {
+    "title": "Love Me Now",
+    "originalArtist": "John Legend"
+  },
+  {
+    "title": "Raspberry Beret",
+    "originalArtist": "Prince"
+  },
+  {
+    "title": "I Wanna Be Your Lover",
+    "originalArtist": "Prince"
+  },
+  {
+    "title": "Sign O' the Times",
+    "originalArtist": "Prince"
+  },
+  {
+    "title": "Diamonds and Pearls",
+    "originalArtist": "Prince"
+  },
+  {
+    "title": "Controversy",
+    "originalArtist": "Prince"
+  },
+  {
+    "title": "I Would Die 4 U",
+    "originalArtist": "Prince"
+  },
+  {
+    "title": "Let's Go Crazy",
+    "originalArtist": "Prince"
+  },
+  {
+    "title": "Lose Yourself to Dance",
+    "originalArtist": "Daft Punk"
+  },
+  {
+    "title": "Finesse",
+    "originalArtist": "Bruno Mars"
+  },
+  {
+    "title": "Treasure",
+    "originalArtist": "Bruno Mars"
+  },
+  {
+    "title": "Leave the Door Open",
+    "originalArtist": "Silk Sonic"
+  },
+  {
+    "title": "Smokin Out the Window",
+    "originalArtist": "Silk Sonic"
+  },
+  {
+    "title": "Skate",
+    "originalArtist": "Silk Sonic"
+  },
+  {
+    "title": "After Last Night",
+    "originalArtist": "Silk Sonic"
+  },
+  {
+    "title": "Call Out My Name",
+    "originalArtist": "The Weeknd"
+  },
+  {
+    "title": "The Morning",
+    "originalArtist": "The Weeknd"
+  },
+  {
+    "title": "Wicked Games",
+    "originalArtist": "The Weeknd"
+  },
+  {
+    "title": "House of Balloons",
+    "originalArtist": "The Weeknd"
+  },
+  {
+    "title": "Love Galore",
+    "originalArtist": "SZA"
+  },
+  {
+    "title": "The Weekend",
+    "originalArtist": "SZA"
+  },
+  {
+    "title": "Good Days",
+    "originalArtist": "SZA"
+  },
+  {
+    "title": "Shirt",
+    "originalArtist": "SZA"
+  },
+  {
+    "title": "Kiss Me More",
+    "originalArtist": "Doja Cat ft. SZA"
+  },
+  {
+    "title": "Say My Name",
+    "originalArtist": "Destiny's Child"
+  },
+  {
+    "title": "Bills, Bills, Bills",
+    "originalArtist": "Destiny's Child"
+  },
+  {
+    "title": "Jumpin' Jumpin'",
+    "originalArtist": "Destiny's Child"
+  },
+  {
+    "title": "Bootylicious",
+    "originalArtist": "Destiny's Child"
+  },
+  {
+    "title": "Survivor",
+    "originalArtist": "Destiny's Child"
+  },
+  {
+    "title": "Lose My Breath",
+    "originalArtist": "Destiny's Child"
+  },
+  {
+    "title": "Unpretty",
+    "originalArtist": "TLC"
+  },
+  {
+    "title": "What About Us",
+    "originalArtist": "Brandy & Monica"
+  },
+  {
+    "title": "The Boy Is Mine",
+    "originalArtist": "Brandy & Monica"
+  },
+  {
+    "title": "Have You Ever?",
+    "originalArtist": "Brandy"
+  },
+  {
+    "title": "Angel of Mine",
+    "originalArtist": "Monica"
+  }
+]

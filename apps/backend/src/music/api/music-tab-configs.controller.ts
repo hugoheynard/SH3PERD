@@ -1,4 +1,5 @@
 import { Controller, Get, Put, Delete, Body } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { QueryBus, CommandBus } from '@nestjs/cqrs';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
@@ -7,17 +8,9 @@ import { SaveMusicTabConfigsCommand, type TSaveMusicTabConfigsPayload } from '..
 import { DeleteMusicTabConfigsCommand } from '../application/commands/DeleteMusicTabConfigsCommand.js';
 import type { TUserId, TApiResponse, TMusicTabConfigsDomainModel } from '@sh3pherd/shared-types';
 
-/**
- * MusicTabConfigsController
- *
- * REST controller for persisting user's music library tab configurations.
- * Mounted under `music/tab-configs` via the MusicModule RouterModule.
- *
- * Endpoints:
- * - GET    /music/tab-configs     → fetch user's tab configs
- * - PUT    /music/tab-configs     → upsert tab configs
- * - DELETE /music/tab-configs     → remove all tab configs (reset to defaults)
- */
+@ApiTags('music / tab configs')
+@ApiBearerAuth('bearer')
+@ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
 @Controller('tab-configs')
 export class MusicTabConfigsController {
   constructor(
@@ -25,6 +18,7 @@ export class MusicTabConfigsController {
     private readonly cmdBus: CommandBus,
   ) {}
 
+  @ApiOperation({ summary: 'Get tab configs', description: 'Returns the user\'s saved music library tab configurations (active tabs + saved presets).' })
   @Get()
   async getTabConfigs(
     @ActorId() actorId: TUserId,
@@ -35,6 +29,7 @@ export class MusicTabConfigsController {
     );
   }
 
+  @ApiOperation({ summary: 'Save tab configs', description: 'Upserts the user\'s tab configurations (active tabs, saved presets, active config ID).' })
   @Put()
   async saveTabConfigs(
     @ActorId() actorId: TUserId,
@@ -46,6 +41,7 @@ export class MusicTabConfigsController {
     );
   }
 
+  @ApiOperation({ summary: 'Delete tab configs', description: 'Removes all saved tab configurations for the user. Resets to defaults on next load.' })
   @Delete()
   async deleteTabConfigs(
     @ActorId() actorId: TUserId,

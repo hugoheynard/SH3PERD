@@ -1,0 +1,614 @@
+[
+  {
+    "title": "Bohemian Rhapsody",
+    "originalArtist": "Queen"
+  },
+  {
+    "title": "We Will Rock You",
+    "originalArtist": "Queen"
+  },
+  {
+    "title": "We Are the Champions",
+    "originalArtist": "Queen"
+  },
+  {
+    "title": "Somebody to Love",
+    "originalArtist": "Queen"
+  },
+  {
+    "title": "Don't Stop Me Now",
+    "originalArtist": "Queen"
+  },
+  {
+    "title": "Killer Queen",
+    "originalArtist": "Queen"
+  },
+  {
+    "title": "Crazy Little Thing Called Love",
+    "originalArtist": "Queen"
+  },
+  {
+    "title": "Another One Bites the Dust",
+    "originalArtist": "Queen"
+  },
+  {
+    "title": "Stairway to Heaven",
+    "originalArtist": "Led Zeppelin"
+  },
+  {
+    "title": "Whole Lotta Love",
+    "originalArtist": "Led Zeppelin"
+  },
+  {
+    "title": "Kashmir",
+    "originalArtist": "Led Zeppelin"
+  },
+  {
+    "title": "Black Dog",
+    "originalArtist": "Led Zeppelin"
+  },
+  {
+    "title": "Rock and Roll",
+    "originalArtist": "Led Zeppelin"
+  },
+  {
+    "title": "Imagine",
+    "originalArtist": "John Lennon"
+  },
+  {
+    "title": "Instant Karma!",
+    "originalArtist": "John Lennon"
+  },
+  {
+    "title": "Jealous Guy",
+    "originalArtist": "John Lennon"
+  },
+  {
+    "title": "Woman",
+    "originalArtist": "John Lennon"
+  },
+  {
+    "title": "Hotel California",
+    "originalArtist": "Eagles"
+  },
+  {
+    "title": "Take It Easy",
+    "originalArtist": "Eagles"
+  },
+  {
+    "title": "Desperado",
+    "originalArtist": "Eagles"
+  },
+  {
+    "title": "Life in the Fast Lane",
+    "originalArtist": "Eagles"
+  },
+  {
+    "title": "Stayin' Alive",
+    "originalArtist": "Bee Gees"
+  },
+  {
+    "title": "How Deep Is Your Love",
+    "originalArtist": "Bee Gees"
+  },
+  {
+    "title": "Night Fever",
+    "originalArtist": "Bee Gees"
+  },
+  {
+    "title": "Tragedy",
+    "originalArtist": "Bee Gees"
+  },
+  {
+    "title": "More Than a Woman",
+    "originalArtist": "Bee Gees"
+  },
+  {
+    "title": "Jive Talkin'",
+    "originalArtist": "Bee Gees"
+  },
+  {
+    "title": "Heroes",
+    "originalArtist": "David Bowie"
+  },
+  {
+    "title": "Ziggy Stardust",
+    "originalArtist": "David Bowie"
+  },
+  {
+    "title": "Changes",
+    "originalArtist": "David Bowie"
+  },
+  {
+    "title": "Life on Mars?",
+    "originalArtist": "David Bowie"
+  },
+  {
+    "title": "Starman",
+    "originalArtist": "David Bowie"
+  },
+  {
+    "title": "Fame",
+    "originalArtist": "David Bowie"
+  },
+  {
+    "title": "Young Americans",
+    "originalArtist": "David Bowie"
+  },
+  {
+    "title": "Superstition",
+    "originalArtist": "Stevie Wonder"
+  },
+  {
+    "title": "Sir Duke",
+    "originalArtist": "Stevie Wonder"
+  },
+  {
+    "title": "Isn't She Lovely",
+    "originalArtist": "Stevie Wonder"
+  },
+  {
+    "title": "Higher Ground",
+    "originalArtist": "Stevie Wonder"
+  },
+  {
+    "title": "You Are the Sunshine of My Life",
+    "originalArtist": "Stevie Wonder"
+  },
+  {
+    "title": "Let's Get It On",
+    "originalArtist": "Marvin Gaye"
+  },
+  {
+    "title": "What's Going On",
+    "originalArtist": "Marvin Gaye"
+  },
+  {
+    "title": "Sexual Healing",
+    "originalArtist": "Marvin Gaye"
+  },
+  {
+    "title": "Got to Give It Up",
+    "originalArtist": "Marvin Gaye"
+  },
+  {
+    "title": "Dancing Queen",
+    "originalArtist": "ABBA"
+  },
+  {
+    "title": "Mamma Mia",
+    "originalArtist": "ABBA"
+  },
+  {
+    "title": "Waterloo",
+    "originalArtist": "ABBA"
+  },
+  {
+    "title": "The Winner Takes It All",
+    "originalArtist": "ABBA"
+  },
+  {
+    "title": "Gimme! Gimme! Gimme!",
+    "originalArtist": "ABBA"
+  },
+  {
+    "title": "SOS",
+    "originalArtist": "ABBA"
+  },
+  {
+    "title": "Knowing Me, Knowing You",
+    "originalArtist": "ABBA"
+  },
+  {
+    "title": "Fernando",
+    "originalArtist": "ABBA"
+  },
+  {
+    "title": "Take a Chance on Me",
+    "originalArtist": "ABBA"
+  },
+  {
+    "title": "Dream On",
+    "originalArtist": "Aerosmith"
+  },
+  {
+    "title": "Walk This Way",
+    "originalArtist": "Aerosmith"
+  },
+  {
+    "title": "Sweet Emotion",
+    "originalArtist": "Aerosmith"
+  },
+  {
+    "title": "Go Your Own Way",
+    "originalArtist": "Fleetwood Mac"
+  },
+  {
+    "title": "Dreams",
+    "originalArtist": "Fleetwood Mac"
+  },
+  {
+    "title": "The Chain",
+    "originalArtist": "Fleetwood Mac"
+  },
+  {
+    "title": "Rhiannon",
+    "originalArtist": "Fleetwood Mac"
+  },
+  {
+    "title": "Everywhere",
+    "originalArtist": "Fleetwood Mac"
+  },
+  {
+    "title": "Landslide",
+    "originalArtist": "Fleetwood Mac"
+  },
+  {
+    "title": "Don't Stop",
+    "originalArtist": "Fleetwood Mac"
+  },
+  {
+    "title": "Born to Run",
+    "originalArtist": "Bruce Springsteen"
+  },
+  {
+    "title": "Thunder Road",
+    "originalArtist": "Bruce Springsteen"
+  },
+  {
+    "title": "The River",
+    "originalArtist": "Bruce Springsteen"
+  },
+  {
+    "title": "Dancing in the Dark",
+    "originalArtist": "Bruce Springsteen"
+  },
+  {
+    "title": "Crocodile Rock",
+    "originalArtist": "Elton John"
+  },
+  {
+    "title": "Tiny Dancer",
+    "originalArtist": "Elton John"
+  },
+  {
+    "title": "Rocket Man",
+    "originalArtist": "Elton John"
+  },
+  {
+    "title": "Your Song",
+    "originalArtist": "Elton John"
+  },
+  {
+    "title": "Bennie and the Jets",
+    "originalArtist": "Elton John"
+  },
+  {
+    "title": "Don't Let the Sun Go Down on Me",
+    "originalArtist": "Elton John"
+  },
+  {
+    "title": "Saturday Night's Alright for Fighting",
+    "originalArtist": "Elton John"
+  },
+  {
+    "title": "Philadelphia Freedom",
+    "originalArtist": "Elton John"
+  },
+  {
+    "title": "Goodbye Yellow Brick Road",
+    "originalArtist": "Elton John"
+  },
+  {
+    "title": "Piano Man",
+    "originalArtist": "Billy Joel"
+  },
+  {
+    "title": "Just the Way You Are",
+    "originalArtist": "Billy Joel"
+  },
+  {
+    "title": "Scenes from an Italian Restaurant",
+    "originalArtist": "Billy Joel"
+  },
+  {
+    "title": "My Sharona",
+    "originalArtist": "The Knack"
+  },
+  {
+    "title": "Heart of Glass",
+    "originalArtist": "Blondie"
+  },
+  {
+    "title": "One Way or Another",
+    "originalArtist": "Blondie"
+  },
+  {
+    "title": "Rapture",
+    "originalArtist": "Blondie"
+  },
+  {
+    "title": "Call Me",
+    "originalArtist": "Blondie"
+  },
+  {
+    "title": "I Will Survive",
+    "originalArtist": "Gloria Gaynor"
+  },
+  {
+    "title": "Le Freak",
+    "originalArtist": "Chic"
+  },
+  {
+    "title": "Good Times",
+    "originalArtist": "Chic"
+  },
+  {
+    "title": "September",
+    "originalArtist": "Earth, Wind & Fire"
+  },
+  {
+    "title": "Boogie Wonderland",
+    "originalArtist": "Earth, Wind & Fire"
+  },
+  {
+    "title": "Shining Star",
+    "originalArtist": "Earth, Wind & Fire"
+  },
+  {
+    "title": "After the Love Has Gone",
+    "originalArtist": "Earth, Wind & Fire"
+  },
+  {
+    "title": "That's the Way of the World",
+    "originalArtist": "Earth, Wind & Fire"
+  },
+  {
+    "title": "Play That Funky Music",
+    "originalArtist": "Wild Cherry"
+  },
+  {
+    "title": "Car Wash",
+    "originalArtist": "Rose Royce"
+  },
+  {
+    "title": "Disco Inferno",
+    "originalArtist": "The Trammps"
+  },
+  {
+    "title": "Y.M.C.A.",
+    "originalArtist": "Village People"
+  },
+  {
+    "title": "I Feel Love",
+    "originalArtist": "Donna Summer"
+  },
+  {
+    "title": "Hot Stuff",
+    "originalArtist": "Donna Summer"
+  },
+  {
+    "title": "Last Dance",
+    "originalArtist": "Donna Summer"
+  },
+  {
+    "title": "Love to Love You Baby",
+    "originalArtist": "Donna Summer"
+  },
+  {
+    "title": "Ring My Bell",
+    "originalArtist": "Anita Ward"
+  },
+  {
+    "title": "Brick House",
+    "originalArtist": "Commodores"
+  },
+  {
+    "title": "Easy",
+    "originalArtist": "Commodores"
+  },
+  {
+    "title": "Three Times a Lady",
+    "originalArtist": "Commodores"
+  },
+  {
+    "title": "I Shot the Sheriff",
+    "originalArtist": "Bob Marley"
+  },
+  {
+    "title": "No Woman, No Cry",
+    "originalArtist": "Bob Marley"
+  },
+  {
+    "title": "Redemption Song",
+    "originalArtist": "Bob Marley"
+  },
+  {
+    "title": "Could You Be Loved",
+    "originalArtist": "Bob Marley"
+  },
+  {
+    "title": "Jamming",
+    "originalArtist": "Bob Marley"
+  },
+  {
+    "title": "Is This Love",
+    "originalArtist": "Bob Marley"
+  },
+  {
+    "title": "Free Bird",
+    "originalArtist": "Lynyrd Skynyrd"
+  },
+  {
+    "title": "Sweet Home Alabama",
+    "originalArtist": "Lynyrd Skynyrd"
+  },
+  {
+    "title": "Smoke on the Water",
+    "originalArtist": "Deep Purple"
+  },
+  {
+    "title": "Highway Star",
+    "originalArtist": "Deep Purple"
+  },
+  {
+    "title": "Paranoid",
+    "originalArtist": "Black Sabbath"
+  },
+  {
+    "title": "Iron Man",
+    "originalArtist": "Black Sabbath"
+  },
+  {
+    "title": "War Pigs",
+    "originalArtist": "Black Sabbath"
+  },
+  {
+    "title": "Barracuda",
+    "originalArtist": "Heart"
+  },
+  {
+    "title": "Crazy on You",
+    "originalArtist": "Heart"
+  },
+  {
+    "title": "More Than a Feeling",
+    "originalArtist": "Boston"
+  },
+  {
+    "title": "Carry On Wayward Son",
+    "originalArtist": "Kansas"
+  },
+  {
+    "title": "Dust in the Wind",
+    "originalArtist": "Kansas"
+  },
+  {
+    "title": "Don't Fear the Reaper",
+    "originalArtist": "Blue Oyster Cult"
+  },
+  {
+    "title": "Roxanne",
+    "originalArtist": "The Police"
+  },
+  {
+    "title": "Message in a Bottle",
+    "originalArtist": "The Police"
+  },
+  {
+    "title": "Anarchy in the U.K.",
+    "originalArtist": "Sex Pistols"
+  },
+  {
+    "title": "God Save the Queen",
+    "originalArtist": "Sex Pistols"
+  },
+  {
+    "title": "London Calling",
+    "originalArtist": "The Clash"
+  },
+  {
+    "title": "Should I Stay or Should I Go",
+    "originalArtist": "The Clash"
+  },
+  {
+    "title": "Rock the Casbah",
+    "originalArtist": "The Clash"
+  },
+  {
+    "title": "Blitzkrieg Bop",
+    "originalArtist": "Ramones"
+  },
+  {
+    "title": "I Wanna Be Sedated",
+    "originalArtist": "Ramones"
+  },
+  {
+    "title": "Love Will Tear Us Apart",
+    "originalArtist": "Joy Division"
+  },
+  {
+    "title": "Comfortably Numb",
+    "originalArtist": "Pink Floyd"
+  },
+  {
+    "title": "Wish You Were Here",
+    "originalArtist": "Pink Floyd"
+  },
+  {
+    "title": "Money",
+    "originalArtist": "Pink Floyd"
+  },
+  {
+    "title": "Another Brick in the Wall",
+    "originalArtist": "Pink Floyd"
+  },
+  {
+    "title": "Time",
+    "originalArtist": "Pink Floyd"
+  },
+  {
+    "title": "Breathe",
+    "originalArtist": "Pink Floyd"
+  },
+  {
+    "title": "A Whiter Shade of Pale",
+    "originalArtist": "Procol Harum"
+  },
+  {
+    "title": "Baker Street",
+    "originalArtist": "Gerry Rafferty"
+  },
+  {
+    "title": "Maggie May",
+    "originalArtist": "Rod Stewart"
+  },
+  {
+    "title": "Da Ya Think I'm Sexy?",
+    "originalArtist": "Rod Stewart"
+  },
+  {
+    "title": "Sailing",
+    "originalArtist": "Rod Stewart"
+  },
+  {
+    "title": "Jolene",
+    "originalArtist": "Dolly Parton"
+  },
+  {
+    "title": "9 to 5",
+    "originalArtist": "Dolly Parton"
+  },
+  {
+    "title": "Afternoon Delight",
+    "originalArtist": "Starland Vocal Band"
+  },
+  {
+    "title": "You Make Me Feel Brand New",
+    "originalArtist": "The Stylistics"
+  },
+  {
+    "title": "Lean on Me",
+    "originalArtist": "Bill Withers"
+  },
+  {
+    "title": "Ain't No Sunshine",
+    "originalArtist": "Bill Withers"
+  },
+  {
+    "title": "Lovely Day",
+    "originalArtist": "Bill Withers"
+  },
+  {
+    "title": "Killing Me Softly with His Song",
+    "originalArtist": "Roberta Flack"
+  },
+  {
+    "title": "You're So Vain",
+    "originalArtist": "Carly Simon"
+  },
+  {
+    "title": "Torn Between Two Lovers",
+    "originalArtist": "Mary MacGregor"
+  }
+]

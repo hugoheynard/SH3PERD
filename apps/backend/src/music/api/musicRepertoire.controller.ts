@@ -1,39 +1,20 @@
 import { Controller, Get, Post, Delete, Body, Param } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
 import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
+import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { CreateRepertoireEntryCommand } from '../application/commands/CreateRepertoireEntryCommand.js';
 import { DeleteRepertoireEntryCommand } from '../application/commands/DeleteRepertoireEntryCommand.js';
 import { GetUserRepertoireQuery } from '../application/queries/GetUserRepertoireQuery.js';
+import { RepertoireEntryPayload } from '../dto/music.dto.js';
 import type { TUserId, TApiResponse, TMusicRepertoireEntryDomainModel, TRepertoireEntryId } from '@sh3pherd/shared-types';
 import { SCreateRepertoireEntryPayload } from '@sh3pherd/shared-types';
 
-/**
- * MusicRepertoireController
- *
- * REST controller for repertoire entry management.
- * Mounted under `music/repertoire` via the MusicModule RouterModule.
- *
- * A **repertoire entry** links a user to a music reference —
- * "this song is in my repertoire". Versions are attached to entries.
- *
- * ────────────────────────────────────────────────────────────────
- * Endpoints
- * ────────────────────────────────────────────────────────────────
- *
- * GET    /music/repertoire/me
- *   Returns all repertoire entries owned by the authenticated user.
- *
- * POST   /music/repertoire
- *   Creates a new repertoire entry linking the user to a music reference.
- *   Body: { payload: { musicReference_id: TMusicReferenceId } }
- *
- * DELETE /music/repertoire/:id
- *   Deletes a repertoire entry. Ownership is verified — only the owner
- *   can delete their own entries.
- *
- */
+@ApiTags('music / repertoire')
+@ApiBearerAuth('bearer')
+@ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
 @Controller('repertoire')
 export class MusicRepertoireController {
   constructor(
@@ -41,12 +22,8 @@ export class MusicRepertoireController {
     private readonly qryBus: QueryBus,
   ) {}
 
-  /**
-   * Get all repertoire entries for the authenticated user.
-   *
-   * @param actorId - Authenticated user ID (from JWT).
-   * @returns Array of repertoire entries.
-   */
+  @ApiOperation({ summary: 'Get my repertoire entries', description: 'Returns all repertoire entries owned by the authenticated user.' })
+  @ApiResponse(apiSuccessDTO(MusicApiCodes.REPERTOIRE_ENTRIES_FETCHED, RepertoireEntryPayload, 200))
   @Get('me')
   async getMyRepertoire(
     @ActorId() actorId: TUserId,
@@ -57,13 +34,8 @@ export class MusicRepertoireController {
     );
   }
 
-  /**
-   * Create a repertoire entry — "add this song to my repertoire".
-   *
-   * @param actorId - Authenticated user ID (from JWT).
-   * @param payload - Validated: { musicReference_id: TMusicReferenceId }
-   * @returns The created repertoire entry.
-   */
+  @ApiOperation({ summary: 'Add song to repertoire', description: 'Creates a repertoire entry linking the user to a music reference — "this song is in my repertoire".' })
+  @ApiResponse(apiSuccessDTO(MusicApiCodes.REPERTOIRE_ENTRY_CREATED, RepertoireEntryPayload, 200))
   @Post()
   async createEntry(
     @ActorId() actorId: TUserId,
@@ -75,14 +47,9 @@ export class MusicRepertoireController {
     );
   }
 
-  /**
-   * Delete a repertoire entry.
-   * Ownership is verified in the command handler.
-   *
-   * @param actorId - Authenticated user ID (from JWT).
-   * @param entryId - The repertoire entry ID to delete.
-   * @returns true if deleted.
-   */
+  @ApiOperation({ summary: 'Remove song from repertoire', description: 'Deletes a repertoire entry. Ownership is verified — only the owner can delete.' })
+  @ApiParam({ name: 'id', description: 'Repertoire entry ID to delete' })
+  @ApiResponse(apiSuccessDTO(MusicApiCodes.REPERTOIRE_ENTRY_DELETED, undefined as any, 200))
   @Delete(':id')
   async deleteEntry(
     @ActorId() actorId: TUserId,

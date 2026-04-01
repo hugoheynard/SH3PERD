@@ -132,8 +132,9 @@ export class MusicRepertoireTableComponent {
 
   formatDuration(seconds?: number): string {
     if (!seconds) return '—';
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
+    const total = Math.round(seconds);
+    const m = Math.floor(total / 60);
+    const s = total % 60;
     return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
@@ -152,6 +153,14 @@ export class MusicRepertoireTableComponent {
 
   favoriteDuration(v: MusicVersion): number | undefined {
     return MusicLibrarySelectorService.favoriteDuration(v);
+  }
+
+  favoriteBpm(v: MusicVersion): number | undefined {
+    return MusicLibrarySelectorService.favoriteBpm(v);
+  }
+
+  favoriteKey(v: MusicVersion): string | undefined {
+    return MusicLibrarySelectorService.favoriteKey(v);
   }
 
   hasTrack(v: MusicVersion): boolean {
