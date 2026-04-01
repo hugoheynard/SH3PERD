@@ -11,11 +11,11 @@ import type {
 } from '../core/token-manager/RefreshTokenService.js';
 import type { IRefreshTokenRepository } from '../repositories/RefreshTokenMongoRepository.js';
 import type { TAuthConfig } from '../types/auth.domain.config.js';
-import type { TSecureCookieConfig } from '../types/auth.domain.tokens.js';
+import type { TCreateAuthSessionResult, TSecureCookieConfig } from '../types/auth.domain.tokens.js';
 import type {
   TGenericRepoFindOneFn, TGenericSaveFn,
 } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
-import type { TRefreshTokenRecord } from '@sh3pherd/shared-types';
+import type { TRefreshTokenRecord, TUserId } from '@sh3pherd/shared-types';
 import { Inject, Injectable } from '@nestjs/common';
 import type { IAbstractJWTService } from '../core/token-manager/JwtService.js';
 import { JWT_SERVICE, REFRESH_TOKEN_SERVICE } from '../auth.tokens.js';
@@ -40,8 +40,11 @@ export type TAuthTokenServiceDeps = {
   deleteAllRefreshTokensForUserFn: IRefreshTokenRepository['deleteMany'];
   secureCookieConfig: TSecureCookieConfig;
 };
+export type TRotateSessionFn = (input: { user_id: TUserId; family_id: string }) => Promise<TCreateAuthSessionResult>;
+
 export type IAuthTokenService = {
   createAuthSession: TCreateAuthSessionFn;
+  rotateSession: TRotateSessionFn;
   verifyAuthToken: TVerifyAuthTokenFn;
   verifyRefreshToken: TVerifyRefreshTokenFn;
   revokeRefreshToken: TRevokeRefreshTokenFn;
@@ -89,6 +92,20 @@ export class AuthService
     //generate a new refresh and auth token
     const authToken = await this.jwtService.generateAuthToken({ payload: { user_id } });
     const refreshToken = await this.refreshTokenService.generateRefreshToken({ user_id });
+    const refreshTokenSecureCookie = this.refreshTokenService.generateRefreshTokenCookie({ refreshToken });
+
+    return { authToken, refreshToken, refreshTokenSecureCookie };
+  };
+
+  /**
+   * Rotates the session within an existing token family.
+   * Used during refresh — generates new tokens without deleting all user sessions.
+   */
+  public rotateSession: TRotateSessionFn = async (input) => {
+    const { user_id, family_id } = input;
+
+    const authToken = await this.jwtService.generateAuthToken({ payload: { user_id } });
+    const refreshToken = await this.refreshTokenService.generateRefreshToken({ user_id, family_id });
     const refreshTokenSecureCookie = this.refreshTokenService.generateRefreshTokenCookie({ refreshToken });
 
     return { authToken, refreshToken, refreshTokenSecureCookie };

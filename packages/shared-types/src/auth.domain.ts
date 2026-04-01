@@ -7,6 +7,8 @@ export type TRefreshTokenDomainModel = {
   id: TRefreshToken;
   refreshToken: TRefreshToken;
   user_id: TUserId;
+  family_id: string;
+  isRevoked: boolean;
   expiresAt: Date;
   createdAt: Date;
 };

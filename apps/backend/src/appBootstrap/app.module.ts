@@ -6,6 +6,7 @@ import configuration from './config/configuration.js';
 import { MongoModule } from './database/MongoModule.js';
 import { ProtectedModule } from './protected.module.js';
 import { APP_GUARD, RouterModule } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthModule } from '../auth/auth.module.js';
 import { AuthGuard } from '../auth/api/auth.guard.js';
 import { TokenFunctionsModule } from '../auth/core/TokenFunctions.module.js';
@@ -28,6 +29,7 @@ import { PlaylistModule } from '../playlists-v2/playlist.module.js';
       load: [configuration], // You can load additional configuration files or functions here
     }),
     GlobalCqrsModule,
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 30 }]),
     // Database module, returns MongoClient instance
     MongoModule,
     // Token verification for AuthGuard
@@ -63,7 +65,11 @@ import { PlaylistModule } from '../playlists-v2/playlist.module.js';
       },
     ]),
   ],
-  providers: [AppService, { provide: APP_GUARD, useClass: AuthGuard }],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: AuthGuard },
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+  ],
   controllers: [AppController],
 })
 export class AppModule {}

@@ -9,13 +9,9 @@ import { dateIsNotPassed } from '../../../utils/date/dateIsNotPassed.js';
 import type { TGenerateRefreshTokenCookie } from '../../types/auth.core.contracts.js';
 import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from '../../auth.constants.js';
 import { REFRESH_TOKEN_REPO } from '../../../appBootstrap/nestTokens.js';
+import { randomUUID } from 'crypto';
 
-/**
- * RefreshTokenManager handles the lifecycle of refresh tokens,
- * including generation, validation, and revocation.
- */
-//RefreshTokenManager Functions
-export type TGenerateRefreshTokenFn = (input: { user_id: TUserId }) => Promise<TRefreshToken>;
+export type TGenerateRefreshTokenFn = (input: { user_id: TUserId; family_id?: string }) => Promise<TRefreshToken>;
 export type TVerifyRefreshTokenFn = (input: { refreshTokenDomainModel: TRefreshTokenDomainModel; }) => boolean;
 export type TRevokeRefreshTokenFn = (input: { refreshToken: TRefreshToken; }) => Promise<TRevokeRefreshTokenResult>;
 export type IAbstractRefreshTokenService = {
@@ -26,22 +22,25 @@ export type IAbstractRefreshTokenService = {
 };
 
 /**
- * RefreshTokenManager handles the lifecycle of refresh tokens,
- * including generation, validation, and revocation.
+ * RefreshTokenService handles the lifecycle of refresh tokens,
+ * including generation, validation, revocation, and rotation.
+ *
+ * Supports token families for rotation with reuse detection:
+ * - Each login creates a new token family
+ * - Each refresh rotates the token within the same family
+ * - Reuse of a revoked token invalidates the entire family (theft detection)
  */
 export class RefreshTokenService
   implements IAbstractRefreshTokenService {
 
   constructor(
     @Inject(REFRESH_TOKEN_REPO) protected readonly refreshTokenRepo: IRefreshTokenRepository,
-    private readonly secureCookieConfig:  TSecureCookieConfig) {};
+    private readonly secureCookieConfig: TSecureCookieConfig) {};
 
   /**
    * Generates a new refresh token for a given user.
-   *
-   * @param input - The user ID for which to generate the refresh token.
-   * @returns A promise that resolves to a new refresh token string.
-   * @throws If token generation or saving fails.
+   * If family_id is provided, the token joins that family (rotation).
+   * Otherwise, a new family is created (login).
    */
   generateRefreshToken: TGenerateRefreshTokenFn = async (input) => {
     try {
@@ -59,6 +58,8 @@ export class RefreshTokenService
         id: newRefreshToken,
         refreshToken: newRefreshToken,
         user_id: input.user_id,
+        family_id: input.family_id ?? randomUUID(),
+        isRevoked: false,
         expiresAt: new Date(Date.now() + this.secureCookieConfig.maxAge),
         createdAt: new Date(),
       };
@@ -77,21 +78,18 @@ export class RefreshTokenService
 
   /**
    * Verifies the validity of a refresh token.
-   *
-   * @param input - The refresh token to validate.
-   * @returns A promise that resolves to a boolean indicating whether the token is valid.
+   * A token is valid if it is not revoked and not expired.
    */
   verifyRefreshToken: TVerifyRefreshTokenFn = (input) => {
     const { refreshTokenDomainModel } = input;
+    if (refreshTokenDomainModel.isRevoked) {
+      return false;
+    }
     return dateIsNotPassed({ date: refreshTokenDomainModel.expiresAt });
   };
 
   /**
-   * Revokes a given refresh token.
-   *
-   * @param input - The refresh token to revoke.
-   * @returns A promise that resolves to an object containing the revoked token.
-   * @throws If the revocation fails or the token does not exist.
+   * Revokes a given refresh token by marking it as revoked.
    */
   revokeRefreshToken: TRevokeRefreshTokenFn = async (input) => {
     try {
