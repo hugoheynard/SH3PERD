@@ -11,7 +11,8 @@
     //"noUncheckedIndexedAccess": true, // OMG NO !!
     "baseUrl": ".",
     "paths": {
-      "@sh3pherd/shared-types": ["./packages/shared-types/src"]
+      "@sh3pherd/shared-types": ["./packages/shared-types/src"],
+      "@sh3pherd/storage": ["./packages/storage/src"]
     }
   },
   "include": ["src"],
@@ -26,7 +27,8 @@
   // for tsc -b
   "references": [
     { "path": "packages/shared-types" },
-    { "path": "./packages/ui-angular" }
+    { "path": "packages/storage" },
+    { "path": "packages/ui-angular" }
   ]
 }
 

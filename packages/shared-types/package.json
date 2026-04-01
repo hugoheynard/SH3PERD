@@ -4,14 +4,9 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/types/index.d.ts"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "*": ["src/*"]
+      "require": "./dist/index.js"
     }
   },
   "private": true,

@@ -13,6 +13,7 @@
     "node_modules"
   ],
   "references": [
-    { "path": "../../packages/shared-types" }
+    { "path": "../../packages/shared-types" },
+    { "path": "../../packages/storage" }
   ]
 }
