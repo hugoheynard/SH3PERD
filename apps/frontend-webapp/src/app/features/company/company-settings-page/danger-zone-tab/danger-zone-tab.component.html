@@ -14,7 +14,23 @@
       <span class="settings-row-label">Company ID</span>
       <span class="settings-row-desc">Unique identifier — do not share publicly.</span>
     </div>
-    <code class="settings-row-value">{{ id() }}</code>
+
+    <div class="id-reveal">
+      @if (idRevealed()) {
+        <code class="id-value">{{ id() }}</code>
+        <button class="btn-copy" (click)="copyId()">
+          {{ copied() ? '✓' : 'Copy' }}
+        </button>
+      } @else {
+        <button class="btn-eye" (click)="revealId()" title="Reveal ID">
+          <code class="id-value id-value--blur">{{ id() }}</code>
+          <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      }
+    </div>
   </div>
 
   <div class="danger-zone">

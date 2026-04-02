@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, si
 import { FormsModule } from '@angular/forms';
 import { InputComponent } from '../../../../shared/forms/input/input.component';
 import { ButtonComponent } from '../../../../shared/button/button.component';
+import { FormSectionComponent } from '../../../../shared/forms/form-section/form-section.component';
 import { CompanyStore } from '../../company.store';
 import type { TCompanyId, TCompanyInfo } from '@sh3pherd/shared-types';
 
@@ -14,7 +15,7 @@ const EMPTY_FORM: TCompanyInfo = {
 @Component({
   selector: 'app-company-info-tab',
   standalone: true,
-  imports: [FormsModule, InputComponent, ButtonComponent],
+  imports: [FormsModule, InputComponent, ButtonComponent, FormSectionComponent],
   templateUrl: './company-info-tab.component.html',
   styleUrl: './company-info-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

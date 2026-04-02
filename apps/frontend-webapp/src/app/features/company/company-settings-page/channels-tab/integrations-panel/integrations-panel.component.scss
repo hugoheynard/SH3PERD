@@ -1,0 +1,120 @@
+.section-title {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0 0 var(--radius-md);
+}
+
+.integration-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.integration-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+  transition: background var(--t-fast);
+
+  &:hover { background: var(--surface-raised); }
+  &.is-connected { border-color: var(--accent-color-border); }
+}
+
+.integration-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--surface-raised);
+  color: var(--text-muted);
+
+  &[data-platform="slack"]    { color: #e01e5a; background: rgba(224, 30, 90, 0.1); }
+  &[data-platform="whatsapp"] { color: #25d366; background: rgba(37, 211, 102, 0.1); }
+  &[data-platform="telegram"] { color: #0088cc; background: rgba(0, 136, 204, 0.1); }
+  &[data-platform="discord"]  { color: #5865f2; background: rgba(88, 101, 242, 0.1); }
+  &[data-platform="teams"]    { color: #6264a7; background: rgba(98, 100, 167, 0.1); }
+}
+
+.integration-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.integration-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.integration-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.integration-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.status-badge {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: var(--radius-lg);
+
+  &.connected {
+    color: var(--accent-color);
+    background: var(--accent-color-dim);
+  }
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-xs);
+  display: flex;
+  color: var(--text-muted);
+}
+
+.btn-disconnect:hover {
+  color: var(--color-alert-light);
+  background: var(--color-alert-dim);
+}
+
+.connect-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  margin: -2px 0 4px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  border-top: none;
+}
+
+.connect-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}

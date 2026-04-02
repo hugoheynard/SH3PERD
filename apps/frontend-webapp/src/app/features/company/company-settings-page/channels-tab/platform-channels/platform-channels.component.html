@@ -1,0 +1,63 @@
+<div class="toolbar">
+  <div class="search-box">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+    </svg>
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Find channel..."
+      [value]="search()"
+      (input)="search.set($any($event.target).value)"
+    />
+  </div>
+  <sh3-button variant="primary" size="sm" (clicked)="startAdd()">+ Add channel</sh3-button>
+</div>
+
+@if (adding()) {
+  <div class="add-form">
+    <sh3-input
+      label="Channel name"
+      placeholder="e.g. #design-team"
+      [ngModel]="newName()"
+      (ngModelChange)="newName.set($event + '')"
+      [autofocus]="true"
+    />
+    <sh3-input
+      label="URL / Invite link"
+      type="url"
+      placeholder="https://..."
+      [ngModel]="newUrl()"
+      (ngModelChange)="newUrl.set($event + '')"
+    />
+    <div class="add-form-actions">
+      <sh3-button
+        variant="primary"
+        size="sm"
+        [disabled]="!newName().trim() || !newUrl().trim()"
+        (clicked)="confirmAdd()"
+      >Create</sh3-button>
+      <sh3-button variant="ghost" size="sm" (clicked)="cancelAdd()">Cancel</sh3-button>
+    </div>
+  </div>
+}
+
+@if (filtered.length > 0) {
+  <div class="channel-list">
+    @for (ch of filtered; track ch.id) {
+      <div class="channel-row">
+        <div class="channel-info">
+          <span class="channel-name">{{ ch.name }}</span>
+          <a class="channel-url" [href]="ch.url" target="_blank" rel="noopener" (click)="$event.stopPropagation()">
+            {{ ch.url.length > 50 ? (ch.url | slice:0:50) + '...' : ch.url }}
+          </a>
+        </div>
+        <button class="btn-remove" (click)="remove(ch.id)" title="Remove channel">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    }
+  </div>
+} @else if (!adding()) {
+  <p class="empty-hint">No channels yet. Click "+ Add channel" to get started.</p>
+}

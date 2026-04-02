@@ -20,6 +20,8 @@ export class DangerZoneTabComponent {
 
   readonly status = signal('');
   readonly id = signal('');
+  readonly idRevealed = signal(false);
+  readonly copied = signal(false);
   readonly confirmingDelete = signal(false);
 
   constructor() {
@@ -29,6 +31,16 @@ export class DangerZoneTabComponent {
       this.status.set(c.status);
       this.id.set(c.id);
     });
+  }
+
+  revealId(): void {
+    this.idRevealed.set(true);
+  }
+
+  copyId(): void {
+    navigator.clipboard.writeText(this.id());
+    this.copied.set(true);
+    setTimeout(() => this.copied.set(false), 1500);
   }
 
   requestDelete(): void {

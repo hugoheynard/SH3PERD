@@ -1,0 +1,46 @@
+<section class="integrations">
+  <h3 class="section-title">Platforms</h3>
+
+  <div class="integration-list">
+    @for (p of platforms; track p.key) {
+      <div class="integration-card" [class.is-connected]="isConnected(p.key)">
+        <div class="integration-icon" [attr.data-platform]="p.key">
+          <app-platform-icon [platform]="p.key" />
+        </div>
+
+        <div class="integration-body">
+          <span class="integration-name">{{ p.label }}</span>
+          <span class="integration-desc">{{ p.description }}</span>
+        </div>
+
+        <div class="integration-actions">
+          @if (isConnected(p.key)) {
+            <span class="status-badge connected">Connected</span>
+            <button class="btn-icon btn-disconnect" (click)="disconnect(p.key)" title="Disconnect">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          } @else {
+            <sh3-button variant="primary" size="sm" (clicked)="startConnect(p.key)">Connect</sh3-button>
+          }
+        </div>
+      </div>
+
+      @if (connectingPlatform() === p.key) {
+        <div class="connect-form">
+          @for (field of p.configFields; track field.key) {
+            <sh3-input
+              [label]="field.label"
+              [placeholder]="field.placeholder"
+              [ngModel]="connectConfig()[field.key] ?? ''"
+              (ngModelChange)="patchConfig(field.key, $event + '')"
+            />
+          }
+          <div class="connect-form-actions">
+            <sh3-button variant="primary" size="sm" (clicked)="confirmConnect()">Save connection</sh3-button>
+            <sh3-button variant="ghost" size="sm" (clicked)="cancelConnect()">Cancel</sh3-button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</section>

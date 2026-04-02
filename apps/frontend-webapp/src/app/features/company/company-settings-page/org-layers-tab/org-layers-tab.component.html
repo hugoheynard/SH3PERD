@@ -5,27 +5,34 @@
     Level 0 = root nodes, Level 1 = their children, etc.
   </p>
 
-  @for (layer of editLayers(); track $index) {
-    <div class="layer-row">
-      <span class="layer-depth-badge">{{ $index }}</span>
-      <input
-        class="form-input"
-        type="text"
-        [value]="layer"
-        (input)="onLayerInput($index, $event)"
-        [placeholder]="'e.g. ' + ($index === 0 ? 'Direction' : $index === 1 ? 'Pôle' : 'Équipe')"
-      />
-      <button class="btn-remove-layer" (click)="removeLayer($index)" title="Remove level" [disabled]="editLayers().length <= 1">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-  }
+  <sh3-form-section title="Layers">
+    @for (layer of editLayers(); track $index) {
+      <div class="layer-row">
+        <span class="layer-depth-badge">{{ $index }}</span>
 
-  <button class="btn-add-layer" (click)="addLayer()">+ Add level</button>
+        <sh3-input
+          class="layer-input"
+          [ngModel]="layer"
+          (ngModelChange)="updateLayer($index, $event + '')"
+          [placeholder]="'e.g. ' + ($index === 0 ? 'Direction' : $index === 1 ? 'Pôle' : 'Équipe')"
+        />
 
-  <div class="form-actions">
-    <button class="btn-save" (click)="save()">Save labels</button>
-  </div>
+        <button class="btn-remove" [disabled]="editLayers().length <= 1" (click)="removeLayer($index)" title="Remove level">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    }
+
+    <sh3-button variant="ghost" size="sm" (clicked)="addLayer()">+ Add level</sh3-button>
+  </sh3-form-section>
+
+  <sh3-button
+    [variant]="dirty() ? 'primary' : 'ghost'"
+    [disabled]="!dirty() || saving()"
+    (clicked)="save()"
+  >
+    {{ saving() ? 'Saving…' : 'Save labels' }}
+  </sh3-button>
 </div>

@@ -2,33 +2,25 @@
   <h2 class="panel-title">Company information</h2>
   <p class="panel-subtitle">Visible to staff and partners.</p>
 
-  <div class="form-group">
+  <sh3-form-section title="General information">
     <sh3-input label="Company name" placeholder="e.g. Acme Productions" [ngModel]="form().name" (ngModelChange)="patchField('name', $event + '')" />
-  </div>
 
-  <div class="form-group">
-    <label class="form-label">Description</label>
-    <textarea class="form-textarea" rows="3" [value]="form().description" (input)="patchField('description', $any($event.target).value)" placeholder="A short description of your company…"></textarea>
-  </div>
+    <div>
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea" rows="3" [value]="form().description" (input)="patchField('description', $any($event.target).value)" placeholder="A short description of your company…"></textarea>
+    </div>
+  </sh3-form-section>
 
-  <div class="form-section-title">Address</div>
-
-  <div class="form-group">
+  <sh3-form-section title="Address">
     <sh3-input label="Street" placeholder="123 Main St" [ngModel]="form().address.street" (ngModelChange)="patchAddress('street', $event + '')" />
-  </div>
 
-  <div class="form-row">
-    <div class="form-group">
+    <div class="form-row">
       <sh3-input label="City" placeholder="Paris" [ngModel]="form().address.city" (ngModelChange)="patchAddress('city', $event + '')" />
+      <sh3-input class="form-field--zip" label="ZIP" placeholder="75001" [ngModel]="form().address.zip" (ngModelChange)="patchAddress('zip', $event + '')" />
     </div>
-    <div class="form-group form-group--zip">
-      <sh3-input label="ZIP" placeholder="75001" [ngModel]="form().address.zip" (ngModelChange)="patchAddress('zip', $event + '')" />
-    </div>
-  </div>
 
-  <div class="form-group">
     <sh3-input label="Country" placeholder="France" [ngModel]="form().address.country" (ngModelChange)="patchAddress('country', $event + '')" />
-  </div>
+  </sh3-form-section>
 
   <div class="form-actions">
     <sh3-button
