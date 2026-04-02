@@ -1,0 +1,244 @@
+/* ── Body layout ──────────────────────────────── */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+/* ── Mode tabs ───────────────────────────────── */
+
+.mode-tabs {
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+
+.mode-tab {
+  flex: 1;
+  padding: 5px 8px;
+  border: none;
+  border-radius: calc(var(--radius-sm) - 1px);
+  background: none;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.12s;
+
+  &:hover {
+    color: var(--text-secondary);
+  }
+
+  &.is-active {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+  }
+}
+
+/* ── Search ───────────────────────────────────── */
+
+.search-input {
+  width: 100%;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border-color);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--t-base);
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
+  &:focus {
+    border-color: var(--accent-color);
+  }
+}
+
+/* ── Contract list ────────────────────────────── */
+
+.contract-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.contract-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--t-base), border-color var(--t-base);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  &.is-selected {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--panel-border-color);
+  }
+}
+
+.contract-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #1a202c;
+  flex-shrink: 0;
+}
+
+.contract-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.contract-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contract-email {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.check-icon {
+  color: #68d391;
+  flex-shrink: 0;
+}
+
+.empty-list {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 12px 0;
+  text-align: center;
+}
+
+/* ── Guest form ──────────────────────────────── */
+
+.guest-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Role selector ────────────────────────────── */
+
+.role-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--panel-border-color);
+}
+
+.role-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.role-pills {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.role-pill {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-transform: capitalize;
+  transition: all 0.12s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &.is-active {
+    background: color-mix(in srgb, var(--accent-color) 18%, transparent);
+    border-color: color-mix(in srgb, var(--accent-color) 35%, transparent);
+    color: var(--accent-color);
+  }
+}
+
+/* ── Footer buttons ───────────────────────────── */
+
+.btn-cancel {
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.btn-confirm {
+  padding: 5px 12px;
+  background: rgba(104, 211, 145, 0.15);
+  border: 1px solid rgba(104, 211, 145, 0.3);
+  border-radius: var(--radius-sm);
+  color: #68d391;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(104, 211, 145, 0.25);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}

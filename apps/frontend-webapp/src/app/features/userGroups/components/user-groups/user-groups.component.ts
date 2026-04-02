@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { DataListComponent } from '../../../../core/components/data-list/data-list.component';
-import { ButtonIconComponent, SvgIconComponent } from '../../../../legacy/ui';
+import { ButtonIconComponent } from '../../../../shared/button-icon/button-icon.component';
+import { SvgIconComponent } from '../../../../shared/svg-icon/svg-icon.component';
 import { UserGroupService } from '../../services/user-group.service';
 import type { TContractId, TUserGroupDomainModel } from '@sh3pherd/shared-types';
 import { LayoutService } from '../../../../core/services/layout.service';

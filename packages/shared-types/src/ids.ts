@@ -14,12 +14,9 @@ import { createIdSchema } from './utils/createIdSchema.js';
 export type TUserId = `user_${string}`;
 export const SUserId = createIdSchema<TUserId>('user');
 
-// ─── Company & Service ─────────────────────────────────────
+// ─── Company ────────────────────────────────────────────────
 export type TCompanyId = `company_${string}`;
 export const SCompanyId = createIdSchema<TCompanyId>('company');
-
-export type TServiceId = `service_${string}`;
-export const SServiceId = createIdSchema<TServiceId>('service');
 
 // ─── Contract & Addendum ───────────────────────────────────
 export type TContractId = `contract_${string}`;
@@ -34,12 +31,22 @@ export const SSignatureId = createIdSchema<TSignatureId>('signature_id');
 export type TAddendumId = `addendum_${string}`;
 export const SAddendumId = createIdSchema<TAddendumId>('addendum');
 
-// ─── Team ──────────────────────────────────────────────────
-export type TTeamId = `team_${string}`;
-export const STeamId = createIdSchema<TTeamId>('team');
+// ─── OrgNode (organizational tree node) ─────────────────────
+export type TOrgNodeId = `orgnode_${string}`;
+export const SOrgNodeId = createIdSchema<TOrgNodeId>('orgnode');
 
-export type TCastMembershipEventId = `castevt_${string}`;
-export const SCastMembershipEventId = createIdSchema<TCastMembershipEventId>('castevt');
+export type TOrgMembershipEventId = `orgevt_${string}`;
+export const SOrgMembershipEventId = createIdSchema<TOrgMembershipEventId>('orgevt');
+
+// ─── Backward-compat aliases (will be removed) ─────────────
+/** @deprecated Use TOrgNodeId */
+export type TTeamId = TOrgNodeId;
+/** @deprecated Use SOrgNodeId */
+export const STeamId = SOrgNodeId;
+/** @deprecated Use TOrgMembershipEventId */
+export type TCastMembershipEventId = TOrgMembershipEventId;
+/** @deprecated Use SOrgMembershipEventId */
+export const SCastMembershipEventId = SOrgMembershipEventId;
 
 // ─── Music ─────────────────────────────────────────────────
 export type TMusicReferenceId = `musicRef_${string}`;

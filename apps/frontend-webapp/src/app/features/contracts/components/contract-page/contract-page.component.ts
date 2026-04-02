@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { ButtonIconComponent } from '../../../../legacy/ui';
+import { ButtonIconComponent } from '../../../../shared/button-icon/button-icon.component';
 import { ContractStore } from '../../services/contract.store';
 import { DataListComponent } from '../../../../core/components/data-list/data-list.component';
 import type { TContractId } from '@sh3pherd/shared-types';

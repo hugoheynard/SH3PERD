@@ -5,7 +5,6 @@ import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.gener
 export interface ICompanyRepository extends IBaseCRUD<TCompanyRecord> {
   findById(id: TCompanyId): Promise<TCompanyRecord | null>;
   findByOwner(ownerId: TUserId): Promise<TCompanyRecord | null>;
-  findByMember(userId: TUserId): Promise<TCompanyRecord[]>;
 }
 
 export class CompanyMongoRepository
@@ -22,11 +21,5 @@ export class CompanyMongoRepository
 
   async findByOwner(ownerId: TUserId): Promise<TCompanyRecord | null> {
     return this.findOne({ filter: { owner_id: ownerId } as any });
-  }
-
-  async findByMember(userId: TUserId): Promise<TCompanyRecord[]> {
-    return this.findMany({
-      filter: { $or: [{ owner_id: userId }, { 'admins.user_id': userId }] } as any,
-    });
   }
 }

@@ -8,7 +8,7 @@
         label="Email"
         type="email"
         name="email"
-        size="large"
+        size="lg"
         placeholder="you@company.com"
         ngModel
         required />
@@ -20,7 +20,7 @@
         label="Password"
         type="password"
         name="password"
-        size="large"
+        size="lg"
         placeholder="••••••••••••"
         ngModel
         required />
@@ -31,10 +31,9 @@
 
   </div>
 
-  <sh3-button-primary
-    [buttonLabel]="'Sign in'"
+  <sh3-button
     [disabled]="!credentials.valid"
-    type="submit">
-  </sh3-button-primary>
+    type="submit"
+    (clicked)="onSubmit(credentials)">Sign in</sh3-button>
 
 </form>

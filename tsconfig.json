@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.base.flags.json",
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@sh3pherd/shared-types": ["./packages/shared-types/src"],
+      "@sh3pherd/storage": ["./packages/storage/src"]
+    },
+    "noEmit": true
+  },
+  "files": [],
+  "references": [
+    { "path": "packages/shared-types" },
+    { "path": "packages/storage" }
+  ]
+}

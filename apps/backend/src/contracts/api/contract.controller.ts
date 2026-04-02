@@ -1,42 +1,46 @@
-import { Body, Controller, Get, Inject, Param, Patch, Post, Req } from '@nestjs/common';
-import type { Request } from 'express';
+import { Body, Controller, Get, Param, Patch, Post, Delete } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import type {
   TCompanyId,
   TContractId,
   TCreateContractRequestDTO,
-  TGetContractsByFilterRequestDTO,
   TUpdateContractDTO,
 } from '@sh3pherd/shared-types';
-import { CONTRACTS_USE_CASES } from '../contracts.tokens.js';
-import type { TContractsUseCases } from '../useCase/ContractUseCasesFactory.js';
-import { UserScopedContext } from '../../utils/nest/decorators/Context.js';
-import type { TUseCaseContext } from '../../types/useCases.generic.types.js';
-import { ApiOkResponse } from '@nestjs/swagger';
-import { ContractListItemDTO } from '../dto/ContractListItemDTO.js';
+import type { TContractRole } from '@sh3pherd/shared-types';
+import { ActorId } from '../../utils/nest/decorators/ActorId.js';
+import type { TUserId } from '@sh3pherd/shared-types';
+
+// Commands
+import { CreateContractCommand } from '../application/commands/CreateContractCommand.js';
+import { UpdateContractCommand } from '../application/commands/UpdateContractCommand.js';
+import { AssignContractRoleCommand } from '../application/commands/AssignContractRoleCommand.js';
+import { RemoveContractRoleCommand } from '../application/commands/RemoveContractRoleCommand.js';
+
+// Queries
+import { GetCurrentUserContractsQuery } from '../application/queries/GetCurrentUserContractsQuery.js';
+import { GetCompanyContractsQuery } from '../application/queries/GetCompanyContractsQuery.js';
+import { GetContractByIdQuery } from '../application/queries/GetContractByIdQuery.js';
 
 @Controller()
 export class ContractController {
   constructor(
-    @Inject(CONTRACTS_USE_CASES) private readonly contractsUC: TContractsUseCases,
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
   ) {}
 
-  @ApiOkResponse({ description: 'Current user contracts', type: [ContractListItemDTO] })
-  @Post('me')
-  getCurrentUserContractList(
-    @Body() requestDTO: TGetContractsByFilterRequestDTO,
-    @UserScopedContext() context: TUseCaseContext<'unscoped'>,
-  ) {
-    return this.contractsUC.getCurrentUserContractList({ context, requestDTO });
+  @Get('me')
+  getCurrentUserContractList(@ActorId() actorId: TUserId) {
+    return this.queryBus.execute(new GetCurrentUserContractsQuery(actorId));
   }
 
   @Get('company/:companyId')
   getCompanyContracts(@Param('companyId') companyId: TCompanyId) {
-    return this.contractsUC.getCompanyContracts(companyId);
+    return this.queryBus.execute(new GetCompanyContractsQuery(companyId));
   }
 
   @Get(':contractId')
   getContractById(@Param('contractId') contractId: TContractId) {
-    return this.contractsUC.getContractById(contractId);
+    return this.queryBus.execute(new GetContractByIdQuery(contractId));
   }
 
   @Patch(':contractId')
@@ -44,14 +48,34 @@ export class ContractController {
     @Param('contractId') contractId: TContractId,
     @Body() dto: Omit<TUpdateContractDTO, 'contract_id'>,
   ) {
-    return this.contractsUC.updateContract({ ...dto, contract_id: contractId });
+    return this.commandBus.execute(new UpdateContractCommand({ ...dto, contract_id: contractId }));
   }
 
   @Post()
   createContract(
-    @Req() req: Request,
-    @Body('requestDTO') requestDTO: TCreateContractRequestDTO,
+    @Body() dto: TCreateContractRequestDTO,
+    @ActorId() actorId: TUserId,
   ) {
-    return this.contractsUC.create(requestDTO, req.user_id);
+    return this.commandBus.execute(new CreateContractCommand(dto, actorId));
+  }
+
+  // ── Role management ──────────────────────────────────────
+
+  @Post(':contractId/roles')
+  assignRole(
+    @Param('contractId') contractId: TContractId,
+    @Body() body: { role: TContractRole },
+    @ActorId() actorId: TUserId,
+  ) {
+    return this.commandBus.execute(new AssignContractRoleCommand(contractId, body.role, actorId));
+  }
+
+  @Delete(':contractId/roles/:role')
+  removeRole(
+    @Param('contractId') contractId: TContractId,
+    @Param('role') role: TContractRole,
+    @ActorId() actorId: TUserId,
+  ) {
+    return this.commandBus.execute(new RemoveContractRoleCommand(contractId, role, actorId));
   }
 }

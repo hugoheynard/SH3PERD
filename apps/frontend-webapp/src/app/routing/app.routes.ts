@@ -61,21 +61,6 @@ export const routes: Routes = [
                   .then(m => m.CompanySettingsPageComponent),
               },
               {
-                path: 'services',
-                children: [
-                  {
-                    path: '',
-                    loadComponent: () => import('../features/company/service-list-page/service-list-page.component')
-                      .then(m => m.ServiceListPageComponent),
-                  },
-                  {
-                    path: ':serviceId',
-                    loadComponent: () => import('../features/company/service-detail-page/service-detail-page.component')
-                      .then(m => m.ServiceDetailPageComponent),
-                  },
-                ],
-              },
-              {
                 path: 'contracts',
                 children: [
                   {

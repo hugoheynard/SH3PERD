@@ -8,6 +8,7 @@ import {
   SSignatureId, type TSignatureId,
   SAddendumId,
 } from './ids.js';
+import { SContractRole, type TContractRole } from './permissions.types.js';
 
 // ─── Enums ─────────────────────────────────────────────────
 
@@ -85,6 +86,12 @@ export interface TContractDomainModel {
   user_id:      TUserId;
   /** The employing company */
   company_id:   TCompanyId;
+  /**
+   * Roles held by this user within the company.
+   * A single contract can carry multiple roles (e.g. `["admin", "artist"]`).
+   * This is the single source of truth for "what can this user do in this company".
+   */
+  roles:        TContractRole[];
   status:       TContractStatus;
   /** Legal/administrative contract type */
   contract_type?: TContractType;
@@ -112,6 +119,7 @@ export const SContractDomainModel: ZodOutput<TContractDomainModel> = z.object({
   id:                 SContractId,
   user_id:            SUserId,
   company_id:         SCompanyId,
+  roles:              z.array(SContractRole).default([]),
   status:             SContractStatus,
   contract_type:      SContractType.optional(),
   job_title:          z.string().optional(),

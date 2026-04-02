@@ -1,0 +1,40 @@
+<div class="tab-panel">
+  <h2 class="panel-title">Settings</h2>
+
+  <div class="settings-row">
+    <div class="settings-row-info">
+      <span class="settings-row-label">Status</span>
+      <span class="settings-row-desc">Current operational status of this company.</span>
+    </div>
+    <span class="status-badge" [class]="'status-' + status()">{{ status() }}</span>
+  </div>
+
+  <div class="settings-row">
+    <div class="settings-row-info">
+      <span class="settings-row-label">Company ID</span>
+      <span class="settings-row-desc">Unique identifier — do not share publicly.</span>
+    </div>
+    <code class="settings-row-value">{{ id() }}</code>
+  </div>
+
+  <div class="danger-zone">
+    <div class="danger-zone-header">Danger zone</div>
+    @if (confirmingDelete()) {
+      <div class="delete-confirm">
+        <span class="delete-confirm-label">This action is irreversible. All data will be lost.</span>
+        <div class="delete-confirm-actions">
+          <sh3-button variant="critical" (clicked)="confirmDelete()">Yes, delete permanently</sh3-button>
+          <sh3-button variant="ghost" (clicked)="cancelDelete()">Cancel</sh3-button>
+        </div>
+      </div>
+    } @else {
+      <div class="danger-row">
+        <div class="settings-row-info">
+          <span class="settings-row-label">Delete company</span>
+          <span class="settings-row-desc">Permanently delete this company and all its data.</span>
+        </div>
+        <sh3-button variant="critical" (clicked)="requestDelete()">Delete</sh3-button>
+      </div>
+    }
+  </div>
+</div>

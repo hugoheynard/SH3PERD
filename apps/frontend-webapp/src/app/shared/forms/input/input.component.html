@@ -1,3 +1,7 @@
+@if (label()) {
+  <label [attr.for]="inputId">{{ label() }}</label>
+}
+
 <input
   [id]="inputId"
   [attr.type]="type()"

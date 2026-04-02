@@ -11,6 +11,7 @@ import {
 import { z }                from 'zod';
 import { SCompanyId, type TCompanyId } from './company.domain.js';
 import { SUserId,    type TUserId }    from './user/user.domain.js';
+import { SContractRole, type TContractRole } from './permissions.types.js';
 
 /** Contract as seen from the user side — includes company name */
 export type TContractListItemViewModel = {
@@ -18,6 +19,7 @@ export type TContractListItemViewModel = {
   user_id:      TUserId;
   company_id:   TCompanyId;
   company_name: string;
+  roles:        TContractRole[];
   contract_type?: TContractType;
   job_title?:   string;
   startDate:    Date;
@@ -32,6 +34,7 @@ export type TCompanyContractViewModel = {
   user_first_name?: string;
   user_last_name?:  string;
   user_email?:      string;
+  roles:            TContractRole[];
   contract_type?:   TContractType;
   job_title?:       string;
   status:           TContractStatus;
@@ -47,6 +50,7 @@ export type TContractDetailViewModel = {
   user_last_name?:  string;
   user_email?:      string;
   company_id:       TCompanyId;
+  roles:            TContractRole[];
   status:           TContractStatus;
   contract_type?:   TContractType;
   job_title?:       string;
@@ -66,6 +70,7 @@ export const SContractListItemViewModel = z.object({
   company_id:   SCompanyId,
   user_id:      SUserId,
   company_name: z.string(),
+  roles:        z.array(SContractRole),
   status:       SContractStatus,
   startDate:    z.date(),
   endDate:      z.date().optional(),

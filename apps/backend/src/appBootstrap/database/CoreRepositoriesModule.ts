@@ -57,9 +57,9 @@ import {
 import { MONGO_CLIENT } from './db.tokens.js';
 import { ContractReadRepository } from '../../contracts/repositories/ContractReadRepository.js';
 import { CompanyMongoRepository, type ICompanyRepository } from '../../company/repositories/CompanyMongoRepository.js';
-import { TeamMongoRepository, type ITeamRepository } from '../../company/repositories/TeamMongoRepository.js';
-import { CastMembershipEventMongoRepository, type ICastMembershipEventRepository } from '../../company/repositories/CastMembershipEventMongoRepository.js';
-import { COMPANY_REPO, CAST_REPO, CAST_MEMBERSHIP_EVENT_REPO, PLAYLIST_REPO, PLAYLIST_TRACK_REPO } from '../nestTokens.js';
+import { OrgNodeMongoRepository, type IOrgNodeRepository } from '../../company/repositories/OrgNodeMongoRepository.js';
+import { OrgMembershipEventMongoRepository, type IOrgMembershipEventRepository } from '../../company/repositories/OrgMembershipEventMongoRepository.js';
+import { COMPANY_REPO, ORG_NODE_REPO, ORG_MEMBERSHIP_EVENT_REPO, PLAYLIST_REPO, PLAYLIST_TRACK_REPO } from '../nestTokens.js';
 import {
   type IPlaylistRepository,
   PlaylistMongoRepository,
@@ -111,8 +111,8 @@ export type TCoreRepositories = {
   playlistTrack: IPlaylistTrackRepository;
   //COMPANY
   company: ICompanyRepository;
-  cast: ITeamRepository;
-  castMembershipEvent: ICastMembershipEventRepository;
+  orgNode: IOrgNodeRepository;
+  orgMembershipEvent: IOrgMembershipEventRepository;
 };
 
 /**
@@ -142,8 +142,8 @@ export type TCoreRepositories = {
     mongoRepoProvider<IPlaylistRepository>(PLAYLIST_REPO, PlaylistMongoRepository, 'playlists'),
     mongoRepoProvider<IPlaylistTrackRepository>(PLAYLIST_TRACK_REPO, PlaylistTrackMongoRepository, 'playlist_tracks'),
     mongoRepoProvider<ICompanyRepository>(COMPANY_REPO, CompanyMongoRepository, 'companies'),
-    mongoRepoProvider<ITeamRepository>(CAST_REPO, TeamMongoRepository, 'teams'),
-    mongoRepoProvider<ICastMembershipEventRepository>(CAST_MEMBERSHIP_EVENT_REPO, CastMembershipEventMongoRepository, 'cast_membership_events'),
+    mongoRepoProvider<IOrgNodeRepository>(ORG_NODE_REPO, OrgNodeMongoRepository, 'org_nodes'),
+    mongoRepoProvider<IOrgMembershipEventRepository>(ORG_MEMBERSHIP_EVENT_REPO, OrgMembershipEventMongoRepository, 'org_membership_events'),
   ],
   exports: [
     USER_PREFERENCES_REPO,
@@ -161,8 +161,8 @@ export type TCoreRepositories = {
     PLAYLIST_REPO,
     PLAYLIST_TRACK_REPO,
     COMPANY_REPO,
-    CAST_REPO,
-    CAST_MEMBERSHIP_EVENT_REPO,
+    ORG_NODE_REPO,
+    ORG_MEMBERSHIP_EVENT_REPO,
   ],
 })
 export class CoreRepositoriesModule {}

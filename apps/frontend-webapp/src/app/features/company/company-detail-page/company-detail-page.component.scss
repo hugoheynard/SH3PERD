@@ -1,240 +1,443 @@
+// ═══════════════════════════════════════════════════════════
+// Company Detail Page — unified OrgNode tree
+// ═══════════════════════════════════════════════════════════
+
 :host { display:flex; flex-direction:column; height:100%; overflow:hidden; }
+
+// ── Page chrome ────────────────────────────────────────────
 .page-back-bar { display:flex; align-items:center; padding:8px 16px; border-bottom:1px solid var(--panel-border-color); flex-shrink:0; }
-.btn-back { display:flex; align-items:center; gap:6px; background:none; border:none; color:var(--text-secondary); font-size:12px; font-weight:500; cursor:pointer; padding:4px 6px; border-radius:var(--radius-sm); &:hover { color:var(--text-primary); background:var(--icon-hover-bg); } svg { flex-shrink:0; } }
-.loading-state,.error-state { display:flex; align-items:center; justify-content:center; flex:1; font-size:13px; color:var(--text-muted,#718096); }
+.btn-back {
+  display:flex; align-items:center; gap:6px; background:none; border:none;
+  color:var(--text-secondary); font-size:12px; font-weight:500; cursor:pointer;
+  padding:4px 6px; border-radius:var(--radius-sm);
+  &:hover { color:var(--text-primary); background:var(--icon-hover-bg); }
+  svg { flex-shrink:0; }
+}
+.loading-state, .error-state {
+  display:flex; align-items:center; justify-content:center; flex:1;
+  font-size:13px; color:var(--text-muted, #718096);
+}
 .error-state { color:#fc8181; }
-.company-page { display:flex; flex-direction:column; flex:1; min-height:0; overflow:hidden; background:var(--content-page-bg-color,#282e39); }
-.company-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px 14px; background:var(--card-color,#2c323d); border-bottom:1px solid rgba(255,255,255,.06); flex-shrink:0; }
+
+// ── Company layout ─────────────────────────────────────────
+.company-page { display:flex; flex-direction:column; flex:1; min-height:0; overflow:hidden; background:var(--content-page-bg-color, #282e39); }
+
+// Header
+.company-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px 14px; background:var(--card-color, #2c323d);
+  border-bottom:1px solid rgba(255,255,255,.06); flex-shrink:0;
+}
 .header-info { display:flex; align-items:center; gap:12px; }
-.company-name { font-size:18px; font-weight:700; color:var(--text-primary,#e2e8f0); margin:0; }
-.status-badge { display:inline-flex; align-items:center; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; &.status-active { background:rgba(104,211,145,.15); color:#68d391; border:1px solid rgba(104,211,145,.3); } &.status-pending { background:rgba(246,173,85,.15); color:#f6ad55; border:1px solid rgba(246,173,85,.3); } &.status-suspended { background:rgba(252,129,129,.15); color:#fc8181; border:1px solid rgba(252,129,129,.3); } }
+.company-name { font-size:18px; font-weight:700; color:var(--text-primary, #e2e8f0); margin:0; }
+.status-badge {
+  display:inline-flex; align-items:center; padding:2px 10px; border-radius:20px;
+  font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.04em;
+  &.status-active   { background:rgba(104,211,145,.15); color:#68d391; border:1px solid rgba(104,211,145,.3); }
+  &.status-pending  { background:rgba(246,173,85,.15);  color:#f6ad55; border:1px solid rgba(246,173,85,.3); }
+  &.status-suspended{ background:rgba(252,129,129,.15); color:#fc8181; border:1px solid rgba(252,129,129,.3); }
+}
 .header-stats { display:flex; gap:20px; }
 .header-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
-.btn-settings { display:flex; align-items:center; justify-content:center; width:32px; height:32px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:8px; color:var(--text-muted,#718096); cursor:pointer; flex-shrink:0; transition:color .15s,background .15s; &:hover { color:var(--accent-color); background:var(--accent-color-dim); border-color:color-mix(in srgb,var(--accent-color) 30%,transparent); } }
-.stat { display:flex; flex-direction:column; align-items:center; gap:1px; }
-.stat-value { font-size:16px; font-weight:700; color:var(--text-primary,#e2e8f0); }
-.stat-label { font-size:10px; color:var(--text-muted,#718096); text-transform:uppercase; letter-spacing:.05em; }
-.company-body { flex:1; min-height:0; display:flex; overflow:hidden; }
-.side-panel { width:220px; min-width:220px; flex-shrink:0; overflow-y:auto; border-right:1px solid rgba(255,255,255,.06); padding:16px 0; display:flex; flex-direction:column; }
-.panel-section { padding:0 12px 16px; }
-.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-.section-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted,#718096); }
-.service-list { list-style:none; margin:0 0 8px; padding:0; display:flex; flex-direction:column; gap:4px; }
-.service-item {
-  --service-color: var(--accent-color);
-  display:flex; align-items:center; gap:8px; padding:5px 8px; border-radius:6px;
-  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.05); cursor:pointer;
-  &:hover {
-    background: color-mix(in srgb, var(--service-color) 10%, rgba(255,255,255,.03));
-    border-color: color-mix(in srgb, var(--service-color) 30%, transparent);
-  }
+.btn-settings {
+  display:flex; align-items:center; justify-content:center; width:32px; height:32px;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  border-radius:8px; color:var(--text-muted, #718096); cursor:pointer; flex-shrink:0;
+  transition:color .15s, background .15s;
+  &:hover { color:var(--accent-color); background:var(--accent-color-dim); border-color:color-mix(in srgb, var(--accent-color) 30%, transparent); }
 }
-.service-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; box-shadow: 0 0 5px color-mix(in srgb, currentColor 40%, transparent); }
-.service-name { font-size:12px; color:var(--text-primary,#e2e8f0); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.btn-remove { background:none; border:none; padding:0 2px; color:var(--text-muted,#718096); cursor:pointer; font-size:14px; opacity:0; flex-shrink:0; &:hover { color:#fc8181; } }
-.add-inline { display:flex; align-items:center; gap:4px; }
-.input-inline { flex:1; min-width:0; background:rgba(255,255,255,.06); border:1px solid color-mix(in srgb,var(--accent-color) 30%,transparent); border-radius:6px; padding:4px 8px; font-size:12px; color:var(--text-primary,#e2e8f0); outline:none; &::placeholder { color:var(--text-muted,#718096); } }
-.btn-confirm { background:rgba(104,211,145,.15); border:1px solid rgba(104,211,145,.3); border-radius:5px; color:#68d391; cursor:pointer; font-size:12px; padding:3px 7px; }
-.btn-cancel { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:5px; color:var(--text-muted,#718096); cursor:pointer; font-size:12px; padding:3px 7px; }
-.btn-add-item { display:flex; align-items:center; gap:4px; background:none; border:1px dashed rgba(255,255,255,.15); border-radius:6px; padding:5px 10px; width:100%; color:var(--text-muted,#718096); font-size:11px; cursor:pointer; &:hover { color:var(--accent-color); } }
-.staff-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
-.staff-item { display:flex; align-items:center; gap:8px; }
-.member-avatar { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#1a202c; flex-shrink:0; }
-.member-info { display:flex; flex-direction:column; min-width:0; }
-.member-id { font-size:11px; color:var(--text-primary,#e2e8f0); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.member-role { font-size:10px; color:var(--text-muted,#718096); text-transform:capitalize; }
-.main-content { flex:1; min-width:0; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
-.tab-bar { display:flex; align-items:center; padding:0 16px; border-bottom:1px solid rgba(255,255,255,.06); flex-shrink:0; }
-.tab-btn { background:none; border:none; border-bottom:2px solid transparent; padding:12px 16px; color:var(--text-muted,#718096); font-size:13px; cursor:pointer; &.active { color:var(--accent-color); border-bottom-color:var(--accent-color); } &:hover:not(.active) { color:var(--text-secondary,#a0aec0); } }
+.stat { display:flex; flex-direction:column; align-items:center; gap:1px; }
+.stat-value { font-size:16px; font-weight:700; color:var(--text-primary, #e2e8f0); }
+.stat-label { font-size:10px; color:var(--text-muted, #718096); text-transform:uppercase; letter-spacing:.05em; }
+
+// Body (tab-based, column layout)
+.company-body { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
+
+// ── Tabs ───────────────────────────────────────────────────
+.tab-bar {
+  display:flex; align-items:center; padding:0 16px;
+  border-bottom:1px solid rgba(255,255,255,.06); flex-shrink:0;
+}
+.tab-btn {
+  background:none; border:none; border-bottom:2px solid transparent;
+  padding:12px 16px; color:var(--text-muted, #718096); font-size:13px; cursor:pointer;
+  &.active { color:var(--accent-color); border-bottom-color:var(--accent-color); }
+  &:hover:not(.active) { color:var(--text-secondary, #a0aec0); }
+}
 .tab-content { flex:1; min-height:0; overflow-y:auto; padding:16px; }
 .content-toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-.results-count { font-size:11px; color:var(--text-muted,#718096); }
-.btn-add-entry { display:flex; align-items:center; gap:5px; padding:4px 12px; background:var(--accent-color-dim); border:1px solid color-mix(in srgb,var(--accent-color) 25%,transparent); border-radius:6px; color:var(--accent-color); font-size:11px; font-weight:600; cursor:pointer; }
-.add-team-form { display:flex; align-items:center; gap:8px; margin-bottom:16px; padding:12px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:8px; }
-.teams-grid { display:flex; flex-direction:column; gap:8px; }
-.team-card {
-  --service-color: transparent;
-  padding:12px 16px; background:var(--card-color,#2c323d);
-  border:1px solid rgba(255,255,255,.05); border-left:3px solid var(--service-color);
-  border-radius:8px;
+.results-count { font-size:11px; color:var(--text-muted, #718096); }
+.toolbar-actions { display:flex; align-items:center; gap:8px; }
+.btn-edit-toggle {
+  display:flex; align-items:center; justify-content:center;
+  width:28px; height:28px; border-radius:6px;
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+  color:var(--text-muted, #718096); cursor:pointer;
+  transition:all .15s;
+  &:hover { color:var(--text-secondary, #a0aec0); background:rgba(255,255,255,.07); }
+  &.is-active {
+    color:var(--accent-color); background:var(--accent-color-dim);
+    border-color:color-mix(in srgb, var(--accent-color) 30%, transparent);
+  }
 }
-.team-card-header { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
-.team-info { display:flex; align-items:center; gap:8px; min-width:0; }
-.team-service-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.team-name { font-size:13px; font-weight:600; color:var(--text-primary,#e2e8f0); }
-.service-badge { display:inline-flex; align-items:center; padding:2px 8px; border:1px solid; border-radius:12px; font-size:10px; font-weight:600; }
-.team-status-badge { display:inline-flex; align-items:center; padding:2px 8px; border-radius:12px; font-size:10px; font-weight:600; text-transform:uppercase; flex-shrink:0; &.team-status-active { background:rgba(104,211,145,.12); color:#68d391; border:1px solid rgba(104,211,145,.25); } &.team-status-archived { background:rgba(255,255,255,.05); color:var(--text-muted,#718096); border:1px solid rgba(255,255,255,.1); } }
-.team-members { display:flex; align-items:center; gap:12px; }
-.member-chips { display:flex; align-items:center; }
-.member-chip { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:#1a202c; border:2px solid var(--card-color,#2c323d); margin-left:-6px; flex-shrink:0; &:first-child { margin-left:0; } &.chip-overflow { background:rgba(255,255,255,.1); color:var(--text-secondary,#a0aec0); font-size:8px; } }
-.member-count { font-size:11px; color:var(--text-muted,#718096); }
-.empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 0; color:var(--text-muted,#718096); font-size:13px; }
-@media (max-width:768px) { .company-body { flex-direction:column; } .side-panel { width:100%; min-width:0; border-right:none; border-bottom:1px solid rgba(255,255,255,.06); padding:12px; } .header-stats { display:none; } }
-.contract-row { cursor:pointer; &:hover { background:var(--bg-hover,#f7fafc); } }
+.btn-add-entry {
+  display:flex; align-items:center; gap:5px; padding:4px 12px;
+  background:var(--accent-color-dim); border:1px solid color-mix(in srgb, var(--accent-color) 25%, transparent);
+  border-radius:6px; color:var(--accent-color); font-size:11px; font-weight:600; cursor:pointer;
+}
 
-// ── Orgchart ──────────────────────────────────────────────
+// ── Add node form ──────────────────────────────────────────
+.add-node-form {
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:16px; padding:12px;
+  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:8px;
+  &--inline { margin:8px 0 4px; padding:8px; }
+}
+.add-node-actions { display:flex; align-items:center; gap:6px; }
+
+// ── Color palette (root node creation) ─────────────────────
+.color-palette {
+  display:flex; align-items:center; gap:5px; padding:2px 0;
+}
+.color-swatch {
+  width:18px; height:18px; border-radius:50%; border:2px solid transparent;
+  cursor:pointer; flex-shrink:0; transition:border-color .15s, transform .15s;
+  &:hover { transform:scale(1.2); }
+  &.is-selected {
+    border-color:var(--text-primary, #e2e8f0);
+    box-shadow:0 0 0 2px rgba(255,255,255,.15);
+    transform:scale(1.15);
+  }
+}
+.input-inline {
+  flex:1; min-width:0; background:rgba(255,255,255,.06);
+  border:1px solid color-mix(in srgb, var(--accent-color) 30%, transparent);
+  border-radius:6px; padding:4px 8px; font-size:12px; color:var(--text-primary, #e2e8f0); outline:none;
+  &::placeholder { color:var(--text-muted, #718096); }
+}
+.btn-confirm {
+  background:rgba(104,211,145,.15); border:1px solid rgba(104,211,145,.3);
+  border-radius:5px; color:#68d391; cursor:pointer; font-size:12px; padding:3px 7px;
+}
+.btn-cancel {
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  border-radius:5px; color:var(--text-muted, #718096); cursor:pointer; font-size:12px; padding:3px 7px;
+}
+
+// ── Empty state ────────────────────────────────────────────
+.empty-state {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:60px 0; color:var(--text-muted, #718096); font-size:13px;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ORGCHART TREE — recursive node system
+// ═══════════════════════════════════════════════════════════
+
 .orgchart-tab { overflow-x:auto; }
 .orgchart-loading, .orgchart-error {
   display:flex; align-items:center; justify-content:center;
-  padding:48px; font-size:13px; color:var(--text-muted,#718096);
+  padding:48px; font-size:13px; color:var(--text-muted, #718096);
 }
 .orgchart-error { color:#fc8181; }
 .orgchart-empty {
   display:flex; align-items:center; justify-content:center;
-  margin-top:32px; font-size:12px; color:var(--text-muted,#718096); font-style:italic;
+  margin-top:32px; font-size:12px; color:var(--text-muted, #718096); font-style:italic;
 }
-
 .orgchart-tree {
   display:flex; flex-direction:column; align-items:center;
   min-width:max-content; padding:32px 40px 48px;
 }
 
-// Root company node
+// ── Root company card ──────────────────────────────────────
 .oc-root-wrap { display:flex; justify-content:center; }
 .oc-root-card {
   display:inline-flex; align-items:center; gap:10px;
   padding:11px 24px; border-radius:12px;
-  background:var(--card-color,#2c323d);
+  background:var(--card-color, #2c323d);
   border:1px solid rgba(255,255,255,.12);
   box-shadow:0 4px 16px rgba(0,0,0,.22);
 }
-.oc-root-icon { color:var(--text-secondary,#a0aec0); flex-shrink:0; }
-.oc-root-name { font-size:14px; font-weight:700; color:var(--text-primary,#e2e8f0); letter-spacing:-.02em; }
+.oc-root-icon { color:var(--text-secondary, #a0aec0); flex-shrink:0; }
+.oc-root-name { font-size:14px; font-weight:700; color:var(--text-primary, #e2e8f0); letter-spacing:-.02em; }
 .oc-root-badge {
   min-width:20px; height:20px; border-radius:10px; padding:0 7px;
   background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
-  color:var(--text-secondary,#a0aec0); font-size:10px; font-weight:600;
+  color:var(--text-secondary, #a0aec0); font-size:10px; font-weight:600;
   display:flex; align-items:center; justify-content:center;
 }
 
-// Trunk connector
-.oc-trunk { width:2px; height:28px; background:linear-gradient(to bottom, rgba(255,255,255,.18), rgba(255,255,255,.06)); }
-.oc-teams-trunk { width:1px; height:20px; background:rgba(255,255,255,.1); }
+// ── Tree connectors ────────────────────────────────────────
+.oc-branch {
+  width:1px; height:20px; background:rgba(255,255,255,.1);
+  &--root { width:2px; height:28px; background:linear-gradient(to bottom, rgba(255,255,255,.18), rgba(255,255,255,.06)); }
+}
+.oc-drop { align-self:center; width:1px; height:24px; background:rgba(255,255,255,.1); }
 
-// Services row — horizontal branch line spans from 1st-col-center to last-col-center
-.oc-services-row {
+// ── Children row — horizontal connector across columns ─────
+.oc-children-row {
   position:relative; display:flex; align-items:flex-start; gap:0;
   &::before {
     content:''; position:absolute; top:0;
-    left:calc(50% / var(--count,1));
-    right:calc(50% / var(--count,1));
-    height:1px; background:rgba(255,255,255,.14);
+    left:calc(50% / var(--count, 1));
+    right:calc(50% / var(--count, 1));
+    height:1px; background:rgba(255,255,255,.1);
   }
 }
-// Each service column sizes to its widest child (teams row or service card).
-// No flex:1 / max-width constraint so expanded teams never bleed into neighbours.
-.oc-service-col {
+
+// ── Node column (one per node at any depth) ────────────────
+// flex:1 ensures equal-width columns so the horizontal connector bar aligns correctly
+.oc-node-col {
+  flex:1; min-width:0;
   display:flex; flex-direction:column; align-items:center;
-  padding:0 10px;
+  padding:0 8px;
 }
 
-// Teams row
-.oc-teams-row {
-  position:relative; display:flex; align-items:flex-start; gap:0;
-  &::before {
-    content:''; position:absolute; top:0;
-    left:calc(50% / var(--count,1));
-    right:calc(50% / var(--count,1));
-    height:1px; background:rgba(255,255,255,.08);
-  }
-}
-.oc-team-col {
-  display:flex; flex-direction:column; align-items:center;
-  padding:0 5px;
-}
-
-// Drop lines — align-self:center keeps them centred inside any col width
-.oc-drop    { align-self:center; width:1px; height:28px; background:rgba(255,255,255,.1); }
-.oc-drop-sm { align-self:center; width:1px; height:20px; background:rgba(255,255,255,.08); }
-
-// Service card — constrained width so it doesn't stretch with the col
-.oc-service-card {
-  --svc: var(--accent-color,#63b3ed);
-  min-width:150px; max-width:220px; width:max-content;
+// ── Node card — adapts to depth ────────────────────────────
+.oc-node-card {
+  --node-color: var(--accent-color, #63b3ed);
   border-radius:9px; cursor:pointer; overflow:hidden;
-  background:var(--card-color,#2c323d);
+  background:var(--card-color, #2c323d);
   border:1px solid rgba(255,255,255,.07);
-  border-left:2px solid color-mix(in srgb, var(--svc) 70%, transparent);
+  border-left:2px solid color-mix(in srgb, var(--node-color) 70%, transparent);
   box-shadow:0 2px 6px rgba(0,0,0,.1);
-  transition:background .15s, border-color .15s;
+  transition:background .15s, border-color .15s, box-shadow .15s;
+  padding:9px 12px;
+
   &:hover { background:rgba(255,255,255,.03); }
+
   &.is-expanded {
-    background:color-mix(in srgb, var(--svc) 7%, var(--card-color,#2c323d));
-    border-left-color:var(--svc);
+    background:color-mix(in srgb, var(--node-color) 7%, var(--card-color, #2c323d));
+    border-left-color:var(--node-color);
     border-color:rgba(255,255,255,.1);
+    box-shadow:0 3px 12px rgba(0,0,0,.18);
   }
-  &--unassigned {
-    --svc: #718096;
-    border-left-color:rgba(255,255,255,.15);
+
+  &.is-archived { opacity:.35; }
+
+  // Depth 0: biggest cards (directions, departments)
+  &.depth-0 {
+    min-width:160px; max-width:240px; width:max-content;
+    border-left-width:3px;
+    .oc-node-name { font-size:13px; }
+    .oc-node-count { min-width:20px; height:20px; border-radius:10px; font-size:10px; }
+  }
+
+  // Depth 1: medium cards (pôles, services)
+  &.depth-1 {
+    min-width:140px; max-width:200px; width:max-content;
+    .oc-node-name { font-size:12px; }
+  }
+
+  // Depth 2+: compact cards (équipes, sub-teams)
+  &.depth-deep {
+    min-width:120px; max-width:170px; width:max-content;
+    padding:7px 10px;
+    border-radius:7px;
+    border-left-width:2px;
+    .oc-node-name { font-size:11px; }
+    .oc-node-count { min-width:16px; height:16px; border-radius:8px; font-size:8px; }
+    .oc-node-layer-label { font-size:8px; }
+    .oc-avatars .oc-avatar { width:18px; height:18px; font-size:6px; }
   }
 }
-.oc-service-card-inner { display:flex; align-items:center; gap:7px; padding:9px 12px; }
-.oc-service-dot {
-  width:6px; height:6px; border-radius:50%; flex-shrink:0;
-  background:var(--svc);
+
+// ── Node card inner elements ───────────────────────────────
+.oc-node-header { display:flex; align-items:center; gap:7px; }
+// ── Settings gear button (replaces color dot) ──────────────
+.oc-node-settings-btn {
+  display:flex; align-items:center; justify-content:center;
+  width:18px; height:18px; border-radius:4px; flex-shrink:0;
+  background:none; border:none; padding:0;
+  color:var(--node-color);
+  cursor:pointer; transition:background .15s, color .15s;
+  opacity:.6;
+  &:hover {
+    opacity:1;
+    background:color-mix(in srgb, var(--node-color) 15%, transparent);
+  }
 }
-.oc-service-name {
-  flex:1; font-size:12px; font-weight:600; color:var(--text-primary,#e2e8f0);
+
+// (Node settings panel moved to popover — no inline styles needed)
+.oc-node-name {
+  flex:1; font-size:12px; font-weight:600; color:var(--text-primary, #e2e8f0);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.oc-service-count {
+.oc-node-type {
+  padding:1px 6px; border-radius:4px; font-size:9px; font-weight:600;
+  background:color-mix(in srgb, var(--node-color) 15%, transparent);
+  color:var(--node-color); text-transform:capitalize; flex-shrink:0;
+}
+.oc-node-count {
   min-width:18px; height:18px; border-radius:9px; padding:0 5px;
-  background:color-mix(in srgb, var(--svc) 18%, transparent);
-  color:var(--svc); font-size:9px; font-weight:700;
+  background:color-mix(in srgb, var(--node-color) 18%, transparent);
+  color:var(--node-color); font-size:9px; font-weight:700;
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
 }
+.oc-node-layer-label {
+  display:block; font-size:9px; color:var(--text-muted, #718096);
+  margin-top:2px; letter-spacing:.03em; opacity:.7;
+}
 .oc-chevron {
-  color:var(--text-muted,#718096); flex-shrink:0; transition:transform .2s;
+  color:var(--text-muted, #718096); flex-shrink:0; transition:transform .2s;
   &--open { transform:rotate(180deg); }
 }
 
-// Team card — fixed width so all team cards are uniform
-.oc-team-card {
-  --svc: var(--accent-color,#63b3ed);
-  width:140px; border-radius:7px; cursor:pointer;
-  background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.07);
-  border-top:1px solid color-mix(in srgb, var(--svc) 45%, rgba(255,255,255,.08));
-  padding:7px 9px;
-  transition:background .15s, border-top-color .15s;
-  &:hover { background:rgba(255,255,255,.05); }
-  &.is-expanded { border-top-color:color-mix(in srgb, var(--svc) 70%, transparent); }
-  &.is-archived { opacity:.35; }
+// ── Communication icons (on node card) ─────────────────────
+.oc-comm-icons {
+  display:flex; align-items:center; gap:4px; margin-top:4px;
 }
-.oc-team-header { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
-.oc-team-name { flex:1; font-size:11px; font-weight:600; color:var(--text-primary,#e2e8f0); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.oc-team-count {
-  min-width:16px; height:16px; border-radius:8px; padding:0 4px;
-  background:rgba(255,255,255,.08); color:var(--text-muted,#718096);
-  font-size:9px; font-weight:600;
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+.oc-comm-icon {
+  display:flex; align-items:center; justify-content:center;
+  width:18px; height:18px; border-radius:4px;
+  color:var(--text-muted, #718096); text-decoration:none;
+  transition:color .12s, background .12s;
+  &:hover { background:rgba(255,255,255,.08); }
+  &[data-platform="slack"]    { &:hover { color:#e01e5a; } }
+  &[data-platform="whatsapp"] { &:hover { color:#25d366; } }
+  &[data-platform="teams"]    { &:hover { color:#6264a7; } }
+  &[data-platform="discord"]  { &:hover { color:#5865f2; } }
+  &[data-platform="telegram"] { &:hover { color:#0088cc; } }
 }
 
-// Stacked avatars inside team card
-.oc-avatars { display:flex; align-items:center; }
+// ── Card action buttons (edit mode, always visible on card) ─
+.oc-card-actions {
+  display:flex; gap:4px; margin-top:6px;
+}
+.oc-card-action-btn {
+  --btn-color: var(--accent-color, #63b3ed);
+  flex:1; padding:3px 6px; border-radius:5px;
+  background:color-mix(in srgb, var(--btn-color) 10%, transparent);
+  border:1px dashed color-mix(in srgb, var(--btn-color) 30%, transparent);
+  color:var(--btn-color); font-size:9px; font-weight:600; cursor:pointer;
+  transition:background .12s, border-color .12s;
+  &:hover {
+    background:color-mix(in srgb, var(--btn-color) 18%, transparent);
+    border-style:solid;
+  }
+}
+
+// ── Avatar stack (on node card) ────────────────────────────
+.oc-avatars { display:flex; align-items:center; margin-top:6px; }
 .oc-avatar {
   width:20px; height:20px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   font-size:7px; font-weight:700; color:#1a202c;
-  border:1.5px solid var(--card-color,#2c323d);
+  border:1.5px solid var(--card-color, #2c323d);
   margin-left:-5px; flex-shrink:0;
   &:first-child { margin-left:0; }
-  &--more { background:rgba(255,255,255,.1); color:var(--text-muted,#718096); font-size:7px; }
+  &--more { background:rgba(255,255,255,.1); color:var(--text-muted, #718096); font-size:7px; }
+  &--guest { background:rgba(255,255,255,.1); color:var(--text-secondary, #a0aec0); border-style:dashed; }
 }
 
-// Member list below team — same width as team card
-.oc-members-stack { display:flex; flex-direction:column; gap:3px; width:140px; margin-top:4px; }
+// ── Member list (expanded) ─────────────────────────────────
+.oc-members-stack { display:flex; flex-direction:column; gap:3px; width:100%; margin-top:6px; }
 .oc-member-card {
-  display:flex; align-items:center; gap:7px; padding:6px 8px; border-radius:7px;
-  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.05);
+  display:flex; align-items:center; gap:7px; padding:5px 8px; border-radius:7px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.05);
+  border-left:2px solid transparent; // colored via inline style (rootColor + '44')
   transition:background .12s;
   &:hover { background:rgba(255,255,255,.06); }
 }
 .oc-member-avatar {
-  width:24px; height:24px; border-radius:50%;
+  width:22px; height:22px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   font-size:8px; font-weight:700; color:#1a202c; flex-shrink:0;
+  &--guest { background:rgba(255,255,255,.1) !important; color:var(--text-secondary, #a0aec0); border:1px dashed rgba(255,255,255,.2); }
+}
+.oc-member-card--guest {
+  border-left-style:dashed;
 }
 .oc-member-info { display:flex; flex-direction:column; min-width:0; }
-.oc-member-name { font-size:10px; font-weight:600; color:var(--text-primary,#e2e8f0); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.oc-member-since { font-size:9px; color:var(--text-muted,#718096); }
+.oc-member-name {
+  font-size:10px; font-weight:600; color:var(--text-primary, #e2e8f0);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.oc-member-role {
+  font-size:9px; font-weight:500; color:var(--root-color, var(--accent-color, #63b3ed));
+  text-transform:capitalize;
+}
+
+// ── Member remove button ────────────────────────────────────
+.oc-member-remove {
+  margin-left:auto; background:none; border:none; padding:2px;
+  color:var(--text-muted, #718096); cursor:pointer; flex-shrink:0;
+  opacity:0; transition:opacity .15s, color .15s;
+  .oc-member-card:hover & { opacity:1; }
+  &:hover { color:#fc8181; }
+}
+
+
+// ── Add member button ────────────────────────────────────────
+.oc-add-member-btn {
+  --btn-color: var(--accent-color, #63b3ed);
+  width:100%;
+  background:none; border:1px dashed rgba(255,255,255,.12);
+  border-radius:6px; padding:4px 8px;
+  color:var(--text-muted, #718096); font-size:10px; cursor:pointer;
+  transition:color .15s, border-color .15s;
+  &:hover {
+    color:var(--btn-color);
+    border-color:color-mix(in srgb, var(--btn-color) 35%, transparent);
+  }
+}
+
+// ── Add child button (inside expanded node) ────────────────
+.oc-add-child-btn {
+  --btn-color: var(--accent-color, #63b3ed);
+  margin-top:6px; width:100%;
+  background:none; border:1px dashed rgba(255,255,255,.12);
+  border-radius:6px; padding:4px 8px;
+  color:var(--text-muted, #718096); font-size:10px; cursor:pointer;
+  transition:color .15s, border-color .15s;
+  &:hover {
+    color:var(--btn-color);
+    border-color:color-mix(in srgb, var(--btn-color) 35%, transparent);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CONTRACTS TAB
+// ═══════════════════════════════════════════════════════════
+
+.contracts-list { display:flex; flex-direction:column; gap:2px; }
+.contract-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 14px; border-radius:8px; cursor:pointer;
+  background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.04);
+  transition:background .12s;
+  &:hover { background:rgba(255,255,255,.05); }
+}
+.contract-user { display:flex; align-items:center; gap:10px; min-width:0; }
+.contract-avatar {
+  width:30px; height:30px; border-radius:50%;
+  background:var(--accent-color-dim, rgba(99,179,237,.15));
+  color:var(--accent-color, #63b3ed);
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; flex-shrink:0;
+}
+.contract-user-info { display:flex; flex-direction:column; min-width:0; }
+.contract-user-name { font-size:12px; font-weight:600; color:var(--text-primary, #e2e8f0); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.contract-user-email { font-size:10px; color:var(--text-muted, #718096); }
+.contract-meta { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.contract-dates { font-size:10px; color:var(--text-secondary, #a0aec0); }
+.contract-status {
+  padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; text-transform:uppercase;
+  &.cstatus-active     { background:rgba(104,211,145,.12); color:#68d391; }
+  &.cstatus-draft      { background:rgba(246,173,85,.12);  color:#f6ad55; }
+  &.cstatus-terminated { background:rgba(255,255,255,.06); color:var(--text-muted, #718096); }
+}
+
+// ── Role chips (contracts) ─────────────────────────────────
+.contract-roles { display:flex; align-items:center; gap:4px; }
+.role-chip {
+  padding:2px 7px; border-radius:4px; font-size:9px; font-weight:600;
+  background:rgba(99,179,237,.12); color:var(--accent-color, #63b3ed);
+  text-transform:capitalize; white-space:nowrap;
+}
+
+// ── Responsive ─────────────────────────────────────────────
+@media (max-width:768px) {
+  .header-stats { display:none; }
+  .orgchart-tree { padding:20px 16px 32px; }
+}

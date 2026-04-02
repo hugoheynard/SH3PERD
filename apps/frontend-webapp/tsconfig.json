@@ -12,9 +12,6 @@
     "importHelpers": true,
 
     "paths": {
-      "ui-angular": [
-        "./dist/ui-angular"
-      ]
     }
   },
   "angularCompilerOptions": {

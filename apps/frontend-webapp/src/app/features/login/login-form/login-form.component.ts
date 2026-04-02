@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonPrimaryComponent, InputComponent } from '../../../legacy/ui';
-//import { TUserCredentialsDTO } from '@sh3pherd/shared-types';
+import { InputComponent } from '../../../shared/forms/input/input.component';
+import { ButtonComponent } from '../../../shared/button/button.component';
 
 @Component({
   selector: 'app-login-form',
   imports: [
-    FormsModule, ButtonPrimaryComponent, InputComponent,
+    FormsModule, ButtonComponent, InputComponent,
   ],
   templateUrl: './login-form.component.html',
   standalone: true,

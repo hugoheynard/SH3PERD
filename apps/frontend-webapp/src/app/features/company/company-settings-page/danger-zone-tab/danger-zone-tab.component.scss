@@ -1,0 +1,20 @@
+.tab-panel { max-width:540px; }
+.panel-title { font-size:16px; font-weight:700; color:var(--text-primary,#e2e8f0); margin:0 0 4px; }
+
+.settings-row { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 0; border-bottom:1px solid rgba(255,255,255,.05); }
+.settings-row-info { display:flex; flex-direction:column; gap:2px; min-width:0; }
+.settings-row-label { font-size:13px; font-weight:500; color:var(--text-primary,#e2e8f0); }
+.settings-row-desc { font-size:11px; color:var(--text-muted,#718096); }
+.settings-row-value { font-size:11px; color:var(--text-secondary,#a0aec0); background:rgba(255,255,255,.05); padding:3px 8px; border-radius:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; }
+.status-badge { display:inline-flex; align-items:center; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:600; text-transform:uppercase; flex-shrink:0;
+  &.status-active { background:rgba(104,211,145,.15); color:#68d391; border:1px solid rgba(104,211,145,.3); }
+  &.status-pending { background:rgba(246,173,85,.15); color:#f6ad55; border:1px solid rgba(246,173,85,.3); }
+  &.status-suspended { background:rgba(252,129,129,.15); color:#fc8181; border:1px solid rgba(252,129,129,.3); }
+}
+
+.danger-zone { margin-top:32px; border:1px solid rgba(252,129,129,.2); border-radius:8px; overflow:hidden; }
+.danger-zone-header { padding:10px 16px; background:rgba(252,129,129,.06); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#fc8181; border-bottom:1px solid rgba(252,129,129,.15); }
+.danger-row { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 16px; }
+.delete-confirm { padding:14px 16px; display:flex; flex-direction:column; gap:12px; }
+.delete-confirm-label { font-size:12px; color:#fc8181; }
+.delete-confirm-actions { display:flex; align-items:center; gap:8px; }

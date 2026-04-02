@@ -2,7 +2,7 @@ import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAd
 import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
 import type { TContractRecord, TUserId, TContractId } from '@sh3pherd/shared-types';
 import type { Filter } from 'mongodb';
-import type { TContractViewModel } from '../useCase/GetCurrentUserContracts.useCase.js';
+import type { TContractListItemViewModel } from '@sh3pherd/shared-types';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
 
@@ -26,10 +26,10 @@ export class ContractMongoRepository
 
   async contractViewModelPipelineByFilter(
     filter: Filter<TContractRecord>
-  ): Promise<TContractViewModel[]> {
+  ): Promise<TContractListItemViewModel[]> {
 
     return this.collection
-      .aggregate<TContractViewModel>([
+      .aggregate<TContractListItemViewModel>([
         { $match: filter },
         {
           $lookup: {

@@ -8,10 +8,12 @@ import type {
   TContractWorkTime,
 } from './contracts.domain.types.js';
 import type { TContractId }   from './ids.js';
+import type { TContractRole } from './permissions.types.js';
 
 export type TCreateContractRequestDTO = {
   company_id:    TCompanyId;
   user_id:       TUserId;
+  roles?:        TContractRole[];
   status:        TContractDomainModel['status'];
   contract_type?: TContractType;
   job_title?:    string;
@@ -21,6 +23,7 @@ export type TCreateContractRequestDTO = {
 
 export type TUpdateContractDTO = {
   contract_id:        TContractId;
+  roles?:             TContractRole[];
   status?:            TContractStatus;
   contract_type?:     TContractType;
   job_title?:         string;

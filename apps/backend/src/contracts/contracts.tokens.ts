@@ -1,7 +1,8 @@
-export const CONTRACTS_USE_CASES          = Symbol('CONTRACTS_USE_CASES');
-export const CONTRACTS_USE_CASES_FACTORY  = Symbol('CONTRACTS_USE_CASES_FACTORY');
-export const CREATE_CONTRACT_USE_CASE     = Symbol('CREATE_CONTRACT_USE_CASE');
-export const GET_CONTRACTS_BY_FILTER_USE_CASE = Symbol('GET_CONTRACTS_BY_FILTER_USE_CASE');
-export const GET_COMPANY_CONTRACTS_USE_CASE   = Symbol('GET_COMPANY_CONTRACTS_USE_CASE');
-export const GET_CONTRACT_BY_ID_USE_CASE  = Symbol('GET_CONTRACT_BY_ID_USE_CASE');
-export const UPDATE_CONTRACT_USE_CASE     = Symbol('UPDATE_CONTRACT_USE_CASE');
+/**
+ * Namespace for contract module injection tokens.
+ * Use-case tokens have been removed — the module now uses CQRS (CommandBus/QueryBus).
+ */
+export const CONTRACT_TOKENS = {
+  /** Contract record repository */
+  CONTRACT_REPOSITORY: Symbol('CONTRACT_REPOSITORY'),
+} as const;

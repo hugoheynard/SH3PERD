@@ -42,6 +42,9 @@ export * from './playlists.js';
 
 export { SRecordMetadata } from './metadata.types.js';
 
+//PERMISSIONS
+export * from './permissions.types.js';
+
 //COMPANY
 export * from './company.domain.js';
 export * from './contracts.domain.types.js'

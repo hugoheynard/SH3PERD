@@ -35,7 +35,7 @@
       <div class="header-stats">
         <span class="stat">
           <span class="stat-value">{{ company.activeTeamCount }}</span>
-          <span class="stat-label">teams</span>
+          <span class="stat-label">nodes</span>
         </span>
         <span class="stat">
           <span class="stat-value">{{ company.activeContractCount }}</span>
@@ -54,350 +54,145 @@
     <!-- Body -->
     <div class="company-body">
 
-      <!-- Side Panel -->
-      <aside class="side-panel">
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <button class="tab-btn" [class.active]="activeTab() === 'orgchart'" (click)="setTab('orgchart')">Organigramme</button>
+        <button class="tab-btn" [class.active]="activeTab() === 'contracts'" (click)="setTab('contracts')">Contracts</button>
+      </div>
 
-        <!-- Services section -->
-        <section class="panel-section">
-          <div class="section-header">
-            <span class="section-title">Services</span>
-            <button class="btn-manage" (click)="goToServices()" title="Manage services">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
+      <!-- Tab: Org Chart -->
+      @if (activeTab() === 'orgchart') {
+        <div class="tab-content orgchart-tab">
+
+          <div class="content-toolbar">
+            <span class="results-count">Organisation</span>
+            <div class="toolbar-actions">
+              @if (editMode() && !addingNode()) {
+                <button class="btn-add-entry" (click)="startAddNode()">+ New {{ getLayerLabel(0) }}</button>
+              }
+              <button class="btn-edit-toggle" [class.is-active]="editMode()" (click)="toggleEditMode()" type="button" title="Toggle edit mode">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
-          <ul class="service-list">
-            @for (service of store.services(); track service.id) {
-              <li
-                class="service-item"
-                [style.--service-color]="getServiceColor(service.id)"
-                (click)="goToService(service.id)"
-                role="button"
-                tabindex="0"
-                (keydown.enter)="goToService(service.id)"
-              >
-                <span class="service-dot" [style.background-color]="getServiceColor(service.id)"></span>
-                <span class="service-name">{{ service.name }}</span>
-                <svg class="service-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-              </li>
-            }
-          </ul>
+          <!-- Root node creation form (with color picker) -->
+          @if (editMode() && addingNode() && !newNodeParentId()) {
+            <div class="add-node-form">
+              <input
+                class="input-inline"
+                type="text"
+                [placeholder]="getLayerLabel(0) + ' name...'"
+                [value]="newNodeName()"
+                (input)="onNodeNameInput($event)"
+                (keydown.enter)="confirmAddNode()"
+                (keydown.escape)="cancelAddNode()"
+                autofocus
+              />
+              <div class="color-palette">
+                @for (c of colorPalette; track c) {
+                  <button
+                    class="color-swatch"
+                    [style.background]="c"
+                    [class.is-selected]="newNodeColor() === c"
+                    (click)="selectColor(c)"
+                    type="button"
+                    [title]="c"
+                  ></button>
+                }
+              </div>
+              <div class="add-node-actions">
+                <button class="btn-confirm" (click)="confirmAddNode()">Create</button>
+                <button class="btn-cancel" (click)="cancelAddNode()">Cancel</button>
+              </div>
+            </div>
+          }
 
-          <button class="btn-add-item" (click)="goToServices()">+ Manage services</button>
-        </section>
+          @if (store.orgChart(); as chart) {
+            <div class="orgchart-tree">
 
-        <!-- Staff section -->
-        <section class="panel-section">
-          <div class="section-header">
-            <span class="section-title">Staff</span>
-          </div>
-
-          <ul class="staff-list">
-            @for (member of store.admins(); track member.user_id) {
-              <li class="staff-item">
-                <div class="member-avatar" [style.background-color]="getMemberColor(member.user_id)">
-                  {{ getInitials(member.user_id) }}
+              <!-- Root: Company -->
+              <div class="oc-root-wrap">
+                <div class="oc-root-card">
+                  <svg class="oc-root-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M3 10l9-7 9 7M5 21V10m14 11V10"/><rect x="9" y="14" width="6" height="7"/></svg>
+                  <span class="oc-root-name">{{ chart.company_name }}</span>
+                  @if (chart.rootNodes.length > 0) {
+                    <span class="oc-root-badge">{{ chart.rootNodes.length }} {{ getLayerLabel(0) }}{{ chart.rootNodes.length !== 1 ? 's' : '' }}</span>
+                  }
                 </div>
-                <div class="member-info">
-                  <span class="member-id">{{ member.user_id | slice: 0:12 }}…</span>
-                  <span class="member-role">{{ member.role }}</span>
+              </div>
+
+              <!-- Tree: recursive org nodes -->
+              @if (chart.rootNodes.length > 0) {
+                <div class="oc-branch oc-branch--root"></div>
+                <div class="oc-children-row" [style.--count]="chart.rootNodes.length">
+                  @for (node of chart.rootNodes; track node.id) {
+                    <!-- depth-0 nodes: rootColor = their own color -->
+                    <ng-container *ngTemplateOutlet="orgNodeTpl; context: { $implicit: node, depth: 0, rootColor: getRootColor(node) }"></ng-container>
+                  }
                 </div>
-              </li>
-            }
-          </ul>
-        </section>
-      </aside>
+              } @else {
+                <div class="orgchart-empty">Aucun noeud pour le moment. Créez votre premier {{ getLayerLabel(0) }}.</div>
+              }
 
-      <!-- Main content -->
-      <main class="main-content">
-
-        <!-- Tab bar -->
-        <div class="tab-bar">
-          <button class="tab-btn" [class.active]="activeTab() === 'teams'" (click)="setTab('teams')">Teams</button>
-          <button class="tab-btn" [class.active]="activeTab() === 'contracts'" (click)="setTab('contracts')">Contracts</button>
-          <button class="tab-btn" [class.active]="activeTab() === 'orgchart'" (click)="setTab('orgchart')">Organigramme</button>
+            </div>
+          }
         </div>
+      }
 
-        <!-- Tab: Teams -->
-        @if (activeTab() === 'teams') {
-          <div class="tab-content">
-            <div class="content-toolbar">
-              <span class="results-count">{{ store.teams().length }} team(s)</span>
-              @if (!addingTeam()) {
-                <button class="btn-add-entry" (click)="startAddTeam()">+ New team</button>
-              }
-            </div>
+      <!-- Tab: Contracts -->
+      @if (activeTab() === 'contracts') {
+        <div class="tab-content">
+          <div class="content-toolbar">
+            <span class="results-count">{{ store.contracts().length }} contract(s)</span>
+            <button class="btn-add-entry" (click)="showContractPanel.set(true)">+ New contract</button>
+          </div>
 
-            @if (addingTeam()) {
-              <div class="add-team-form">
-                <input
-                  class="input-inline"
-                  type="text"
-                  placeholder="Team name..."
-                  [value]="newTeamName()"
-                  (input)="onTeamNameInput($event)"
-                  (keydown.enter)="confirmAddTeam()"
-                  (keydown.escape)="cancelAddTeam()"
-                  autofocus
-                />
-                <button class="btn-confirm" (click)="confirmAddTeam()">Create</button>
-                <button class="btn-cancel" (click)="cancelAddTeam()">Cancel</button>
+          <div class="contracts-list">
+            @for (contract of store.contracts(); track contract.id) {
+              <div class="contract-row" (click)="goToContract(contract.id)" role="button" tabindex="0" (keydown.enter)="goToContract(contract.id)">
+                <div class="contract-user">
+                  <div class="contract-avatar">
+                    {{ (contract.user_first_name?.[0] ?? '?').toUpperCase() }}
+                  </div>
+                  <div class="contract-user-info">
+                    <span class="contract-user-name">
+                      {{ contract.user_first_name }} {{ contract.user_last_name }}
+                    </span>
+                    @if (contract.user_email) {
+                      <span class="contract-user-email">{{ contract.user_email }}</span>
+                    }
+                  </div>
+                </div>
+                <div class="contract-meta">
+                  @if (contract.roles.length > 0) {
+                    <span class="contract-roles">
+                      @for (role of contract.roles; track role) {
+                        <span class="role-chip">{{ role }}</span>
+                      }
+                    </span>
+                  }
+                  <span class="contract-dates">
+                    {{ contract.startDate | date:'shortDate' }}
+                    @if (contract.endDate) { → {{ contract.endDate | date:'shortDate' }} }
+                  </span>
+                  <span class="contract-status" [class]="'cstatus-' + contract.status">{{ contract.status }}</span>
+                </div>
               </div>
             }
 
-            <div class="teams-grid">
-              @for (team of store.teams(); track team.id) {
-                <div class="team-card" [style.--service-color]="getServiceColor(team.service_id)">
-                  <div class="team-card-header">
-                    <div class="team-info">
-                      @if (team.service_id) {
-                        <span class="team-service-dot" [style.background-color]="getServiceColor(team.service_id)"></span>
-                      }
-                      <span class="team-name">{{ team.name }}</span>
-                      @if (team.service_id) {
-                        <span class="service-badge" [style.color]="getServiceColor(team.service_id)" [style.border-color]="getServiceColor(team.service_id) + '44'" [style.background]="getServiceColor(team.service_id) + '18'">
-                          {{ getServiceName(team.service_id) }}
-                        </span>
-                      }
-                    </div>
-                    <span class="team-status-badge" [class]="'team-status-' + team.status">
-                      {{ team.status }}
-                    </span>
-                  </div>
-
-                  <div class="team-members">
-                    <div class="member-chips">
-                      @for (member of team.members.slice(0, 5); track member.user_id) {
-                        @if (!member.leftAt) {
-                          <div
-                            class="member-chip"
-                            [style.background-color]="getMemberColor(member.user_id)"
-                            [title]="member.user_id"
-                          >
-                            {{ getInitials(member.user_id) }}
-                          </div>
-                        }
-                      }
-                      @if (getActiveMemberCount(team) > 5) {
-                        <div class="member-chip chip-overflow">+{{ getActiveMemberCount(team) - 5 }}</div>
-                      }
-                    </div>
-                    <span class="member-count">{{ getActiveMemberCount(team) }} membre(s) actif(s)</span>
-                  </div>
-                </div>
-              }
-
-              @if (store.teams().length === 0) {
-                <div class="empty-state">
-                  <span>No teams yet. Create your first team above.</span>
-                </div>
-              }
-            </div>
-          </div>
-        }
-
-        <!-- Tab: Contracts -->
-        @if (activeTab() === 'contracts') {
-          <div class="tab-content">
-            <div class="content-toolbar">
-              <span class="results-count">{{ store.contracts().length }} contract(s)</span>
-              <button class="btn-add-entry" (click)="showContractPanel.set(true)">+ New contract</button>
-            </div>
-
-            <div class="contracts-list">
-              @for (contract of store.contracts(); track contract.id) {
-                <div class="contract-row" (click)="goToContract(contract.id)" role="button" tabindex="0" (keydown.enter)="goToContract(contract.id)">
-                  <div class="contract-user">
-                    <div class="contract-avatar">
-                      {{ (contract.user_first_name?.[0] ?? '?').toUpperCase() }}
-                    </div>
-                    <div class="contract-user-info">
-                      <span class="contract-user-name">
-                        {{ contract.user_first_name }} {{ contract.user_last_name }}
-                      </span>
-                      @if (contract.user_email) {
-                        <span class="contract-user-email">{{ contract.user_email }}</span>
-                      }
-                    </div>
-                  </div>
-                  <div class="contract-meta">
-                    <span class="contract-dates">
-                      {{ contract.startDate | date:'shortDate' }}
-                      @if (contract.endDate) { → {{ contract.endDate | date:'shortDate' }} }
-                    </span>
-                    <span class="contract-status" [class]="'cstatus-' + contract.status">{{ contract.status }}</span>
-                  </div>
-                </div>
-              }
-
-              @if (store.contracts().length === 0) {
-                <div class="empty-state">
-                  <span>No contracts yet. Create the first one.</span>
-                </div>
-              }
-            </div>
-          </div>
-        }
-
-        <!-- Tab: Organigramme -->
-        @if (activeTab() === 'orgchart') {
-          <div class="tab-content orgchart-tab">
-
-            @if (orgChartLoading()) {
-              <div class="orgchart-loading">Chargement de l'organigramme…</div>
-            }
-            @if (orgChartError()) {
-              <div class="orgchart-error">{{ orgChartError() }}</div>
-            }
-
-            @if (orgChart(); as chart) {
-              <div class="orgchart-tree">
-
-                <!-- Root: Company -->
-                <div class="oc-root-wrap">
-                  <div class="oc-root-card">
-                    <svg class="oc-root-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M3 10l9-7 9 7M5 21V10m14 11V10"/><rect x="9" y="14" width="6" height="7"/></svg>
-                    <span class="oc-root-name">{{ chart.company_name }}</span>
-                    @if (chart.services.length > 0) {
-                      <span class="oc-root-badge">{{ chart.services.length }} service{{ chart.services.length !== 1 ? 's' : '' }}</span>
-                    }
-                  </div>
-                </div>
-
-                <!-- Services level -->
-                @if (chart.services.length > 0 || chart.unassignedTeams.length > 0) {
-                  <div class="oc-trunk"></div>
-                  @let totalCols = chart.services.length + (chart.unassignedTeams.length > 0 ? 1 : 0);
-                  <div class="oc-services-row" [style.--count]="totalCols">
-
-                    @for (service of chart.services; track service.service_id) {
-                      <div class="oc-service-col">
-                        <div class="oc-drop"></div>
-
-                        <!-- Service card -->
-                        <div class="oc-service-card"
-                          [style.--svc]="service.color ?? 'var(--accent-color,#63b3ed)'"
-                          [class.is-expanded]="isServiceExpanded(service.service_id)"
-                          (click)="toggleService(service.service_id)"
-                          role="button"
-                          [attr.aria-expanded]="isServiceExpanded(service.service_id)">
-                          <div class="oc-service-card-inner">
-                            <span class="oc-service-dot"></span>
-                            <span class="oc-service-name">{{ service.name }}</span>
-                            <span class="oc-service-count">{{ service.teams.length }}</span>
-                            <svg class="oc-chevron" [class.oc-chevron--open]="isServiceExpanded(service.service_id)" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-                          </div>
-                        </div>
-
-                        <!-- Teams level -->
-                        @if (isServiceExpanded(service.service_id) && service.teams.length > 0) {
-                          <div class="oc-teams-trunk"></div>
-                          <div class="oc-teams-row" [style.--count]="service.teams.length">
-                            @for (team of service.teams; track team.id) {
-                              <div class="oc-team-col">
-                                <div class="oc-drop-sm"></div>
-
-                                <!-- Team card -->
-                                <div class="oc-team-card"
-                                  [style.--svc]="service.color ?? 'var(--accent-color,#63b3ed)'"
-                                  [class.is-expanded]="isTeamExpanded(team.id)"
-                                  [class.is-archived]="team.status === 'archived'"
-                                  (click)="toggleTeam(team.id)"
-                                  role="button"
-                                  [attr.aria-expanded]="isTeamExpanded(team.id)">
-                                  <div class="oc-team-header">
-                                    <span class="oc-team-name">{{ team.name }}</span>
-                                    <span class="oc-team-count">{{ orgTeamMemberCount(team) }}</span>
-                                    @if (team.members.length > 0) {
-                                      <svg class="oc-chevron" [class.oc-chevron--open]="isTeamExpanded(team.id)" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-                                    }
-                                  </div>
-                                  @if (team.members.length > 0) {
-                                    <div class="oc-avatars">
-                                      @for (m of team.members.slice(0, 4); track m.user_id) {
-                                        <div class="oc-avatar" [style.background]="getMemberColor(m.user_id)" [title]="(m.first_name ?? '') + ' ' + (m.last_name ?? '')">
-                                          {{ (m.first_name?.[0] ?? '?').toUpperCase() }}
-                                        </div>
-                                      }
-                                      @if (team.members.length > 4) {
-                                        <div class="oc-avatar oc-avatar--more">+{{ team.members.length - 4 }}</div>
-                                      }
-                                    </div>
-                                  }
-                                </div>
-
-                                <!-- Members level -->
-                                @if (isTeamExpanded(team.id) && team.members.length > 0) {
-                                  <div class="oc-members-stack">
-                                    @for (member of team.members; track member.user_id) {
-                                      <div class="oc-member-card">
-                                        <div class="oc-member-avatar" [style.background]="getMemberColor(member.user_id)">
-                                          {{ (member.first_name?.[0] ?? '?').toUpperCase() }}
-                                        </div>
-                                        <div class="oc-member-info">
-                                          <span class="oc-member-name">{{ member.first_name }} {{ member.last_name }}</span>
-                                          <span class="oc-member-since">depuis {{ member.joinedAt | date:'MMM yy' }}</span>
-                                        </div>
-                                      </div>
-                                    }
-                                  </div>
-                                }
-
-                              </div>
-                            }
-                          </div>
-                        }
-
-                      </div>
-                    }
-
-                    <!-- Unassigned teams bucket -->
-                    @if (chart.unassignedTeams.length > 0) {
-                      <div class="oc-service-col">
-                        <div class="oc-drop"></div>
-                        <div class="oc-service-card oc-service-card--unassigned"
-                          [class.is-expanded]="isServiceExpanded('__unassigned__')"
-                          (click)="toggleService('__unassigned__')"
-                          role="button">
-                          <div class="oc-service-card-inner">
-                            <span class="oc-service-dot"></span>
-                            <span class="oc-service-name">Non assignés</span>
-                            <span class="oc-service-count">{{ chart.unassignedTeams.length }}</span>
-                            <svg class="oc-chevron" [class.oc-chevron--open]="isServiceExpanded('__unassigned__')" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-                          </div>
-                        </div>
-                        @if (isServiceExpanded('__unassigned__')) {
-                          <div class="oc-teams-trunk"></div>
-                          <div class="oc-teams-row" [style.--count]="chart.unassignedTeams.length">
-                            @for (team of chart.unassignedTeams; track team.id) {
-                              <div class="oc-team-col">
-                                <div class="oc-drop-sm"></div>
-                                <div class="oc-team-card" (click)="toggleTeam(team.id)" role="button">
-                                  <div class="oc-team-header">
-                                    <span class="oc-team-name">{{ team.name }}</span>
-                                    <span class="oc-team-count">{{ orgTeamMemberCount(team) }}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            }
-                          </div>
-                        }
-                      </div>
-                    }
-
-                  </div>
-                }
-
-                @if (chart.services.length === 0 && chart.unassignedTeams.length === 0) {
-                  <div class="orgchart-empty">Aucun service ni team pour le moment.</div>
-                }
-
+            @if (store.contracts().length === 0) {
+              <div class="empty-state">
+                <span>No contracts yet. Create the first one.</span>
               </div>
             }
           </div>
-        }
+        </div>
+      }
 
-      </main>
     </div>
   </div>
 }
@@ -409,3 +204,179 @@
     (created)="showContractPanel.set(false)"
   />
 }
+
+<!-- ═══════════════════════════════════════════════════════════
+     Recursive org node template
+     Context: node (implicit), depth, rootColor
+     ═══════════════════════════════════════════════════════════ -->
+<ng-template #orgNodeTpl let-node let-depth="depth" let-rootColor="rootColor">
+  <div class="oc-node-col" [style.--root-color]="rootColor">
+    <div class="oc-drop" [style.background]="rootColor + '33'"></div>
+
+    <!-- Node card -->
+    <div class="oc-node-card"
+      [class.depth-0]="depth === 0"
+      [class.depth-1]="depth === 1"
+      [class.depth-deep]="depth >= 2"
+      [style.--node-color]="getNodeColorForDepth(node, depth, rootColor)"
+      [class.is-expanded]="isNodeExpanded(node.id)"
+      [class.is-archived]="node.status === 'archived'"
+      (click)="toggleNode(node.id); $event.stopPropagation()"
+      role="button"
+      [attr.aria-expanded]="isNodeExpanded(node.id)">
+
+      <div class="oc-node-header">
+        @if (editMode()) {
+          <button class="oc-node-settings-btn" (click)="openNodeSettings(node, depth); $event.stopPropagation()" title="Node settings" type="button">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19.14,12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24,0-.43.17-.47.41l-.36,2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47,0-.59.22L2.74,8.87c-.12.21-.08.47.12.61l2.03,1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03,1.58c-.18.14-.23.41-.12.61l1.92,3.32c.12.22.37.29.59.22l2.39-.96c.5.38,1.03.7,1.62.94l.36,2.54c.05.24.24.41.48.41h3.84c.24,0,.44-.17.47-.41l.36-2.54c.59-.24,1.13-.56,1.62-.94l2.39.96c.22.08.47,0,.59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6,3.6,1.62,3.6,3.6-1.62,3.6-3.6,3.6z"/>
+            </svg>
+          </button>
+        }
+        <span class="oc-node-name">{{ node.name }}</span>
+        <span class="oc-node-count" [title]="totalDescendantMembers(node) + ' members total'">{{ totalDescendantMembers(node) }}</span>
+        @if (node.children.length > 0 || node.members.length > 0) {
+          <svg class="oc-chevron" [class.oc-chevron--open]="isNodeExpanded(node.id)" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        }
+      </div>
+
+      <!-- Depth label (from orgLayers) -->
+      <span class="oc-node-layer-label">{{ getLayerLabel(depth) }}</span>
+
+      <!-- Communication icons -->
+      @if ((node.communications ?? []).length > 0) {
+        <div class="oc-comm-icons">
+          @for (comm of node.communications; track comm.platform) {
+            <a class="oc-comm-icon" [attr.data-platform]="comm.platform" [href]="comm.url" target="_blank" rel="noopener" [title]="comm.platform + ': ' + comm.url" (click)="$event.stopPropagation()">
+              @if (comm.platform === 'slack') {
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zm1.271 0a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zm0 1.271a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zm6.124 2.521a2.528 2.528 0 0 1 2.521-2.521A2.528 2.528 0 0 1 20 8.834a2.528 2.528 0 0 1-2.521 2.521h-2.521V8.834zm-1.272 0a2.528 2.528 0 0 1-2.521 2.521 2.528 2.528 0 0 1-2.521-2.521V2.522A2.528 2.528 0 0 1 11.165 0a2.528 2.528 0 0 1 2.521 2.522v6.312zm-2.521 6.124a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521 2.528 2.528 0 0 1-2.521-2.521v-2.521h2.521zm0-1.272a2.528 2.528 0 0 1-2.521-2.521 2.528 2.528 0 0 1 2.521-2.521h6.313A2.528 2.528 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.521h-6.313z"/></svg>
+              }
+              @if (comm.platform === 'whatsapp') {
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              }
+              @if (comm.platform === 'teams') {
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M19.404 4.5a2.25 2.25 0 110 4.5 2.25 2.25 0 010-4.5zM12 3a3.75 3.75 0 110 7.5A3.75 3.75 0 0112 3zm7.5 9h-3a3 3 0 00-3 3v4.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a3 3 0 00-3-3zm-9-1.5H4.5a3 3 0 00-3 3v6A1.5 1.5 0 003 21h12a1.5 1.5 0 001.5-1.5v-6a3 3 0 00-3-3z"/></svg>
+              }
+              @if (comm.platform === 'discord') {
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+              }
+              @if (comm.platform === 'telegram') {
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+              }
+            </a>
+          }
+        </div>
+      }
+
+      <!-- Member avatars preview -->
+      @if (memberCount(node) > 0) {
+        <div class="oc-avatars">
+          @for (m of node.members.slice(0, 4); track m.user_id) {
+            <div class="oc-avatar" [style.background]="getMemberColor(m.user_id)" [title]="(m.first_name ?? '') + ' ' + (m.last_name ?? '')">
+              {{ getInitials(m.first_name) }}
+            </div>
+          }
+          @for (g of (node.guest_members ?? []).slice(0, node.members.length >= 4 ? 0 : 4 - node.members.length); track g.id) {
+            <div class="oc-avatar oc-avatar--guest" [title]="g.display_name + (g.title ? ' · ' + g.title : '')">
+              {{ g.display_name[0]?.toUpperCase() ?? '?' }}
+            </div>
+          }
+          @if (memberCount(node) > 4) {
+            <div class="oc-avatar oc-avatar--more">+{{ memberCount(node) - 4 }}</div>
+          }
+        </div>
+      }
+
+      <!-- Quick action buttons on the card (edit mode, no need to expand) -->
+      @if (editMode()) {
+        <div class="oc-card-actions" (click)="$event.stopPropagation()">
+          <button class="oc-card-action-btn" [style.--btn-color]="getNodeColorForDepth(node, depth, rootColor)" (click)="openAddMemberPopover(node)">+ Member</button>
+          <button class="oc-card-action-btn" [style.--btn-color]="getNodeColorForDepth(node, depth, rootColor)" (click)="startAddNode(node.id)">+ {{ getLayerLabel(depth + 1) }}</button>
+        </div>
+      }
+    </div>
+
+    <!-- Expanded content: members + children + add button -->
+    @if (isNodeExpanded(node.id)) {
+
+      <!-- Detailed member list -->
+      @if (memberCount(node) > 0) {
+        <div class="oc-members-stack">
+          @for (member of node.members; track member.user_id) {
+            <div class="oc-member-card" [style.border-left-color]="rootColor + '44'">
+              <div class="oc-member-avatar" [style.background]="getMemberColor(member.user_id)">
+                {{ getInitials(member.first_name) }}
+              </div>
+              <div class="oc-member-info">
+                <span class="oc-member-name">{{ member.first_name }} {{ member.last_name }}</span>
+                <span class="oc-member-role">{{ member.team_role }}</span>
+              </div>
+              @if (editMode()) {
+                <button class="oc-member-remove" (click)="removeMember(node.id, member.user_id); $event.stopPropagation()" title="Remove member">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+              }
+            </div>
+          }
+          @for (guest of node.guest_members ?? []; track guest.id) {
+            <div class="oc-member-card oc-member-card--guest" [style.border-left-color]="rootColor + '44'">
+              <div class="oc-member-avatar oc-member-avatar--guest">
+                {{ guest.display_name[0]?.toUpperCase() ?? '?' }}
+              </div>
+              <div class="oc-member-info">
+                <span class="oc-member-name">{{ guest.display_name }}</span>
+                <span class="oc-member-role">{{ guest.team_role }}@if (guest.title) { · {{ guest.title }} }</span>
+              </div>
+              @if (editMode()) {
+                <button class="oc-member-remove" (click)="removeGuestMember(node.id, guest.id); $event.stopPropagation()" title="Remove guest">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @if (editMode()) {
+        <!-- Add member button (opens popover via LayoutService) -->
+        <button class="oc-add-member-btn" [style.--btn-color]="rootColor" (click)="openAddMemberPopover(node); $event.stopPropagation()">
+          + Member
+        </button>
+
+        <!-- Add child node button -->
+        <button class="oc-add-child-btn" [style.--btn-color]="rootColor" (click)="startAddNode(node.id); $event.stopPropagation()">
+          + {{ getLayerLabel(depth + 1) }}
+        </button>
+
+        <!-- Inline creation form for children -->
+        @if (addingNode() && newNodeParentId() === node.id) {
+          <div class="add-node-form add-node-form--inline">
+            <input
+              class="input-inline"
+              type="text"
+              [placeholder]="getLayerLabel(depth + 1) + ' name...'"
+              [value]="newNodeName()"
+              (input)="onNodeNameInput($event)"
+              (keydown.enter)="confirmAddNode()"
+              (keydown.escape)="cancelAddNode()"
+              (click)="$event.stopPropagation()"
+              autofocus
+            />
+            <button class="btn-confirm" (click)="confirmAddNode(); $event.stopPropagation()">Create</button>
+            <button class="btn-cancel" (click)="cancelAddNode(); $event.stopPropagation()">Cancel</button>
+          </div>
+        }
+      }
+
+      <!-- Children nodes (recursive — pass rootColor down) -->
+      @if (node.children.length > 0) {
+        <div class="oc-branch" [style.background]="rootColor + '22'"></div>
+        <div class="oc-children-row" [style.--count]="node.children.length">
+          @for (child of node.children; track child.id) {
+            <ng-container *ngTemplateOutlet="orgNodeTpl; context: { $implicit: child, depth: depth + 1, rootColor: rootColor }"></ng-container>
+          }
+        </div>
+      }
+    }
+  </div>
+</ng-template>

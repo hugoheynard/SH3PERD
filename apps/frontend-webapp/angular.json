@@ -41,7 +41,7 @@
             "stylePreprocessorOptions": {
               "includePaths": [
                 "src/styles",
-                "src/app/legacy/ui/styles"              ]
+                "src/app/shared/styles"              ]
             },
             "scripts": [],
             "server": "src/main.server.ts",

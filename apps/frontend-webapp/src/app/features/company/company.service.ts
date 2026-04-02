@@ -6,19 +6,19 @@ import type {
   TCompanyAddress,
   TCompanyContractViewModel,
   TCompanyDetailViewModel,
-  TCompanyViewModel,
   TCompanyCardViewModel,
   TCompanyId,
-  TCompanyAdminRole,
   TCompanyOrgChartViewModel,
-  TServiceCommunication,
-  TContractStatus,
   TContractDetailViewModel,
   TContractId,
-  TTeamRecord,
-  TService,
-  TServiceId,
-  TServiceDetailViewModel,
+  TContractRole,
+  TContractStatus,
+  TOrgNodeId,
+  TOrgNodeGuestMember,
+  TOrgNodeRecord,
+  TTeamRole,
+  TTeamType,
+  TOrgNodeCommunication,
   TUserId,
   TUserSearchResult,
 } from '@sh3pherd/shared-types';
@@ -27,6 +27,8 @@ import type {
   providedIn: 'root',
 })
 export class CompanyService extends BaseHttpService {
+
+  // ── Company ────────────────────────────────────────────────
 
   createCompany(name: string): Observable<TApiResponse<TCompanyDetailViewModel>> {
     return this.http.post<TApiResponse<TCompanyDetailViewModel>>(
@@ -37,7 +39,7 @@ export class CompanyService extends BaseHttpService {
 
   getMyCompany(): Observable<TApiResponse<TCompanyDetailViewModel>> {
     return this.http.get<TApiResponse<TCompanyDetailViewModel>>(
-      `${this.UrlBuilder.apiProtectedRoute('companies').route('me').build()}`
+      this.UrlBuilder.apiProtectedRoute('companies').route('me').build()
     );
   }
 
@@ -53,33 +55,131 @@ export class CompanyService extends BaseHttpService {
     );
   }
 
-  updateCompanyInfo(id: TCompanyId, dto: { name?: string; description?: string; address?: TCompanyAddress }): Observable<TApiResponse<TCompanyDetailViewModel>> {
+  updateCompanyInfo(id: TCompanyId, dto: { name?: string; description?: string; address?: TCompanyAddress; orgLayers?: string[]; integrations?: import('@sh3pherd/shared-types').TCompanyIntegration[]; channels?: import('@sh3pherd/shared-types').TCompanyChannel[] }): Observable<TApiResponse<TCompanyDetailViewModel>> {
     return this.http.patch<TApiResponse<TCompanyDetailViewModel>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(id).build(),
       dto
     );
   }
 
-  addAdmin(id: TCompanyId, userId: TUserId, role: TCompanyAdminRole): Observable<TApiResponse<TCompanyDetailViewModel>> {
-    return this.http.post<TApiResponse<TCompanyDetailViewModel>>(
-      this.UrlBuilder.apiProtectedRoute('companies').route(`${id}/admins`).build(),
-      { user_id: userId, role }
+  deleteCompany(id: TCompanyId): Observable<void> {
+    return this.http.delete<void>(
+      this.UrlBuilder.apiProtectedRoute('companies').route(id).build()
     );
   }
 
-  removeAdmin(id: TCompanyId, userId: TUserId): Observable<TApiResponse<TCompanyDetailViewModel>> {
-    return this.http.delete<TApiResponse<TCompanyDetailViewModel>>(
-      this.UrlBuilder.apiProtectedRoute('companies').route(`${id}/admins/${userId}`).build()
+  // ── Org Chart ──────────────────────────────────────────────
+
+  getOrgChart(companyId: TCompanyId): Observable<TApiResponse<TCompanyOrgChartViewModel>> {
+    return this.http.get<TApiResponse<TCompanyOrgChartViewModel>>(
+      this.UrlBuilder.apiProtectedRoute('companies').route(`${companyId}/orgchart`).build()
     );
   }
 
-  // ── Contracts ───────────────────────────────────────────────
+  // ── Org Nodes ──────────────────────────────────────────────
+
+  createOrgNode(dto: {
+    company_id: TCompanyId;
+    name: string;
+    parent_id?: TOrgNodeId;
+    type?: TTeamType;
+    color?: string;
+  }): Observable<TApiResponse<TOrgNodeRecord>> {
+    return this.http.post<TApiResponse<TOrgNodeRecord>>(
+      this.UrlBuilder.apiProtectedRoute('companies').route('org-nodes').build(),
+      dto
+    );
+  }
+
+  updateOrgNode(nodeId: TOrgNodeId, dto: { name?: string; color?: string; type?: TTeamType; communications?: TOrgNodeCommunication[] }): Observable<TApiResponse<TOrgNodeRecord>> {
+    return this.http.patch<TApiResponse<TOrgNodeRecord>>(
+      this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}`).build(),
+      dto
+    );
+  }
+
+  getCompanyOrgNodes(companyId: TCompanyId): Observable<TApiResponse<TOrgNodeRecord[]>> {
+    return this.http.get<TApiResponse<TOrgNodeRecord[]>>(
+      this.UrlBuilder.apiProtectedRoute('companies').route(`${companyId}/org-nodes`).build()
+    );
+  }
+
+  getOrgNodeMembers(nodeId: TOrgNodeId): Observable<TApiResponse<unknown>> {
+    return this.http.get<TApiResponse<unknown>>(
+      this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/members`).build()
+    );
+  }
+
+  addOrgNodeMember(nodeId: TOrgNodeId, dto: { user_id: TUserId; contract_id: string; team_role?: TTeamRole }): Observable<TApiResponse<unknown>> {
+    return this.http.post<TApiResponse<unknown>>(
+      this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/members`).build(),
+      dto
+    );
+  }
+
+  removeOrgNodeMember(nodeId: TOrgNodeId, userId: TUserId): Observable<TApiResponse<unknown>> {
+    return this.http.delete<TApiResponse<unknown>>(
+      this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/members/${userId}`).build()
+    );
+  }
+
+  // ── Guest Members ─────────────────────────────────────────
+
+  addGuestMember(nodeId: TOrgNodeId, dto: { display_name: string; title?: string; team_role: TTeamRole }): Observable<TApiResponse<TOrgNodeGuestMember>> {
+    return this.http.post<TApiResponse<TOrgNodeGuestMember>>(
+      this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/guests`).build(),
+      dto
+    );
+  }
+
+  removeGuestMember(nodeId: TOrgNodeId, guestId: string): Observable<TApiResponse<unknown>> {
+    return this.http.delete<TApiResponse<unknown>>(
+      this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/guests/${guestId}`).build()
+    );
+  }
+
+  // ── Contracts ──────────────────────────────────────────────
 
   getCompanyContracts(companyId: TCompanyId): Observable<TCompanyContractViewModel[]> {
     return this.http.get<TCompanyContractViewModel[]>(
       this.UrlBuilder.apiProtectedRoute('contracts').route(`company/${companyId}`).build()
     );
   }
+
+  getContractById(contractId: TContractId): Observable<TContractDetailViewModel> {
+    return this.http.get<TContractDetailViewModel>(
+      this.UrlBuilder.apiProtectedRoute('contracts').route(contractId).build()
+    );
+  }
+
+  createContractForUser(dto: { company_id: TCompanyId; user_id: TUserId; status: TContractStatus; startDate: string; endDate?: string }): Observable<TApiResponse<TCompanyContractViewModel>> {
+    return this.http.post<TApiResponse<TCompanyContractViewModel>>(
+      this.UrlBuilder.apiProtectedRoute('contracts').build(),
+      { requestDTO: dto }
+    );
+  }
+
+  updateContract(contractId: TContractId, dto: { status?: TContractStatus; startDate?: string; endDate?: string | null }): Observable<TContractDetailViewModel> {
+    return this.http.patch<TContractDetailViewModel>(
+      this.UrlBuilder.apiProtectedRoute('contracts').route(contractId).build(),
+      dto
+    );
+  }
+
+  assignContractRole(contractId: TContractId, role: TContractRole): Observable<unknown> {
+    return this.http.post<unknown>(
+      this.UrlBuilder.apiProtectedRoute('contracts').route(`${contractId}/roles`).build(),
+      { role }
+    );
+  }
+
+  removeContractRole(contractId: TContractId, role: TContractRole): Observable<unknown> {
+    return this.http.delete<unknown>(
+      this.UrlBuilder.apiProtectedRoute('contracts').route(`${contractId}/roles/${role}`).build()
+    );
+  }
+
+  // ── Users ──────────────────────────────────────────────────
 
   searchUserByEmail(email: string): Observable<TApiResponse<TUserSearchResult | null>> {
     return this.http.get<TApiResponse<TUserSearchResult | null>>(
@@ -91,91 +191,6 @@ export class CompanyService extends BaseHttpService {
     return this.http.post<TApiResponse<TUserSearchResult>>(
       this.UrlBuilder.apiProtectedRoute('users').route('invite').build(),
       dto
-    );
-  }
-
-  createContractForUser(dto: { company_id: TCompanyId; user_id: TUserId; status: TContractStatus; startDate: string; endDate?: string }): Observable<TApiResponse<TCompanyContractViewModel>> {
-    return this.http.post<TApiResponse<TCompanyContractViewModel>>(
-      this.UrlBuilder.apiProtectedRoute('contracts').build(),
-      { requestDTO: dto }
-    );
-  }
-
-  getContractById(contractId: TContractId): Observable<TContractDetailViewModel> {
-    return this.http.get<TContractDetailViewModel>(
-      this.UrlBuilder.apiProtectedRoute('contracts').route(contractId).build()
-    );
-  }
-
-  updateContract(contractId: TContractId, dto: { status?: TContractStatus; startDate?: string; endDate?: string | null }): Observable<TContractDetailViewModel> {
-    return this.http.patch<TContractDetailViewModel>(
-      this.UrlBuilder.apiProtectedRoute('contracts').route(contractId).build(),
-      dto
-    );
-  }
-
-  deleteCompany(id: TCompanyId): Observable<void> {
-    return this.http.delete<void>(
-      this.UrlBuilder.apiProtectedRoute('companies').route(id).build()
-    );
-  }
-
-  addService(companyId: TCompanyId, name: string): Observable<TApiResponse<TCompanyViewModel>> {
-    return this.http.post<TApiResponse<TCompanyViewModel>>(
-      `${this.UrlBuilder.apiProtectedRoute('companies').route('services').build()}`,
-      { company_id: companyId, name }
-    );
-  }
-
-  removeService(companyId: TCompanyId, serviceId: TServiceId): Observable<TApiResponse<TCompanyViewModel>> {
-    return this.http.delete<TApiResponse<TCompanyViewModel>>(
-      `${this.UrlBuilder.apiProtectedRoute('companies').route(`services/${serviceId}`).build()}`,
-      { body: { company_id: companyId } }
-    );
-  }
-
-  createTeam(dto: { company_id: TCompanyId; name: string; service_id?: TServiceId }): Observable<TApiResponse<TTeamRecord>> {
-    return this.http.post<TApiResponse<TTeamRecord>>(
-      `${this.UrlBuilder.apiProtectedRoute('companies').route('teams').build()}`,
-      dto
-    );
-  }
-
-  getCompanyTeams(companyId: TCompanyId): Observable<TApiResponse<TTeamRecord[]>> {
-    return this.http.get<TApiResponse<TTeamRecord[]>>(
-      `${this.UrlBuilder.apiProtectedRoute('companies').route(`${companyId}/teams`).build()}`
-    );
-  }
-
-  addTeamMember(teamId: string, dto: { user_id: string; contract_id: string }): Observable<TApiResponse<unknown>> {
-    return this.http.post<TApiResponse<unknown>>(
-      `${this.UrlBuilder.apiProtectedRoute('companies').route(`teams/${teamId}/members`).build()}`,
-      dto
-    );
-  }
-
-  removeTeamMember(teamId: string, userId: string): Observable<TApiResponse<unknown>> {
-    return this.http.delete<TApiResponse<unknown>>(
-      `${this.UrlBuilder.apiProtectedRoute('companies').route(`teams/${teamId}/members/${userId}`).build()}`
-    );
-  }
-
-  getServiceDetail(companyId: TCompanyId, serviceId: TServiceId): Observable<TApiResponse<TServiceDetailViewModel>> {
-    return this.http.get<TApiResponse<TServiceDetailViewModel>>(
-      this.UrlBuilder.apiProtectedRoute('companies').route(`${companyId}/services/${serviceId}`).build()
-    );
-  }
-
-  updateService(companyId: TCompanyId, serviceId: TServiceId, dto: { name?: string; color?: string; communication?: TServiceCommunication | null }): Observable<TApiResponse<TService>> {
-    return this.http.patch<TApiResponse<TService>>(
-      this.UrlBuilder.apiProtectedRoute('companies').route(`services/${serviceId}`).build(),
-      { company_id: companyId, ...dto }
-    );
-  }
-
-  getOrgChart(companyId: TCompanyId): Observable<TApiResponse<TCompanyOrgChartViewModel>> {
-    return this.http.get<TApiResponse<TCompanyOrgChartViewModel>>(
-      this.UrlBuilder.apiProtectedRoute('companies').route(`${companyId}/orgchart`).build()
     );
   }
 }

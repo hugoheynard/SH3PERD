@@ -1,0 +1,122 @@
+<ui-popover-frame width="360px">
+
+  <div popover-title>
+    Add member to {{ nodeName }}
+  </div>
+
+  <div popover-body class="body">
+
+    <!-- Mode toggle -->
+    <div class="mode-tabs">
+      <button class="mode-tab" [class.is-active]="mode() === 'contract'" (click)="setMode('contract')" type="button">
+        From contracts
+      </button>
+      <button class="mode-tab" [class.is-active]="mode() === 'guest'" (click)="setMode('guest')" type="button">
+        Guest
+      </button>
+    </div>
+
+    <!-- Contract mode -->
+    @if (mode() === 'contract') {
+      <!-- Search -->
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Search by name or email..."
+        [value]="searchQuery()"
+        (input)="onSearch($event)"
+        autofocus
+      />
+
+      <!-- Contract list -->
+      <div class="contract-list">
+        @for (contract of filteredContracts; track contract.id) {
+          <button class="contract-option"
+            [class.is-selected]="selectedContractId() === contract.id"
+            (click)="selectContract(contract.id)"
+            type="button">
+            <div class="contract-avatar" [style.background]="getMemberColor(contract.user_id)">
+              {{ (contract.user_first_name?.[0] ?? '?').toUpperCase() }}
+            </div>
+            <div class="contract-info">
+              <span class="contract-name">{{ contract.user_first_name }} {{ contract.user_last_name }}</span>
+              @if (contract.user_email) {
+                <span class="contract-email">{{ contract.user_email }}</span>
+              }
+            </div>
+            @if (selectedContractId() === contract.id) {
+              <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+            }
+          </button>
+        }
+        @if (filteredContracts.length === 0) {
+          <span class="empty-list">No available contracts</span>
+        }
+      </div>
+
+      <!-- Role selector -->
+      @if (selectedContractId()) {
+        <div class="role-section">
+          <span class="role-label">Role</span>
+          <div class="role-pills">
+            @for (role of teamRoles; track role) {
+              <button class="role-pill"
+                [class.is-active]="selectedRole() === role"
+                (click)="selectRole(role)"
+                type="button">
+                {{ role }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    }
+
+    <!-- Guest mode -->
+    @if (mode() === 'guest') {
+      <div class="guest-form">
+        <label class="field-label">Name</label>
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Display name..."
+          [value]="guestName()"
+          (input)="onGuestNameInput($event)"
+          autofocus
+        />
+
+        <label class="field-label">Title</label>
+        <input
+          class="search-input"
+          type="text"
+          placeholder="e.g. Sound Engineer, External Producer..."
+          [value]="guestTitle()"
+          (input)="onGuestTitleInput($event)"
+        />
+
+        <div class="role-section">
+          <span class="role-label">Role</span>
+          <div class="role-pills">
+            @for (role of teamRoles; track role) {
+              <button class="role-pill"
+                [class.is-active]="guestRole() === role"
+                (click)="selectGuestRole(role)"
+                type="button">
+                {{ role }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+  </div>
+
+  <div popover-footer>
+    <button class="btn-cancel" (click)="layout.clearPopover()">Cancel</button>
+    <button class="btn-confirm" [disabled]="!canConfirm" (click)="confirm()">
+      {{ mode() === 'guest' ? 'Add guest' : 'Add member' }}
+    </button>
+  </div>
+
+</ui-popover-frame>

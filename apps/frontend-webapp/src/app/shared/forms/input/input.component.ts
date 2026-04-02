@@ -65,6 +65,9 @@ export class InputComponent extends BaseControlValueAccessor<string | number> {
    */
   readonly align = input<'start' | 'center'>('start');
 
+  /** Optional label displayed above the input. */
+  readonly label = input<string>();
+
   /** Placeholder text. */
   readonly placeholder = input('');
 

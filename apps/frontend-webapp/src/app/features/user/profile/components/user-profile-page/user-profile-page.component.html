@@ -23,8 +23,8 @@
 
     <form [formGroup]="form" class="form-grid" (ngSubmit)="submitProfile()">
       <div class="field">
-        <label class="field__label">First name</label>
         <sh3-input
+          label="First name"
           formControlName="first_name"
           placeholder="First name"
           [readonly]="!editingProfile()"
@@ -32,8 +32,8 @@
       </div>
 
       <div class="field">
-        <label class="field__label">Last name</label>
         <sh3-input
+          label="Last name"
           formControlName="last_name"
           placeholder="Last name"
           [readonly]="!editingProfile()"
@@ -41,8 +41,8 @@
       </div>
 
       <div class="field">
-        <label class="field__label">Display name</label>
         <sh3-input
+          label="Display name"
           formControlName="display_name"
           placeholder="Display name (optional)"
           [readonly]="!editingProfile()"
@@ -50,8 +50,8 @@
       </div>
 
       <div class="field">
-        <label class="field__label">Phone</label>
         <sh3-input
+          label="Phone"
           type="tel"
           formControlName="phone"
           placeholder="Phone (optional)"
@@ -88,8 +88,8 @@
     } @else {
       <form [formGroup]="emailForm" class="form-grid" (ngSubmit)="submitEmail()">
         <div class="field">
-          <label class="field__label">New email</label>
           <sh3-input
+            label="New email"
             type="email"
             formControlName="newEmail"
             placeholder="new@email.com"
@@ -97,8 +97,8 @@
         </div>
 
         <div class="field">
-          <label class="field__label">Confirm email</label>
           <sh3-input
+            label="Confirm email"
             type="email"
             formControlName="confirmEmail"
             placeholder="Repeat new email"

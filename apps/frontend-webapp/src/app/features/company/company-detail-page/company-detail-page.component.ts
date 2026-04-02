@@ -3,10 +3,32 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyStore } from '../company.store';
 import { ContractCreationPanelComponent } from '../contract-creation-panel/contract-creation-panel.component';
-import { CompanyService } from '../company.service';
-import type { TTeamRecord, TCompanyId, TContractId, TCompanyOrgChartViewModel, TServiceTeamViewModel } from '@sh3pherd/shared-types';
+import { LayoutService } from '../../../core/services/layout.service';
+import { AddMemberPopoverComponent, type TAddMemberPopoverData } from '../popovers/add-member-popover/add-member-popover.component';
+import { NodeSettingsPopoverComponent, type TNodeSettingsPopoverData } from '../popovers/node-settings-popover/node-settings-popover.component';
+import type {
+  TCompanyId,
+  TContractId,
+  TOrgNodeHierarchyViewModel,
+  TOrgNodeId,
+  TUserId,
+} from '@sh3pherd/shared-types';
 
-type CompanyTab = 'teams' | 'contracts' | 'orgchart';
+type CompanyTab = 'orgchart' | 'contracts';
+
+/** Preset color palette for root nodes */
+const NODE_PALETTE = [
+  '#63b3ed', // blue
+  '#68d391', // green
+  '#f6ad55', // orange
+  '#fc8181', // red
+  '#b794f4', // purple
+  '#76e4f7', // cyan
+  '#fbb6ce', // pink
+  '#f6e05e', // yellow
+  '#4fd1c5', // teal
+  '#a3bffa', // indigo
+] as const;
 
 @Component({
   selector: 'app-company-detail-page',
@@ -20,24 +42,32 @@ export class CompanyDetailPageComponent implements OnInit {
   readonly store = inject(CompanyStore);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly companyService = inject(CompanyService);
+  private readonly layout = inject(LayoutService);
 
-  readonly activeTab = signal<CompanyTab>('teams');
-  readonly newTeamName = signal('');
-  readonly addingTeam = signal(false);
+  readonly activeTab = signal<CompanyTab>('orgchart');
+  readonly editMode = signal(false);
   readonly showContractPanel = signal(false);
 
-  // Orgchart state
-  readonly orgChart = signal<TCompanyOrgChartViewModel | null>(null);
-  readonly orgChartLoading = signal(false);
-  readonly orgChartError = signal<string | null>(null);
-  readonly expandedServices = signal<Set<string>>(new Set());
-  readonly expandedTeams = signal<Set<string>>(new Set());
+  // Org chart expand/collapse state (tracks node IDs)
+  readonly expandedNodes = signal<Set<string>>(new Set());
+
+  // Org node creation state
+  readonly addingNode = signal(false);
+  readonly newNodeName = signal('');
+  readonly newNodeParentId = signal<string | undefined>(undefined);
+  readonly newNodeColor = signal<string>(NODE_PALETTE[0]);
+
+  // (Node settings are now a popover — no inline state needed)
+
+  // Color palette exposed to template
+  readonly colorPalette = NODE_PALETTE;
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id') as TCompanyId;
     if (id) {
       this.store.loadCompanyById(id);
+      this.store.loadOrgChart(id);
+      this.store.loadCompanyContracts(id);
     }
   }
 
@@ -51,117 +81,187 @@ export class CompanyDetailPageComponent implements OnInit {
     this.router.navigate(['/app/company', company.id, 'settings']);
   }
 
-  goToServices(): void {
-    const company = this.store.company();
-    if (!company) return;
-    this.router.navigate(['/app/company', company.id, 'services']);
-  }
-
-  goToService(serviceId: string): void {
-    const company = this.store.company();
-    if (!company) return;
-    this.router.navigate(['/app/company', company.id, 'services', serviceId]);
-  }
-
   setTab(tab: CompanyTab): void {
     this.activeTab.set(tab);
+  }
+
+  toggleEditMode(): void {
+    const entering = !this.editMode();
+    this.editMode.set(entering);
+    if (!entering) {
+      this.cancelAddNode();
+    }
+  }
+
+  // ── Org chart helpers ──────────────────────────────────────
+
+  toggleNode(nodeId: string): void {
+    const s = new Set(this.expandedNodes());
+    s.has(nodeId) ? s.delete(nodeId) : s.add(nodeId);
+    this.expandedNodes.set(s);
+  }
+
+  isNodeExpanded(nodeId: string): boolean {
+    return this.expandedNodes().has(nodeId);
+  }
+
+  /** Get the orgLayers label for a given depth index */
+  getLayerLabel(depth: number): string {
+    const chart = this.store.orgChart();
+    return chart?.orgLayers?.[depth] ?? `Level ${depth}`;
+  }
+
+  memberCount(node: TOrgNodeHierarchyViewModel): number {
+    return node.members.length + (node.guest_members?.length ?? 0);
+  }
+
+  /** Count unique persons across a node and all its descendants */
+  totalDescendantMembers(node: TOrgNodeHierarchyViewModel): number {
+    const userIds = new Set<string>();
+    let guestCount = 0;
+    const walk = (n: TOrgNodeHierarchyViewModel): void => {
+      for (const m of n.members) userIds.add(m.user_id);
+      guestCount += (n.guest_members?.length ?? 0);
+      for (const child of n.children) walk(child);
+    };
+    walk(node);
+    return userIds.size + guestCount;
+  }
+
+  // ── Color system ───────────────────────────────────────────
+
+  getNodeColorForDepth(node: TOrgNodeHierarchyViewModel, depth: number, rootColor?: string): string {
+    if (depth === 0) {
+      return node.color || NODE_PALETTE[0];
+    }
+    const base = rootColor || NODE_PALETTE[0];
+    const pct = Math.max(40, 100 - depth * 20);
+    return `color-mix(in srgb, ${base} ${pct}%, var(--card-color, #2c323d))`;
+  }
+
+  getRootColor(node: TOrgNodeHierarchyViewModel): string {
+    return node.color || NODE_PALETTE[0];
+  }
+
+  // ── Node creation ──────────────────────────────────────────
+
+  startAddNode(parentId?: string): void {
+    this.newNodeParentId.set(parentId);
+    this.newNodeColor.set(NODE_PALETTE[0]);
+    this.addingNode.set(true);
+  }
+
+  cancelAddNode(): void {
+    this.addingNode.set(false);
+    this.newNodeName.set('');
+    this.newNodeParentId.set(undefined);
+  }
+
+  confirmAddNode(): void {
+    const name = this.newNodeName().trim();
+    const company = this.store.company();
+    if (!name || !company) return;
+
+    const isRoot = !this.newNodeParentId();
+    this.store.createOrgNode(
+      {
+        company_id: company.id,
+        name,
+        parent_id: this.newNodeParentId() as any,
+        ...(isRoot ? { color: this.newNodeColor() } : {}),
+      },
+      () => this.store.loadOrgChart(company.id),
+    );
+    this.newNodeName.set('');
+    this.addingNode.set(false);
+    this.newNodeParentId.set(undefined);
+  }
+
+  onNodeNameInput(event: Event): void {
+    this.newNodeName.set((event.target as HTMLInputElement).value);
+  }
+
+  selectColor(color: string): void {
+    this.newNodeColor.set(color);
+  }
+
+  // ── Member assignment ──────────────────────────────────────
+
+  openAddMemberPopover(node: TOrgNodeHierarchyViewModel): void {
     const company = this.store.company();
     if (!company) return;
-    if (tab === 'teams') this.store.loadTeams(company.id);
-    if (tab === 'contracts') this.store.loadCompanyContracts(company.id);
-    if (tab === 'orgchart') this.loadOrgChart(company.id as TCompanyId);
-  }
 
-  loadOrgChart(companyId: TCompanyId): void {
-    if (this.orgChart()) return; // already loaded
-    this.orgChartLoading.set(true);
-    this.orgChartError.set(null);
-    this.companyService.getOrgChart(companyId).subscribe({
-      next: (res) => {
-        this.orgChart.set(res.data);
-        // expand all services by default
-        const allServiceIds = new Set(res.data.services.map(s => s.service_id));
-        this.expandedServices.set(allServiceIds);
-        this.orgChartLoading.set(false);
+    this.layout.setPopover<AddMemberPopoverComponent, TAddMemberPopoverData>(
+      AddMemberPopoverComponent,
+      {
+        nodeId: node.id as TOrgNodeId,
+        nodeName: node.name,
+        companyId: company.id,
+        existingMembers: node.members,
       },
-      error: () => {
-        this.orgChartError.set('Failed to load org chart');
-        this.orgChartLoading.set(false);
+    );
+  }
+
+  removeMember(nodeId: string, userId: string): void {
+    const company = this.store.company();
+    if (!company) return;
+
+    this.store.removeOrgNodeMember(
+      nodeId as TOrgNodeId,
+      userId as TUserId,
+      () => this.store.loadOrgChart(company.id),
+    );
+  }
+
+  removeGuestMember(nodeId: string, guestId: string): void {
+    const company = this.store.company();
+    if (!company) return;
+
+    this.store.removeGuestMember(
+      nodeId as TOrgNodeId,
+      guestId,
+      () => this.store.loadOrgChart(company.id),
+    );
+  }
+
+  /** Get contract display name from a contract ID */
+  getContractLabel(contractId: string): string {
+    const c = this.store.contracts().find(ct => ct.id === contractId);
+    if (!c) return contractId;
+    const name = [c.user_first_name, c.user_last_name].filter(Boolean).join(' ');
+    return name || c.user_email || c.user_id;
+  }
+
+  // ── Node settings (popover) ────────────────────────────────
+
+  openNodeSettings(node: TOrgNodeHierarchyViewModel, depth: number): void {
+    const company = this.store.company();
+    if (!company) return;
+
+    this.layout.setPopover<NodeSettingsPopoverComponent, TNodeSettingsPopoverData>(
+      NodeSettingsPopoverComponent,
+      {
+        node,
+        companyId: company.id,
+        depth,
       },
-    });
+    );
   }
 
-  toggleService(serviceId: string): void {
-    const s = new Set(this.expandedServices());
-    s.has(serviceId) ? s.delete(serviceId) : s.add(serviceId);
-    this.expandedServices.set(s);
-  }
+  // ── UI helpers ─────────────────────────────────────────────
 
-  toggleTeam(teamId: string): void {
-    const s = new Set(this.expandedTeams());
-    s.has(teamId) ? s.delete(teamId) : s.add(teamId);
-    this.expandedTeams.set(s);
-  }
-
-  isServiceExpanded(serviceId: string): boolean {
-    return this.expandedServices().has(serviceId);
-  }
-
-  isTeamExpanded(teamId: string): boolean {
-    return this.expandedTeams().has(teamId);
-  }
-
-  orgTeamMemberCount(team: TServiceTeamViewModel): number {
-    return team.members.length;
-  }
-
-  startAddTeam(): void {
-    this.addingTeam.set(true);
-  }
-
-  cancelAddTeam(): void {
-    this.addingTeam.set(false);
-    this.newTeamName.set('');
-  }
-
-  confirmAddTeam(): void {
-    const name = this.newTeamName().trim();
-    if (!name) return;
-    this.store.createTeam(name);
-    this.newTeamName.set('');
-    this.addingTeam.set(false);
-  }
-
-  onTeamNameInput(event: Event): void {
-    this.newTeamName.set((event.target as HTMLInputElement).value);
-  }
-
-  getActiveMemberCount(team: TTeamRecord): number {
-    return team.members.filter(m => !m.leftAt).length;
-  }
-
-  getInitials(userId: string): string {
-    return userId.slice(-4, -2).toUpperCase();
+  getInitials(name?: string): string {
+    if (!name) return '?';
+    return name[0].toUpperCase();
   }
 
   getMemberColor(userId: string): string {
-    const colors = ['#63b3ed', '#68d391', '#f6ad55', '#fc8181', '#b794f4', '#76e4f7', '#fbb6ce'];
+    const colors = NODE_PALETTE;
     let hash = 0;
     for (let i = 0; i < userId.length; i++) {
       hash = userId.charCodeAt(i) + ((hash << 5) - hash);
     }
     return colors[Math.abs(hash) % colors.length];
-  }
-
-  getServiceName(serviceId: string | undefined): string {
-    if (!serviceId) return '';
-    const service = this.store.services().find(s => s.id === serviceId);
-    return service?.name ?? '';
-  }
-
-  getServiceColor(serviceId: string | undefined): string {
-    if (!serviceId) return 'transparent';
-    return this.store.services().find(s => s.id === serviceId)?.color ?? 'var(--accent-color)';
   }
 
   goToContract(contractId: TContractId): void {

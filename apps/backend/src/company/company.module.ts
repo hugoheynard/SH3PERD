@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { CompanyController } from './api/company.controller.js';
-import { CompanyUseCasesModule } from './useCase/company-use-cases.module.js';
+import { CompanyHandlersModule } from './company-handlers.module.js';
 
 @Module({
-  imports: [CompanyUseCasesModule],
+  imports: [CompanyHandlersModule],
   controllers: [CompanyController],
 })
 export class CompanyModule {}

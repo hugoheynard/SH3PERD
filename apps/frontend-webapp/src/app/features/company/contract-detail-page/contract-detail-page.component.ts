@@ -8,9 +8,11 @@ import {
 import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyService } from '../company.service';
+import { CompanyStore } from '../company.store';
 import type {
   TContractDetailViewModel,
   TContractId,
+  TContractRole,
   TContractStatus,
   TContractType,
   TCompensationPeriod,
@@ -43,6 +45,7 @@ export class ContractDetailPageComponent implements OnInit {
   private readonly route          = inject(ActivatedRoute);
   private readonly router         = inject(Router);
   private readonly companyService = inject(CompanyService);
+  private readonly store          = inject(CompanyStore);
 
   readonly detail  = signal<TContractDetailViewModel | null>(null);
   readonly loading = signal(true);
@@ -50,6 +53,10 @@ export class ContractDetailPageComponent implements OnInit {
   readonly editing = signal(false);
   readonly saving  = signal(false);
   readonly form    = signal<EditForm>(this.defaultForm());
+
+  readonly AVAILABLE_ROLES: TContractRole[] = ['owner', 'admin', 'artist', 'viewer'];
+  readonly addingRole = signal(false);
+  readonly selectedNewRole = signal<TContractRole>('viewer');
 
   readonly STATUS_OPTIONS: TContractStatus[]      = ['draft', 'active', 'terminated'];
   readonly CONTRACT_TYPES: (TContractType | '')[] = ['', 'CDI', 'CDD', 'freelance', 'stage', 'alternance'];
@@ -136,6 +143,33 @@ export class ContractDetailPageComponent implements OnInit {
       next: () => { this.saving.set(false); this.editing.set(false); this.loadDetail(); },
       error: () => { this.saving.set(false); this.error.set('Failed to save changes'); },
     });
+  }
+
+  // ── Role management ─────────────────────────────────────
+
+  assignRole(): void {
+    const id = this.contractId;
+    if (!id) return;
+    this.store.assignContractRole(id, this.selectedNewRole(), () => {
+      this.addingRole.set(false);
+      this.loadDetail();
+    });
+  }
+
+  removeRole(role: TContractRole): void {
+    const id = this.contractId;
+    if (!id) return;
+    this.store.removeContractRole(id, role, () => this.loadDetail());
+  }
+
+  getRoleColor(role: TContractRole): string {
+    const map: Record<TContractRole, string> = { owner: '#f6ad55', admin: '#b794f4', artist: '#63b3ed', viewer: '#68d391' };
+    return map[role] ?? '#a0aec0';
+  }
+
+  getAvailableRolesToAdd(): TContractRole[] {
+    const current = this.detail()?.roles ?? [];
+    return this.AVAILABLE_ROLES.filter(r => !current.includes(r));
   }
 
   goBack(): void {

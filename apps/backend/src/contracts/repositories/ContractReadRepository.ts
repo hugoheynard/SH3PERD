@@ -39,8 +39,12 @@ export class ContractReadRepository implements IContractReadRepository {
       {
         $project: {
           id: 1,
+          user_id: 1,
           company_id: '$company.id',
           company_name: '$company.name',
+          roles: 1,
+          contract_type: 1,
+          job_title: 1,
           startDate: 1,
           endDate: 1,
           status: 1,
@@ -78,6 +82,7 @@ export class ContractReadRepository implements IContractReadRepository {
           user_first_name: '$profile.first_name',
           user_last_name: '$profile.last_name',
           user_email: '$credentials.email',
+          roles: 1,
           status: 1,
           startDate: 1,
           endDate: 1,

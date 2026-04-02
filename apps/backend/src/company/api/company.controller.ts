@@ -1,26 +1,29 @@
-import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Patch, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { ApiBearerAuth, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
-import { UserScopedContext } from '../../utils/nest/decorators/Context.js';
-import type { TUseCaseContext } from '../../types/useCases.generic.types.js';
 import { buildApiResponseDTO } from '../../music/codes.js';
-import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
-import { COMPANY_USE_CASES } from '../company.tokens.js';
-import type { TCompanyUseCases } from '../useCase/CompanyUseCasesFactory.js';
-import type { TCreateCompanyDTO } from '../useCase/company/CreateCompanyUseCase.js';
-import type { TAddServiceDTO } from '../useCase/company/AddServiceUseCase.js';
-import type { TCreateTeamDTO } from '../useCase/team/CreateTeamUseCase.js';
-import type { TAddTeamMemberDTO } from '../useCase/team/AddTeamMemberUseCase.js';
-import type { TRemoveTeamMemberDTO } from '../useCase/team/RemoveTeamMemberUseCase.js';
-import type { TTeamId, TCompanyId, TCompanyAdminRole, TServiceId, TUserId } from '@sh3pherd/shared-types';
+import type { TOrgNodeId, TCompanyId, TUserId } from '@sh3pherd/shared-types';
+import type { TTeamType, TTeamRole, TOrgNodeCommunication } from '@sh3pherd/shared-types';
 import { COMPANY_CODES_SUCCESS } from './company.codes.js';
-import {
-  CompanyViewModelPayload,
-  CompanyDetailViewModelPayload,
-  CompanyCardViewModelPayload,
-  TeamViewModelPayload,
-  TeamMemberViewModelPayload,
-} from '../dto/company.dto.js';
+
+// Commands
+import { CreateCompanyCommand } from '../application/commands/CreateCompanyCommand.js';
+import { UpdateCompanyInfoCommand } from '../application/commands/UpdateCompanyInfoCommand.js';
+import { DeleteCompanyCommand } from '../application/commands/DeleteCompanyCommand.js';
+import { CreateOrgNodeCommand } from '../application/commands/CreateTeamCommand.js';
+import { UpdateOrgNodeInfoCommand } from '../application/commands/UpdateOrgNodeInfoCommand.js';
+import { AddOrgNodeMemberCommand } from '../application/commands/AddTeamMemberCommand.js';
+import { RemoveOrgNodeMemberCommand } from '../application/commands/RemoveTeamMemberCommand.js';
+import { AddGuestMemberCommand, RemoveGuestMemberCommand } from '../application/commands/GuestMemberCommands.js';
+
+// Queries
+import { GetCompanyByIdQuery } from '../application/queries/GetCompanyByIdQuery.js';
+import { GetCompanyByOwnerQuery } from '../application/queries/GetCompanyByOwnerQuery.js';
+import { GetMyCompaniesQuery } from '../application/queries/GetMyCompaniesQuery.js';
+import { GetCompanyOrgNodesQuery } from '../application/queries/GetCompanyTeamsQuery.js';
+import { GetOrgNodeMembersQuery } from '../application/queries/GetTeamMembersQuery.js';
+import { GetCompanyOrgChartQuery } from '../application/queries/GetCompanyOrgChartQuery.js';
 
 @ApiTags('companies')
 @ApiBearerAuth('bearer')
@@ -30,223 +33,188 @@ import {
 @Controller()
 export class CompanyController {
   constructor(
-    @Inject(COMPANY_USE_CASES) private readonly uc: TCompanyUseCases,
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
   ) {}
 
   // ── Company ────────────────────────────────────────────────
 
-  @ApiOperation({ summary: 'Create a company', description: 'Creates a new company owned by the authenticated user.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.CREATE_COMPANY, CompanyViewModelPayload, 200))
+  @ApiOperation({ summary: 'Create a company' })
   @Post()
   async createCompany(
-    @Body() dto: TCreateCompanyDTO,
-    @UserScopedContext() ctx: TUseCaseContext<'unscoped'>,
+    @Body() dto: { name: string },
+    @ActorId() actorId: TUserId,
   ) {
-    const result = await this.uc.createCompany(dto, ctx.user_scope);
+    const result = await this.commandBus.execute(new CreateCompanyCommand(dto, actorId));
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.CREATE_COMPANY, result);
   }
 
-  @ApiOperation({ summary: 'Get my company', description: 'Returns the company owned by the authenticated user.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.GET_COMPANY, CompanyDetailViewModelPayload, 200))
+  @ApiOperation({ summary: 'Get my company (as owner)' })
   @Get('me')
-  async getMyCompany(
-    @ActorId() actorId: TUserId,
-  ) {
-    const result = await this.uc.getMyCompany(actorId);
+  async getMyCompany(@ActorId() actorId: TUserId) {
+    const result = await this.queryBus.execute(new GetCompanyByOwnerQuery(actorId));
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_COMPANY, result);
   }
 
   @ApiOperation({ summary: 'Get all companies for current user' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.GET_MY_COMPANIES, CompanyCardViewModelPayload, 200))
   @Get('my-companies')
-  async getMyCompanies(@UserScopedContext() ctx: TUseCaseContext<'unscoped'>) {
-    return buildApiResponseDTO(
-      COMPANY_CODES_SUCCESS.GET_MY_COMPANIES,
-      await this.uc.getMyCompanies(ctx.user_scope),
-    );
+  async getMyCompanies(@ActorId() actorId: TUserId) {
+    const result = await this.queryBus.execute(new GetMyCompaniesQuery(actorId));
+    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_MY_COMPANIES, result);
   }
 
-  @ApiOperation({ summary: 'Get company by ID', description: 'Returns a company by its ID.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_BY_ID, CompanyDetailViewModelPayload, 200))
+  @ApiOperation({ summary: 'Get company by ID' })
   @Get(':id')
-  async getCompanyById(
-    @Param('id') id: TCompanyId,
-    @ActorId() actorId: TUserId,
-  ) {
-    const result = await this.uc.getCompanyById(id, actorId);
+  async getCompanyById(@Param('id') id: TCompanyId) {
+    const result = await this.queryBus.execute(new GetCompanyByIdQuery(id));
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_BY_ID, result);
   }
 
-  @ApiOperation({ summary: 'Delete a company', description: 'Permanently deletes a company. Only the owner can delete.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.DELETE_COMPANY, undefined as any, 204))
+  @ApiOperation({ summary: 'Delete a company (owner only)' })
   @HttpCode(204)
   @Delete(':id')
   async deleteCompany(
     @Param('id') id: TCompanyId,
     @ActorId() actorId: TUserId,
   ) {
-    await this.uc.deleteCompany(id, actorId);
+    await this.commandBus.execute(new DeleteCompanyCommand(id, actorId));
   }
 
-  @ApiOperation({ summary: 'Update company info', description: 'Updates name, description and/or address. Owner only.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.UPDATE_COMPANY_INFO, CompanyDetailViewModelPayload, 200))
+  @ApiOperation({ summary: 'Update company info' })
   @Patch(':id')
   async updateCompanyInfo(
     @Param('id') id: TCompanyId,
     @Body() body: { name?: string; description?: string; address?: Record<string, string> },
     @ActorId() actorId: TUserId,
   ) {
-    const result = await this.uc.updateCompanyInfo({ company_id: id, ...body }, actorId);
+    const result = await this.commandBus.execute(
+      new UpdateCompanyInfoCommand({ company_id: id, ...body }, actorId),
+    );
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.UPDATE_COMPANY_INFO, result);
   }
 
-  // ── Admins ─────────────────────────────────────────────────
+  // ── Org Chart ──────────────────────────────────────────────
 
-  @ApiOperation({ summary: 'Add admin', description: 'Adds a user to the company admins. Owner only.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.ADD_ADMIN, CompanyDetailViewModelPayload, 200))
-  @Post(':id/admins')
-  async addAdmin(
-    @Param('id') id: TCompanyId,
-    @Body() body: { user_id: TUserId; role: TCompanyAdminRole },
-    @ActorId() actorId: TUserId,
-  ) {
-    const result = await this.uc.addAdmin({ company_id: id, user_id: body.user_id, role: body.role }, actorId);
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.ADD_ADMIN, result);
-  }
-
-  @ApiOperation({ summary: 'Remove admin', description: 'Removes a user from company admins. Owner only.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.REMOVE_ADMIN, CompanyDetailViewModelPayload, 200))
-  @Delete(':id/admins/:userId')
-  async removeAdmin(
-    @Param('id') id: TCompanyId,
-    @Param('userId') userId: TUserId,
-    @ActorId() actorId: TUserId,
-  ) {
-    const result = await this.uc.removeAdmin({ company_id: id, user_id: userId }, actorId);
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.REMOVE_ADMIN, result);
-  }
-
-  // ── Services ───────────────────────────────────────────────
-
-  @ApiOperation({ summary: 'Add a service', description: 'Adds a new service to the specified company.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.ADD_SERVICE, CompanyViewModelPayload, 200))
-  @Post('services')
-  async addService(
-    @Body() dto: TAddServiceDTO,
-    @UserScopedContext() ctx: TUseCaseContext<'unscoped'>,
-  ) {
-    const result = await this.uc.addService(dto, ctx.user_scope);
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.ADD_SERVICE, result);
-  }
-
-  @ApiOperation({ summary: 'Update a service', description: 'Updates name and/or color of a service.' })
-  @Patch('services/:serviceId')
-  async updateService(
-    @Param('serviceId') serviceId: TServiceId,
-    @Body() body: { company_id: TCompanyId; name?: string; color?: string; communication?: import('@sh3pherd/shared-types').TServiceCommunication | null },
-  ) {
-    const result = await this.uc.updateService({ company_id: body.company_id, service_id: serviceId, name: body.name, color: body.color, communication: body.communication });
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.UPDATE_SERVICE, result);
-  }
-
-  @ApiOperation({ summary: 'Remove a service', description: 'Removes a service from the specified company.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.REMOVE_SERVICE, CompanyViewModelPayload, 200))
-  @Delete('services/:serviceId')
-  async removeService(
-    @Param('serviceId') serviceId: TServiceId,
-    @Body() body: { company_id: TCompanyId },
-    @UserScopedContext() ctx: TUseCaseContext<'unscoped'>,
-  ) {
-    const result = await this.uc.removeService({ company_id: body.company_id, service_id: serviceId }, ctx.user_scope);
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.REMOVE_SERVICE, result);
-  }
-
-  @ApiOperation({ summary: 'Get company org chart', description: 'Returns the full company hierarchy — services, teams and active members.' })
+  @ApiOperation({ summary: 'Get company org chart (hierarchy tree)' })
   @Get(':id/orgchart')
-  async getOrgChart(
-    @Param('id') id: TCompanyId,
-  ) {
-    const result = await this.uc.getOrgChart(id);
+  async getOrgChart(@Param('id') id: TCompanyId) {
+    const result = await this.queryBus.execute(new GetCompanyOrgChartQuery(id));
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_ORGCHART, result);
   }
 
-  @ApiOperation({ summary: 'Get service detail', description: 'Returns a service with its teams and active members.' })
-  @Get(':id/services/:serviceId')
-  async getServiceDetail(
-    @Param('id') id: TCompanyId,
-    @Param('serviceId') serviceId: TServiceId,
+  // ── Org Nodes ──────────────────────────────────────────────
+
+  @ApiOperation({ summary: 'Create an org node' })
+  @Post('org-nodes')
+  async createOrgNode(
+    @Body() dto: {
+      company_id: TCompanyId;
+      name: string;
+      parent_id?: TOrgNodeId;
+      type?: TTeamType;
+      color?: string;
+    },
+    @ActorId() actorId: TUserId,
   ) {
-    const result = await this.uc.getServiceDetail(id, serviceId);
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_SERVICE_DETAIL, result);
+    const result = await this.commandBus.execute(new CreateOrgNodeCommand(dto, actorId));
+    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.CREATE_ORGNODE, result);
   }
 
-  // ── Teams ──────────────────────────────────────────────────
-
-  @ApiOperation({ summary: 'Create a team', description: 'Creates a new team for a company.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.CREATE_TEAM, TeamViewModelPayload, 200))
-  @Post('teams')
-  async createTeam(
-    @Body() dto: TCreateTeamDTO,
-    @UserScopedContext() ctx: TUseCaseContext<'unscoped'>,
+  @ApiOperation({ summary: 'Update an org node' })
+  @Patch('org-nodes/:nodeId')
+  async updateOrgNode(
+    @Param('nodeId') nodeId: TOrgNodeId,
+    @Body() body: { name?: string; color?: string; type?: TTeamType; communications?: TOrgNodeCommunication[] },
+    @ActorId() actorId: TUserId,
   ) {
-    const result = await this.uc.createTeam(dto, ctx.user_scope);
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.CREATE_TEAM, result);
+    const result = await this.commandBus.execute(
+      new UpdateOrgNodeInfoCommand({ org_node_id: nodeId, ...body }, actorId),
+    );
+    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.UPDATE_ORGNODE, result);
   }
 
-  @ApiOperation({ summary: 'Get company teams', description: 'Returns all teams belonging to a company.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_TEAMS, TeamViewModelPayload, 200))
-  @Get(':companyId/teams')
-  async getCompanyTeams(
-    @Param('companyId') companyId: TCompanyId,
-  ) {
-    const result = await this.uc.getCompanyTeams({ company_id: companyId });
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_TEAMS, result);
+  @ApiOperation({ summary: 'Get company org nodes (flat list)' })
+  @Get(':companyId/org-nodes')
+  async getCompanyOrgNodes(@Param('companyId') companyId: TCompanyId) {
+    const result = await this.queryBus.execute(new GetCompanyOrgNodesQuery(companyId));
+    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_ORGNODES, result);
   }
 
-  @ApiOperation({ summary: 'Get team members', description: 'Returns active members of a team.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.ADD_TEAM_MEMBER, TeamMemberViewModelPayload, 200))
-  @Get('teams/:teamId/members')
-  async getTeamMembers(
-    @Param('teamId') teamId: TTeamId,
-  ) {
-    const result = await this.uc.getTeamMembers({ cast_id: teamId });
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.ADD_TEAM_MEMBER, result);
+  @ApiOperation({ summary: 'Get org node members' })
+  @Get('org-nodes/:nodeId/members')
+  async getOrgNodeMembers(@Param('nodeId') nodeId: TOrgNodeId) {
+    const result = await this.queryBus.execute(new GetOrgNodeMembersQuery(nodeId));
+    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_ORGNODE_MEMBERS, result);
   }
 
-  @ApiOperation({ summary: 'Get team members at date', description: 'Returns team members active at a specific date.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.ADD_TEAM_MEMBER, TeamMemberViewModelPayload, 200))
-  @Get('teams/:teamId/members/at/:date')
-  async getTeamMembersAt(
-    @Param('teamId') teamId: TTeamId,
+  @ApiOperation({ summary: 'Get org node members at date' })
+  @Get('org-nodes/:nodeId/members/at/:date')
+  async getOrgNodeMembersAt(
+    @Param('nodeId') nodeId: TOrgNodeId,
     @Param('date') date: string,
   ) {
-    const result = await this.uc.getTeamMembers({ cast_id: teamId, at: new Date(date) });
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.ADD_TEAM_MEMBER, result);
+    const result = await this.queryBus.execute(new GetOrgNodeMembersQuery(nodeId, new Date(date)));
+    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_ORGNODE_MEMBERS, result);
   }
 
-  @ApiOperation({ summary: 'Add team member', description: 'Adds a member to the specified team.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.ADD_TEAM_MEMBER, TeamMemberViewModelPayload, 200))
-  @Post('teams/:teamId/members')
-  async addTeamMember(
-    @Param('teamId') teamId: TTeamId,
-    @Body() body: Omit<TAddTeamMemberDTO, 'cast_id'>,
-    @UserScopedContext() ctx: TUseCaseContext<'unscoped'>,
+  @ApiOperation({ summary: 'Add member to org node' })
+  @Post('org-nodes/:nodeId/members')
+  async addOrgNodeMember(
+    @Param('nodeId') nodeId: TOrgNodeId,
+    @Body() body: { user_id: TUserId; contract_id: string; team_role?: TTeamRole },
+    @ActorId() actorId: TUserId,
   ) {
-    const result = await this.uc.addTeamMember({ ...body, cast_id: teamId }, ctx.user_scope);
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.ADD_TEAM_MEMBER, result);
+    const result = await this.commandBus.execute(
+      new AddOrgNodeMemberCommand(
+        { org_node_id: nodeId, user_id: body.user_id, contract_id: body.contract_id as any, team_role: body.team_role },
+        actorId,
+      ),
+    );
+    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.ADD_ORGNODE_MEMBER, result);
   }
 
-  @ApiOperation({ summary: 'Remove team member', description: 'Removes a member from the specified team.' })
-  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.REMOVE_TEAM_MEMBER, TeamMemberViewModelPayload, 200))
-  @Delete('teams/:teamId/members/:userId')
-  async removeTeamMember(
-    @Param('teamId') teamId: TTeamId,
+  @ApiOperation({ summary: 'Remove member from org node' })
+  @Delete('org-nodes/:nodeId/members/:userId')
+  async removeOrgNodeMember(
+    @Param('nodeId') nodeId: TOrgNodeId,
     @Param('userId') userId: string,
     @Body() body: { reason?: string },
-    @UserScopedContext() ctx: TUseCaseContext<'unscoped'>,
+    @ActorId() actorId: TUserId,
   ) {
-    const dto: TRemoveTeamMemberDTO = { cast_id: teamId, user_id: userId as any, reason: body?.reason };
-    const result = await this.uc.removeTeamMember(dto, ctx.user_scope);
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.REMOVE_TEAM_MEMBER, result);
+    const result = await this.commandBus.execute(
+      new RemoveOrgNodeMemberCommand(
+        { org_node_id: nodeId, user_id: userId as TUserId, reason: body?.reason },
+        actorId,
+      ),
+    );
+    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.REMOVE_ORGNODE_MEMBER, result);
+  }
+
+  // ── Guest Members ─────────────────────────────────────────
+
+  @ApiOperation({ summary: 'Add a guest (display-only) member to an org node' })
+  @Post('org-nodes/:nodeId/guests')
+  async addGuestMember(
+    @Param('nodeId') nodeId: TOrgNodeId,
+    @Body() body: { display_name: string; title?: string; team_role: TTeamRole },
+    @ActorId() actorId: TUserId,
+  ) {
+    const result = await this.commandBus.execute(
+      new AddGuestMemberCommand({ org_node_id: nodeId, ...body }, actorId),
+    );
+    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.ADD_GUEST_MEMBER, result);
+  }
+
+  @ApiOperation({ summary: 'Remove a guest member from an org node' })
+  @Delete('org-nodes/:nodeId/guests/:guestId')
+  async removeGuestMember(
+    @Param('nodeId') nodeId: TOrgNodeId,
+    @Param('guestId') guestId: string,
+    @ActorId() actorId: TUserId,
+  ) {
+    const result = await this.commandBus.execute(
+      new RemoveGuestMemberCommand({ org_node_id: nodeId, guest_id: guestId }, actorId),
+    );
+    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.REMOVE_GUEST_MEMBER, result);
   }
 }

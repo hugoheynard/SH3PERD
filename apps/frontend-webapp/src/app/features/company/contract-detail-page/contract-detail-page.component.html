@@ -44,6 +44,39 @@
     @if (!editing()) {
       <div class="contract-body">
 
+        <!-- Roles section -->
+        <section class="info-section">
+          <h3 class="section-label">Roles</h3>
+          <div class="roles-row">
+            @for (role of c.roles; track role) {
+              <span class="role-chip" [style.background]="getRoleColor(role) + '22'" [style.color]="getRoleColor(role)" [style.border-color]="getRoleColor(role) + '44'">
+                {{ role }}
+                <button class="role-remove-btn" (click)="removeRole(role)" title="Remove role">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+              </span>
+            }
+            @if (c.roles.length === 0) {
+              <span class="info-value">No roles assigned</span>
+            }
+          </div>
+          @if (addingRole()) {
+            <div class="add-role-form">
+              <div class="pill-selector wrap">
+                @for (role of getAvailableRolesToAdd(); track role) {
+                  <button class="pill sm" [class.active]="selectedNewRole() === role" (click)="selectedNewRole.set(role)" type="button">{{ role }}</button>
+                }
+              </div>
+              <div class="form-actions" style="margin-top: 8px;">
+                <button class="btn-save" style="padding: 4px 12px; font-size: 12px;" (click)="assignRole()">Add</button>
+                <button class="btn-cancel" style="padding: 4px 12px; font-size: 12px;" (click)="addingRole.set(false)">Cancel</button>
+              </div>
+            </div>
+          } @else if (getAvailableRolesToAdd().length > 0) {
+            <button class="btn-add-member" style="margin-top: 8px;" (click)="addingRole.set(true)">+ Add role</button>
+          }
+        </section>
+
         <section class="info-section">
           <h3 class="section-label">Position</h3>
           <div class="info-grid">

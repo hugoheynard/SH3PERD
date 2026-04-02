@@ -1,9 +1,8 @@
 import { Component, inject, type OnInit } from '@angular/core';
-import {
-  ButtonPrimaryComponent,
-  InputComponent,
-  MultiSelectDropdownComponent, SelectComponent,
-} from '../../../../legacy/ui';
+import { InputComponent } from '../../../../shared/forms/input/input.component';
+import { MultiSelectDropdownComponent } from '../../../../shared/forms/multi-select-dropdown/multi-select-dropdown.component';
+import { SelectComponent } from '../../../../shared/forms/select/select.component';
+import { ButtonComponent } from '../../../../shared/button/button.component';
 import { FormBuilder, type FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
 import type { TUserGroupId } from '@sh3pherd/shared-types';
@@ -19,7 +18,7 @@ export type TPanelInjectComponent<TCOMP> = {
   imports: [
     InputComponent,
     ReactiveFormsModule,
-    ButtonPrimaryComponent,
+    ButtonComponent,
     MultiSelectDropdownComponent,
     SelectComponent,
   ],

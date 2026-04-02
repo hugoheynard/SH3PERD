@@ -60,7 +60,9 @@ export abstract class BaseMongoRepository<TRecord extends Document> implements I
       returnDocument: 'after',
     });
 
-    return result ? result['value'] : null;
+    // MongoDB driver v6+ returns the document directly (not { value: doc })
+    if (!result) return null;
+    return this.mapMongoDocToDomainModel(result as WithId<TRecord>);
   };
 
   /**
