@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyStore } from '../company.store';
 import { ContractCreationPanelComponent } from '../contract-creation-panel/contract-creation-panel.component';
+import { CompanyHeaderComponent } from './company-header/company-header.component';
 import { LayoutService } from '../../../core/services/layout.service';
 import { AddMemberPopoverComponent, type TAddMemberPopoverData } from '../popovers/add-member-popover/add-member-popover.component';
 import { NodeSettingsPopoverComponent, type TNodeSettingsPopoverData } from '../popovers/node-settings-popover/node-settings-popover.component';
@@ -33,7 +34,7 @@ const NODE_PALETTE = [
 @Component({
   selector: 'app-company-detail-page',
   standalone: true,
-  imports: [CommonModule, ContractCreationPanelComponent],
+  imports: [CommonModule, ContractCreationPanelComponent, CompanyHeaderComponent],
   templateUrl: './company-detail-page.component.html',
   styleUrl: './company-detail-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
