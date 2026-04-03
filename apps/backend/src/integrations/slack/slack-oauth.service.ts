@@ -6,9 +6,11 @@ import type { TCompanyId, TUserId } from '@sh3pherd/shared-types';
 const SLACK_SCOPES = [
   'channels:read',
   'channels:manage',
+  'groups:read',
   'groups:write',
   'chat:write',
   'users:read',
+  'files:write',
 ].join(',');
 
 interface TSlackOAuthState {
@@ -24,10 +26,14 @@ export class SlackOAuthService {
   private readonly stateSecret: string;
 
   constructor(private readonly config: ConfigService) {
-    this.clientId = this.config.getOrThrow<string>('slackClientId');
-    this.clientSecret = this.config.getOrThrow<string>('slackClientSecret');
-    this.redirectUri = this.config.getOrThrow<string>('slackRedirectUri');
-    this.stateSecret = this.config.getOrThrow<string>('jwtSecret');
+    this.clientId = this.config.get<string>('slackClientId', '');
+    this.clientSecret = this.config.get<string>('slackClientSecret', '');
+    this.redirectUri = this.config.get<string>('slackRedirectUri', '');
+    this.stateSecret = this.clientSecret;
+  }
+
+  get isConfigured(): boolean {
+    return !!(this.clientId && this.clientSecret && this.redirectUri && this.stateSecret);
   }
 
   /** Builds the Slack OAuth authorize URL with a signed state parameter. */

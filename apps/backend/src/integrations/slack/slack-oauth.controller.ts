@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Query, Res } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
@@ -32,6 +32,9 @@ export class SlackOAuthController {
     @Query('companyId') companyId: TCompanyId,
     @ActorId() actorId: TUserId,
   ): { url: string } {
+    if (!this.slackOAuth.isConfigured) {
+      throw new BadRequestException('Slack integration is not configured');
+    }
     const url = this.slackOAuth.buildAuthorizeUrl(companyId, actorId);
     return { url };
   }
