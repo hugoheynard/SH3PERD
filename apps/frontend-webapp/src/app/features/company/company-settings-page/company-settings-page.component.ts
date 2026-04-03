@@ -33,6 +33,16 @@ export class CompanySettingsPageComponent implements OnInit {
     if (id && !this.store.company()) {
       this.store.loadCompanyById(id);
     }
+
+    // Handle OAuth return (Slack redirects back with ?slack=connected)
+    const slackResult = this.route.snapshot.queryParamMap.get('slack');
+    if (slackResult === 'connected') {
+      this.activeTab.set(SettingsTab.CHANNELS);
+      if (id) this.store.loadCompanyById(id);
+    } else if (slackResult === 'error') {
+      this.activeTab.set(SettingsTab.CHANNELS);
+      console.error('[Settings] Slack OAuth failed');
+    }
   }
 
   goBack(): void {

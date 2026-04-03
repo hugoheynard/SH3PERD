@@ -25,6 +25,11 @@
 
   &:hover { background: var(--surface-raised); }
   &.is-connected { border-color: var(--accent-color-border); }
+
+  &.is-locked {
+    opacity: 0.45;
+    pointer-events: none;
+  }
 }
 
 .integration-icon {
@@ -82,6 +87,11 @@
   &.connected {
     color: var(--accent-color);
     background: var(--accent-color-dim);
+  }
+
+  &.coming-soon {
+    color: var(--text-muted);
+    background: var(--surface-raised);
   }
 }
 

@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CompanyStore } from '../company.store';
-import { CompanyService } from '../company.service';
+import { ContractStore } from '../contract.store';
+import { UserLookupService } from '../user-lookup.service';
 import type { TContractStatus, TUserSearchResult } from '@sh3pherd/shared-types';
 
 type PanelStep = 'search' | 'new-user' | 'contract';
@@ -16,7 +17,8 @@ type PanelStep = 'search' | 'new-user' | 'contract';
 })
 export class ContractCreationPanelComponent {
   readonly store = inject(CompanyStore);
-  private readonly companyService = inject(CompanyService);
+  private readonly contractStore = inject(ContractStore);
+  private readonly userLookup = inject(UserLookupService);
 
   readonly closed = output<void>();
   readonly created = output<void>();
@@ -52,7 +54,7 @@ export class ContractCreationPanelComponent {
     const email = this.searchEmail();
     if (!email) return;
     this.searching.set(true);
-    this.companyService.searchUserByEmail(email).subscribe({
+    this.userLookup.searchUserByEmail(email).subscribe({
       next: (res) => {
         this.searchResult.set(res.data ?? null);
         this.searching.set(false);
@@ -75,7 +77,7 @@ export class ContractCreationPanelComponent {
 
   inviteAndContinue(): void {
     this.inviting.set(true);
-    this.companyService.inviteUser({
+    this.userLookup.inviteUser({
       email: this.searchEmail(),
       first_name: this.newFirstName(),
       last_name: this.newLastName(),
@@ -102,7 +104,7 @@ export class ContractCreationPanelComponent {
     if (!company || !user || !this.contractStartDate()) return;
 
     this.submitting.set(true);
-    this.store.createContractForUser(
+    this.contractStore.createContractForUser(
       company.id,
       user.user_id,
       {

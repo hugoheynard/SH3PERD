@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PopoverFrameComponent } from '../../../../shared/ui-frames/popover-frame/popover-frame.component';
 import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
-import { CompanyStore } from '../../company.store';
+import { OrgChartStore } from '../../orgchart.store';
 import { LayoutService } from '../../../../core/services/layout.service';
 import type {
   TCompanyId,
@@ -40,7 +40,7 @@ const PLATFORMS: { key: TCommunicationPlatform; label: string; icon: string }[] 
 })
 export class NodeSettingsPopoverComponent {
   private readonly config = inject<TNodeSettingsPopoverData>(INJECTION_DATA);
-  private readonly store = inject(CompanyStore);
+  private readonly store = inject(OrgChartStore);
   readonly layout = inject(LayoutService);
 
   readonly platforms = PLATFORMS;

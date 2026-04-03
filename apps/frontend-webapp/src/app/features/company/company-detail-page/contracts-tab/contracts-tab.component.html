@@ -1,0 +1,53 @@
+<div class="tab-content">
+  <div class="content-toolbar">
+    <span class="results-count">{{ store.contracts().length }} contract(s)</span>
+    <sh3-button variant="primary" size="sm" (clicked)="showCreatePanel.set(true)">+ New contract</sh3-button>
+  </div>
+
+  <div class="contracts-list">
+    @for (contract of store.contracts(); track contract.id) {
+      <div class="contract-row" (click)="goToContract(contract.id)" role="button" tabindex="0" (keydown.enter)="goToContract(contract.id)">
+        <div class="contract-user">
+          <div class="contract-avatar">
+            {{ (contract.user_first_name?.[0] ?? '?').toUpperCase() }}
+          </div>
+          <div class="contract-user-info">
+            <span class="contract-user-name">
+              {{ contract.user_first_name }} {{ contract.user_last_name }}
+            </span>
+            @if (contract.user_email) {
+              <span class="contract-user-email">{{ contract.user_email }}</span>
+            }
+          </div>
+        </div>
+        <div class="contract-meta">
+          @if (contract.roles.length > 0) {
+            <span class="contract-roles">
+              @for (role of contract.roles; track role) {
+                <span class="role-chip">{{ role }}</span>
+              }
+            </span>
+          }
+          <span class="contract-dates">
+            {{ contract.startDate | date:'shortDate' }}
+            @if (contract.endDate) { → {{ contract.endDate | date:'shortDate' }} }
+          </span>
+          <span class="contract-status" [class]="'cstatus-' + contract.status">{{ contract.status }}</span>
+        </div>
+      </div>
+    }
+
+    @if (store.contracts().length === 0) {
+      <div class="empty-state">
+        <span>No contracts yet. Create the first one.</span>
+      </div>
+    }
+  </div>
+</div>
+
+@if (showCreatePanel()) {
+  <app-contract-creation-panel
+    (closed)="showCreatePanel.set(false)"
+    (created)="showCreatePanel.set(false)"
+  />
+}

@@ -9,6 +9,7 @@
     [integrations]="integrations()"
     (connected)="onPlatformConnected($event)"
     (disconnected)="onPlatformDisconnected($event)"
+    (oauthRequested)="onOAuthRequested($event)"
   />
 
   <!-- ── Platform sub-tabs + channels ──────────────── -->

@@ -70,4 +70,11 @@ export class ApiURLService {
     this.route(prefix);
     return this;
   };
+
+  apiAuthRoute(suffix: string): this {
+    this.api();
+    this.route('auth');
+    this.route(suffix);
+    return this;
+  };
 }

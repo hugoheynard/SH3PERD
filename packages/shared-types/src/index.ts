@@ -46,7 +46,12 @@ export { SRecordMetadata } from './metadata.types.js';
 export * from './permissions.types.js';
 
 //COMPANY
-export * from './company.domain.js';
+export * from './company/communication.types.js';
+export * from './company/company.types.js';
+export * from './company/orgnode.types.js';
+export * from './company/membership-event.types.js';
+export * from './company/company-settings.dto.js';
+export * from './company.domain.js';    // barrel re-export + deprecated aliases
 export * from './contracts.domain.types.js'
 export * from './contract.viewModel.types.js';
 export * from './contracts.dto.types.js';

@@ -1,5 +1,6 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
+import { TCompanyStatus } from '@sh3pherd/shared-types';
 import type { TCompanyRecord, TUserId } from '@sh3pherd/shared-types';
 import { COMPANY_REPO } from '../../company.tokens.js';
 import { CONTRACT_REPO } from '../../../appBootstrap/nestTokens.js';
@@ -21,7 +22,7 @@ export class CreateCompanyCommand {
 
 /**
  * Creates a company and automatically:
- * 1. Creates the company record
+ * 1. Creates the company record (entity validates name + owner)
  * 2. Creates an "owner" contract linking the creator to the company
  */
 @CommandHandler(CreateCompanyCommand)
@@ -37,14 +38,18 @@ export class CreateCompanyHandler implements ICommandHandler<CreateCompanyComman
     const company = new CompanyEntity({
       name: dto.name,
       owner_id: actorId,
-      status: 'active',
+      description: '',
+      address: { street: '', city: '', zip: '', country: '' },
+      orgLayers: [...CompanyEntity.DEFAULT_ORG_LAYERS],
+      integrations: [],
+      channels: [],
+      status: TCompanyStatus.ACTIVE,
     });
 
     const metadata = RecordMetadataUtils.create(actorId);
     const companyRecord: TCompanyRecord = { ...company.toDomain, ...metadata };
 
     const saved = await this.companyRepo.save(companyRecord);
-
     if (!saved) {
       throw new TechnicalError('Failed to create company', 'COMPANY_CREATE_FAILED', 500);
     }

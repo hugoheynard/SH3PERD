@@ -1,12 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { CompanyStore } from '../../company.store';
+import { CompanyService } from '../../company.service';
 import { IntegrationsPanelComponent } from './integrations-panel/integrations-panel.component';
 import { PlatformChannelsComponent } from './platform-channels/platform-channels.component';
 import { PlatformIconComponent } from './platform-icon/platform-icon.component';
 import type {
-  TCompanyChannel,
   TCompanyId,
-  TCompanyIntegration,
   TCommunicationPlatform,
 } from '@sh3pherd/shared-types';
 
@@ -20,15 +19,15 @@ import type {
 })
 export class ChannelsTabComponent {
   private readonly store = inject(CompanyStore);
+  private readonly companyService = inject(CompanyService);
 
   readonly companyId = input.required<TCompanyId>();
 
-  // ── State ──────────────────────────────────────────────
-  readonly integrations = signal<TCompanyIntegration[]>([]);
-  readonly channels = signal<TCompanyChannel[]>([]);
-
   // ── Sub-tab ────────────────────────────────────────────
   readonly activePlatform = signal<TCommunicationPlatform | null>(null);
+
+  /** Integrations are read directly from the store — single source of truth */
+  readonly integrations = computed(() => this.store.company()?.integrations ?? []);
 
   readonly connectedPlatforms = computed(() =>
     this.integrations().filter(i => i.status === 'connected').map(i => i.platform),
@@ -37,48 +36,35 @@ export class ChannelsTabComponent {
   readonly activeChannels = computed(() => {
     const p = this.activePlatform();
     if (!p) return [];
-    return this.channels().filter(ch => ch.platform === p);
+    const channels = this.store.company()?.channels ?? [];
+    return channels.filter(ch => ch.platform === p);
   });
 
-  private populated = false;
+  // ── OAuth ───────────────────────────────────────────────
 
-  constructor() {
-    // Populate once from store, then component owns its state
-    effect(() => {
-      const c = this.store.company();
-      if (!c || this.populated) return;
-      this.populated = true;
-      this.integrations.set([...(c.integrations ?? [])]);
-      this.channels.set([...(c.channels ?? [])]);
-
-      // Auto-select first connected platform
-      const first = (c.integrations ?? []).find(i => i.status === 'connected');
-      if (first) this.activePlatform.set(first.platform);
+  onOAuthRequested(platform: TCommunicationPlatform): void {
+    if (platform !== 'slack') return;
+    this.companyService.getSlackAuthUrl(this.companyId()).subscribe({
+      next: (res) => { window.location.href = res.url; },
+      error: (err) => console.error('[ChannelsTab] OAuth URL failed', err),
     });
   }
 
   // ── Integration events ─────────────────────────────────
 
   onPlatformConnected(event: { platform: TCommunicationPlatform; config: Record<string, string> }): void {
-    this.integrations.update(list => {
-      const filtered = list.filter(i => i.platform !== event.platform);
-      return [...filtered, { platform: event.platform, status: 'connected' as const, config: event.config, connectedAt: new Date() }];
-    });
+    this.store.connectIntegration(this.companyId(), event.platform, event.config);
     this.activePlatform.set(event.platform);
-    this.save();
   }
 
   onPlatformDisconnected(platform: TCommunicationPlatform): void {
-    this.integrations.update(list => list.filter(i => i.platform !== platform));
-    this.channels.update(list => list.filter(ch => ch.platform !== platform));
+    this.store.disconnectIntegration(this.companyId(), platform);
 
     // If disconnected platform was active, switch to first remaining
     if (this.activePlatform() === platform) {
-      const remaining = this.connectedPlatforms();
+      const remaining = this.connectedPlatforms().filter(p => p !== platform);
       this.activePlatform.set(remaining.length > 0 ? remaining[0] : null);
     }
-
-    this.save();
   }
 
   // ── Channel events ─────────────────────────────────────
@@ -86,22 +72,10 @@ export class ChannelsTabComponent {
   onChannelAdded(event: { name: string; url: string }): void {
     const platform = this.activePlatform();
     if (!platform) return;
-    const id = `ch_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-    this.channels.update(list => [...list, { id, name: event.name, platform, url: event.url }]);
-    this.save();
+    this.store.addChannel(this.companyId(), { name: event.name, platform, url: event.url });
   }
 
   onChannelRemoved(channelId: string): void {
-    this.channels.update(list => list.filter(ch => ch.id !== channelId));
-    this.save();
-  }
-
-  // ── Persist ────────────────────────────────────────────
-
-  private save(): void {
-    this.store.updateCompanyInfo(this.companyId(), {
-      integrations: this.integrations(),
-      channels: this.channels(),
-    });
+    this.store.removeChannel(this.companyId(), channelId);
   }
 }

@@ -2,7 +2,8 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PopoverFrameComponent } from '../../../../shared/ui-frames/popover-frame/popover-frame.component';
 import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
-import { CompanyStore } from '../../company.store';
+import { OrgChartStore } from '../../orgchart.store';
+import { ContractStore } from '../../contract.store';
 import { LayoutService } from '../../../../core/services/layout.service';
 import type {
   TCompanyContractViewModel,
@@ -38,7 +39,8 @@ const NODE_PALETTE = [
 })
 export class AddMemberPopoverComponent {
   private readonly config = inject<TAddMemberPopoverData>(INJECTION_DATA);
-  private readonly store = inject(CompanyStore);
+  private readonly orgChartStore = inject(OrgChartStore);
+  private readonly contractStore = inject(ContractStore);
   readonly layout = inject(LayoutService);
 
   readonly teamRoles = TEAM_ROLES;
@@ -59,7 +61,7 @@ export class AddMemberPopoverComponent {
   get filteredContracts(): TCompanyContractViewModel[] {
     const existingUserIds = new Set(this.config.existingMembers.map(m => m.user_id));
     const q = this.searchQuery().toLowerCase();
-    return this.store.contracts().filter(c => {
+    return this.contractStore.contracts().filter(c => {
       if (c.status !== 'active' || existingUserIds.has(c.user_id)) return false;
       if (!q) return true;
       const fullName = `${c.user_first_name ?? ''} ${c.user_last_name ?? ''}`.toLowerCase();
@@ -121,16 +123,16 @@ export class AddMemberPopoverComponent {
     const contractId = this.selectedContractId();
     if (!contractId) return;
 
-    const contract = this.store.contracts().find(c => c.id === contractId);
+    const contract = this.contractStore.contracts().find(c => c.id === contractId);
     if (!contract) return;
 
-    this.store.addOrgNodeMember(
+    this.orgChartStore.addOrgNodeMember(
       this.config.nodeId,
       contract.user_id as TUserId,
       contractId,
       this.selectedRole(),
       () => {
-        this.store.loadOrgChart(this.config.companyId);
+        this.orgChartStore.loadOrgChart(this.config.companyId);
         this.layout.clearPopover();
       },
     );
@@ -142,11 +144,11 @@ export class AddMemberPopoverComponent {
 
     const title = this.guestTitle().trim() || undefined;
 
-    this.store.addGuestMember(
+    this.orgChartStore.addGuestMember(
       this.config.nodeId,
       { display_name: name, title, team_role: this.guestRole() },
       () => {
-        this.store.loadOrgChart(this.config.companyId);
+        this.orgChartStore.loadOrgChart(this.config.companyId);
         this.layout.clearPopover();
       },
     );

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Patch } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
@@ -9,7 +9,6 @@ import { COMPANY_CODES_SUCCESS } from './company.codes.js';
 
 // Commands
 import { CreateCompanyCommand } from '../application/commands/CreateCompanyCommand.js';
-import { UpdateCompanyInfoCommand } from '../application/commands/UpdateCompanyInfoCommand.js';
 import { DeleteCompanyCommand } from '../application/commands/DeleteCompanyCommand.js';
 import { CreateOrgNodeCommand } from '../application/commands/CreateTeamCommand.js';
 import { UpdateOrgNodeInfoCommand } from '../application/commands/UpdateOrgNodeInfoCommand.js';
@@ -37,7 +36,7 @@ export class CompanyController {
     private readonly queryBus: QueryBus,
   ) {}
 
-  // ── Company ────────────────────────────────────────────────
+  // ── Company CRUD ─────────────────────────────────────────────
 
   @ApiOperation({ summary: 'Create a company' })
   @Post()
@@ -80,20 +79,7 @@ export class CompanyController {
     await this.commandBus.execute(new DeleteCompanyCommand(id, actorId));
   }
 
-  @ApiOperation({ summary: 'Update company info' })
-  @Patch(':id')
-  async updateCompanyInfo(
-    @Param('id') id: TCompanyId,
-    @Body() body: { name?: string; description?: string; address?: Record<string, string> },
-    @ActorId() actorId: TUserId,
-  ) {
-    const result = await this.commandBus.execute(
-      new UpdateCompanyInfoCommand({ company_id: id, ...body }, actorId),
-    );
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.UPDATE_COMPANY_INFO, result);
-  }
-
-  // ── Org Chart ──────────────────────────────────────────────
+  // ── Org Chart ────────────────────────────────────────────────
 
   @ApiOperation({ summary: 'Get company org chart (hierarchy tree)' })
   @Get(':id/orgchart')
@@ -102,7 +88,7 @@ export class CompanyController {
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_ORGCHART, result);
   }
 
-  // ── Org Nodes ──────────────────────────────────────────────
+  // ── Org Nodes ────────────────────────────────────────────────
 
   @ApiOperation({ summary: 'Create an org node' })
   @Post('org-nodes')
@@ -190,7 +176,7 @@ export class CompanyController {
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.REMOVE_ORGNODE_MEMBER, result);
   }
 
-  // ── Guest Members ─────────────────────────────────────────
+  // ── Guest Members ────────────────────────────────────────────
 
   @ApiOperation({ summary: 'Add a guest (display-only) member to an org node' })
   @Post('org-nodes/:nodeId/guests')

@@ -1,4 +1,4 @@
-import type { TCompanyId }    from './company.domain.js';
+import type { TCompanyId }    from './ids.js';
 import type { TUserId }       from './user/user.domain.js';
 import type {
   TContractDomainModel,

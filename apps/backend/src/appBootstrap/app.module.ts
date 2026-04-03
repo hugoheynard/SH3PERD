@@ -19,6 +19,7 @@ import { UserProfileModule } from '../user/profile/user-profile.module.js';
 import { GlobalCqrsModule } from './global-cqrs.module.js';
 import { CompanyModule } from '../company/company.module.js';
 import { PlaylistModule } from '../playlists-v2/playlist.module.js';
+import { IntegrationsModule } from '../integrations/integrations.module.js';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { PlaylistModule } from '../playlists-v2/playlist.module.js';
     CoreRepositoriesModule,
     // Modules
     AuthModule,
+    IntegrationsModule,
     UserModule,
     UserProfileModule,
     ContractModule,
@@ -45,6 +47,7 @@ import { PlaylistModule } from '../playlists-v2/playlist.module.js';
     // ⚠️ Prefix split
     RouterModule.register([
       { path: 'auth', module: AuthModule },
+      { path: 'auth/slack', module: IntegrationsModule },
       {
         path: 'protected',
         module: ProtectedModule,

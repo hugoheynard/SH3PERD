@@ -9,7 +9,7 @@ import {
   type TContractWorkTime,
 } from './contracts.domain.types.js';
 import { z }                from 'zod';
-import { SCompanyId, type TCompanyId } from './company.domain.js';
+import { SCompanyId, type TCompanyId } from './ids.js';
 import { SUserId,    type TUserId }    from './user/user.domain.js';
 import { SContractRole, type TContractRole } from './permissions.types.js';
 

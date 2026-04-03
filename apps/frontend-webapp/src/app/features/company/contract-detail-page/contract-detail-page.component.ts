@@ -7,8 +7,8 @@ import {
 } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CompanyService } from '../company.service';
-import { CompanyStore } from '../company.store';
+import { ContractService } from '../contract.service';
+import { ContractStore } from '../contract.store';
 import type {
   TContractDetailViewModel,
   TContractId,
@@ -44,8 +44,8 @@ type EditForm = {
 export class ContractDetailPageComponent implements OnInit {
   private readonly route          = inject(ActivatedRoute);
   private readonly router         = inject(Router);
-  private readonly companyService = inject(CompanyService);
-  private readonly store          = inject(CompanyStore);
+  private readonly contractService = inject(ContractService);
+  private readonly store           = inject(ContractStore);
 
   readonly detail  = signal<TContractDetailViewModel | null>(null);
   readonly loading = signal(true);
@@ -74,7 +74,7 @@ export class ContractDetailPageComponent implements OnInit {
     if (!id) { this.error.set('Missing contract ID'); this.loading.set(false); return; }
     this.loading.set(true);
     this.error.set(null);
-    this.companyService.getContractById(id).subscribe({
+    this.contractService.getContractById(id).subscribe({
       next:  (data) => { this.detail.set(data); this.loading.set(false); },
       error: ()     => { this.error.set('Failed to load contract'); this.loading.set(false); },
     });
@@ -139,7 +139,7 @@ export class ContractDetailPageComponent implements OnInit {
       };
     }
 
-    this.companyService.updateContract(id, dto as any).subscribe({
+    this.contractService.updateContract(id, dto as any).subscribe({
       next: () => { this.saving.set(false); this.editing.set(false); this.loadDetail(); },
       error: () => { this.saving.set(false); this.error.set('Failed to save changes'); },
     });

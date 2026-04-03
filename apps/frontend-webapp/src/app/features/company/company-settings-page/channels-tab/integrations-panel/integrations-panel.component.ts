@@ -10,6 +10,8 @@ export interface PlatformMeta {
   label: string;
   description: string;
   configFields: { key: string; label: string; placeholder: string }[];
+  feature_unlocked: boolean;
+  oauthFlow?: boolean;
 }
 
 export const PLATFORMS: PlatformMeta[] = [
@@ -17,9 +19,9 @@ export const PLATFORMS: PlatformMeta[] = [
     key: 'slack',
     label: 'Slack',
     description: 'Connect your Slack workspace to link channels to org nodes.',
-    configFields: [
-      { key: 'webhook_url', label: 'Webhook URL', placeholder: 'https://hooks.slack.com/services/...' },
-    ],
+    configFields: [],
+    feature_unlocked: true,
+    oauthFlow: true,
   },
   {
     key: 'whatsapp',
@@ -28,6 +30,7 @@ export const PLATFORMS: PlatformMeta[] = [
     configFields: [
       { key: 'invite_base_url', label: 'Invite base URL', placeholder: 'https://chat.whatsapp.com/...' },
     ],
+    feature_unlocked: false,
   },
   {
     key: 'telegram',
@@ -36,6 +39,7 @@ export const PLATFORMS: PlatformMeta[] = [
     configFields: [
       { key: 'bot_token', label: 'Bot token', placeholder: '123456:ABC-DEF...' },
     ],
+    feature_unlocked: false,
   },
   {
     key: 'discord',
@@ -44,6 +48,7 @@ export const PLATFORMS: PlatformMeta[] = [
     configFields: [
       { key: 'server_invite', label: 'Server invite', placeholder: 'https://discord.gg/...' },
     ],
+    feature_unlocked: false,
   },
   {
     key: 'teams',
@@ -52,6 +57,7 @@ export const PLATFORMS: PlatformMeta[] = [
     configFields: [
       { key: 'tenant_id', label: 'Tenant ID', placeholder: 'your-tenant-id' },
     ],
+    feature_unlocked: false,
   },
 ];
 
@@ -67,6 +73,7 @@ export class IntegrationsPanelComponent {
   readonly integrations = input.required<TCompanyIntegration[]>();
   readonly connected = output<{ platform: TCommunicationPlatform; config: Record<string, string> }>();
   readonly disconnected = output<TCommunicationPlatform>();
+  readonly oauthRequested = output<TCommunicationPlatform>();
 
   readonly platforms = PLATFORMS;
 

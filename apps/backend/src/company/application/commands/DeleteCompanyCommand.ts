@@ -24,9 +24,9 @@ export class DeleteCompanyHandler implements ICommandHandler<DeleteCompanyComman
   async execute(cmd: DeleteCompanyCommand): Promise<void> {
     const { companyId, actorId } = cmd;
 
-    const company = await this.companyRepo.findOne({ filter: { id: companyId } });
-    if (!company) throw new BusinessError('Company not found', 'COMPANY_NOT_FOUND', 404);
-    if (company.owner_id !== actorId) throw new BusinessError('Only the owner can delete', 'COMPANY_DELETE_FORBIDDEN', 403);
+    const record = await this.companyRepo.findOne({ filter: { id: companyId } });
+    if (!record) throw new BusinessError('Company not found', 'COMPANY_NOT_FOUND', 404);
+    if (record.owner_id !== actorId) throw new BusinessError('Only the owner can delete', 'COMPANY_NOT_OWNED', 403);
 
     await this.companyRepo.deleteOne({ id: companyId } as any);
   }

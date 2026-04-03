@@ -16,6 +16,7 @@ import type {
   TTeamRole,
   TTeamType,
   TOrgNodeCommunication,
+  TCompanyInfo,
   TUserId,
 } from '@sh3pherd/shared-types';
 
@@ -84,7 +85,7 @@ export class CompanyMockStore {
   loadMyCompanies(): void { /* already loaded */ }
   loadCompanyById(_id: TCompanyId): void { /* already loaded */ }
 
-  updateCompanyInfo(_id: TCompanyId, dto: { name?: string; description?: string; address?: TCompanyAddress; orgLayers?: string[]; integrations?: TCompanyIntegration[]; channels?: TCompanyChannel[] }): void {
+  updateCompanyInfo(_id: TCompanyId, dto: TCompanyInfo): void {
     this._company.update(c => {
       if (!c) return c;
       return { ...c, ...dto };

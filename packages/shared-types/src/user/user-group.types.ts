@@ -8,7 +8,7 @@ import {
 } from '../contracts.domain.types.js';
 import type { TRecordMetadata } from '../metadata.types.js';
 import { SUserProfileDomainModel, type TUserProfileDomainModel } from './user-profile.js';
-import { SCompanyId, type TCompanyId } from '../company.domain.js';
+import { SCompanyId, type TCompanyId } from '../ids.js';
 import { type TFormOption, zFormOption } from '../utils/form.js';
 
 
