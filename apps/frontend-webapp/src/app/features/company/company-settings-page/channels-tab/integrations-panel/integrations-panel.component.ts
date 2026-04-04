@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { InputComponent } from '../../../../../shared/forms/input/input.component';
 import { ButtonComponent } from '../../../../../shared/button/button.component';
 import { PlatformIconComponent } from '../platform-icon/platform-icon.component';
-import type { TCompanyIntegration, TCommunicationPlatform } from '@sh3pherd/shared-types';
+import type { TIntegrationViewModel, TCommunicationPlatform } from '@sh3pherd/shared-types';
 
 export interface PlatformMeta {
   key: TCommunicationPlatform;
@@ -70,7 +70,7 @@ export const PLATFORMS: PlatformMeta[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IntegrationsPanelComponent {
-  readonly integrations = input.required<TCompanyIntegration[]>();
+  readonly integrations = input.required<TIntegrationViewModel[]>();
   readonly connected = output<{ platform: TCommunicationPlatform; config: Record<string, string> }>();
   readonly disconnected = output<TCommunicationPlatform>();
   readonly oauthRequested = output<TCommunicationPlatform>();

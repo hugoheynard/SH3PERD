@@ -104,47 +104,4 @@ export class CompanyStore {
       },
     });
   }
-
-  // ── Settings ────────────────────────────────────────────────
-
-  connectIntegration(id: TCompanyId, platform: import('@sh3pherd/shared-types').TCommunicationPlatform, config: Record<string, string>): void {
-    this.companyService.connectIntegration(id, platform, config).subscribe({
-      next: (res) => this.mergeCompany(res.data),
-      error: (err) => console.error('[CompanyStore] connectIntegration failed', err),
-    });
-  }
-
-  disconnectIntegration(id: TCompanyId, platform: import('@sh3pherd/shared-types').TCommunicationPlatform): void {
-    this.companyService.disconnectIntegration(id, platform).subscribe({
-      next: (res) => this.mergeCompany(res.data),
-      error: (err) => console.error('[CompanyStore] disconnectIntegration failed', err),
-    });
-  }
-
-  addChannel(id: TCompanyId, dto: { name: string; platform: import('@sh3pherd/shared-types').TCommunicationPlatform; url: string }): void {
-    this.companyService.addChannel(id, dto).subscribe({
-      next: (res) => this.mergeCompany(res.data),
-      error: (err) => console.error('[CompanyStore] addChannel failed', err),
-    });
-  }
-
-  removeChannel(id: TCompanyId, channelId: string): void {
-    this.companyService.removeChannel(id, channelId).subscribe({
-      next: (res) => this.mergeCompany(res.data),
-      error: (err) => console.error('[CompanyStore] removeChannel failed', err),
-    });
-  }
-
-  // ── Helpers ─────────────────────────────────────────────────
-
-  /**
-   * Optimistic merge: patches the existing detail view model with fields
-   * returned by the backend (a TCompanyRecord), preserving computed fields
-   * like activeTeamCount / activeContractCount that only the GET query provides.
-   */
-  private mergeCompany(partial: Partial<TCompanyDetailViewModel>): void {
-    const current = this._company();
-    if (!current) return;
-    this._company.set({ ...current, ...partial });
-  }
 }

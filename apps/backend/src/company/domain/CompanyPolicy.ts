@@ -1,5 +1,6 @@
-import type { TUserId } from '@sh3pherd/shared-types';
+import type { TOrgNodeId, TUserId } from '@sh3pherd/shared-types';
 import type { CompanyEntity } from './CompanyEntity.js';
+import type { OrgNodeEntity } from './OrgNodeEntity.js';
 import type { PermissionResolver } from '../../permissions/PermissionResolver.js';
 
 /**
@@ -42,6 +43,62 @@ export class CompanyPolicy {
     const canWrite = await permissionResolver.hasCompanyPermission(actorId, companyId as any, 'company:settings:write');
     if (!canWrite) {
       throw new Error('COMPANY_FORBIDDEN');
+    }
+  }
+
+  // ── Org chart structural rules ─────────────────────────
+
+  /** Ensures the parent node belongs to the same company. */
+  ensureParentBelongsToCompany(parentId: TOrgNodeId, nodes: OrgNodeEntity[]): void {
+    if (!nodes.some(n => n.id === parentId)) {
+      throw new Error('ORGNODE_PARENT_NOT_IN_COMPANY');
+    }
+  }
+
+  /** Ensures the parent node is not archived. */
+  ensureParentIsActive(parentId: TOrgNodeId, nodes: OrgNodeEntity[]): void {
+    const parent = nodes.find(n => n.id === parentId);
+    if (parent?.isArchived()) {
+      throw new Error('ORGNODE_PARENT_ARCHIVED');
+    }
+  }
+
+  /**
+   * Ensures adding a child under parentId would not exceed maxDepth.
+   * Walks the parent chain from parentId to root, counting depth.
+   */
+  ensureMaxDepthNotExceeded(parentId: TOrgNodeId, nodes: OrgNodeEntity[], maxDepth: number): void {
+    let depth = 0;
+    let currentId: TOrgNodeId | undefined = parentId;
+
+    while (currentId) {
+      depth++;
+      const node = nodes.find(n => n.id === currentId);
+      currentId = node?.toDomain.parent_id;
+    }
+
+    if (depth > maxDepth) {
+      throw new Error('ORGNODE_MAX_DEPTH_EXCEEDED');
+    }
+  }
+
+  /** Ensures no active sibling has the same name (case-insensitive). */
+  ensureNameUniqueAmongSiblings(name: string, parentId: TOrgNodeId | undefined, nodes: OrgNodeEntity[]): void {
+    const normalized = name.trim().toLowerCase();
+    const siblings = nodes.filter(n => {
+      const domain = n.toDomain;
+      return domain.parent_id === parentId && !n.isArchived();
+    });
+
+    if (siblings.some(s => s.toDomain.name.toLowerCase() === normalized)) {
+      throw new Error('ORGNODE_SIBLING_NAME_DUPLICATE');
+    }
+  }
+
+  /** Ensures the node has no children (required before deletion). */
+  ensureNodeHasNoChildren(nodeId: TOrgNodeId, nodes: OrgNodeEntity[]): void {
+    if (nodes.some(n => n.toDomain.parent_id === nodeId)) {
+      throw new Error('ORGNODE_HAS_CHILDREN');
     }
   }
 }

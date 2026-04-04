@@ -1,18 +1,17 @@
 <div class="tab-panel">
   <h2 class="panel-title">Communication channels</h2>
   <p class="panel-subtitle">
-    Connect your platforms first, then register channels that can be assigned to org nodes.
+    Connect your platforms first, then manage channels from the org chart node settings.
   </p>
 
   <!-- ── Integrations ──────────────────────────────── -->
   <app-integrations-panel
     [integrations]="integrations()"
-    (connected)="onPlatformConnected($event)"
     (disconnected)="onPlatformDisconnected($event)"
     (oauthRequested)="onOAuthRequested($event)"
   />
 
-  <!-- ── Platform sub-tabs + channels ──────────────── -->
+  <!-- ── Connected channels overview ──────────────── -->
   @if (connectedPlatforms().length > 0) {
     <div class="channels-section">
       <h3 class="section-title">Channels</h3>
@@ -34,8 +33,6 @@
         <app-platform-channels
           [platform]="platform"
           [channels]="activeChannels()"
-          (added)="onChannelAdded($event)"
-          (removed)="onChannelRemoved($event)"
         />
       }
     </div>

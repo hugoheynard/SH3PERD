@@ -41,8 +41,6 @@ export class CreateCompanyHandler implements ICommandHandler<CreateCompanyComman
       description: '',
       address: { street: '', city: '', zip: '', country: '' },
       orgLayers: [...CompanyEntity.DEFAULT_ORG_LAYERS],
-      integrations: [],
-      channels: [],
       status: TCompanyStatus.ACTIVE,
     });
 

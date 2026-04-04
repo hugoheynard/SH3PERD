@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration.js';
 import { MongoModule } from './database/MongoModule.js';
 import { ProtectedModule } from './protected.module.js';
-import { APP_GUARD, RouterModule } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, RouterModule } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthModule } from '../auth/auth.module.js';
 import { AuthGuard } from '../auth/api/auth.guard.js';
@@ -20,6 +20,7 @@ import { GlobalCqrsModule } from './global-cqrs.module.js';
 import { CompanyModule } from '../company/company.module.js';
 import { PlaylistModule } from '../playlists-v2/playlist.module.js';
 import { IntegrationsModule } from '../integrations/integrations.module.js';
+import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionFilter.js';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { IntegrationsModule } from '../integrations/integrations.module.js';
           { path: 'contracts', module: ContractModule },
           { path: 'user-groups', module: UserGroupsModule },
           { path: 'companies', module: CompanyModule },
+          { path: 'integrations', module: IntegrationsModule },
           { path: 'playlists', module: PlaylistModule },
         ]
       },
@@ -70,6 +72,7 @@ import { IntegrationsModule } from '../integrations/integrations.module.js';
   ],
   providers: [
     AppService,
+    { provide: APP_FILTER, useClass: GlobalExceptionFilter },
     { provide: APP_GUARD, useClass: AuthGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],

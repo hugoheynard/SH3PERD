@@ -1,8 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
 import { PopoverFrameComponent } from '../../../../shared/ui-frames/popover-frame/popover-frame.component';
 import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
 import { OrgChartStore } from '../../orgchart.store';
+import { CompanyService, type TSlackChannel } from '../../company.service';
 import { LayoutService } from '../../../../core/services/layout.service';
 import type {
   TCompanyId,
@@ -23,13 +25,14 @@ const NODE_PALETTE = [
   '#76e4f7', '#fbb6ce', '#f6e05e', '#4fd1c5', '#a3bffa',
 ] as const;
 
-const PLATFORMS: { key: TCommunicationPlatform; label: string; icon: string }[] = [
-  { key: 'slack',    label: 'Slack',    icon: 'slack' },
-  { key: 'whatsapp', label: 'WhatsApp', icon: 'whatsapp' },
-  { key: 'teams',    label: 'Teams',    icon: 'teams' },
-  { key: 'discord',  label: 'Discord',  icon: 'discord' },
-  { key: 'telegram', label: 'Telegram', icon: 'telegram' },
-];
+const PLATFORM_LABELS: Record<TCommunicationPlatform, string> = {
+  slack: 'Slack',
+  whatsapp: 'WhatsApp',
+  teams: 'Teams',
+  discord: 'Discord',
+  telegram: 'Telegram',
+  other: 'Other',
+};
 
 @Component({
   selector: 'app-node-settings-popover',
@@ -41,9 +44,9 @@ const PLATFORMS: { key: TCommunicationPlatform; label: string; icon: string }[] 
 export class NodeSettingsPopoverComponent {
   private readonly config = inject<TNodeSettingsPopoverData>(INJECTION_DATA);
   private readonly store = inject(OrgChartStore);
+  private readonly companyService = inject(CompanyService);
   readonly layout = inject(LayoutService);
 
-  readonly platforms = PLATFORMS;
   readonly colorPalette = NODE_PALETTE;
   readonly depth = this.config.depth;
   readonly nodeName = signal(this.config.node.name);
@@ -54,10 +57,53 @@ export class NodeSettingsPopoverComponent {
     [...(this.config.node.communications ?? [])],
   );
 
-  // Adding a new channel
+  // Platforms with a connected integration — loaded on init
+  readonly connectedPlatforms = signal<{ key: TCommunicationPlatform; label: string }[]>([]);
+
+  // ── Add channel flow ───────────────────────────────────
   readonly addingChannel = signal(false);
   readonly newPlatform = signal<TCommunicationPlatform>('slack');
-  readonly newUrl = signal('');
+  readonly channelQuery = signal('');
+  readonly newChannelPrivate = signal(false);
+  readonly suggestions = signal<TSlackChannel[]>([]);
+  readonly searching = signal(false);
+  readonly creating = signal(false);
+
+  // Debounced search
+  private readonly searchSubject = new Subject<string>();
+
+  constructor() {
+    // Load connected integrations
+    this.companyService.getIntegrations(this.config.companyId).subscribe({
+      next: (data) => {
+        this.connectedPlatforms.set(
+          data
+            .filter(i => i.status === 'connected')
+            .map(i => ({ key: i.platform, label: PLATFORM_LABELS[i.platform] ?? i.platform })),
+        );
+      },
+      error: (err) => console.error('[NodeSettings] loadIntegrations failed', err),
+    });
+
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => {
+        if (!query.trim()) return of([]);
+        this.searching.set(true);
+        return this.companyService.searchSlackChannels(this.config.companyId, query);
+      }),
+    ).subscribe({
+      next: (results) => {
+        this.suggestions.set(results);
+        this.searching.set(false);
+      },
+      error: () => {
+        this.suggestions.set([]);
+        this.searching.set(false);
+      },
+    });
+  }
 
   onNameInput(event: Event): void {
     this.nodeName.set((event.target as HTMLInputElement).value);
@@ -73,44 +119,76 @@ export class NodeSettingsPopoverComponent {
     return this.communications().find(c => c.platform === platform);
   }
 
-  startAddChannel(): void {
-    // Default to first platform not already added
+  get availablePlatforms() {
     const existing = new Set(this.communications().map(c => c.platform));
-    const available = PLATFORMS.find(p => !existing.has(p.key));
-    this.newPlatform.set(available?.key ?? 'slack');
-    this.newUrl.set('');
+    return this.connectedPlatforms().filter(p => !existing.has(p.key));
+  }
+
+  startAddChannel(): void {
+    const available = this.availablePlatforms;
+    if (available.length === 0) return;
+    this.newPlatform.set(available[0].key);
+    this.channelQuery.set('');
+    this.newChannelPrivate.set(false);
+    this.suggestions.set([]);
     this.addingChannel.set(true);
   }
 
   cancelAddChannel(): void {
     this.addingChannel.set(false);
+    this.suggestions.set([]);
   }
 
   selectNewPlatform(platform: TCommunicationPlatform): void {
     this.newPlatform.set(platform);
+    this.channelQuery.set('');
+    this.suggestions.set([]);
   }
 
-  onNewUrlInput(event: Event): void {
-    this.newUrl.set((event.target as HTMLInputElement).value);
+  onChannelQueryInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.channelQuery.set(value);
+    this.searchSubject.next(value);
   }
 
-  confirmAddChannel(): void {
-    const url = this.newUrl().trim();
-    if (!url) return;
+  /** Select an existing Slack channel from suggestions. */
+  selectExistingChannel(channel: TSlackChannel): void {
+    const platform = this.newPlatform();
+    // TODO: check if this channel is already linked to another org node
     this.communications.update(list => [
       ...list,
-      { platform: this.newPlatform(), url },
+      { platform, url: channel.url },
     ]);
     this.addingChannel.set(false);
+    this.suggestions.set([]);
+  }
+
+  /** Create a new Slack channel with the typed name. */
+  confirmCreateChannel(): void {
+    const name = this.channelQuery().trim();
+    if (!name) return;
+    const platform = this.newPlatform();
+    this.creating.set(true);
+
+    this.companyService.createSlackChannel(this.config.companyId, name, this.newChannelPrivate()).subscribe({
+      next: (channel) => {
+        this.communications.update(list => [
+          ...list,
+          { platform, url: channel.url },
+        ]);
+        this.addingChannel.set(false);
+        this.suggestions.set([]);
+        this.creating.set(false);
+      },
+      error: (err) => {
+        console.error('[NodeSettings] createChannel failed', err);
+        this.creating.set(false);
+      },
+    });
   }
 
   removeChannel(platform: TCommunicationPlatform): void {
     this.communications.update(list => list.filter(c => c.platform !== platform));
-  }
-
-  get availablePlatforms(): typeof PLATFORMS {
-    const existing = new Set(this.communications().map(c => c.platform));
-    return PLATFORMS.filter(p => !existing.has(p.key));
   }
 
   // ── Save ────────────────────────────────────────────────

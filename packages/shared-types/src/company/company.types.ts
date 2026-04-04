@@ -5,14 +5,6 @@ import {
   SUserId,       type TUserId,
   SCompanyId,    type TCompanyId,
 } from '../ids.js';
-import type {
-  TCompanyIntegration,
-  TCompanyChannel,
-} from './communication.types.js';
-import {
-  SCompanyIntegration,
-  SCompanyChannel,
-} from './communication.types.js';
 
 
 // ─── Company Status ────────────────────────────────────────
@@ -75,13 +67,10 @@ export const SCompanyInfo: ZodOutput<TCompanyInfo> = z.object({
  * Core domain model for a company.
  * Persisted as a MongoDB document in the `companies` collection.
  *
- * `description` and `address` are optional — a newly created company starts with just a name.
- * Use {@link TCompanyInfo} for the full form DTO shape where all info fields are required.
- *
- * **Note:** `admins` and `services` have been removed.
- * - Access control is managed through {@link TContractDomainModel.roles}
- * - Organizational hierarchy is managed through {@link TOrgNodeDomainModel}
+ * - Access control is managed through Contracts (roles)
+ * - Organizational hierarchy is managed through OrgNodes
  * - `orgLayers` defines the company-specific vocabulary for hierarchy levels
+ * - Integrations and channels are stored in the `integration_credentials` collection
  */
 export interface TCompanyDomainModel {
   /** Unique identifier, prefixed `company_` */
@@ -101,10 +90,6 @@ export interface TCompanyDomainModel {
    * @example ["Direction", "Pole", "Equipe"]
    */
   orgLayers: string[];
-  /** Connected platform integrations (Slack, WhatsApp, etc.) */
-  integrations: TCompanyIntegration[];
-  /** Registered communication channels available for org nodes to use */
-  channels: TCompanyChannel[];
   status: TCompanyStatus;
 }
 export const SCompanyDomainModel = z.object({
@@ -114,8 +99,6 @@ export const SCompanyDomainModel = z.object({
   description:  z.string().default(''),
   address:      SCompanyAddress.default({ street: '', city: '', zip: '', country: '' }),
   orgLayers:    z.array(z.string()).default(['Department', 'Team', 'Sub-team']),
-  integrations: z.array(SCompanyIntegration).default([]),
-  channels:     z.array(SCompanyChannel).default([]),
   status:       SCompanyStatus.default('active'),
 });
 
@@ -142,8 +125,6 @@ export interface TCompanyDetailViewModel {
   description: string;
   address: TCompanyAddress;
   orgLayers: string[];
-  integrations: TCompanyIntegration[];
-  channels: TCompanyChannel[];
   activeTeamCount: number;
   activeContractCount: number;
 }

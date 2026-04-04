@@ -6,6 +6,7 @@ import { ContractModule } from '../contracts/contract.module.js';
 import { UserModule } from '../user/user.module.js';
 import { UserGroupsModule } from '../userGroups/user-groups.module.js';
 import { CompanyModule } from '../company/company.module.js';
+import { IntegrationsModule } from '../integrations/integrations.module.js';
 import { PlaylistModule } from '../playlists-v2/playlist.module.js';
 import { CONTRACT_SCOPED_GUARD } from './nestTokens.js';
 
@@ -20,6 +21,7 @@ import { CONTRACT_SCOPED_GUARD } from './nestTokens.js';
     ContractModule,
     UserGroupsModule,
     CompanyModule,
+    IntegrationsModule,
     PlaylistModule,
   ],
   providers: [

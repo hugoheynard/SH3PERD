@@ -57,6 +57,9 @@ export * from './contract.viewModel.types.js';
 export * from './contracts.dto.types.js';
 
 
+//INTEGRATIONS
+export * from './integrations/index.js';
+
 //CALENDAR
 export * from './event.domain.js';
 export { createIdSchema } from './utils/createIdSchema.js';

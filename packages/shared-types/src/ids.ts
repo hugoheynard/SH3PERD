@@ -61,6 +61,10 @@ export const SRepertoireEntryId = createIdSchema<TRepertoireEntryId>('repEntry')
 export type TVersionTrackId = `track_${string}`;
 export const SVersionTrackId = createIdSchema<TVersionTrackId>('track');
 
+// ─── Integration Credentials ─────────────────────────────
+export type TIntegrationCredentialsId = `intcred_${string}`;
+export const SIntegrationCredentialsId = createIdSchema<TIntegrationCredentialsId>('intcred');
+
 // ─── Playlist ─────────────────────────────────────────────
 export type TPlaylistId = `playlist_${string}`;
 export const SPlaylistId = createIdSchema<TPlaylistId>('playlist');

@@ -34,6 +34,7 @@ export const PLAYLIST_TRACK_REPO = Symbol('PLAYLIST_TRACK_REPO');
 
 // COMPANY
 export const COMPANY_REPO               = Symbol('COMPANY_REPO');
+export const COMPANY_AGGREGATE_REPO     = Symbol('COMPANY_AGGREGATE_REPO');
 export const ORG_NODE_REPO              = Symbol('ORG_NODE_REPO');
 export const ORG_MEMBERSHIP_EVENT_REPO  = Symbol('ORG_MEMBERSHIP_EVENT_REPO');
 /** @deprecated Use ORG_NODE_REPO */

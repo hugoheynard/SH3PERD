@@ -59,7 +59,9 @@ import { ContractReadRepository } from '../../contracts/repositories/ContractRea
 import { CompanyMongoRepository, type ICompanyRepository } from '../../company/repositories/CompanyMongoRepository.js';
 import { OrgNodeMongoRepository, type IOrgNodeRepository } from '../../company/repositories/OrgNodeMongoRepository.js';
 import { OrgMembershipEventMongoRepository, type IOrgMembershipEventRepository } from '../../company/repositories/OrgMembershipEventMongoRepository.js';
+import { IntegrationCredentialsMongoRepository, type IIntegrationCredentialsRepository } from '../../integrations/repositories/IntegrationCredentialsRepository.js';
 import { COMPANY_REPO, ORG_NODE_REPO, ORG_MEMBERSHIP_EVENT_REPO, PLAYLIST_REPO, PLAYLIST_TRACK_REPO } from '../nestTokens.js';
+import { INTEGRATION_CREDENTIALS_REPO } from '../../integrations/integrations.tokens.js';
 import {
   type IPlaylistRepository,
   PlaylistMongoRepository,
@@ -144,6 +146,7 @@ export type TCoreRepositories = {
     mongoRepoProvider<ICompanyRepository>(COMPANY_REPO, CompanyMongoRepository, 'companies'),
     mongoRepoProvider<IOrgNodeRepository>(ORG_NODE_REPO, OrgNodeMongoRepository, 'org_nodes'),
     mongoRepoProvider<IOrgMembershipEventRepository>(ORG_MEMBERSHIP_EVENT_REPO, OrgMembershipEventMongoRepository, 'org_membership_events'),
+    mongoRepoProvider<IIntegrationCredentialsRepository>(INTEGRATION_CREDENTIALS_REPO, IntegrationCredentialsMongoRepository, 'integration_credentials'),
   ],
   exports: [
     USER_PREFERENCES_REPO,
@@ -163,6 +166,7 @@ export type TCoreRepositories = {
     COMPANY_REPO,
     ORG_NODE_REPO,
     ORG_MEMBERSHIP_EVENT_REPO,
+    INTEGRATION_CREDENTIALS_REPO,
   ],
 })
 export class CoreRepositoriesModule {}

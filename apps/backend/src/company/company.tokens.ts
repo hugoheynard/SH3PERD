@@ -1,6 +1,7 @@
 // Repository tokens — sourced from nestTokens to match CoreRepositoriesModule registrations
 export {
   COMPANY_REPO,
+  COMPANY_AGGREGATE_REPO,
   ORG_NODE_REPO,
   ORG_MEMBERSHIP_EVENT_REPO,
   USER_PROFILE_REPO,

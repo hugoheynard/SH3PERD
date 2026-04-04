@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { SlicePipe } from '@angular/common';
 import { InputComponent } from '../../../../../shared/forms/input/input.component';
 import { ButtonComponent } from '../../../../../shared/button/button.component';
-import type { TCompanyChannel, TCommunicationPlatform } from '@sh3pherd/shared-types';
+import type { TIntegrationChannel, TCommunicationPlatform } from '@sh3pherd/shared-types';
 
 @Component({
   selector: 'app-platform-channels',
@@ -15,7 +15,7 @@ import type { TCompanyChannel, TCommunicationPlatform } from '@sh3pherd/shared-t
 })
 export class PlatformChannelsComponent {
   readonly platform = input.required<TCommunicationPlatform>();
-  readonly channels = input.required<TCompanyChannel[]>();
+  readonly channels = input.required<TIntegrationChannel[]>();
 
   readonly added = output<{ name: string; url: string }>();
   readonly removed = output<string>();
@@ -28,7 +28,7 @@ export class PlatformChannelsComponent {
   readonly newName = signal('');
   readonly newUrl = signal('');
 
-  get filtered(): TCompanyChannel[] {
+  get filtered(): TIntegrationChannel[] {
     const q = this.search().toLowerCase().trim();
     if (!q) return this.channels();
     return this.channels().filter(ch => ch.name.toLowerCase().includes(q));

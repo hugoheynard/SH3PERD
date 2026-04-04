@@ -6,8 +6,6 @@ import type {
   TCompanyCardViewModel,
   TCompanyOrgChartViewModel,
   TCompanyId,
-  TCompanyIntegration,
-  TCompanyChannel,
   TContractId,
   TContractRole,
   TContractStatus,
@@ -33,13 +31,6 @@ const MOCK_COMPANY: TCompanyDetailViewModel = {
     country: 'France',
   },
   orgLayers: ['Direction', 'Pôle', 'Équipe'],
-  integrations: [
-    { platform: 'slack', status: 'connected', config: { webhook_url: 'https://hooks.slack.com/services/T00/B00/xxx' }, connectedAt: new Date('2025-12-01') },
-  ],
-  channels: [
-    { id: 'ch_001', name: '#general', platform: 'slack', url: 'https://acme.slack.com/archives/C001' },
-    { id: 'ch_002', name: '#design-team', platform: 'slack', url: 'https://acme.slack.com/archives/C002' },
-  ],
   activeTeamCount: 5,
   activeContractCount: 12,
 };

@@ -18,10 +18,6 @@ export {
   SCommunicationPlatform,
   type TIntegrationStatus,
   SIntegrationStatus,
-  type TCompanyIntegration,
-  SCompanyIntegration,
-  type TCompanyChannel,
-  SCompanyChannel,
   type TOrgNodeCommunication,
   SOrgNodeCommunication,
 } from './company/communication.types.js';

@@ -8,8 +8,16 @@ import type {
   TCompanyId,
   TCompanyInfo,
   TOrgLayers,
-  TCommunicationPlatform,
+  TIntegrationViewModel,
 } from '@sh3pherd/shared-types';
+
+export interface TSlackChannel {
+  id: string;
+  name: string;
+  is_private: boolean;
+  num_members: number;
+  url: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class CompanyService extends BaseHttpService {
@@ -47,14 +55,7 @@ export class CompanyService extends BaseHttpService {
     );
   }
 
-  // ── OAuth ───────────────────────────────────────────────────
-
-  getSlackAuthUrl(companyId: TCompanyId): Observable<{ url: string }> {
-    const base = this.UrlBuilder.apiAuthRoute('slack/authorize').build();
-    return this.http.get<{ url: string }>(`${base}?companyId=${companyId}`);
-  }
-
-  // ── Settings ────────────────────────────────────────────────
+  // ── Company Settings ───────────────────────────────────────
 
   updateCompanyInfo(id: TCompanyId, dto: TCompanyInfo): Observable<TApiResponse<TCompanyInfo>> {
     return this.http.patch<TApiResponse<TCompanyInfo>>(
@@ -70,29 +71,36 @@ export class CompanyService extends BaseHttpService {
     );
   }
 
-  connectIntegration(id: TCompanyId, platform: TCommunicationPlatform, config: Record<string, string>): Observable<TApiResponse<TCompanyDetailViewModel>> {
-    return this.http.post<TApiResponse<TCompanyDetailViewModel>>(
-      this.UrlBuilder.apiProtectedRoute('companies').route(`${id}/settings/integrations`).build(),
-      { platform, config }
-    );
+  // ── Integrations ──────────────────────────────────────────
+
+  getIntegrations(companyId: TCompanyId): Observable<TIntegrationViewModel[]> {
+    const base = this.UrlBuilder.apiProtectedRoute('integrations').build();
+    return this.http.get<TIntegrationViewModel[]>(`${base}?companyId=${companyId}`);
   }
 
-  disconnectIntegration(id: TCompanyId, platform: TCommunicationPlatform): Observable<TApiResponse<TCompanyDetailViewModel>> {
-    return this.http.delete<TApiResponse<TCompanyDetailViewModel>>(
-      this.UrlBuilder.apiProtectedRoute('companies').route(`${id}/settings/integrations/${platform}`).build(),
-    );
+  disconnectIntegration(companyId: TCompanyId, platform: string): Observable<void> {
+    const base = this.UrlBuilder.apiProtectedRoute('integrations').route(platform).build();
+    return this.http.delete<void>(`${base}?companyId=${companyId}`);
   }
 
-  addChannel(id: TCompanyId, dto: { name: string; platform: TCommunicationPlatform; url: string }): Observable<TApiResponse<TCompanyDetailViewModel>> {
-    return this.http.post<TApiResponse<TCompanyDetailViewModel>>(
-      this.UrlBuilder.apiProtectedRoute('companies').route(`${id}/settings/channels`).build(),
-      dto
-    );
+  // ── Slack OAuth ────────────────────────────────────────────
+
+  getSlackAuthUrl(companyId: TCompanyId): Observable<{ url: string }> {
+    const base = this.UrlBuilder.apiAuthRoute('slack/authorize').build();
+    return this.http.get<{ url: string }>(`${base}?companyId=${companyId}`);
   }
 
-  removeChannel(id: TCompanyId, channelId: string): Observable<TApiResponse<TCompanyDetailViewModel>> {
-    return this.http.delete<TApiResponse<TCompanyDetailViewModel>>(
-      this.UrlBuilder.apiProtectedRoute('companies').route(`${id}/settings/channels/${channelId}`).build(),
+  // ── Slack Channels ─────────────────────────────────────────
+
+  searchSlackChannels(companyId: TCompanyId, query: string): Observable<TSlackChannel[]> {
+    const base = this.UrlBuilder.apiAuthRoute('slack/channels/search').build();
+    return this.http.get<TSlackChannel[]>(`${base}?companyId=${companyId}&q=${encodeURIComponent(query)}`);
+  }
+
+  createSlackChannel(companyId: TCompanyId, name: string, isPrivate: boolean): Observable<TSlackChannel> {
+    return this.http.post<TSlackChannel>(
+      this.UrlBuilder.apiAuthRoute('slack/channels/create').build(),
+      { companyId, name, isPrivate },
     );
   }
 }
