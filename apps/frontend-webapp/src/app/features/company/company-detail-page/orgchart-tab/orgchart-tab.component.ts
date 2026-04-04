@@ -75,15 +75,43 @@ export class OrgchartTabComponent {
   }
 
   totalDescendantMembers(node: TOrgNodeHierarchyViewModel): number {
-    const userIds = new Set<string>();
-    let guestCount = 0;
+    return this.getDescendantAvatars(node).length;
+  }
+
+  /**
+   * Collects all unique member/guest avatars from a node and all its descendants.
+   * Members are deduplicated by user_id. Guests are always included.
+   * Returns a flat array suitable for avatar stack rendering.
+   */
+  getDescendantAvatars(node: TOrgNodeHierarchyViewModel): { id: string; label: string; initials: string; isGuest: boolean }[] {
+    const memberMap = new Map<string, { id: string; label: string; initials: string; isGuest: boolean }>();
+    const guests: { id: string; label: string; initials: string; isGuest: boolean }[] = [];
+
     const walk = (n: TOrgNodeHierarchyViewModel): void => {
-      for (const m of n.members) userIds.add(m.user_id);
-      guestCount += (n.guest_members?.length ?? 0);
+      for (const m of n.members) {
+        if (!memberMap.has(m.user_id)) {
+          const name = `${m.first_name ?? ''} ${m.last_name ?? ''}`.trim();
+          memberMap.set(m.user_id, {
+            id: m.user_id,
+            label: name || m.user_id,
+            initials: this.getInitials(m.first_name),
+            isGuest: false,
+          });
+        }
+      }
+      for (const g of (n.guest_members ?? [])) {
+        guests.push({
+          id: g.id,
+          label: g.display_name + (g.title ? ` · ${g.title}` : ''),
+          initials: g.display_name[0]?.toUpperCase() ?? '?',
+          isGuest: true,
+        });
+      }
       for (const child of n.children) walk(child);
     };
+
     walk(node);
-    return userIds.size + guestCount;
+    return [...memberMap.values(), ...guests];
   }
 
   // ── Color system ────────────────────────────────────────

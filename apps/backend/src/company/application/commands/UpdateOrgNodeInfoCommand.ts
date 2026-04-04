@@ -14,7 +14,6 @@ export type TUpdateOrgNodeInfoDTO = {
   name?: string;
   color?: string;
   type?: TTeamType;
-  /** Replace all communications at once */
   communications?: TOrgNodeCommunication[];
 };
 
@@ -41,27 +40,20 @@ export class UpdateOrgNodeInfoHandler implements ICommandHandler<UpdateOrgNodeIn
     const canManage = await this.permissionResolver.hasCompanyPermission(actorId, existing.company_id, 'company:orgchart:write');
     if (!canManage) throw new BusinessError('Forbidden', 'ORGNODE_FORBIDDEN', 403);
 
-    const entity = new OrgNodeEntity(existing);
-    entity.updateInfo({
-      name: dto.name,
-      color: dto.color,
-      type: dto.type,
-    });
+    const stripped = RecordMetadataUtils.stripDocMetadata(existing);
+    console.log('[DEBUG UpdateOrgNode] stripped props:', JSON.stringify(stripped, null, 2));
+    const entity = new OrgNodeEntity(stripped);
 
-    // Build $set from entity domain snapshot
-    const setFields: Record<string, any> = {
-      ...entity.getDiffProps(),
-      ...RecordMetadataUtils.update(),
-    };
+    // Apply only the fields that were provided
+    if (dto.name !== undefined) entity.rename(dto.name);
+    if (dto.color !== undefined) entity.setColor(dto.color);
+    if (dto.type !== undefined) entity.setType(dto.type);
+    if (dto.communications !== undefined) entity.setCommunications(dto.communications);
 
-    // If communications array provided, replace entirely
-    if (dto.communications !== undefined) {
-      setFields['communications'] = dto.communications;
-    }
-
+    // Save full entity state
     const updated = await this.orgNodeRepo.updateOne({
       filter: { id: dto.org_node_id },
-      update: { $set: setFields } as any,
+      update: { $set: { ...entity.toDomain, ...RecordMetadataUtils.update() } } as any,
     });
 
     return updated!;

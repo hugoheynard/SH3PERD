@@ -4,14 +4,18 @@ import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs
 import { PopoverFrameComponent } from '../../../../shared/ui-frames/popover-frame/popover-frame.component';
 import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
 import { OrgChartStore } from '../../orgchart.store';
+import { ContractStore } from '../../contract.store';
 import { CompanyService, type TSlackChannel } from '../../company.service';
 import { LayoutService } from '../../../../core/services/layout.service';
 import type {
   TCompanyId,
+  TCompanyContractViewModel,
   TOrgNodeCommunication,
   TOrgNodeHierarchyViewModel,
   TOrgNodeId,
   TCommunicationPlatform,
+  TTeamRole,
+  TUserId,
 } from '@sh3pherd/shared-types';
 
 export type TNodeSettingsPopoverData = {
@@ -42,8 +46,9 @@ const PLATFORM_LABELS: Record<TCommunicationPlatform, string> = {
   styleUrl: './node-settings-popover.component.scss',
 })
 export class NodeSettingsPopoverComponent {
-  private readonly config = inject<TNodeSettingsPopoverData>(INJECTION_DATA);
+  readonly config = inject<TNodeSettingsPopoverData>(INJECTION_DATA);
   private readonly store = inject(OrgChartStore);
+  private readonly contractStore = inject(ContractStore);
   private readonly companyService = inject(CompanyService);
   readonly layout = inject(LayoutService);
 
@@ -51,6 +56,8 @@ export class NodeSettingsPopoverComponent {
   readonly depth = this.config.depth;
   readonly nodeName = signal(this.config.node.name);
   readonly nodeColor = signal(this.config.node.color || NODE_PALETTE[0]);
+  readonly editMode = signal(true); // popover is always in edit context
+  readonly activeTab = signal<'members' | 'comms' | 'settings'>('members');
 
   // Communications — editable copy
   readonly communications = signal<TOrgNodeCommunication[]>(
@@ -191,13 +198,179 @@ export class NodeSettingsPopoverComponent {
     this.communications.update(list => list.filter(c => c.platform !== platform));
   }
 
+  // ── Members ─────────────────────────────────────────────
+
+  getMemberColor(userId: string): string {
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return NODE_PALETTE[Math.abs(hash) % NODE_PALETTE.length];
+  }
+
+  // ── Remove confirmation ─────────────────────────────────
+
+  readonly confirmingRemove = signal<string | null>(null); // user_id or guest_id being confirmed
+
+  startRemoveMember(id: string): void {
+    this.confirmingRemove.set(id);
+  }
+
+  cancelRemove(): void {
+    this.confirmingRemove.set(null);
+  }
+
+  confirmRemoveMember(userId: string): void {
+    this.store.removeOrgNodeMember(
+      this.config.node.id as TOrgNodeId,
+      userId as any,
+      () => {
+        this.store.loadOrgChart(this.config.companyId);
+        this.layout.clearPopover();
+      },
+    );
+  }
+
+  confirmRemoveGuest(guestId: string): void {
+    this.store.removeGuestMember(
+      this.config.node.id as TOrgNodeId,
+      guestId,
+      () => {
+        this.store.loadOrgChart(this.config.companyId);
+        this.layout.clearPopover();
+      },
+    );
+  }
+
+  // ── Add member ─────────────────────────────────────────
+
+  readonly addingMember = signal(false);
+  readonly addMemberMode = signal<'contract' | 'guest'>('contract');
+  readonly memberSearchQuery = signal('');
+  readonly selectedContractId = signal<string | null>(null);
+  readonly selectedRole = signal<TTeamRole>('member');
+  readonly guestName = signal('');
+  readonly guestTitle = signal('');
+  readonly guestRole = signal<TTeamRole>('member');
+  readonly teamRoles: TTeamRole[] = ['director', 'manager', 'member', 'viewer'];
+
+  startAddMember(): void {
+    this.addingMember.set(true);
+    this.addMemberMode.set('contract');
+    this.memberSearchQuery.set('');
+    this.selectedContractId.set(null);
+    this.selectedRole.set('member');
+  }
+
+  cancelAddMember(): void {
+    this.addingMember.set(false);
+  }
+
+  get filteredContracts(): TCompanyContractViewModel[] {
+    const existingUserIds = new Set(this.config.node.members.map(m => m.user_id));
+    const q = this.memberSearchQuery().toLowerCase();
+    return this.contractStore.contracts().filter(c => {
+      if (c.status !== 'active' || existingUserIds.has(c.user_id)) return false;
+      if (!q) return true;
+      const fullName = `${c.user_first_name ?? ''} ${c.user_last_name ?? ''}`.toLowerCase();
+      const email = (c.user_email ?? '').toLowerCase();
+      return fullName.includes(q) || email.includes(q);
+    });
+  }
+
+  onMemberSearch(event: Event): void {
+    this.memberSearchQuery.set((event.target as HTMLInputElement).value);
+  }
+
+  selectContract(contractId: string): void {
+    this.selectedContractId.set(contractId);
+  }
+
+  onGuestNameInput(event: Event): void {
+    this.guestName.set((event.target as HTMLInputElement).value);
+  }
+
+  onGuestTitleInput(event: Event): void {
+    this.guestTitle.set((event.target as HTMLInputElement).value);
+  }
+
+  confirmAddMember(): void {
+    if (this.addMemberMode() === 'contract') {
+      const contractId = this.selectedContractId();
+      if (!contractId) return;
+      const contract = this.contractStore.contracts().find(c => c.id === contractId);
+      if (!contract) return;
+      this.store.addOrgNodeMember(
+        this.config.node.id as TOrgNodeId,
+        contract.user_id as TUserId,
+        contractId,
+        this.selectedRole(),
+        () => {
+          this.store.loadOrgChart(this.config.companyId);
+          this.layout.clearPopover();
+        },
+      );
+    } else {
+      const name = this.guestName().trim();
+      if (!name) return;
+      this.store.addGuestMember(
+        this.config.node.id as TOrgNodeId,
+        { display_name: name, title: this.guestTitle().trim() || undefined, team_role: this.guestRole() },
+        () => {
+          this.store.loadOrgChart(this.config.companyId);
+          this.layout.clearPopover();
+        },
+      );
+    }
+  }
+
+  // ── Archive (delete) ────────────────────────────────────
+
+  readonly archiveStep = signal<'idle' | 'confirm' | 'type-name'>('idle');
+  readonly archiveInput = signal('');
+  readonly archiving = signal(false);
+
+  startArchive(): void {
+    this.archiveStep.set('confirm');
+  }
+
+  cancelArchive(): void {
+    this.archiveStep.set('idle');
+    this.archiveInput.set('');
+  }
+
+  proceedToTypeName(): void {
+    this.archiveStep.set('type-name');
+    this.archiveInput.set('');
+  }
+
+  onArchiveInput(event: Event): void {
+    this.archiveInput.set((event.target as HTMLInputElement).value);
+  }
+
+  get archiveNameMatches(): boolean {
+    return this.archiveInput().trim().toLowerCase() === this.config.node.name.trim().toLowerCase();
+  }
+
+  confirmArchive(): void {
+    if (!this.archiveNameMatches) return;
+    this.archiving.set(true);
+    this.store.archiveOrgNode(
+      this.config.node.id as TOrgNodeId,
+      () => {
+        this.store.loadOrgChart(this.config.companyId);
+        this.layout.clearPopover();
+      },
+    );
+  }
+
   // ── Save ────────────────────────────────────────────────
 
   save(): void {
     const dto: Record<string, any> = {};
-    const name = this.nodeName().trim();
+    const name = (this.nodeName() ?? '').trim();
     if (name && name !== this.config.node.name) dto['name'] = name;
-    if (this.depth === 0) dto['color'] = this.nodeColor();
+    if (this.depth === 0 && this.nodeColor() !== this.config.node.color) dto['color'] = this.nodeColor();
     dto['communications'] = this.communications();
 
     this.store.updateOrgNode(

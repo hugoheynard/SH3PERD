@@ -21,30 +21,11 @@
             <button class="btn-icon btn-disconnect" (click)="disconnect(p.key)" title="Disconnect">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
-          } @else if (p.oauthFlow) {
-            <sh3-button variant="primary" size="sm" (clicked)="oauthRequested.emit(p.key)">Connect</sh3-button>
           } @else {
-            <sh3-button variant="primary" size="sm" (clicked)="startConnect(p.key)">Connect</sh3-button>
+            <sh3-button variant="primary" size="sm" (clicked)="oauthRequested.emit(p.key)">Connect</sh3-button>
           }
         </div>
       </div>
-
-      @if (p.feature_unlocked && connectingPlatform() === p.key) {
-        <div class="connect-form">
-          @for (field of p.configFields; track field.key) {
-            <sh3-input
-              [label]="field.label"
-              [placeholder]="field.placeholder"
-              [ngModel]="connectConfig()[field.key] ?? ''"
-              (ngModelChange)="patchConfig(field.key, $event + '')"
-            />
-          }
-          <div class="connect-form-actions">
-            <sh3-button variant="primary" size="sm" (clicked)="confirmConnect()">Save connection</sh3-button>
-            <sh3-button variant="ghost" size="sm" (clicked)="cancelConnect()">Cancel</sh3-button>
-          </div>
-        </div>
-      }
     }
   </div>
 </section>

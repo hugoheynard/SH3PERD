@@ -24,9 +24,15 @@ export class CompanyEntity extends Entity<TCompanyDomainModel> {
 
   constructor(props: TEntityInput<TCompanyDomainModel>) {
     const name = props.name?.trim();
-    if (!name) throw new Error('COMPANY_NAME_REQUIRED');
-    if (!props.owner_id) throw new Error('COMPANY_OWNER_REQUIRED');
-    if (!CompanyEntity.VALID_STATUSES.has(props.status)) throw new Error('COMPANY_INVALID_STATUS');
+    if (!name) {
+      throw new Error('COMPANY_NAME_REQUIRED');
+    }
+    if (!props.owner_id) {
+      throw new Error('COMPANY_OWNER_REQUIRED');
+    }
+    if (!CompanyEntity.VALID_STATUSES.has(props.status)) {
+      throw new Error('COMPANY_INVALID_STATUS');
+    }
 
     super({ ...props, name }, 'company');
   }
@@ -50,7 +56,9 @@ export class CompanyEntity extends Entity<TCompanyDomainModel> {
 
   updateInfo(info: TCompanyInfo): void {
     const name = info.name.trim();
-    if (!name) throw new Error('COMPANY_NAME_REQUIRED');
+    if (!name) {
+      throw new Error('COMPANY_NAME_REQUIRED');
+    }
     this.props.name = name;
     this.props.description = info.description;
     this.props.address = { ...info.address };
@@ -59,16 +67,22 @@ export class CompanyEntity extends Entity<TCompanyDomainModel> {
   /* ── Org Layers ── */
 
   updateOrgLayers(layers: string[]): void {
-    if (layers.length === 0) throw new Error('COMPANY_ORG_LAYERS_EMPTY');
+    if (layers.length === 0) {
+      throw new Error('COMPANY_ORG_LAYERS_EMPTY');
+    }
     const trimmed = layers.map(l => l.trim());
-    if (trimmed.some(l => !l)) throw new Error('COMPANY_ORG_LAYER_BLANK');
+    if (trimmed.some(l => !l)) {
+      throw new Error('COMPANY_ORG_LAYER_BLANK');
+    }
     this.props.orgLayers = trimmed;
   }
 
   /* ── Status ── */
 
   updateStatus(status: TCompanyStatus): void {
-    if (!CompanyEntity.VALID_STATUSES.has(status)) throw new Error('COMPANY_INVALID_STATUS');
+    if (!CompanyEntity.VALID_STATUSES.has(status)) {
+      throw new Error('COMPANY_INVALID_STATUS');
+    }
     this.props.status = status;
   }
 }

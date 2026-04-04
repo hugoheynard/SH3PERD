@@ -15,6 +15,7 @@ import { UpdateOrgNodeInfoCommand } from '../application/commands/UpdateOrgNodeI
 import { AddOrgNodeMemberCommand } from '../application/commands/AddTeamMemberCommand.js';
 import { RemoveOrgNodeMemberCommand } from '../application/commands/RemoveTeamMemberCommand.js';
 import { AddGuestMemberCommand, RemoveGuestMemberCommand } from '../application/commands/GuestMemberCommands.js';
+import { ArchiveOrgNodeCommand } from '../application/commands/ArchiveOrgNodeCommand.js';
 
 // Queries
 import { GetCompanyByIdQuery } from '../application/queries/GetCompanyByIdQuery.js';
@@ -117,6 +118,16 @@ export class CompanyController {
       new UpdateOrgNodeInfoCommand({ org_node_id: nodeId, ...body }, actorId),
     );
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.UPDATE_ORGNODE, result);
+  }
+
+  @ApiOperation({ summary: 'Archive an org node' })
+  @HttpCode(204)
+  @Delete('org-nodes/:nodeId')
+  async archiveOrgNode(
+    @Param('nodeId') nodeId: TOrgNodeId,
+    @ActorId() actorId: TUserId,
+  ) {
+    await this.commandBus.execute(new ArchiveOrgNodeCommand(nodeId, actorId));
   }
 
   @ApiOperation({ summary: 'Get company org nodes (flat list)' })

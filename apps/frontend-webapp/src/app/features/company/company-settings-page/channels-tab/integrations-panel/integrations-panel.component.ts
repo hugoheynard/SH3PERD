@@ -1,6 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { InputComponent } from '../../../../../shared/forms/input/input.component';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ButtonComponent } from '../../../../../shared/button/button.component';
 import { PlatformIconComponent } from '../platform-icon/platform-icon.component';
 import type { TIntegrationViewModel, TCommunicationPlatform } from '@sh3pherd/shared-types';
@@ -64,52 +62,23 @@ export const PLATFORMS: PlatformMeta[] = [
 @Component({
   selector: 'app-integrations-panel',
   standalone: true,
-  imports: [FormsModule, InputComponent, ButtonComponent, PlatformIconComponent],
+  imports: [ButtonComponent, PlatformIconComponent],
   templateUrl: './integrations-panel.component.html',
   styleUrl: './integrations-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IntegrationsPanelComponent {
   readonly integrations = input.required<TIntegrationViewModel[]>();
-  readonly connected = output<{ platform: TCommunicationPlatform; config: Record<string, string> }>();
   readonly disconnected = output<TCommunicationPlatform>();
   readonly oauthRequested = output<TCommunicationPlatform>();
 
   readonly platforms = PLATFORMS;
 
-  // Connect flow
-  readonly connectingPlatform = signal<TCommunicationPlatform | null>(null);
-  readonly connectConfig = signal<Record<string, string>>({});
-
   isConnected(platform: TCommunicationPlatform): boolean {
     return this.integrations().some(i => i.platform === platform && i.status === 'connected');
   }
 
-  startConnect(platform: TCommunicationPlatform): void {
-    const existing = this.integrations().find(i => i.platform === platform);
-    this.connectConfig.set({ ...(existing?.config ?? {}) });
-    this.connectingPlatform.set(platform);
-  }
-
-  cancelConnect(): void {
-    this.connectingPlatform.set(null);
-  }
-
-  confirmConnect(): void {
-    const platform = this.connectingPlatform();
-    if (!platform) return;
-    const config = this.connectConfig();
-    if (!Object.values(config).some(v => v.trim())) return;
-
-    this.connected.emit({ platform, config });
-    this.connectingPlatform.set(null);
-  }
-
   disconnect(platform: TCommunicationPlatform): void {
     this.disconnected.emit(platform);
-  }
-
-  patchConfig(key: string, value: string): void {
-    this.connectConfig.update(cfg => ({ ...cfg, [key]: value }));
   }
 }

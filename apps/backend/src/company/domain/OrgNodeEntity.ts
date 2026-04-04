@@ -23,20 +23,54 @@ import { DomainError } from '../../utils/errorManagement/errorClasses/DomainErro
  * to all child nodes. A direct membership overrides the inherited role.
  */
 export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
+  private static readonly VALID_STATUSES = new Set(['active', 'archived']);
+
   constructor(props: TEntityInput<TOrgNodeDomainModel>) {
-    super(props, 'orgnode');
+    if (!props.company_id) {
+      throw new DomainError('Company ID is required', { code: 'ORGNODE_COMPANY_REQUIRED' });
+    }
+    if (!props.name?.trim()) {
+      throw new DomainError('Name is required', { code: 'ORGNODE_NAME_REQUIRED' });
+    }
+    if (!OrgNodeEntity.VALID_STATUSES.has(props.status)) {
+      throw new DomainError('Invalid status', { code: 'ORGNODE_INVALID_STATUS' });
+    }
+
+    super({ ...props, name: props.name.trim() }, 'orgnode');
   }
+
+  // ── Getters ────────────────────────────────────────────
+
+  get name(): string { return this.props.name; }
+  get company_id() { return this.props.company_id; }
+  get parent_id() { return this.props.parent_id; }
+  get type() { return this.props.type; }
+  get color() { return this.props.color; }
+  get status() { return this.props.status; }
+  get communications() { return this.props.communications; }
+  get members() { return this.props.members; }
+  get guest_members() { return this.props.guest_members; }
 
   // ── Node info management ───────────────────────────────
 
-  /** Update node display properties (name, color, type) */
-  updateInfo(fields: {
-    name?: string;
-    color?: string;
-    type?: TTeamType;
-  }): void {
-    this.props = { ...this.props, ...fields };
-  }
+  rename(name: string): void {
+    if (!name.trim()) {
+      throw new DomainError('Name is required', { code: 'ORGNODE_NAME_REQUIRED' });
+    }
+    this.props.name = name.trim();
+  };
+
+  setColor(color: string): void {
+    this.props.color = color;
+  };
+
+  setType(type: TTeamType): void {
+    this.props.type = type;
+  };
+
+  setCommunications(communications: TOrgNodeCommunication[]): void {
+    this.props.communications = [...communications];
+  };
 
   /** Add a communication channel to this node */
   addCommunication(comm: TOrgNodeCommunication): void {

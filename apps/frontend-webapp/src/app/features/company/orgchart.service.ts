@@ -75,6 +75,12 @@ export class OrgChartService extends BaseHttpService {
     );
   }
 
+  archiveOrgNode(nodeId: TOrgNodeId): Observable<void> {
+    return this.http.delete<void>(
+      this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}`).build()
+    );
+  }
+
   removeGuestMember(nodeId: TOrgNodeId, guestId: string): Observable<TApiResponse<unknown>> {
     return this.http.delete<TApiResponse<unknown>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/guests/${guestId}`).build()

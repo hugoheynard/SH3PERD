@@ -139,100 +139,65 @@
         </div>
       }
 
-      <!-- Member avatars preview -->
-      @if (memberCount(node) > 0) {
-        <div class="oc-avatars">
-          @for (m of node.members.slice(0, 4); track m.user_id) {
-            <div class="oc-avatar" [style.background]="getMemberColor(m.user_id)" [title]="(m.first_name ?? '') + ' ' + (m.last_name ?? '')">
-              {{ getInitials(m.first_name) }}
-            </div>
-          }
-          @for (g of (node.guest_members ?? []).slice(0, node.members.length >= 4 ? 0 : 4 - node.members.length); track g.id) {
-            <div class="oc-avatar oc-avatar--guest" [title]="g.display_name + (g.title ? ' · ' + g.title : '')">
-              {{ g.display_name[0]?.toUpperCase() ?? '?' }}
-            </div>
-          }
-          @if (memberCount(node) > 4) {
-            <div class="oc-avatar oc-avatar--more">+{{ memberCount(node) - 4 }}</div>
-          }
-        </div>
-      }
+      <!-- Member avatars preview (includes all descendants) -->
+      @let avatars = getDescendantAvatars(node);
+      <div class="oc-avatars-row">
+        @if (avatars.length > 0) {
+          <div class="oc-avatars">
+            @for (a of avatars.slice(0, 4); track a.id) {
+              <div
+                class="oc-avatar"
+                [class.oc-avatar--guest]="a.isGuest"
+                [style.background]="a.isGuest ? '' : getMemberColor(a.id)"
+                [title]="a.label"
+              >
+                {{ a.initials }}
+              </div>
+            }
+            @if (avatars.length > 4) {
+              <div class="oc-avatar oc-avatar--more">+{{ avatars.length - 4 }}</div>
+            }
+          </div>
+        }
+        @if (editMode()) {
+          <button class="oc-add-member-icon" (click)="openAddMemberPopover(node); $event.stopPropagation()" title="Add member">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        }
+      </div>
 
-      <!-- Quick action buttons on the card (edit mode) -->
-      @if (editMode()) {
-        <div class="oc-card-actions" (click)="$event.stopPropagation()">
-          <button class="oc-card-action-btn" [style.--btn-color]="getNodeColorForDepth(node, depth, rootColor)" (click)="openAddMemberPopover(node)">+ Member</button>
-          <button class="oc-card-action-btn" [style.--btn-color]="getNodeColorForDepth(node, depth, rootColor)" (click)="startAddNode(node.id)">+ {{ getLayerLabel(depth + 1) }}</button>
-        </div>
-      }
     </div>
 
-    <!-- Expanded content: members + children + add button -->
+    <!-- Expanded content: children + add node -->
     @if (isNodeExpanded(node.id)) {
 
-      <!-- Detailed member list -->
-      @if (memberCount(node) > 0) {
-        <div class="oc-members-stack">
-          @for (member of node.members; track member.user_id) {
-            <div class="oc-member-card" [style.border-left-color]="rootColor + '44'">
-              <div class="oc-member-avatar" [style.background]="getMemberColor(member.user_id)">
-                {{ getInitials(member.first_name) }}
-              </div>
-              <div class="oc-member-info">
-                <span class="oc-member-name">{{ member.first_name }} {{ member.last_name }}</span>
-                <span class="oc-member-role">{{ member.team_role }}</span>
-              </div>
-              @if (editMode()) {
-                <button class="oc-member-remove" (click)="removeMember(node.id, member.user_id); $event.stopPropagation()" title="Remove member">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                </button>
-              }
-            </div>
-          }
-          @for (guest of node.guest_members ?? []; track guest.id) {
-            <div class="oc-member-card oc-member-card--guest" [style.border-left-color]="rootColor + '44'">
-              <div class="oc-member-avatar oc-member-avatar--guest">
-                {{ guest.display_name[0]?.toUpperCase() ?? '?' }}
-              </div>
-              <div class="oc-member-info">
-                <span class="oc-member-name">{{ guest.display_name }}</span>
-                <span class="oc-member-role">{{ guest.team_role }}@if (guest.title) { · {{ guest.title }} }</span>
-              </div>
-              @if (editMode()) {
-                <button class="oc-member-remove" (click)="removeGuestMember(node.id, guest.id); $event.stopPropagation()" title="Remove guest">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                </button>
-              }
-            </div>
-          }
-        </div>
-      }
-
       @if (editMode()) {
-        <button class="oc-add-member-btn" [style.--btn-color]="rootColor" (click)="openAddMemberPopover(node); $event.stopPropagation()">
-          + Member
-        </button>
-
-        <button class="oc-add-child-btn" [style.--btn-color]="rootColor" (click)="startAddNode(node.id); $event.stopPropagation()">
-          + {{ getLayerLabel(depth + 1) }}
-        </button>
-
         @if (addingNode() && newNodeParentId() === node.id) {
-          <div class="add-node-form add-node-form--inline">
+          <div class="oc-add-child-inline" (click)="$event.stopPropagation()">
+            <span class="oc-add-child-prefix">+</span>
             <input
-              class="input-inline"
+              class="oc-add-child-input"
               type="text"
               [placeholder]="getLayerLabel(depth + 1) + ' name...'"
               [value]="newNodeName()"
               (input)="onNodeNameInput($event)"
               (keydown.enter)="confirmAddNode()"
               (keydown.escape)="cancelAddNode()"
-              (click)="$event.stopPropagation()"
               autofocus
             />
-            <button class="btn-confirm" (click)="confirmAddNode(); $event.stopPropagation()">Create</button>
-            <button class="btn-cancel" (click)="cancelAddNode(); $event.stopPropagation()">Cancel</button>
+            @if (newNodeName().trim()) {
+              <button class="oc-add-child-confirm" (click)="confirmAddNode()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+              </button>
+            }
+            <button class="oc-add-child-cancel" (click)="cancelAddNode()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
           </div>
+        } @else {
+          <button class="oc-add-child-btn" [style.--btn-color]="rootColor" (click)="startAddNode(node.id); $event.stopPropagation()">
+            + {{ getLayerLabel(depth + 1) }}
+          </button>
         }
       }
 

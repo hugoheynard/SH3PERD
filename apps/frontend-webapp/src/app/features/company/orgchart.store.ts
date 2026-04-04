@@ -96,4 +96,13 @@ export class OrgChartStore {
       error: (err) => console.error('[OrgChartStore] removeGuestMember failed', err),
     });
   }
+
+  // ── Archive ───────────────────────────────────────────────
+
+  archiveOrgNode(nodeId: TOrgNodeId, onSuccess?: () => void): void {
+    this.service.archiveOrgNode(nodeId).subscribe({
+      next: () => onSuccess?.(),
+      error: (err) => console.error('[OrgChartStore] archiveOrgNode failed', err),
+    });
+  }
 }

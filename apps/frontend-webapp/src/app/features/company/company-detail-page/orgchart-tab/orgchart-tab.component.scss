@@ -97,25 +97,33 @@
 
 // ── Tree connectors ────────────────────────────────────────
 .oc-branch {
-  width: 1px; height: 20px; background: var(--border-light);
+  width: 1px; height: 20px; background: color-mix(in srgb, var(--root-color, var(--border-light)) 35%, transparent);
   &--root { width: 2px; height: 28px; background: linear-gradient(to bottom, var(--floating-border-color), var(--border-subtle)); }
 }
-.oc-drop { align-self: center; width: 1px; height: 24px; background: var(--border-light); }
+.oc-drop { align-self: center; width: 1px; height: 24px; background: color-mix(in srgb, var(--root-color, var(--border-light)) 35%, transparent); }
 
 .oc-children-row {
-  position: relative; display: flex; align-items: flex-start; gap: 0;
-  &::before {
-    content: ''; position: absolute; top: 0;
-    left: calc(50% / var(--count, 1));
-    right: calc(50% / var(--count, 1));
-    height: 1px; background: var(--border-light);
-  }
+  display: flex; align-items: flex-start; gap: 0;
 }
 
 .oc-node-col {
-  flex: 1; min-width: 0;
+  flex: 0 0 auto;
   display: flex; flex-direction: column; align-items: center;
   padding: 0 8px;
+  position: relative;
+
+  // Each child draws a horizontal bar at the top connecting to siblings
+  &:not(:only-child)::before {
+    content: ''; position: absolute; top: 0; height: 1px;
+    background: color-mix(in srgb, var(--root-color, var(--border-light)) 35%, transparent);
+    left: 0; right: 0;
+  }
+  // First child: bar only on the right half (from center to right edge)
+  &:first-child::before { left: 50%; }
+  // Last child: bar only on the left half (from left edge to center)
+  &:last-child::before { right: 50%; }
+  // Only child: no bar
+  &:only-child::before { display: none; }
 }
 
 // ── Node card ──────────────────────────────────────────────
@@ -222,7 +230,8 @@
 }
 
 // ── Avatar stack ────────────────────────────────────────────
-.oc-avatars { display: flex; align-items: center; margin-top: 6px; }
+.oc-avatars-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.oc-avatars { display: flex; align-items: center; }
 .oc-avatar {
   width: 20px; height: 20px; border-radius: var(--radius-round);
   display: flex; align-items: center; justify-content: center;
@@ -234,8 +243,22 @@
   &--guest { background: var(--surface-raised); color: var(--text-secondary); border-style: dashed; }
 }
 
+.oc-add-member-icon {
+  width: 20px; height: 20px; border-radius: var(--radius-round);
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: 1px dashed var(--border-light);
+  color: var(--text-muted); cursor: pointer; flex-shrink: 0;
+  transition: color var(--t-fast), border-color var(--t-fast), background var(--t-fast);
+
+  &:hover {
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
 // ── Member list (expanded) ──────────────────────────────────
-.oc-members-stack { display: flex; flex-direction: column; gap: 3px; width: 100%; margin-top: 6px; }
+.oc-members-stack { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; }
 .oc-member-card {
   display: flex; align-items: center; gap: 7px; padding: 5px 8px; border-radius: 7px;
   background: var(--surface-subtle);
@@ -270,9 +293,14 @@
 }
 
 // ── Add member / child buttons ──────────────────────────────
+.oc-add-member-btn, .oc-add-child-btn, .oc-add-child-inline, .oc-members-stack {
+  align-self: center;
+  width: 100%;
+  max-width: 160px;
+}
+
 .oc-add-member-btn, .oc-add-child-btn {
   --btn-color: var(--accent-color);
-  width: 100%;
   background: none; border: 1px dashed var(--border-light);
   border-radius: var(--radius-sm); padding: 4px 8px;
   color: var(--text-muted); font-size: 10px; cursor: pointer;
@@ -283,6 +311,63 @@
   }
 }
 .oc-add-child-btn { margin-top: 6px; }
+
+.oc-add-child-inline {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 6px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 2px 4px;
+  background: var(--surface-subtle);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.oc-add-child-prefix {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.oc-add-child-input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 11px;
+  padding: 3px 0;
+
+  &::placeholder { color: var(--text-muted); opacity: 0.6; }
+}
+
+.oc-add-child-confirm,
+.oc-add-child-cancel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: var(--radius-xs);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.oc-add-child-confirm {
+  color: #68d391;
+  &:hover { background: rgba(104, 211, 145, 0.15); }
+}
+
+.oc-add-child-cancel {
+  &:hover { color: var(--color-alert-light); background: rgba(252, 129, 129, 0.1); }
+}
 
 // ── Responsive ──────────────────────────────────────────────
 @media (max-width: 768px) {
