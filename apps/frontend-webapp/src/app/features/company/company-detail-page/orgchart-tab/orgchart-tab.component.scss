@@ -361,8 +361,8 @@
 }
 
 .oc-add-child-confirm {
-  color: #68d391;
-  &:hover { background: rgba(104, 211, 145, 0.15); }
+  color: var(--accent-color);
+  &:hover { background: var(--accent-color-dim); }
 }
 
 .oc-add-child-cancel {

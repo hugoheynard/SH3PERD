@@ -1,6 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TabNavComponent, type TabNavItem } from '../../../../shared/tab-nav/tab-nav.component';
+import { AvatarComponent } from '../../../../shared/avatar/avatar.component';
+import { PillSelectorComponent } from '../../../../shared/pill-selector/pill-selector.component';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
 import { PopoverFrameComponent } from '../../../../shared/ui-frames/popover-frame/popover-frame.component';
 import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
@@ -42,7 +44,7 @@ const PLATFORM_LABELS: Record<TCommunicationPlatform, string> = {
 @Component({
   selector: 'app-node-settings-popover',
   standalone: true,
-  imports: [CommonModule, PopoverFrameComponent, TabNavComponent],
+  imports: [CommonModule, PopoverFrameComponent, TabNavComponent, AvatarComponent, PillSelectorComponent],
   templateUrl: './node-settings-popover.component.html',
   styleUrl: './node-settings-popover.component.scss',
 })
@@ -263,6 +265,7 @@ export class NodeSettingsPopoverComponent {
   readonly guestTitle = signal('');
   readonly guestRole = signal<TTeamRole>('member');
   readonly teamRoles: TTeamRole[] = ['director', 'manager', 'member', 'viewer'];
+  readonly roleOptions = this.teamRoles.map(r => ({ key: r, label: r }));
 
   startAddMember(): void {
     this.addingMember.set(true);

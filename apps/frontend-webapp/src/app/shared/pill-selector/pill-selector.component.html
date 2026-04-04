@@ -1,0 +1,10 @@
+<div class="pill-row">
+  @for (opt of options(); track opt.key) {
+    <button
+      class="pill"
+      [class.is-active]="activeKey() === opt.key"
+      (click)="selected.emit(opt.key)"
+      type="button"
+    >{{ opt.label }}</button>
+  }
+</div>

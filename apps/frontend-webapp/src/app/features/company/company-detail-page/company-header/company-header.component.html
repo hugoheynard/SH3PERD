@@ -1,6 +1,6 @@
 <header class="company-header">
   <div class="header-info">
-    <div class="company-avatar">{{ initials() }}</div>
+    <sh3-avatar [name]="name()" [square]="true" size="lg" />
     <h1 class="company-name">{{ name() }}</h1>
   </div>
 
@@ -15,5 +15,5 @@
     </span>
   </div>
 
-  <span class="status-badge" [class]="'status-' + status()">{{ status() }}</span>
+  <sh3-status-badge [status]="status()" />
 </header>

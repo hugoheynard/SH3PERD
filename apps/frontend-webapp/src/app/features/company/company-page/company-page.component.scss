@@ -144,9 +144,9 @@
   letter-spacing: 0.04em;
 
   &.status-active {
-    background: rgba(104, 211, 145, 0.12);
-    color: #68d391;
-    border: 1px solid rgba(104, 211, 145, 0.25);
+    background: var(--accent-color-dim);
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color-border);
   }
   &.status-pending {
     background: rgba(246, 173, 85, 0.12);

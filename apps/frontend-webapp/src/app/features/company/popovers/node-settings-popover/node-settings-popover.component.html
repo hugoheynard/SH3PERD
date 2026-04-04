@@ -24,9 +24,7 @@
         <div class="popover-members-list">
           @for (member of config.node.members; track member.user_id) {
             <div class="popover-member-row">
-              <div class="popover-member-avatar" [style.background]="getMemberColor(member.user_id)">
-                {{ (member.first_name ?? '?')[0].toUpperCase() }}
-              </div>
+              <sh3-avatar [name]="(member.first_name ?? '') + ' ' + (member.last_name ?? '')" [colorSeed]="member.user_id" size="sm" />
               <div class="popover-member-info">
                 <span class="popover-member-name">{{ member.first_name ?? '' }} {{ member.last_name ?? '' }}</span>
                 <span class="popover-member-role">{{ member.team_role }}</span>
@@ -45,9 +43,7 @@
           }
           @for (guest of config.node.guest_members ?? []; track guest.id) {
             <div class="popover-member-row popover-member-row--guest">
-              <div class="popover-member-avatar popover-member-avatar--guest">
-                {{ guest.display_name[0]?.toUpperCase() ?? '?' }}
-              </div>
+              <sh3-avatar [name]="guest.display_name" variant="ghost" size="sm" />
               <div class="popover-member-info">
                 <span class="popover-member-name">{{ guest.display_name }}</span>
                 <span class="popover-member-role">{{ guest.team_role }}@if (guest.title) { · {{ guest.title }} }</span>
@@ -75,10 +71,11 @@
       } @else {
         <div class="add-member-section">
           <!-- Mode tabs -->
-          <div class="add-member-mode-tabs">
-            <button class="add-member-mode-tab" [class.is-active]="addMemberMode() === 'contract'" (click)="addMemberMode.set('contract')" type="button">From contracts</button>
-            <button class="add-member-mode-tab" [class.is-active]="addMemberMode() === 'guest'" (click)="addMemberMode.set('guest')" type="button">Guest</button>
-          </div>
+          <sh3-pill-selector
+            [options]="[{ key: 'contract', label: 'From contracts' }, { key: 'guest', label: 'Guest' }]"
+            [activeKey]="addMemberMode()"
+            (selected)="addMemberMode.set($event)"
+          />
 
           @if (addMemberMode() === 'contract') {
             <!-- Search -->
@@ -88,9 +85,7 @@
             <div class="add-member-contract-list">
               @for (c of filteredContracts; track c.id) {
                 <button class="add-member-contract-item" [class.is-selected]="selectedContractId() === c.id" (click)="selectContract(c.id)" type="button">
-                  <div class="popover-member-avatar" [style.background]="getMemberColor(c.user_id)">
-                    {{ (c.user_first_name ?? '?')[0].toUpperCase() }}
-                  </div>
+                  <sh3-avatar [name]="(c.user_first_name ?? '') + ' ' + (c.user_last_name ?? '')" [colorSeed]="c.user_id" size="sm" />
                   <div class="popover-member-info">
                     <span class="popover-member-name">{{ c.user_first_name ?? '' }} {{ c.user_last_name ?? '' }}</span>
                     <span class="popover-member-role">{{ c.user_email ?? '' }}</span>
@@ -104,21 +99,13 @@
 
             <!-- Role selector -->
             @if (selectedContractId()) {
-              <div class="add-member-role-selector">
-                @for (role of teamRoles; track role) {
-                  <button class="role-pill" [class.is-active]="selectedRole() === role" (click)="selectedRole.set(role)" type="button">{{ role }}</button>
-                }
-              </div>
+              <sh3-pill-selector [options]="roleOptions" [activeKey]="selectedRole()" (selected)="selectedRole.set($event)" />
             }
           } @else {
             <!-- Guest form -->
             <input class="field-input" type="text" placeholder="Display name" [value]="guestName()" (input)="onGuestNameInput($event)" autofocus />
             <input class="field-input" type="text" placeholder="Title (optional)" [value]="guestTitle()" (input)="onGuestTitleInput($event)" />
-            <div class="add-member-role-selector">
-              @for (role of teamRoles; track role) {
-                <button class="role-pill" [class.is-active]="guestRole() === role" (click)="guestRole.set(role)" type="button">{{ role }}</button>
-              }
-            </div>
+            <sh3-pill-selector [options]="roleOptions" [activeKey]="guestRole()" (selected)="guestRole.set($event)" />
           }
 
           <div class="add-member-actions">

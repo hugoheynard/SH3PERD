@@ -130,7 +130,7 @@
 }
 
 .check-icon {
-  color: #68d391;
+  color: var(--accent-color);
   flex-shrink: 0;
 }
 
@@ -225,16 +225,16 @@
 
 .btn-confirm {
   padding: 5px 12px;
-  background: rgba(104, 211, 145, 0.15);
-  border: 1px solid rgba(104, 211, 145, 0.3);
+  background: var(--accent-color-dim);
+  border: 1px solid var(--accent-color-border);
   border-radius: var(--radius-sm);
-  color: #68d391;
+  color: var(--accent-color);
   font-size: var(--text-sm);
   font-weight: 600;
   cursor: pointer;
 
   &:hover {
-    background: rgba(104, 211, 145, 0.25);
+    background: var(--accent-color-border);
   }
 
   &:disabled {

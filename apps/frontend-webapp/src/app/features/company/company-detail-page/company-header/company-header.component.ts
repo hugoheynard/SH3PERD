@@ -1,8 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { AvatarComponent } from '../../../../shared/avatar/avatar.component';
+import { StatusBadgeComponent } from '../../../../shared/status-badge/status-badge.component';
 
 @Component({
   selector: 'app-company-header',
   standalone: true,
+  imports: [AvatarComponent, StatusBadgeComponent],
   templateUrl: './company-header.component.html',
   styleUrl: './company-header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -12,11 +15,4 @@ export class CompanyHeaderComponent {
   readonly status = input.required<string>();
   readonly nodeCount = input(0);
   readonly contractCount = input(0);
-
-  /** First letters of the first two words (e.g. "Acme Productions" → "AP") */
-  readonly initials = computed(() => {
-    const words = this.name().trim().split(/\s+/);
-    if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
-    return this.name().substring(0, 2).toUpperCase();
-  });
 }
