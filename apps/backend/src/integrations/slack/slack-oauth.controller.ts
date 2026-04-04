@@ -83,11 +83,11 @@ export class SlackOAuthController {
         });
       }
 
-      res.redirect(`${this.frontendUrl}/app/company/${companyId}/settings?tab=channels&slack=connected`);
+      res.redirect(`${this.frontendUrl}/app/company/${companyId}?tab=settings&slack=connected`);
     } catch (err) {
       console.error('[SlackOAuth] callback failed', err);
       const redirectId = companyId! ?? '';
-      res.redirect(`${this.frontendUrl}/app/company/${redirectId}/settings?tab=channels&slack=error`);
+      res.redirect(`${this.frontendUrl}/app/company/${redirectId}?tab=settings&slack=error`);
     }
   }
 }

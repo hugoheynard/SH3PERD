@@ -17,7 +17,13 @@
 
   <div class="settings-layout">
 
-    <app-settings-nav [activeTab]="activeTab()" (tabChange)="setTab($event)" />
+    <sh3-tab-nav
+      [tabs]="settingsTabs"
+      [activeKey]="activeTab()"
+      activeStyle="fill"
+      direction="vertical"
+      (tabChange)="setTab($event)"
+    />
 
     <!-- Tab content -->
     <div class="settings-content">

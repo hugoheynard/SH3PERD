@@ -1,5 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TabNavComponent, type TabNavItem } from '../../../../shared/tab-nav/tab-nav.component';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
 import { PopoverFrameComponent } from '../../../../shared/ui-frames/popover-frame/popover-frame.component';
 import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
@@ -41,7 +42,7 @@ const PLATFORM_LABELS: Record<TCommunicationPlatform, string> = {
 @Component({
   selector: 'app-node-settings-popover',
   standalone: true,
-  imports: [CommonModule, PopoverFrameComponent],
+  imports: [CommonModule, PopoverFrameComponent, TabNavComponent],
   templateUrl: './node-settings-popover.component.html',
   styleUrl: './node-settings-popover.component.scss',
 })
@@ -57,7 +58,16 @@ export class NodeSettingsPopoverComponent {
   readonly nodeName = signal(this.config.node.name);
   readonly nodeColor = signal(this.config.node.color || NODE_PALETTE[0]);
   readonly editMode = signal(true); // popover is always in edit context
-  readonly activeTab = signal<'members' | 'comms' | 'settings'>('members');
+  readonly activeTab = signal<string>('members');
+
+  readonly popoverTabs = computed<TabNavItem[]>(() => {
+    const memberCount = this.config.node.members.length + (this.config.node.guest_members?.length ?? 0);
+    return [
+      { key: 'members', label: 'Members', badge: memberCount, icon: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z' },
+      { key: 'comms', label: 'Channels', icon: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z' },
+      { key: 'settings', label: 'Settings', icon: 'M19.14,12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24,0-.43.17-.47.41l-.36,2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47,0-.59.22L2.74,8.87c-.12.21-.08.47.12.61l2.03,1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03,1.58c-.18.14-.23.41-.12.61l1.92,3.32c.12.22.37.29.59.22l2.39-.96c.5.38,1.03.7,1.62.94l.36,2.54c.05.24.24.41.48.41h3.84c.24,0,.44-.17.47-.41l.36-2.54c.59-.24,1.13-.56,1.62-.94l2.39.96c.22.08.47,0,.59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6,3.6,1.62,3.6,3.6-1.62,3.6-3.6,3.6z' },
+    ];
+  });
 
   // Communications — editable copy
   readonly communications = signal<TOrgNodeCommunication[]>(

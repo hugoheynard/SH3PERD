@@ -1,0 +1,147 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.tab-nav {
+  display: flex;
+  width: 100%;
+  gap: 2px;
+}
+
+.tab-nav-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 4px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: color var(--t-fast), background var(--t-fast), border-color var(--t-fast);
+  white-space: nowrap;
+
+  &:hover { color: var(--text-secondary); }
+}
+
+// ── Underline style ──────────────────────────────
+.style-underline {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  .tab-nav-item {
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+
+    &.is-active {
+      color: var(--text-primary);
+      border-bottom-color: var(--accent-color);
+    }
+  }
+}
+
+// ── Fill style ───────────────────────────────────
+.style-fill {
+  .tab-nav-item {
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+
+    &.is-active {
+      background: var(--accent-color-dim);
+      color: var(--accent-color);
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    &:hover:not(.is-active) {
+      background: rgba(255, 255, 255, 0.04);
+    }
+  }
+}
+
+// ── Vertical direction ───────────────────────────
+// On desktop: stacked sidebar. On mobile (≤768px): auto-switches to horizontal.
+.dir-vertical {
+  flex-direction: column;
+
+  .tab-nav-item {
+    flex: none;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 8px 10px;
+    gap: 8px;
+    font-size: var(--text-sm);
+    font-weight: 500;
+  }
+
+  // Underline in vertical → left border instead of bottom
+  &.style-underline {
+    border-bottom: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+
+    .tab-nav-item {
+      border-bottom: none;
+      border-left: 2px solid transparent;
+      margin-bottom: 0;
+      margin-right: -1px;
+
+      &.is-active { border-left-color: var(--accent-color); }
+    }
+  }
+
+  // Fill in vertical → same as horizontal but left-aligned
+  &.style-fill .tab-nav-item {
+    &.is-active {
+      background: var(--accent-color-dim);
+      color: var(--accent-color);
+    }
+  }
+
+  // Auto-switch to horizontal on mobile
+  @media (max-width: 768px) {
+    flex-direction: row;
+
+    .tab-nav-item {
+      flex: 1;
+      justify-content: center;
+      text-align: center;
+      padding: 6px 4px;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    &.style-underline {
+      border-right: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+      .tab-nav-item {
+        border-left: none;
+        border-bottom: 2px solid transparent;
+        margin-right: 0;
+        margin-bottom: -1px;
+
+        &.is-active { border-bottom-color: var(--accent-color); }
+      }
+    }
+
+    &.style-fill {
+      border-right: none;
+    }
+  }
+}
+
+// ── Icon ─────────────────────────────────────────
+.tab-nav-icon {
+  flex-shrink: 0;
+}
+
+// ── Badge ────────────────────────────────────────
+.tab-nav-badge {
+  font-size: 9px;
+  font-weight: 700;
+  opacity: 0.6;
+}

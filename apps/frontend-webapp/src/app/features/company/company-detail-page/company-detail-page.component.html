@@ -31,17 +31,19 @@
       [status]="c.status"
       [nodeCount]="c.activeTeamCount"
       [contractCount]="c.activeContractCount"
-      (settingsClicked)="goToSettings()"
     />
 
     <!-- Body -->
     <div class="company-body">
 
       <!-- Tab bar -->
-      <div class="tab-bar">
-        <button class="tab-btn" [class.active]="activeTab() === 'orgchart'" (click)="setTab('orgchart')">Organigramme</button>
-        <button class="tab-btn" [class.active]="activeTab() === 'contracts'" (click)="setTab('contracts')">Contracts</button>
-      </div>
+      <sh3-tab-nav
+        [tabs]="detailTabs"
+        [activeKey]="activeTab()"
+        activeStyle="underline"
+        direction="horizontal"
+        (tabChange)="setTab($event)"
+      />
 
       @if (activeTab() === 'orgchart') {
         <app-orgchart-tab [companyId]="c.id" />
@@ -49,6 +51,32 @@
 
       @if (activeTab() === 'contracts') {
         <app-contracts-tab [companyId]="c.id" />
+      }
+
+      @if (activeTab() === 'settings') {
+        <div class="settings-inline">
+          <sh3-tab-nav
+            [tabs]="settingsTabs"
+            [activeKey]="activeSettingsTab()"
+            activeStyle="fill"
+            direction="vertical"
+            (tabChange)="activeSettingsTab.set($event)"
+          />
+          <div class="settings-content">
+            @if (activeSettingsTab() === SettingsTab.INFOS) {
+              <app-company-info-tab [companyId]="c.id" />
+            }
+            @if (activeSettingsTab() === SettingsTab.ORG_LAYERS) {
+              <app-org-layers-tab [companyId]="c.id" />
+            }
+            @if (activeSettingsTab() === SettingsTab.CHANNELS) {
+              <app-channels-tab [companyId]="c.id" />
+            }
+            @if (activeSettingsTab() === SettingsTab.SETTINGS) {
+              <app-danger-zone-tab [companyId]="c.id" />
+            }
+          </div>
+        </div>
       }
 
     </div>

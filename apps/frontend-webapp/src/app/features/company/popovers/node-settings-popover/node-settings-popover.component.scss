@@ -7,39 +7,6 @@
   padding: 12px 14px;
 }
 
-/* ── Tabs ────────────────────────────────────── */
-
-.popover-tabs {
-  display: flex;
-  gap: 2px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  margin-bottom: 4px;
-}
-
-.popover-tab {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 6px 0;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--text-muted);
-  font-size: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: center;
-  transition: color var(--t-fast), border-color var(--t-fast);
-
-  &:hover { color: var(--text-secondary); }
-
-  &.is-active {
-    color: var(--text-primary);
-    border-bottom-color: var(--accent-color);
-  }
-}
 
 /* ── Fields ──────────────────────────────────── */
 

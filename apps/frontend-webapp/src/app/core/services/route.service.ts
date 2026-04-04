@@ -43,11 +43,6 @@ export class RouteService {
   };
 
   @RouteService.tryCatchDecorator
-  async navigateToSettings(){
-    await this.router.navigate(['app/settings']);
-  };
-
-  @RouteService.tryCatchDecorator
   async navigateToLogin(){
     await this.router.navigate(['login']);
   };

@@ -56,11 +56,6 @@ export const routes: Routes = [
                   .then(m => m.CompanyDetailPageComponent),
               },
               {
-                path: 'settings',
-                loadComponent: () => import('../features/company/company-settings-page/company-settings-page.component')
-                  .then(m => m.CompanySettingsPageComponent),
-              },
-              {
                 path: 'contracts',
                 children: [
                   {
