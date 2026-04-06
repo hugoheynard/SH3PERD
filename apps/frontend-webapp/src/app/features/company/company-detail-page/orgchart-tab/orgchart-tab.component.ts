@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angu
 import { CommonModule } from '@angular/common';
 import { OrgChartStore } from '../../orgchart.store';
 import { LayoutService } from '../../../../core/services/layout.service';
-import { AddMemberPopoverComponent, type TAddMemberPopoverData } from '../../popovers/add-member-popover/add-member-popover.component';
 import { NodeSettingsPopoverComponent, type TNodeSettingsPopoverData } from '../../popovers/node-settings-popover/node-settings-popover.component';
 import type {
   TCompanyId,
@@ -170,15 +169,10 @@ export class OrgchartTabComponent {
 
   // ── Member assignment ───────────────────────────────────
 
-  openAddMemberPopover(node: TOrgNodeHierarchyViewModel): void {
-    this.layout.setPopover<AddMemberPopoverComponent, TAddMemberPopoverData>(
-      AddMemberPopoverComponent,
-      {
-        nodeId: node.id as TOrgNodeId,
-        nodeName: node.name,
-        companyId: this.companyId(),
-        existingMembers: node.members,
-      },
+  openAddMemberPopover(node: TOrgNodeHierarchyViewModel, depth: number): void {
+    this.layout.setPopover<NodeSettingsPopoverComponent, TNodeSettingsPopoverData>(
+      NodeSettingsPopoverComponent,
+      { node, companyId: this.companyId(), depth, openAddMember: true },
     );
   }
 

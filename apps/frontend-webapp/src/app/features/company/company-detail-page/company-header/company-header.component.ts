@@ -12,6 +12,7 @@ import { StatusBadgeComponent } from '../../../../shared/status-badge/status-bad
 })
 export class CompanyHeaderComponent {
   readonly name = input.required<string>();
+  readonly companyId = input.required<string>();
   readonly status = input.required<string>();
   readonly nodeCount = input(0);
   readonly contractCount = input(0);

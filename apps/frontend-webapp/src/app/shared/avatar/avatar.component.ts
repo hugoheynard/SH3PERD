@@ -8,15 +8,19 @@ const PALETTE = [
 /**
  * `<sh3-avatar>` — Displays a user/entity avatar with initials or an image.
  *
+ * If `imageUrl` is provided, displays the image. Otherwise, displays initials
+ * with a deterministic background color.
+ *
  * ## Inputs
  *
- * | Input    | Type                    | Default | Description                                    |
- * |----------|-------------------------|---------|------------------------------------------------|
- * | `name`   | `string` (required)     | —       | Full name — initials are derived automatically.|
- * | `size`   | `'sm' \| 'md' \| 'lg'` | `'md'`  | Avatar size (20px / 32px / 44px).              |
- * | `colorSeed` | `string`             | `name`  | String used to pick a deterministic color.     |
- * | `variant`| `'solid' \| 'ghost'`    | `'solid'`| `'ghost'` renders a dashed border (for guests).|
- * | `square` | `boolean`              | `false` | Square shape with small radius (for orgs).     |
+ * | Input       | Type                    | Default   | Description                                    |
+ * |-------------|-------------------------|-----------|------------------------------------------------|
+ * | `name`      | `string` (required)     | —         | Full name — initials are derived automatically.|
+ * | `size`      | `'sm' \| 'md' \| 'lg'` | `'md'`    | Avatar size (20px / 32px / 44px).              |
+ * | `colorSeed` | `string`                | `name`    | String used to pick a deterministic color.     |
+ * | `variant`   | `'solid' \| 'ghost'`    | `'solid'` | `'ghost'` renders a dashed border (for guests).|
+ * | `square`    | `boolean`               | `false`   | Square shape with small radius (for orgs).     |
+ * | `imageUrl`  | `string`                | —         | URL of an image/logo. Replaces initials when set.|
  *
  * ## Examples
  *
@@ -24,23 +28,37 @@ const PALETTE = [
  * <sh3-avatar name="Hugo Heynard" />
  * <sh3-avatar name="Guest User" variant="ghost" size="sm" />
  * <sh3-avatar name="Acme Corp" [square]="true" size="lg" />
+ * <sh3-avatar name="Acme Corp" [square]="true" size="lg" imageUrl="/assets/logos/acme.png" />
  * ```
  */
 @Component({
   selector: 'sh3-avatar',
   standalone: true,
   template: `
-    <div
-      class="avatar"
-      [class.size-sm]="size() === 'sm'"
-      [class.size-md]="size() === 'md'"
-      [class.size-lg]="size() === 'lg'"
-      [class.variant-ghost]="variant() === 'ghost'"
-      [class.shape-square]="square()"
-      [style.background]="variant() === 'solid' ? color() : ''"
-      [style.color]="variant() === 'solid' ? '#1a202c' : ''"
-      [attr.title]="name()"
-    >{{ initials() }}</div>
+    @if (imageUrl()) {
+      <div
+        class="avatar has-image"
+        [class.size-sm]="size() === 'sm'"
+        [class.size-md]="size() === 'md'"
+        [class.size-lg]="size() === 'lg'"
+        [class.shape-square]="square()"
+        [attr.title]="name()"
+      >
+        <img [src]="imageUrl()" [alt]="name()" class="avatar-img" />
+      </div>
+    } @else {
+      <div
+        class="avatar"
+        [class.size-sm]="size() === 'sm'"
+        [class.size-md]="size() === 'md'"
+        [class.size-lg]="size() === 'lg'"
+        [class.variant-ghost]="variant() === 'ghost'"
+        [class.shape-square]="square()"
+        [style.background]="variant() === 'solid' ? color() : ''"
+        [style.color]="variant() === 'solid' ? '#1a202c' : ''"
+        [attr.title]="name()"
+      >{{ initials() }}</div>
+    }
   `,
   styleUrl: './avatar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,6 +69,7 @@ export class AvatarComponent {
   readonly colorSeed = input<string | undefined>(undefined);
   readonly variant = input<'solid' | 'ghost'>('solid');
   readonly square = input(false);
+  readonly imageUrl = input<string | undefined>(undefined);
 
   readonly initials = computed(() => {
     const n = this.name().trim();

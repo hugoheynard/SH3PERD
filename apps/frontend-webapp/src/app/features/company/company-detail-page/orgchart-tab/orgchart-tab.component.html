@@ -160,7 +160,7 @@
           </div>
         }
         @if (editMode()) {
-          <button class="oc-add-member-icon" (click)="openAddMemberPopover(node); $event.stopPropagation()" title="Add member">
+          <button class="oc-add-member-icon" (click)="openAddMemberPopover(node, depth); $event.stopPropagation()" title="Add member">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         }

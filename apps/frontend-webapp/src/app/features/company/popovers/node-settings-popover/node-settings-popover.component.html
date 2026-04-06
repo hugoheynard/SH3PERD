@@ -74,7 +74,7 @@
           <sh3-pill-selector
             [options]="[{ key: 'contract', label: 'From contracts' }, { key: 'guest', label: 'Guest' }]"
             [activeKey]="addMemberMode()"
-            (selected)="addMemberMode.set($event)"
+            (selected)="setAddMemberMode($event)"
           />
 
           @if (addMemberMode() === 'contract') {
@@ -99,13 +99,13 @@
 
             <!-- Role selector -->
             @if (selectedContractId()) {
-              <sh3-pill-selector [options]="roleOptions" [activeKey]="selectedRole()" (selected)="selectedRole.set($event)" />
+              <sh3-pill-selector [options]="roleOptions" [activeKey]="selectedRole()" (selected)="setSelectedRole($event)" />
             }
           } @else {
             <!-- Guest form -->
             <input class="field-input" type="text" placeholder="Display name" [value]="guestName()" (input)="onGuestNameInput($event)" autofocus />
             <input class="field-input" type="text" placeholder="Title (optional)" [value]="guestTitle()" (input)="onGuestTitleInput($event)" />
-            <sh3-pill-selector [options]="roleOptions" [activeKey]="guestRole()" (selected)="guestRole.set($event)" />
+            <sh3-pill-selector [options]="roleOptions" [activeKey]="guestRole()" (selected)="setGuestRole($event)" />
           }
 
           <div class="add-member-actions">

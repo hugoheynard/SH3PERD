@@ -40,6 +40,8 @@ Renders a row or column of tab buttons. Does NOT render content — the parent s
 
 **Icon format:** SVG path `d` string (Material Icons). The component renders a 14×14 SVG with `fill="currentColor"`.
 
+**Typing:** `tabChange` emits `string`. If your signal uses a strict union, use a setter method with `as` cast (same pattern as `sh3-pill-selector` — see below).
+
 **Convention:** Always set `activeStyle` and `direction` explicitly.
 
 ---
@@ -99,9 +101,9 @@ Horizontal row of selectable pills. Single-select.
 
 ```html
 <sh3-pill-selector
-  [options]="[{ key: 'manager', label: 'Manager' }, { key: 'member', label: 'Member' }]"
+  [options]="roleOptions"
   [activeKey]="selectedRole()"
-  (selected)="selectedRole.set($event)"
+  (selected)="setSelectedRole($event)"
 />
 ```
 
@@ -113,6 +115,43 @@ Horizontal row of selectable pills. Single-select.
 | Output | Type | Description |
 |--------|------|-------------|
 | `selected` | `string` | Key of the clicked pill |
+
+### Typing pattern — `string` output → typed signal
+
+The `(selected)` output emits a `string`. If your signal uses a strict union type or enum
+(e.g. `signal<TTeamRole>('member')`), **do not assign directly in the template**.
+Instead, create a setter method in the parent that casts explicitly:
+
+```ts
+// In the parent component:
+
+readonly selectedRole = signal<TTeamRole>('member');
+
+// Options built from the enum — guarantees the keys are valid values
+readonly roleOptions = (['director', 'manager', 'member', 'viewer'] as TTeamRole[])
+  .map(r => ({ key: r, label: r }));
+
+// Setter with explicit cast — safe because the keys come from our own enum
+setSelectedRole(key: string): void {
+  this.selectedRole.set(key as TTeamRole);
+}
+```
+
+```html
+<!-- Template: use the setter, not .set() directly -->
+<sh3-pill-selector
+  [options]="roleOptions"
+  [activeKey]="selectedRole()"
+  (selected)="setSelectedRole($event)"
+/>
+```
+
+**Why `as` is safe here:** the `options` array is built from the enum values,
+so the emitted `key` is guaranteed to be a valid enum member. The cast
+bridges the generic `string` output to the strict type without losing type safety.
+
+**Do NOT use `satisfies`** — it checks types at declaration time, not at assignment time.
+It cannot convert a `string` into a union type.
 
 ---
 

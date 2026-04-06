@@ -1,11 +1,18 @@
 import { ChangeDetectionStrategy, Component, inject, signal, type OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CompanyStore } from '../company.store';
+import { ButtonComponent } from '../../../shared/button/button.component';
+import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
+import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
+import { CompanyCardComponent } from './company-card/company-card.component';
+
+const BUILDING_ICON = 'M19,3H5C3.346,3,2,4.346,2,6v16h20V6C22,4.346,20.654,3,19,3ZM4,20V6c0-.551,.449-1,1-1h14c.551,0,1,.449,1,1V20H13V15h-2v5H4ZM7,8h2v2H7v-2Zm0,4h2v2H7v-2Zm4-4h2v2H11v-2Zm0,4h2v2H11v-2Zm4-4h2v2H15v-2Zm0,4h2v2H15v-2Z';
 
 @Component({
   selector: 'app-company-page',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, ButtonComponent, LoadingStateComponent, EmptyStateComponent, CompanyCardComponent],
   templateUrl: './company-page.component.html',
   styleUrl: './company-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,6 +23,7 @@ export class CompanyPageComponent implements OnInit {
 
   readonly creatingCompany = signal(false);
   readonly newCompanyName = signal('');
+  readonly buildingIcon = BUILDING_ICON;
 
   ngOnInit(): void {
     this.store.loadMyCompanies();
@@ -43,20 +51,5 @@ export class CompanyPageComponent implements OnInit {
 
   onCompanyNameInput(e: Event): void {
     this.newCompanyName.set((e.target as HTMLInputElement).value);
-  }
-
-  getInitials(name: string): string {
-    return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
-  }
-
-  getCompanyColor(id: string): string {
-    const colors = ['#06a4a4', '#63b3ed', '#68d391', '#f6ad55', '#b794f4', '#76e4f7'];
-    let hash = 0;
-    for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
-    return colors[Math.abs(hash) % colors.length];
-  }
-
-  formatDate(date: Date | string): string {
-    return new Date(date).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
   }
 }

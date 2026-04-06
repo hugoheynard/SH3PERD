@@ -23,6 +23,8 @@ import type {
 
 export type TNodeSettingsPopoverData = {
   node: TOrgNodeHierarchyViewModel;
+  /** If true, opens directly on Members tab with add-member form visible. */
+  openAddMember?: boolean;
   companyId: TCompanyId;
   depth: number;
 };
@@ -61,6 +63,7 @@ export class NodeSettingsPopoverComponent {
   readonly nodeColor = signal(this.config.node.color || NODE_PALETTE[0]);
   readonly editMode = signal(true); // popover is always in edit context
   readonly activeTab = signal<string>('members');
+  readonly addingMember = signal(this.config.openAddMember ?? false);
 
   readonly popoverTabs = computed<TabNavItem[]>(() => {
     const memberCount = this.config.node.members.length + (this.config.node.guest_members?.length ?? 0);
@@ -256,7 +259,6 @@ export class NodeSettingsPopoverComponent {
 
   // ── Add member ─────────────────────────────────────────
 
-  readonly addingMember = signal(false);
   readonly addMemberMode = signal<'contract' | 'guest'>('contract');
   readonly memberSearchQuery = signal('');
   readonly selectedContractId = signal<string | null>(null);
@@ -266,6 +268,18 @@ export class NodeSettingsPopoverComponent {
   readonly guestRole = signal<TTeamRole>('member');
   readonly teamRoles: TTeamRole[] = ['director', 'manager', 'member', 'viewer'];
   readonly roleOptions = this.teamRoles.map(r => ({ key: r, label: r }));
+
+  setAddMemberMode(key: string): void {
+    this.addMemberMode.set(key as 'contract' | 'guest');
+  }
+
+  setSelectedRole(key: string): void {
+    this.selectedRole.set(key as TTeamRole);
+  }
+
+  setGuestRole(key: string): void {
+    this.guestRole.set(key as TTeamRole);
+  }
 
   startAddMember(): void {
     this.addingMember.set(true);

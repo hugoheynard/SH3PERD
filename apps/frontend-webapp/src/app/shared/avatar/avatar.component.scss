@@ -24,4 +24,17 @@
   &.shape-square {
     border-radius: var(--radius-sm);
   }
+
+  // ── Image mode ────────────────────
+  &.has-image {
+    overflow: hidden;
+    background: var(--surface-raised);
+    border: 1px solid var(--border-light);
+  }
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
