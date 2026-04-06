@@ -7,6 +7,7 @@ import { CompanyEntity } from '../../domain/CompanyEntity.js';
 import { CompanyPolicy } from '../../domain/CompanyPolicy.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
 import { PermissionResolver } from '../../../permissions/PermissionResolver.js';
 
 export class UpdateOrgLayersCommand {
@@ -17,7 +18,22 @@ export class UpdateOrgLayersCommand {
   ) {}
 }
 
-/** Updates the company's org layer labels. Requires `company:settings:write`. */
+/**
+ * Updates the company's org layer labels (e.g. ["Direction", "Pole", "Equipe"]).
+ *
+ * Flow:
+ * 1. Verify the actor has `company:settings:write` permission.
+ * 2. Load the company record from the repository.
+ * 3. Reconstitute the entity and apply the mutation (entity validates non-empty, no blank labels).
+ * 4. Persist the full entity state.
+ * 5. Return the updated TOrgLayers projection.
+ *
+ * @throws BusinessError COMPANY_NOT_FOUND (404) — company does not exist.
+ * @throws BusinessError COMPANY_FORBIDDEN (403) — actor lacks permission (via policy).
+ * @throws Error COMPANY_ORG_LAYERS_EMPTY — array is empty (via entity).
+ * @throws Error COMPANY_ORG_LAYER_BLANK — a label is blank after trimming (via entity).
+ * @throws TechnicalError COMPANY_UPDATE_FAILED (500) — repository write failed.
+ */
 @CommandHandler(UpdateOrgLayersCommand)
 export class UpdateOrgLayersHandler implements ICommandHandler<UpdateOrgLayersCommand, TOrgLayers> {
   private readonly policy = new CompanyPolicy();
@@ -38,16 +54,15 @@ export class UpdateOrgLayersHandler implements ICommandHandler<UpdateOrgLayersCo
     const entity = new CompanyEntity(RecordMetadataUtils.stripDocMetadata(record));
     entity.updateOrgLayers(cmd.orgLayers);
 
-    const diff = entity.getDiffProps();
+    const updated = await this.companyRepo.updateOne({
+      filter: { id: cmd.companyId },
+      update: { $set: { ...entity.toDomain, ...RecordMetadataUtils.update() } } as any,
+    });
 
-    if (Object.keys(diff).length > 0) {
-      const updated = await this.companyRepo.updateOne({
-        filter: { id: cmd.companyId } as any,
-        update: { $set: { ...diff, ...RecordMetadataUtils.update() } } as any,
-      });
-      if (!updated) throw new BusinessError('Failed to update company', 'COMPANY_UPDATE_FAILED', 500);
+    if (!updated) {
+      throw new TechnicalError('Failed to update company', 'COMPANY_UPDATE_FAILED', 500);
     }
 
-    return { orgLayers: [...entity.orgLayers] };
+    return entity.orgLayersInfo;
   }
 }

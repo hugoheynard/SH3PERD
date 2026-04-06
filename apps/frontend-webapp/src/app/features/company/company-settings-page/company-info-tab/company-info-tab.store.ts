@@ -1,5 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { CompanyService } from '../../company.service';
+import { ToastService } from '../../../../shared/toast/toast.service';
 import type { TCompanyId, TCompanyInfo } from '@sh3pherd/shared-types';
 
 /**
@@ -11,6 +12,7 @@ import type { TCompanyId, TCompanyInfo } from '@sh3pherd/shared-types';
 @Injectable()
 export class CompanyInfoTabStore {
   private readonly companyService = inject(CompanyService);
+  private readonly toast = inject(ToastService);
 
   // ── State ──────────────────────────────────────────────────
   private readonly _info = signal<TCompanyInfo | null>(null);
@@ -63,11 +65,13 @@ export class CompanyInfoTabStore {
       next: (res) => {
         this._info.set(res.data);
         this._saving.set(false);
+        this.toast.show('Company info updated', 'success');
       },
       error: (err) => {
         console.error('[CompanyInfoTabStore] save failed', err);
         this._error.set('Failed to save company info.');
         this._saving.set(false);
+        this.toast.show('Failed to save company info', 'error');
       },
     });
   }

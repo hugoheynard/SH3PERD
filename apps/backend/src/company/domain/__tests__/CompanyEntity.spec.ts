@@ -177,6 +177,62 @@ describe('CompanyEntity', () => {
     });
   });
 
+  // ─── orgLayersInfo ──────────────────────────────────────
+
+  describe('orgLayersInfo', () => {
+    it('should return only orgLayers', () => {
+      const company = makeCompany();
+      const info = company.orgLayersInfo;
+      expect(info).toEqual({ orgLayers: ['Department', 'Team', 'Sub-team'] });
+      expect(info).not.toHaveProperty('id');
+      expect(info).not.toHaveProperty('name');
+      expect(info).not.toHaveProperty('status');
+    });
+
+    it('should reflect mutations', () => {
+      const company = makeCompany();
+      company.updateOrgLayers(['A', 'B']);
+      expect(company.orgLayersInfo).toEqual({ orgLayers: ['A', 'B'] });
+    });
+
+    it('should return a copy (not a reference)', () => {
+      const company = makeCompany();
+      const a = company.orgLayersInfo.orgLayers;
+      const b = company.orgLayersInfo.orgLayers;
+      expect(a).toEqual(b);
+      expect(a).not.toBe(b);
+    });
+  });
+
+  // ─── companyInfo ─────────────────────────────────────────
+
+  describe('companyInfo', () => {
+    it('should return only name, description and address', () => {
+      const company = makeCompany({ name: 'Acme', description: 'A company', address: { street: '1', city: 'Paris', zip: '75001', country: 'FR' } });
+      const info = company.companyInfo;
+      expect(info).toEqual({ name: 'Acme', description: 'A company', address: { street: '1', city: 'Paris', zip: '75001', country: 'FR' } });
+      expect(info).not.toHaveProperty('id');
+      expect(info).not.toHaveProperty('owner_id');
+      expect(info).not.toHaveProperty('status');
+      expect(info).not.toHaveProperty('orgLayers');
+    });
+
+    it('should reflect mutations', () => {
+      const company = makeCompany();
+      company.updateInfo({ name: 'New', description: 'Desc', address: { street: 'A', city: 'B', zip: 'C', country: 'D' } });
+      expect(company.companyInfo.name).toBe('New');
+      expect(company.companyInfo.description).toBe('Desc');
+    });
+
+    it('should return a copy of address (not a reference)', () => {
+      const company = makeCompany();
+      const a1 = company.companyInfo.address;
+      const a2 = company.companyInfo.address;
+      expect(a1).toEqual(a2);
+      expect(a1).not.toBe(a2);
+    });
+  });
+
   // ─── toDomain ────────────────────────────────────────────
 
   describe('toDomain', () => {

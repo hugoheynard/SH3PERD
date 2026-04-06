@@ -7,8 +7,10 @@ import { CompanyEntity } from '../../domain/CompanyEntity.js';
 import { CompanyPolicy } from '../../domain/CompanyPolicy.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
 import { PermissionResolver } from '../../../permissions/PermissionResolver.js';
 
+/** DTO for the update — extends TCompanyInfo with the target company ID. */
 export type TUpdateCompanyInfoDTO = TCompanyInfo & {
   company_id: TCompanyId;
 };
@@ -20,7 +22,21 @@ export class UpdateCompanyInfoCommand {
   ) {}
 }
 
-/** Updates company info (name, description, address). Requires `company:settings:write`. */
+/**
+ * Updates a company's public info (name, description, address).
+ *
+ * Flow:
+ * 1. Verify the actor has `company:settings:write` permission.
+ * 2. Load the company record from the repository.
+ * 3. Reconstitute the entity and apply the mutation (entity validates invariants).
+ * 4. Persist the full entity state (no diff — the info fields are few and always sent together).
+ * 5. Return the updated TCompanyInfo projection.
+ *
+ * @throws BusinessError COMPANY_NOT_FOUND (404) — company does not exist.
+ * @throws BusinessError COMPANY_FORBIDDEN (403) — actor lacks permission (via policy).
+ * @throws Error COMPANY_NAME_REQUIRED — name is empty (via entity).
+ * @throws TechnicalError COMPANY_UPDATE_FAILED (500) — repository write failed.
+ */
 @CommandHandler(UpdateCompanyInfoCommand)
 export class UpdateCompanyInfoHandler implements ICommandHandler<UpdateCompanyInfoCommand, TCompanyInfo> {
   private readonly policy = new CompanyPolicy();
@@ -36,21 +52,24 @@ export class UpdateCompanyInfoHandler implements ICommandHandler<UpdateCompanyIn
     await this.policy.ensureCanManageSettings(actorId, dto.company_id, this.permissionResolver);
 
     const record = await this.companyRepo.findOne({ filter: { id: dto.company_id } });
-    if (!record) throw new BusinessError('Company not found', 'COMPANY_NOT_FOUND', 404);
+
+    if (!record) {
+      throw new BusinessError('Company not found', 'COMPANY_NOT_FOUND', 404);
+    }
 
     const entity = new CompanyEntity(RecordMetadataUtils.stripDocMetadata(record));
     const { company_id: _, ...info } = dto;
     entity.updateInfo(info);
 
-    const diff = entity.getDiffProps();
-    if (Object.keys(diff).length > 0) {
-      const updated = await this.companyRepo.updateOne({
-        filter: { id: dto.company_id } as any,
-        update: { $set: { ...diff, ...RecordMetadataUtils.update() } } as any,
-      });
-      if (!updated) throw new BusinessError('Failed to update company', 'COMPANY_UPDATE_FAILED', 500);
+    const updated = await this.companyRepo.updateOne({
+      filter: { id: dto.company_id },
+      update: { $set: { ...entity.toDomain, ...RecordMetadataUtils.update() } },
+    });
+
+    if (!updated) {
+      throw new TechnicalError('Failed to update company', 'COMPANY_UPDATE_FAILED', 500);
     }
 
-    return { name: entity.name, description: entity.description, address: entity.address };
+    return entity.companyInfo;
   }
 }

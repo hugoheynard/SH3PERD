@@ -3,6 +3,7 @@ import type {
   TCompanyAddress,
   TCompanyDomainModel,
   TCompanyInfo,
+  TOrgLayers,
   TUserId,
 } from '@sh3pherd/shared-types';
 import { TCompanyStatus } from '@sh3pherd/shared-types';
@@ -46,6 +47,18 @@ export class CompanyEntity extends Entity<TCompanyDomainModel> {
   get orgLayers(): readonly string[] { return this.props.orgLayers; }
   get status(): TCompanyStatus { return this.props.status; }
 
+  /* ── Projections ── */
+
+  /** Returns the public info subset (name, description, address). */
+  get companyInfo(): TCompanyInfo {
+    return { name: this.props.name, description: this.props.description, address: { ...this.props.address } };
+  }
+
+  /** Returns the org layers projection. */
+  get orgLayersInfo(): TOrgLayers {
+    return { orgLayers: [...this.props.orgLayers] };
+  }
+
   /* ── Ownership ── */
 
   isOwnedBy(userId: TUserId): boolean {
@@ -56,9 +69,11 @@ export class CompanyEntity extends Entity<TCompanyDomainModel> {
 
   updateInfo(info: TCompanyInfo): void {
     const name = info.name.trim();
+
     if (!name) {
       throw new Error('COMPANY_NAME_REQUIRED');
     }
+
     this.props.name = name;
     this.props.description = info.description;
     this.props.address = { ...info.address };
