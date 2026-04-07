@@ -1,53 +1,51 @@
-import {ChangeDetectorRef, Component, effect, inject, Input, signal} from '@angular/core';
-import { NgStyle } from '@angular/common';
-import {MatIcon} from '@angular/material/icon';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { SvgIconComponent } from '../../../shared/svg-icon/svg-icon.component';
+import { LayoutService } from '../../services/layout.service';
 
-interface MenuItem {
+interface MobileMenuItem {
+  id: string;
+  icon: string;
   label: string;
   route: string;
-  iconName?: string;
 }
 
+/**
+ * Full-screen mobile menu with grid of square tiles.
+ * Controlled via LayoutService.openMobileMenu() / closeMobileMenu().
+ * Hidden on desktop (min-width: 769px).
+ */
 @Component({
   selector: 'app-circular-menu',
-  templateUrl: './circular-menu.component.html',
   standalone: true,
-  imports: [
-    MatIcon,
-    NgStyle
-],
-  styleUrls: ['./circular-menu.component.scss']
+  imports: [SvgIconComponent],
+  templateUrl: './circular-menu.component.html',
+  styleUrl: './circular-menu.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CircularMenuComponent {
-  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
-  public isOpen = signal(false);
-  @Input() menuItems: MenuItem[] = [];
+  private router = inject(Router);
+  private layout = inject(LayoutService);
 
-  constructor() {
-    effect((): void => {
-      if (this.isOpen()) {
-        this.cdr.markForCheck();
-      }
-    });
-  };
+  readonly isOpen = this.layout.mobileMenuOpen;
 
-  toggle(): void {
-    this.isOpen.update(v => !v);
-  };
-
-  open(): void {
-    this.isOpen.set(true);
-  };
+  readonly menuItems: MobileMenuItem[] = [
+    { id: 'home',       icon: 'home',                label: 'Home',       route: '/app/home'            },
+    { id: 'program',    icon: 'program',             label: 'Program',    route: '/app/program'         },
+    { id: 'calendar',   icon: 'calendar',            label: 'Calendar',   route: '/app/calendar'        },
+    { id: 'music',      icon: 'notes_2',             label: 'Music',      route: '/app/musicLibrary'    },
+    { id: 'playlists',  icon: 'play',                label: 'Playlists',  route: '/app/playlistManager' },
+    { id: 'contracts',  icon: 'contracts',           label: 'Contracts',  route: '/app/contracts'       },
+    { id: 'groups',     icon: 'user-group-menu-icon',label: 'Groups',     route: '/app/userGroup'       },
+    { id: 'company',    icon: 'company',             label: 'Company',    route: '/app/company'         },
+  ];
 
   close(): void {
-    this.isOpen.set(false);
-  };
+    this.layout.closeMobileMenu();
+  }
 
-  /*
   navigate(route: string): void {
-    // this.router.navigate([route]);
+    this.router.navigate([route]);
     this.close();
-  };
-
-   */
+  }
 }

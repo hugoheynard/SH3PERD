@@ -31,12 +31,6 @@ export class CompanyService extends BaseHttpService {
     );
   }
 
-  getMyCompany(): Observable<TApiResponse<TCompanyDetailViewModel>> {
-    return this.http.get<TApiResponse<TCompanyDetailViewModel>>(
-      this.UrlBuilder.apiProtectedRoute('companies').route('me').build()
-    );
-  }
-
   getMyCompanies(): Observable<TApiResponse<TCompanyCardViewModel[]>> {
     return this.http.get<TApiResponse<TCompanyCardViewModel[]>>(
       this.UrlBuilder.apiProtectedRoute('companies').route('my-companies').build()

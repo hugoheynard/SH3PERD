@@ -1,5 +1,6 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
 import { CompanyService } from './company.service';
+import { ToastService } from '../../shared/toast/toast.service';
 import type {
   TCompanyDetailViewModel,
   TCompanyCardViewModel,
@@ -9,6 +10,7 @@ import type {
 @Injectable({ providedIn: 'root' })
 export class CompanyStore {
   private readonly companyService = inject(CompanyService);
+  private readonly toast = inject(ToastService);
 
   // ── State ──────────────────────────────────────────────────
   private readonly _company = signal<TCompanyDetailViewModel | null>(null);
@@ -32,30 +34,17 @@ export class CompanyStore {
       next: (res) => {
         this._company.set(res.data);
         this._loading.set(false);
+        this.toast.show('Company created', 'success');
       },
       error: (err) => {
         console.error('[CompanyStore] createCompany failed', err);
         this._error.set('Failed to create company.');
         this._loading.set(false);
+        this.toast.show('Failed to create company', 'error');
       },
     });
   }
 
-  loadMyCompany(): void {
-    this._loading.set(true);
-    this._error.set(null);
-    this.companyService.getMyCompany().subscribe({
-      next: (res) => {
-        this._company.set(res.data);
-        this._loading.set(false);
-      },
-      error: (err) => {
-        console.error('[CompanyStore] loadMyCompany failed', err);
-        this._error.set('Failed to load company.');
-        this._loading.set(false);
-      },
-    });
-  }
 
   loadMyCompanies(): void {
     this._loading.set(true);
@@ -95,12 +84,14 @@ export class CompanyStore {
       next: () => {
         this._company.set(null);
         this._loading.set(false);
+        this.toast.show('Company deleted', 'success');
         onSuccess();
       },
       error: (err) => {
         console.error('[CompanyStore] deleteCompany failed', err);
         this._error.set('Failed to delete company.');
         this._loading.set(false);
+        this.toast.show('Failed to delete company', 'error');
       },
     });
   }

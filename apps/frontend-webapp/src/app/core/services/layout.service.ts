@@ -9,6 +9,12 @@ type LayoutPanelConfig<T> = {
 
 @Injectable({ providedIn: 'root' })
 export class LayoutService {
+  /* ── Mobile menu ── */
+  private _mobileMenuOpen = signal(false);
+  readonly mobileMenuOpen = this._mobileMenuOpen.asReadonly();
+  openMobileMenu(): void  { this._mobileMenuOpen.set(true); }
+  closeMobileMenu(): void { this._mobileMenuOpen.set(false); }
+
   private _leftPanelComponent = signal<{ component: Type<unknown>, data?: unknown, mode?: 'over' | 'push' } | null>(null);
   private _rightPanelComponent = signal<{ component: Type<unknown>, data?: unknown, mode?: 'over' | 'push' } | null>(null);
   private _contextMenuComponent = signal<Type<unknown> | null>(null);

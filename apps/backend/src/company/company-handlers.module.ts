@@ -20,7 +20,6 @@ import { ArchiveOrgNodeHandler } from './application/commands/ArchiveOrgNodeComm
 
 // Queries
 import { GetCompanyByIdHandler } from './application/queries/GetCompanyByIdQuery.js';
-import { GetCompanyByOwnerHandler } from './application/queries/GetCompanyByOwnerQuery.js';
 import { GetMyCompaniesHandler } from './application/queries/GetMyCompaniesQuery.js';
 import { GetCompanyOrgNodesHandler } from './application/queries/GetCompanyTeamsQuery.js';
 import { GetOrgNodeMembersHandler } from './application/queries/GetTeamMembersQuery.js';
@@ -42,7 +41,6 @@ const CommandHandlers = [
 
 const QueryHandlers = [
   GetCompanyByIdHandler,
-  GetCompanyByOwnerHandler,
   GetMyCompaniesHandler,
   GetCompanyOrgNodesHandler,
   GetOrgNodeMembersHandler,

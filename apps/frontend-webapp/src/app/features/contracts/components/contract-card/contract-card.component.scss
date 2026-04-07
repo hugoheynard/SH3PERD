@@ -1,0 +1,73 @@
+:host {
+  display: block;
+}
+
+.contract-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--card-color);
+  border: 1px solid var(--panel-border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background var(--t-fast), border-color var(--t-fast);
+
+  &:hover {
+    background: var(--surface-raised);
+    border-color: var(--accent-color-border);
+
+    .card-chevron {
+      color: var(--accent-color);
+      transform: translateX(2px);
+    }
+  }
+}
+
+:host(.highlight) .contract-card {
+  border-color: var(--accent-color-border);
+  background: var(--surface-subtle);
+}
+
+.card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-roles {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.card-dates {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.card-end {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.card-chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: color var(--t-fast), transform var(--t-fast);
+}

@@ -4,7 +4,7 @@ import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.gener
 
 export interface ICompanyRepository extends IBaseCRUD<TCompanyRecord> {
   findById(id: TCompanyId): Promise<TCompanyRecord | null>;
-  findByOwner(ownerId: TUserId): Promise<TCompanyRecord | null>;
+  findByUser(userId: TUserId): Promise<TCompanyRecord[]>;
 }
 
 export class CompanyMongoRepository
@@ -19,7 +19,30 @@ export class CompanyMongoRepository
     return this.findOne({ filter: { id } });
   }
 
-  async findByOwner(ownerId: TUserId): Promise<TCompanyRecord | null> {
-    return this.findOne({ filter: { owner_id: ownerId } as any });
+  /**
+   * Returns all companies where the user has an active contract.
+   * Uses a MongoDB aggregation to join contracts → companies in a single query.
+   */
+  async findByUser(userId: TUserId): Promise<TCompanyRecord[]> {
+    const results = await this.collection.aggregate<TCompanyRecord>([
+      {
+        $lookup: {
+          from: 'contracts',
+          localField: 'id',
+          foreignField: 'company_id',
+          as: '_contracts',
+        },
+      },
+      {
+        $match: {
+          '_contracts': {
+            $elemMatch: { user_id: userId, status: 'active' },
+          },
+        },
+      },
+      { $project: { _id: 0, _contracts: 0 } },
+    ]).toArray();
+
+    return results;
   }
 }

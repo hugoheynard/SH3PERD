@@ -3,6 +3,7 @@ import { getMongoClient } from './getMongoClient.js';
 import { ConfigService } from '@nestjs/config';
 import { type Db, MongoClient } from 'mongodb';
 import { MONGO_CLIENT, MONGO_CORE_DB } from './db.tokens.js';
+import { TransactionRunner } from './TransactionRunner.js';
 
 /**
  * @module MongoModule
@@ -40,7 +41,8 @@ import { MONGO_CLIENT, MONGO_CORE_DB } from './db.tokens.js';
       },
       inject: [MONGO_CLIENT, ConfigService]
     },
+    TransactionRunner,
   ],
-  exports: [MONGO_CLIENT, MONGO_CORE_DB],
+  exports: [MONGO_CLIENT, MONGO_CORE_DB, TransactionRunner],
 })
 export class MongoModule {}

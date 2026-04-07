@@ -1,20 +1,44 @@
-<div class="currentContract">
-  Favorite Contract
+<!-- Header -->
+<div class="page-header">
+  <h2>My Contracts</h2>
+  <div class="toolbar-actions">
+    <sh3-view-toggle [mode]="viewMode()" (modeChange)="viewMode.set($event)" />
+  </div>
 </div>
 
-<data-list
-  [data]="contracts()"
-  [column]="[
-  { fromKey: 'company_name', label: 'company' },
-  { fromKey: 'status' },
-  { fromKey: 'startDate', label: 'start date', pipe: 'date', pipeArgs: ['shortDate'] },
-  { fromKey: 'endDate', label: 'end date', pipe: 'date', pipeArgs: ['shortDate'] }
-  ]"
-  [rowActionsTemplate]="actionsTemplate"
-/>
+@if (store.loading()) {
+  <sh3-loading message="Loading contracts..." />
+} @else {
 
-<!-- row action template -->
+  <!-- Favorite contract -->
+  @if (store.favoriteContract(); as fav) {
+    <section class="favorite-section">
+      <span class="section-label">Favorite</span>
+      <app-contract-card [contract]="fav" [highlight]="true" (clicked)="edit($event)" />
+    </section>
+  }
+
+  <!-- Contract list -->
+  @if (viewMode() === 'cards') {
+    <div class="cards-list">
+      @for (contract of store.contracts(); track contract.id) {
+        <app-contract-card [contract]="contract" (clicked)="edit($event)" />
+      } @empty {
+        <sh3-empty-state
+          title="No contracts"
+          subtitle="You don't have any contracts yet."
+        />
+      }
+    </div>
+  } @else {
+    <data-list
+      [data]="store.contracts()"
+      [column]="tableColumns"
+      [rowActionsTemplate]="actionsTemplate"
+    />
+  }
+}
+
 <ng-template #actionsTemplate let-contract>
-  <sh3-button-icon icon='edit' (clicked)="edit(contract)"/>
+  <sh3-button-icon icon="edit" (clicked)="edit(contract.id)" />
 </ng-template>
-

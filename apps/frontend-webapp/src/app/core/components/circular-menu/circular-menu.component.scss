@@ -1,80 +1,133 @@
+:host {
+  display: contents;
+}
+
+/* ── Overlay ───────────────────────────────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 999;
+  animation: fade-in 0.2s ease;
+}
+
+/* ── Grid menu ─────────────────────────────────────── */
+
 .grid-menu {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  display: grid;
-  grid-template-columns: repeat(3, 100px);
-  gap: 2.5rem 2.5rem;
   z-index: 1000;
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(6px);
+  user-select: none;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 16px;
+  max-width: 340px;
+  width: calc(100vw - 48px);
 }
 
-.menu-item {
-  width: 100px;
-  height: 100px;
-  border-radius: 12px;
-  background-color: var(--headAndfootBgColor);
-  color: white;
-  font-size: 16px;
-  text-align: center;
-  line-height: 100px;
-  border: none;
+/* ── Tile ──────────────────────────────────────────── */
+
+.menu-tile {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  background: var(--glass-bg, rgba(255, 255, 255, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  //animation
+
+  /* entrance animation */
   opacity: 0;
-  animation: fadeInScale 0.4s ease forwards;
-  animation-delay: calc(var(--i) * 80ms); // delay progressive via CSS variable
+  animation: tile-in 0.3s ease forwards;
+  animation-delay: calc(var(--i, 0) * 50ms);
 
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 
   &:hover {
-    transform: scale(1.1);
-    background-color: #444;
-    box-shadow: 0 4px 12px rgba(253, 255, 255, 0.2);
+    transform: scale(1.06);
+    background: rgba(255, 255, 255, 0.14);
+    border-color: var(--accent-color-border);
   }
 
-  .menu-icon {
-    font-size: 4rem;
-    width: 4rem;
-    height: 4rem;
-    margin-top: 1rem;
-    color: var(--baseTextColor);
+  &:active {
+    transform: scale(0.96);
   }
 }
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  backdrop-filter: blur(6px);
-  background-color: rgba(0, 0, 0, 0.5); // Opacité + foncé
-  z-index: 999; // En dessous du menu
+.menu-tile--close {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.06);
+
+  &:hover {
+    background: var(--color-alert-dim);
+    border-color: var(--color-alert-border);
+
+    .tile-icon {
+      color: var(--color-alert-light);
+    }
+
+    .tile-label {
+      color: var(--color-alert-light);
+    }
+  }
 }
 
+/* ── Tile content ──────────────────────────────────── */
 
-@media (min-width: 768px) {
-  .grid-menu, .menu-toggle {
+.tile-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--text-secondary);
+
+  ::ng-deep svg, ::ng-deep path, ::ng-deep rect, ::ng-deep polygon, ::ng-deep circle {
+    fill: currentColor;
+  }
+}
+
+.tile-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ── Hide on desktop ───────────────────────────────── */
+
+@media (min-width: 769px) {
+  .overlay,
+  .grid-menu {
     display: none;
   }
-  .overlay {
-    display: none;
-  }
 }
 
-@keyframes fadeInScale {
-  0% {
+/* ── Animations ────────────────────────────────────── */
+
+@keyframes tile-in {
+  from {
     opacity: 0;
-    transform: scale(0.6);
+    transform: scale(0.7);
   }
-  100% {
+  to {
     opacity: 1;
     transform: scale(1);
   }
 }
 
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

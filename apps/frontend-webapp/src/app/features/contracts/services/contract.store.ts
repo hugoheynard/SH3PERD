@@ -1,26 +1,39 @@
 import { ContractsService } from './contracts.service';
-import { inject, Injectable, signal } from '@angular/core';
-import type { TContractListItemViewModel } from '@sh3pherd/shared-types';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import type { TContractDomainModel } from '@sh3pherd/shared-types';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContractStore {
   private readonly contractService = inject(ContractsService);
-  private readonly _contracts = signal<TContractListItemViewModel[]>([]);
+  private readonly _contracts = signal<TContractDomainModel[]>([]);
+  private readonly _loading = signal(false);
 
-  // Exposed readonly signal
-  readonly contracts = this._contracts.asReadonly();
+  /** The user's favorite (pinned) contract, if any. */
+  readonly favoriteContract = computed(() =>
+    this._contracts().find(c => c.is_favorite) ?? null,
+  );
 
+  /** All contracts except the favorite. */
+  readonly contracts = computed(() =>
+    this._contracts().filter(c => !c.is_favorite),
+  );
 
-  loadMyContracts(filter: any) {
-    this.contractService.getCurrentUserContractList({ requestDTO: { filter } }).subscribe({
-      next: (contracts) => this._contracts.set(contracts),
+  readonly loading = this._loading.asReadonly();
+
+  loadMyContracts() {
+    this._loading.set(true);
+    this.contractService.getCurrentUserContractList().subscribe({
+      next: (contracts) => {
+        this._contracts.set(contracts);
+        this._loading.set(false);
+      },
       error: (err) => {
         console.error('Error loading contracts', err);
         this._contracts.set([]);
+        this._loading.set(false);
       }
     });
-    console.log('loadMyContracts called', this.contracts())
   };
 }

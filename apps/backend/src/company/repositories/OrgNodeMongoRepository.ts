@@ -5,9 +5,7 @@ import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.gener
 export interface IOrgNodeRepository extends IBaseCRUD<TOrgNodeRecord> {
   findById(id: TOrgNodeId): Promise<TOrgNodeRecord | null>;
   findByCompany(companyId: TCompanyId): Promise<TOrgNodeRecord[]>;
-  /** Find direct children of a parent node */
   findByParentId(parentId: TOrgNodeId, companyId: TCompanyId): Promise<TOrgNodeRecord[]>;
-  /** Find root nodes (depth 0) — those with no parent */
   findRootNodes(companyId: TCompanyId): Promise<TOrgNodeRecord[]>;
 }
 

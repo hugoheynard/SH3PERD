@@ -1,0 +1,25 @@
+<button class="contract-card" (click)="clicked.emit(contract().id)" type="button">
+  <sh3-avatar [name]="contract().company_id" [colorSeed]="contract().company_id" [square]="true" size="lg" />
+
+  <div class="card-body">
+    <span class="card-title">{{ contract().job_title || contract().contract_type || 'Contract' }}</span>
+    <div class="card-roles">
+      @for (role of contract().roles; track role) {
+        <sh3-badge [content]="role" radius="pill" variant="info" />
+      }
+    </div>
+    <span class="card-dates">
+      {{ formatDate(contract().startDate) }}
+      @if (contract().endDate) {
+        → {{ formatDate(contract().endDate) }}
+      }
+    </span>
+  </div>
+
+  <div class="card-end">
+    <sh3-status-badge [status]="contract().status" />
+    <svg class="card-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 18l6-6-6-6"/>
+    </svg>
+  </div>
+</button>

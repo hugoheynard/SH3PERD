@@ -1,21 +1,25 @@
 @if (isOpen()) {
   <div class="overlay" (click)="close()"></div>
-}
 
-@if (isOpen()) {
   <div class="grid-menu">
-    <button class="menu-item" (click)="toggle()"><mat-icon class="menu-icon">clear</mat-icon></button>
-    @for (item of menuItems; track item; let i = $index) {
+    @for (item of menuItems; track item.id; let i = $index) {
       <button
-        class="menu-item"
-        [ngStyle]="{ '--i': i }"
-        >
-        <mat-icon class="menu-icon">{{ item.iconName }}</mat-icon>
+        class="menu-tile"
+        [style.--i]="i"
+        (click)="navigate(item.route)"
+        type="button"
+      >
+        <sh3-svg-icon [name]="item.icon" class="tile-icon" />
+        <span class="tile-label">{{ item.label }}</span>
       </button>
     }
+
+    <!-- Close tile -->
+    <button class="menu-tile menu-tile--close" [style.--i]="menuItems.length" (click)="close()" type="button">
+      <svg class="tile-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+      <span class="tile-label">Close</span>
+    </button>
   </div>
 }
-
-
-
-

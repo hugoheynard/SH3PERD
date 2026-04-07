@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, HostListener, inject, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, HostListener, inject, signal } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
-import { CircularMenuComponent } from '../circular-menu/circular-menu.component';
 import { NavigationService } from '../../services/navigation.service';
 import { NotificationService } from '../../notifications/notification.service';
 import { LayoutService } from '../../services/layout.service';
@@ -14,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
     selector: 'app-header',
   imports: [
-    MatIcon
+    MatIcon,
   ],
     templateUrl: './header.component.html',
     standalone: true,
@@ -29,7 +28,6 @@ export class HeaderComponent {
   private userCtx = inject(UserContextService);
   private auth = inject(AuthService);
 
-  @ViewChild('circularMenu') circularMenu!: CircularMenuComponent;
   public isDark: boolean = true;
 
   readonly showProfileMenu = signal(false);
@@ -58,8 +56,7 @@ export class HeaderComponent {
   }
 
   onMenuClick(): void {
-    console.log('Menu clicked');
-    this.circularMenu.open()
+    this.layout.openMobileMenu();
   };
 
   getCurrentPageName(): string {

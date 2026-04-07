@@ -1,32 +1,44 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ButtonIconComponent } from '../../../../shared/button-icon/button-icon.component';
+import { ViewToggleComponent, type ViewMode } from '../../../../shared/view-toggle/view-toggle.component';
 import { ContractStore } from '../../services/contract.store';
-import { DataListComponent } from '../../../../core/components/data-list/data-list.component';
-import type { TContractId } from '@sh3pherd/shared-types';
+import { DataListComponent, type DataListColumn } from '../../../../core/components/data-list/data-list.component';
+import { ContractCardComponent } from '../contract-card/contract-card.component';
+import { EmptyStateComponent } from '../../../../shared/empty-state/empty-state.component';
+import { LoadingStateComponent } from '../../../../shared/loading-state/loading-state.component';
+import type { TContractDomainModel, TContractId } from '@sh3pherd/shared-types';
 
 @Component({
   selector: 'app-contract-page',
   imports: [
     DataListComponent,
     ButtonIconComponent,
+    ViewToggleComponent,
+    ContractCardComponent,
+    EmptyStateComponent,
+    LoadingStateComponent,
   ],
   standalone: true,
   templateUrl: './contract-page.component.html',
-  styleUrl: './contract-page.component.scss'
+  styleUrl: './contract-page.component.scss',
 })
 export class ContractPageComponent {
-  private readonly store = inject(ContractStore);
-  readonly contracts = this.store.contracts;
+  readonly store = inject(ContractStore);
+  readonly viewMode = signal<ViewMode>('cards');
 
+  readonly tableColumns: DataListColumn<TContractDomainModel>[] = [
+    { fromKey: 'company_id', label: 'Company' },
+    { fromKey: 'status', label: 'Status' },
+    { fromKey: 'roles', label: 'Roles' },
+    { fromKey: 'startDate', label: 'Start', pipe: 'date', pipeArgs: ['shortDate'] },
+    { fromKey: 'endDate', label: 'End', pipe: 'date', pipeArgs: ['shortDate'] },
+  ];
 
   ngOnInit(): void {
-    // Initialization logic here
-    this.store.loadMyContracts({});
-    console.log('Contracts loaded:', this.contracts());
-  };
+    this.store.loadMyContracts();
+  }
 
   edit(contractId: TContractId): void {
-    console.log('Contract page edited:', contractId);
-  };
-
+    console.log('Navigate to contract:', contractId);
+  }
 }

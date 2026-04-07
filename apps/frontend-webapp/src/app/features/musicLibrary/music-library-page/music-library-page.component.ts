@@ -12,6 +12,7 @@ import { MusicRepertoireTableComponent } from '../components/music-repertoire-ta
 import { AddEntryPanelComponent } from '../components/add-entry-panel/add-entry-panel.component';
 import { MusicCrossTableComponent } from '../components/music-cross-table/music-cross-table.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
+import { ViewToggleComponent } from '../../../shared/view-toggle/view-toggle.component';
 import type { AddVersionPayload } from '../services/mutations-layer/music-library-mutation.service';
 import type { VersionEditPayload } from '../components/music-repertoire-table/music-repertoire-table.component';
 import { MusicVersionApiService } from '../services/music-version-api.service';
@@ -33,6 +34,7 @@ import { InfoDirective } from '../../../shared/help/info.directive';
     MusicRepertoireTableComponent,
     MusicCrossTableComponent,
     ButtonComponent,
+    ViewToggleComponent,
     InfoDirective,
   ],
   templateUrl: './music-library-page.component.html',

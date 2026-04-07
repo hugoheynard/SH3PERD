@@ -15,13 +15,21 @@ import {
  * - `active`    — fully operational
  * - `suspended` — temporarily disabled
  */
+/**
+ * Lifecycle status of a company.
+ * - `pending`   — created but not yet activated
+ * - `active`    — fully operational
+ * - `suspended` — temporarily disabled (reversible)
+ * - `archived`  — soft-deleted by owner (not visible in lists)
+ */
 export enum TCompanyStatus {
   PENDING = 'pending',
   ACTIVE = 'active',
   SUSPENDED = 'suspended',
+  ARCHIVED = 'archived',
 }
 
-export const SCompanyStatus = z.enum(['pending', 'active', 'suspended']);
+export const SCompanyStatus = z.enum(['pending', 'active', 'suspended', 'archived']);
 
 
 // ─── Company Address ───────────────────────────────────────

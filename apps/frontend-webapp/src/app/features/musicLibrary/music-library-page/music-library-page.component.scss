@@ -86,31 +86,6 @@
   }
 }
 
-.view-toggle {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  background: var(--surface-subtle);
-  border: 1px solid var(--border-light);
-  border-radius: 6px;
-  color: var(--text-secondary);
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-
-  &:hover {
-    background: var(--accent-color-dim);
-    border-color: var(--accent-color-border);
-    color: var(--accent-color-light);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
-  }
-}
 
 /* ── Cards list ─────────────────────────────────── */
 

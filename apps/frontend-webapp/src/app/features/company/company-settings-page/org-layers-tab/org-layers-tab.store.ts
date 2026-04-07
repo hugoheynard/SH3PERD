@@ -1,5 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { CompanyService } from '../../company.service';
+import { ToastService } from '../../../../shared/toast/toast.service';
 import type { TCompanyId } from '@sh3pherd/shared-types';
 
 /**
@@ -11,6 +12,7 @@ import type { TCompanyId } from '@sh3pherd/shared-types';
 @Injectable()
 export class OrgLayersTabStore {
   private readonly companyService = inject(CompanyService);
+  private readonly toast = inject(ToastService);
 
   // ── State ──────────────────────────────────────────────────
   private readonly _orgLayers = signal<string[] | null>(null);
@@ -51,11 +53,13 @@ export class OrgLayersTabStore {
       next: (res) => {
         this._orgLayers.set(res.data.orgLayers);
         this._saving.set(false);
+        this.toast.show('Org layers updated', 'success');
       },
       error: (err) => {
         console.error('[OrgLayersTabStore] save failed', err);
         this._error.set('Failed to save org layers.');
         this._saving.set(false);
+        this.toast.show('Failed to save org layers', 'error');
       },
     });
   }

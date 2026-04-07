@@ -1,12 +1,11 @@
 import { MONGO_CORE_DB } from '../../appBootstrap/database/db.tokens.js';
-import type { TUserId, TContractRecord, TContractId, TUserProfileRecord, TCompanyId, TCompanyContractViewModel } from '@sh3pherd/shared-types';
+import type { TContractRecord, TContractId, TUserProfileRecord, TCompanyId, TCompanyContractViewModel } from '@sh3pherd/shared-types';
 import type { Collection } from 'mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Db } from 'mongodb';
 
 
 export interface IContractReadRepository {
-  getContractListViewModel(userId: TUserId): Promise<any[]>;
   getContractWithUserProfile(idOrIds: TContractId | TContractId[] ): Promise<{ contract: TContractRecord; userProfile: TUserProfileRecord }[]>;
   getCompanyContractList(companyId: TCompanyId): Promise<TCompanyContractViewModel[]>;
 }
@@ -17,40 +16,6 @@ export class ContractReadRepository implements IContractReadRepository {
 
   constructor(@Inject(MONGO_CORE_DB) private readonly db: Db) {
     this.collection = this.db.collection('contracts');
-  };
-
-  /**
-   * Get contract list view model for a specific user
-   * @param userId
-   */
-  async getContractListViewModel(userId: TUserId): Promise<any[]> {
-
-    return this.collection.aggregate([
-      { $match: { user_id: userId } },
-      {
-        $lookup: {
-          from: 'companies',
-          localField: 'company_id',
-          foreignField: 'id',
-          as: 'company',
-        },
-      },
-      { $unwind: '$company' },
-      {
-        $project: {
-          id: 1,
-          user_id: 1,
-          company_id: '$company.id',
-          company_name: '$company.name',
-          roles: 1,
-          contract_type: 1,
-          job_title: 1,
-          startDate: 1,
-          endDate: 1,
-          status: 1,
-        },
-      },
-    ]).toArray();
   };
 
   async getCompanyContractList(companyId: TCompanyId): Promise<TCompanyContractViewModel[]> {

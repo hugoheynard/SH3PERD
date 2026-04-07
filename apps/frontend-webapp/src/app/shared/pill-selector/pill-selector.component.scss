@@ -3,6 +3,7 @@
 .pill-row {
   display: flex;
   gap: 4px;
+  user-select: none;
 }
 
 .pill {
