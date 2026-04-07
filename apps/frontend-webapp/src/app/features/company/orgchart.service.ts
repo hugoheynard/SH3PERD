@@ -17,17 +17,21 @@ import type {
 @Injectable({ providedIn: 'root' })
 export class OrgChartService extends BaseHttpService {
 
+  // ── Company-level views (contract-scoped) ───────────────────
+
   getOrgChart(companyId: TCompanyId): Observable<TApiResponse<TCompanyOrgChartViewModel>> {
-    return this.http.get<TApiResponse<TCompanyOrgChartViewModel>>(
+    return this.scopedHttp.withContract().get<TApiResponse<TCompanyOrgChartViewModel>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`${companyId}/orgchart`).build()
     );
   }
 
   getCompanyOrgNodes(companyId: TCompanyId): Observable<TApiResponse<TOrgNodeRecord[]>> {
-    return this.http.get<TApiResponse<TOrgNodeRecord[]>>(
+    return this.scopedHttp.withContract().get<TApiResponse<TOrgNodeRecord[]>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`${companyId}/org-nodes`).build()
     );
   }
+
+  // ── Node CRUD (contract-scoped) ─────────────────────────────
 
   createOrgNode(dto: {
     company_id: TCompanyId;
@@ -36,53 +40,57 @@ export class OrgChartService extends BaseHttpService {
     type?: TTeamType;
     color?: string;
   }): Observable<TApiResponse<TOrgNodeRecord>> {
-    return this.http.post<TApiResponse<TOrgNodeRecord>>(
+    return this.scopedHttp.withContract().post<TApiResponse<TOrgNodeRecord>>(
       this.UrlBuilder.apiProtectedRoute('companies').route('org-nodes').build(),
       dto
     );
   }
 
   updateOrgNode(nodeId: TOrgNodeId, dto: { name?: string; color?: string; type?: TTeamType; communications?: TOrgNodeCommunication[] }): Observable<TApiResponse<TOrgNodeRecord>> {
-    return this.http.patch<TApiResponse<TOrgNodeRecord>>(
+    return this.scopedHttp.withContract().patch<TApiResponse<TOrgNodeRecord>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}`).build(),
       dto
     );
   }
 
+  archiveOrgNode(nodeId: TOrgNodeId): Observable<void> {
+    return this.scopedHttp.withContract().delete<void>(
+      this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}`).build()
+    );
+  }
+
+  // ── Members (contract-scoped) ───────────────────────────────
+
   getOrgNodeMembers(nodeId: TOrgNodeId): Observable<TApiResponse<unknown>> {
-    return this.http.get<TApiResponse<unknown>>(
+    return this.scopedHttp.withContract().get<TApiResponse<unknown>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/members`).build()
     );
   }
 
   addOrgNodeMember(nodeId: TOrgNodeId, dto: { user_id: TUserId; contract_id: string; team_role?: TTeamRole }): Observable<TApiResponse<unknown>> {
-    return this.http.post<TApiResponse<unknown>>(
+    return this.scopedHttp.withContract().post<TApiResponse<unknown>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/members`).build(),
       dto
     );
   }
 
   removeOrgNodeMember(nodeId: TOrgNodeId, userId: TUserId): Observable<TApiResponse<unknown>> {
-    return this.http.delete<TApiResponse<unknown>>(
+    return this.scopedHttp.withContract().delete<TApiResponse<unknown>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/members/${userId}`).build()
     );
   }
 
+  // ── Guest members (contract-scoped) ─────────────────────────
+
   addGuestMember(nodeId: TOrgNodeId, dto: { display_name: string; title?: string; team_role: TTeamRole }): Observable<TApiResponse<TOrgNodeGuestMember>> {
-    return this.http.post<TApiResponse<TOrgNodeGuestMember>>(
+    return this.scopedHttp.withContract().post<TApiResponse<TOrgNodeGuestMember>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/guests`).build(),
       dto
     );
   }
 
-  archiveOrgNode(nodeId: TOrgNodeId): Observable<void> {
-    return this.http.delete<void>(
-      this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}`).build()
-    );
-  }
-
   removeGuestMember(nodeId: TOrgNodeId, guestId: string): Observable<TApiResponse<unknown>> {
-    return this.http.delete<TApiResponse<unknown>>(
+    return this.scopedHttp.withContract().delete<TApiResponse<unknown>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/guests/${guestId}`).build()
     );
   }

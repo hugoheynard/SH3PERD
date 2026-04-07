@@ -60,6 +60,10 @@ export const P = {
       Write:  'company:members:write',
       Invite: 'company:members:invite',
     },
+    OrgChart: {
+      Read:   'company:orgchart:read',
+      Write:  'company:orgchart:write',
+    },
   },
   Music: {
     Playlist: {
@@ -168,11 +172,13 @@ export const ROLE_TEMPLATES: Record<TContractRole, TPermission[]> = {
     P.Music.Playlist.Own,
     P.Music.Setlist.Read,
     P.Event.Planning.Read,
+    P.Company.OrgChart.Read,
   ],
   viewer: [
     P.Music.Playlist.Read,
     P.Event.Planning.Read,
     P.Company.Settings.Read,
+    P.Company.OrgChart.Read,
   ],
 } as const;
 

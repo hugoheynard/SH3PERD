@@ -10,8 +10,6 @@ import { CreateCompanyCommand, type TCreateCompanyResult } from '../application/
 import { DeleteCompanyCommand } from '../application/commands/DeleteCompanyCommand.js';
 import { GetCompanyByIdQuery } from '../application/queries/GetCompanyByIdQuery.js';
 import { GetMyCompaniesQuery } from '../application/queries/GetMyCompaniesQuery.js';
-import { GetCompanyOrgChartQuery } from '../application/queries/GetCompanyOrgChartQuery.js';
-import { GetCompanyOrgNodesQuery } from '../application/queries/GetCompanyTeamsQuery.js';
 
 
 @ApiTags('companies')
@@ -23,6 +21,8 @@ export class CompanyController {
     private readonly queryBus: QueryBus,
   ) {}
 
+  // TODO: Platform-level action — currently any authenticated user can create a company.
+  //       When plans/restrictions are added, guard with @RequirePlatformPermission('platform:company:create').
   @ApiOperation({
     summary: 'Create a company',
     description: 'Creates a new company and an owner contract for the authenticated user in a single atomic transaction. The owner contract grants full access to the company.',
@@ -127,19 +127,4 @@ export class CompanyController {
     await this.commandBus.execute(new DeleteCompanyCommand(id, actorId));
   }
 
-  // ── Org Chart (company-level views) ─────────────────────────
-
-  @ApiOperation({ summary: 'Get company org chart (hierarchy tree)' })
-  @Get(':id/orgchart')
-  async getOrgChart(@Param('id') id: TCompanyId) {
-    const result = await this.queryBus.execute(new GetCompanyOrgChartQuery(id));
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_ORGCHART, result);
-  }
-
-  @ApiOperation({ summary: 'Get company org nodes (flat list)' })
-  @Get(':id/org-nodes')
-  async getCompanyOrgNodes(@Param('id') id: TCompanyId) {
-    const result = await this.queryBus.execute(new GetCompanyOrgNodesQuery(id));
-    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_ORGNODES, result);
-  }
 }

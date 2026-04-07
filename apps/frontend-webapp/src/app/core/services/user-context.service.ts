@@ -102,11 +102,11 @@ export class UserContextService {
       preferences: { ...prev.preferences, ...patch },
     });
 
-    // Persist to backend
+    // Persist to backend (fire-and-forget — don't revert on failure,
+    // the local value is the session source of truth)
     this.http.patch<TUserPreferencesDomainModel>(`${this.userURL}/preferences`, patch).subscribe({
       error: (err) => {
-        console.error('Failed to save preferences, reverting', err);
-        this._user.set(prev); // revert on failure
+        console.warn('Failed to persist preferences to backend', err);
       },
     });
   }

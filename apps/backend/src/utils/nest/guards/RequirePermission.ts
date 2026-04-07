@@ -7,6 +7,7 @@ import {
   SetMetadata,
   UseGuards,
 } from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
 import { Reflector } from '@nestjs/core';
 import { ROLE_TEMPLATES, type TContractRole, type TPermission } from '@sh3pherd/shared-types';
 
@@ -130,6 +131,10 @@ export function RequirePermission(...permissions: TPermission[]) {
   return applyDecorators(
     SetMetadata(REQUIRED_PERMISSION_KEY, permissions),
     UseGuards(PermissionGuard),
+    ApiResponse({
+      status: 403,
+      description: `Requires permission: ${permissions.join(', ')}`,
+    }),
   );
 }
 

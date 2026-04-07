@@ -59,9 +59,9 @@ export class CompanyDetailPageComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id') as TCompanyId;
     if (id) {
+      // loadCompanyById is NOT contract-scoped — can fire immediately
       this.store.loadCompanyById(id);
-      this.orgChartStore.loadOrgChart(id);
-      this.contractStore.loadCompanyContracts(id);
+      // Resolve workspace first, then load contract-scoped data
       this.resolveWorkspace(id);
     }
 
@@ -83,6 +83,7 @@ export class CompanyDetailPageComponent implements OnInit {
 
   /**
    * Resolve the user's active contract for this company and set it as the workspace.
+   * Once set, loads all contract-scoped data (orgchart, contracts).
    * If no active contract is found, the user has no access — redirect to company list.
    */
   private resolveWorkspace(companyId: TCompanyId): void {
@@ -91,6 +92,9 @@ export class CompanyDetailPageComponent implements OnInit {
         const active = contracts.find(c => c.company_id === companyId && c.status === 'active');
         if (active) {
           this.userCtx.setWorkspace(active.id);
+          // Now that workspace is set, load contract-scoped data
+          this.orgChartStore.loadOrgChart(companyId);
+          this.contractStore.loadCompanyContracts(companyId);
         } else {
           console.warn('[CompanyDetail] No active contract for this company — redirecting');
           this.router.navigate(['/app/company']);

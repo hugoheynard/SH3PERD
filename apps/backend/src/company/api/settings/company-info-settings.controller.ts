@@ -35,9 +35,7 @@ export class CompanyInfoSettingsController {
   @ApiBody(apiRequestDTO(CompanyInfoPayload))
   @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.UPDATE_COMPANY_INFO, CompanyInfoPayload))
   @ApiResponse({ status: 400, description: 'Validation failed (name empty, malformed body).' })
-  @ApiResponse({ status: 403, description: `Actor lacks ${P.Company.Settings.Write} permission.` })
   @ApiResponse({ status: 404, description: 'Company not found.' })
-
   @RequirePermission(P.Company.Settings.Write)
   @Patch(':id/settings/info')
   async updateCompanyInfo(

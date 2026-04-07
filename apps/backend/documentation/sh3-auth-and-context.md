@@ -139,12 +139,11 @@ These older decorators still work but the new ones above are preferred:
 
 **File:** `src/utils/nest/guards/RequirePermission.ts`
 
-### How it works
+### What it does (3 effects from 1 declaration)
 
-1. Reads `request.contract_roles` (e.g. `['admin', 'artist']`)
-2. Expands roles into permissions using `ROLE_TEMPLATES` from `@sh3pherd/shared-types`
-3. Checks if the expanded permissions match the required permission(s)
-4. Throws `403 Forbidden` if not
+1. **Guard runtime** — reads `request.contract_roles`, expands via `ROLE_TEMPLATES`, checks match → throws `403 Forbidden` if denied
+2. **Permission Registry** — auto-registers the permission in the global `PermissionRegistry` at decoration time
+3. **Swagger** — auto-generates `@ApiResponse({ status: 403, description: 'Requires permission: ...' })`
 
 ### The `P` object — single source of truth
 
@@ -170,6 +169,7 @@ export const P = {
   Company: {
     Settings: { Read, Write, Delete },
     Members:  { Read, Write, Invite },
+    OrgChart: { Read, Write },
   },
   Music: {
     Playlist: { Read, Write, Delete, Own },
@@ -185,11 +185,15 @@ export const P = {
 
 ### Decorator: `@RequirePermission(...permissions)`
 
-Direct, no template literals, full autocompletion:
+Direct, no template literals, full autocompletion. No need to add `@ApiResponse({ status: 403 })` — the decorator does it automatically.
 
 ```ts
 import { P } from '@sh3pherd/shared-types';
 
+// This single decorator:
+// 1. Guards the route at runtime (403 if denied)
+// 2. Registers 'company:settings:write' in PermissionRegistry
+// 3. Adds @ApiResponse({ status: 403, description: 'Requires permission: company:settings:write' }) to Swagger
 @ContractScoped()
 @RequirePermission(P.Company.Settings.Write)
 @Patch('settings')
@@ -210,8 +214,8 @@ Uses `P` for exact permissions and string wildcards for broad grants:
 export const ROLE_TEMPLATES: Record<TContractRole, TPermission[]> = {
   owner: ['*'],
   admin: ['company:*', 'music:*:read', 'event:*', P.Company.Members.Invite],
-  artist: [P.Music.Playlist.Own, P.Music.Setlist.Read, P.Event.Planning.Read],
-  viewer: [P.Music.Playlist.Read, P.Event.Planning.Read, P.Company.Settings.Read],
+  artist: [P.Music.Playlist.Own, P.Music.Setlist.Read, P.Event.Planning.Read, P.Company.OrgChart.Read],
+  viewer: [P.Music.Playlist.Read, P.Event.Planning.Read, P.Company.Settings.Read, P.Company.OrgChart.Read],
 };
 ```
 
@@ -221,8 +225,8 @@ export const ROLE_TEMPLATES: Record<TContractRole, TPermission[]> = {
 |------|------------|
 | `owner` | `*` (everything) |
 | `admin` | `company:*`, `music:*:read`, `event:*`, `company:members:invite` |
-| `artist` | `music:playlist:own`, `music:setlist:read`, `event:planning:read` |
-| `viewer` | `music:playlist:read`, `event:planning:read`, `company:settings:read` |
+| `artist` | `music:playlist:own`, `music:setlist:read`, `event:planning:read`, `company:orgchart:read` |
+| `viewer` | `music:playlist:read`, `event:planning:read`, `company:settings:read`, `company:orgchart:read` |
 
 ### Team-level permissions
 

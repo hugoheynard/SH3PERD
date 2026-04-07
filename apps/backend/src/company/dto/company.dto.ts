@@ -1,12 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ApiModel } from '../../utils/swagger/api-model.swagger.util.js';
 import { createZodDto } from 'nestjs-zod';
-import { SCompanyInfo } from '@sh3pherd/shared-types';
+import { SCompanyInfo, SOrgLayers, SOrgNodeDomainModel } from '@sh3pherd/shared-types';
 
 // ─── Company Info (request + response DTO for settings) ───
 
 @ApiModel()
 export class CompanyInfoPayload extends createZodDto(SCompanyInfo) {}
+
+// ─── Org Layers (request + response DTO for settings) ─────
+
+@ApiModel()
+export class OrgLayersPayload extends createZodDto(SOrgLayers) {}
+
+// ─── Org Node Domain Model ────────────────────────────────
+
+@ApiModel()
+export class OrgNodePayload extends createZodDto(SOrgNodeDomainModel) {}
 
 // ─── Company View Model ────────────────────────────────────
 
@@ -64,4 +74,28 @@ export class TeamViewModelPayload {
   @ApiProperty({ required: false }) color?: string;
   @ApiProperty() status!: string;
   @ApiProperty({ type: () => [TeamMemberViewModelPayload] }) activeMembers!: TeamMemberViewModelPayload[];
+}
+
+// ─── Org Node Hierarchy (recursive tree node) ─────────────
+
+@ApiModel()
+export class OrgNodeHierarchyPayload {
+  @ApiProperty() id!: string;
+  @ApiProperty() name!: string;
+  @ApiProperty({ required: false }) parent_id?: string;
+  @ApiProperty({ required: false }) type?: string;
+  @ApiProperty({ required: false }) color?: string;
+  @ApiProperty() status!: string;
+  @ApiProperty({ type: () => [TeamMemberViewModelPayload] }) members!: TeamMemberViewModelPayload[];
+  @ApiProperty({ type: () => [OrgNodeHierarchyPayload] }) children!: OrgNodeHierarchyPayload[];
+}
+
+// ─── Company Org Chart View Model ─────────────────────────
+
+@ApiModel()
+export class CompanyOrgChartPayload {
+  @ApiProperty() company_id!: string;
+  @ApiProperty() company_name!: string;
+  @ApiProperty({ type: [String] }) orgLayers!: string[];
+  @ApiProperty({ type: () => [OrgNodeHierarchyPayload] }) rootNodes!: OrgNodeHierarchyPayload[];
 }

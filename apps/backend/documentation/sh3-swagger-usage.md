@@ -226,8 +226,9 @@ export class CompanyDetailViewModelPayload {
 3. Define API codes in the domain's `codes.ts` file
 4. On the controller method:
    - `@ApiOperation({ summary, description })`
-   - `@ApiBody(apiRequestDTO(RequestPayload, 'description'))` (for POST/PATCH/PUT)
+   - `@ApiBody(apiRequestDTO(RequestPayload))` (for POST/PATCH/PUT)
    - `@ApiResponse(apiSuccessDTO(CODE, ResponsePayload, httpStatus))`
+   - `@RequirePermission(P.X.Y.Z)` — auto-generates the 403 Swagger response (no manual `@ApiResponse 403` needed)
 5. Wrap the handler return with `buildApiResponseDTO(CODE, data)`
 6. Type the return as `TAsyncApiResponseDTO<TDomainType>`
 
