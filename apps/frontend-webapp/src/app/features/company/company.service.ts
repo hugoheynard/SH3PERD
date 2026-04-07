@@ -52,14 +52,14 @@ export class CompanyService extends BaseHttpService {
   // ── Company Settings ───────────────────────────────────────
 
   updateCompanyInfo(id: TCompanyId, dto: TCompanyInfo): Observable<TApiResponse<TCompanyInfo>> {
-    return this.http.patch<TApiResponse<TCompanyInfo>>(
+    return this.scopedHttp.withContract().patch<TApiResponse<TCompanyInfo>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`${id}/settings/info`).build(),
       dto
     );
   }
 
   updateOrgLayers(id: TCompanyId, orgLayers: string[]): Observable<TApiResponse<TOrgLayers>> {
-    return this.http.patch<TApiResponse<TOrgLayers>>(
+    return this.scopedHttp.withContract().patch<TApiResponse<TOrgLayers>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`${id}/settings/org-layers`).build(),
       { orgLayers }
     );

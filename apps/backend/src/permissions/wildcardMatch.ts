@@ -1,4 +1,3 @@
-import type { TPermission } from '@sh3pherd/shared-types';
 
 /**
  * Checks whether a user-held permission matches a required permission.
@@ -13,7 +12,7 @@ import type { TPermission } from '@sh3pherd/shared-types';
  * @param required - The permission required for the action (never contains wildcards)
  * @returns true if `held` covers `required`
  */
-export function wildcardMatch(held: TPermission, required: string): boolean {
+export function wildcardMatch(held: string, required: string): boolean {
   if (held === '*') return true;
   if (held === required) return true;
 
@@ -32,6 +31,6 @@ export function wildcardMatch(held: TPermission, required: string): boolean {
 /**
  * Checks whether a set of held permissions satisfies a required permission.
  */
-export function hasPermission(held: TPermission[], required: string): boolean {
+export function hasPermission(held: string[], required: string): boolean {
   return held.some(p => wildcardMatch(p, required));
 }

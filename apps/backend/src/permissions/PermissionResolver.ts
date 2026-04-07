@@ -100,7 +100,7 @@ export class PermissionResolver {
     );
     const finalPerms = applyOverrides(teamPerms, membership?.permission_overrides as any);
 
-    return hasPermission(finalPerms as any, required);
+    return hasPermission(finalPerms, required);
   }
 
   // ── Helpers ──────────────────────────────────────────
@@ -147,10 +147,10 @@ export function expandTeamRole(role: string): string[] {
 }
 
 /** Apply permission overrides (grant/revoke) on top of a base set */
-export function applyOverrides(
-  base: TPermission[],
-  overrides?: { grant?: TPermission[]; revoke?: TPermission[] },
-): TPermission[] {
+export function applyOverrides<T extends string = string>(
+  base: T[],
+  overrides?: { grant?: T[]; revoke?: T[] },
+): T[] {
   if (!overrides) return base;
 
   let result = [...base];

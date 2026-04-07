@@ -13,6 +13,8 @@ import { DangerZoneTabComponent } from '../company-settings-page/danger-zone-tab
 import { TabNavComponent, type TabNavItem } from '../../../shared/tab-nav/tab-nav.component';
 import { SettingsTab } from '../company-settings-page/tab-names.enum';
 import type { TCompanyId } from '@sh3pherd/shared-types';
+import { ContractsService } from '../../contracts/services/contracts.service';
+import { UserContextService } from '../../../core/services/user-context.service';
 
 @Component({
   selector: 'app-company-detail-page',
@@ -30,6 +32,8 @@ export class CompanyDetailPageComponent implements OnInit {
   readonly store = inject(CompanyStore);
   private readonly orgChartStore = inject(OrgChartStore);
   private readonly contractStore = inject(ContractStore);
+  private readonly contractsService = inject(ContractsService);
+  private readonly userCtx = inject(UserContextService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -58,6 +62,7 @@ export class CompanyDetailPageComponent implements OnInit {
       this.store.loadCompanyById(id);
       this.orgChartStore.loadOrgChart(id);
       this.contractStore.loadCompanyContracts(id);
+      this.resolveWorkspace(id);
     }
 
     // Handle query params (e.g. Slack OAuth return: ?tab=settings&slack=connected)
@@ -74,6 +79,27 @@ export class CompanyDetailPageComponent implements OnInit {
       this.activeSettingsTab.set(SettingsTab.CHANNELS);
       console.error('[CompanyDetail] Slack OAuth failed');
     }
+  }
+
+  /**
+   * Resolve the user's active contract for this company and set it as the workspace.
+   * If no active contract is found, the user has no access — redirect to company list.
+   */
+  private resolveWorkspace(companyId: TCompanyId): void {
+    this.contractsService.getCurrentUserContractList().subscribe({
+      next: (contracts) => {
+        const active = contracts.find(c => c.company_id === companyId && c.status === 'active');
+        if (active) {
+          this.userCtx.setWorkspace(active.id);
+        } else {
+          console.warn('[CompanyDetail] No active contract for this company — redirecting');
+          this.router.navigate(['/app/company']);
+        }
+      },
+      error: () => {
+        this.router.navigate(['/app/company']);
+      },
+    });
   }
 
   goBack(): void {

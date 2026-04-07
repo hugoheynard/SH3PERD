@@ -4,97 +4,80 @@ import { Observable } from 'rxjs';
 import { UserContextService } from '../services/user-context.service';
 
 /**
- * HttpClient contextuel et stateless, avec API fluide
- * Ex: this.http.withContract().withHeader('X-Feature', 'import').post('/api/...')
+ * Contextual, stateless HTTP client with fluent API.
+ *
+ * Reads the current contract ID from `UserContextService.currentContractId`
+ * **at call time** (not at injection time), so workspace switches are
+ * picked up immediately.
+ *
+ * @example
+ * ```ts
+ * this.scopedHttp.withContract().patch('/api/...', data);
+ * this.scopedHttp.withContract().withFeature('import').post('/api/...', data);
+ * ```
  */
 @Injectable({ providedIn: 'root' })
 export class ScopedHttpClient {
   private readonly http = inject(HttpClient);
-  private readonly contractId = inject(UserContextService).currentContractId();
+  private readonly userCtx = inject(UserContextService);
 
-  /** Crée un nouveau scope avec les headers donnés */
+  /** Create a scoped request builder with the given headers. */
   private scoped(headers: HttpHeaders) {
     const self = this;
-    const contractId = this.contractId;
 
     return {
-      /** Ajouter un header custom */
       withHeader(key: string, value: string) {
-        const newHeaders = headers.set(key, value);
-        return self.scoped(newHeaders);
+        return self.scoped(headers.set(key, value));
       },
 
-      /**
-       * Adds a feature header to the request.
-       * @param featureName
-       */
       withFeature(featureName: string) {
         return self.scoped(headers.set('X-Feature', featureName));
       },
 
       withContract() {
-        if (!contractId) {
-          return self.scoped(headers);
-        }
+        const contractId = self.userCtx.currentContractId();
+        if (!contractId) return self.scoped(headers);
         return self.scoped(headers.set('X-Contract-Id', contractId));
       },
 
-      /** Effectuer une requête GET */
       get<T>(url: string, options: { headers?: HttpHeaders; params?: HttpParams } = {}): Observable<T> {
         return self.http.get<T>(url, { ...options, headers });
       },
 
-      /** POST */
-      post<T>(
-        url: string,
-        body: unknown,
-        options: { headers?: HttpHeaders; params?: HttpParams } = {},
-      ): Observable<T> {
+      post<T>(url: string, body: unknown, options: { headers?: HttpHeaders; params?: HttpParams } = {}): Observable<T> {
         return self.http.post<T>(url, body, { ...options, headers });
       },
 
-      /** PUT */
-      put<T>(
-        url: string,
-        body: unknown,
-        options: { headers?: HttpHeaders; params?: HttpParams } = {},
-      ): Observable<T> {
+      put<T>(url: string, body: unknown, options: { headers?: HttpHeaders; params?: HttpParams } = {}): Observable<T> {
         return self.http.put<T>(url, body, { ...options, headers });
       },
 
-      /** PATCH */
-      patch<T>(
-        url: string,
-        body: unknown,
-        options: { headers?: HttpHeaders; params?: HttpParams } = {},
-      ): Observable<T> {
+      patch<T>(url: string, body: unknown, options: { headers?: HttpHeaders; params?: HttpParams } = {}): Observable<T> {
         return self.http.patch<T>(url, body, { ...options, headers });
       },
 
-      /** DELETE */
       delete<T>(url: string, options: { headers?: HttpHeaders; params?: HttpParams } = {}): Observable<T> {
         return self.http.delete<T>(url, { ...options, headers });
       },
     };
   }
 
-  /** Point d’entrée de la DSL : crée un scope contractuel */
+  /** Entry point — creates a scope with the current contract header. */
   withContract() {
+    const contractId = this.userCtx.currentContractId();
     let headers = new HttpHeaders();
-
-    if (this.contractId) {
-      headers = headers.set('X-Contract-Id', this.contractId);
+    if (contractId) {
+      headers = headers.set('X-Contract-Id', contractId);
     }
-
     return this.scoped(headers);
-  };
+  }
 
-  /** Point d’entrée sans contrat (custom headers uniquement) */
+  /** Entry point — scope with a custom header (no contract). */
   withHeader(key: string, value: string) {
     return this.scoped(new HttpHeaders().set(key, value));
   }
 
-  /** 🔹 Scope direct pour une feature spécifique (sans contrat) */
+  /** Entry point — scope with a feature header (no contract). */
   withFeature(featureName: string) {
     return this.scoped(new HttpHeaders().set('X-Feature', featureName));
   }

@@ -16,10 +16,12 @@ import {
 import { COMPANY_CODES_SUCCESS } from '../company.codes.js';
 import { UpdateCompanyInfoCommand } from '../../application/commands/UpdateCompanyInfoCommand.js';
 import { RequirePermission } from '../../../utils/nest/guards/RequirePermission.js';
+import { ContractScoped } from '../../../utils/nest/decorators/ContractScoped.js';
 import { CompanyInfoPayload } from '../../dto/company.dto.js';
 
 @ApiTags('company-settings / info')
 @ApiBearerAuth('bearer')
+@ContractScoped()
 @Controller()
 export class CompanyInfoSettingsController {
   constructor(private readonly commandBus: CommandBus) {}
@@ -35,6 +37,7 @@ export class CompanyInfoSettingsController {
   @ApiResponse({ status: 400, description: 'Validation failed (name empty, malformed body).' })
   @ApiResponse({ status: 403, description: `Actor lacks ${P.Company.Settings.Write} permission.` })
   @ApiResponse({ status: 404, description: 'Company not found.' })
+
   @RequirePermission(P.Company.Settings.Write)
   @Patch(':id/settings/info')
   async updateCompanyInfo(
