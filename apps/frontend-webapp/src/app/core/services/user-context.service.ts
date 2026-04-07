@@ -1,6 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import type { TApiResponse, TUserMeViewModel, TUserPreferencesDomainModel } from '@sh3pherd/shared-types';
-//import { BaseHttpService } from './BaseHttpService';
 import type { TContractId } from '@sh3pherd/shared-types';
 import { strictComputed } from '../utils/strictComputed';
 import { HttpClient } from '@angular/common/http';
@@ -10,46 +9,61 @@ import { ApiURLService } from './api-url.service';
 @Injectable({
   providedIn: 'root'
 })
-export class UserContextService  {
+export class UserContextService {
   private readonly http = inject(HttpClient);
   private readonly url = inject(ApiURLService);
   private readonly userURL = this.url.apiProtectedRoute('user').build();
   private readonly _user = signal<TUserMeViewModel | null>(null);
 
-  userMe = this._user.asReadonly();
+  /** Raw user view model — null until loaded. */
+  readonly userMe = this._user.asReadonly();
 
-  setUser(user: TUserMeViewModel | null) {
-    this._user.set(user);
-  };
+  // ── Derived identity signals (safe defaults, never throw) ──
 
-  /** Getter strict (throw if user null) */
-  get userStrict(): TUserMeViewModel {
-    const value = this._user();
-    if (!value) {
-      throw new Error('User not initialized');
-    }
-    return value;
-  };
+  readonly displayName = computed(() => {
+    const u = this._user();
+    if (!u?.profile) return '';
+    return u.profile.display_name ?? `${u.profile.first_name} ${u.profile.last_name}`;
+  });
+
+  readonly userInitial = computed(() => {
+    const u = this._user();
+    return u?.profile?.first_name?.charAt(0)?.toUpperCase() ?? '';
+  });
+
+  readonly firstName = computed(() => this._user()?.profile?.first_name ?? '');
+  readonly lastName = computed(() => this._user()?.profile?.last_name ?? '');
+
+  // ── Derived preference signals ──
+
+  readonly theme = computed<'light' | 'dark'>(() => {
+    return this._user()?.preferences?.theme ?? 'dark';
+  });
 
   /**
-   * The current contract ID from the user's preferences.
-   * Nullable - may be null if not set in user preferences.
+   * The current contract workspace from user preferences.
+   * Nullable — null if user not loaded or preference not set.
    */
   readonly currentContractId = computed<TContractId | null>(() => {
     return this._user()?.preferences.contract_workspace ?? null;
   });
 
-  /** signal strict (throw si null) */
+  /** Strict version — throws if workspace not set. */
   readonly currentContractIdStrict = strictComputed<TContractId>(this.currentContractId, 'Workspace');
+
+  // ── Actions ──
+
+  setUser(user: TUserMeViewModel | null) {
+    this._user.set(user);
+  };
 
   /**
    * Fetches the current user's profile from the backend and updates the user signal.
-   * If the request fails, it logs the error and sets the user signal to null.
    */
   getUser(): void {
     this.http.get<TApiResponse<TUserMeViewModel>>(`${this.userURL}/me`).subscribe({
       next: (res) => {
-        this.setUser(res.data)
+        this.setUser(res.data);
       },
       error: (err) => {
         console.error('Failed to load user profile', err);
@@ -58,13 +72,42 @@ export class UserContextService  {
     });
   };
 
+  // ── Preference setters (optimistic update + backend sync) ──
+
   /**
-   * Updates the current user's preferences.
-   * @param data
+   * Switch theme — updates local signal immediately, then persists to backend.
    */
-  updateUserPreferences(data: Partial<TUserPreferencesDomainModel>) {
-    return this.http.patch<TUserPreferencesDomainModel>(`${this.userURL}/preferences`, data);
-  };
+  setTheme(theme: 'light' | 'dark'): void {
+    this.patchPreferencesOptimistic({ theme });
+  }
 
+  /**
+   * Switch workspace — updates local signal immediately, then persists to backend.
+   */
+  setWorkspace(contractId: TContractId): void {
+    this.patchPreferencesOptimistic({ contract_workspace: contractId });
+  }
 
+  /**
+   * Generic preference update: applies the patch to the local signal first (optimistic),
+   * then syncs to the backend. Reverts on failure.
+   */
+  private patchPreferencesOptimistic(patch: Partial<TUserPreferencesDomainModel>): void {
+    const prev = this._user();
+    if (!prev) return;
+
+    // Optimistic local update
+    this._user.set({
+      ...prev,
+      preferences: { ...prev.preferences, ...patch },
+    });
+
+    // Persist to backend
+    this.http.patch<TUserPreferencesDomainModel>(`${this.userURL}/preferences`, patch).subscribe({
+      error: (err) => {
+        console.error('Failed to save preferences, reverting', err);
+        this._user.set(prev); // revert on failure
+      },
+    });
+  }
 }

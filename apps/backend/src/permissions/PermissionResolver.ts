@@ -98,9 +98,9 @@ export class PermissionResolver {
     const membership = targetTeam?.members.find(
       m => m.user_id === actorId && !m.leftAt,
     );
-    const finalPerms = applyOverrides(teamPerms, membership?.permission_overrides);
+    const finalPerms = applyOverrides(teamPerms, membership?.permission_overrides as any);
 
-    return hasPermission(finalPerms, required);
+    return hasPermission(finalPerms as any, required);
   }
 
   // ── Helpers ──────────────────────────────────────────
@@ -141,7 +141,7 @@ export function expandContractRoles(roles: TContractRole[]): TPermission[] {
 }
 
 /** Expand a team role to its permission set via TEAM_ROLE_TEMPLATES */
-export function expandTeamRole(role: string): TPermission[] {
+export function expandTeamRole(role: string): string[] {
   const template = TEAM_ROLE_TEMPLATES[role as keyof typeof TEAM_ROLE_TEMPLATES];
   return template ? [...template] : [];
 }

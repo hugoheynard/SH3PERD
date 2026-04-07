@@ -71,6 +71,33 @@ export function apiSuccessDTO<T extends Type<any>>(
 
 
 /**
+ * Swagger request body factory — references a Zod-derived DTO class.
+ *
+ * Pair with `createZodDto(SMySchema)` + `@ApiModel()` to auto-generate
+ * the request body schema from your Zod schema.
+ *
+ * @param model - DTO class (created via `createZodDto`)
+ * @param description - Optional description override
+ *
+ * @example
+ * ```ts
+ * @ApiBody(apiRequestDTO(CompanyInfoPayload))
+ * @Post()
+ * create(@Body() dto: TCompanyInfo) { ... }
+ * ```
+ */
+export function apiRequestDTO<T extends Type<any>>(
+  model: T,
+  description?: string,
+) {
+  return {
+    ...(description ? { description } : {}),
+    schema: { $ref: getSchemaPath(model) },
+  };
+}
+
+
+/**
  * Crée une réponse Swagger standardisée pour les erreurs.
  *
  * @param code - Code d’erreur (ex: USER_ERRORS.INVALID_ID)

@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ApiModel } from '../../utils/swagger/api-model.swagger.util.js';
+import { createZodDto } from 'nestjs-zod';
+import { SCompanyInfo } from '@sh3pherd/shared-types';
+
+// ─── Company Info (request + response DTO for settings) ───
+
+@ApiModel()
+export class CompanyInfoPayload extends createZodDto(SCompanyInfo) {}
 
 // ─── Company View Model ────────────────────────────────────
 

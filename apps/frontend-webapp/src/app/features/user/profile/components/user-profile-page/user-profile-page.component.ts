@@ -40,25 +40,9 @@ export class UserProfilePageComponent implements OnInit {
   readonly emailSuccess = signal(false);
   readonly emailError = signal('');
 
-  /** User initial for avatar fallback. */
-  readonly userInitial = computed(() => {
-    const user = this.userCtx.userMe();
-    const first = user?.profile?.first_name?.charAt(0) ?? '';
-    const last = user?.profile?.last_name?.charAt(0) ?? '';
-    return (first + last).toUpperCase() || 'U';
-  });
-
-  readonly userFullName = computed(() => {
-    const user = this.userCtx.userMe();
-    if (!user?.profile) return '';
-    return user.profile.display_name
-      ?? `${user.profile.first_name} ${user.profile.last_name}`;
-  });
-
-  readonly userEmail = computed(() => {
-    // Email is not in profile model, placeholder for now
-    return '';
-  });
+  readonly userInitial = this.userCtx.userInitial;
+  readonly userFullName = this.userCtx.displayName;
+  readonly userEmail = computed(() => ''); // Email not in profile model yet
 
   ngOnInit(): void {
     this.api.getCurrentUserProfile().subscribe({

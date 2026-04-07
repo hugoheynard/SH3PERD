@@ -138,6 +138,23 @@ apiSuccessDTO(code: { code: string; message: string }, model: Type, status?: num
 }
 ```
 
+### `apiRequestDTO()` - `src/utils/swagger/api-response.swagger.util.ts`
+
+Generates a Swagger `@ApiBody` config that references a Zod-derived DTO:
+
+```ts
+apiRequestDTO(model: Type, description?: string)
+```
+
+**Usage:**
+```ts
+@ApiBody(apiRequestDTO(CreateCompanyPayload, 'Company creation payload'))
+@Post()
+create(@Body() dto: TCreateCompanyDTO) { ... }
+```
+
+This replaces inline `schema: { type: 'object', properties: { ... } }` blocks with a `$ref` to the DTO, keeping Swagger docs in sync with the Zod schema.
+
 ### `buildApiResponseDTO()` - `src/music/codes.ts`
 
 Runtime wrapper that builds the actual response payload matching the Swagger shape:
@@ -204,12 +221,13 @@ export class CompanyDetailViewModelPayload {
 
 ## Checklist for adding Swagger to a new endpoint
 
-1. Ensure a Zod schema exists in `@sh3pherd/shared-types` for the response shape
-2. Create a DTO class: `@ApiModel() export class XPayload extends createZodDto(SSchema) {}`
+1. Ensure Zod schemas exist in `@sh3pherd/shared-types` for request and response shapes
+2. Create DTO classes: `@ApiModel() export class XPayload extends createZodDto(SSchema) {}`
 3. Define API codes in the domain's `codes.ts` file
 4. On the controller method:
    - `@ApiOperation({ summary, description })`
-   - `@ApiResponse(apiSuccessDTO(CODE, PayloadDTO, httpStatus))`
+   - `@ApiBody(apiRequestDTO(RequestPayload, 'description'))` (for POST/PATCH/PUT)
+   - `@ApiResponse(apiSuccessDTO(CODE, ResponsePayload, httpStatus))`
 5. Wrap the handler return with `buildApiResponseDTO(CODE, data)`
 6. Type the return as `TAsyncApiResponseDTO<TDomainType>`
 
@@ -223,7 +241,7 @@ export class CompanyDetailViewModelPayload {
 | DTO classes | `src/<domain>/dto/<domain>.dto.ts` or co-located with query/command |
 | API codes | `src/<domain>/api/codes/<domain>.codes.ts` or `src/<domain>/codes.ts` |
 | `@ApiModel()` decorator | `src/utils/swagger/api-model.swagger.util.ts` |
-| `apiSuccessDTO()` / `apiError()` | `src/utils/swagger/api-response.swagger.util.ts` |
+| `apiSuccessDTO()` / `apiRequestDTO()` / `apiError()` | `src/utils/swagger/api-response.swagger.util.ts` |
 | `buildApiResponseDTO()` | `src/music/codes.ts` (shared, should be moved to utils) |
 | `@ResPayloadValidator()` | `src/utils/nest/ResPayloadValidator.decorator.ts` |
 | Swagger bootstrap | `src/main.ts` (DocumentBuilder + SwaggerModule) |

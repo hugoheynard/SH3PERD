@@ -4,10 +4,11 @@ import { GetCurrentUserViewModelHandler } from './application/query/GetCurrentUs
 import { GetUserProfileHandler } from './application/query/GetUserProfileQuery.js';
 import { SearchUserByEmailHandler } from './application/query/SearchUserByEmailQuery.js';
 import { UpdateUserProfileHandler } from './application/commands/UpdateUserProfileCommand.js';
+import { UpdateUserPreferencesHandler } from './application/commands/UpdateUserPreferencesCommand.js';
 import { InviteUserHandler } from './application/commands/InviteUserCommand.js';
 import { AuthCoreModule } from '../auth/core/auth-core.module.js';
 
-const CommandHandlers = [UpdateUserProfileHandler, InviteUserHandler];
+const CommandHandlers = [UpdateUserProfileHandler, UpdateUserPreferencesHandler, InviteUserHandler];
 const QueryHandlers = [GetCurrentUserViewModelHandler, GetUserProfileHandler, SearchUserByEmailHandler];
 
 @Module({

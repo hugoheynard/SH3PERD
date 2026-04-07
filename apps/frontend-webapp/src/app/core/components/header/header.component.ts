@@ -1,7 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, HostListener, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
-import { ThemeService } from '../../services/theme.service';
 import { NavigationService } from '../../services/navigation.service';
 import { NotificationService } from '../../notifications/notification.service';
 import { LayoutService } from '../../services/layout.service';
@@ -9,51 +8,33 @@ import { NotificationPanelComponent } from '../../notifications/notification-pan
 import { HelpPanelComponent } from '../../../shared/help/help-panel.component';
 import { UserContextService } from '../../services/user-context.service';
 import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '../../services/theme.service';
+import { ThemeToggleComponent } from '../../../shared/theme-toggle/theme-toggle.component';
 
 @Component({
-    selector: 'app-header',
+  selector: 'app-header',
   imports: [
     MatIcon,
+    ThemeToggleComponent,
   ],
-    templateUrl: './header.component.html',
-    standalone: true,
-    styleUrl: './header.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './header.component.html',
+  standalone: true,
+  styleUrl: './header.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  private navigationService: NavigationService = inject(NavigationService);
-  private layout = inject(LayoutService);
-  private notif = inject(NotificationService);
-  private router = inject(Router);
-  private userCtx = inject(UserContextService);
-  private auth = inject(AuthService);
+  private readonly navigationService = inject(NavigationService);
+  private readonly layout = inject(LayoutService);
+  private readonly notif = inject(NotificationService);
+  private readonly router = inject(Router);
+  private readonly userCtx = inject(UserContextService);
+  private readonly auth = inject(AuthService);
 
-  public isDark: boolean = true;
+  constructor() { void inject(ThemeService); }
 
   readonly showProfileMenu = signal(false);
-
-  /** User initial for the pastille (first letter of first_name, fallback to 'U'). */
-  readonly userInitial = computed(() => {
-    const user = this.userCtx.userMe();
-    return user?.profile?.first_name?.charAt(0)?.toUpperCase() ?? 'U';
-  });
-
-  /** Display name for the menu header. */
-  readonly userDisplayName = computed(() => {
-    const user = this.userCtx.userMe();
-    if (!user?.profile) return '';
-    return user.profile.display_name
-      ?? `${user.profile.first_name} ${user.profile.last_name}`;
-  });
-
-  constructor(private themeService: ThemeService) {
-    this.isDark = this.themeService.getTheme() === 'dark';
-  }
-
-  toggleTheme(): void {
-    this.themeService.toggleTheme();
-    this.isDark = !this.isDark;
-  }
+  readonly userInitial = this.userCtx.userInitial;
+  readonly userDisplayName = this.userCtx.displayName;
 
   onMenuClick(): void {
     this.layout.openMobileMenu();

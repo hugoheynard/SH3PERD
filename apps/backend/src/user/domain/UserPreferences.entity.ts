@@ -30,6 +30,13 @@ export class UserPreferences extends Entity<TUserPreferencesDomainModel>{
   };
 
   /**
+   * Set theme to a specific value.
+   */
+  setTheme(theme: 'light' | 'dark'): void {
+    this.props.theme = theme;
+  };
+
+  /**
    * Change the contract workspace.
    * @param newWorkspace
    */
