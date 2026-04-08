@@ -3,7 +3,7 @@ import { Inject } from '@nestjs/common';
 import type { TCompanyId, TUserId } from '@sh3pherd/shared-types';
 import { COMPANY_REPO } from '../../company.tokens.js';
 import type { ICompanyRepository } from '../../repositories/CompanyMongoRepository.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class DeleteCompanyCommand {
   constructor(
@@ -25,8 +25,8 @@ export class DeleteCompanyHandler implements ICommandHandler<DeleteCompanyComman
     const { companyId, actorId } = cmd;
 
     const record = await this.companyRepo.findOne({ filter: { id: companyId } });
-    if (!record) throw new BusinessError('Company not found', 'COMPANY_NOT_FOUND', 404);
-    if (record.owner_id !== actorId) throw new BusinessError('Only the owner can delete', 'COMPANY_NOT_OWNED', 403);
+    if (!record) throw new BusinessError('Company not found', { code: 'COMPANY_NOT_FOUND', status: 404 });
+    if (record.owner_id !== actorId) throw new BusinessError('Only the owner can delete', { code: 'COMPANY_NOT_OWNED', status: 403 });
 
     await this.companyRepo.deleteOne({ id: companyId } as any);
   }

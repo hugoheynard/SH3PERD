@@ -6,8 +6,8 @@ import type { TTeamRole } from '@sh3pherd/shared-types';
 import { ORG_NODE_REPO } from '../../company.tokens.js';
 import type { IOrgNodeRepository } from '../../repositories/OrgNodeMongoRepository.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
-import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
 
 // ── Add Guest Member ─────────────────────────────────────
 
@@ -35,7 +35,7 @@ export class AddGuestMemberHandler implements ICommandHandler<AddGuestMemberComm
     const { dto } = cmd;
 
     const record = await this.orgNodeRepo.findOne({ filter: { id: dto.org_node_id } });
-    if (!record) throw new BusinessError('Org node not found', 'ORGNODE_NOT_FOUND', 404);
+    if (!record) throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
 
     const guest: TOrgNodeGuestMember = {
       id: `guest_${randomUUID()}`,
@@ -52,7 +52,7 @@ export class AddGuestMemberHandler implements ICommandHandler<AddGuestMemberComm
       },
     });
 
-    if (!saved) throw new TechnicalError('Failed to add guest member', 'ORGNODE_ADD_GUEST_FAILED', 500);
+    if (!saved) throw new TechnicalError('Failed to add guest member', { code: 'ORGNODE_ADD_GUEST_FAILED' });
     return guest;
   }
 }
@@ -88,7 +88,7 @@ export class RemoveGuestMemberHandler implements ICommandHandler<RemoveGuestMemb
       },
     });
 
-    if (!saved) throw new TechnicalError('Failed to remove guest member', 'ORGNODE_REMOVE_GUEST_FAILED', 500);
+    if (!saved) throw new TechnicalError('Failed to remove guest member', { code: 'ORGNODE_REMOVE_GUEST_FAILED' });
     return true;
   }
 }

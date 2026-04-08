@@ -8,7 +8,7 @@ import type { IOrgNodeRepository } from '../../repositories/OrgNodeMongoReposito
 import type { IBaseCRUD } from '../../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 import { CompanyEntity } from '../../domain/CompanyEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class GetCompanyByIdQuery {
   constructor(public readonly companyId: TCompanyId) {}
@@ -32,7 +32,7 @@ export class GetCompanyByIdHandler implements IQueryHandler<GetCompanyByIdQuery,
 
   async execute(query: GetCompanyByIdQuery): Promise<TCompanyDetailViewModel> {
     const record = await this.companyRepo.findById(query.companyId);
-    if (!record) throw new BusinessError('Company not found', 'COMPANY_NOT_FOUND', 404);
+    if (!record) throw new BusinessError('Company not found', { code: 'COMPANY_NOT_FOUND', status: 404 });
 
     const entity = new CompanyEntity(RecordMetadataUtils.stripDocMetadata(record));
     const domain = entity.toDomain;

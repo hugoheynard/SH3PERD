@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import { TechnicalError } from '../../utils/errorManagement/errorClasses/TechnicalError.js';
+import { TechnicalError } from '../../utils/errorManagement/TechnicalError.js';
 
 let cachedClient: MongoClient | null = null;
 
@@ -9,7 +9,7 @@ export const getMongoClient = async (input: { uri: string }): Promise<MongoClien
   if (!uri) {
     throw new Error('[MONGO] URI is required but not provided');
 
-    //throw new TechnicalError("MONGO_URI_MISSING", "MongoDB URI is not defined", 500);
+    //throw new TechnicalError("MONGO_URI_MISSING", { code: "MongoDB URI is not defined" });
   }
 
   if (cachedClient) {
@@ -22,11 +22,11 @@ export const getMongoClient = async (input: { uri: string }): Promise<MongoClien
     return cachedClient;
   } catch (error: unknown) {
     if (error instanceof Error) {
-      throw new TechnicalError('MONGO_CLIENT_INIT_FAILED', error.message, 500);
+      throw new TechnicalError('MongoDB connection failed', { code: 'MONGO_CLIENT_INIT_FAILED', cause: error as Error });
     }
 
     // fallback pour les erreurs non typées
-    throw new TechnicalError('MONGO_CLIENT_INIT_FAILED', 'Unknown error', 500);
+    throw new TechnicalError('MongoDB connection failed', { code: 'MONGO_CLIENT_INIT_FAILED' });
   }
 };
 

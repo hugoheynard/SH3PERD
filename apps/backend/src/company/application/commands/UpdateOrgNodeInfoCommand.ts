@@ -6,8 +6,7 @@ import { ORG_NODE_REPO } from '../../company.tokens.js';
 import type { IOrgNodeRepository } from '../../repositories/OrgNodeMongoRepository.js';
 import { OrgNodeEntity } from '../../domain/OrgNodeEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
-import { PermissionResolver } from '../../../permissions/PermissionResolver.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export type TUpdateOrgNodeInfoDTO = {
   org_node_id: TOrgNodeId;
@@ -28,20 +27,16 @@ export class UpdateOrgNodeInfoCommand {
 export class UpdateOrgNodeInfoHandler implements ICommandHandler<UpdateOrgNodeInfoCommand, TOrgNodeRecord> {
   constructor(
     @Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository,
-    private readonly permissionResolver: PermissionResolver,
   ) {}
 
   async execute(cmd: UpdateOrgNodeInfoCommand): Promise<TOrgNodeRecord> {
-    const { dto, actorId } = cmd;
+    const { dto } = cmd;
 
     const existing = await this.orgNodeRepo.findOne({ filter: { id: dto.org_node_id } });
-    if (!existing) throw new BusinessError('Org node not found', 'ORGNODE_NOT_FOUND', 404);
+    if (!existing) throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
 
-    const canManage = await this.permissionResolver.hasCompanyPermission(actorId, existing.company_id, 'company:orgchart:write');
-    if (!canManage) throw new BusinessError('Forbidden', 'ORGNODE_FORBIDDEN', 403);
 
     const stripped = RecordMetadataUtils.stripDocMetadata(existing);
-    console.log('[DEBUG UpdateOrgNode] stripped props:', JSON.stringify(stripped, null, 2));
     const entity = new OrgNodeEntity(stripped);
 
     // Apply only the fields that were provided

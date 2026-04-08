@@ -3,7 +3,7 @@ import { CompanyAggregate } from '../domain/CompanyAggregate.js';
 import { CompanyEntity } from '../domain/CompanyEntity.js';
 import { OrgNodeEntity } from '../domain/OrgNodeEntity.js';
 import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js';
-import { BusinessError } from '../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../utils/errorManagement/BusinessError.js';
 import type { ICompanyRepository } from './CompanyMongoRepository.js';
 import type { IOrgNodeRepository } from './OrgNodeMongoRepository.js';
 
@@ -25,7 +25,7 @@ export class CompanyAggregateRepository implements ICompanyAggregateRepository {
     ]);
 
     if (!companyRecord) {
-      throw new BusinessError('Company not found', 'COMPANY_NOT_FOUND', 404);
+      throw new BusinessError('Company not found', { code: 'COMPANY_NOT_FOUND', status: 404 });
     }
 
     const company = new CompanyEntity(RecordMetadataUtils.stripDocMetadata(companyRecord));

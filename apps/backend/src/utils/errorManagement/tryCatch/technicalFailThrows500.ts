@@ -1,4 +1,4 @@
-import { TechnicalError } from '../errorClasses/TechnicalError.js';
+import { TechnicalError } from '../TechnicalError.js';
 
 /**
  * Method decorator that wraps an asynchronous method in a `try/catch`
@@ -46,11 +46,12 @@ export function technicalFailThrows500(code: string, message?: string): MethodDe
         return await originalMethod.apply(this, args);
       } catch (err) {
         console.error(err)
-        throw new TechnicalError(
-          message ?? `Failure in ${target.constructor.name}.${String(propertyKey)}`,
-          code,
-          500,
-        );
+        throw new TechnicalError(message ?? `Failure in ${target.constructor.name}.${String(propertyKey)}`, { code, cause: err as Error });
+
+
+
+
+
       }
     };
   };

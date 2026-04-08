@@ -1,7 +1,7 @@
 import { UpdateUserProfileCommand, UpdateUserProfileHandler } from '../../application/commands/UpdateUserProfileCommand.js';
 import { userId, makeProfileRecord, mockProfileRepo } from '../test-helpers.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
-import { DomainError } from '../../../utils/errorManagement/errorClasses/DomainError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { DomainError } from '../../../utils/errorManagement/DomainError.js';
 
 describe('UpdateUserProfileHandler', () => {
   const profileRepo = mockProfileRepo();

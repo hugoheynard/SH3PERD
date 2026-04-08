@@ -4,7 +4,7 @@ import type { TOrgNodeId, TOrgNodeMember } from '@sh3pherd/shared-types';
 import { ORG_NODE_REPO } from '../../company.tokens.js';
 import type { IOrgNodeRepository } from '../../repositories/OrgNodeMongoRepository.js';
 import { OrgNodeEntity } from '../../domain/OrgNodeEntity.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class GetOrgNodeMembersQuery {
   constructor(
@@ -21,7 +21,7 @@ export class GetOrgNodeMembersHandler implements IQueryHandler<GetOrgNodeMembers
 
   async execute(query: GetOrgNodeMembersQuery): Promise<TOrgNodeMember[]> {
     const record = await this.orgNodeRepo.findOne({ filter: { id: query.orgNodeId } });
-    if (!record) throw new BusinessError('Org node not found', 'ORGNODE_NOT_FOUND', 404);
+    if (!record) throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
 
     const entity = new OrgNodeEntity(record);
     return query.at ? entity.getMembersAt(query.at) : entity.getActiveMembers();

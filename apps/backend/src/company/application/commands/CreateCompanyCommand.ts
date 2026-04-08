@@ -10,7 +10,7 @@ import { TransactionRunner } from '../../../appBootstrap/database/TransactionRun
 import { CompanyEntity } from '../../domain/CompanyEntity.js';
 import { ContractEntity } from '../../../contracts/domain/ContractEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
+import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
 
 export type TCreateCompanyDTO = { name: string };
 
@@ -86,7 +86,7 @@ export class CreateCompanyHandler implements ICommandHandler<CreateCompanyComman
         await this.contractRepo.save({ ...ownerContract.toDomain, ...metadata } as any, session);
       });
     } catch {
-      throw new TechnicalError('Failed to create company', 'COMPANY_CREATE_FAILED', 500);
+      throw new TechnicalError('Failed to create company', { code: 'COMPANY_CREATE_FAILED' });
     }
 
     return {

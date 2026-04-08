@@ -1,5 +1,5 @@
 import type { ContractEntity } from './ContractEntity.js';
-import { DomainError } from '../../utils/errorManagement/errorClasses/DomainError.js';
+import { DomainError } from '../../utils/errorManagement/DomainError.js';
 
 
 export class ContractPolicy {

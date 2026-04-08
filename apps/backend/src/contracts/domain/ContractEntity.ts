@@ -1,7 +1,7 @@
 import type { TContractDomainModel } from '@sh3pherd/shared-types';
 import type { TContractRole } from '@sh3pherd/shared-types';
 import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
-import { DomainError } from '../../utils/errorManagement/errorClasses/DomainError.js';
+import { DomainError } from '../../utils/errorManagement/DomainError.js';
 
 /**
  * Contract entity — represents a binding agreement between a user and a company.

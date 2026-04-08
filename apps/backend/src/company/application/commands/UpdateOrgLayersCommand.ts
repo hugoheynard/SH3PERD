@@ -4,11 +4,9 @@ import type { TCompanyId, TOrgLayers, TUserId } from '@sh3pherd/shared-types';
 import { COMPANY_REPO } from '../../company.tokens.js';
 import type { ICompanyRepository } from '../../repositories/CompanyMongoRepository.js';
 import { CompanyEntity } from '../../domain/CompanyEntity.js';
-import { CompanyPolicy } from '../../domain/CompanyPolicy.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
-import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
-import { PermissionResolver } from '../../../permissions/PermissionResolver.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
 
 export class UpdateOrgLayersCommand {
   constructor(
@@ -29,26 +27,22 @@ export class UpdateOrgLayersCommand {
  * 5. Return the updated TOrgLayers projection.
  *
  * @throws BusinessError COMPANY_NOT_FOUND (404) — company does not exist.
- * @throws BusinessError COMPANY_FORBIDDEN (403) — actor lacks permission (via policy).
  * @throws Error COMPANY_ORG_LAYERS_EMPTY — array is empty (via entity).
  * @throws Error COMPANY_ORG_LAYER_BLANK — a label is blank after trimming (via entity).
  * @throws TechnicalError COMPANY_UPDATE_FAILED (500) — repository write failed.
  */
 @CommandHandler(UpdateOrgLayersCommand)
 export class UpdateOrgLayersHandler implements ICommandHandler<UpdateOrgLayersCommand, TOrgLayers> {
-  private readonly policy = new CompanyPolicy();
 
   constructor(
     @Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository,
-    private readonly permissionResolver: PermissionResolver,
   ) {}
 
   async execute(cmd: UpdateOrgLayersCommand): Promise<TOrgLayers> {
-    await this.policy.ensureCanManageSettings(cmd.actorId, cmd.companyId, this.permissionResolver);
 
     const record = await this.companyRepo.findOne({ filter: { id: cmd.companyId } });
     if (!record) {
-      throw new BusinessError('Company not found', 'COMPANY_NOT_FOUND', 404);
+      throw new BusinessError('Company not found', { code: 'COMPANY_NOT_FOUND', status: 404 });
     }
 
     const entity = new CompanyEntity(RecordMetadataUtils.stripDocMetadata(record));
@@ -60,7 +54,7 @@ export class UpdateOrgLayersHandler implements ICommandHandler<UpdateOrgLayersCo
     });
 
     if (!updated) {
-      throw new TechnicalError('Failed to update company', 'COMPANY_UPDATE_FAILED', 500);
+      throw new TechnicalError('Failed to update company', { code: 'COMPANY_UPDATE_FAILED' });
     }
 
     return entity.orgLayersInfo;

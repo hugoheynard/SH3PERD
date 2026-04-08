@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { ClientSession, MongoClient } from 'mongodb';
 import { MONGO_CLIENT } from './db.tokens.js';
-import { TechnicalError } from '../../utils/errorManagement/errorClasses/TechnicalError.js';
+import { TechnicalError } from '../../utils/errorManagement/TechnicalError.js';
 
 /**
  * Encapsulates MongoDB transaction lifecycle.
@@ -45,11 +45,12 @@ export class TransactionRunner {
       return result!;
     } catch (err) {
       if (err instanceof TechnicalError) throw err;
-      throw new TechnicalError(
-        'Transaction failed',
-        'TRANSACTION_FAILED',
-        500,
-      );
+      throw new TechnicalError("Transaction failed", { code: "TRANSACTION_FAILED", cause: err as Error });
+
+
+
+
+
     } finally {
       await session.endSession();
     }

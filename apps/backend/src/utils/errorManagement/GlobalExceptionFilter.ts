@@ -7,9 +7,9 @@ import {
   Logger,
 } from '@nestjs/common';
 import type { Response } from 'express';
-import { DomainError } from './errorClasses/DomainError.js';
-import { BusinessError } from './errorClasses/BusinessError.js';
-import { TechnicalError } from './errorClasses/TechnicalError.js';
+import { DomainError } from './DomainError.js';
+import { BusinessError } from './BusinessError.js';
+import { TechnicalError } from './TechnicalError.js';
 
 /**
  * Unified error response shape sent to the client.
@@ -23,11 +23,13 @@ interface ErrorResponse {
 /**
  * Global exception filter — catches all errors and returns a consistent JSON response.
  *
- * - **DomainError** → 400 (domain rule violated in entity/aggregate)
- * - **BusinessError** → its statusCode (application-level: 400, 403, 404)
- * - **TechnicalError** → its statusCode (infrastructure failure, typically 500) + logged as error
- * - **HttpException** → NestJS built-in (BadRequest, Unauthorized, etc.)
- * - **Unknown Error** → 500 + logged as error (unexpected crash)
+ * | Error class    | HTTP status        | Client message        | Logged |
+ * |----------------|--------------------|-----------------------|--------|
+ * | DomainError    | 400                | error message         | no     |
+ * | BusinessError  | its `status` field | error message         | no     |
+ * | TechnicalError | 500                | generic (no details)  | yes (full context + cause) |
+ * | HttpException  | its status         | NestJS message        | no     |
+ * | Unknown        | 500                | generic               | yes    |
  */
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -45,6 +47,16 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         `[${result.errorCode}] ${result.message}`,
         exception instanceof Error ? exception.stack : undefined,
       );
+
+      // Log chained cause if available (TechnicalError)
+      if (exception instanceof TechnicalError) {
+        if (exception.cause) {
+          this.logger.error('Caused by:', (exception.cause as Error).stack ?? exception.cause);
+        }
+        if (exception.context) {
+          this.logger.error('Context:', JSON.stringify(exception.context));
+        }
+      }
     }
 
     response.status(result.statusCode).json(result);
@@ -55,7 +67,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception instanceof DomainError) {
       return {
         statusCode: HttpStatus.BAD_REQUEST,
-        errorCode: exception.code ?? 'DOMAIN_ERROR',
+        errorCode: exception.code,
         message: exception.message,
       };
     }
@@ -63,8 +75,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     // Business rule violated (handler/controller layer)
     if (exception instanceof BusinessError) {
       return {
-        statusCode: exception.statusCode,
-        errorCode: exception.errorCode,
+        statusCode: exception.status,
+        errorCode: exception.code,
         message: exception.message,
       };
     }
@@ -72,8 +84,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     // Infrastructure failure (DB, external service)
     if (exception instanceof TechnicalError) {
       return {
-        statusCode: exception.statusCode,
-        errorCode: exception.errorCode,
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        errorCode: exception.code,
         message: 'An internal error occurred.',
       };
     }

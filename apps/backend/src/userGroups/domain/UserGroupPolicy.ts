@@ -1,6 +1,6 @@
 import type { ContractEntity } from '../../contracts/domain/ContractEntity.js';
 import { UserGroupEntity } from './UserGroupEntity.js';
-import { DomainError } from '../../utils/errorManagement/errorClasses/DomainError.js';
+import { DomainError } from '../../utils/errorManagement/DomainError.js';
 import  { type TContractId, UserGroupTypesEnum } from '@sh3pherd/shared-types';
 
 export class UserGroupPolicy {
@@ -9,7 +9,7 @@ export class UserGroupPolicy {
     private readonly group: UserGroupEntity,
   ) {
     if (!this.actor.isActive()) {
-      throw new DomainError(`Actor contract ${this.actor.id} is not active.`);
+      throw new DomainError('Actor contract is not active', { code: 'CONTRACT_NOT_ACTIVE' });
     }
   };
 
@@ -64,7 +64,7 @@ export class UserGroupPolicy {
    */
   private canManageGuard(actor_id: TContractId): void {
     if (!this.group.isGroupLead(actor_id) && !this.group.isReferent(actor_id)) {
-      throw new DomainError(`Contract ${actor_id} does not have rights to manage this user group.`);
+      throw new DomainError('Not authorized to manage this user group', { code: 'USER_GROUP_UNAUTHORIZED' });
     }
   };
 
@@ -72,11 +72,11 @@ export class UserGroupPolicy {
     const inParent = this.group.isMember(member.id);
 
     if (!member.isActive()) {
-      throw new DomainError(`Member ${member.id} is not active.`);
+      throw new DomainError('Member is not active', { code: 'MEMBER_NOT_ACTIVE' });
     }
 
     if (!inParent) {
-      throw new DomainError(`Member ${member.id} does not belong to parent group ${this.group.id}`);
+      throw new DomainError('Member does not belong to parent group', { code: 'MEMBER_NOT_IN_GROUP' });
     }
   };
 

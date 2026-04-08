@@ -10,7 +10,7 @@ import { PASSWORD_SERVICE } from '../../../auth/auth.tokens.js';
 import { UserCredentialEntity } from '../../domain/UserCredential.entity.js';
 import { UserProfileEntity } from '../../domain/UserProfileEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export type TInviteUserDTO = {
   email: string;
@@ -43,7 +43,7 @@ export class InviteUserHandler implements ICommandHandler<InviteUserCommand, TUs
 
     const existing = await this.credsRepo.findOne({ filter: { email: payload.email } });
     if (existing) {
-      throw new BusinessError('Email already in use', 'USER_ALREADY_EXISTS', 409);
+      throw new BusinessError('Email already in use', { code: 'USER_ALREADY_EXISTS', status: 409 });
     }
 
     const tempPasswordHash = await this.passwordService.hashPassword({ password: randomUUID() });

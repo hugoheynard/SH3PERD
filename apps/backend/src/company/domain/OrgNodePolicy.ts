@@ -1,5 +1,5 @@
 import type { OrgNodeEntity } from './OrgNodeEntity.js';
-import { DomainError } from '../../utils/errorManagement/errorClasses/DomainError.js';
+import { DomainError } from '../../utils/errorManagement/DomainError.js';
 
 export class OrgNodePolicy {
   ensureActive(node: OrgNodeEntity): void {

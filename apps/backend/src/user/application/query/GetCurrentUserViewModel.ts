@@ -5,7 +5,7 @@ import type { IUserProfileRepository } from '../../infra/UserProfileMongoRepo.re
 import type { IUserPreferencesRepository } from '../../infra/UserPreferencesMongoRepo.repository.js';
 import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO, USER_PREFERENCES_REPO } from '../../../appBootstrap/nestTokens.js';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class GetCurrentUserViewModelQuery {
   constructor(
@@ -35,7 +35,7 @@ export class GetCurrentUserViewModelHandler
     ]);
 
     if (!creds) {
-      throw new BusinessError('User not found', 'USER_NOT_FOUND', 404);
+      throw new BusinessError('User not found', { code: 'USER_NOT_FOUND', status: 404 });
     }
 
     return {

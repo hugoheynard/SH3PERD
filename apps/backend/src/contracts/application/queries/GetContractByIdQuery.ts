@@ -3,7 +3,7 @@ import { Inject } from '@nestjs/common';
 import type { TContractDetailViewModel, TContractId } from '@sh3pherd/shared-types';
 import { CONTRACT_READ_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IContractReadRepository } from '../../repositories/ContractReadRepository.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class GetContractByIdQuery {
   constructor(public readonly contractId: TContractId) {}
@@ -17,7 +17,7 @@ export class GetContractByIdHandler implements IQueryHandler<GetContractByIdQuer
 
   async execute(query: GetContractByIdQuery): Promise<TContractDetailViewModel> {
     const results = await this.readRepo.getContractWithUserProfile(query.contractId);
-    if (!results.length) throw new BusinessError('Contract not found', 'CONTRACT_NOT_FOUND', 404);
+    if (!results.length) throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
 
     const { contract, userProfile } = results[0];
 

@@ -9,7 +9,7 @@ import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO } from '../../../appBootstrap/
 import { UserCredentialEntity } from '../../../user/domain/UserCredential.entity.js';
 import { UserProfileEntity } from '../../../user/domain/UserProfileEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class RegisterUserCommand {
   constructor(public readonly payload: TRegisterUserRequestDTO) {}
@@ -27,7 +27,7 @@ export class RegisterUserHandler implements ICommandHandler<RegisterUserCommand,
     const existing = await this.userCredsRepo.findOne({ filter: { email: cmd.payload.email } });
 
     if (existing) {
-      throw new BusinessError('email already in use', 'USER_ALREADY_EXISTS', 409);
+      throw new BusinessError('email already in use', { code: 'USER_ALREADY_EXISTS', status: 409 });
     }
 
     const credentials = new UserCredentialEntity({

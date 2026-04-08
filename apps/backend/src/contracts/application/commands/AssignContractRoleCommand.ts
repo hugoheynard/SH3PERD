@@ -6,7 +6,7 @@ import { CONTRACT_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IContractRepository } from '../../repositories/ContractMongoRepository.js';
 import { ContractEntity } from '../../domain/ContractEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class AssignContractRoleCommand {
   constructor(
@@ -24,7 +24,7 @@ export class AssignContractRoleHandler implements ICommandHandler<AssignContract
 
   async execute(cmd: AssignContractRoleCommand): Promise<TContractRecord> {
     const record = await this.contractRepo.findOne({ filter: { id: cmd.contractId } });
-    if (!record) throw new BusinessError('Contract not found', 'CONTRACT_NOT_FOUND', 404);
+    if (!record) throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
 
     const entity = new ContractEntity(record);
     entity.assignRole(cmd.role);
@@ -37,7 +37,7 @@ export class AssignContractRoleHandler implements ICommandHandler<AssignContract
       update: { $set: { ...diff, ...RecordMetadataUtils.update() } } as any,
     });
 
-    if (!updated) throw new BusinessError('Failed to assign role', 'CONTRACT_ROLE_ASSIGN_FAILED', 500);
+    if (!updated) throw new BusinessError('Failed to assign role', { code: 'CONTRACT_ROLE_ASSIGN_FAILED', status: 500 });
     return updated;
   }
 }

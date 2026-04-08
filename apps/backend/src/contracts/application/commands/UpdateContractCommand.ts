@@ -3,7 +3,7 @@ import { Inject } from '@nestjs/common';
 import type { TContractRecord, TUpdateContractDTO } from '@sh3pherd/shared-types';
 import { CONTRACT_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IContractRepository } from '../../repositories/ContractMongoRepository.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class UpdateContractCommand {
   constructor(public readonly dto: TUpdateContractDTO) {}
@@ -45,7 +45,7 @@ export class UpdateContractHandler implements ICommandHandler<UpdateContractComm
     if (Object.keys($unset).length) update['$unset'] = $unset;
 
     if (!Object.keys(update).length) {
-      throw new BusinessError('Nothing to update', 'CONTRACT_EMPTY_UPDATE', 400);
+      throw new BusinessError('Nothing to update', { code: 'CONTRACT_EMPTY_UPDATE', status: 400 });
     }
 
     const updated = await this.contractRepo.updateOne({
@@ -54,7 +54,7 @@ export class UpdateContractHandler implements ICommandHandler<UpdateContractComm
       options: { returnDocument: 'after' },
     });
 
-    if (!updated) throw new BusinessError('Contract not found or update failed', 'CONTRACT_UPDATE_FAILED', 404);
+    if (!updated) throw new BusinessError('Contract not found or update failed', { code: 'CONTRACT_UPDATE_FAILED', status: 404 });
     return updated;
   }
 }

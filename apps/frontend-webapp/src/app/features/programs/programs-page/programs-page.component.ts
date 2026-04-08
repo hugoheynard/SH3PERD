@@ -6,8 +6,10 @@ import {
   HostListener,
   inject,
   type OnInit,
+  PLATFORM_ID,
   ViewChild,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 import { SlotPlannerComponent } from '../timeline/elements/slot-planner/slot-planner.component';
 import { ProgramHeaderComponent } from '../program-header/program-header.component';
@@ -103,7 +105,10 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     });
   };
 
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
   ngAfterViewInit() {
+    if (!this.isBrowser) return;
     requestAnimationFrame(() => {
       this.roomLayout.refresh();
     });

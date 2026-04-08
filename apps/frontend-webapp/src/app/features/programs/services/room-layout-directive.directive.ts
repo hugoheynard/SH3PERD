@@ -1,4 +1,5 @@
-import { Directive, ElementRef, inject, input, type OnDestroy, type OnInit } from '@angular/core';
+import { Directive, ElementRef, inject, input, PLATFORM_ID, type OnDestroy, type OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RoomLayoutRegistry } from './room-layout-registry.service';
 
 
@@ -101,8 +102,12 @@ export class RoomLayoutDirective implements OnInit, OnDestroy {
    * Registers the element in the RoomLayoutRegistry
    * when the directive is initialized.
    */
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
   ngOnInit() {
-    this.registry.register(this.roomId(), this.el.nativeElement);
+    if (this.isBrowser) {
+      this.registry.register(this.roomId(), this.el.nativeElement);
+    }
   }
 
   /**

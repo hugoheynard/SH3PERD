@@ -1,6 +1,6 @@
 import { AggregateEntity, type TEntityInput } from '../../utils/entities/Entity.js';
 import type { TUserGroupDomainModel, TContractId } from '@sh3pherd/shared-types';
-import { DomainError } from '../../utils/errorManagement/errorClasses/DomainError.js';
+import { DomainError } from '../../utils/errorManagement/DomainError.js';
 
 
 /**
@@ -48,7 +48,7 @@ export class UserGroupEntity extends AggregateEntity<TUserGroupDomainModel>{
   // --- Guards Methods ---
   private ensureHasGroupLead(props: TEntityInput<TUserGroupDomainModel>): void {
     if (!props.groupLead) {
-      throw new DomainError('User group must have a group lead.');
+      throw new DomainError('User group must have a group lead', { code: 'USER_GROUP_NO_LEAD' });
     }
   };
 

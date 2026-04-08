@@ -9,7 +9,7 @@ import type {
   TUserId,
 } from '@sh3pherd/shared-types';
 import type { TTeamRole, TTeamType } from '@sh3pherd/shared-types';
-import { DomainError } from '../../utils/errorManagement/errorClasses/DomainError.js';
+import { DomainError } from '../../utils/errorManagement/DomainError.js';
 
 /**
  * OrgNode entity — a node in the company's organizational hierarchy.

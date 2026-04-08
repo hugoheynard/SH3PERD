@@ -7,7 +7,7 @@ import type { IUserCredentialsRepository } from '../../../user/infra/UserCredent
 import type { TRefreshTokenSecureCookie } from '../../types/auth.domain.tokens.js';
 import { AUTH_SERVICE, PASSWORD_SERVICE } from '../../auth.tokens.js';
 import { USER_CREDENTIALS_REPO } from '../../../appBootstrap/nestTokens.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export type TLoginCommandResult = TLoginResponseDTO & {
   refreshTokenSecureCookie: TRefreshTokenSecureCookie;
@@ -30,16 +30,16 @@ export class LoginHandler implements ICommandHandler<LoginCommand, TLoginCommand
 
     const user = await this.userCredRepo.findOne({ filter: { email } });
     if (!user) {
-      throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 400);
+      throw new BusinessError('Invalid credentials', { code: 'INVALID_CREDENTIALS', status: 400 });
     }
 
     if (!user.active) {
-      throw new BusinessError('User account is deactivated.', 'USER_DEACTIVATED', 403);
+      throw new BusinessError('User account is deactivated.', { code: 'USER_DEACTIVATED', status: 403 });
     }
 
     const { isValid } = await this.passwordService.comparePassword({ password, hashedPassword: user.password });
     if (!isValid) {
-      throw new BusinessError('Invalid credentials', 'INVALID_CREDENTIALS', 400);
+      throw new BusinessError('Invalid credentials', { code: 'INVALID_CREDENTIALS', status: 400 });
     }
 
     const session = await this.authService.createAuthSession({ user_id: user.id });

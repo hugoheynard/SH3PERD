@@ -238,7 +238,7 @@ async myHandler(...): Promise<TApiResponse<TCompanyInfo>> { ... }
 ```ts
 @ApiTags('domain / sub-group')           // Swagger grouping
 @ApiBearerAuth('bearer')                 // Swagger auth indicator
-@ContractScoped()                        // contract context guard (CLASS LEVEL ONLY)
+@ContractScoped()                        // contract context guard (class or method level)
 @Controller()                            // NestJS route prefix
 export class MyController {
 
@@ -278,10 +278,12 @@ company/api/
 ```
 
 **Why split?**
-- **`@ContractScoped()` must be at class level** — method-level doesn't work reliably with NestJS guard execution order
-- Never mix scoped and unscoped endpoints in the same controller
+- `@ContractScoped()` works at both class and method level, but class-level is cleaner when all routes share the same scope
+- Splitting avoids mixing scoped and unscoped endpoints in the same controller
 - Each file is short (~50 lines), easy to read
 - A dev opens one file and sees the full context: scope, permission, Swagger, handler
+
+> **Tip:** If a controller has a mix of scoped and unscoped routes, use `@ContractScoped()` at method level on individual routes instead of splitting.
 
 ---
 

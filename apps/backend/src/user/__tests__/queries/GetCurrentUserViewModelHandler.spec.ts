@@ -11,7 +11,7 @@ import {
   mockProfileRepo,
   mockPrefsRepo,
 } from '../test-helpers.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 describe('GetCurrentUserViewModelHandler', () => {
   const credsRepo = mockCredsRepo();

@@ -4,11 +4,9 @@ import type { TCompanyId, TCompanyInfo, TUserId } from '@sh3pherd/shared-types';
 import { COMPANY_REPO } from '../../company.tokens.js';
 import type { ICompanyRepository } from '../../repositories/CompanyMongoRepository.js';
 import { CompanyEntity } from '../../domain/CompanyEntity.js';
-import { CompanyPolicy } from '../../domain/CompanyPolicy.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
-import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
-import { PermissionResolver } from '../../../permissions/PermissionResolver.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
 
 /** DTO for the update — extends TCompanyInfo with the target company ID. */
 export type TUpdateCompanyInfoDTO = TCompanyInfo & {
@@ -39,22 +37,19 @@ export class UpdateCompanyInfoCommand {
  */
 @CommandHandler(UpdateCompanyInfoCommand)
 export class UpdateCompanyInfoHandler implements ICommandHandler<UpdateCompanyInfoCommand, TCompanyInfo> {
-  private readonly policy = new CompanyPolicy();
 
   constructor(
     @Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository,
-    private readonly permissionResolver: PermissionResolver,
   ) {}
 
   async execute(cmd: UpdateCompanyInfoCommand): Promise<TCompanyInfo> {
-    const { dto, actorId } = cmd;
+    const { dto } = cmd;
 
-    await this.policy.ensureCanManageSettings(actorId, dto.company_id, this.permissionResolver);
 
     const record = await this.companyRepo.findOne({ filter: { id: dto.company_id } });
 
     if (!record) {
-      throw new BusinessError('Company not found', 'COMPANY_NOT_FOUND', 404);
+      throw new BusinessError('Company not found', { code: 'COMPANY_NOT_FOUND', status: 404 });
     }
 
     const entity = new CompanyEntity(RecordMetadataUtils.stripDocMetadata(record));
@@ -67,7 +62,7 @@ export class UpdateCompanyInfoHandler implements ICommandHandler<UpdateCompanyIn
     });
 
     if (!updated) {
-      throw new TechnicalError('Failed to update company', 'COMPANY_UPDATE_FAILED', 500);
+      throw new TechnicalError('Failed to update company', { code: 'COMPANY_UPDATE_FAILED' });
     }
 
     return entity.companyInfo;

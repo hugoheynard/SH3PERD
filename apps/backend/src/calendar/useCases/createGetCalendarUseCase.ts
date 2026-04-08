@@ -1,4 +1,4 @@
-import { TechnicalError } from '../../utils/errorManagement/errorClasses/TechnicalError.js';
+import { TechnicalError } from '../../utils/errorManagement/TechnicalError.js';
 
 export const createGetCalendarUseCase = (deps: any) => {
   const { getEventUnitsFn, buildCalendarFn } = deps;
@@ -19,7 +19,7 @@ export const createGetCalendarUseCase = (deps: any) => {
 
       return calendar;
     } catch (error) {
-      throw new TechnicalError('FAILED_TO_GET_CALENDAR', 'Failed to get calendar', 500);
+      throw new TechnicalError('FAILED_TO_GET_CALENDAR', { code: 'Failed to get calendar' });
     }
   };
 };

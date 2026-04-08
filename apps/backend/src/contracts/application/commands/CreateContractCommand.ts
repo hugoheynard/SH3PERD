@@ -5,7 +5,7 @@ import { CONTRACT_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IContractRepository } from '../../repositories/ContractMongoRepository.js';
 import { ContractEntity } from '../../domain/ContractEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
+import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
 
 export class CreateContractCommand {
   constructor(
@@ -32,7 +32,7 @@ export class CreateContractHandler implements ICommandHandler<CreateContractComm
     const record: TContractRecord = { ...entity.toDomain, ...metadata };
 
     const saved = await this.contractRepo.save(record);
-    if (!saved) throw new TechnicalError('Failed to create contract', 'CONTRACT_CREATE_FAILED', 500);
+    if (!saved) throw new TechnicalError('Failed to create contract', { code: 'CONTRACT_CREATE_FAILED' });
 
     return record;
   }

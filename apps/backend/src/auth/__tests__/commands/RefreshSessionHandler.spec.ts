@@ -10,7 +10,7 @@ import {
   makeRevokedRefreshToken,
   makeSessionResult,
 } from '../test-helpers';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 describe('RefreshSessionHandler', () => {
   function createHandler() {

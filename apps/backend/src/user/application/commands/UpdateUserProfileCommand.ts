@@ -7,7 +7,7 @@ import type { IUserProfileRepository } from '../../infra/UserProfileMongoRepo.re
 import { UserProfileEntity } from '../../domain/UserProfileEntity.js';
 import { UserProfilePolicy } from '../../domain/UserProfilePolicy.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 import { createZodDto } from 'nestjs-zod';
 import { ApiModel } from '../../../utils/swagger/api-model.swagger.util.js';
 
@@ -40,7 +40,7 @@ export class UpdateUserProfileHandler implements ICommandHandler<UpdateUserProfi
     const record = await this.userProfileRepo.findOne({ filter: { user_id: targetUser_id } });
 
     if (!record) {
-      throw new BusinessError('User profile not found', 'USER_PROFILE_NOT_FOUND', 404);
+      throw new BusinessError('User profile not found', { code: 'USER_PROFILE_NOT_FOUND', status: 404 });
     }
 
     const entity = new UserProfileEntity(record);

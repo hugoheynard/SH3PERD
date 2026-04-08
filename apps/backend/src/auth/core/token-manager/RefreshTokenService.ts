@@ -1,4 +1,4 @@
-import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
+import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
 import type { TRefreshTokenDomainModel } from '@sh3pherd/shared-types';
 import type { TRevokeRefreshTokenResult, TSecureCookieConfig } from '../../types/auth.domain.tokens.js';
 import type { IRefreshTokenRepository } from '../../repositories/RefreshTokenMongoRepository.js';
@@ -47,11 +47,12 @@ export class RefreshTokenService
       const newRefreshToken = generateTypedId('refreshToken');
 
       if (!newRefreshToken) {
-        throw new TechnicalError(
-          'Failed to generate refresh token - generator function returned null',
-          'REFRESH_TOKEN_GENERATION_FAILED',
-          500,
-        );
+        throw new TechnicalError("Failed to generate refresh token", { code: "REFRESH_TOKEN_GENERATION_FAILED" });
+
+
+
+
+
       }
 
       const record: TRefreshTokenRecord = {
@@ -68,11 +69,12 @@ export class RefreshTokenService
 
       return newRefreshToken;
     } catch (error) {
-      throw new TechnicalError(
-        `Unable to save refresh token for user ${input.user_id}: ${(error as Error).message}`,
-        'REFRESH_TOKEN_SAVE_FAILED',
-        500,
-      );
+      throw new TechnicalError("Unable to save refresh token", { code: "REFRESH_TOKEN_SAVE_FAILED", cause: error as Error, context: { user_id: input.user_id } });
+
+
+
+
+
     }
   };
 

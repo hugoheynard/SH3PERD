@@ -1,4 +1,4 @@
-import { DomainError } from '../../../utils/errorManagement/errorClasses/DomainError.js';
+import { DomainError } from '../../../utils/errorManagement/DomainError.js';
 import { makeNode, makeGuest, makeComm, userId, contractId, nodeId } from './test-helpers.js';
 
 /** Asserts that fn throws a DomainError with the expected code. */

@@ -21,42 +21,36 @@ export const CONTRACT_SCOPED_KEY = 'scoped';
  * - `@ContractRoles()`       — extracts `TContractRole[]` from the request
  * - `@RequirePermission(P.X.Y.Z)` — checks if the contract roles grant the required permission
  *
- * Can be applied at class level (all routes) or method level (single route).
+ * Works at both class level and method level.
  *
  * @example
  * ```ts
- * // All routes in this controller require a contract context
+ * // Class level — all routes require contract context
  * @ContractScoped()
  * @Controller('settings')
- * export class SettingsController {
+ * export class SettingsController { ... }
  *
- *   @RequirePermission(P.Company.Settings.Write)
- *   @Patch('info')
- *   update(@ContractId() contractId: TContractId) { ... }
- * }
- *
- * // Or on a single method
+ * // Method level — only this route requires contract context
  * @ContractScoped()
- * @Post('create')
- * create(@ContractId() contractId: TContractId) { ... }
+ * @RequirePermission(P.Company.OrgChart.Read)
+ * @Get('orgchart')
+ * getOrgChart() { ... }
  * ```
  */
 export function ContractScoped(): ClassDecorator & MethodDecorator {
+  const composed = applyDecorators(
+    SetMetadata(CONTRACT_SCOPED_KEY, true),
+    UseGuards(ContractContextGuard),
+  );
 
   return ((target: any, propertyKey?: string | symbol, descriptor?: PropertyDescriptor) => {
-    if (propertyKey) {
-      // on method
-      applyDecorators(
-        UseGuards(ContractContextGuard),
-        SetMetadata(CONTRACT_SCOPED_KEY, true),
-      )(target, propertyKey, descriptor);
-      return;
+    if (propertyKey && descriptor) {
+      // Method-level: apply each decorator individually to the descriptor
+      SetMetadata(CONTRACT_SCOPED_KEY, true)(target, propertyKey, descriptor);
+      UseGuards(ContractContextGuard)(target, propertyKey, descriptor);
     } else {
-      // on controller
-      applyDecorators(
-        UseGuards(ContractContextGuard),
-        SetMetadata(CONTRACT_SCOPED_KEY, true),
-      )(target);
+      // Class-level: use composed decorator
+      composed(target);
     }
   }) as any;
 }

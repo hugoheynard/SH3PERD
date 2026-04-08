@@ -7,7 +7,7 @@ import type { IRefreshTokenRepository } from '../../repositories/RefreshTokenMon
 import type { TRefreshTokenSecureCookie } from '../../types/auth.domain.tokens.js';
 import { AUTH_SERVICE, REFRESH_TOKEN_SERVICE } from '../../auth.tokens.js';
 import { REFRESH_TOKEN_REPO } from '../../../appBootstrap/nestTokens.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export type TRefreshSessionResult = {
   authToken: string;
@@ -31,21 +31,21 @@ export class RefreshSessionHandler implements ICommandHandler<RefreshSessionComm
     const token = await this.refreshTokenRepo.findOne({ filter: { refreshToken: cmd.refreshToken } });
 
     if (!token) {
-      throw new BusinessError('Refresh token not found', 'TOKEN_NOT_FOUND', 401);
+      throw new BusinessError('Refresh token not found', { code: 'TOKEN_NOT_FOUND', status: 401 });
     }
 
     // Reuse detection: if the token was already revoked, an attacker may have stolen it.
     // Invalidate the entire token family to protect the user.
     if (token.isRevoked) {
       await this.refreshTokenRepo.deleteMany({ family_id: token.family_id });
-      throw new BusinessError('Token reuse detected — all sessions in this family have been revoked', 'TOKEN_REUSE_DETECTED', 401);
+      throw new BusinessError('Token reuse detected — all sessions in this family have been revoked', { code: 'TOKEN_REUSE_DETECTED', status: 401 });
     }
 
     const isValid = this.refreshTokenService.verifyRefreshToken({ refreshTokenDomainModel: token });
 
     if (!isValid) {
       await this.refreshTokenRepo.deleteOne({ refreshToken: cmd.refreshToken });
-      throw new BusinessError('Invalid tokens', 'INVALID_TOKENS', 401);
+      throw new BusinessError('Invalid tokens', { code: 'INVALID_TOKENS', status: 401 });
     }
 
     // Mark current token as revoked (soft-delete for reuse detection)

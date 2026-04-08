@@ -1,13 +1,14 @@
 import { Body, Controller, Delete, Get, Inject, Param, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import type { TCompanyId, TCommunicationPlatform, TUserId, TIntegrationViewModel } from '@sh3pherd/shared-types';
-import { ActorId } from '../../utils/nest/decorators/ActorId.js';
+import type { TCompanyId, TCommunicationPlatform, TIntegrationViewModel } from '@sh3pherd/shared-types';
 import { INTEGRATION_CREDENTIALS_REPO } from '../integrations.tokens.js';
 import type { IIntegrationCredentialsRepository } from '../repositories/IntegrationCredentialsRepository.js';
 import { IntegrationCredentialsEntity } from '../domain/IntegrationCredentialsEntity.js';
 import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js';
-import { BusinessError } from '../../utils/errorManagement/errorClasses/BusinessError.js';
-import { PermissionResolver } from '../../permissions/PermissionResolver.js';
+import { BusinessError } from '../../utils/errorManagement/BusinessError.js';
+
+// TODO: Add @ContractScoped() + @RequirePermission() when integrations are scoped to a contract.
+//       Currently platform-level — any authenticated user with a companyId can manage integrations.
 
 @ApiTags('integration-settings')
 @ApiBearerAuth('bearer')
@@ -16,7 +17,6 @@ import { PermissionResolver } from '../../permissions/PermissionResolver.js';
 export class IntegrationSettingsController {
   constructor(
     @Inject(INTEGRATION_CREDENTIALS_REPO) private readonly credentialsRepo: IIntegrationCredentialsRepository,
-    private readonly permissionResolver: PermissionResolver,
   ) {}
 
   /** List all integrations for a company (hides sensitive config). */
@@ -24,9 +24,7 @@ export class IntegrationSettingsController {
   @Get()
   async getIntegrations(
     @Query('companyId') companyId: TCompanyId,
-    @ActorId() actorId: TUserId,
   ): Promise<TIntegrationViewModel[]> {
-    await this.ensureCanManage(companyId, actorId);
     const records = await this.credentialsRepo.findByCompany(companyId);
     return records.map(r => ({
       id: r.id,
@@ -43,12 +41,10 @@ export class IntegrationSettingsController {
   async disconnect(
     @Query('companyId') companyId: TCompanyId,
     @Param('platform') platform: TCommunicationPlatform,
-    @ActorId() actorId: TUserId,
   ): Promise<void> {
-    await this.ensureCanManage(companyId, actorId);
     const record = await this.credentialsRepo.findByCompanyAndPlatform(companyId, platform);
     if (!record) {
-      throw new BusinessError('Integration not found', 'INTEGRATION_NOT_FOUND', 404);
+      throw new BusinessError('Integration not found', { code: 'INTEGRATION_NOT_FOUND', status: 404 });
     }
 
     const entity = new IntegrationCredentialsEntity(RecordMetadataUtils.stripDocMetadata(record));
@@ -70,11 +66,9 @@ export class IntegrationSettingsController {
     @Query('companyId') companyId: TCompanyId,
     @Param('platform') platform: TCommunicationPlatform,
     @Body() body: { name: string; url: string },
-    @ActorId() actorId: TUserId,
   ): Promise<TIntegrationViewModel> {
-    await this.ensureCanManage(companyId, actorId);
     const record = await this.credentialsRepo.findByCompanyAndPlatform(companyId, platform);
-    if (!record) throw new BusinessError('Integration not found', 'INTEGRATION_NOT_FOUND', 404);
+    if (!record) throw new BusinessError('Integration not found', { code: 'INTEGRATION_NOT_FOUND', status: 404 });
 
     const entity = new IntegrationCredentialsEntity(RecordMetadataUtils.stripDocMetadata(record));
     entity.addChannel(body);
@@ -97,11 +91,9 @@ export class IntegrationSettingsController {
     @Query('companyId') companyId: TCompanyId,
     @Param('platform') platform: TCommunicationPlatform,
     @Param('channelId') channelId: string,
-    @ActorId() actorId: TUserId,
   ): Promise<TIntegrationViewModel> {
-    await this.ensureCanManage(companyId, actorId);
     const record = await this.credentialsRepo.findByCompanyAndPlatform(companyId, platform);
-    if (!record) throw new BusinessError('Integration not found', 'INTEGRATION_NOT_FOUND', 404);
+    if (!record) throw new BusinessError('Integration not found', { code: 'INTEGRATION_NOT_FOUND', status: 404 });
 
     const entity = new IntegrationCredentialsEntity(RecordMetadataUtils.stripDocMetadata(record));
     entity.removeChannel(channelId);
@@ -115,10 +107,5 @@ export class IntegrationSettingsController {
     }
 
     return { id: entity.id, platform: entity.platform, status: entity.status, channels: [...entity.channels], connectedAt: entity.connectedAt };
-  }
-
-  private async ensureCanManage(companyId: TCompanyId, actorId: TUserId): Promise<void> {
-    const canManage = await this.permissionResolver.hasCompanyPermission(actorId, companyId, 'company:settings:write');
-    if (!canManage) throw new BusinessError('Forbidden', 'INTEGRATION_FORBIDDEN', 403);
   }
 }

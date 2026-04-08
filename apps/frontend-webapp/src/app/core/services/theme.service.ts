@@ -1,14 +1,17 @@
-import { effect, inject, Injectable } from '@angular/core';
+import { effect, inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { UserContextService } from './user-context.service';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly userCtx = inject(UserContextService);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   constructor() {
-    // React to theme changes (initial load + user toggles)
     effect(() => {
-      document.documentElement.setAttribute('data-theme', this.userCtx.theme());
+      if (this.isBrowser) {
+        document.documentElement.setAttribute('data-theme', this.userCtx.theme());
+      }
     });
   }
 

@@ -1,7 +1,6 @@
 import type { TOrgNodeId, TUserId } from '@sh3pherd/shared-types';
 import type { CompanyEntity } from './CompanyEntity.js';
 import type { OrgNodeEntity } from './OrgNodeEntity.js';
-import type { PermissionResolver } from '../../permissions/PermissionResolver.js';
 
 /**
  * Business rules enforcement for the Company domain.
@@ -26,23 +25,6 @@ export class CompanyPolicy {
   ensureIsActive(entity: CompanyEntity): void {
     if (entity.status !== 'active') {
       throw new Error('COMPANY_NOT_ACTIVE');
-    }
-  }
-
-  // ── Settings permission ─────────────────────────────────
-
-  /**
-   * Ensures the actor can manage company settings.
-   * Wraps the PermissionResolver call to avoid boilerplate in every handler.
-   */
-  async ensureCanManageSettings(
-    actorId: TUserId,
-    companyId: string,
-    permissionResolver: PermissionResolver,
-  ): Promise<void> {
-    const canWrite = await permissionResolver.hasCompanyPermission(actorId, companyId as any, 'company:settings:write');
-    if (!canWrite) {
-      throw new Error('COMPANY_FORBIDDEN');
     }
   }
 

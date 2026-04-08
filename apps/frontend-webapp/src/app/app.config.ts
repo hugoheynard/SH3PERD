@@ -11,6 +11,7 @@ import { routes } from './routing/app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from '../interceptors/auth.interceptor';
+import { errorInterceptor } from '../interceptors/error.interceptor';
 import { TIMELINE_PROJECTOR } from './features/programs/services/timelineProjectionSystem/TimelineProjector';
 import { TimelineProjectionService } from './features/programs/services/timelineProjectionSystem/TimelineProjectionService';
 import { AuthService } from './core/services/auth.service';
@@ -38,7 +39,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(),
     provideHttpClient(
-      withInterceptors([authInterceptor]),
+      withInterceptors([authInterceptor, errorInterceptor]),
       withFetch()
     ),
     {

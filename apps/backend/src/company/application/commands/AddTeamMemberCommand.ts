@@ -9,8 +9,8 @@ import type { IOrgMembershipEventRepository } from '../../repositories/OrgMember
 import { OrgNodeEntity } from '../../domain/OrgNodeEntity.js';
 import { OrgNodePolicy } from '../../domain/OrgNodePolicy.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { TechnicalError } from '../../../utils/errorManagement/errorClasses/TechnicalError.js';
-import { BusinessError } from '../../../utils/errorManagement/errorClasses/BusinessError.js';
+import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export type TAddOrgNodeMemberDTO = {
   org_node_id: TOrgNodeId;
@@ -43,7 +43,7 @@ export class AddOrgNodeMemberHandler implements ICommandHandler<AddOrgNodeMember
     const { dto, actorId } = cmd;
 
     const record = await this.orgNodeRepo.findOne({ filter: { id: dto.org_node_id } });
-    if (!record) throw new BusinessError('Org node not found', 'ORGNODE_NOT_FOUND', 404);
+    if (!record) throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
 
     const entity = new OrgNodeEntity(record);
     this.policy.ensureActive(entity);
@@ -73,7 +73,7 @@ export class AddOrgNodeMemberHandler implements ICommandHandler<AddOrgNodeMember
     ]);
 
     if (!nodeSaved || !eventSaved) {
-      throw new TechnicalError('Failed to add member', 'ORGNODE_ADD_MEMBER_FAILED', 500);
+      throw new TechnicalError('Failed to add member', { code: 'ORGNODE_ADD_MEMBER_FAILED' });
     }
 
     return membershipEvent;
