@@ -1,6 +1,7 @@
 import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
 import type {
   TOrgNodeDomainModel,
+  TOrgNodeId,
   TOrgNodeMember,
   TOrgNodeGuestMember,
   TOrgNodeCommunication,
@@ -71,6 +72,10 @@ export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
 
   setPosition(position: number): void {
     this.props.position = position;
+  };
+
+  setParent(parentId: TOrgNodeId | undefined): void {
+    this.props.parent_id = parentId;
   };
 
   setCommunications(communications: TOrgNodeCommunication[]): void {

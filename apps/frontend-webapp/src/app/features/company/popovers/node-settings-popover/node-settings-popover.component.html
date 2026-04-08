@@ -256,6 +256,14 @@
         autofocus
       />
 
+      <!-- Parent -->
+      <label class="field-label">Parent</label>
+      <select class="field-input" [value]="selectedParentId() ?? ''" (change)="onParentChange($event)">
+        @for (opt of parentOptions(); track opt.id) {
+          <option [value]="opt.id ?? ''">{{ opt.label }}</option>
+        }
+      </select>
+
       <!-- Color (only depth 0) -->
       @if (depth === 0) {
         <label class="field-label">Color</label>

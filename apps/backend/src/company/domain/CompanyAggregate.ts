@@ -121,6 +121,26 @@ export class CompanyAggregate extends AggregateRoot {
   }
 
   /**
+   * Ungroup a node: move all its children up to its parent, then archive the node.
+   * The inverse of groupNodes().
+   */
+  ungroupNode(nodeId: TOrgNodeId): void {
+    const node = this.findNode(nodeId);
+    if (!node) throw new Error('ORGNODE_NOT_FOUND');
+
+    const nodeParentId = node.toDomain.parent_id;
+
+    // Re-parent all children to the node's parent
+    const children = this.nodes.filter(n => n.toDomain.parent_id === nodeId && n.toDomain.status === 'active');
+    for (const child of children) {
+      child.setParent(nodeParentId as TOrgNodeId | undefined);
+    }
+
+    // Remove the now-empty node (children were already moved)
+    this.removeNode(nodeId);
+  }
+
+  /**
    * Remove an org node. Must have no children.
    * Returns the removed entity for cleanup.
    */
@@ -133,5 +153,42 @@ export class CompanyAggregate extends AggregateRoot {
     const [removed] = this.nodes.splice(idx, 1);
     this._removedNodes.push(removed);
     return removed;
+  }
+
+  /**
+   * Group selected sibling nodes under a new parent.
+   *
+   * 1. Validates all selected nodes are active siblings (same parent_id)
+   * 2. Creates a new parent node at the same level
+   * 3. Re-parents each selected node under the new parent
+   */
+  groupNodes(parentName: string, nodeIds: TOrgNodeId[]): OrgNodeEntity {
+    // Validate all nodes exist and are active
+    const selected = nodeIds.map(id => {
+      const node = this.findNode(id);
+      if (!node) throw new Error('ORGNODE_NOT_FOUND');
+      if (node.toDomain.status !== 'active') throw new Error('ORGNODE_NOT_ACTIVE');
+      return node;
+    });
+
+    // Validate all are siblings (same parent_id)
+    const commonParentId = selected[0].toDomain.parent_id;
+    if (!selected.every(n => n.toDomain.parent_id === commonParentId)) {
+      throw new Error('ORGNODE_NOT_SIBLINGS');
+    }
+
+    // Create new parent at the same level
+    const newParent = this.addOrgNode({
+      company_id: this.id,
+      name: parentName,
+      parent_id: commonParentId,
+    });
+
+    // Re-parent each selected node
+    for (const node of selected) {
+      node.setParent(newParent.id as TOrgNodeId);
+    }
+
+    return newParent;
   }
 }

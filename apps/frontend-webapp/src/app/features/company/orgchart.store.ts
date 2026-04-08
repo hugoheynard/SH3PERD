@@ -139,6 +139,34 @@ export class OrgChartStore {
     });
   }
 
+  // ── Ungroup ──────────────────────────────────────────────
+
+  ungroupOrgNode(companyId: TCompanyId, nodeId: TOrgNodeId, onSuccess?: () => void): void {
+    this.service.ungroupOrgNode(companyId, nodeId).subscribe({
+      next: () => {
+        this.toast.show('Node ungrouped', 'success');
+        onSuccess?.();
+      },
+      error: () => {
+        this.toast.show('Failed to ungroup node', 'error');
+      },
+    });
+  }
+
+  // ── Group ────────────────────────────────────────────────
+
+  groupOrgNodes(companyId: TCompanyId, parentName: string, nodeIds: TOrgNodeId[], onSuccess?: () => void): void {
+    this.service.groupOrgNodes(companyId, { parentName, nodeIds }).subscribe({
+      next: () => {
+        this.toast.show(`Group "${parentName}" created`, 'success');
+        onSuccess?.();
+      },
+      error: () => {
+        this.toast.show('Failed to create group', 'error');
+      },
+    });
+  }
+
   // ── Reorder ──────────────────────────────────────────────
 
   reorderOrgNodes(companyId: TCompanyId, parentId: TOrgNodeId | undefined, orderedIds: TOrgNodeId[], onSuccess?: () => void): void {

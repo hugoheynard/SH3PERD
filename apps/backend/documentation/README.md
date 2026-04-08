@@ -19,6 +19,7 @@
 
 | Doc | Description |
 |-----|-------------|
+| [Org Chart](sh3-orgchart.md) | Org chart features, API endpoints, architecture, file locations |
 | [Contracts](sh3-contracts.md) | Contract aggregate diagram (contract + addendums) |
 | [Calendar](sh3-calendar.md) | Event matrix — manual and CP-generated with OR-Tools |
 | [Integrations](sh3-integrations.md) | Slack OAuth, channel management, architecture, routes |

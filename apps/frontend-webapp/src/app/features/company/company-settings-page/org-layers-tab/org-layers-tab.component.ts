@@ -56,8 +56,26 @@ export class OrgLayersTabComponent implements OnInit {
     this.editLayers.update(layers => [...layers, '']);
   }
 
+  insertLayerAt(index: number): void {
+    this.editLayers.update(layers => {
+      const copy = [...layers];
+      copy.splice(index, 0, '');
+      return copy;
+    });
+  }
+
   removeLayer(index: number): void {
     this.editLayers.update(layers => layers.filter((_, i) => i !== index));
+  }
+
+  moveLayer(index: number, direction: -1 | 1): void {
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= this.editLayers().length) return;
+    this.editLayers.update(layers => {
+      const copy = [...layers];
+      [copy[index], copy[newIndex]] = [copy[newIndex], copy[index]];
+      return copy;
+    });
   }
 
   save(): void {

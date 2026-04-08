@@ -15,6 +15,8 @@ import { CreateOrgNodeCommand } from '../application/commands/CreateTeamCommand.
 import { UpdateOrgNodeInfoCommand } from '../application/commands/UpdateOrgNodeInfoCommand.js';
 import { ArchiveOrgNodeCommand } from '../application/commands/ArchiveOrgNodeCommand.js';
 import { ReorderOrgNodesCommand } from '../application/commands/ReorderOrgNodesCommand.js';
+import { GroupOrgNodesCommand } from '../application/commands/GroupOrgNodesCommand.js';
+import { UngroupOrgNodeCommand } from '../application/commands/UngroupOrgNodeCommand.js';
 
 @ApiTags('org-nodes / crud')
 @ApiBearerAuth('bearer')
@@ -53,6 +55,32 @@ export class OrgNodeCrudController {
   ) {
     await this.commandBus.execute(
       new ReorderOrgNodesCommand(body.companyId, body.parentId, body.orderedIds),
+    );
+    return { ok: true };
+  }
+
+  @ApiOperation({ summary: 'Group sibling nodes under a new parent' })
+  @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.CREATE_ORGNODE, OrgNodePayload, 201))
+  @RequirePermission(P.Company.OrgChart.Write)
+  @Post('group')
+  async groupOrgNodes(
+    @Body() body: { companyId: TCompanyId; parentName: string; nodeIds: TOrgNodeId[] },
+  ): Promise<TApiResponse<any>> {
+    const result = await this.commandBus.execute(
+      new GroupOrgNodesCommand(body.companyId, body.parentName, body.nodeIds),
+    );
+    return buildApiResponseDTO(COMPANY_CODES_SUCCESS.CREATE_ORGNODE, result);
+  }
+
+  @ApiOperation({ summary: 'Ungroup — move children up and archive the node' })
+  @ApiResponse({ status: 200, description: 'Node ungrouped.' })
+  @RequirePermission(P.Company.OrgChart.Write)
+  @Post('ungroup')
+  async ungroupOrgNode(
+    @Body() body: { companyId: TCompanyId; nodeId: TOrgNodeId },
+  ) {
+    await this.commandBus.execute(
+      new UngroupOrgNodeCommand(body.companyId, body.nodeId),
     );
     return { ok: true };
   }

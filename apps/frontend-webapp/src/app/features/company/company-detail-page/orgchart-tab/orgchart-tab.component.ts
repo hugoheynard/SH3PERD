@@ -40,12 +40,20 @@ export class OrgchartTabComponent {
   readonly newNodeColor = signal<string>(NODE_PALETTE[0]);
   readonly colorPalette = NODE_PALETTE;
 
+  // Multiselect + group state
+  readonly selectedNodeIds = signal<Set<string>>(new Set());
+  readonly selectionParentId = signal<string | undefined>(undefined);
+  readonly groupName = signal('');
+
   // ── Edit mode ───────────────────────────────────────────
 
   toggleEditMode(): void {
     const entering = !this.editMode();
     this.editMode.set(entering);
-    if (!entering) this.cancelAddNode();
+    if (!entering) {
+      this.cancelAddNode();
+      this.clearSelection();
+    }
   }
 
   // ── Expand / collapse ───────────────────────────────────
@@ -220,6 +228,41 @@ export class OrgchartTabComponent {
     return NODE_PALETTE[Math.abs(hash) % NODE_PALETTE.length];
   }
 
+  // ── Node leaders ─────────────────────────────────────────
+
+  private readonly LEADER_ROLES = ['director', 'manager'] as const;
+  private readonly ROLE_LABELS: Record<string, string> = {
+    director: 'Dir.',
+    manager: 'Mgr.',
+  };
+
+  getNodeLeaders(node: TOrgNodeHierarchyViewModel): { id: string; name: string; initials: string; roleLabel: string; label: string; isGuest: boolean }[] {
+    // Regular members who are directors/managers
+    const memberLeaders = node.members
+      .filter(m => this.LEADER_ROLES.includes(m.team_role as any))
+      .map(m => {
+        const first = m.first_name ?? '';
+        const last = m.last_name ?? '';
+        const name = first || last ? `${first} ${last}`.trim() : m.user_id;
+        const initials = ((first?.charAt(0) ?? '') + (last?.charAt(0) ?? '')).toUpperCase() || '?';
+        const roleLabel = this.ROLE_LABELS[m.team_role] ?? m.team_role;
+        return { id: m.user_id, name, initials, roleLabel, label: `${name} (${roleLabel})`, isGuest: false };
+      });
+
+    // Guest members who are directors/managers
+    const guestLeaders = (node.guest_members ?? [])
+      .filter(g => this.LEADER_ROLES.includes(g.team_role as any))
+      .map(g => {
+        const name = g.display_name;
+        const parts = name.split(' ');
+        const initials = ((parts[0]?.charAt(0) ?? '') + (parts[1]?.charAt(0) ?? '')).toUpperCase() || '?';
+        const roleLabel = this.ROLE_LABELS[g.team_role] ?? g.team_role;
+        return { id: g.id, name, initials, roleLabel, label: `${name} (${roleLabel})`, isGuest: true };
+      });
+
+    return [...memberLeaders, ...guestLeaders];
+  }
+
   // ── Toolbar actions ──────────────────────────────────────
 
   /**
@@ -252,6 +295,15 @@ export class OrgchartTabComponent {
     });
   }
 
+  ungroupNode(node: TOrgNodeHierarchyViewModel): void {
+    const chart = this.store.orgChart();
+    if (!chart) return;
+
+    this.store.ungroupOrgNode(chart.company_id as TCompanyId, node.id as TOrgNodeId, () => {
+      this.store.loadOrgChart(chart.company_id as TCompanyId);
+    });
+  }
+
   archiveNode(nodeId: TOrgNodeId): void {
     const chart = this.store.orgChart();
     if (!chart) return;
@@ -272,5 +324,62 @@ export class OrgchartTabComponent {
       if (found) return found;
     }
     return undefined;
+  }
+
+  // ── Multiselect + Group ─────────────────────────────────
+
+  /**
+   * Shift+click toggles selection. Only siblings (same parent) can be selected.
+   * Normal click clears selection and expands/collapses.
+   */
+  onNodeClick(node: TOrgNodeHierarchyViewModel, event: MouseEvent): void {
+    if (!this.editMode() || !event.shiftKey) {
+      // Normal click — clear selection, toggle expand
+      this.clearSelection();
+      this.toggleNode(node.id);
+      return;
+    }
+
+    // Shift+click — toggle selection
+    event.stopPropagation();
+    const nodeParent = node.parent_id ?? undefined;
+    const currentParent = this.selectionParentId();
+    const ids = new Set(this.selectedNodeIds());
+
+    // If selecting from a different parent → reset
+    if (ids.size > 0 && currentParent !== nodeParent) {
+      ids.clear();
+    }
+
+    if (ids.has(node.id)) {
+      ids.delete(node.id);
+    } else {
+      ids.add(node.id);
+    }
+
+    this.selectedNodeIds.set(ids);
+    this.selectionParentId.set(ids.size > 0 ? nodeParent : undefined);
+  }
+
+  clearSelection(): void {
+    this.selectedNodeIds.set(new Set());
+    this.selectionParentId.set(undefined);
+    this.groupName.set('');
+  }
+
+  onGroupNameInput(event: Event): void {
+    this.groupName.set((event.target as HTMLInputElement).value);
+  }
+
+  confirmGroup(): void {
+    const name = this.groupName().trim();
+    const ids = Array.from(this.selectedNodeIds()) as TOrgNodeId[];
+    const chart = this.store.orgChart();
+    if (!name || ids.length < 2 || !chart) return;
+
+    this.store.groupOrgNodes(chart.company_id as TCompanyId, name, ids, () => {
+      this.clearSelection();
+      this.store.loadOrgChart(chart.company_id as TCompanyId);
+    });
   }
 }

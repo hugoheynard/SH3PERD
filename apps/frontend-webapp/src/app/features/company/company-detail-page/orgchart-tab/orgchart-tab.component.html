@@ -64,10 +64,16 @@
       <!-- Tree: recursive org nodes -->
       @if (chart.rootNodes.length > 0) {
         <div class="oc-branch oc-branch--root"></div>
-        <div class="oc-children-row" [style.--count]="chart.rootNodes.length">
+
+        <div class="oc-children-row-wrap">
+          @if (selectedNodeIds().size >= 2 && selectionParentId() === undefined) {
+            <ng-container *ngTemplateOutlet="groupBarTpl"></ng-container>
+          }
+          <div class="oc-children-row" [style.--count]="chart.rootNodes.length">
           @for (node of chart.rootNodes; track node.id) {
             <ng-container *ngTemplateOutlet="orgNodeTpl; context: { $implicit: node, depth: 0, rootColor: getRootColor(node) }"></ng-container>
           }
+          </div>
         </div>
       } @else {
         <div class="orgchart-empty">Aucun noeud pour le moment. Créez votre premier {{ getLayerLabel(0) }}.</div>
@@ -96,9 +102,28 @@
           <button class="oc-toolbar-btn" title="Move right" (click)="moveNode(node, depth, 1)" type="button">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
           </button>
+          @if (node.children.length > 0) {
+            <button class="oc-toolbar-btn" title="Ungroup — move children up and remove this node" (click)="ungroupNode(node)" type="button">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 9l-6-6-6 6"/><path d="M12 3v18"/><path d="M3 21h18"/></svg>
+            </button>
+          }
           <button class="oc-toolbar-btn" title="Settings" (click)="openNodeSettings(node, depth)" type="button">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
+        </div>
+      }
+
+      <!-- Node leaders (directors/managers) — always visible above card -->
+      @let leaders = getNodeLeaders(node);
+      @if (leaders.length > 0) {
+        <div class="oc-node-leaders">
+          @for (leader of leaders; track leader.id) {
+            <div class="oc-leader" [class.oc-leader--guest]="leader.isGuest" [title]="leader.label">
+              <div class="oc-leader-avatar" [style.background]="getMemberColor(leader.id)">{{ leader.initials }}</div>
+              <span class="oc-leader-name">{{ leader.name }}</span>
+              <span class="oc-leader-role">{{ leader.roleLabel }}</span>
+            </div>
+          }
         </div>
       }
 
@@ -107,10 +132,11 @@
         [class.depth-0]="depth === 0"
         [class.depth-1]="depth === 1"
         [class.depth-deep]="depth >= 2"
+        [class.is-selected]="selectedNodeIds().has(node.id)"
         [style.--node-color]="getNodeColorForDepth(node, depth, rootColor)"
         [class.is-expanded]="isNodeExpanded(node.id)"
         [class.is-archived]="node.status === 'archived'"
-        (click)="toggleNode(node.id); $event.stopPropagation()"
+        (click)="onNodeClick(node, $event)"
         role="button"
         [attr.aria-expanded]="isNodeExpanded(node.id)">
 
@@ -223,12 +249,44 @@
       <!-- Children nodes (recursive) -->
       @if (node.children.length > 0) {
         <div class="oc-branch" [style.background]="rootColor + '22'"></div>
-        <div class="oc-children-row" [style.--count]="node.children.length">
-          @for (child of node.children; track child.id) {
-            <ng-container *ngTemplateOutlet="orgNodeTpl; context: { $implicit: child, depth: depth + 1, rootColor: rootColor }"></ng-container>
+
+        <div class="oc-children-row-wrap">
+          @if (selectedNodeIds().size >= 2 && selectionParentId() === node.id) {
+            <ng-container *ngTemplateOutlet="groupBarTpl"></ng-container>
           }
+          <div class="oc-children-row" [style.--count]="node.children.length">
+            @for (child of node.children; track child.id) {
+              <ng-container *ngTemplateOutlet="orgNodeTpl; context: { $implicit: child, depth: depth + 1, rootColor: rootColor }"></ng-container>
+            }
+          </div>
         </div>
       }
     }
+  </div>
+</ng-template>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Group bar template (reused at each level)
+     ═══════════════════════════════════════════════════════════ -->
+<ng-template #groupBarTpl>
+  <div class="oc-group-bar">
+    <span class="oc-group-count">{{ selectedNodeIds().size }} selected</span>
+    <input
+      class="oc-group-input"
+      type="text"
+      placeholder="New group name..."
+      [value]="groupName()"
+      (input)="onGroupNameInput($event)"
+      (keydown.enter)="confirmGroup()"
+      (keydown.escape)="clearSelection()"
+      autofocus
+    />
+    <button class="oc-group-confirm" [disabled]="!groupName().trim()" (click)="confirmGroup()" type="button">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+      Group
+    </button>
+    <button class="oc-group-cancel" (click)="clearSelection()" type="button">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
   </div>
 </ng-template>

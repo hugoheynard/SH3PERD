@@ -95,6 +95,20 @@ export class OrgChartService extends BaseHttpService {
     );
   }
 
+  ungroupOrgNode(companyId: TCompanyId, nodeId: TOrgNodeId): Observable<{ ok: boolean }> {
+    return this.scopedHttp.withContract().post<{ ok: boolean }>(
+      this.UrlBuilder.apiProtectedRoute('companies').route('org-nodes/ungroup').build(),
+      { companyId, nodeId }
+    );
+  }
+
+  groupOrgNodes(companyId: TCompanyId, dto: { parentName: string; nodeIds: TOrgNodeId[] }): Observable<TApiResponse<unknown>> {
+    return this.scopedHttp.withContract().post<TApiResponse<unknown>>(
+      this.UrlBuilder.apiProtectedRoute('companies').route('org-nodes/group').build(),
+      { companyId, ...dto }
+    );
+  }
+
   reorderOrgNodes(companyId: TCompanyId, parentId: TOrgNodeId | undefined, orderedIds: TOrgNodeId[]): Observable<{ ok: boolean }> {
     return this.scopedHttp.withContract().patch<{ ok: boolean }>(
       this.UrlBuilder.apiProtectedRoute('companies').route('org-nodes/reorder').build(),

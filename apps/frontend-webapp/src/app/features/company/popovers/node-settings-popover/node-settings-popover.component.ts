@@ -61,6 +61,22 @@ export class NodeSettingsPopoverComponent {
   readonly depth = this.config.depth;
   readonly nodeName = signal(this.config.node.name);
   readonly nodeColor = signal(this.config.node.color || NODE_PALETTE[0]);
+  readonly selectedParentId = signal<string | null>(this.config.node.parent_id ?? null);
+
+  /** All possible parent nodes (excluding self and descendants to prevent cycles). */
+  readonly parentOptions = computed(() => {
+    const chart = this.store.orgChart();
+    if (!chart) return [];
+    const selfId = this.config.node.id;
+    const descendantIds = this.collectDescendantIds(this.config.node);
+    const excluded = new Set([selfId, ...descendantIds]);
+
+    const options: { id: string | null; label: string }[] = [
+      { id: null, label: '— Root (no parent) —' },
+    ];
+    this.flattenNodes(chart.rootNodes, 0, excluded, options);
+    return options;
+  });
   readonly editMode = signal(true); // popover is always in edit context
   readonly activeTab = signal<string>('members');
   readonly addingMember = signal(this.config.openAddMember ?? false);
@@ -389,6 +405,36 @@ export class NodeSettingsPopoverComponent {
     );
   }
 
+  // ── Parent selection helpers ─────────────────────────────
+
+  private collectDescendantIds(node: TOrgNodeHierarchyViewModel): string[] {
+    const ids: string[] = [];
+    for (const child of node.children ?? []) {
+      ids.push(child.id);
+      ids.push(...this.collectDescendantIds(child));
+    }
+    return ids;
+  }
+
+  private flattenNodes(
+    nodes: TOrgNodeHierarchyViewModel[],
+    depth: number,
+    excluded: Set<string>,
+    result: { id: string | null; label: string }[],
+  ): void {
+    for (const node of nodes) {
+      if (excluded.has(node.id)) continue;
+      const indent = '  '.repeat(depth);
+      result.push({ id: node.id, label: `${indent}${node.name}` });
+      this.flattenNodes(node.children ?? [], depth + 1, excluded, result);
+    }
+  }
+
+  onParentChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.selectedParentId.set(value === '' ? null : value);
+  }
+
   // ── Save ────────────────────────────────────────────────
 
   save(): void {
@@ -396,6 +442,14 @@ export class NodeSettingsPopoverComponent {
     const name = (this.nodeName() ?? '').trim();
     if (name && name !== this.config.node.name) dto['name'] = name;
     if (this.depth === 0 && this.nodeColor() !== this.config.node.color) dto['color'] = this.nodeColor();
+
+    // Re-parenting
+    const currentParent = this.config.node.parent_id ?? null;
+    const newParent = this.selectedParentId();
+    if (newParent !== currentParent) {
+      dto['parent_id'] = newParent;
+    }
+
     dto['communications'] = this.communications();
 
     this.store.updateOrgNode(

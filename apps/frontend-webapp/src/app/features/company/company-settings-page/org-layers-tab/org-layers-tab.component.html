@@ -6,6 +6,12 @@
   </p>
 
   <sh3-form-section title="Layers">
+
+    <!-- Insert button before first layer -->
+    <button class="btn-insert" (click)="insertLayerAt(0)" title="Insert level above" type="button">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+
     @for (layer of editLayers(); track $index) {
       <div class="layer-row">
         <span class="layer-depth-badge">{{ $index }}</span>
@@ -17,15 +23,25 @@
           [placeholder]="'e.g. ' + ($index === 0 ? 'Direction' : $index === 1 ? 'Pôle' : 'Équipe')"
         />
 
-        <button class="btn-remove" [disabled]="editLayers().length <= 1" (click)="removeLayer($index)" title="Remove level">
+        <button class="btn-move" [disabled]="$index === 0" (click)="moveLayer($index, -1)" title="Move up" type="button">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+        </button>
+        <button class="btn-move" [disabled]="$index === editLayers().length - 1" (click)="moveLayer($index, 1)" title="Move down" type="button">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+
+        <button class="btn-remove" [disabled]="editLayers().length <= 1" (click)="removeLayer($index)" title="Remove level" type="button">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M18 6L6 18M6 6l12 12"/>
           </svg>
         </button>
       </div>
-    }
 
-    <sh3-button variant="ghost" size="sm" (clicked)="addLayer()">+ Add level</sh3-button>
+      <!-- Insert button after each layer -->
+      <button class="btn-insert" (click)="insertLayerAt($index + 1)" title="Insert level below" type="button">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    }
   </sh3-form-section>
 
   <sh3-button

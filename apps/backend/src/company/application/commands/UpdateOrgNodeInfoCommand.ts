@@ -13,6 +13,7 @@ export type TUpdateOrgNodeInfoDTO = {
   name?: string;
   color?: string;
   type?: TTeamType;
+  parent_id?: TOrgNodeId | null;  // null = move to root
   communications?: TOrgNodeCommunication[];
 };
 
@@ -43,6 +44,7 @@ export class UpdateOrgNodeInfoHandler implements ICommandHandler<UpdateOrgNodeIn
     if (dto.name !== undefined) entity.rename(dto.name);
     if (dto.color !== undefined) entity.setColor(dto.color);
     if (dto.type !== undefined) entity.setType(dto.type);
+    if (dto.parent_id !== undefined) entity.setParent(dto.parent_id ?? undefined);
     if (dto.communications !== undefined) entity.setCommunications(dto.communications);
 
     // Save full entity state

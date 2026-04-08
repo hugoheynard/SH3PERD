@@ -18,6 +18,8 @@ import { RemoveOrgNodeMemberHandler } from './application/commands/RemoveTeamMem
 import { AddGuestMemberHandler, RemoveGuestMemberHandler } from './application/commands/GuestMemberCommands.js';
 import { ArchiveOrgNodeHandler } from './application/commands/ArchiveOrgNodeCommand.js';
 import { ReorderOrgNodesHandler } from './application/commands/ReorderOrgNodesCommand.js';
+import { GroupOrgNodesHandler } from './application/commands/GroupOrgNodesCommand.js';
+import { UngroupOrgNodeHandler } from './application/commands/UngroupOrgNodeCommand.js';
 
 // Queries
 import { GetCompanyByIdHandler } from './application/queries/GetCompanyByIdQuery.js';
@@ -39,6 +41,8 @@ const CommandHandlers = [
   RemoveGuestMemberHandler,
   ArchiveOrgNodeHandler,
   ReorderOrgNodesHandler,
+  GroupOrgNodesHandler,
+  UngroupOrgNodeHandler,
 ];
 
 const QueryHandlers = [
