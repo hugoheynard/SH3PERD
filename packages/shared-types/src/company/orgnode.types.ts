@@ -47,6 +47,8 @@ export interface TOrgNodeMember {
   team_role: TTeamRole;
   /** Per-user permission exceptions (enterprise-grade). Empty for POC. */
   permission_overrides?: TPermissionOverride;
+  /** Free-text job title — e.g. "Directeur Artistique", "Ingénieur Son" */
+  job_title?: string;
   /** When the user joined this node */
   joinedAt: Date;
   /** When the user left — absent if still active */
@@ -56,6 +58,7 @@ export const SOrgNodeMember: ZodOutput<TOrgNodeMember> = z.object({
   user_id:              SUserId,
   contract_id:          SContractId,
   team_role:            STeamRole,
+  job_title:            z.string().optional(),
   permission_overrides: SPermissionOverride.optional(),
   joinedAt:             z.coerce.date(),
   leftAt:               z.coerce.date().optional(),
@@ -160,6 +163,7 @@ export interface TOrgNodeMemberViewModel {
   user_id: TUserId;
   contract_id: TContractId;
   team_role: TTeamRole;
+  job_title?: string;
   joinedAt: Date;
   leftAt?: Date;
   /** Resolved from user profile — optional enrichment */

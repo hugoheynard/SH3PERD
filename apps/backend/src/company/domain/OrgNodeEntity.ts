@@ -101,6 +101,7 @@ export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
     userId: TUserId,
     contractId: TContractId,
     teamRole: TTeamRole = 'member',
+    jobTitle?: string,
     joinedAt: Date = new Date(),
   ): TOrgNodeMember {
     if (this.hasActiveMember(userId)) {
@@ -113,6 +114,7 @@ export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
       user_id: userId,
       contract_id: contractId,
       team_role: teamRole,
+      ...(jobTitle ? { job_title: jobTitle } : {}),
       joinedAt,
     };
     this.props = { ...this.props, members: [...this.props.members, member] };

@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, input, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { OrgChartStore } from '../../orgchart.store';
 import { LayoutService } from '../../../../core/services/layout.service';
 import { NodeSettingsPopoverComponent, type TNodeSettingsPopoverData } from '../../popovers/node-settings-popover/node-settings-popover.component';
@@ -19,7 +20,7 @@ const NODE_PALETTE = [
 @Component({
   selector: 'app-orgchart-tab',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './orgchart-tab.component.html',
   styleUrl: './orgchart-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +45,41 @@ export class OrgchartTabComponent {
   readonly selectedNodeIds = signal<Set<string>>(new Set());
   readonly selectionParentId = signal<string | undefined>(undefined);
   readonly groupName = signal('');
+
+  // Search
+  readonly searchQuery = signal('');
+  readonly searchMask = signal(false);
+
+  // Zoom
+  readonly zoomLevel = signal(1);
+
+  // Filter
+  readonly showArchived = signal(false);
+
+  // Move-to modal
+  readonly moveModalNode = signal<TOrgNodeHierarchyViewModel | null>(null);
+
+  @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLElement>;
+
+  // ── Keyboard shortcuts ───────────────────────────────────
+
+  @HostListener('document:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    // Don't intercept when typing in an input
+    const tag = (event.target as HTMLElement)?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+    if ((event.key === '+' || event.key === '=') && !event.ctrlKey && !event.metaKey) {
+      event.preventDefault();
+      this.zoomIn();
+    } else if (event.key === '-' && !event.ctrlKey && !event.metaKey) {
+      event.preventDefault();
+      this.zoomOut();
+    } else if (event.key === '0' && !event.ctrlKey && !event.metaKey) {
+      event.preventDefault();
+      this.resetZoom();
+    }
+  }
 
   // ── Edit mode ───────────────────────────────────────────
 
@@ -381,5 +417,147 @@ export class OrgchartTabComponent {
       this.clearSelection();
       this.store.loadOrgChart(chart.company_id as TCompanyId);
     });
+  }
+
+  // ── Collapse / Expand all ───────────────────────────────
+
+  expandAll(): void {
+    const chart = this.store.orgChart();
+    if (!chart) return;
+    const ids = new Set<string>();
+    const walk = (nodes: TOrgNodeHierarchyViewModel[]) => {
+      for (const n of nodes) {
+        ids.add(n.id);
+        walk(n.children);
+      }
+    };
+    walk(chart.rootNodes);
+    this.expandedNodes.set(ids);
+    this.centerScroll();
+  }
+
+  collapseAll(): void {
+    this.expandedNodes.set(new Set());
+    this.centerScroll();
+  }
+
+  // ── Search ──────────────────────────────────────────────
+
+  onSearchInput(event: Event): void {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
+  }
+
+  toggleSearchMask(): void {
+    this.searchMask.update(v => !v);
+  }
+
+  /** Check if a node or any of its descendants matches the search query. */
+  nodeMatchesSearch(node: TOrgNodeHierarchyViewModel): boolean {
+    const q = this.searchQuery().toLowerCase().trim();
+    if (!q) return true;
+    if (node.name.toLowerCase().includes(q)) return true;
+    // Check members
+    if (node.members.some(m => {
+      const name = `${m.first_name ?? ''} ${m.last_name ?? ''}`.toLowerCase();
+      return name.includes(q);
+    })) return true;
+    // Check descendants
+    return node.children.some(c => this.nodeMatchesSearch(c));
+  }
+
+  /** Check if this specific node name matches (not descendants). */
+  nodeNameMatches(node: TOrgNodeHierarchyViewModel): boolean {
+    const q = this.searchQuery().toLowerCase().trim();
+    if (!q) return false;
+    return node.name.toLowerCase().includes(q);
+  }
+
+  // ── Zoom ────────────────────────────────────────────────
+
+  zoomIn(): void {
+    this.zoomLevel.update(z => Math.min(z + 0.1, 2));
+    this.centerScroll();
+  }
+
+  zoomOut(): void {
+    this.zoomLevel.update(z => Math.max(z - 0.1, 0.4));
+    this.centerScroll();
+  }
+
+  resetZoom(): void {
+    this.zoomLevel.set(1);
+    this.centerScroll();
+  }
+
+  private centerScroll(): void {
+    requestAnimationFrame(() => {
+      const el = this.scrollContainer?.nativeElement;
+      if (!el) return;
+      const scrollWidth = el.scrollWidth;
+      const clientWidth = el.clientWidth;
+      el.scrollLeft = (scrollWidth - clientWidth) / 2;
+    });
+  }
+
+  // ── Move-to modal ───────────────────────────────────────
+
+  openMoveModal(node: TOrgNodeHierarchyViewModel): void {
+    this.moveModalNode.set(node);
+  }
+
+  closeMoveModal(): void {
+    this.moveModalNode.set(null);
+  }
+
+  /** Get all possible parents (excludes self and descendants). */
+  getMoveTargets(): { id: string | null; label: string }[] {
+    const chart = this.store.orgChart();
+    const movingNode = this.moveModalNode();
+    if (!chart || !movingNode) return [];
+
+    const excluded = new Set([movingNode.id, ...this.collectDescendantIds(movingNode)]);
+    const targets: { id: string | null; label: string }[] = [
+      { id: null, label: '— Root (no parent) —' },
+    ];
+    this.flattenForSelect(chart.rootNodes, 0, excluded, targets);
+    return targets;
+  }
+
+  confirmMove(newParentId: string | null): void {
+    const node = this.moveModalNode();
+    const chart = this.store.orgChart();
+    if (!node || !chart) return;
+
+    this.store.updateOrgNode(
+      node.id as TOrgNodeId,
+      { parent_id: newParentId } as any,
+      () => {
+        this.closeMoveModal();
+        this.store.loadOrgChart(chart.company_id as TCompanyId);
+      },
+    );
+  }
+
+  private collectDescendantIds(node: TOrgNodeHierarchyViewModel): string[] {
+    const ids: string[] = [];
+    for (const child of node.children ?? []) {
+      ids.push(child.id);
+      ids.push(...this.collectDescendantIds(child));
+    }
+    return ids;
+  }
+
+  private flattenForSelect(
+    nodes: TOrgNodeHierarchyViewModel[],
+    depth: number,
+    excluded: Set<string>,
+    result: { id: string | null; label: string }[],
+  ): void {
+    for (const node of nodes) {
+      if (excluded.has(node.id)) continue;
+      const indent = '\u00A0\u00A0'.repeat(depth);
+      result.push({ id: node.id, label: `${indent}${node.name}` });
+      this.flattenForSelect(node.children ?? [], depth + 1, excluded, result);
+    }
   }
 }

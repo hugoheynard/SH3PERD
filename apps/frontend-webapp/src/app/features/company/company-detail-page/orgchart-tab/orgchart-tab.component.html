@@ -2,7 +2,50 @@
 
   <div class="content-toolbar">
     <span class="results-count">Organisation</span>
+
+    <!-- Search -->
+    <div class="toolbar-search">
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Search nodes..."
+        [value]="searchQuery()"
+        (input)="onSearchInput($event)"
+      />
+      @if (searchQuery()) {
+        <button class="search-mask-toggle" [class.is-active]="searchMask()" (click)="toggleSearchMask()" type="button" title="Toggle mask mode">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      }
+    </div>
+
     <div class="toolbar-actions">
+      <!-- Zoom -->
+      @if (zoomLevel() !== 1) {
+        <button class="toolbar-icon-btn" (click)="resetZoom()" title="Reset zoom" type="button">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        </button>
+      }
+      <button class="toolbar-icon-btn" (click)="zoomOut()" title="Zoom out (−)" type="button">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M8 11h6"/></svg>
+      </button>
+      <span class="zoom-label">{{ (zoomLevel() * 100) | number:'1.0-0' }}%</span>
+      <button class="toolbar-icon-btn" (click)="zoomIn()" title="Zoom in (+)" type="button">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>
+      </button>
+
+      <span class="toolbar-separator"></span>
+
+      <!-- Expand / Collapse -->
+      <button class="toolbar-icon-btn" (click)="expandAll()" title="Expand all" type="button">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
+      </button>
+      <button class="toolbar-icon-btn" (click)="collapseAll()" title="Collapse all" type="button">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 11l-5-5-5 5M17 18l-5-5-5 5"/></svg>
+      </button>
+
+      <span class="toolbar-separator"></span>
+
       @if (editMode() && !addingNode()) {
         <button class="btn-add-entry" (click)="startAddNode()">+ New {{ getLayerLabel(0) }}</button>
       }
@@ -48,7 +91,8 @@
   }
 
   @if (store.orgChart(); as chart) {
-    <div class="orgchart-tree">
+    <div class="orgchart-scroll" #scrollContainer>
+    <div class="orgchart-tree" [style.transform]="'scale(' + zoomLevel() + ')'" [style.transform-origin]="'top center'">
 
       <!-- Root: Company -->
       <div class="oc-root-wrap">
@@ -80,14 +124,49 @@
       }
 
     </div>
+    </div> <!-- /orgchart-scroll -->
   }
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Move-to modal overlay
+     ═══════════════════════════════════════════════════════════ -->
+@if (moveModalNode(); as movingNode) {
+  <div class="move-modal-overlay" (click)="closeMoveModal()">
+    <div class="move-modal" (click)="$event.stopPropagation()">
+      <div class="move-modal-header">
+        <span>Move "{{ movingNode.name }}" to:</span>
+        <button class="move-modal-close" (click)="closeMoveModal()" type="button">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="move-modal-list">
+        @for (target of getMoveTargets(); track target.id) {
+          <button
+            class="move-modal-item"
+            [class.is-current]="target.id === (movingNode.parent_id ?? null)"
+            (click)="confirmMove(target.id)"
+            type="button"
+          >
+            {{ target.label }}
+            @if (target.id === (movingNode.parent_id ?? null)) {
+              <span class="move-modal-current">(current)</span>
+            }
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
 
 <!-- ═══════════════════════════════════════════════════════════
      Recursive org node template
      ═══════════════════════════════════════════════════════════ -->
 <ng-template #orgNodeTpl let-node let-depth="depth" let-rootColor="rootColor">
-  <div class="oc-node-col" [style.--root-color]="rootColor">
+  <div class="oc-node-col" [style.--root-color]="rootColor"
+    [class.is-masked]="searchMask() && searchQuery() && !nodeMatchesSearch(node)"
+    [class.is-search-hit]="searchQuery() && nodeNameMatches(node)"
+  >
     <div class="oc-drop" [style.background]="rootColor + '33'"></div>
 
     <!-- Node card wrapper (for toolbar positioning) -->
@@ -107,6 +186,9 @@
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 9l-6-6-6 6"/><path d="M12 3v18"/><path d="M3 21h18"/></svg>
             </button>
           }
+          <button class="oc-toolbar-btn" title="Move to another parent" (click)="openMoveModal(node)" type="button">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
           <button class="oc-toolbar-btn" title="Settings" (click)="openNodeSettings(node, depth)" type="button">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>

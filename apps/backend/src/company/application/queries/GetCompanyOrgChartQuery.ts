@@ -54,6 +54,7 @@ export class GetCompanyOrgChartHandler implements IQueryHandler<GetCompanyOrgCha
         user_id: m.user_id,
         contract_id: m.contract_id,
         team_role: m.team_role,
+        job_title: m.job_title,
         joinedAt: m.joinedAt,
         ...(m.leftAt ? { leftAt: m.leftAt } : {}),
         first_name: profile?.first_name,
