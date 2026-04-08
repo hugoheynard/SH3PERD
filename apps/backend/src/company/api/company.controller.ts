@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
@@ -7,7 +7,6 @@ import type { TCompanyId, TUserId } from '@sh3pherd/shared-types';
 import { COMPANY_CODES_SUCCESS } from './company.codes.js';
 
 import { CreateCompanyCommand, type TCreateCompanyResult } from '../application/commands/CreateCompanyCommand.js';
-import { DeleteCompanyCommand } from '../application/commands/DeleteCompanyCommand.js';
 import { GetCompanyByIdQuery } from '../application/queries/GetCompanyByIdQuery.js';
 import { GetMyCompaniesQuery } from '../application/queries/GetMyCompaniesQuery.js';
 
@@ -112,19 +111,6 @@ export class CompanyController {
   async getCompanyById(@Param('id') id: TCompanyId) {
     const result = await this.queryBus.execute(new GetCompanyByIdQuery(id));
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_BY_ID, result);
-  }
-
-  //TODO archived soft delete for sh3pherd users,
-  // add hard delete sh3-admin only with deletion of all
-  // related ressources maybe doing a sh3-admin controller with a backoffice
-  @ApiOperation({ summary: 'Delete a company (owner only)' })
-  @HttpCode(204)
-  @Delete(':id')
-  async deleteCompany(
-    @Param('id') id: TCompanyId,
-    @ActorId() actorId: TUserId,
-  ) {
-    await this.commandBus.execute(new DeleteCompanyCommand(id, actorId));
   }
 
 }

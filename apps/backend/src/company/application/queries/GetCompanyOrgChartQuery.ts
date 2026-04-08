@@ -68,7 +68,7 @@ export class GetCompanyOrgChartHandler implements IQueryHandler<GetCompanyOrgCha
       );
 
       return children
-        .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))
+        .sort((a, b) => (a.position ?? Infinity) - (b.position ?? Infinity) || (a.name ?? '').localeCompare(b.name ?? ''))
         .map((node): TOrgNodeHierarchyViewModel => ({
           id: node.id,
           name: node.name,

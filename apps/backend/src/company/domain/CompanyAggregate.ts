@@ -95,12 +95,21 @@ export class CompanyAggregate extends AggregateRoot {
 
     this.policy.ensureNameUniqueAmongSiblings(dto.name, dto.parent_id, this.nodes);
 
+    // Auto-assign position: append after last sibling
+    const siblings = this.nodes.filter(n =>
+      n.toDomain.parent_id === dto.parent_id && n.toDomain.status === 'active',
+    );
+    const nextPosition = siblings.length > 0
+      ? Math.max(...siblings.map(n => n.toDomain.position ?? 0)) + 1
+      : 0;
+
     const node = new OrgNodeEntity({
       company_id: dto.company_id,
       name: dto.name,
       parent_id: dto.parent_id,
       type: dto.type,
       color: dto.color,
+      position: nextPosition,
       communications: [],
       members: [],
       guest_members: [],

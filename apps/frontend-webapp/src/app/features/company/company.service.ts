@@ -44,7 +44,7 @@ export class CompanyService extends BaseHttpService {
   }
 
   deleteCompany(id: TCompanyId): Observable<void> {
-    return this.http.delete<void>(
+    return this.scopedHttp.withContract().delete<void>(
       this.UrlBuilder.apiProtectedRoute('companies').route(id).build()
     );
   }

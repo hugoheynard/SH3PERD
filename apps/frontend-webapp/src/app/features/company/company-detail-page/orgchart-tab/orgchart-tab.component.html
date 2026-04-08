@@ -166,7 +166,15 @@
         }
       </div>
 
+
     </div>
+
+    <!-- Add child — always visible in edit mode, below the card (dashed button) -->
+    @if (editMode() && !isNodeExpanded(node.id)) {
+      <button class="oc-add-child-btn" [style.--btn-color]="rootColor" (click)="startAddNode(node.id); $event.stopPropagation()">
+        + {{ getLayerLabel(depth + 1) }}
+      </button>
+    }
 
     <!-- Expanded content: children + add node -->
     @if (isNodeExpanded(node.id)) {

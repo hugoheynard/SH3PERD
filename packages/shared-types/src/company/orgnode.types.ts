@@ -124,6 +124,8 @@ export interface TOrgNodeDomainModel {
   type?: TTeamType;
   /** Optional display color as a hex string — e.g. `#63b3ed` */
   color?: string;
+  /** Sort order among siblings (0-based). Lower values appear first. */
+  position?: number;
   /** Communication channels linked to this node (Slack, WhatsApp, Teams...) */
   communications: TOrgNodeCommunication[];
   /** Full membership history — active and past members */
@@ -139,6 +141,7 @@ export const SOrgNodeDomainModel: ZodOutput<TOrgNodeDomainModel> = z.object({
   parent_id:     SOrgNodeId.optional(),
   type:          STeamType.optional(),
   color:         z.string().optional(),
+  position:      z.number().int().min(0).optional(),
   communications: z.array(SOrgNodeCommunication).default([]),
   members:       z.array(SOrgNodeMember).default([]),
   guest_members: z.array(SOrgNodeGuestMember).default([]),

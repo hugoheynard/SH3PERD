@@ -132,6 +132,10 @@ export class OrgchartTabComponent {
     this.newNodeParentId.set(parentId);
     this.newNodeColor.set(NODE_PALETTE[0]);
     this.addingNode.set(true);
+    // Auto-expand the parent so the inline form is visible
+    if (parentId && !this.isNodeExpanded(parentId)) {
+      this.toggleNode(parentId);
+    }
   }
 
   cancelAddNode(): void {

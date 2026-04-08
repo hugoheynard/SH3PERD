@@ -46,6 +46,7 @@ export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
   get parent_id() { return this.props.parent_id; }
   get type() { return this.props.type; }
   get color() { return this.props.color; }
+  get position() { return this.props.position; }
   get status() { return this.props.status; }
   get communications() { return this.props.communications; }
   get members() { return this.props.members; }
@@ -66,6 +67,10 @@ export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
 
   setType(type: TTeamType): void {
     this.props.type = type;
+  };
+
+  setPosition(position: number): void {
+    this.props.position = position;
   };
 
   setCommunications(communications: TOrgNodeCommunication[]): void {

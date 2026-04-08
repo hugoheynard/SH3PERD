@@ -3,6 +3,13 @@ import { ApiModel } from '../../utils/swagger/api-model.swagger.util.js';
 import { createZodDto } from 'nestjs-zod';
 import { SCompanyInfo, SOrgLayers, SOrgNodeDomainModel } from '@sh3pherd/shared-types';
 
+// ─── Deleted Company (response for DELETE) ────────────────
+
+@ApiModel()
+export class DeletedCompanyPayload {
+  @ApiProperty({ example: 'company_abc-123' }) id!: string;
+}
+
 // ─── Company Info (request + response DTO for settings) ───
 
 @ApiModel()
