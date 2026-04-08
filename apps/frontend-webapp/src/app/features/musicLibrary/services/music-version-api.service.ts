@@ -38,7 +38,6 @@ export class MusicVersionApiService extends BaseHttpService {
           return res.data;
         }),
         catchError(err => {
-          console.error('[MusicVersionApi] create failed', err);
           this.toast.show('Failed to create version', 'error');
           return throwError(() => err);
         }),
@@ -61,7 +60,6 @@ export class MusicVersionApiService extends BaseHttpService {
           return res.data;
         }),
         catchError(err => {
-          console.error('[MusicVersionApi] update failed', err);
           this.toast.show('Failed to update version', 'error');
           return throwError(() => err);
         }),
@@ -80,7 +78,6 @@ export class MusicVersionApiService extends BaseHttpService {
       .pipe(
         map(res => res?.data ?? false),
         catchError(err => {
-          console.error('[MusicVersionApi] delete failed', err);
           this.toast.show('Failed to delete version', 'error');
           return throwError(() => err);
         }),

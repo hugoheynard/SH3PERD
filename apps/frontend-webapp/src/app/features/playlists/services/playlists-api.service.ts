@@ -45,7 +45,6 @@ export class PlaylistsApiService extends BaseHttpService {
           return res.data;
         }),
         catchError(err => {
-          console.error('[PlaylistsApi] getMyPlaylists failed', err);
           return throwError(() => err);
         }),
       );
@@ -63,7 +62,6 @@ export class PlaylistsApiService extends BaseHttpService {
           return res.data;
         }),
         catchError(err => {
-          console.error('[PlaylistsApi] getPlaylistDetail failed', err);
           return throwError(() => err);
         }),
       );
@@ -82,7 +80,6 @@ export class PlaylistsApiService extends BaseHttpService {
           return res.data;
         }),
         catchError(err => {
-          console.error('[PlaylistsApi] createPlaylist failed', err);
           return throwError(() => err);
         }),
       );
@@ -101,7 +98,6 @@ export class PlaylistsApiService extends BaseHttpService {
           return res.data;
         }),
         catchError(err => {
-          console.error('[PlaylistsApi] updatePlaylist failed', err);
           return throwError(() => err);
         }),
       );
@@ -116,7 +112,6 @@ export class PlaylistsApiService extends BaseHttpService {
       .pipe(
         map(() => void 0),
         catchError(err => {
-          console.error('[PlaylistsApi] deletePlaylist failed', err);
           return throwError(() => err);
         }),
       );
@@ -137,7 +132,6 @@ export class PlaylistsApiService extends BaseHttpService {
           return res.data;
         }),
         catchError(err => {
-          console.error('[PlaylistsApi] addTrack failed', err);
           return throwError(() => err);
         }),
       );
@@ -152,7 +146,6 @@ export class PlaylistsApiService extends BaseHttpService {
       .pipe(
         map(() => void 0),
         catchError(err => {
-          console.error('[PlaylistsApi] removeTrack failed', err);
           return throwError(() => err);
         }),
       );
@@ -168,7 +161,6 @@ export class PlaylistsApiService extends BaseHttpService {
       .pipe(
         map(() => void 0),
         catchError(err => {
-          console.error('[PlaylistsApi] reorderTrack failed', err);
           return throwError(() => err);
         }),
       );

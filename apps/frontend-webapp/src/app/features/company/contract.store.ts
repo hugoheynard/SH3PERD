@@ -24,7 +24,6 @@ export class ContractStore {
   loadCompanyContracts(companyId: TCompanyId): void {
     this.service.getCompanyContracts(companyId).subscribe({
       next: (res) => this._contracts.set(res),
-      error: (err) => console.error('[ContractStore] loadCompanyContracts failed', err),
     });
   }
 
@@ -39,21 +38,18 @@ export class ContractStore {
         this._contracts.update(list => [...list, res.data]);
         onSuccess?.();
       },
-      error: (err) => console.error('[ContractStore] createContractForUser failed', err),
     });
   }
 
   assignContractRole(contractId: TContractId, role: TContractRole, onSuccess?: () => void): void {
     this.service.assignContractRole(contractId, role).subscribe({
       next: () => onSuccess?.(),
-      error: (err) => console.error('[ContractStore] assignContractRole failed', err),
     });
   }
 
   removeContractRole(contractId: TContractId, role: TContractRole, onSuccess?: () => void): void {
     this.service.removeContractRole(contractId, role).subscribe({
       next: () => onSuccess?.(),
-      error: (err) => console.error('[ContractStore] removeContractRole failed', err),
     });
   }
 }

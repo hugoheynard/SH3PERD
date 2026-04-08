@@ -47,7 +47,6 @@ export class UserProfilePageComponent implements OnInit {
   ngOnInit(): void {
     this.api.getCurrentUserProfile().subscribe({
       next: (res) => this.formService.patchForm(res.data),
-      error: (err) => console.error('Failed to load profile', err),
     });
   }
 
@@ -92,8 +91,7 @@ export class UserProfilePageComponent implements OnInit {
         // Refresh user context so header pastille updates
         this.userCtx.getUser();
       },
-      error: (err) => {
-        console.error('Failed to update profile', err);
+      error: () => {
         this.saving.set(false);
       },
     });
@@ -136,8 +134,7 @@ export class UserProfilePageComponent implements OnInit {
         this.editingEmail.set(false);
         this.emailForm.reset();
       },
-      error: (err) => {
-        console.error('Failed to change email', err);
+      error: () => {
         this.savingEmail.set(false);
         this.emailError.set('Failed to update email. Please try again.');
       },

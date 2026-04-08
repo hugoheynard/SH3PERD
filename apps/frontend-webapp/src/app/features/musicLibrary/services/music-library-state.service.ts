@@ -91,8 +91,7 @@ export class MusicLibraryStateService {
       next: (result) => {
         this.state.update(s => ({ ...s, entries: result.entries as LibraryEntry[] }));
       },
-      error: (err) => {
-        console.error('[MusicLibraryState] Failed to load library', err);
+      error: () => {
         this.loaded = false;
       },
     });

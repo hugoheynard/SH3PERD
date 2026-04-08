@@ -44,7 +44,6 @@ export class MusicTrackApiService extends BaseHttpService {
           return res.data;
         }),
         catchError(err => {
-          console.error('[MusicTrackApi] upload failed', err);
           this.toast.show('Failed to upload track', 'error');
           return throwError(() => err);
         }),
@@ -63,7 +62,6 @@ export class MusicTrackApiService extends BaseHttpService {
       .pipe(
         map(res => res?.data ?? false),
         catchError(err => {
-          console.error('[MusicTrackApi] delete failed', err);
           this.toast.show('Failed to delete track', 'error');
           return throwError(() => err);
         }),
@@ -83,7 +81,6 @@ export class MusicTrackApiService extends BaseHttpService {
       .pipe(
         map(res => res?.data ?? false),
         catchError(err => {
-          console.error('[MusicTrackApi] setFavorite failed', err);
           this.toast.show('Failed to set favorite', 'error');
           return throwError(() => err);
         }),
@@ -105,7 +102,6 @@ export class MusicTrackApiService extends BaseHttpService {
           return res.data.url;
         }),
         catchError(err => {
-          console.error('[MusicTrackApi] getDownloadUrl failed', err);
           this.toast.show('Failed to get download URL', 'error');
           return throwError(() => err);
         }),

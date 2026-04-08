@@ -36,8 +36,7 @@ export class CompanyStore {
         this._loading.set(false);
         this.toast.show('Company created', 'success');
       },
-      error: (err) => {
-        console.error('[CompanyStore] createCompany failed', err);
+      error: () => {
         this._error.set('Failed to create company.');
         this._loading.set(false);
         this.toast.show('Failed to create company', 'error');
@@ -54,8 +53,7 @@ export class CompanyStore {
         this._companies.set(res.data);
         this._loading.set(false);
       },
-      error: (err) => {
-        console.error('[CompanyStore] loadMyCompanies failed', err);
+      error: () => {
         this._error.set('Failed to load companies.');
         this._loading.set(false);
       },
@@ -70,8 +68,7 @@ export class CompanyStore {
         this._company.set(res.data);
         this._loading.set(false);
       },
-      error: (err) => {
-        console.error('[CompanyStore] loadCompanyById failed', err);
+      error: () => {
         this._error.set('Failed to load company.');
         this._loading.set(false);
       },
@@ -87,8 +84,7 @@ export class CompanyStore {
         this.toast.show('Company deleted', 'success');
         onSuccess();
       },
-      error: (err) => {
-        console.error('[CompanyStore] deleteCompany failed', err);
+      error: () => {
         this._error.set('Failed to delete company.');
         this._loading.set(false);
         this.toast.show('Failed to delete company', 'error');

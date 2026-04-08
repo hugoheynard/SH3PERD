@@ -30,8 +30,7 @@ export class MusicReferenceApiService extends BaseHttpService {
       )
       .pipe(
         map(res => res?.data ?? []),
-        catchError(err => {
-          console.error('[MusicReferenceApi] search failed', err);
+        catchError(() => {
           return of([]);
         }),
       );
@@ -55,8 +54,7 @@ export class MusicReferenceApiService extends BaseHttpService {
           }
           return res.data;
         }),
-        catchError(err => {
-          console.error('[MusicReferenceApi] create failed', err);
+        catchError((err) => {
           this.toast.show('Failed to create reference', 'error');
           return throwError(() => err);
         }),

@@ -87,8 +87,7 @@ export class ContractCreationPanelComponent {
         this.inviting.set(false);
         this.step.set('contract');
       },
-      error: (err) => {
-        console.error('[ContractPanel] invite failed', err);
+      error: () => {
         this.inviting.set(false);
       },
     });

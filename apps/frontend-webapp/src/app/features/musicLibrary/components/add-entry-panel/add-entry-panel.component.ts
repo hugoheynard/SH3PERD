@@ -102,8 +102,7 @@ export class AddEntryPanelComponent implements OnInit {
         this.toast.show('Added to repertoire', 'success');
         this.close();
       },
-      error: (err) => {
-        console.error('Failed to add repertoire entry', err);
+      error: () => {
         this.error.set('Failed to add entry. Please try again.');
         this.saving.set(false);
       },
@@ -124,8 +123,7 @@ export class AddEntryPanelComponent implements OnInit {
         this.saving.set(false);
         this.pendingRef.set(created);
       },
-      error: (err) => {
-        console.error('Failed to create reference', err);
+      error: () => {
         this.error.set('Failed to create reference. Please try again.');
         this.saving.set(false);
       },
@@ -149,8 +147,7 @@ export class AddEntryPanelComponent implements OnInit {
         this.toast.show('Added to repertoire', 'success');
         this.close();
       },
-      error: (err) => {
-        console.error('Failed to add to repertoire', err);
+      error: () => {
         this.error.set('Failed to add to repertoire. Please try again.');
         this.saving.set(false);
       },

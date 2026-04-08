@@ -36,8 +36,7 @@ export class OrgLayersTabStore {
         this._orgLayers.set(res.data.orgLayers ?? ['Department', 'Team', 'Sub-team']);
         this._loading.set(false);
       },
-      error: (err) => {
-        console.error('[OrgLayersTabStore] load failed', err);
+      error: () => {
         this._error.set('Failed to load org layers.');
         this._loading.set(false);
       },
@@ -55,8 +54,7 @@ export class OrgLayersTabStore {
         this._saving.set(false);
         this.toast.show('Org layers updated', 'success');
       },
-      error: (err) => {
-        console.error('[OrgLayersTabStore] save failed', err);
+      error: () => {
         this._error.set('Failed to save org layers.');
         this._saving.set(false);
         this.toast.show('Failed to save org layers', 'error');

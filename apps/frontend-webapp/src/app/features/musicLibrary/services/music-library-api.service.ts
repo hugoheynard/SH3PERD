@@ -35,8 +35,7 @@ export class MusicLibraryApiService extends BaseHttpService {
           if (!res?.data) throw new Error('INVALID_RESPONSE');
           return res.data;
         }),
-        catchError(err => {
-          console.error('[MusicLibraryApi] getMyLibrary failed', err);
+        catchError((err) => {
           return throwError(() => err);
         }),
       );
@@ -50,8 +49,7 @@ export class MusicLibraryApiService extends BaseHttpService {
       )
       .pipe(
         map(res => res?.data ?? null),
-        catchError(err => {
-          console.error('[MusicLibraryApi] getTabConfigs failed', err);
+        catchError(() => {
           return of(null);
         }),
       );
@@ -71,8 +69,7 @@ export class MusicLibraryApiService extends BaseHttpService {
       )
       .pipe(
         map(res => res?.data ?? false),
-        catchError(err => {
-          console.error('[MusicLibraryApi] saveTabConfigs failed', err);
+        catchError(() => {
           return of(false);
         }),
       );
@@ -86,8 +83,7 @@ export class MusicLibraryApiService extends BaseHttpService {
       )
       .pipe(
         map(res => res?.data ?? false),
-        catchError(err => {
-          console.error('[MusicLibraryApi] deleteTabConfigs failed', err);
+        catchError(() => {
           return of(false);
         }),
       );

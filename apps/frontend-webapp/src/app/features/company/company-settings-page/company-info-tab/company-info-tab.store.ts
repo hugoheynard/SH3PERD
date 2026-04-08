@@ -47,8 +47,7 @@ export class CompanyInfoTabStore {
         });
         this._loading.set(false);
       },
-      error: (err) => {
-        console.error('[CompanyInfoTabStore] load failed', err);
+      error: () => {
         this._error.set('Failed to load company info.');
         this._loading.set(false);
       },
@@ -67,8 +66,7 @@ export class CompanyInfoTabStore {
         this._saving.set(false);
         this.toast.show('Company info updated', 'success');
       },
-      error: (err) => {
-        console.error('[CompanyInfoTabStore] save failed', err);
+      error: () => {
         this._error.set('Failed to save company info.');
         this._saving.set(false);
         this.toast.show('Failed to save company info', 'error');

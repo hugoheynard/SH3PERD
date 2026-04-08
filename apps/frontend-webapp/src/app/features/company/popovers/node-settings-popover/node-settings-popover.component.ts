@@ -104,7 +104,6 @@ export class NodeSettingsPopoverComponent {
             .map(i => ({ key: i.platform, label: PLATFORM_LABELS[i.platform] ?? i.platform })),
         );
       },
-      error: (err) => console.error('[NodeSettings] loadIntegrations failed', err),
     });
 
     this.searchSubject.pipe(
@@ -202,8 +201,7 @@ export class NodeSettingsPopoverComponent {
         this.suggestions.set([]);
         this.creating.set(false);
       },
-      error: (err) => {
-        console.error('[NodeSettings] createChannel failed', err);
+      error: () => {
         this.creating.set(false);
       },
     });

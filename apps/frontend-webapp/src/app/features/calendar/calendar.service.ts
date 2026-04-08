@@ -59,8 +59,7 @@ export class CalendarService {
 
     this.loadEvents(p.date, p.users).subscribe({
       next: res => this.data.set(res),
-      error: err => {
-        console.error('Error loading calendar data', err);
+      error: () => {
         this.data.set(null);
       }
     });

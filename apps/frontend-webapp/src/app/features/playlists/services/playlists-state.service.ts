@@ -32,8 +32,7 @@ export class PlaylistsStateService {
           selectedPlaylistId: s.selectedPlaylistId ?? summaries[0]?.id ?? null,
         }));
       },
-      error: (err) => {
-        console.error('[PlaylistsState] Failed to load playlists', err);
+      error: () => {
         this.toast.show('Failed to load playlists', 'error');
         this.loaded = false;
       },

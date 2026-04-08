@@ -77,7 +77,6 @@ export class CompanyDetailPageComponent implements OnInit {
     } else if (slackResult === 'error') {
       this.activeTab.set('settings');
       this.activeSettingsTab.set(SettingsTab.CHANNELS);
-      console.error('[CompanyDetail] Slack OAuth failed');
     }
   }
 

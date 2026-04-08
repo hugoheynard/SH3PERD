@@ -33,7 +33,6 @@ export class MusicRepertoireApiService extends BaseHttpService {
       .pipe(
         map(res => res?.data ?? []),
         catchError(err => {
-          console.error('[RepertoireApi] getMyRepertoire failed', err);
           return throwError(() => err);
         }),
       );
@@ -57,7 +56,6 @@ export class MusicRepertoireApiService extends BaseHttpService {
           return res.data;
         }),
         catchError(err => {
-          console.error('[RepertoireApi] addEntry failed', err);
           this.toast.show('Failed to add to repertoire', 'error');
           return throwError(() => err);
         }),
@@ -77,7 +75,6 @@ export class MusicRepertoireApiService extends BaseHttpService {
       .pipe(
         map(res => res?.data ?? false),
         catchError(err => {
-          console.error('[RepertoireApi] deleteEntry failed', err);
           this.toast.show('Failed to remove entry', 'error');
           return throwError(() => err);
         }),

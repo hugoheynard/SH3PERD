@@ -2,12 +2,14 @@ import {
   HttpErrorResponse, type HttpHandlerFn, type HttpInterceptorFn,
   HttpRequest,
 } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { catchError, switchMap, throwError } from 'rxjs';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { catchError, EMPTY, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../app/core/services/auth.service';
 
 const isApiUrl = (url: string) => url.includes('/api/');
 const isAuthUrl = (url: string) => /\/auth\/(login|refresh|logout)/.test(url);
+const isProtectedUrl = (url: string) => url.includes('/api/protected/');
 const withCredsIfApi = (req: HttpRequest<any>) =>
   isApiUrl(req.url) && !req.withCredentials ? req.clone({ withCredentials: true }) : req;
 
@@ -16,9 +18,17 @@ const withCredsIfApi = (req: HttpRequest<any>) =>
  * Http interceptor to attach access tokens to outgoing requests,
  * and automatically attempt to refresh the session on 401 errors.
  *
- * @returns An observable of the HTTP event
+ * On SSR, protected API calls are silently skipped (EMPTY) since
+ * there is no auth token available server-side.
  */
 export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn) => {
+  const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  // SSR: skip protected API calls — no token available server-side
+  if (!isBrowser && isProtectedUrl(req.url)) {
+    return EMPTY;
+  }
+
   const auth = inject(AuthService);
 
   const baseReq = withCredsIfApi(req);

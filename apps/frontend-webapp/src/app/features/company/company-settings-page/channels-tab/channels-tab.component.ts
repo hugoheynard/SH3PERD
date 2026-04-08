@@ -44,7 +44,6 @@ export class ChannelsTabComponent implements OnInit {
   private loadIntegrations(): void {
     this.companyService.getIntegrations(this.companyId()).subscribe({
       next: (data) => this.integrations.set(data),
-      error: (err) => console.error('[ChannelsTab] loadIntegrations failed', err),
     });
   }
 
@@ -54,7 +53,6 @@ export class ChannelsTabComponent implements OnInit {
     if (platform !== 'slack') return;
     this.companyService.getSlackAuthUrl(this.companyId()).subscribe({
       next: (res) => { window.location.href = res.url; },
-      error: (err) => console.error('[ChannelsTab] OAuth URL failed', err),
     });
   }
 
@@ -69,7 +67,6 @@ export class ChannelsTabComponent implements OnInit {
           this.activePlatform.set(remaining.length > 0 ? remaining[0] : null);
         }
       },
-      error: (err) => console.error('[ChannelsTab] disconnect failed', err),
     });
   }
 }

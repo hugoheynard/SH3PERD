@@ -29,8 +29,7 @@ export class ContractStore {
         this._contracts.set(contracts);
         this._loading.set(false);
       },
-      error: (err) => {
-        console.error('Error loading contracts', err);
+      error: () => {
         this._contracts.set([]);
         this._loading.set(false);
       }

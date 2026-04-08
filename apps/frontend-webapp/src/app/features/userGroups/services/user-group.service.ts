@@ -39,9 +39,8 @@ export class UserGroupService extends BaseHttpService {
       .post<TApiResponse<any>>(url, {})
       .subscribe({
         next: value=> this._userGroups.set(value.data),
-        error: err => {
+        error: () => {
           this._userGroups.set(null);
-          console.error('[UserGroups] Error loading user groups: ', err);
         }
       });
   };
@@ -57,8 +56,7 @@ export class UserGroupService extends BaseHttpService {
       .withFeature('user-groups::create')
       .post<any>(url, data).subscribe({
         next: () => this.getMyUserGroups(),
-        error: err => {
-          console.error('[UserGroups] Error creating user group: ', err);
+        error: () => {
         }
       })
   };
@@ -75,8 +73,7 @@ export class UserGroupService extends BaseHttpService {
       .get<TApiResponse<TSubgroupInitialFormValuesObject>>(url)
       .pipe(
         map(res => res.data),
-        catchError(err => {
-          console.error('[UserGroups] Error loading sub-group form config:', err);
+        catchError(() => {
           return of(null); // retourne un flux vide pour éviter le crash
         })
       );

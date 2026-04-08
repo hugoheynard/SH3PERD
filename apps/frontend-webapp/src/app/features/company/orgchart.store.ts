@@ -30,7 +30,6 @@ export class OrgChartStore {
   loadOrgChart(companyId: TCompanyId): void {
     this.service.getOrgChart(companyId).subscribe({
       next: (res) => this._orgChart.set(res.data),
-      error: (err) => console.error('[OrgChartStore] loadOrgChart failed', err),
     });
   }
 
@@ -39,7 +38,6 @@ export class OrgChartStore {
   loadOrgNodes(companyId: TCompanyId): void {
     this.service.getCompanyOrgNodes(companyId).subscribe({
       next: (res) => this._orgNodes.set(res.data),
-      error: (err) => console.error('[OrgChartStore] loadOrgNodes failed', err),
     });
   }
 
@@ -53,8 +51,7 @@ export class OrgChartStore {
         this.toast.show(`Node "${dto.name}" created`, 'success');
         onSuccess?.();
       },
-      error: (err) => {
-        console.error('[OrgChartStore] createOrgNode failed', err);
+      error: () => {
         this.toast.show('Failed to create node', 'error');
       },
     });
@@ -70,8 +67,7 @@ export class OrgChartStore {
         this.toast.show('Node updated', 'success');
         onSuccess?.();
       },
-      error: (err) => {
-        console.error('[OrgChartStore] updateOrgNode failed', err);
+      error: () => {
         this.toast.show('Failed to update node', 'error');
       },
     });
@@ -85,8 +81,7 @@ export class OrgChartStore {
         this.toast.show('Member added', 'success');
         onSuccess?.();
       },
-      error: (err) => {
-        console.error('[OrgChartStore] addOrgNodeMember failed', err);
+      error: () => {
         this.toast.show('Failed to add member', 'error');
       },
     });
@@ -98,8 +93,7 @@ export class OrgChartStore {
         this.toast.show('Member removed', 'success');
         onSuccess?.();
       },
-      error: (err) => {
-        console.error('[OrgChartStore] removeOrgNodeMember failed', err);
+      error: () => {
         this.toast.show('Failed to remove member', 'error');
       },
     });
@@ -113,8 +107,7 @@ export class OrgChartStore {
         this.toast.show(`Guest "${dto.display_name}" added`, 'success');
         onSuccess?.();
       },
-      error: (err) => {
-        console.error('[OrgChartStore] addGuestMember failed', err);
+      error: () => {
         this.toast.show('Failed to add guest', 'error');
       },
     });
@@ -126,8 +119,7 @@ export class OrgChartStore {
         this.toast.show('Guest removed', 'success');
         onSuccess?.();
       },
-      error: (err) => {
-        console.error('[OrgChartStore] removeGuestMember failed', err);
+      error: () => {
         this.toast.show('Failed to remove guest', 'error');
       },
     });
@@ -141,8 +133,7 @@ export class OrgChartStore {
         this.toast.show('Node archived', 'success');
         onSuccess?.();
       },
-      error: (err) => {
-        console.error('[OrgChartStore] archiveOrgNode failed', err);
+      error: () => {
         this.toast.show('Failed to archive node', 'error');
       },
     });
