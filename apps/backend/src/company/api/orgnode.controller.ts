@@ -14,6 +14,7 @@ import { OrgNodePayload } from '../dto/company.dto.js';
 import { CreateOrgNodeCommand } from '../application/commands/CreateTeamCommand.js';
 import { UpdateOrgNodeInfoCommand } from '../application/commands/UpdateOrgNodeInfoCommand.js';
 import { ArchiveOrgNodeCommand } from '../application/commands/ArchiveOrgNodeCommand.js';
+import { ReorderOrgNodesCommand } from '../application/commands/ReorderOrgNodesCommand.js';
 
 @ApiTags('org-nodes / crud')
 @ApiBearerAuth('bearer')
@@ -40,6 +41,20 @@ export class OrgNodeCrudController {
       new CreateOrgNodeCommand(dto, actorId),
     );
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.CREATE_ORGNODE, result);
+  }
+
+  // ⚠️ reorder MUST be before :nodeId to avoid NestJS matching "reorder" as a nodeId param
+  @ApiOperation({ summary: 'Reorder org nodes within a parent' })
+  @ApiResponse({ status: 200, description: 'Nodes reordered.' })
+  @RequirePermission(P.Company.OrgChart.Write)
+  @Patch('reorder')
+  async reorderOrgNodes(
+    @Body() body: { companyId: TCompanyId; parentId?: TOrgNodeId; orderedIds: TOrgNodeId[] },
+  ) {
+    await this.commandBus.execute(
+      new ReorderOrgNodesCommand(body.companyId, body.parentId, body.orderedIds),
+    );
+    return { ok: true };
   }
 
   @ApiOperation({ summary: 'Update an org node' })

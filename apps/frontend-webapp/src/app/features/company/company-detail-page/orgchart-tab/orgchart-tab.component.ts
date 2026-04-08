@@ -219,4 +219,58 @@ export class OrgchartTabComponent {
     }
     return NODE_PALETTE[Math.abs(hash) % NODE_PALETTE.length];
   }
+
+  // ── Toolbar actions ──────────────────────────────────────
+
+  /**
+   * Move a node left (-1) or right (+1) among its siblings.
+   */
+  moveNode(node: TOrgNodeHierarchyViewModel, _depth: number, direction: -1 | 1): void {
+    const chart = this.store.orgChart();
+    if (!chart) return;
+
+    const parentId = node.parent_id as TOrgNodeId | undefined;
+    const siblings = parentId
+      ? this.findNodeChildren(chart.rootNodes, parentId)
+      : chart.rootNodes;
+
+    if (!siblings || siblings.length < 2) return;
+
+    const currentIndex = siblings.findIndex(n => n.id === node.id);
+    const newIndex = currentIndex + direction;
+
+    if (newIndex < 0 || newIndex >= siblings.length) return;
+
+    // Swap positions
+    const reordered = [...siblings];
+    [reordered[currentIndex], reordered[newIndex]] = [reordered[newIndex], reordered[currentIndex]];
+
+    const orderedIds = reordered.map(n => n.id) as TOrgNodeId[];
+
+    this.store.reorderOrgNodes(chart.company_id as TCompanyId, parentId, orderedIds, () => {
+      this.store.loadOrgChart(chart.company_id as TCompanyId);
+    });
+  }
+
+  archiveNode(nodeId: TOrgNodeId): void {
+    const chart = this.store.orgChart();
+    if (!chart) return;
+
+    this.store.archiveOrgNode(nodeId, () => {
+      this.store.loadOrgChart(chart.company_id as TCompanyId);
+    });
+  }
+
+  /** Find children of a node by walking the tree recursively. */
+  private findNodeChildren(
+    nodes: TOrgNodeHierarchyViewModel[],
+    parentId: TOrgNodeId,
+  ): TOrgNodeHierarchyViewModel[] | undefined {
+    for (const node of nodes) {
+      if (node.id === parentId) return node.children;
+      const found = this.findNodeChildren(node.children, parentId);
+      if (found) return found;
+    }
+    return undefined;
+  }
 }

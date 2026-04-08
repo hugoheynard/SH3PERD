@@ -312,6 +312,69 @@
 }
 .oc-add-child-btn { margin-top: 6px; }
 
+// ── Node wrap (positions toolbar relative to card) ──────
+.oc-node-wrap {
+  position: relative;
+
+  &:hover .oc-node-toolbar {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+}
+
+// ── Floating toolbar ────────────────────────────────────
+.oc-node-toolbar {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  right: 0;
+
+  // Invisible bridge to fill the gap between toolbar and card
+  // so the hover doesn't break when moving the mouse between them
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 8px;
+  }
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 6px;
+  background: var(--floating-panel-color, rgba(30, 30, 40, 0.95));
+  border: 1px solid var(--floating-border-color, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  user-select: none;
+
+  // hidden by default, shown on hover
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.oc-toolbar-btn {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-xs);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+  }
+}
+
 .oc-quick-actions {
   margin-top: 4px;
   width: 100%;

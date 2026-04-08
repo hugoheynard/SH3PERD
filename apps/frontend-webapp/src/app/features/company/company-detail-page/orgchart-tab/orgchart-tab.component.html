@@ -84,27 +84,38 @@
   <div class="oc-node-col" [style.--root-color]="rootColor">
     <div class="oc-drop" [style.background]="rootColor + '33'"></div>
 
-    <!-- Node card -->
-    <div class="oc-node-card"
-      [class.depth-0]="depth === 0"
-      [class.depth-1]="depth === 1"
-      [class.depth-deep]="depth >= 2"
-      [style.--node-color]="getNodeColorForDepth(node, depth, rootColor)"
-      [class.is-expanded]="isNodeExpanded(node.id)"
-      [class.is-archived]="node.status === 'archived'"
-      (click)="toggleNode(node.id); $event.stopPropagation()"
-      role="button"
-      [attr.aria-expanded]="isNodeExpanded(node.id)">
+    <!-- Node card wrapper (for toolbar positioning) -->
+    <div class="oc-node-wrap">
 
-      <div class="oc-node-header">
-        @if (editMode()) {
-          <button class="oc-node-settings-btn" (click)="openNodeSettings(node, depth); $event.stopPropagation()" title="Node settings" type="button">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19.14,12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24,0-.43.17-.47.41l-.36,2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47,0-.59.22L2.74,8.87c-.12.21-.08.47.12.61l2.03,1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03,1.58c-.18.14-.23.41-.12.61l1.92,3.32c.12.22.37.29.59.22l2.39-.96c.5.38,1.03.7,1.62.94l.36,2.54c.05.24.24.41.48.41h3.84c.24,0,.44-.17.47-.41l.36-2.54c.59-.24,1.13-.56,1.62-.94l2.39.96c.22.08.47,0,.59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6,3.6,1.62,3.6,3.6-1.62,3.6-3.6,3.6z"/>
-            </svg>
+      <!-- Floating toolbar — appears on hover in edit mode -->
+      @if (editMode()) {
+        <div class="oc-node-toolbar" (click)="$event.stopPropagation()">
+          <button class="oc-toolbar-btn" title="Move left" (click)="moveNode(node, depth, -1)" type="button">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
-        }
-        <span class="oc-node-name">{{ node.name }}</span>
+          <button class="oc-toolbar-btn" title="Move right" (click)="moveNode(node, depth, 1)" type="button">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <button class="oc-toolbar-btn" title="Settings" (click)="openNodeSettings(node, depth)" type="button">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      }
+
+      <!-- Node card -->
+      <div class="oc-node-card"
+        [class.depth-0]="depth === 0"
+        [class.depth-1]="depth === 1"
+        [class.depth-deep]="depth >= 2"
+        [style.--node-color]="getNodeColorForDepth(node, depth, rootColor)"
+        [class.is-expanded]="isNodeExpanded(node.id)"
+        [class.is-archived]="node.status === 'archived'"
+        (click)="toggleNode(node.id); $event.stopPropagation()"
+        role="button"
+        [attr.aria-expanded]="isNodeExpanded(node.id)">
+
+        <div class="oc-node-header">
+          <span class="oc-node-name">{{ node.name }}</span>
         <span class="oc-node-count" [title]="totalDescendantMembers(node) + ' members total'">{{ totalDescendantMembers(node) }}</span>
         @if (node.children.length > 0 || node.members.length > 0) {
           <svg class="oc-chevron" [class.oc-chevron--open]="isNodeExpanded(node.id)" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
@@ -166,8 +177,8 @@
         }
       </div>
 
-
     </div>
+    </div> <!-- /oc-node-wrap -->
 
     <!-- Add child — always visible in edit mode, below the card (dashed button) -->
     @if (editMode() && !isNodeExpanded(node.id)) {

@@ -138,4 +138,17 @@ export class OrgChartStore {
       },
     });
   }
+
+  // ── Reorder ──────────────────────────────────────────────
+
+  reorderOrgNodes(companyId: TCompanyId, parentId: TOrgNodeId | undefined, orderedIds: TOrgNodeId[], onSuccess?: () => void): void {
+    this.service.reorderOrgNodes(companyId, parentId, orderedIds).subscribe({
+      next: () => {
+        onSuccess?.();
+      },
+      error: () => {
+        this.toast.show('Failed to reorder nodes', 'error');
+      },
+    });
+  }
 }

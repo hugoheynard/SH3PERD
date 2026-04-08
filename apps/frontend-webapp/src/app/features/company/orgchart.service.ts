@@ -94,4 +94,11 @@ export class OrgChartService extends BaseHttpService {
       this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/guests/${guestId}`).build()
     );
   }
+
+  reorderOrgNodes(companyId: TCompanyId, parentId: TOrgNodeId | undefined, orderedIds: TOrgNodeId[]): Observable<{ ok: boolean }> {
+    return this.scopedHttp.withContract().patch<{ ok: boolean }>(
+      this.UrlBuilder.apiProtectedRoute('companies').route('org-nodes/reorder').build(),
+      { companyId, parentId, orderedIds }
+    );
+  }
 }

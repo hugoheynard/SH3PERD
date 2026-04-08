@@ -9,6 +9,7 @@ import type {
 import type {
   MultiSlotDragPayload,
 } from '../../features/programs/slot-multi-drag-preview/slot-multi-drag-preview.component';
+import type { TOrgNodeHierarchyViewModel } from '@sh3pherd/shared-types';
 
 
 /* ---------------------------------------------------
@@ -41,6 +42,7 @@ export type DragPayloadMap = {
   resize: ArtistPerformanceSlot,
   cue: TimelineCue,
   tab: TabDragPayload,
+  'org-node': TOrgNodeHierarchyViewModel,
 };
 
 
