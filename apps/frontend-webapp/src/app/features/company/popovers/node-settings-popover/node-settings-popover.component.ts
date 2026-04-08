@@ -29,10 +29,7 @@ export type TNodeSettingsPopoverData = {
   depth: number;
 };
 
-const NODE_PALETTE = [
-  '#63b3ed', '#68d391', '#f6ad55', '#fc8181', '#b794f4',
-  '#76e4f7', '#fbb6ce', '#f6e05e', '#4fd1c5', '#a3bffa',
-] as const;
+import { NODE_PALETTE } from '../../orgchart-palette';
 
 const PLATFORM_LABELS: Record<TCommunicationPlatform, string> = {
   slack: 'Slack',
@@ -111,6 +108,9 @@ export class NodeSettingsPopoverComponent {
   private readonly searchSubject = new Subject<string>();
 
   constructor() {
+    // Load company guests for the "Guests" tab
+    this.loadCompanyGuests();
+
     // Load connected integrations
     this.companyService.getIntegrations(this.config.companyId).subscribe({
       next: (data) => {
@@ -274,17 +274,49 @@ export class NodeSettingsPopoverComponent {
   // ── Add member ─────────────────────────────────────────
 
   readonly addMemberMode = signal<'contract' | 'guest'>('contract');
+  readonly creatingGuest = signal(false);
   readonly memberSearchQuery = signal('');
   readonly selectedContractId = signal<string | null>(null);
+  readonly selectedUserId = signal<string | null>(null);
   readonly selectedRole = signal<TTeamRole>('member');
-  readonly guestName = signal('');
-  readonly guestTitle = signal('');
+  readonly memberJobTitle = signal('');
+  readonly guestFirstName = signal('');
+  readonly guestLastName = signal('');
+  readonly guestEmail = signal('');
+  readonly guestPhone = signal('');
   readonly guestRole = signal<TTeamRole>('member');
   readonly teamRoles: TTeamRole[] = ['director', 'manager', 'member', 'viewer'];
   readonly roleOptions = this.teamRoles.map(r => ({ key: r, label: r }));
 
   setAddMemberMode(key: string): void {
     this.addMemberMode.set(key as 'contract' | 'guest');
+    this.creatingGuest.set(false);
+  }
+
+  /** Guest users loaded from the API (same source as Settings > Guests tab). */
+  readonly companyGuests = signal<{ user_id: string; email: string; first_name?: string; last_name?: string; phone?: string }[]>([]);
+
+  private loadCompanyGuests(): void {
+    this.companyService.getCompanyGuests(this.config.companyId).subscribe({
+      next: (guests) => this.companyGuests.set(guests),
+    });
+  }
+
+  /** Filtered guests for the popover — excludes those already in this node. */
+  get filteredGuests(): { user_id: string; email: string; first_name?: string; last_name?: string }[] {
+    const currentNodeMemberIds = new Set(this.config.node.members.map(m => m.user_id as string));
+    const q = this.memberSearchQuery().toLowerCase();
+
+    return this.companyGuests().filter(g => {
+      if (currentNodeMemberIds.has(g.user_id)) return false;
+      if (!q) return true;
+      const name = `${g.first_name ?? ''} ${g.last_name ?? ''} ${g.email ?? ''}`.toLowerCase();
+      return name.includes(q);
+    });
+  }
+
+  selectExistingUser(userId: string): void {
+    this.selectedUserId.set(userId);
   }
 
   setSelectedRole(key: string): void {
@@ -327,16 +359,24 @@ export class NodeSettingsPopoverComponent {
     this.selectedContractId.set(contractId);
   }
 
-  onGuestNameInput(event: Event): void {
-    this.guestName.set((event.target as HTMLInputElement).value);
-  }
-
-  onGuestTitleInput(event: Event): void {
-    this.guestTitle.set((event.target as HTMLInputElement).value);
+  onGuestInput(field: 'firstName' | 'lastName' | 'email' | 'phone', event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    switch (field) {
+      case 'firstName': this.guestFirstName.set(value); break;
+      case 'lastName': this.guestLastName.set(value); break;
+      case 'email': this.guestEmail.set(value); break;
+      case 'phone': this.guestPhone.set(value); break;
+    }
   }
 
   confirmAddMember(): void {
-    if (this.addMemberMode() === 'contract') {
+    const mode = this.addMemberMode();
+    const close = () => {
+      this.store.loadOrgChart(this.config.companyId);
+      this.layout.clearPopover();
+    };
+
+    if (mode === 'contract') {
       const contractId = this.selectedContractId();
       if (!contractId) return;
       const contract = this.contractStore.contracts().find(c => c.id === contractId);
@@ -346,21 +386,32 @@ export class NodeSettingsPopoverComponent {
         contract.user_id as TUserId,
         contractId,
         this.selectedRole(),
-        () => {
-          this.store.loadOrgChart(this.config.companyId);
-          this.layout.clearPopover();
-        },
+        this.memberJobTitle().trim() || undefined,
+        close,
+      );
+    } else if (!this.creatingGuest()) {
+      // Guest mode — select existing guest
+      const userId = this.selectedUserId();
+      if (!userId) return;
+      this.store.addOrgNodeMember(
+        this.config.node.id as TOrgNodeId,
+        userId as TUserId,
+        '' as any,
+        this.selectedRole(),
+        this.memberJobTitle().trim() || undefined,
+        close,
       );
     } else {
-      const name = this.guestName().trim();
-      if (!name) return;
-      this.store.addGuestMember(
+      const firstName = this.guestFirstName().trim();
+      const lastName = this.guestLastName().trim();
+      const email = this.guestEmail().trim();
+      if (!firstName || !email) return;
+      this.store.createGuestAndAddMember(
         this.config.node.id as TOrgNodeId,
-        { display_name: name, title: this.guestTitle().trim() || undefined, team_role: this.guestRole() },
-        () => {
-          this.store.loadOrgChart(this.config.companyId);
-          this.layout.clearPopover();
-        },
+        { first_name: firstName, last_name: lastName, email, phone: this.guestPhone().trim() || undefined },
+        this.guestRole(),
+        this.memberJobTitle().trim() || undefined,
+        close,
       );
     }
   }

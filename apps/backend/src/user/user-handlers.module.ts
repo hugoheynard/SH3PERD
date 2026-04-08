@@ -6,10 +6,13 @@ import { SearchUserByEmailHandler } from './application/query/SearchUserByEmailQ
 import { UpdateUserProfileHandler } from './application/commands/UpdateUserProfileCommand.js';
 import { UpdateUserPreferencesHandler } from './application/commands/UpdateUserPreferencesCommand.js';
 import { InviteUserHandler } from './application/commands/InviteUserCommand.js';
+import { CreateGuestUserHandler } from './application/commands/CreateGuestUserCommand.js';
+import { UpdateGuestProfileHandler } from './application/commands/UpdateGuestProfileCommand.js';
+import { GetCompanyGuestsHandler } from './application/query/GetCompanyGuestsQuery.js';
 import { AuthCoreModule } from '../auth/core/auth-core.module.js';
 
-const CommandHandlers = [UpdateUserProfileHandler, UpdateUserPreferencesHandler, InviteUserHandler];
-const QueryHandlers = [GetCurrentUserViewModelHandler, GetUserProfileHandler, SearchUserByEmailHandler];
+const CommandHandlers = [UpdateUserProfileHandler, UpdateUserPreferencesHandler, InviteUserHandler, CreateGuestUserHandler, UpdateGuestProfileHandler];
+const QueryHandlers = [GetCurrentUserViewModelHandler, GetUserProfileHandler, SearchUserByEmailHandler, GetCompanyGuestsHandler];
 
 @Module({
   imports: [CqrsModule, AuthCoreModule],

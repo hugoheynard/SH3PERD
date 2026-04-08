@@ -67,7 +67,7 @@ export class OrgChartService extends BaseHttpService {
     );
   }
 
-  addOrgNodeMember(nodeId: TOrgNodeId, dto: { user_id: TUserId; contract_id: string; team_role?: TTeamRole }): Observable<TApiResponse<unknown>> {
+  addOrgNodeMember(nodeId: TOrgNodeId, dto: { user_id: TUserId; contract_id: string; team_role?: TTeamRole; job_title?: string }): Observable<TApiResponse<unknown>> {
     return this.scopedHttp.withContract().post<TApiResponse<unknown>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/members`).build(),
       dto
@@ -92,6 +92,15 @@ export class OrgChartService extends BaseHttpService {
   removeGuestMember(nodeId: TOrgNodeId, guestId: string): Observable<TApiResponse<unknown>> {
     return this.scopedHttp.withContract().delete<TApiResponse<unknown>>(
       this.UrlBuilder.apiProtectedRoute('companies').route(`org-nodes/${nodeId}/guests/${guestId}`).build()
+    );
+  }
+
+  // ── Guest user creation ──────────────────────────────────
+
+  createGuestUser(dto: { email: string; first_name: string; last_name: string; phone?: string }): Observable<{ user_id: string; email: string; first_name: string; last_name: string; is_guest: true }> {
+    return this.http.post<any>(
+      this.UrlBuilder.apiProtectedRoute('user').route('guest').build(),
+      dto
     );
   }
 

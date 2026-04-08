@@ -57,12 +57,12 @@ export class OrgNodeMembersController {
   @Post(':nodeId/members')
   async addOrgNodeMember(
     @Param('nodeId') nodeId: TOrgNodeId,
-    @Body() body: { user_id: TUserId; contract_id: string; team_role?: TTeamRole },
+    @Body() body: { user_id: TUserId; contract_id: string; team_role?: TTeamRole; job_title?: string },
     @ActorId() actorId: TUserId,
   ) {
     const result = await this.commandBus.execute(
       new AddOrgNodeMemberCommand(
-        { org_node_id: nodeId, user_id: body.user_id, contract_id: body.contract_id as any, team_role: body.team_role },
+        { org_node_id: nodeId, user_id: body.user_id, contract_id: body.contract_id as any, team_role: body.team_role, job_title: body.job_title },
         actorId,
       ),
     );

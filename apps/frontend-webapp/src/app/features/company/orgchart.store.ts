@@ -75,8 +75,8 @@ export class OrgChartStore {
 
   // ── Members ────────────────────────────────────────────────
 
-  addOrgNodeMember(nodeId: TOrgNodeId, userId: TUserId, contractId: string, teamRole?: TTeamRole, onSuccess?: () => void): void {
-    this.service.addOrgNodeMember(nodeId, { user_id: userId, contract_id: contractId, team_role: teamRole }).subscribe({
+  addOrgNodeMember(nodeId: TOrgNodeId, userId: TUserId, contractId: string, teamRole?: TTeamRole, jobTitle?: string, onSuccess?: () => void): void {
+    this.service.addOrgNodeMember(nodeId, { user_id: userId, contract_id: contractId, team_role: teamRole, job_title: jobTitle }).subscribe({
       next: () => {
         this.toast.show('Member added', 'success');
         onSuccess?.();
@@ -135,6 +135,31 @@ export class OrgChartStore {
       },
       error: () => {
         this.toast.show('Failed to archive node', 'error');
+      },
+    });
+  }
+
+  // ── Guest → Member ──────────────────────────────────────
+
+  /**
+   * Creates a guest user, then adds them as a regular member to the node.
+   */
+  createGuestAndAddMember(
+    nodeId: TOrgNodeId,
+    dto: { email: string; first_name: string; last_name: string; phone?: string },
+    teamRole: TTeamRole,
+    jobTitle?: string,
+    onSuccess?: () => void,
+  ): void {
+    this.service.createGuestUser(dto).subscribe({
+      next: (guest) => {
+        this.addOrgNodeMember(nodeId, guest.user_id as TUserId, '' as any, teamRole, jobTitle, () => {
+          this.toast.show(`Guest "${dto.first_name}" added as member`, 'success');
+          onSuccess?.();
+        });
+      },
+      error: () => {
+        this.toast.show('Failed to create guest user', 'error');
       },
     });
   }

@@ -1,64 +1,91 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import type { TUserSearchResult, TUserId } from '@sh3pherd/shared-types';
+import type { TUserId } from '@sh3pherd/shared-types';
 import type { IUserCredentialsRepository } from '../../infra/UserCredentialsMongoRepo.repository.js';
 import type { IUserProfileRepository } from '../../infra/UserProfileMongoRepo.repository.js';
-import type { IPasswordService } from '../../../auth/core/password-manager/types/Interfaces.js';
 import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO } from '../../../appBootstrap/nestTokens.js';
-import { PASSWORD_SERVICE } from '../../../auth/auth.tokens.js';
 import { UserCredentialEntity } from '../../domain/UserCredential.entity.js';
 import { UserProfileEntity } from '../../domain/UserProfileEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
-export type TInviteUserDTO = {
+export type TCreateGuestUserDTO = {
   email: string;
   first_name: string;
   last_name: string;
+  phone?: string;
 };
 
-export class InviteUserCommand {
+export type TCreateGuestUserResult = {
+  user_id: TUserId;
+  email: string;
+  first_name: string;
+  last_name: string;
+  is_guest: true;
+};
+
+export class CreateGuestUserCommand {
   constructor(
-    public readonly payload: TInviteUserDTO,
+    public readonly payload: TCreateGuestUserDTO,
     public readonly actorId: TUserId,
   ) {}
 }
 
 /**
- * Invites a new user by creating credentials (inactive) and a profile.
- * The user must reset their password before logging in.
- * Uses PasswordService instead of direct bcrypt for consistent hashing strategy.
+ * Creates a guest user — a lightweight account with no password.
+ *
+ * The guest gets real user_credentials (is_guest: true, password: null)
+ * and a user_profile. They can be added to org nodes as regular members.
+ *
+ * If the email already exists:
+ * - as a guest → returns the existing user (deduplication)
+ * - as a real user → throws 409 (use addMember with their user_id instead)
  */
-@CommandHandler(InviteUserCommand)
-export class InviteUserHandler implements ICommandHandler<InviteUserCommand, TUserSearchResult> {
+@CommandHandler(CreateGuestUserCommand)
+export class CreateGuestUserHandler implements ICommandHandler<CreateGuestUserCommand, TCreateGuestUserResult> {
   constructor(
-    @Inject(PASSWORD_SERVICE) private readonly passwordService: IPasswordService,
     @Inject(USER_CREDENTIALS_REPO) private readonly credsRepo: IUserCredentialsRepository,
     @Inject(USER_PROFILE_REPO) private readonly profileRepo: IUserProfileRepository,
   ) {}
 
-  async execute(cmd: InviteUserCommand): Promise<TUserSearchResult> {
+  async execute(cmd: CreateGuestUserCommand): Promise<TCreateGuestUserResult> {
     const { payload, actorId } = cmd;
 
+    // Deduplication: check if email already exists
     const existing = await this.credsRepo.findOne({ filter: { email: payload.email } });
+
     if (existing) {
-      throw new BusinessError('Email already in use', { code: 'USER_ALREADY_EXISTS', status: 409 });
+      if (existing.is_guest) {
+        // Return existing guest — no duplicate
+        return {
+          user_id: existing.id,
+          email: existing.email,
+          first_name: payload.first_name,
+          last_name: payload.last_name,
+          is_guest: true,
+        };
+      }
+      throw new BusinessError('Email belongs to an active user — add them as a regular member', {
+        code: 'USER_ALREADY_EXISTS',
+        status: 409,
+      });
     }
 
-    const tempPasswordHash = await this.passwordService.hashPassword({ password: randomUUID() });
-
+    // Create guest credentials (no password)
     const credentials = new UserCredentialEntity({
       email: payload.email,
-      password: tempPasswordHash,
+      password: null,
       email_verified: false,
-      active: false, is_guest: false,
+      active: true,
+      is_guest: true,
     });
 
+    // Create profile
     const profile = new UserProfileEntity({
       user_id: credentials.id,
       first_name: payload.first_name,
       last_name: payload.last_name,
+      phone: payload.phone,
       active: true,
     });
 
@@ -80,6 +107,7 @@ export class InviteUserHandler implements ICommandHandler<InviteUserCommand, TUs
         email: payload.email,
         first_name: payload.first_name,
         last_name: payload.last_name,
+        is_guest: true,
       };
     } finally {
       await session.endSession();

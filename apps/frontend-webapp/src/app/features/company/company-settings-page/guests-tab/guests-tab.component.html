@@ -1,0 +1,75 @@
+<div class="tab-panel">
+  <h2 class="panel-title">Guest Members</h2>
+  <p class="panel-subtitle">
+    Manage guest users — external collaborators without a SH3PHERD account.
+    Guests can be added to org chart nodes as regular members.
+  </p>
+
+  <!-- Search + Create -->
+  <div class="guests-toolbar">
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Search guests..."
+      [value]="searchQuery()"
+      (input)="searchQuery.set($any($event.target).value)"
+    />
+    @if (!creating()) {
+      <sh3-button variant="primary" size="sm" (clicked)="startCreate()">+ New guest</sh3-button>
+    }
+  </div>
+
+  <!-- Create form -->
+  @if (creating()) {
+    <div class="guest-form">
+      <input class="field-input" type="text" placeholder="First name *" [value]="newFirstName()" (input)="onInput(newFirstName, $event)" autofocus />
+      <input class="field-input" type="text" placeholder="Last name" [value]="newLastName()" (input)="onInput(newLastName, $event)" />
+      <input class="field-input" type="email" placeholder="Email *" [value]="newEmail()" (input)="onInput(newEmail, $event)" />
+      <input class="field-input" type="tel" placeholder="Phone" [value]="newPhone()" (input)="onInput(newPhone, $event)" />
+      <div class="form-actions">
+        <sh3-button variant="primary" size="sm" [disabled]="!newFirstName().trim() || !newEmail().trim()" (clicked)="confirmCreate()">Create</sh3-button>
+        <sh3-button variant="ghost" size="sm" (clicked)="cancelCreate()">Cancel</sh3-button>
+      </div>
+    </div>
+  }
+
+  <!-- Guest list -->
+  @if (loading()) {
+    <p class="loading-hint">Loading guests...</p>
+  } @else if (filteredGuests.length === 0) {
+    <p class="empty-hint">No guests found.</p>
+  } @else {
+    <div class="guest-list">
+      @for (guest of filteredGuests; track guest.user_id) {
+        <div class="guest-row">
+          @if (editingId() === guest.user_id) {
+            <!-- Edit mode -->
+            <div class="guest-edit-form">
+              <input class="field-input" type="text" placeholder="First name" [value]="editFirstName()" (input)="onInput(editFirstName, $event)" autofocus />
+              <input class="field-input" type="text" placeholder="Last name" [value]="editLastName()" (input)="onInput(editLastName, $event)" />
+              <input class="field-input" type="email" placeholder="Email" [value]="editEmail()" (input)="onInput(editEmail, $event)" />
+              <input class="field-input" type="tel" placeholder="Phone" [value]="editPhone()" (input)="onInput(editPhone, $event)" />
+              <div class="form-actions">
+                <sh3-button variant="primary" size="sm" (clicked)="confirmEdit()">Save</sh3-button>
+                <sh3-button variant="ghost" size="sm" (clicked)="cancelEdit()">Cancel</sh3-button>
+              </div>
+            </div>
+          } @else {
+            <!-- View mode -->
+            <sh3-avatar [name]="(guest.first_name ?? '') + ' ' + (guest.last_name ?? '')" [colorSeed]="guest.user_id" size="sm" variant="ghost" />
+            <div class="guest-info">
+              <span class="guest-name">{{ guest.first_name ?? '' }} {{ guest.last_name ?? '' }}</span>
+              <span class="guest-meta">{{ guest.email }}@if (guest.phone) { · {{ guest.phone }} }</span>
+            </div>
+            <button class="guest-edit-btn" (click)="startEdit(guest)" type="button" title="Edit">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

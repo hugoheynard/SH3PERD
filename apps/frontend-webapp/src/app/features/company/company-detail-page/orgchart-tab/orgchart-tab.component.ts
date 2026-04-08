@@ -10,12 +10,7 @@ import type {
   TOrgNodeId,
   TUserId,
 } from '@sh3pherd/shared-types';
-
-/** Preset color palette for root nodes */
-const NODE_PALETTE = [
-  '#63b3ed', '#68d391', '#f6ad55', '#fc8181', '#b794f4',
-  '#76e4f7', '#fbb6ce', '#f6e05e', '#4fd1c5', '#a3bffa',
-] as const;
+import { NODE_PALETTE } from '../../orgchart-palette';
 
 @Component({
   selector: 'app-orgchart-tab',
@@ -272,7 +267,7 @@ export class OrgchartTabComponent {
     manager: 'Mgr.',
   };
 
-  getNodeLeaders(node: TOrgNodeHierarchyViewModel): { id: string; name: string; initials: string; roleLabel: string; label: string; isGuest: boolean }[] {
+  getNodeLeaders(node: TOrgNodeHierarchyViewModel): { id: string; name: string; shortName: string; initials: string; roleLabel: string; label: string; isGuest: boolean }[] {
     // Regular members who are directors/managers
     const memberLeaders = node.members
       .filter(m => this.LEADER_ROLES.includes(m.team_role as any))
@@ -280,9 +275,10 @@ export class OrgchartTabComponent {
         const first = m.first_name ?? '';
         const last = m.last_name ?? '';
         const name = first || last ? `${first} ${last}`.trim() : m.user_id;
+        const shortName = first + (last ? ` ${last.charAt(0)}.` : '');
         const initials = ((first?.charAt(0) ?? '') + (last?.charAt(0) ?? '')).toUpperCase() || '?';
         const roleLabel = this.ROLE_LABELS[m.team_role] ?? m.team_role;
-        return { id: m.user_id, name, initials, roleLabel, label: `${name} (${roleLabel})`, isGuest: false };
+        return { id: m.user_id, name, shortName, initials, roleLabel, label: `${name} (${roleLabel})`, isGuest: false };
       });
 
     // Guest members who are directors/managers
@@ -291,9 +287,10 @@ export class OrgchartTabComponent {
       .map(g => {
         const name = g.display_name;
         const parts = name.split(' ');
+        const shortName = parts[0] + (parts[1] ? ` ${parts[1].charAt(0)}.` : '');
         const initials = ((parts[0]?.charAt(0) ?? '') + (parts[1]?.charAt(0) ?? '')).toUpperCase() || '?';
         const roleLabel = this.ROLE_LABELS[g.team_role] ?? g.team_role;
-        return { id: g.id, name, initials, roleLabel, label: `${name} (${roleLabel})`, isGuest: true };
+        return { id: g.id, name, shortName, initials, roleLabel, label: `${name} (${roleLabel})`, isGuest: true };
       });
 
     return [...memberLeaders, ...guestLeaders];

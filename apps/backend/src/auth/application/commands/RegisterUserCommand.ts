@@ -34,7 +34,7 @@ export class RegisterUserHandler implements ICommandHandler<RegisterUserCommand,
       email: cmd.payload.email,
       password: await this.password.hashPassword({ password: cmd.payload.password }),
       email_verified: false,
-      active: true,
+      active: true, is_guest: false,
     });
 
     const profile = new UserProfileEntity({

@@ -97,4 +97,26 @@ export class CompanyService extends BaseHttpService {
       { companyId, name, isPrivate },
     );
   }
+
+  // ── Guests ─────────────────────────────────────────────────
+
+  getCompanyGuests(companyId: TCompanyId): Observable<any[]> {
+    return this.http.get<any[]>(
+      this.UrlBuilder.apiProtectedRoute('user').route('guests').build() + `?companyId=${companyId}`
+    );
+  }
+
+  createGuest(dto: { email: string; first_name: string; last_name: string; phone?: string }): Observable<any> {
+    return this.http.post<any>(
+      this.UrlBuilder.apiProtectedRoute('user').route('guest').build(),
+      dto
+    );
+  }
+
+  updateGuest(userId: string, patch: { first_name?: string; last_name?: string; email?: string; phone?: string }): Observable<void> {
+    return this.http.patch<void>(
+      this.UrlBuilder.apiProtectedRoute('user').route(`guest/${userId}`).build(),
+      patch
+    );
+  }
 }

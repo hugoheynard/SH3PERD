@@ -73,6 +73,9 @@
             @if (activeSettingsTab() === SettingsTab.CHANNELS) {
               <app-channels-tab [companyId]="c.id" />
             }
+            @if (activeSettingsTab() === SettingsTab.GUESTS) {
+              <app-guests-tab [companyId]="c.id" />
+            }
             @if (activeSettingsTab() === SettingsTab.SETTINGS) {
               <app-danger-zone-tab [companyId]="c.id" />
             }

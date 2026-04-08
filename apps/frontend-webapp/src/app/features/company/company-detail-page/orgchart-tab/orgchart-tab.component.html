@@ -202,7 +202,7 @@
           @for (leader of leaders; track leader.id) {
             <div class="oc-leader" [class.oc-leader--guest]="leader.isGuest" [title]="leader.label">
               <div class="oc-leader-avatar" [style.background]="getMemberColor(leader.id)">{{ leader.initials }}</div>
-              <span class="oc-leader-name">{{ leader.name }}</span>
+              <span class="oc-leader-name">{{ leader.shortName }}</span>
               <span class="oc-leader-role">{{ leader.roleLabel }}</span>
             </div>
           }

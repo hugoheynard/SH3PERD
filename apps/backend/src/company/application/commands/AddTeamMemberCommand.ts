@@ -17,6 +17,7 @@ export type TAddOrgNodeMemberDTO = {
   user_id: TUserId;
   contract_id: TContractId;
   team_role?: TTeamRole;
+  job_title?: string;
 };
 
 export class AddOrgNodeMemberCommand {
@@ -49,7 +50,7 @@ export class AddOrgNodeMemberHandler implements ICommandHandler<AddOrgNodeMember
     this.policy.ensureActive(entity);
     this.policy.ensureCanManageMembers(actorId);
 
-    const member = entity.addMember(dto.user_id, dto.contract_id, dto.team_role ?? 'member');
+    const member = entity.addMember(dto.user_id, dto.contract_id, dto.team_role ?? 'member', dto.job_title);
 
     const membershipEvent: TOrgMembershipEventRecord = {
       id: `orgevt_${randomUUID()}`,

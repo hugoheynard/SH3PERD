@@ -6,9 +6,11 @@ import { SUserId, type TUserId } from './user.domain.js';
 export const SUserCredentialsDomainModel = z.object({
   id: SUserId,
   email: z.string().email(),
-  password: z.string(),
+  password: z.string().nullable(),
   active: z.boolean(),
   email_verified: z.boolean(),
+  /** True for guest users who haven't activated their account yet. */
+  is_guest: z.boolean().default(false),
 });
 
 /**
@@ -35,8 +37,10 @@ export const SuserCredentialsDTO = z.object({
 export type TUserCredentialsDomainModel = {
   id: TUserId;
   email: string;
-  password: string;
+  password: string | null;
   active: boolean;
   email_verified: boolean;
+  /** True for guest users who haven't activated their account yet. */
+  is_guest: boolean;
 };
 export type TUserCredentialsRecord = TUserCredentialsDomainModel & TRecordMetadata;

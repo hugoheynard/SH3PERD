@@ -27,7 +27,7 @@
               <sh3-avatar [name]="(member.first_name ?? '') + ' ' + (member.last_name ?? '')" [colorSeed]="member.user_id" size="sm" />
               <div class="popover-member-info">
                 <span class="popover-member-name">{{ member.first_name ?? '' }} {{ member.last_name ?? '' }}</span>
-                <span class="popover-member-role">{{ member.team_role }}</span>
+                <span class="popover-member-role">{{ member.team_role }}@if (member.job_title) { · {{ member.job_title }} }</span>
               </div>
               @if (confirmingRemove() === member.user_id) {
                 <div class="popover-member-confirm-remove">
@@ -72,16 +72,15 @@
         <div class="add-member-section">
           <!-- Mode tabs -->
           <sh3-pill-selector
-            [options]="[{ key: 'contract', label: 'From contracts' }, { key: 'guest', label: 'Guest' }]"
+            [options]="[{ key: 'contract', label: 'Contracts' }, { key: 'guest', label: 'Guests' }]"
             [activeKey]="addMemberMode()"
             (selected)="setAddMemberMode($event)"
           />
 
           @if (addMemberMode() === 'contract') {
-            <!-- Search -->
+            <!-- Search contracts -->
             <input class="field-input" type="text" placeholder="Search by name or email..." [value]="memberSearchQuery()" (input)="onMemberSearch($event)" autofocus />
 
-            <!-- Contract list -->
             <div class="add-member-contract-list">
               @for (c of filteredContracts; track c.id) {
                 <button class="add-member-contract-item" [class.is-selected]="selectedContractId() === c.id" (click)="selectContract(c.id)" type="button">
@@ -97,19 +96,53 @@
               }
             </div>
 
-            <!-- Role selector -->
             @if (selectedContractId()) {
               <sh3-pill-selector [options]="roleOptions" [activeKey]="selectedRole()" (selected)="setSelectedRole($event)" />
             }
           } @else {
-            <!-- Guest form -->
-            <input class="field-input" type="text" placeholder="Display name" [value]="guestName()" (input)="onGuestNameInput($event)" autofocus />
-            <input class="field-input" type="text" placeholder="Title (optional)" [value]="guestTitle()" (input)="onGuestTitleInput($event)" />
-            <sh3-pill-selector [options]="roleOptions" [activeKey]="guestRole()" (selected)="setGuestRole($event)" />
+            <!-- Guests: search existing or create new -->
+            @if (!creatingGuest()) {
+              <input class="field-input" type="text" placeholder="Search guests..." [value]="memberSearchQuery()" (input)="onMemberSearch($event)" autofocus />
+
+              <div class="add-member-contract-list">
+                @for (g of filteredGuests; track g.user_id) {
+                  <button class="add-member-contract-item" [class.is-selected]="selectedUserId() === g.user_id" (click)="selectExistingUser(g.user_id)" type="button">
+                    <sh3-avatar [name]="(g.first_name ?? '') + ' ' + (g.last_name ?? '')" [colorSeed]="g.user_id" size="sm" variant="ghost" />
+                    <div class="popover-member-info">
+                      <span class="popover-member-name">{{ g.first_name ?? '' }} {{ g.last_name ?? '' }}</span>
+                      <span class="popover-member-role">{{ g.email }}</span>
+                    </div>
+                  </button>
+                }
+                @if (filteredGuests.length === 0) {
+                  <p class="empty-hint">No guests found. Create one below.</p>
+                }
+              </div>
+
+              <button class="btn-add-channel" (click)="creatingGuest.set(true)" type="button">+ Create new guest</button>
+
+              @if (selectedUserId()) {
+                <sh3-pill-selector [options]="roleOptions" [activeKey]="selectedRole()" (selected)="setSelectedRole($event)" />
+              }
+            } @else {
+              <!-- Inline guest creation form -->
+              <input class="field-input" type="text" placeholder="First name *" [value]="guestFirstName()" (input)="onGuestInput('firstName', $event)" autofocus />
+              <input class="field-input" type="text" placeholder="Last name" [value]="guestLastName()" (input)="onGuestInput('lastName', $event)" />
+              <input class="field-input" type="email" placeholder="Email *" [value]="guestEmail()" (input)="onGuestInput('email', $event)" />
+              <input class="field-input" type="tel" placeholder="Phone (optional)" [value]="guestPhone()" (input)="onGuestInput('phone', $event)" />
+              <sh3-pill-selector [options]="roleOptions" [activeKey]="guestRole()" (selected)="setGuestRole($event)" />
+            }
           }
 
+          <!-- Job title (all modes) -->
+          <input class="field-input" type="text" placeholder="Job title (optional — e.g. Directeur Artistique)" [value]="memberJobTitle()" (input)="memberJobTitle.set($any($event.target).value)" />
+
           <div class="add-member-actions">
-            <button class="btn-confirm" (click)="confirmAddMember()" [disabled]="addMemberMode() === 'contract' ? !selectedContractId() : !guestName().trim()" type="button">Add</button>
+            <button class="btn-confirm" (click)="confirmAddMember()" [disabled]="
+              addMemberMode() === 'contract' ? !selectedContractId() :
+              creatingGuest() ? (!guestFirstName().trim() || !guestEmail().trim()) :
+              !selectedUserId()
+            " type="button">Add</button>
             <button class="btn-cancel" (click)="cancelAddMember()" type="button">Cancel</button>
           </div>
         </div>
