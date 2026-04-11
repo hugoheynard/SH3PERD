@@ -97,10 +97,10 @@ export class OrgChartService extends BaseHttpService {
 
   // ── Guest user creation ──────────────────────────────────
 
-  createGuestUser(dto: { email: string; first_name: string; last_name: string; phone?: string }): Observable<{ user_id: string; email: string; first_name: string; last_name: string; is_guest: true }> {
-    return this.http.post<any>(
+  createGuestUser(dto: { email: string; first_name: string; last_name: string; phone?: string; company_id?: TCompanyId }): Observable<{ user_id: string; email: string; first_name: string; last_name: string; is_guest: true }> {
+    return this.scopedHttp.withContract().post<any>(
       this.UrlBuilder.apiProtectedRoute('user').route('guest').build(),
-      dto
+      dto,
     );
   }
 

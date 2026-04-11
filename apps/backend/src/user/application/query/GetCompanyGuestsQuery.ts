@@ -1,9 +1,10 @@
 import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import type { TCompanyId, TUserId } from '@sh3pherd/shared-types';
-import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO } from '../../../appBootstrap/nestTokens.js';
+import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO, GUEST_COMPANY_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IUserCredentialsRepository } from '../../infra/UserCredentialsMongoRepo.repository.js';
 import type { IUserProfileRepository } from '../../infra/UserProfileMongoRepo.repository.js';
+import type { IGuestCompanyRepository } from '../../infra/GuestCompanyMongoRepo.repository.js';
 
 export type TGuestViewModel = {
   user_id: TUserId;
@@ -19,29 +20,33 @@ export class GetCompanyGuestsQuery {
 }
 
 /**
- * Returns all guest users (is_guest: true) who are active members
- * of any org node in the given company.
+ * Returns all guest users linked to the given company via the `guest_company` junction.
+ *
+ * A guest belongs to a company because someone explicitly added them to that company's
+ * directory (settings tab) or to one of its nodes. The same guest can belong to multiple
+ * companies — the junction allows it.
  */
 @QueryHandler(GetCompanyGuestsQuery)
 export class GetCompanyGuestsHandler implements IQueryHandler<GetCompanyGuestsQuery, TGuestViewModel[]> {
   constructor(
     @Inject(USER_CREDENTIALS_REPO) private readonly credsRepo: IUserCredentialsRepository,
     @Inject(USER_PROFILE_REPO) private readonly profileRepo: IUserProfileRepository,
+    @Inject(GUEST_COMPANY_REPO) private readonly guestCompanyRepo: IGuestCompanyRepository,
   ) {}
 
-  async execute(_query: GetCompanyGuestsQuery): Promise<TGuestViewModel[]> {
-    // TODO: scope by company when multi-company is supported.
-    // For now, return ALL guest users (is_guest: true).
-    const allCreds = await this.credsRepo.findMany({ filter: { is_guest: true } as any });
-    const guestCreds = allCreds ?? [];
+  async execute(query: GetCompanyGuestsQuery): Promise<TGuestViewModel[]> {
+    const guestIds = await this.guestCompanyRepo.findGuestIdsByCompany(query.companyId);
+    if (guestIds.length === 0) return [];
 
-    if (guestCreds.length === 0) return [];
+    const [creds, profiles] = await Promise.all([
+      this.credsRepo.findMany({ filter: { id: { $in: guestIds }, is_guest: true } as any }),
+      this.profileRepo.findMany({ filter: { user_id: { $in: guestIds } } as any }),
+    ]);
 
-    const guestIds = guestCreds.map(c => c.id);
-    const profiles = await this.profileRepo.findMany({ filter: { user_id: { $in: guestIds } } as any }) ?? [];
-    const profileMap = new Map(profiles.map(p => [p.user_id, p]));
+    const credsList = creds ?? [];
+    const profileMap = new Map((profiles ?? []).map(p => [p.user_id as TUserId, p]));
 
-    return guestCreds.map(c => {
+    return credsList.map(c => {
       const profile = profileMap.get(c.id);
       return {
         user_id: c.id,

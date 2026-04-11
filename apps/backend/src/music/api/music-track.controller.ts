@@ -12,6 +12,9 @@ import { MasterTrackCommand } from '../application/commands/MasterTrackCommand.j
 import { PitchShiftVersionCommand } from '../application/commands/PitchShiftVersionCommand.js';
 import { GetTrackDownloadUrlQuery } from '../application/queries/GetTrackDownloadUrlQuery.js';
 import { VersionTrackPayload, TrackDownloadUrlPayload, MusicVersionPayload } from '../dto/music.dto.js';
+import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
+import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
+import { P } from '@sh3pherd/shared-types';
 import type {
   TUserId, TApiResponse, TMusicVersionId, TVersionTrackId,
   TVersionTrackDomainModel, TMusicVersionDomainModel, TMasteringTargetSpecs,
@@ -21,6 +24,7 @@ import type {
 @ApiTags('music / tracks')
 @ApiBearerAuth('bearer')
 @ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
+@ContractScoped()
 @Controller('versions/:versionId/tracks')
 export class MusicTrackController {
   constructor(
@@ -32,6 +36,7 @@ export class MusicTrackController {
   @ApiConsumes('multipart/form-data')
   @ApiParam({ name: 'versionId', description: 'Version to attach the track to' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.TRACK_UPLOADED, VersionTrackPayload, 201))
+  @RequirePermission(P.Music.Track.Write)
   @Post()
   @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 50 * 1024 * 1024 } }))
   async uploadTrack(
@@ -49,6 +54,7 @@ export class MusicTrackController {
   @ApiParam({ name: 'versionId', description: 'Version owning the track' })
   @ApiParam({ name: 'trackId', description: 'Track to delete' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.TRACK_DELETED, undefined as any, 200))
+  @RequirePermission(P.Music.Track.Write)
   @Delete(':trackId')
   async deleteTrack(
     @ActorId() actorId: TUserId,
@@ -65,6 +71,7 @@ export class MusicTrackController {
   @ApiParam({ name: 'versionId', description: 'Version owning the track' })
   @ApiParam({ name: 'trackId', description: 'Track to set as favorite' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.TRACK_FAVORITE_SET, undefined as any, 200))
+  @RequirePermission(P.Music.Track.Write)
   @Patch(':trackId/favorite')
   async setFavorite(
     @ActorId() actorId: TUserId,
@@ -81,6 +88,7 @@ export class MusicTrackController {
   @ApiParam({ name: 'versionId', description: 'Version owning the track' })
   @ApiParam({ name: 'trackId', description: 'Track to download' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.TRACK_DOWNLOAD_URL, TrackDownloadUrlPayload, 200))
+  @RequirePermission(P.Music.Track.Read)
   @Get(':trackId/download')
   async getDownloadUrl(
     @ActorId() actorId: TUserId,
@@ -97,6 +105,7 @@ export class MusicTrackController {
   @ApiParam({ name: 'versionId', description: 'Version owning the source track' })
   @ApiParam({ name: 'trackId', description: 'Source track to master' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.TRACK_MASTERED, VersionTrackPayload, 200))
+  @RequirePermission(P.Music.Track.Write)
   @Post(':trackId/master')
   async masterTrack(
     @ActorId() actorId: TUserId,
@@ -114,6 +123,7 @@ export class MusicTrackController {
   @ApiParam({ name: 'versionId', description: 'Source version to pitch-shift' })
   @ApiParam({ name: 'trackId', description: 'Reference track for the operation' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.VERSION_PITCH_SHIFTED, MusicVersionPayload, 200))
+  @RequirePermission(P.Music.Track.Write)
   @Post(':trackId/pitch-shift')
   async pitchShiftTrack(
     @ActorId() actorId: TUserId,

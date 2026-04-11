@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, input, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, HostListener, inject, input, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrgChartStore } from '../../orgchart.store';
 import { LayoutService } from '../../../../core/services/layout.service';
 import { NodeSettingsPopoverComponent, type TNodeSettingsPopoverData } from '../../popovers/node-settings-popover/node-settings-popover.component';
+import { OrgchartExportModalComponent } from '../../orgchart-export-modal/orgchart-export-modal.component';
 import type {
   TCompanyId,
   TOrgNodeHierarchyViewModel,
@@ -15,7 +16,7 @@ import { NODE_PALETTE } from '../../orgchart-palette';
 @Component({
   selector: 'app-orgchart-tab',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, OrgchartExportModalComponent],
   templateUrl: './orgchart-tab.component.html',
   styleUrl: './orgchart-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +29,9 @@ export class OrgchartTabComponent {
 
   readonly editMode = signal(false);
   readonly expandedNodes = signal<Set<string>>(new Set());
+
+  // Export modal visibility
+  readonly exportModalOpen = signal(false);
 
   // Node creation state
   readonly addingNode = signal(false);
@@ -51,8 +55,38 @@ export class OrgchartTabComponent {
   // Filter
   readonly showArchived = signal(false);
 
+  /**
+   * Org chart with archived nodes filtered out (recursively) unless `showArchived` is on.
+   * Reads `store.orgChart()` and `showArchived()` reactively — components iterate this instead of `store.orgChart()`.
+   */
+  readonly visibleChart = computed(() => {
+    const chart = this.store.orgChart();
+    if (!chart) return null;
+    if (this.showArchived()) return chart;
+
+    const filterTree = (nodes: TOrgNodeHierarchyViewModel[]): TOrgNodeHierarchyViewModel[] =>
+      nodes
+        .filter(n => n.status !== 'archived')
+        .map(n => ({ ...n, children: filterTree(n.children) }));
+
+    return { ...chart, rootNodes: filterTree(chart.rootNodes) };
+  });
+
   // Move-to modal
   readonly moveModalNode = signal<TOrgNodeHierarchyViewModel | null>(null);
+
+  toggleShowArchived(): void {
+    this.showArchived.update(v => !v);
+  }
+
+  // ── Export modal ────────────────────────────────────────
+  openExportModal(): void {
+    this.exportModalOpen.set(true);
+  }
+
+  closeExportModal(): void {
+    this.exportModalOpen.set(false);
+  }
 
   @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLElement>;
 

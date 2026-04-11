@@ -1,0 +1,142 @@
+<div class="export-modal-overlay" (click)="cancel()">
+  <div class="export-modal" (click)="$event.stopPropagation()">
+    <header class="export-modal-header">
+      <div>
+        <span class="export-modal-eyebrow">Export</span>
+        <h2 class="export-modal-title">Orgchart</h2>
+      </div>
+      <button class="export-modal-close" type="button" (click)="cancel()" [disabled]="running()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Mode picker: big radio cards -->
+    <section class="export-modal-section">
+      <h3 class="export-modal-section-title">Format</h3>
+      <div class="export-mode-grid">
+        <button
+          type="button"
+          class="export-mode-card"
+          [class.is-selected]="selectedMode() === 'fit'"
+          (click)="selectMode('fit')"
+        >
+          <span class="export-mode-card-icon">📄</span>
+          <span class="export-mode-card-title">PDF — Fit to page</span>
+          <span class="export-mode-card-desc">Whole chart scaled to one landscape sheet. Best for small/medium charts.</span>
+        </button>
+
+        <button
+          type="button"
+          class="export-mode-card"
+          [class.is-selected]="selectedMode() === 'by-root'"
+          (click)="selectMode('by-root')"
+        >
+          <span class="export-mode-card-icon">📚</span>
+          <span class="export-mode-card-title">PDF — By root</span>
+          <span class="export-mode-card-desc">One page per top-level node, natural sizing. Best for large charts.</span>
+        </button>
+
+        <button
+          type="button"
+          class="export-mode-card"
+          [class.is-selected]="selectedMode() === 'poster'"
+          (click)="selectMode('poster')"
+        >
+          <span class="export-mode-card-icon">🖼️</span>
+          <span class="export-mode-card-title">PDF — Poster</span>
+          <span class="export-mode-card-desc">Full size, A2/A1 sheet, Chromium auto-paginates. Best for wall prints.</span>
+        </button>
+
+        <button
+          type="button"
+          class="export-mode-card"
+          [class.is-selected]="selectedMode() === 'svg'"
+          (click)="selectMode('svg')"
+        >
+          <span class="export-mode-card-icon">⚡</span>
+          <span class="export-mode-card-title">SVG — Vector</span>
+          <span class="export-mode-card-desc">Instant, client-side, infinitely zoomable. No server round trip.</span>
+        </button>
+      </div>
+    </section>
+
+    @if (!isSvgMode()) {
+      <section class="export-modal-section">
+        <h3 class="export-modal-section-title">PDF options</h3>
+
+        <div class="export-option-row">
+          <label class="export-option-label">Paper</label>
+          <select
+            class="export-option-select"
+            [value]="format()"
+            (change)="format.set($any($event.target).value)"
+          >
+            @for (f of formatOptions; track f) {
+              <option [value]="f">{{ f }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="export-option-row">
+          <label class="export-option-label">Orientation</label>
+          <div class="export-option-toggle-group">
+            <button
+              type="button"
+              class="export-option-toggle"
+              [class.is-active]="landscape()"
+              (click)="landscape.set(true)"
+            >Landscape</button>
+            <button
+              type="button"
+              class="export-option-toggle"
+              [class.is-active]="!landscape()"
+              (click)="landscape.set(false)"
+            >Portrait</button>
+          </div>
+        </div>
+
+        <div class="export-option-row">
+          <label class="export-option-check">
+            <input type="checkbox" [checked]="withCoverPage()" (change)="withCoverPage.set($any($event.target).checked)"/>
+            Include cover page (company name, stats, date)
+          </label>
+        </div>
+
+        <div class="export-option-row">
+          <label class="export-option-check">
+            <input type="checkbox" [checked]="withHeaderFooter()" (change)="withHeaderFooter.set($any($event.target).checked)"/>
+            Page header/footer (page numbers, date)
+          </label>
+        </div>
+
+        <div class="export-option-row">
+          <label class="export-option-label">Watermark</label>
+          <input
+            type="text"
+            class="export-option-input"
+            placeholder="e.g. Confidential"
+            [value]="watermark()"
+            (input)="onWatermarkInput($event)"
+            maxlength="120"
+          />
+        </div>
+      </section>
+    }
+
+    <footer class="export-modal-footer">
+      <button type="button" class="export-btn export-btn--secondary" (click)="cancel()" [disabled]="running()">
+        Cancel
+      </button>
+      <button type="button" class="export-btn export-btn--primary" (click)="confirm()" [disabled]="running()">
+        @if (running()) {
+          <span class="export-spinner"></span>
+          Exporting…
+        } @else {
+          {{ isSvgMode() ? 'Download SVG' : 'Download PDF' }}
+        }
+      </button>
+    </footer>
+  </div>
+</div>

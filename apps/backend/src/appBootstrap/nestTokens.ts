@@ -16,6 +16,7 @@ export const USER_CREDENTIALS_REPO = Symbol('USER_CREDENTIALS_REPO');
 export const USER_PROFILE_REPO = Symbol('USER_PROFILE_REPO');
 export const USER_PREFERENCES_REPO = Symbol('USER_PREFERENCES_REPO');
 export const USER_GROUPS_REPO = Symbol('USER_GROUPS_REPO');
+export const GUEST_COMPANY_REPO = Symbol('GUEST_COMPANY_REPO');
 export const CONTRACT_REPO = Symbol('CONTRACT_REPO');
 export const CONTRACT_READ_REPO = Symbol('CONTRACT_READ_REPO');
 

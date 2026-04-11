@@ -1,9 +1,10 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import type { TUserId } from '@sh3pherd/shared-types';
+import type { TUserId, TCompanyId } from '@sh3pherd/shared-types';
 import type { IUserCredentialsRepository } from '../../infra/UserCredentialsMongoRepo.repository.js';
 import type { IUserProfileRepository } from '../../infra/UserProfileMongoRepo.repository.js';
-import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO } from '../../../appBootstrap/nestTokens.js';
+import type { IGuestCompanyRepository } from '../../infra/GuestCompanyMongoRepo.repository.js';
+import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO, GUEST_COMPANY_REPO } from '../../../appBootstrap/nestTokens.js';
 import { UserCredentialEntity } from '../../domain/UserCredential.entity.js';
 import { UserProfileEntity } from '../../domain/UserProfileEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
@@ -14,6 +15,7 @@ export type TCreateGuestUserDTO = {
   first_name: string;
   last_name: string;
   phone?: string;
+  company_id?: TCompanyId;
 };
 
 export type TCreateGuestUserResult = {
@@ -46,6 +48,7 @@ export class CreateGuestUserHandler implements ICommandHandler<CreateGuestUserCo
   constructor(
     @Inject(USER_CREDENTIALS_REPO) private readonly credsRepo: IUserCredentialsRepository,
     @Inject(USER_PROFILE_REPO) private readonly profileRepo: IUserProfileRepository,
+    @Inject(GUEST_COMPANY_REPO) private readonly guestCompanyRepo: IGuestCompanyRepository,
   ) {}
 
   async execute(cmd: CreateGuestUserCommand): Promise<TCreateGuestUserResult> {
@@ -56,7 +59,10 @@ export class CreateGuestUserHandler implements ICommandHandler<CreateGuestUserCo
 
     if (existing) {
       if (existing.is_guest) {
-        // Return existing guest — no duplicate
+        // Existing guest — link to this company too if requested (idempotent)
+        if (payload.company_id) {
+          await this.guestCompanyRepo.link(existing.id, payload.company_id);
+        }
         return {
           user_id: existing.id,
           email: existing.email,
@@ -101,6 +107,11 @@ export class CreateGuestUserHandler implements ICommandHandler<CreateGuestUserCo
           session,
         );
       });
+
+      // Link to company (outside the transaction — guest_company is idempotent and small)
+      if (payload.company_id) {
+        await this.guestCompanyRepo.link(credentials.id, payload.company_id);
+      }
 
       return {
         user_id: credentials.id,

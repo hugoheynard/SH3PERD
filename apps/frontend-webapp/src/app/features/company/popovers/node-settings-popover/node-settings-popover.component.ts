@@ -408,6 +408,7 @@ export class NodeSettingsPopoverComponent {
       if (!firstName || !email) return;
       this.store.createGuestAndAddMember(
         this.config.node.id as TOrgNodeId,
+        this.config.companyId,
         { first_name: firstName, last_name: lastName, email, phone: this.guestPhone().trim() || undefined },
         this.guestRole(),
         this.memberJobTitle().trim() || undefined,

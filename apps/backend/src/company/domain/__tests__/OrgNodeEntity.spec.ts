@@ -257,9 +257,9 @@ describe('OrgNodeEntity', () => {
       const jan = new Date('2025-01-01');
       const feb = new Date('2025-02-01');
 
-      node.addMember(userId(1), contractId(1), 'member', jan);
+      node.addMember(userId(1), contractId(1), 'member', undefined, jan);
       node.removeMember(userId(1), feb);
-      node.addMember(userId(2), contractId(2), 'member', jan);
+      node.addMember(userId(2), contractId(2), 'member', undefined, jan);
 
       // Mid-January: both active
       const midJan = new Date('2025-01-15');

@@ -11,6 +11,7 @@ import {
   USER_CREDENTIALS_REPO, USER_GROUPS_REPO,
   USER_PREFERENCES_REPO,
   USER_PROFILE_REPO,
+  GUEST_COMPANY_REPO,
 } from '../nestTokens.js';
 import { ConfigService } from '@nestjs/config';
 import type { MongoClient } from 'mongodb';
@@ -54,6 +55,10 @@ import {
   type IUserGroupsMongoRepository,
   UserGroupsMongoRepository,
 } from '../../userGroups/infra/UserGroupsMongoRepository.js';
+import {
+  type IGuestCompanyRepository,
+  GuestCompanyMongoRepository,
+} from '../../user/infra/GuestCompanyMongoRepo.repository.js';
 import { MONGO_CLIENT } from './db.tokens.js';
 import { ContractReadRepository } from '../../contracts/repositories/ContractReadRepository.js';
 import { CompanyMongoRepository, type ICompanyRepository } from '../../company/repositories/CompanyMongoRepository.js';
@@ -134,6 +139,7 @@ export type TCoreRepositories = {
     mongoRepoProvider<IUserProfileRepository>(USER_PROFILE_REPO, UserProfileMongoRepository, 'user_profiles'),
     mongoRepoProvider<IUserPreferencesRepository>(USER_PREFERENCES_REPO, UserPreferencesMongoRepository, 'user_preferences'),
     mongoRepoProvider<IUserGroupsMongoRepository>(USER_GROUPS_REPO, UserGroupsMongoRepository, 'user_groups'),
+    mongoRepoProvider<IGuestCompanyRepository>(GUEST_COMPANY_REPO, GuestCompanyMongoRepository, 'guest_company'),
     mongoRepoProvider<IContractRepository>(CONTRACT_REPO, ContractMongoRepository, 'contracts'),
     { provide: CONTRACT_READ_REPO, useClass: ContractReadRepository },
     mongoRepoProvider<IEventUnitRepository>(EVENT_UNIT_REPO, EventUnitMongoRepository, 'eventUnits'),
@@ -156,6 +162,7 @@ export type TCoreRepositories = {
     CONTRACT_REPO,
     CONTRACT_READ_REPO,
     USER_GROUPS_REPO,
+    GUEST_COMPANY_REPO,
     EVENT_UNIT_REPO,
     MUSIC_REFERENCE_REPO,
     MUSIC_VERSION_REPO,

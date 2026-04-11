@@ -11,6 +11,9 @@ import { OrgNodePolicy } from '../../domain/OrgNodePolicy.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { USER_CREDENTIALS_REPO, GUEST_COMPANY_REPO } from '../../../appBootstrap/nestTokens.js';
+import type { IUserCredentialsRepository } from '../../../user/infra/UserCredentialsMongoRepo.repository.js';
+import type { IGuestCompanyRepository } from '../../../user/infra/GuestCompanyMongoRepo.repository.js';
 
 export type TAddOrgNodeMemberDTO = {
   org_node_id: TOrgNodeId;
@@ -38,6 +41,8 @@ export class AddOrgNodeMemberHandler implements ICommandHandler<AddOrgNodeMember
   constructor(
     @Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository,
     @Inject(ORG_MEMBERSHIP_EVENT_REPO) private readonly eventRepo: IOrgMembershipEventRepository,
+    @Inject(USER_CREDENTIALS_REPO) private readonly credsRepo: IUserCredentialsRepository,
+    @Inject(GUEST_COMPANY_REPO) private readonly guestCompanyRepo: IGuestCompanyRepository,
   ) {}
 
   async execute(cmd: AddOrgNodeMemberCommand): Promise<TOrgMembershipEventRecord> {
@@ -75,6 +80,13 @@ export class AddOrgNodeMemberHandler implements ICommandHandler<AddOrgNodeMember
 
     if (!nodeSaved || !eventSaved) {
       throw new TechnicalError('Failed to add member', { code: 'ORGNODE_ADD_MEMBER_FAILED' });
+    }
+
+    // If the added user is a guest, ensure they are linked to this company
+    // so the Settings > Guests tab sees them. Idempotent, safe to call always.
+    const creds = await this.credsRepo.findOne({ filter: { id: dto.user_id } });
+    if (creds?.is_guest) {
+      await this.guestCompanyRepo.link(dto.user_id, entity.company_id);
     }
 
     return membershipEvent;

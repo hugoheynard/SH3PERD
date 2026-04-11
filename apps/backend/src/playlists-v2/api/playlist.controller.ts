@@ -11,6 +11,9 @@ import { DeletePlaylistCommand } from '../application/commands/DeletePlaylistHan
 import { GetUserPlaylistsQuery } from '../application/queries/GetUserPlaylistsHandler.js';
 import { GetPlaylistDetailQuery } from '../application/queries/GetPlaylistDetailHandler.js';
 import { PlaylistPayload, PlaylistSummaryPayload, PlaylistDetailPayload } from '../dto/playlist.dto.js';
+import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
+import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
+import { P } from '@sh3pherd/shared-types';
 import type {
   TUserId,
   TPlaylistId,
@@ -24,6 +27,7 @@ import { SCreatePlaylistPayload, SUpdatePlaylistPayload } from '@sh3pherd/shared
 @ApiTags('playlists')
 @ApiBearerAuth('bearer')
 @ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
+@ContractScoped()
 @Controller()
 export class PlaylistController {
   constructor(
@@ -33,6 +37,7 @@ export class PlaylistController {
 
   @ApiOperation({ summary: 'Create a playlist', description: 'Creates a new empty playlist for the authenticated user.' })
   @ApiResponse(apiSuccessDTO(PlaylistApiCodes.PLAYLIST_CREATED, PlaylistPayload, 200))
+  @RequirePermission(P.Music.Playlist.Own)
   @Post()
   async createPlaylist(
     @ActorId() actorId: TUserId,
@@ -46,6 +51,7 @@ export class PlaylistController {
 
   @ApiOperation({ summary: 'Get my playlists', description: 'Returns all playlists owned by the authenticated user with track counts.' })
   @ApiResponse(apiSuccessDTO(PlaylistApiCodes.PLAYLISTS_FETCHED, PlaylistSummaryPayload, 200))
+  @RequirePermission(P.Music.Playlist.Read)
   @Get('me')
   async getMyPlaylists(
     @ActorId() actorId: TUserId,
@@ -59,6 +65,7 @@ export class PlaylistController {
   @ApiOperation({ summary: 'Get playlist detail', description: 'Returns the playlist with all its resolved tracks (title, artist, version label). Ownership is verified.' })
   @ApiParam({ name: 'id', description: 'Playlist ID' })
   @ApiResponse(apiSuccessDTO(PlaylistApiCodes.PLAYLIST_DETAIL_FETCHED, PlaylistDetailPayload, 200))
+  @RequirePermission(P.Music.Playlist.Read)
   @Get(':id')
   async getPlaylistDetail(
     @ActorId() actorId: TUserId,
@@ -73,6 +80,7 @@ export class PlaylistController {
   @ApiOperation({ summary: 'Update a playlist', description: 'Partial update of a playlist\'s metadata (name, color, description). Ownership is verified.' })
   @ApiParam({ name: 'id', description: 'Playlist ID to update' })
   @ApiResponse(apiSuccessDTO(PlaylistApiCodes.PLAYLIST_UPDATED, PlaylistPayload, 200))
+  @RequirePermission(P.Music.Playlist.Own)
   @Patch(':id')
   async updatePlaylist(
     @ActorId() actorId: TUserId,
@@ -88,6 +96,7 @@ export class PlaylistController {
   @ApiOperation({ summary: 'Delete a playlist', description: 'Deletes a playlist and all its tracks. Ownership is verified.' })
   @ApiParam({ name: 'id', description: 'Playlist ID to delete' })
   @ApiResponse(apiSuccessDTO(PlaylistApiCodes.PLAYLIST_DELETED, undefined as any, 200))
+  @RequirePermission(P.Music.Playlist.Own)
   @Delete(':id')
   async deletePlaylist(
     @ActorId() actorId: TUserId,

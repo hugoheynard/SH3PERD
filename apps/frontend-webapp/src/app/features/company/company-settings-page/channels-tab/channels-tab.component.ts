@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal, type OnInit } from '@angular/core';
 import { CompanyService } from '../../company.service';
+import { ToastService } from '../../../../shared/toast/toast.service';
 import { IntegrationsPanelComponent } from './integrations-panel/integrations-panel.component';
 import { PlatformChannelsComponent } from './platform-channels/platform-channels.component';
 import { PlatformIconComponent } from './platform-icon/platform-icon.component';
@@ -19,6 +20,7 @@ import type {
 })
 export class ChannelsTabComponent implements OnInit {
   private readonly companyService = inject(CompanyService);
+  private readonly toast = inject(ToastService);
 
   readonly companyId = input.required<TCompanyId>();
 
@@ -44,6 +46,7 @@ export class ChannelsTabComponent implements OnInit {
   private loadIntegrations(): void {
     this.companyService.getIntegrations(this.companyId()).subscribe({
       next: (data) => this.integrations.set(data),
+      error: () => this.toast.show('Failed to load integrations', 'error'),
     });
   }
 
@@ -53,6 +56,7 @@ export class ChannelsTabComponent implements OnInit {
     if (platform !== 'slack') return;
     this.companyService.getSlackAuthUrl(this.companyId()).subscribe({
       next: (res) => { window.location.href = res.url; },
+      error: () => this.toast.show('Failed to start Slack connection', 'error'),
     });
   }
 
@@ -66,7 +70,9 @@ export class ChannelsTabComponent implements OnInit {
           const remaining = this.connectedPlatforms().filter(p => p !== platform);
           this.activePlatform.set(remaining.length > 0 ? remaining[0] : null);
         }
+        this.toast.show(`${platform} disconnected`, 'success');
       },
+      error: () => this.toast.show(`Failed to disconnect ${platform}`, 'error'),
     });
   }
 }

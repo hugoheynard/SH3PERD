@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContractController } from './contract.controller';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { ContractController } from './contract.controller.js';
+import { ContractContextGuard } from './contract-context.guard.js';
+import { PermissionGuard } from '../../utils/nest/guards/RequirePermission.js';
 
 describe('ContractController', () => {
   let controller: ContractController;
@@ -7,7 +10,15 @@ describe('ContractController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ContractController],
-    }).compile();
+      providers: [
+        { provide: CommandBus, useValue: { execute: jest.fn() } },
+        { provide: QueryBus, useValue: { execute: jest.fn() } },
+      ],
+    })
+      // The controller is now @ContractScoped + @RequirePermission — stub both guards
+      .overrideGuard(ContractContextGuard).useValue({ canActivate: () => true })
+      .overrideGuard(PermissionGuard).useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<ContractController>(ContractController);
   });

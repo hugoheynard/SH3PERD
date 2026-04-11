@@ -171,14 +171,22 @@ export const ROLE_TEMPLATES: Record<TContractRole, TPermission[]> = {
   artist: [
     P.Music.Playlist.Own,
     P.Music.Setlist.Read,
+    P.Music.Library.Read,
+    P.Music.Library.Write,
+    P.Music.Track.Read,
+    P.Music.Track.Write,
     P.Event.Planning.Read,
     P.Company.OrgChart.Read,
+    P.Company.Members.Read,
   ],
   viewer: [
     P.Music.Playlist.Read,
+    P.Music.Library.Read,
+    P.Music.Track.Read,
     P.Event.Planning.Read,
     P.Company.Settings.Read,
     P.Company.OrgChart.Read,
+    P.Company.Members.Read,
   ],
 } as const;
 

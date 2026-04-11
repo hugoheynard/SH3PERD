@@ -9,12 +9,16 @@ import { CreateRepertoireEntryCommand } from '../application/commands/CreateRepe
 import { DeleteRepertoireEntryCommand } from '../application/commands/DeleteRepertoireEntryCommand.js';
 import { GetUserRepertoireQuery } from '../application/queries/GetUserRepertoireQuery.js';
 import { RepertoireEntryPayload } from '../dto/music.dto.js';
+import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
+import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
+import { P } from '@sh3pherd/shared-types';
 import type { TUserId, TApiResponse, TMusicRepertoireEntryDomainModel, TRepertoireEntryId } from '@sh3pherd/shared-types';
 import { SCreateRepertoireEntryPayload } from '@sh3pherd/shared-types';
 
 @ApiTags('music / repertoire')
 @ApiBearerAuth('bearer')
 @ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
+@ContractScoped()
 @Controller('repertoire')
 export class MusicRepertoireController {
   constructor(
@@ -24,6 +28,7 @@ export class MusicRepertoireController {
 
   @ApiOperation({ summary: 'Get my repertoire entries', description: 'Returns all repertoire entries owned by the authenticated user.' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.REPERTOIRE_ENTRIES_FETCHED, RepertoireEntryPayload, 200))
+  @RequirePermission(P.Music.Library.Read)
   @Get('me')
   async getMyRepertoire(
     @ActorId() actorId: TUserId,
@@ -36,6 +41,7 @@ export class MusicRepertoireController {
 
   @ApiOperation({ summary: 'Add song to repertoire', description: 'Creates a repertoire entry linking the user to a music reference — "this song is in my repertoire".' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.REPERTOIRE_ENTRY_CREATED, RepertoireEntryPayload, 200))
+  @RequirePermission(P.Music.Library.Write)
   @Post()
   async createEntry(
     @ActorId() actorId: TUserId,
@@ -50,6 +56,7 @@ export class MusicRepertoireController {
   @ApiOperation({ summary: 'Remove song from repertoire', description: 'Deletes a repertoire entry. Ownership is verified — only the owner can delete.' })
   @ApiParam({ name: 'id', description: 'Repertoire entry ID to delete' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.REPERTOIRE_ENTRY_DELETED, undefined as any, 200))
+  @RequirePermission(P.Music.Library.Write)
   @Delete(':id')
   async deleteEntry(
     @ActorId() actorId: TUserId,

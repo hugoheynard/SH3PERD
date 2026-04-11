@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post, Delete } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { P } from '@sh3pherd/shared-types';
 import type {
   TCompanyId,
   TContractId,
@@ -11,6 +12,8 @@ import type {
 import type { TContractRole } from '@sh3pherd/shared-types';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import type { TUserId } from '@sh3pherd/shared-types';
+import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
+import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
 
 // Commands
 import { CreateContractCommand } from '../application/commands/CreateContractCommand.js';
@@ -66,16 +69,22 @@ export class ContractController {
     return this.queryBus.execute(new GetCurrentUserContractsQuery(actorId));
   }
 
+  @ContractScoped()
+  @RequirePermission(P.Company.Members.Read)
   @Get('company/:companyId')
   getCompanyContracts(@Param('companyId') companyId: TCompanyId) {
     return this.queryBus.execute(new GetCompanyContractsQuery(companyId));
   }
 
+  @ContractScoped()
+  @RequirePermission(P.Company.Members.Read)
   @Get(':contractId')
   getContractById(@Param('contractId') contractId: TContractId) {
     return this.queryBus.execute(new GetContractByIdQuery(contractId));
   }
 
+  @ContractScoped()
+  @RequirePermission(P.Company.Members.Write)
   @Patch(':contractId')
   updateContract(
     @Param('contractId') contractId: TContractId,
@@ -84,6 +93,8 @@ export class ContractController {
     return this.commandBus.execute(new UpdateContractCommand({ ...dto, contract_id: contractId }));
   }
 
+  @ContractScoped()
+  @RequirePermission(P.Company.Members.Invite)
   @Post()
   createContract(
     @Body() dto: TCreateContractRequestDTO,
@@ -98,6 +109,8 @@ export class ContractController {
 
   // ── Role management ──────────────────────────────────────
 
+  @ContractScoped()
+  @RequirePermission(P.Company.Members.Write)
   @Post(':contractId/roles')
   assignRole(
     @Param('contractId') contractId: TContractId,
@@ -107,6 +120,8 @@ export class ContractController {
     return this.commandBus.execute(new AssignContractRoleCommand(contractId, body.role, actorId));
   }
 
+  @ContractScoped()
+  @RequirePermission(P.Company.Members.Write)
   @Delete(':contractId/roles/:role')
   removeRole(
     @Param('contractId') contractId: TContractId,

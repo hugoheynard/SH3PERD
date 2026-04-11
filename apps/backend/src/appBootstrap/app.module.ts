@@ -20,6 +20,7 @@ import { GlobalCqrsModule } from './global-cqrs.module.js';
 import { CompanyModule } from '../company/company.module.js';
 import { PlaylistModule } from '../playlists-v2/playlist.module.js';
 import { IntegrationsModule } from '../integrations/integrations.module.js';
+import { PrintModule } from '../print/print.module.js';
 import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionFilter.js';
 
 @Module({
@@ -45,6 +46,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
     ContractModule,
     ProtectedModule,
     PlaylistModule,
+    PrintModule,
     // ⚠️ Prefix split
     RouterModule.register([
       { path: 'auth', module: AuthModule },
@@ -64,6 +66,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
           { path: 'contracts', module: ContractModule },
           { path: 'user-groups', module: UserGroupsModule },
           { path: 'companies', module: CompanyModule },
+          { path: '', module: PrintModule },
           { path: 'integrations', module: IntegrationsModule },
           { path: 'playlists', module: PlaylistModule },
         ]

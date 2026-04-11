@@ -46,6 +46,24 @@
 
       <span class="toolbar-separator"></span>
 
+      <!-- Show/Hide archived -->
+      <button class="toolbar-icon-btn" [class.is-active]="showArchived()" (click)="toggleShowArchived()" [title]="showArchived() ? 'Hide archived nodes' : 'Show archived nodes'" type="button">
+        @if (showArchived()) {
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        } @else {
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        }
+      </button>
+
+      <span class="toolbar-separator"></span>
+
+      <!-- Export orgchart -->
+      <button class="toolbar-icon-btn" (click)="openExportModal()" title="Export orgchart (PDF / SVG)" type="button">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      </button>
+
+      <span class="toolbar-separator"></span>
+
       @if (editMode() && !addingNode()) {
         <button class="btn-add-entry" (click)="startAddNode()">+ New {{ getLayerLabel(0) }}</button>
       }
@@ -90,7 +108,7 @@
     </div>
   }
 
-  @if (store.orgChart(); as chart) {
+  @if (visibleChart(); as chart) {
     <div class="orgchart-scroll" #scrollContainer>
     <div class="orgchart-tree" [style.transform]="'scale(' + zoomLevel() + ')'" [style.transform-origin]="'top center'">
 
@@ -127,6 +145,18 @@
     </div> <!-- /orgchart-scroll -->
   }
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Export modal
+     ═══════════════════════════════════════════════════════════ -->
+@if (exportModalOpen() && visibleChart(); as chart) {
+  <app-orgchart-export-modal
+    [companyId]="companyId()"
+    [companyName]="chart.company_name"
+    [chart]="chart"
+    (closed)="closeExportModal()"
+  />
+}
 
 <!-- ═══════════════════════════════════════════════════════════
      Move-to modal overlay

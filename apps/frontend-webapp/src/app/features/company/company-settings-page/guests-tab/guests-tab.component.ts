@@ -97,19 +97,18 @@ export class GuestsTabComponent implements OnInit {
     const lastName = this.newLastName().trim();
     const phone = this.newPhone().trim() || undefined;
 
-    this.service.createGuest({ first_name, last_name: lastName, email, phone }).subscribe({
-      next: (result) => {
+    this.service.createGuest({
+      first_name,
+      last_name: lastName,
+      email,
+      phone,
+      company_id: this.companyId(),
+    }).subscribe({
+      next: () => {
         this.toast.show('Guest created', 'success');
         this.creating.set(false);
-        // Add locally immediately (guest isn't in a node yet so loadGuests won't find them)
-        this.guests.update(list => [...list, {
-          user_id: result.user_id,
-          email,
-          first_name,
-          last_name: lastName,
-          phone,
-          is_guest: true,
-        }]);
+        // Reload from the backend — the guest is now linked to the company via guest_company
+        this.loadGuests();
       },
       error: () => {
         this.toast.show('Failed to create guest', 'error');

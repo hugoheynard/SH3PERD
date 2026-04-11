@@ -31,10 +31,15 @@ export class ArchiveOrgNodeHandler implements ICommandHandler<ArchiveOrgNodeComm
     const existing = await this.orgNodeRepo.findOne({ filter: { id: nodeId } });
     if (!existing) throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
 
+    // Idempotent: archiving an already-archived node is a no-op (avoid 400 in UI race conditions)
+    if (existing.status === 'archived') return;
 
-    // Check no children
+    // Block only on ACTIVE children — archived children are ignored
     const children = await this.orgNodeRepo.findByParentId(nodeId, existing.company_id);
-    if (children.length > 0) throw new BusinessError('Cannot archive node with children', { code: 'ORGNODE_HAS_CHILDREN', status: 400 });
+    const activeChildren = children.filter(c => c.status === 'active');
+    if (activeChildren.length > 0) {
+      throw new BusinessError('Cannot archive node with children', { code: 'ORGNODE_HAS_CHILDREN', status: 400 });
+    }
 
     const entity = new OrgNodeEntity(RecordMetadataUtils.stripDocMetadata(existing));
     entity.archive();

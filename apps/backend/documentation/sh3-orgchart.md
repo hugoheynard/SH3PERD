@@ -160,29 +160,136 @@ company/
 
 ---
 
-## TODO: Guest ↔ Company relationship refacto
+## Guest ↔ Company relationship
 
-### Current state (POC)
+### Data model
 - Guests are real users with `is_guest: true` + `password: null` in `user_credentials`
 - They have a `user_profile` (first_name, last_name, phone)
-- The `GET /users/guests` query returns ALL guests globally (no company scoping)
-- The popover "Guests" tab searches org chart members excluding contract holders
-- Deduplication by email on creation
+- A junction collection `guest_company` links each guest to one or more companies:
+  - `{ user_id, company_id, created_at }`
+  - A guest can belong to multiple companies (multi-company scenario)
 
-### Problem
-- No direct link between a guest and a company
-- A guest created in Company A settings appears in Company B too
-- The popover "Guests" list pulls from org node members, not from the settings guest list
+### Flows
+1. **Create guest from Settings > Guests tab** — `POST /users/guest` with `company_id` → creates credentials + profile + junction link
+2. **Add existing guest to a node** — `POST /org-nodes/:id/members` → handler detects `is_guest: true` and ensures the junction link exists (idempotent)
+3. **List guests for a company** — `GET /users/guests?companyId=X` joins `guest_company` against `user_credentials` + `user_profile`
+4. **Unlink a guest from a company** — `DELETE /users/guest/:userId/companies/:companyId` (does NOT delete the user, only the link)
 
-### Proposed refacto
-1. **Add `company_id` to guest creation** — store on credentials or create a `guest_company` junction collection
-2. **`GET /users/guests?companyId`** scopes by company_id instead of returning all
-3. **Popover "Guests" tab** calls the same API as the settings tab (not org node members)
-4. **Settings "Guests" tab** is the single source of truth for company guests
-5. **When a guest is added to a node** → they're a regular member with a `user_id`
-6. **When multi-company** → a guest can belong to multiple companies (junction table)
+### Migration
+A migration script (`apps/backend/src/migrations/backfill-guest-company-junction.mjs`) backfills the junction collection from existing org node memberships. Idempotent.
 
 ### Future: Guest activation
 - Send invite email with JWT activation link
 - Guest clicks → sets password → `is_guest: false`, `password` set
 - All memberships and history preserved
+
+---
+
+## Roadmap — Innovative Features
+
+Audit date: 2026-04-11. Ordered by ROI (impact / effort / fit with existing arch).
+
+### Tier 1 — High impact, data already in place
+
+#### 1. Timeline Orgchart (dimension temporelle)
+- [ ] **Orgchart at date** — date slider on the orgchart tab. Rebuild the tree from `joinedAt`/`leftAt` on memberships + node `created_at`/`archived_at`. Data is already persisted.
+- [ ] **Orgchart diff** — compare two dates, highlight in green new nodes/members and in red departures/archives.
+- [ ] **Planned memberships** — add `effectiveAt` / `effectiveUntil` on memberships so a future move can be queued (e.g. "Hugo joins Groupe Rock on 2026-05-01"). A cron promotes pending → active at the effective date.
+- [ ] **Planned nodes** — same pattern for node creation scheduled in the future.
+
+#### 2. Slack sync bidirectionnelle (finir la boucle commencée dans les intégrations)
+- [ ] `MemberJoinedNode` → `conversations.invite` on every linked Slack channel of the node.
+- [ ] `MemberLeftNode` / `ContractTerminated` → `conversations.kick`.
+- [ ] `OrgNodeRenamed` → `conversations.setTopic` + `setPurpose`.
+- [ ] `OrgNodeArchived` → `conversations.archive` (with prior confirmation in UI).
+- [ ] Map SH3PHERD `user_id` ↔ Slack `user_id` via email lookup (`users.lookupByEmail`), stored in a dedicated `slack_user_mapping` collection.
+- [ ] Graceful skip when user is not in the workspace + error surface in settings.
+- [ ] WhatsApp groups counterpart (WhatsApp Cloud API) — same event hooks, target audience is the music industry.
+
+#### 3. Node Blueprints & Vacancy Detection
+- [ ] Save an existing node as a **blueprint** (JSON stored in `company.blueprints[]`): structure + required roles (count + job title), no people.
+- [ ] "Apply blueprint" action — instantiate the blueprint under a parent node, create children with open positions.
+- [ ] **Vacancy view** — compare a node's blueprint to its actual members and list missing slots.
+- [ ] Prebuilt system blueprints per sector (label, studio, venue, management).
+
+### Tier 2 — Product differentiators
+
+#### 4. Project Mode for OrgNodes (killer feature for studios / labels)
+- [ ] Add `temporality: 'permanent' | 'project'` + `starts_at` / `ends_at` on `OrgNodeEntity`.
+- [ ] On creation of a project node: auto-provision linked resources via event bus — Slack channel, shared folder (Drive/Dropbox), calendar, dedicated playlist, budget envelope.
+- [ ] Automatic archival when `ends_at` passes (cron job listens for expiring projects).
+- [ ] Project card view — separate UI in the orgchart listing active/upcoming/finished projects.
+- [ ] Positioning: this turns the orgchart into a **project-ops surface** — differentiator vs BambooHR / Gusto / Pingboard.
+
+#### 5. Budget & cost rollup per node
+- [ ] Derive node cost from member contracts (amount × allocation fraction).
+- [ ] Rollup parent = Σ children costs.
+- [ ] Heatmap mode on the orgchart: colour nodes by cost intensity.
+- [ ] Time-window filter (this month, this quarter, lifetime of the project node).
+- [ ] Export breakdown CSV per node.
+
+#### 6. Member journey timeline
+- [ ] Per-user horizontal timeline of every membership (node × period × role × job_title).
+- [ ] Integrate into a "HR profile" panel of the user.
+- [ ] PDF export "dossier collaborateur" for annual reviews or litigation.
+
+### Tier 3 — UX polish (high demo value)
+
+#### 7. Advanced Drag & Drop
+- [ ] Drag a member avatar from one node to another → emits a transfer command (leftAt on old membership, joinedAt on new).
+- [ ] Drag a node onto another to re-parent (backend already supports it via `UpdateOrgNodeInfoCommand`).
+- [ ] Multi-drag after Shift+click selection.
+- [ ] Drag ghost + drop zones highlighting.
+
+#### 8. Navigation polish
+- [ ] **Minimap** — IDE-style miniature of the full orgchart in a corner, click to jump.
+- [ ] **Drag-to-pan** — grab the background to move the zoomed viewport.
+- [ ] **Keyboard navigation** — arrows between siblings, Tab to expand, Shift+Tab to collapse.
+- [ ] **Undo/Redo** stack for last structural ops (move, group, add member, archive).
+
+#### 9. Permissions matrix view
+- [ ] Grid of nodes × members × permissions, colour-coded.
+- [ ] Filter by permission family (OrgChart, Music, Contracts…).
+- [ ] Temporary roles — assign a role with an expiration date ("interim manager for 2 weeks").
+- [ ] Delegation — a director can delegate rights to a subordinate for a period.
+
+#### 10. Exports & printables
+- [ ] PDF / PNG high-res export of the orgchart (SVG → headless Chrome render).
+- [ ] Paginated PDF that splits large charts across pages.
+- [ ] Public read-only share link (token-based, revocable) for clients and partners.
+
+### Tier 4 — AI & automation (once the foundation is solid)
+
+#### 11. Auto-suggest structure on onboarding
+- [ ] Sector picker at company creation (label, studio, venue, management, events).
+- [ ] Claude Haiku prompt → proposes orgLayers + a seed orgchart + blueprints.
+- [ ] Editable review step before applying.
+
+#### 12. Org health score
+- [ ] Per-node rules: leader missing, manager span of control >10, empty layer, guest without profile data, high turnover.
+- [ ] Aggregate into a 0-100 company score.
+- [ ] Red badges on node headers, central dashboard "organisation health".
+- [ ] Weekly digest posted to the owner's Slack DM.
+
+#### 13. Onboarding checklist generator
+- [ ] On `MemberJoinedNode`, generate a checklist based on node type + blueprint: Slack invite, contract signed, manager intro meeting, tool access.
+- [ ] Assignee = the new member's manager, due dates relative to join date.
+- [ ] Visible in the member journey view and in a dedicated "open checklists" dashboard.
+
+#### 14. Conflict detection
+- [ ] Member in too many nodes (load warning).
+- [ ] Node with no active leader.
+- [ ] Empty org layer in the company hierarchy.
+- [ ] Contract end date without successor planned.
+
+### Inter-company collaboration (long-term)
+- [ ] **Shared nodes** — a node co-owned by two companies for a co-production.
+- [ ] Cross-company permission model (read-only, contribute, admin).
+- [ ] External org view — a read-only shareable link scoped to a subtree.
+
+---
+
+### Parallel tracks (not orgchart-specific, tracked elsewhere)
+- Guest activation flow (Phase 5-6) — see `TODO-guest-to-user.md`.
+- `GetCompanyByIdQuery` counts optimisation via `countDocuments` at scale.
+- Unit tests for `IntegrationCredentialsEntity`, `SlackApiService`, `SlackOAuthService`.

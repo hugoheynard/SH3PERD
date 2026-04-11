@@ -40,6 +40,7 @@
     "@sh3pherd/storage": "workspace:*",
     "fuse.js": "^7.1.0",
     "nestjs-zod": "^5.0.1",
+    "puppeteer": "^24.1.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1"

@@ -142,16 +142,18 @@ export class OrgChartStore {
   // ── Guest → Member ──────────────────────────────────────
 
   /**
-   * Creates a guest user, then adds them as a regular member to the node.
+   * Creates a guest user (linked to the company via guest_company),
+   * then adds them as a regular member to the node.
    */
   createGuestAndAddMember(
     nodeId: TOrgNodeId,
+    companyId: TCompanyId,
     dto: { email: string; first_name: string; last_name: string; phone?: string },
     teamRole: TTeamRole,
     jobTitle?: string,
     onSuccess?: () => void,
   ): void {
-    this.service.createGuestUser(dto).subscribe({
+    this.service.createGuestUser({ ...dto, company_id: companyId }).subscribe({
       next: (guest) => {
         this.addOrgNodeMember(nodeId, guest.user_id as TUserId, '' as any, teamRole, jobTitle, () => {
           this.toast.show(`Guest "${dto.first_name}" added as member`, 'success');

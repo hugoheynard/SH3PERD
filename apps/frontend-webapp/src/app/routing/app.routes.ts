@@ -25,6 +25,15 @@ export const routes: Routes = [
       { path: '', component: LoginComponent }
     ]
   },
+  // Print-only route — no auth shell, no guards. Loaded exclusively by
+  // headless Chromium during PDF export. The token carried in the query
+  // param is validated on the backend read endpoint (single-use JWT).
+  {
+    path: 'print/orgchart/:companyId',
+    loadComponent: () =>
+      import('../features/company/orgchart-print/orgchart-print.component')
+        .then(m => m.OrgchartPrintComponent),
+  },
   { path: 'app',
     component: MainLayoutComponent,
     canActivate: [authGuard],

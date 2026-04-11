@@ -1,0 +1,304 @@
+/* ──────────────────────────────────────────────────────────
+ * Orgchart export modal
+ *
+ * Matches the visual language of the existing move-to modal inside
+ * the orgchart tab (backdrop-blur, dark panel, accent buttons) so the
+ * two feel like siblings.
+ * ────────────────────────────────────────────────────────── */
+
+.export-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.export-modal {
+  width: 100%;
+  max-width: 640px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: var(--floating-panel-color, rgba(28, 32, 44, 0.98));
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md, 12px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Header ─────────────────────────────────────────────
+.export-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.export-modal-eyebrow {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.export-modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.export-modal-close {
+  all: unset;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xs);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+// ── Sections ───────────────────────────────────────────
+.export-modal-section {
+  padding: 18px 24px;
+
+  + .export-modal-section {
+    border-top: 1px solid var(--border-light);
+  }
+}
+
+.export-modal-section-title {
+  margin: 0 0 12px 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+// ── Mode picker ────────────────────────────────────────
+.export-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.export-mode-card {
+  all: unset;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 14px 12px;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-sm, 8px);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all var(--t-fast);
+
+  &:hover {
+    border-color: rgba(6, 164, 164, 0.4);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  &.is-selected {
+    border-color: var(--accent-color, #06a4a4);
+    background: var(--accent-color-dim, rgba(6, 164, 164, 0.08));
+    box-shadow: 0 0 0 1px var(--accent-color, #06a4a4);
+  }
+}
+
+.export-mode-card-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.export-mode-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.export-mode-card-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+// ── Option rows ────────────────────────────────────────
+.export-option-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+
+  + .export-option-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+}
+
+.export-option-label {
+  flex: 0 0 110px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.export-option-select,
+.export-option-input {
+  flex: 1;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xs);
+  color: var(--text-primary);
+  font-size: 12px;
+  outline: none;
+
+  &:focus {
+    border-color: var(--accent-color-border, rgba(6, 164, 164, 0.6));
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+}
+
+.export-option-toggle-group {
+  display: flex;
+  gap: 4px;
+  padding: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xs);
+}
+
+.export-option-toggle {
+  all: unset;
+  flex: 1;
+  padding: 6px 14px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: calc(var(--radius-xs) - 1px);
+  transition: all var(--t-fast);
+
+  &:hover { color: var(--text-primary); }
+
+  &.is-active {
+    background: var(--accent-color, #06a4a4);
+    color: #fff;
+  }
+}
+
+.export-option-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  width: 100%;
+
+  input[type='checkbox'] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--accent-color, #06a4a4);
+    cursor: pointer;
+  }
+}
+
+// ── Footer ─────────────────────────────────────────────
+.export-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+.export-btn {
+  all: unset;
+  padding: 9px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--t-fast);
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.export-btn--secondary {
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
+
+  &:hover:not(:disabled) {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.04);
+  }
+}
+
+.export-btn--primary {
+  background: var(--accent-color, #06a4a4);
+  color: #fff;
+  border: 1px solid var(--accent-color, #06a4a4);
+
+  &:hover:not(:disabled) {
+    background: #07b5b5;
+    border-color: #07b5b5;
+  }
+}
+
+.export-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: export-spin 0.7s linear infinite;
+}
+
+@keyframes export-spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Responsive ─────────────────────────────────────────
+@media (max-width: 640px) {
+  .export-mode-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .export-option-label {
+    flex-basis: 90px;
+  }
+}

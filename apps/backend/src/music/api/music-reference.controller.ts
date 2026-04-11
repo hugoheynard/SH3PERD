@@ -5,6 +5,9 @@ import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js'
 import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
 import { CreateMusicReferenceCommand } from '../application/commands/CreateMusicReferenceCommand.js';
 import { SearchMusicReferencesQuery } from '../application/queries/SearchMusicReferencesQuery.js';
+import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
+import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
+import { P } from '@sh3pherd/shared-types';
 import type { TUserId, TApiResponse, TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
 import { SCreateMusicReferencePayload } from '@sh3pherd/shared-types';
 
@@ -45,6 +48,7 @@ import { SCreateMusicReferencePayload } from '@sh3pherd/shared-types';
  *   linked to this reference across all users.
  *
  */
+@ContractScoped()
 @Controller('references')
 export class MusicReferenceController {
   constructor(
@@ -62,6 +66,7 @@ export class MusicReferenceController {
    * GET /api/protected/music/references/dynamic-search?q=bohemian
    * → { data: [{ id: "musicRef_...", title: "bohemian rhapsody", artist: "queen", ... }], ... }
    */
+  @RequirePermission(P.Music.Library.Read)
   @Get('dynamic-search')
   async searchReferences(
     @Query('q') searchValue: string,
@@ -88,6 +93,7 @@ export class MusicReferenceController {
    * Body: { "payload": { "title": "Bohemian Rhapsody", "artist": "Queen" } }
    * → { data: { id: "musicRef_...", title: "bohemian rhapsody", artist: "queen", owner_id: "user_..." }, ... }
    */
+  @RequirePermission(P.Music.Library.Write)
   @Post()
   async createReference(
     @ActorId() actorId: TUserId,

@@ -101,22 +101,30 @@ export class CompanyService extends BaseHttpService {
   // ── Guests ─────────────────────────────────────────────────
 
   getCompanyGuests(companyId: TCompanyId): Observable<any[]> {
-    return this.http.get<any[]>(
+    return this.scopedHttp.withContract().get<any[]>(
       this.UrlBuilder.apiProtectedRoute('user').route('guests').build() + `?companyId=${companyId}`
     );
   }
 
-  createGuest(dto: { email: string; first_name: string; last_name: string; phone?: string }): Observable<any> {
-    return this.http.post<any>(
+  createGuest(
+    dto: { email: string; first_name: string; last_name: string; phone?: string; company_id?: TCompanyId },
+  ): Observable<any> {
+    return this.scopedHttp.withContract().post<any>(
       this.UrlBuilder.apiProtectedRoute('user').route('guest').build(),
-      dto
+      dto,
     );
   }
 
   updateGuest(userId: string, patch: { first_name?: string; last_name?: string; email?: string; phone?: string }): Observable<void> {
-    return this.http.patch<void>(
+    return this.scopedHttp.withContract().patch<void>(
       this.UrlBuilder.apiProtectedRoute('user').route(`guest/${userId}`).build(),
-      patch
+      patch,
+    );
+  }
+
+  unlinkGuestFromCompany(userId: string, companyId: TCompanyId): Observable<{ ok: boolean }> {
+    return this.scopedHttp.withContract().delete<{ ok: boolean }>(
+      this.UrlBuilder.apiProtectedRoute('user').route(`guest/${userId}/companies/${companyId}`).build(),
     );
   }
 }
