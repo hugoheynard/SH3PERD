@@ -1,5 +1,6 @@
-<div class="tab-content orgchart-tab">
+<div class="tab-content orgchart-tab" [class.print-mode]="printMode()">
 
+  @if (!printMode()) {
   <div class="content-toolbar">
     <span class="results-count">Organisation</span>
 
@@ -75,6 +76,7 @@
       </button>
     </div>
   </div>
+  }
 
   <!-- Root node creation form (with color picker) -->
   @if (editMode() && addingNode() && !newNodeParentId()) {
@@ -110,7 +112,11 @@
 
   @if (visibleChart(); as chart) {
     <div class="orgchart-scroll" #scrollContainer>
-    <div class="orgchart-tree" [style.transform]="'scale(' + zoomLevel() + ')'" [style.transform-origin]="'top center'">
+    <div
+      class="orgchart-tree"
+      [style.transform]="printMode() ? null : 'scale(' + zoomLevel() + ')'"
+      [style.transform-origin]="'top center'"
+    >
 
       <!-- Root: Company -->
       <div class="oc-root-wrap">

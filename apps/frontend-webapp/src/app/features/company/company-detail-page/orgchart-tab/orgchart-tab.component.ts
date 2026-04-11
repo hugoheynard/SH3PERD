@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, ElementRef, HostListener, inject, input, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, HostListener, inject, input, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrgChartStore } from '../../orgchart.store';
@@ -27,11 +27,62 @@ export class OrgchartTabComponent {
 
   readonly companyId = input.required<TCompanyId>();
 
+  /**
+   * Print mode — when `true`, the component renders as a read-only,
+   * static snapshot of the orgchart:
+   *
+   * - Toolbar (search, zoom, expand/collapse, archived toggle, export,
+   *   edit-mode button, "new root") is hidden.
+   * - Edit mode is disabled and cannot be entered — all mutating handlers
+   *   early-return.
+   * - Per-node floating toolbars (move left/right, ungroup, move-to,
+   *   settings) are hidden.
+   * - "Add child" dashed buttons and "add member" plus icons disappear.
+   * - Keyboard shortcuts (+/-/0 for zoom) become no-ops.
+   * - Node click doesn't toggle expansion — the tree is rendered with
+   *   every node expanded by the print wrapper via the expandAll helper.
+   * - The move-to and export modals are never opened programmatically.
+   *
+   * Used by the `/print/orgchart/:companyId` route loaded inside
+   * headless Chromium during PDF export, so the PDF is pixel-identical
+   * to the live orgchart tab minus the edit affordances.
+   */
+  readonly printMode = input<boolean>(false);
+
   readonly editMode = signal(false);
   readonly expandedNodes = signal<Set<string>>(new Set());
 
   // Export modal visibility
   readonly exportModalOpen = signal(false);
+
+  constructor() {
+    /*
+     * Print-mode auto-expansion: as soon as the orgchart is populated
+     * in the store while `printMode` is on, populate `expandedNodes`
+     * with every node id so the tree renders fully-unfolded. Without
+     * this, the PDF would only show root nodes because the user can't
+     * click to expand inside a static snapshot.
+     *
+     * `effect()` is called here (not as a field initializer) so we
+     * don't need to hold a reference to the returned `EffectRef` —
+     * the effect's lifecycle is bound to the component's injection
+     * context automatically.
+     */
+    effect(() => {
+      if (!this.printMode()) return;
+      const chart = this.store.orgChart();
+      if (!chart) return;
+      const ids = new Set<string>();
+      const walk = (nodes: TOrgNodeHierarchyViewModel[]) => {
+        for (const n of nodes) {
+          ids.add(n.id);
+          walk(n.children);
+        }
+      };
+      walk(chart.rootNodes);
+      this.expandedNodes.set(ids);
+    });
+  }
 
   // Node creation state
   readonly addingNode = signal(false);
@@ -94,6 +145,10 @@ export class OrgchartTabComponent {
 
   @HostListener('document:keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
+    // Print mode is read-only — the keyboard zoom shortcuts would mutate
+    // `zoomLevel` and cause Chromium to lay out at a wrong scale.
+    if (this.printMode()) return;
+
     // Don't intercept when typing in an input
     const tag = (event.target as HTMLElement)?.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
@@ -113,6 +168,10 @@ export class OrgchartTabComponent {
   // ── Edit mode ───────────────────────────────────────────
 
   toggleEditMode(): void {
+    // Print mode forbids edit — no-op. The toolbar button is hidden
+    // anyway, but we guard the handler as well so any synthetic click
+    // from a test or rogue pointer event is inert.
+    if (this.printMode()) return;
     const entering = !this.editMode();
     this.editMode.set(entering);
     if (!entering) {
@@ -400,6 +459,11 @@ export class OrgchartTabComponent {
    * Normal click clears selection and expands/collapses.
    */
   onNodeClick(node: TOrgNodeHierarchyViewModel, event: MouseEvent): void {
+    // Print mode: the tree is rendered with every node pre-expanded by
+    // the print wrapper, so clicks would only fold the tree and break
+    // the layout mid-print. No-op.
+    if (this.printMode()) return;
+
     if (!this.editMode() || !event.shiftKey) {
       // Normal click — clear selection, toggle expand
       this.clearSelection();
@@ -464,12 +528,12 @@ export class OrgchartTabComponent {
     };
     walk(chart.rootNodes);
     this.expandedNodes.set(ids);
-    this.centerScroll();
+    if (!this.printMode()) this.centerScroll();
   }
 
   collapseAll(): void {
     this.expandedNodes.set(new Set());
-    this.centerScroll();
+    if (!this.printMode()) this.centerScroll();
   }
 
   // ── Search ──────────────────────────────────────────────
@@ -506,16 +570,19 @@ export class OrgchartTabComponent {
   // ── Zoom ────────────────────────────────────────────────
 
   zoomIn(): void {
+    if (this.printMode()) return;
     this.zoomLevel.update(z => Math.min(z + 0.1, 2));
     this.centerScroll();
   }
 
   zoomOut(): void {
+    if (this.printMode()) return;
     this.zoomLevel.update(z => Math.max(z - 0.1, 0.4));
     this.centerScroll();
   }
 
   resetZoom(): void {
+    if (this.printMode()) return;
     this.zoomLevel.set(1);
     this.centerScroll();
   }

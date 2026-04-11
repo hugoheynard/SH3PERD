@@ -40,7 +40,27 @@ async function bootstrap(): Promise<void> {
     origin: 'http://localhost:4200', //TODO manager CORS avec env
     credentials: true,
     methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-    allowedHeaders: ['Content-Type','Authorization','X-XSRF-TOKEN', 'X-Feature', 'X-Contract-Id']
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-XSRF-TOKEN',
+      'X-Feature',
+      'X-Contract-Id',
+      // Print export headers (used by the orgchart PDF pipeline):
+      // - X-Print-Token carries the single-use JWT consumed by the
+      //   public `print-payload` endpoint.
+      // - X-Skip-Auth tells the frontend auth interceptor not to fetch
+      //   an access token for this request (Puppeteer has none).
+      'X-Print-Token',
+      'X-Skip-Auth',
+    ],
+    // Expose the telemetry headers the export endpoint sets so the
+    // frontend export service can read them off the response.
+    exposedHeaders: [
+      'X-Orgchart-Pages',
+      'X-Orgchart-Pagination',
+      'X-Orgchart-Format',
+    ],
   });
 
   app.setGlobalPrefix('api');

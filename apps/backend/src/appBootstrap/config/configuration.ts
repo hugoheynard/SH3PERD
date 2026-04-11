@@ -30,7 +30,9 @@ export default (): {
     // where you mount a layer or a system package instead of the bundled Chromium.
     chromiumPath: process.env['CHROMIUM_EXECUTABLE_PATH'],
     poolSize: parseInt(process.env['PRINT_POOL_SIZE'] ?? '2', 10),
-    pageTimeoutMs: parseInt(process.env['PRINT_PAGE_TIMEOUT_MS'] ?? '30000', 10),
-    readySignalTimeoutMs: parseInt(process.env['PRINT_READY_TIMEOUT_MS'] ?? '20000', 10),
+    // Bumped to 60s because Angular dev mode can take 10-30s to compile
+    // a newly-added lazy chunk on first load. Production should lower this.
+    pageTimeoutMs: parseInt(process.env['PRINT_PAGE_TIMEOUT_MS'] ?? '60000', 10),
+    readySignalTimeoutMs: parseInt(process.env['PRINT_READY_TIMEOUT_MS'] ?? '30000', 10),
   },
 });

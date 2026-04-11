@@ -33,6 +33,18 @@ export class OrgChartStore {
     });
   }
 
+  /**
+   * Directly sets the orgchart view model, bypassing the authenticated
+   * HTTP endpoint. Used by the print-only route (`OrgchartPrintComponent`)
+   * which fetches the data via the public print-payload endpoint and
+   * needs to feed it into the same store the live tab component reads
+   * from. Keeping this as a dedicated method (rather than making
+   * `_orgChart` public) preserves the store's read/write boundary.
+   */
+  setOrgChartDirect(chart: TCompanyOrgChartViewModel): void {
+    this._orgChart.set(chart);
+  }
+
   // ── Org Nodes ──────────────────────────────────────────────
 
   loadOrgNodes(companyId: TCompanyId): void {

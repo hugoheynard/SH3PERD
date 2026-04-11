@@ -1,8 +1,10 @@
 <!--
-  Print-only orgchart template.
-  Layout is structured as a sequence of "print pages" so that paginated
-  modes (by-root / poster) can use native CSS page breaks, and the
-  single-page mode (fit) simply renders one page with a scaled tree.
+  Print-only orgchart route. Thin wrapper around the live `OrgchartTabComponent`
+  which renders itself in read-only mode when `printMode` is true.
+
+  Everything visual lives in the live component + its SCSS. This template
+  just provides the page scaffolding (cover, header, watermark) that only
+  the print route needs.
 -->
 
 @if (errorMessage()) {
@@ -10,31 +12,16 @@
     <h1>Unable to render orgchart</h1>
     <p>{{ errorMessage() }}</p>
   </div>
-} @else if (hasChart() && chart(); as chartRef) {
+} @else if (isReady()) {
 
-  <!-- Cover page (only when requested) -->
   @if (showCover()) {
-    <section class="print-page print-page--cover" [attr.data-mode]="paginationMode()">
+    <section class="print-page print-page--cover">
       <div class="print-cover-inner">
         <div class="print-cover-meta">
           <span class="print-cover-brand">SH3PHERD</span>
           <span class="print-cover-label">Org chart</span>
         </div>
-        <h1 class="print-cover-title">{{ chartRef.company_name }}</h1>
-        <div class="print-cover-stats">
-          <div>
-            <span class="print-cover-number">{{ visibleRoots().length }}</span>
-            <span class="print-cover-sub">{{ chartRef.orgLayers?.[0] ?? 'departments' }}</span>
-          </div>
-          <div>
-            <span class="print-cover-number">{{ countAllNodes() }}</span>
-            <span class="print-cover-sub">nodes total</span>
-          </div>
-          <div>
-            <span class="print-cover-number">{{ countAllMembers() }}</span>
-            <span class="print-cover-sub">members</span>
-          </div>
-        </div>
+        <h1 class="print-cover-title">{{ store.orgChart()?.company_name }}</h1>
         <div class="print-cover-date">Generated on {{ renderedAt | date:'longDate' }}</div>
       </div>
       @if (watermark()) {
@@ -43,92 +30,14 @@
     </section>
   }
 
-  <!-- Chart page(s) -->
-  @if (paginationMode() === 'by-root') {
-    <!-- One page per root node -->
-    @for (root of visibleRoots(); track trackById($index, root)) {
-      <section class="print-page print-page--chart print-page--by-root">
-        <header class="print-chart-header">
-          <span class="print-chart-eyebrow">{{ chartRef.company_name }}</span>
-          <h2 class="print-chart-title" [style.color]="getRootColor(root)">{{ root.name }}</h2>
-        </header>
-        <div class="print-orgchart-tree print-orgchart-tree--by-root">
-          <div class="oc-print-root-wrap">
-            <ng-container *ngTemplateOutlet="nodeTpl; context: { $implicit: root, depth: 0, rootColor: getRootColor(root) }"></ng-container>
-          </div>
-        </div>
-        @if (watermark()) { <div class="print-watermark">{{ watermark() }}</div> }
-      </section>
+  <section class="print-page print-page--chart" [attr.data-mode]="paginationMode()">
+    @if (companyId(); as cid) {
+      <app-orgchart-tab [companyId]="cid" [printMode]="true" />
     }
-  } @else {
-    <!-- fit or poster — single tree block, sized by CSS -->
-    <section class="print-page print-page--chart" [attr.data-mode]="paginationMode()">
-      <header class="print-chart-header">
-        <span class="print-chart-eyebrow">{{ chartRef.company_name }}</span>
-        <h2 class="print-chart-title">Organisation</h2>
-      </header>
-
-      <div
-        class="print-orgchart-tree"
-        [attr.data-mode]="paginationMode()"
-        [style.transform]="paginationMode() === 'fit' ? 'scale(' + fitScale() + ')' : null"
-        [style.transform-origin]="'top center'"
-      >
-        <div class="oc-print-company-card">{{ chartRef.company_name }}</div>
-        @if (visibleRoots().length > 0) {
-          <div class="oc-print-branch"></div>
-          <div class="oc-print-children-row" [style.--count]="visibleRoots().length">
-            @for (root of visibleRoots(); track trackById($index, root)) {
-              <ng-container *ngTemplateOutlet="nodeTpl; context: { $implicit: root, depth: 0, rootColor: getRootColor(root) }"></ng-container>
-            }
-          </div>
-        } @else {
-          <p class="print-empty">No nodes yet.</p>
-        }
-      </div>
-
-      @if (watermark()) { <div class="print-watermark">{{ watermark() }}</div> }
-    </section>
-  }
+    @if (watermark()) {
+      <div class="print-watermark">{{ watermark() }}</div>
+    }
+  </section>
 } @else {
   <div class="print-loading">Loading orgchart…</div>
 }
-
-<!-- ── Recursive node template ────────────────────────────── -->
-<ng-template #nodeTpl let-node let-depth="depth" let-rootColor="rootColor">
-  <div class="oc-print-col">
-    <div
-      class="oc-print-card"
-      [class.depth-0]="depth === 0"
-      [class.depth-1]="depth === 1"
-      [class.depth-deep]="depth >= 2"
-      [style.background]="getNodeBackground(node, depth, rootColor)"
-      [style.border-color]="getBorderColor(node, rootColor)"
-    >
-      <div class="oc-print-card-accent" [style.background]="getBorderColor(node, rootColor)"></div>
-      <div class="oc-print-card-body">
-        <div class="oc-print-card-row">
-          <span class="oc-print-name">{{ node.name }}</span>
-          <span class="oc-print-count">{{ totalMembers(node) }}</span>
-        </div>
-        <div class="oc-print-card-meta">
-          @for (leader of getNodeLeaders(node); track leader.name + leader.role) {
-            <span class="oc-print-leader">
-              <span class="oc-print-leader-role">{{ leader.role }}</span>
-              {{ leader.name }}
-            </span>
-          }
-        </div>
-      </div>
-    </div>
-
-    @if (node.children?.length) {
-      <div class="oc-print-branch"></div>
-      <div class="oc-print-children-row" [style.--count]="node.children.length">
-        @for (child of node.children; track trackById($index, child)) {
-          <ng-container *ngTemplateOutlet="nodeTpl; context: { $implicit: child, depth: depth + 1, rootColor: rootColor }"></ng-container>
-        }
-      </div>
-    }
-  </div>
-</ng-template>

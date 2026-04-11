@@ -100,6 +100,33 @@ export class OrgchartPdfService {
     if (opts.watermark) url.searchParams.set('watermark', opts.watermark);
 
     const buffer = await this.pool.withPage(async (page) => {
+      // ── Diagnostics ────────────────────────────────────────────
+      // Mirror the page's console, JS errors, and failed network
+      // requests into the backend logger. Without these, a broken
+      // render produces a generic `waitForFunction` timeout with no
+      // visibility into what actually went wrong inside Chromium.
+      page.on('console', (msg) => {
+        const type = msg.type();
+        if (type === 'error' || type === 'warn') {
+          this.logger.warn(`[page:${type}] ${msg.text()}`);
+        }
+      });
+      page.on('pageerror', (err: unknown) => {
+        const message = err instanceof Error ? err.message : String(err);
+        this.logger.error(`[page:error] ${message}`);
+      });
+      page.on('requestfailed', (req) => {
+        this.logger.warn(
+          `[page:requestfailed] ${req.method()} ${req.url()} — ${req.failure()?.errorText ?? 'unknown'}`,
+        );
+      });
+      page.on('response', (response) => {
+        const status = response.status();
+        if (status >= 400) {
+          this.logger.warn(`[page:response ${status}] ${response.url()}`);
+        }
+      });
+
       // Print-media emulation forces Chromium to pick the @media print
       // stylesheet branches — mandatory for our print-only layout.
       await page.emulateMediaType('print');
@@ -108,12 +135,17 @@ export class OrgchartPdfService {
       page.setDefaultNavigationTimeout(this.pageTimeoutMs);
       page.setDefaultTimeout(this.pageTimeoutMs);
 
-      await page.goto(url.toString(), { waitUntil: 'networkidle0' });
+      // `domcontentloaded` (not `networkidle0`) — Angular dev mode keeps
+      // an HMR WebSocket open permanently, which means the network never
+      // idles and `networkidle0` would always time out in dev. Production
+      // behaves the same way any time a long-lived connection (analytics,
+      // service worker, SSE) is involved, so relying on the DOM event is
+      // the portable choice. The real readiness gate is the explicit
+      // `__sh3_orgchartReady` flag below, which the print component sets
+      // after data load + fonts + image decoding.
+      await page.goto(url.toString(), { waitUntil: 'domcontentloaded' });
 
-      // Wait for the print component to flag itself as ready. The page is
-      // responsible for (a) loading the orgchart, (b) waiting for
-      // `document.fonts.ready`, (c) decoding avatar images, (d) setting
-      // the ready flag. This keeps the server ignorant of layout concerns.
+      // Wait for the print component to flag itself as ready.
       await page.waitForFunction(
         '(window).__sh3_orgchartReady === true',
         { timeout: this.readyTimeoutMs },

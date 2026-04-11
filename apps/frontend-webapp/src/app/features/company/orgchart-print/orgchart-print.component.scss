@@ -1,33 +1,27 @@
 /* ──────────────────────────────────────────────────────────────
  * Orgchart print stylesheet
  *
- * Loaded only by the /print/orgchart/:id route. Everything here is
- * scoped to that component, so it cannot leak into the main app shell.
+ * Scoped to `OrgchartPrintComponent`. Delegates all tree rendering
+ * to the live `OrgchartTabComponent` + its own SCSS — this file only
+ * provides:
+ *   - Page setup (`@page`, size, margins)
+ *   - Cover page layout
+ *   - Watermark
+ *   - Print-mode overrides that neutralise the live tab's runtime
+ *     affordances (scroll, height clamps, hover effects)
  *
- * Three modes are supported via `[data-mode]`:
- *   - fit    → single landscape page, tree scaled to fit
- *   - by-root → one page per root, natural sizing
- *   - poster  → one continuous canvas with page-break hints
- *
- * Page size is declared via `@page` per section. `preferCSSPageSize: true`
- * on the Puppeteer side instructs Chromium to honour these over the
- * default A3 landscape.
+ * Global design tokens (`--text-primary`, `--border-light`, etc.) come
+ * from `src/styles.scss` which is the app's root stylesheet and is
+ * loaded on every route, including this one.
  * ────────────────────────────────────────────────────────────── */
 
 :host {
   display: block;
-  background: #0f1218;
-  color: #e7eaf0;
+  background: var(--content-page-bg-color, #0f1218);
+  color: var(--text-primary, #e7eaf0);
   font-family: -apple-system, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
-}
-
-/* Strip away scrollbars & viewport noise in the headless browser. */
-:host,
-:host ::ng-deep body {
-  margin: 0;
-  padding: 0;
 }
 
 @page {
@@ -35,17 +29,7 @@
   margin: 12mm 12mm 16mm 12mm;
 }
 
-/* Cover page: portrait, same A3 size for consistency. */
-.print-page--cover {
-  page: cover;
-}
-
-@page cover {
-  size: A3;
-  margin: 20mm;
-}
-
-/* Poster mode: bigger sheet + looser margins. */
+/* Poster mode: larger sheet, tighter margins. */
 .print-page[data-mode='poster'] {
   page: poster;
 }
@@ -53,6 +37,16 @@
 @page poster {
   size: A2 landscape;
   margin: 8mm;
+}
+
+/* Cover page: same size, portrait, wider margins. */
+.print-page--cover {
+  page: cover;
+}
+
+@page cover {
+  size: A3;
+  margin: 20mm;
 }
 
 /* ── Page container ─────────────────────────────────────── */
@@ -65,9 +59,8 @@
   box-sizing: border-box;
   break-after: page;
   page-break-after: always;
-
-  /* Default vertical sizing in screen preview — print media resets this. */
   min-height: 100vh;
+  overflow: hidden;
 }
 
 .print-page:last-child {
@@ -92,7 +85,7 @@
   display: flex;
   justify-content: center;
   gap: 14px;
-  color: #8a93a6;
+  color: var(--text-muted, #8a93a6);
   font-size: 12px;
   letter-spacing: 1.4px;
   text-transform: uppercase;
@@ -101,270 +94,81 @@
 
 .print-cover-brand {
   font-weight: 700;
-  color: #e7eaf0;
+  color: var(--text-primary, #e7eaf0);
 }
 
 .print-cover-title {
   font-size: 64px;
   font-weight: 700;
   line-height: 1.05;
-  margin: 0 0 48px 0;
+  margin: 0 0 40px 0;
   letter-spacing: -1px;
-}
-
-.print-cover-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-bottom: 64px;
-
-  > div {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
-  }
-}
-
-.print-cover-number {
-  font-size: 40px;
-  font-weight: 700;
-  color: #e7eaf0;
-}
-
-.print-cover-sub {
-  font-size: 11px;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: #8a93a6;
 }
 
 .print-cover-date {
   font-size: 13px;
-  color: #8a93a6;
+  color: var(--text-muted, #8a93a6);
 }
 
-/* ── Chart page header ──────────────────────────────────── */
+/* ── Chart page — hosts <app-orgchart-tab> ─────────────── */
 
-.print-chart-header {
+.print-page--chart {
+  padding: 16px;
+}
+
+/*
+ * The live orgchart tab component assumes an app-shell context: it
+ * constrains itself to `height: 100%`, enables inner scrolling, and
+ * has hover transitions that don't belong on a static sheet. When it
+ * sits inside `.print-page--chart` with `[printMode]="true"`, we
+ * neutralise those rules via `::ng-deep` so it flows naturally inside
+ * the print page.
+ *
+ * `::ng-deep` is deprecated as a general tool but it's the documented
+ * escape hatch for exactly this case: styling a child component that
+ * lives in a different view-encapsulation boundary.
+ */
+:host ::ng-deep app-orgchart-tab {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.print-chart-eyebrow {
-  font-size: 10px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: #8a93a6;
-}
-
-.print-chart-title {
-  font-size: 22px;
-  font-weight: 600;
-  margin: 0;
-  color: #e7eaf0;
-}
-
-/* ── Tree container ─────────────────────────────────────── */
-
-.print-orgchart-tree {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-}
+  min-height: 0;
+  width: 100%;
 
-/* fit mode: the TS code computes a scale factor and we apply it inline. */
-.print-orgchart-tree[data-mode='fit'] {
-  overflow: visible;
-}
+  .tab-content.orgchart-tab {
+    flex: 1;
+    padding: 0;
+    overflow: visible;
+  }
 
-/* poster mode: no scaling — sections can grow and Chromium paginates. */
-.print-orgchart-tree[data-mode='poster'] {
-  overflow: visible;
+  .orgchart-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow: visible; /* no scrollbars inside a printed page */
+  }
 
-  .oc-print-card {
+  .orgchart-tree {
+    transform: none !important; /* zoom is meaningless on paper */
+  }
+
+  /* Disable hover-only UI that would flash mid-render. */
+  .oc-node-col:hover .oc-node-toolbar,
+  .oc-node-toolbar {
+    display: none !important;
+  }
+
+  /* Kill transitions — Chromium prints mid-transition state otherwise. */
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* Every card should be page-break-safe in poster mode. */
+  .oc-node-card {
     break-inside: avoid;
     page-break-inside: avoid;
   }
-}
-
-/* by-root mode: one root per page, no cover label clutter. */
-.print-orgchart-tree--by-root {
-  padding-top: 12px;
-}
-
-.oc-print-company-card {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 24px;
-  font-size: 14px;
-  font-weight: 600;
-  background: #1a1f29;
-  border: 1px solid #2a3140;
-  border-radius: 10px;
-  color: #e7eaf0;
-  margin-bottom: 0;
-}
-
-/* Vertical connector between rows. */
-.oc-print-branch {
-  width: 1px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-/* Sibling row with horizontal connector lines drawn via pseudo-elements. */
-.oc-print-children-row {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: nowrap;
-  position: relative;
-
-  /* Horizontal bar connecting siblings */
-  &::before {
-    content: '';
-    position: absolute;
-    top: -12px;
-    left: 20%;
-    right: 20%;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.12);
-  }
-
-  /* Hide the top connector on the outermost row where it's not needed. */
-  &:first-child::before {
-    display: none;
-  }
-}
-
-/* Each column centers its card and recurses children below. */
-.oc-print-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-
-  /* Short vertical stem above the card */
-  &::before {
-    content: '';
-    width: 1px;
-    height: 12px;
-    background: rgba(255, 255, 255, 0.12);
-    margin-bottom: -1px;
-  }
-}
-
-/* The root's column shouldn't draw a stem above (no parent). */
-.oc-print-root-wrap > .oc-print-col::before,
-.print-orgchart-tree > .oc-print-children-row > .oc-print-col::before {
-  display: none;
-}
-
-/* ── Node card ──────────────────────────────────────────── */
-
-.oc-print-card {
-  position: relative;
-  display: flex;
-  min-width: 200px;
-  max-width: 260px;
-  min-height: 68px;
-  border-radius: 10px;
-  border: 1.5px solid;
-  overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-.oc-print-card.depth-0 {
-  min-width: 240px;
-  min-height: 76px;
-}
-
-.oc-print-card.depth-1 {
-  min-width: 220px;
-}
-
-.oc-print-card.depth-deep {
-  min-width: 190px;
-  min-height: 58px;
-}
-
-.oc-print-card-accent {
-  width: 5px;
-  flex-shrink: 0;
-}
-
-.oc-print-card-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
-  padding: 10px 14px;
-  flex: 1;
-  min-width: 0;
-}
-
-.oc-print-card-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.oc-print-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: #f2f4f8;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
-
-.oc-print-count {
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(242, 244, 248, 0.75);
-  background: rgba(0, 0, 0, 0.25);
-  padding: 1px 8px;
-  border-radius: 10px;
-  flex-shrink: 0;
-}
-
-.oc-print-card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.oc-print-leader {
-  font-size: 10px;
-  color: rgba(242, 244, 248, 0.72);
-  background: rgba(0, 0, 0, 0.25);
-  padding: 2px 6px;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.oc-print-leader-role {
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  color: rgba(242, 244, 248, 0.9);
 }
 
 /* ── Watermark ───────────────────────────────────────────── */
@@ -376,7 +180,7 @@
   right: 0;
   text-align: center;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.22);
   text-transform: uppercase;
   letter-spacing: 2px;
   pointer-events: none;
@@ -398,39 +202,32 @@
 .print-error h1 {
   font-size: 20px;
   margin-bottom: 8px;
-  color: #e7eaf0;
+  color: var(--text-primary, #e7eaf0);
 }
 
 .print-error p {
   font-size: 13px;
-  color: #8a93a6;
+  color: var(--text-muted, #8a93a6);
 }
 
 .print-loading {
-  color: #8a93a6;
+  color: var(--text-muted, #8a93a6);
   font-size: 13px;
-}
-
-.print-empty {
-  color: #8a93a6;
-  font-style: italic;
-  font-size: 13px;
-  margin: 40px 0;
 }
 
 /* ── Print-media overrides ─────────────────────────────── */
 
 @media print {
   :host {
-    background: #0f1218;
+    background: var(--content-page-bg-color, #0f1218);
   }
 
   .print-page {
     min-height: auto;
   }
 
-  /* Hide scrollbars / overflow clipping when paginating. */
-  .print-orgchart-tree {
+  :host ::ng-deep .orgchart-scroll,
+  :host ::ng-deep .orgchart-tree {
     overflow: visible !important;
   }
 }

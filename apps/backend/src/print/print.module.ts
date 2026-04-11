@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CompanyHandlersModule } from '../company/company-handlers.module.js';
 import { OrgchartExportController } from './api/orgchart-export.controller.js';
+import { OrgchartPrintPayloadController } from './api/orgchart-print-payload.controller.js';
 import { OrgchartPdfService } from './services/OrgchartPdfService.js';
 import { PrintTokenService } from './services/PrintTokenService.js';
 import { PuppeteerPoolService } from './services/PuppeteerPoolService.js';
@@ -25,7 +26,7 @@ import {
  */
 @Module({
   imports: [CqrsModule, CompanyHandlersModule],
-  controllers: [OrgchartExportController],
+  controllers: [OrgchartExportController, OrgchartPrintPayloadController],
   providers: [
     { provide: PRINT_TOKEN_SERVICE, useClass: PrintTokenService },
     { provide: PUPPETEER_POOL_SERVICE, useClass: PuppeteerPoolService },
