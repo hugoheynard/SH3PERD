@@ -5,6 +5,7 @@ import { firstValueFrom, timeout } from 'rxjs';
 import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
 import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
+import { QuotaService } from '../../../quota/QuotaService.js';
 import {
   MicroservicePatterns,
   type TUserId,
@@ -48,9 +49,13 @@ export class AiMasterTrackHandler implements ICommandHandler<AiMasterTrackComman
   constructor(
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
+    private readonly quotaService: QuotaService,
   ) {}
 
   async execute(cmd: AiMasterTrackCommand): Promise<TVersionTrackDomainModel> {
+    // 0. Quota check
+    await this.quotaService.ensureAllowed(cmd.actorId, 'master_ai');
+
     // 1. Load and validate source track via aggregate
     const aggregate = await this.aggregateRepo.loadByVersionId(cmd.versionId);
     const version = aggregate.ensureCanMasterTrack(cmd.actorId, cmd.versionId, cmd.trackId);
@@ -116,6 +121,8 @@ export class AiMasterTrackHandler implements ICommandHandler<AiMasterTrackComman
 
     aggregate.addTrack(cmd.actorId, cmd.versionId, masteredTrack);
     await this.aggregateRepo.save(aggregate);
+
+    await this.quotaService.recordUsage(cmd.actorId, 'master_ai');
 
     return masteredTrack;
   }

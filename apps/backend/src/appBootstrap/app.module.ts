@@ -22,6 +22,7 @@ import { PlaylistModule } from '../playlists-v2/playlist.module.js';
 import { IntegrationsModule } from '../integrations/integrations.module.js';
 import { PrintModule } from '../print/print.module.js';
 import { PlatformContractModule } from '../platform-contract/platform-contract.module.js';
+import { QuotaModule } from '../quota/quota.module.js';
 import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionFilter.js';
 
 @Module({
@@ -51,6 +52,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
     UserProfileModule,
     ContractModule,
     PlatformContractModule,
+    QuotaModule,
     ProtectedModule,
     PlaylistModule,
     PrintModule,
@@ -76,6 +78,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
           { path: '', module: PrintModule },
           { path: 'integrations', module: IntegrationsModule },
           { path: 'playlists', module: PlaylistModule },
+          { path: '', module: QuotaModule },
         ]
       },
     ]),

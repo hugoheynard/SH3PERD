@@ -68,12 +68,21 @@ $text-2:     #8892b0;
   text-align: center;
 }
 
-// Border Collie illustration
-.bc-svg {
-  width: 180px;
+// Shepherd dog illustration
+.bc-img {
+  width: 320px;
   height: auto;
-  color: rgba(255, 255, 255, .70);
-  filter: drop-shadow(0 0 28px rgba(6, 164, 164, .18));
+  border-radius: 16px;
+  filter: drop-shadow(0 0 40px rgba(6, 164, 164, .22));
+  object-fit: cover;
+}
+
+// Small icon in the auth panel header
+.auth-logo-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: cover;
 }
 
 // Brand text
@@ -191,7 +200,7 @@ $text-2:     #8892b0;
 @media (max-width: 860px) {
   .login-page  { flex-direction: column; overflow-y: auto; height: auto; min-height: 100vh; }
   .brand-panel { flex: none; padding: 48px 24px 32px; }
-  .bc-svg      { width: 220px; }
+  .bc-img      { width: 220px; }
   .brand-name  { font-size: 30px; }
   .auth-panel  { flex: none; border-left: none; border-top: 1px solid $border; }
   .auth-inner  { padding: 36px 24px 52px; }

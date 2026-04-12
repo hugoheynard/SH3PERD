@@ -12,6 +12,7 @@ import type {
   TVersionTrackDomainModel,
 } from '@sh3pherd/shared-types';
 import { TrackUploadedEvent } from '../events/TrackUploadedEvent.js';
+import { QuotaService } from '../../../quota/QuotaService.js';
 
 export class UploadTrackCommand {
   constructor(
@@ -29,12 +30,17 @@ export class UploadTrackHandler implements ICommandHandler<UploadTrackCommand, T
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject(TRACK_STORAGE_SERVICE) private readonly storage: ITrackStorageService,
     private readonly eventBus: EventBus,
+    private readonly quotaService: QuotaService,
   ) {}
 
   async execute(cmd: UploadTrackCommand): Promise<TVersionTrackDomainModel> {
+    // Quota checks — before any S3 upload or domain mutation
+    await this.quotaService.ensureAllowed(cmd.actorId, 'track_upload');
+    await this.quotaService.ensureAllowed(cmd.actorId, 'storage_bytes', cmd.file.length);
+
     const aggregate = await this.aggregateRepo.loadByVersionId(cmd.versionId);
 
-    // Validate before uploading to S3
+    // Domain validation — structural invariants
     const version = aggregate.ensureCanAddTrack(cmd.actorId, cmd.versionId);
     const isFirstTrack = version.tracks.length === 0;
 
@@ -63,6 +69,10 @@ export class UploadTrackHandler implements ICommandHandler<UploadTrackCommand, T
       await this.storage.delete(s3Key).catch(() => {});
       throw e;
     }
+
+    // Record usage — after successful save
+    await this.quotaService.recordUsage(cmd.actorId, 'track_upload');
+    await this.quotaService.recordUsage(cmd.actorId, 'storage_bytes', cmd.file.length);
 
     // Async: trigger audio analysis
     this.eventBus.publish(new TrackUploadedEvent(cmd.actorId, cmd.versionId, trackId, s3Key));

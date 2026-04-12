@@ -5,6 +5,7 @@ import { firstValueFrom, timeout } from 'rxjs';
 import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
 import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
+import { QuotaService } from '../../../quota/QuotaService.js';
 import { MusicVersionEntity } from '../../domain/entities/MusicVersionEntity.js';
 import {
   MicroservicePatterns,
@@ -34,9 +35,13 @@ export class PitchShiftVersionHandler implements ICommandHandler<PitchShiftVersi
   constructor(
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
+    private readonly quotaService: QuotaService,
   ) {}
 
   async execute(cmd: PitchShiftVersionCommand): Promise<TMusicVersionDomainModel> {
+    // 0. Quota check
+    await this.quotaService.ensureAllowed(cmd.actorId, 'pitch_shift');
+
     // 1. Load and validate via aggregate
     const aggregate = await this.aggregateRepo.loadByVersionId(cmd.versionId);
     const source = aggregate.ensureCanDeriveVersion(cmd.actorId, cmd.versionId, cmd.trackId);
@@ -102,6 +107,8 @@ export class PitchShiftVersionHandler implements ICommandHandler<PitchShiftVersi
     newVersion.addTrack(newTrack);
     aggregate.createDerivedVersion(newVersion);
     await this.aggregateRepo.save(aggregate);
+
+    await this.quotaService.recordUsage(cmd.actorId, 'pitch_shift');
 
     return newVersion.toDomain;
   }

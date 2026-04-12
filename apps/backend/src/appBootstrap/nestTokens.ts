@@ -36,6 +36,9 @@ export const PLAYLIST_TRACK_REPO = Symbol('PLAYLIST_TRACK_REPO');
 // PLATFORM CONTRACT
 export const PLATFORM_CONTRACT_REPO     = Symbol('PLATFORM_CONTRACT_REPO');
 
+// QUOTA
+export const USAGE_COUNTER_REPO         = Symbol('USAGE_COUNTER_REPO');
+
 // COMPANY
 export const COMPANY_REPO               = Symbol('COMPANY_REPO');
 export const COMPANY_AGGREGATE_REPO     = Symbol('COMPANY_AGGREGATE_REPO');
