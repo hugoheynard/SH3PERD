@@ -4,7 +4,6 @@ import { Reflector } from '@nestjs/core';
 import { PLATFORM_SCOPED_KEY } from '../../utils/nest/decorators/PlatformScoped.js';
 import { PLATFORM_CONTRACT_REPO } from '../../appBootstrap/nestTokens.js';
 import type { IPlatformContractRepository } from '../infra/PlatformContractMongoRepo.js';
-import type { TUserId } from '@sh3pherd/shared-types';
 
 /**
  * Guard that resolves the platform contract for the authenticated user.
@@ -37,7 +36,7 @@ export class PlatformContractContextGuard implements CanActivate {
     if (!isPlatformScoped) return true;
 
     const req = ctx.switchToHttp().getRequest<Request>();
-    const userId = req.user_id as TUserId;
+    const userId = req.user_id;
 
     if (!userId) {
       throw new UnauthorizedException('No authenticated user — platform contract cannot be resolved');

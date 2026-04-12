@@ -1,241 +1,220 @@
 # SH3PHERD — Music Library
 
-Feature TODO for the Music Library module. Consolidates the audit
-from 2026-04-11 and the proposed roadmap, ordered by ROI.
+Feature roadmap for the Music Library module. Updated 2026-04-12.
 
-## Audit recap
+---
 
-### What works well
-- DDD-correct backend: `MusicReferenceEntity`, `MusicVersionEntity`,
-  `RepertoireEntryEntity`, aggregate root + `MusicPolicy`.
-- CQRS with 13 commands, 5 queries, 1 event handler.
-- `audio-processor` microservice (TCP): Essentia BPM/key, ITU-R BS.1770
-  loudness analysis, mastering via loudnorm pass-2, ffmpeg pitch-shift.
-- Frontend with layered services: selectors, mutations, api. Tab
-  system with configurable search modes, filters by genre + BPM +
-  duration + ratings.
-- Upload flow wired to async analysis via event bus.
+## Current state
 
-### What's missing or partial
-- No inline audio playback — tracks can be downloaded but not played
-  in-app, no waveform, no queue, no practice-mode player.
-- Cross-search UI is built but the backend endpoint is missing;
-  `mockCrossContext` fills the state in dev.
-- `shared` / `match` search modes are declared but not implemented.
-- References carry only title + artist — no album, year, cover art,
-  ISRC, MusicBrainz id.
-- No tags, no setlists, no link with Playlists V2.
-- No play stats, no last-played, no practice log, no streaks.
-- Versions are personal — no sharing, no fork, no node-scoping, no
-  contract-level library.
-- Policy is restrictive: 1 master per version, 2 tracks per version,
-  no stems, no instrumental/voice-only separation.
-- No external metadata import (Spotify, Deezer, MusicBrainz).
-- No acoustic matching between versions (key-compatible, BPM-close).
+### What's shipped ✅
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| **DDD backend** | ✅ | `MusicReferenceEntity`, `MusicVersionEntity`, `RepertoireEntryEntity`, `RepertoireEntryAggregate`, `MusicPolicy` |
+| **CQRS** | ✅ | 14 commands, 6 queries, 1 event handler |
+| **Audio processor** | ✅ | Essentia BPM/key, ITU-R BS.1770 loudness, mastering (loudnorm), pitch-shift (ffmpeg asetrate), AI mastering (DeepAFx-ST subprocess) |
+| **Inline audio player** | ✅ | Docked bar, wavesurfer.js, queue, keyboard shortcuts (Space/←/→/N/P/M), play buttons in table + cards |
+| **Pre-computed peaks** | ✅ | Peak extraction in processor, base64 Int16 encode/decode in shared-types, instant waveform via `load(url, peaks)`, sparkline thumbnails, pixel-accurate clipping markers |
+| **Mastering UI** | ✅ | Modal with 3 modes (Standard/AI/Full Auto), EQ curve SVG, compressor display, LUFS target presets, before/after comparison |
+| **AI mastering backend** | ✅ | Python DeepAFx-ST worker, TS subprocess bridge, `AiMasterTrackCommand`, `POST /:trackId/ai-master` endpoint |
+| **Pitch-shift** | ✅ | `pitchShift()` implemented (was a stub), `PitchShiftVersionCommand` |
+| **Platform contract** | ✅ | `PlatformContractEntity`, `@PlatformScoped()` decorator, `PlatformContractContextGuard`, created at registration (plan_free) |
+| **Quota service** | ✅ | `QuotaService` with `ensureAllowed()` + `recordUsage()`, `PLAN_QUOTAS` config, 402 errors, wired in 5 handlers |
+| **Cross library backend** | ✅ | `GetCompanyCrossLibraryQuery`, `GET /companies/:id/cross-library`, `@ContractScoped` |
+| **Music controllers cleanup** | ✅ | All 7 controllers: `@PlatformScoped()` + `@RequirePermission()`, zero `any`, explicit `execute<C,R>` types |
+| **Controller split** | ✅ | `MusicTrackController` (CRUD) + `MusicTrackProcessingController` (mastering/pitch-shift) |
+| **Shared utils** | ✅ | `rating.utils.ts`, `duration.utils.ts`, `InlineConfirmComponent` extracted to shared |
+| **Unit tests (processor)** | ✅ | 38 tests: analyze (computeQuality, blockLoudness, truePeakLinear, mixToMono, peaks), pitch-shift (computeShiftedRate), ai-master (subprocess mock) |
+| **Unit tests (quota)** | ✅ | 11 tests: allow/block/unlimited/unavailable/amount/record/summary |
+| **E2E tests** | ✅ | 24 tests: auth (18) + workspace (6), MongoMemoryServer, entity-based factories |
+
+### What's partially done 🔄
+
+| Feature | Status | What remains |
+|---------|--------|-------------|
+| **Cross search frontend** | 🔄 | UI exists (`MusicCrossTableComponent` + mock data). Backend endpoint done. Need to wire frontend to call `GET /companies/:id/cross-library` instead of mock. |
+| **AI mastering end-to-end** | 🔄 | Backend + frontend UI done. Need to install the DeepAFx-ST checkpoint + Python deps to test on real audio. |
+| **Peaks on real data** | 🔄 | Code complete. Need to upload a real track with the processor running to verify sparklines + instant waveform. |
+
+### What's not started ❌
+
+| Feature | Status |
+|---------|--------|
+| Metadata enrichment (MusicBrainz/Spotify) | ❌ |
+| Personal play stats + practice log | ❌ |
+| Smart setlist builder | ❌ |
+| Key/tempo transposition suggestions UI | ❌ |
+| Node-scoped music libraries | ❌ |
+| Music → Playlist V2 bridge | ❌ |
+| Contract-scoped library sharing + forks | ❌ |
+| Auto-tagging + recommendation (MusicNN) | ❌ |
+| Lyrics + chord sheets + sync | ❌ |
+| Practice assistant (Claude-powered) | ❌ |
+| **Persona match** (AI event programming) | ❌ |
 
 ---
 
 ## Roadmap — ordered by ROI
 
-### Tier 1 — High impact, data and infra already in place
+### Tier 1 — Foundations (high impact, infra in place)
 
-#### 1. Inline audio player with waveform
-- [ ] Install `wavesurfer.js` (lightweight, no framework lock-in).
-- [ ] `AudioPlayerService` — global signal-based state (current track,
-      queue, playing, position, volume, loop mode).
-- [ ] `AudioPlayerComponent` — docked bar at the bottom of the app
-      (Spotify/SoundCloud pattern). Waveform, play/pause, seek, prev/next,
-      volume, track metadata row.
-- [ ] Play buttons wired into `music-repertoire-table` and
-      `music-reference-card`.
-- [ ] Queue builder: play all favorites of the current tab / filtered
-      set, play a version's favorite track.
-- [ ] Loudness markers on the waveform using `TAudioAnalysisSnapshot`
-      (clipping zones in red, true-peak warnings, loudest segment
-      highlighted).
-- [ ] Keyboard shortcuts: Space (play/pause), ← → (seek ±5 s),
-      M (mute), N (next), P (previous).
-- [ ] Mobile-friendly touch controls (min-40px tap targets, swipe).
+#### 1. Inline audio player with waveform ✅ DONE
+See `sh3-music-audio-player.md`.
+
+#### 1b. Pre-computed waveform peaks ✅ DONE
+See `sh3-music-audio-player.md`.
 
 #### 2. Metadata enrichment via MusicBrainz / Spotify
-- [ ] New `MusicMetadataService` in the backend that looks up
-      `title + artist` against MusicBrainz (free, no auth) and, as a
-      fallback, Spotify (OAuth client credentials).
-- [ ] Enrich `MusicReferenceEntity` with optional fields: `album`,
-      `releaseYear`, `coverArtUrl`, `isrc`, `musicBrainzId`.
-- [ ] Deduplication via `musicBrainzId` when available (stronger than
-      lowercase title/artist).
-- [ ] Backfill migration for existing references.
-- [ ] Cover art shown on cards + table + player.
+- [ ] `MusicMetadataService` — lookup title+artist against MusicBrainz (free) / Spotify (OAuth)
+- [ ] Enrich `MusicReferenceEntity`: `album`, `releaseYear`, `coverArtUrl`, `isrc`, `musicBrainzId`
+- [ ] Deduplication via `musicBrainzId`
+- [ ] Backfill migration for existing references
+- [ ] Cover art in cards + table + player
+- **Effort**: ~3 days
 
 #### 3. Personal play stats & practice log
-- [ ] New collection `music_plays` with one doc per playback session:
-      `{ user_id, version_id, track_id, started_at, duration_played }`.
-- [ ] Emit `TrackPlayedEvent` from the player when a track reaches
-      ≥30 s or ≥25 % of its duration (avoids noise from scrubbing).
-- [ ] Query: `last_played`, `play_count`, `total_practice_time`.
-- [ ] "Stale tracks" view: versions not played in >30 days, sorted
-      by mastery rating (high-rated stale first).
-- [ ] Practice streak: consecutive days with at least 1 valid play
-      (stored + displayed in side panel).
-- [ ] Heatmap calendar (GitHub-style) of practice days.
+- [ ] Collection `music_plays`: `{ user_id, version_id, track_id, started_at, duration_played }`
+- [ ] `TrackPlayedEvent` from player (≥30s or ≥25% of duration)
+- [ ] Queries: `last_played`, `play_count`, `total_practice_time`
+- [ ] "Stale tracks" view (>30 days since last play, high mastery first)
+- [ ] Practice streak (consecutive days)
+- [ ] Heatmap calendar (GitHub-style)
+- **Effort**: ~2 days
 
 ---
 
 ### Tier 2 — Product differentiators
 
-#### 4. Cross search backend
-- [ ] `GetContractCrossLibraryQuery` — joins repertoire entries of all
-      contract members (or orgchart node members) and returns a
-      reference × user matrix.
-- [ ] Compatibility score per (reference, user-set) based on BPM
-      variance, key compatibility (circle of fifths), LUFS delta.
-- [ ] `GET /protected/music/cross?contractId=...&filter=...` endpoint
-      that replaces `mockCrossContext` in the state service.
-- [ ] Wire the already-built `MusicCrossTableComponent` to the real
-      data.
-- [ ] Cache strategy: response is expensive, TTL 1 min per contract.
+#### 4. Cross search ✅ BACKEND DONE, frontend wiring pending
+- [x] `GetCompanyCrossLibraryQuery` — cross-references all artists' libraries
+- [x] `GET /api/protected/companies/:id/cross-library` endpoint
+- [x] Shared types: `TCrossSearchResult`, `TCrossMember`, `TCrossReferenceResult`
+- [x] Sorted by `compatibleCount` (most-shared songs first)
+- [ ] Wire frontend `MusicCrossTableComponent` to real endpoint
+- [ ] Replace `mockCrossContext` with API call
+- [ ] Compatibility score (BPM variance, key compat, LUFS delta)
+- [ ] Cache strategy (TTL 1 min per company)
+- **Effort**: ~1 day (frontend wiring only)
 
-#### 5. Smart setlist builder
-- [ ] Harmonic mixing: given a list of versions, compute valid
-      transitions using circle-of-fifths key compatibility.
-- [ ] Energy curve targeting: user picks a shape (linear ramp, peak-
-      middle, wave) and the builder selects + orders versions matching
-      the shape via `energy` rating + LUFS.
-- [ ] Duration target: "50 min concert" → LP solver on `durationSeconds`.
-- [ ] Constraints: "no two consecutive songs in the same key",
-      "minor key at least every 3 songs", "no BPM delta >15 between
-      adjacent songs".
-- [ ] Export to Playlists V2 as a new setlist.
-- [ ] Manual override on the generated order (drag to reorder,
-      lock a position).
+#### 5. Persona match (AI event programming) ❌ NEW
+- [ ] `PersonaExtractor` — Claude Haiku extracts criteria from free text
+- [ ] `ScoringEngine` — pure algorithm scores artist × version × slot
+- [ ] `LineupBuilder` — Claude Sonnet curates the final lineup + explanation
+- [ ] `POST /companies/:id/persona-match` endpoint
+- [ ] Timeline UI with slot cards, energy curve SVG, AI explanation
+- [ ] Alternatives (2-3 lineups), lock-a-slot, regenerate
+- [ ] Quota: `persona_match` (Free: 0, Pro: 5/month, Band+: unlimited)
+- **Effort**: ~5.5 days
+- See `sh3-persona-match.md`
 
-#### 6. AI mastering via DeepAFx-ST (autodiff)
-- [ ] Integrate Adobe's DeepAFx-ST (autodiff mode) as a Python worker
-      alongside the existing Node.js audio-processor.
-- [ ] Two-stage pipeline: DeepAFx-ST (intelligent EQ + compression) →
-      ffmpeg loudnorm (LUFS/LRA calibration to user target).
-- [ ] Three mastering modes in the UI: Standard (loudnorm only),
-      AI Master (reference-based), AI Master Full Auto (preset + -14 LUFS).
-- [ ] Expose the predicted EQ curve + compressor settings to the user
-      ("here's what the AI did").
-- [ ] Ship 3-5 built-in reference presets (streaming, vinyl, broadcast).
-- [ ] See dedicated doc: `sh3-music-mastering.md`
+#### 6. Smart setlist builder
+- [ ] Harmonic mixing (circle of fifths key compatibility)
+- [ ] Energy curve targeting (ascending, peak, wave, flat)
+- [ ] Duration target ("50 min concert" → LP solver)
+- [ ] Constraints (no 2 consecutive same key, BPM delta <15)
+- [ ] Export to Playlists V2
+- [ ] Manual override (drag reorder, lock position)
+- **Effort**: ~4 days
 
-#### 7. Key / tempo transposition suggestions
-- [ ] Transposition presets: "Vocalist preferred key" (user profile
-      setting), "Broadcast-ready" (-23 LUFS), "Streaming" (-14 LUFS).
-- [ ] UI on each version: "Pitch-shift this version to X" (dropdown).
-- [ ] Time-stretch support in the audio-processor microservice
-      (currently pitch-shift only). ffmpeg `rubberband` filter.
-- [ ] Auto-mastering presets per target platform.
+#### 7. AI mastering via DeepAFx-ST ✅ BACKEND + UI DONE
+- [x] Python worker `deepafx_worker.py`
+- [x] TS subprocess bridge `ai-master.ts`
+- [x] `AiMasterTrackCommand` + `POST /:trackId/ai-master`
+- [x] Mastering modal (3 modes, EQ curve SVG, presets, LUFS targets)
+- [ ] Install DeepAFx-ST checkpoint + Python deps for real testing
+- [ ] Ship 3-5 built-in reference presets (streaming, vinyl, broadcast)
+- See `sh3-music-mastering.md`
+
+#### 8. Key / tempo transposition suggestions
+- [ ] Transposition presets ("Vocalist preferred key", platform targets)
+- [ ] UI on each version: "Pitch-shift to X" dropdown
+- [ ] Time-stretch (ffmpeg rubberband) — pitch-shift ✅ done, time-stretch ❌
+- **Effort**: ~1 day
 
 ---
 
-### Tier 3 — Integration with the rest of the platform
+### Tier 3 — Platform integration
 
-#### 8. Node-scoped music libraries
-- [ ] Optional `node_id` on `RepertoireEntry` OR a `node_repertoire`
-      junction collection that shares references between node members.
-- [ ] Add `node` target mode on the search config alongside `me`,
-      `contract`, etc.
-- [ ] Permission: `P.Music.Library.Read` already covers, just needs to
-      be node-scoped in the query handler.
-- [ ] UI: selector in the side panel lets the user switch between
-      "my repertoire", "node repertoire", "contract repertoire".
+#### 9. Node-scoped music libraries
+- [ ] `node_id` on `RepertoireEntry` OR `node_repertoire` junction
+- [ ] `node` target mode in search config
+- [ ] UI: selector "my repertoire" / "node repertoire" / "contract repertoire"
+- **Effort**: ~3.5 days
 
-#### 9. Music → Playlist V2 bridge
-- [ ] `PlaylistTrack` can reference either a raw file OR a
-      `MusicVersion` id.
-- [ ] When the reference is a `MusicVersion`, the playlist item auto-
-      pulls the favorite track from the version.
-- [ ] Setlist mode on playlists: shows BPM/key/LUFS of each item,
-      computes transition quality between adjacent items.
-- [ ] Bulk-add "all versions of tab X" into a playlist.
+#### 10. Music → Playlist V2 bridge
+- [ ] `PlaylistTrack` references `MusicVersion` id
+- [ ] Auto-pull favorite track from referenced version
+- [ ] Setlist mode (BPM/key/LUFS display + transition quality)
+- [ ] Bulk-add from tab
+- **Effort**: ~2.5 days
 
-#### 10. Contract-scoped library sharing
-- [ ] Version-level sharing: a version is visible to a `contract_id`
-      (in addition to its `owner_id`).
-- [ ] Fork action: create a new version copy on the forker's side,
-      with `parentVersionId` linking back to the original.
-- [ ] "Forks of this version" list on the original.
-- [ ] Notification when someone forks your version.
+#### 11. Contract-scoped library sharing
+- [ ] Version-level sharing via `contract_id`
+- [ ] Fork action (copy with `parentVersionId` link)
+- [ ] "Forks of this version" list
+- [ ] Notification on fork
+- **Effort**: ~3 days
 
 ---
 
 ### Tier 4 — AI / automation
 
-#### 11. Auto-tagging and recommendation
-- [ ] Integrate MusicNN (or Discogs-effnet) inside the audio-processor
-      to extract mood + instrument tags + genre probability at upload
-      time.
-- [ ] Store embeddings (128- or 256-dim) on the track for similarity
-      search.
-- [ ] MongoDB Atlas Vector Search index on the embedding field.
-- [ ] "Similar tracks" suggestion on each version.
-- [ ] Semantic search: "melancholic minor-key songs around 90 BPM" →
-      embedding of the query → ANN lookup.
+#### 12. Auto-tagging + recommendation
+- [ ] MusicNN / Discogs-effnet in audio-processor
+- [ ] Mood + instrument tags + genre probability at upload
+- [ ] Embeddings (128-dim) for similarity search
+- [ ] MongoDB Atlas Vector Search
+- [ ] "Similar tracks" + semantic search
+- **Effort**: ~5 days
 
-#### 12. Lyrics + chord sheets + sync
-- [ ] Lyrics fetch via Genius / Musixmatch API at reference creation.
-- [ ] Chord sheet fetch (Ultimate Guitar scraping or Chordify API).
-- [ ] Store as markdown on the reference.
-- [ ] Auto-sync lyrics/chords ↔ audio using the beat grid from the
-      analysis result.
-- [ ] Practice mode: inline lyrics scroll, chords pop at the right
-      timing above the waveform.
-- [ ] Transposition of chord sheets when the version is pitch-shifted.
+#### 13. Lyrics + chord sheets + sync
+- [ ] Genius / Musixmatch API for lyrics
+- [ ] Chord sheets (Chordify / Ultimate Guitar)
+- [ ] Auto-sync with beat grid
+- [ ] Practice mode (scrolling lyrics, chord timing)
+- [ ] Chord transposition on pitch-shift
+- **Effort**: ~4 days
 
-#### 13. Practice assistant (Claude-powered)
-- [ ] Daily agent run that analyzes a user's library + play stats +
-      ratings and generates a practice report:
-    - Stale high-rated songs to revisit
-    - Weak areas (keys/genres with consistently low mastery)
-    - Band compatibility notes vs contract members
-    - Suggested setlists for upcoming events (via calendar integration)
-- [ ] Delivery: in-app feed, optional weekly email, optional Slack DM
-      to the owner via the existing Slack integration.
+#### 14. Practice assistant (Claude-powered)
+- [ ] Daily analysis of library + play stats + ratings
+- [ ] Practice report: stale songs, weak areas, band compatibility
+- [ ] Suggested setlists for upcoming events
+- [ ] Delivery: in-app feed, weekly email, Slack DM
+- **Effort**: ~2.5 days
 
 ---
 
-## Parallel tracks
+## Infrastructure done
 
-- [ ] Frontend: split the massive `music-library-page.component.ts`
-      (260 lines, 15 event handlers) into smaller orchestration units —
-      moving the track upload / download / favorite logic into a
-      dedicated `TrackInteractionService`.
-- [ ] Backend: unit tests for `MusicPolicy` limits (10 versions,
-      2 tracks, 1 master, 3 derivations).
-- [ ] Backend: unit tests for `RepertoireEntryAggregate` dirty
-      tracking.
-- [ ] Audio-processor: concurrent analysis queue (current setup runs
-      analysis sequentially per message).
-- [ ] Replace the `mockCrossContext` sentinel with an explicit empty
-      state so tests don't leak mock data.
+| Layer | What | Doc |
+|-------|------|-----|
+| **Platform contract** | SaaS subscription per user (Free/Pro/Band/Business), `@PlatformScoped()`, created at registration | `sh3-platform-contract.md` |
+| **Quota service** | `ensureAllowed()` + `recordUsage()` in 5 handlers, plan-based limits, 402 errors | `sh3-quota-service.md` |
+| **Audio processor** | Essentia + ITU BS.1770 + ffmpeg + DeepAFx-ST, 38 unit tests | `sh3-music-mastering.md` |
+| **Audio player** | Wavesurfer, peaks, sparklines, markers, keyboard shortcuts | `sh3-music-audio-player.md` |
+| **E2E tests** | MongoMemoryServer, entity-based factories, 24 tests | `sh3-e2e-tests.md` |
+| **Shared utils** | `rating.utils.ts`, `duration.utils.ts`, `InlineConfirmComponent` | — |
 
 ---
 
-## Current priority
+## Recommended priority order
 
-**Completed: Tier 1 / #1 — Inline audio player with waveform.** ✅
-Player docked bar, wavesurfer, queue, keyboard shortcuts, play
-buttons in table + cards. See `sh3-music-audio-player.md`.
-
-**In progress: Tier 1 / #1 supplement — Pre-computed peaks.** 🔄
-Shared types helpers, processor extraction, frontend decode + sparkline
-thumbnails, pixel-accurate markers. Code written, pending commit.
-
-**Next up: Tier 2 / #6 — AI mastering via DeepAFx-ST.**
-See dedicated doc: `sh3-music-mastering.md`.
+1. **Wire cross search frontend** (~1 day) — backend done, UI exists in mock, just wire
+2. **Persona match** (~5.5 days) — the killer feature for event venues, uses Claude API
+3. **Metadata enrichment** (~3 days) — covers make the library look pro
+4. **Play stats** (~2 days) — daily engagement driver
+5. **Smart setlist builder** (~4 days) — builds on cross search + scoring engine from persona match
 
 ---
 
 ## Related docs
-- `sh3-music-audio-player.md` — audio player layer (peaks pipeline,
-  sparklines, markers, CORS R2 config)
-- `sh3-music-mastering.md` — AI mastering architecture (DeepAFx-ST
-  autodiff, two-stage pipeline, reference presets, UX)
-- `sh3-orgchart.md` — orgchart roadmap (where node-scoped libraries
-  connect to this module)
-- `sh3-orgchart-export.md` / `sh3-orgchart-print.md` — previous feature
-  track
+
+| Doc | What it covers |
+|-----|---------------|
+| `sh3-music-audio-player.md` | Player bar, wavesurfer, peaks, sparklines, markers, CORS R2 |
+| `sh3-music-mastering.md` | DeepAFx-ST autodiff, two-stage pipeline, presets, subprocess bridge |
+| `sh3-persona-match.md` | AI event programming: persona extraction + scoring engine + lineup builder |
+| `sh3-platform-contract.md` | SaaS plans, `@PlatformScoped()`, dual contract model |
+| `sh3-quota-service.md` | Quota enforcement, plan limits, 402 errors, usage counters |
+| `sh3-e2e-tests.md` | E2E infrastructure, MongoMemoryServer, factories, patterns |
+| `sh3-orgchart.md` | Orgchart roadmap (node-scoped libraries connect here) |
