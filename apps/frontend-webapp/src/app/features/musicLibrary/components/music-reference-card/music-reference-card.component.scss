@@ -334,6 +334,36 @@
   &:hover { background: var(--hover-color); }
 }
 
+/* ── Inline play button ──────────────────────── */
+
+.btn-play-inline {
+  all: unset;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent-color, #06a4a4);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease;
+
+  &:hover {
+    background: #07b5b5;
+    transform: scale(1.08);
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+  }
+}
+
 /* ── Track count toggle ──────────────────────── */
 
 .btn-track-count {

@@ -1,0 +1,255 @@
+/* ──────────────────────────────────────────────────────────
+ * Global audio player bar.
+ *
+ * Mounted inside the main layout, docked at the bottom via a fixed
+ * position so it overlays on top of any page content. Hides itself
+ * entirely when there's no current track, so idle layouts don't
+ * reserve the vertical space.
+ * ────────────────────────────────────────────────────────── */
+
+:host {
+  display: contents;
+}
+
+.audio-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 400;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 20px;
+  background: linear-gradient(180deg, rgba(22, 26, 36, 0.96), rgba(14, 17, 24, 0.98));
+  border-top: 1px solid var(--border-light, rgba(255, 255, 255, 0.08));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+  color: var(--text-primary, #e7eaf0);
+  transform: translateY(0);
+  transition: transform 220ms ease-out, opacity 220ms ease-out;
+}
+
+.audio-bar.is-empty {
+  transform: translateY(calc(100% + 8px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Transport controls ───────────────────────────────── */
+
+.audio-bar-transport {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.audio-btn {
+  all: unset;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: rgba(231, 234, 240, 0.78);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, transform 120ms ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e7eaf0;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &.is-active {
+    color: var(--accent-color, #06a4a4);
+    background: rgba(6, 164, 164, 0.12);
+  }
+}
+
+.audio-btn--primary {
+  width: 38px;
+  height: 38px;
+  background: var(--accent-color, #06a4a4);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: #07b5b5;
+    color: #fff;
+  }
+
+  &:disabled {
+    background: rgba(6, 164, 164, 0.35);
+  }
+}
+
+/* ── Track metadata ──────────────────────────────────── */
+
+.audio-bar-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  max-width: 240px;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.audio-bar-title {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.audio-bar-subtitle {
+  font-size: 10px;
+  color: rgba(231, 234, 240, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Waveform surface ───────────────────────────────── */
+
+.audio-bar-wave {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.audio-bar-time {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(231, 234, 240, 0.55);
+  min-width: 30px;
+  text-align: center;
+  user-select: none;
+}
+
+.audio-bar-wave-host {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.audio-bar-wave-surface {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* the host catches the click */
+}
+
+/* ── Analysis overlays ──────────────────────────────── */
+
+.audio-bar-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 2;
+
+  &--clipping {
+    background: repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 6px,
+      rgba(255, 82, 82, 0.18) 6px,
+      rgba(255, 82, 82, 0.18) 12px
+    );
+    border-top: 1px dashed rgba(255, 82, 82, 0.55);
+    border-bottom: 1px dashed rgba(255, 82, 82, 0.55);
+  }
+
+  &--loudest {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 184, 54, 0.22),
+      rgba(255, 184, 54, 0.06)
+    );
+    border-left: 1px solid rgba(255, 184, 54, 0.6);
+    border-right: 1px solid rgba(255, 184, 54, 0.6);
+  }
+}
+
+.audio-bar-loading-veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 18, 24, 0.35);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 3;
+  animation: audio-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes audio-shimmer {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.65; }
+}
+
+.audio-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: audio-spin 0.8s linear infinite;
+}
+
+@keyframes audio-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Aux controls (loop, volume, close) ──────────────── */
+
+.audio-bar-aux {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audio-volume {
+  width: 90px;
+  height: 4px;
+  accent-color: var(--accent-color, #06a4a4);
+  cursor: pointer;
+}
+
+/* ── Responsive trimming ────────────────────────────── */
+
+@media (max-width: 900px) {
+  .audio-bar {
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    padding: 8px 12px;
+  }
+
+  .audio-bar-meta {
+    display: none;
+  }
+
+  .audio-volume {
+    display: none;
+  }
+}
+
+@media (max-width: 540px) {
+  .audio-bar-time {
+    display: none;
+  }
+}

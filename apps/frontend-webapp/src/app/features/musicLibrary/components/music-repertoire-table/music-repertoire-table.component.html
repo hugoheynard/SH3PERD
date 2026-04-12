@@ -142,7 +142,30 @@
               </td>
               <td class="col-tracks">
                 @if (hasTrack(version)) {
-                  <span class="track-count">{{ trackCount(version) }}</span>
+                  <div class="tracks-cell">
+                    <button
+                      class="btn-play"
+                      type="button"
+                      [attr.aria-label]="isVersionPlaying(version) ? 'Pause' : 'Play'"
+                      [title]="isVersionPlaying(version) ? 'Pause' : 'Play favorite track'"
+                      (click)="playVersion(entry, version); $event.stopPropagation()"
+                    >
+                      @if (isVersionPlaying(version)) {
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M6 4h4v16H6zM14 4h4v16h-4z"/>
+                        </svg>
+                      } @else {
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M8 5v14l11-7z"/>
+                        </svg>
+                      }
+                    </button>
+                    @if (getVersionPeaks(version); as peaks) {
+                      <app-waveform-thumbnail [peaks]="peaks" />
+                    } @else {
+                      <span class="track-count">{{ trackCount(version) }}</span>
+                    }
+                  </div>
                 } @else {
                   <span class="col-quality-placeholder">—</span>
                 }

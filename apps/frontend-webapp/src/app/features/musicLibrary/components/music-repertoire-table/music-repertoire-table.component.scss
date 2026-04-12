@@ -147,6 +147,38 @@ td {
   color: var(--accent-color-light);
 }
 
+/* -- Inline play trigger inside the tracks cell ------------- */
+
+.tracks-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.btn-play {
+  all: unset;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent-color, #06a4a4);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease;
+
+  &:hover {
+    background: #07b5b5;
+    transform: scale(1.08);
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+}
+
 /* -- Action column ------------------------------------------ */
 
 .col-actions {

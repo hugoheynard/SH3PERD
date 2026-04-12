@@ -13,6 +13,7 @@ import {LayoutService} from '../services/layout.service';
 import {CircularMenuComponent} from '../components/circular-menu/circular-menu.component';
 import { NgClass } from '@angular/common';
 import { ToastContainerComponent } from '../../shared/toast/toast-container.component';
+import { AudioPlayerBarComponent } from '../../features/musicLibrary/audio-player/audio-player-bar.component';
 
 export const INJECTION_DATA = new InjectionToken<unknown>('PANEL_DATA');
 
@@ -25,6 +26,7 @@ export const INJECTION_DATA = new InjectionToken<unknown>('PANEL_DATA');
     HeaderComponent,
     NgClass,
     ToastContainerComponent,
+    AudioPlayerBarComponent,
   ],
   templateUrl: './main-layout.component.html',
   standalone: true,

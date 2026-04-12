@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../../shared/button/button.component';
 import { InputComponent } from '../../../../shared/forms/input/input.component';
@@ -8,6 +8,11 @@ import { Genre, MUSIC_GENRES } from '../../music-library-types';
 import type { AddVersionPayload } from '../../services/mutations-layer/music-library-mutation.service';
 import type { LibraryEntry, MusicGenre, MusicVersion, Rating } from '../../music-library-types';
 import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
+import { AudioPlayerService } from '../../audio-player/audio-player.service';
+import { toPlayableTrack } from '../../audio-player/audio-player.types';
+import { WaveformThumbnailComponent } from '../../audio-player/waveform-thumbnail.component';
+import { decodePeaks } from '@sh3pherd/shared-types';
+import type { TMusicVersionId } from '@sh3pherd/shared-types';
 
 export type VersionEditPayload = {
   entryId: string;
@@ -23,11 +28,13 @@ export type VersionEditPayload = {
 @Component({
   selector: 'app-music-repertoire-table',
   standalone: true,
-  imports: [AddVersionFormComponent, FormsModule, ButtonComponent, InputComponent, BadgeComponent],
+  imports: [AddVersionFormComponent, FormsModule, ButtonComponent, InputComponent, BadgeComponent, WaveformThumbnailComponent],
   templateUrl: './music-repertoire-table.component.html',
   styleUrl: './music-repertoire-table.component.scss',
 })
 export class MusicRepertoireTableComponent {
+
+  protected readonly audioPlayer = inject(AudioPlayerService);
 
   readonly entries      = input<LibraryEntry[]>([]);
   readonly analysingIds = input<Set<string>>(new Set());
@@ -169,5 +176,75 @@ export class MusicRepertoireTableComponent {
 
   trackCount(v: MusicVersion): number {
     return v.tracks.length;
+  }
+
+  /* ── Peaks / sparkline ── */
+
+  /**
+   * Returns pre-computed peaks for a version's favorite track, or null
+   * if the track hasn't been analysed with the peaks feature yet.
+   */
+  getVersionPeaks(version: MusicVersion): Float32Array | null {
+    const track = version.tracks.find(t => t.favorite) ?? version.tracks[0];
+    const analysis = track?.analysisResult;
+    if (!analysis?.peaks || !analysis.peakCount) return null;
+    try {
+      return decodePeaks(analysis.peaks, analysis.peakCount);
+    } catch {
+      return null;
+    }
+  }
+
+  /* ── Audio player ── */
+
+  /**
+   * Plays the favorite track of a version through the global audio
+   * player bar. Builds the `TPlayableTrack` payload on the fly with
+   * the reference title + version label so the now-playing row has
+   * meaningful metadata. If the version has no tracks, this is a
+   * no-op — the button is hidden in that case anyway.
+   */
+  playVersion(entry: LibraryEntry, version: MusicVersion): void {
+    const track = version.tracks.find(t => t.favorite) ?? version.tracks[0];
+    if (!track) return;
+    this.audioPlayer.playTrack(
+      toPlayableTrack(track, version.id as TMusicVersionId, {
+        title: entry.reference.title,
+        subtitle: `${entry.reference.originalArtist} · ${version.label}`,
+      }),
+    );
+  }
+
+  /**
+   * Plays the entire filtered set as a queue, starting at the clicked
+   * version. Each entry contributes its favorite track; versions
+   * without a track are skipped.
+   */
+  playFromHere(startEntry: LibraryEntry, startVersion: MusicVersion): void {
+    const queue = this.entries()
+      .flatMap(entry =>
+        entry.versions.flatMap(version => {
+          const track = version.tracks.find(t => t.favorite) ?? version.tracks[0];
+          if (!track) return [];
+          return [
+            toPlayableTrack(track, version.id as TMusicVersionId, {
+              title: entry.reference.title,
+              subtitle: `${entry.reference.originalArtist} · ${version.label}`,
+            }),
+          ];
+        }),
+      );
+    const startIndex = queue.findIndex(p => p.versionId === startVersion.id);
+    this.audioPlayer.playQueue(queue, Math.max(0, startIndex));
+    // Suppress unused parameter lint — kept for future affordance
+    // (e.g. visually marking the starting row).
+    void startEntry;
+  }
+
+  /** Whether the player is currently playing the given version's favorite track. */
+  isVersionPlaying(version: MusicVersion): boolean {
+    const current = this.audioPlayer.currentTrack();
+    if (!current) return false;
+    return current.versionId === version.id && this.audioPlayer.isPlaying();
   }
 }
