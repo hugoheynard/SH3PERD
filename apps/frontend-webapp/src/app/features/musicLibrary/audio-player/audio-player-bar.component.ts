@@ -12,6 +12,7 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { formatTime } from '../../../shared/utils/duration.utils';
 import { AudioPlayerService } from './audio-player.service';
 import type { TPlayableTrack } from './audio-player.types';
 import type { TAudioAnalysisSnapshot } from '@sh3pherd/shared-types';
@@ -96,14 +97,10 @@ export class AudioPlayerBarComponent implements AfterViewInit, OnDestroy {
   });
 
   /** Human-formatted current position (e.g. "1:23"). */
-  readonly positionLabel = computed(() =>
-    this.formatTime(this.player.position()),
-  );
+  readonly positionLabel = computed(() => formatTime(this.player.position()));
 
   /** Human-formatted total duration. */
-  readonly durationLabel = computed(() =>
-    this.formatTime(this.player.duration()),
-  );
+  readonly durationLabel = computed(() => formatTime(this.player.duration()));
 
   /** `0` → `1` progress fraction for the seek bar fallback. */
   readonly progress = computed(() => {
@@ -463,16 +460,6 @@ export class AudioPlayerBarComponent implements AfterViewInit, OnDestroy {
     }
 
     return markers;
-  }
-
-  // ── Formatting helpers ────────────────────────────────────
-
-  private formatTime(seconds: number): string {
-    if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
-    const total = Math.floor(seconds);
-    const m = Math.floor(total / 60);
-    const s = total % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
   // ── Template helper accessors ────────────────────────────

@@ -1,0 +1,143 @@
+<!--
+  Inline confirm component — 4 modes, one template.
+  The trigger slot (ng-content) is shown in idle state for toggle/inline modes.
+  danger-zone and type-confirm render their own trigger button from triggerLabel.
+-->
+
+<!-- ═══════════════════════════════════════════════
+     IDLE — show trigger
+     ═══════════════════════════════════════════════ -->
+@if (showTrigger()) {
+  @if (usesProjectedTrigger()) {
+    <!-- toggle / inline: host provides the trigger via ng-content -->
+    <span class="sh3-ic-trigger" (click)="activate()">
+      <ng-content />
+    </span>
+  } @else {
+    <!-- danger-zone / type-confirm: built-in trigger button -->
+    <button
+      class="sh3-ic-danger-trigger"
+      [class.sm]="size() === 'sm'"
+      type="button"
+      (click)="activate()"
+    >{{ triggerLabel() }}</button>
+  }
+}
+
+<!-- ═══════════════════════════════════════════════
+     CONFIRM — buttons or warning
+     ═══════════════════════════════════════════════ -->
+@if (showConfirmButtons()) {
+
+  <!-- ── toggle mode: "Confirm?" + "×" ── -->
+  @if (mode() === 'toggle') {
+    <span class="sh3-ic-row" [class.sm]="size() === 'sm'">
+      <button
+        class="sh3-ic-btn sh3-ic-btn--alert"
+        [class.sm]="size() === 'sm'"
+        type="button"
+        (click)="confirm()"
+      >{{ confirmLabel() }}</button>
+      <button
+        class="sh3-ic-btn sh3-ic-btn--cancel-icon"
+        type="button"
+        aria-label="Cancel"
+        (click)="cancel()"
+      >×</button>
+    </span>
+  }
+
+  <!-- ── inline mode: "Remove" + "Cancel" ── -->
+  @if (mode() === 'inline') {
+    <span class="sh3-ic-row" [class.sm]="size() === 'sm'">
+      <button
+        class="sh3-ic-btn sh3-ic-btn--danger"
+        [class.sm]="size() === 'sm'"
+        type="button"
+        (click)="confirm()"
+      >{{ confirmLabel() }}</button>
+      <button
+        class="sh3-ic-btn sh3-ic-btn--ghost"
+        [class.sm]="size() === 'sm'"
+        type="button"
+        (click)="cancel()"
+      >{{ cancelLabel() }}</button>
+    </span>
+  }
+
+  <!-- ── danger-zone mode: warning + buttons ── -->
+  @if (mode() === 'danger-zone') {
+    <div class="sh3-ic-block">
+      @if (warningText()) {
+        <p class="sh3-ic-warning">{{ warningText() }}</p>
+      }
+      <div class="sh3-ic-row">
+        <button
+          class="sh3-ic-btn sh3-ic-btn--danger"
+          type="button"
+          [disabled]="loading()"
+          (click)="confirm()"
+        >{{ loading() ? 'Deleting…' : confirmLabel() }}</button>
+        <button
+          class="sh3-ic-btn sh3-ic-btn--ghost"
+          type="button"
+          (click)="cancel()"
+        >{{ cancelLabel() }}</button>
+      </div>
+    </div>
+  }
+
+  <!-- ── type-confirm mode: warning + "Yes" → input step ── -->
+  @if (mode() === 'type-confirm') {
+    <div class="sh3-ic-block">
+      @if (warningText()) {
+        <p class="sh3-ic-warning">{{ warningText() }}</p>
+      }
+      <div class="sh3-ic-row">
+        <button
+          class="sh3-ic-btn sh3-ic-btn--danger"
+          type="button"
+          (click)="proceedToInput()"
+        >Yes, delete</button>
+        <button
+          class="sh3-ic-btn sh3-ic-btn--ghost"
+          type="button"
+          (click)="cancel()"
+        >{{ cancelLabel() }}</button>
+      </div>
+    </div>
+  }
+}
+
+<!-- ═══════════════════════════════════════════════
+     INPUT — type-confirm text input
+     ═══════════════════════════════════════════════ -->
+@if (showInput()) {
+  <div class="sh3-ic-block">
+    <p class="sh3-ic-warning">
+      Type <strong class="sh3-ic-match-value">{{ matchValue() }}</strong> to confirm:
+    </p>
+    <input
+      class="sh3-ic-input"
+      type="text"
+      [placeholder]="matchPlaceholder() ?? matchValue()"
+      [value]="typedValue()"
+      (input)="onInput($event)"
+      (keydown)="onInputKeydown($event)"
+      autofocus
+    />
+    <div class="sh3-ic-row">
+      <button
+        class="sh3-ic-btn sh3-ic-btn--danger"
+        type="button"
+        [disabled]="!inputMatches() || loading()"
+        (click)="confirm()"
+      >{{ loading() ? 'Deleting…' : confirmLabel() }}</button>
+      <button
+        class="sh3-ic-btn sh3-ic-btn--ghost"
+        type="button"
+        (click)="cancel()"
+      >{{ cancelLabel() }}</button>
+    </div>
+  </div>
+}

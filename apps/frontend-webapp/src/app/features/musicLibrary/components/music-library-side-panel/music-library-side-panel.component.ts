@@ -1,6 +1,7 @@
 import { Component, inject, input } from '@angular/core';
 import { MusicTabMutationService } from '../../services/mutations-layer/music-tab-mutation.service';
 import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
+import { RATING_DOTS, ratingLevel } from '../../../../shared/utils/rating.utils';
 import { MUSIC_GENRES } from '../../music-library-types';
 import type { MusicDataFilter, MusicGenre, MusicTab, Rating } from '../../music-library-types';
 import { RangeSliderComponent, type RangeValue } from '../../../../shared/range-slider/range-slider.component';
@@ -120,7 +121,7 @@ export class MusicLibrarySidePanelComponent {
   readonly activeTab = input<MusicTab | undefined>(undefined);
 
   readonly allGenres = MUSIC_GENRES;
-  readonly ratings: Rating[] = [1, 2, 3, 4];
+  readonly ratings = RATING_DOTS;
 
   readonly filterRows: { key: 'mastery' | 'energy' | 'effort' | 'quality'; label: string }[] = [
     { key: 'mastery', label: 'MST' },
@@ -130,15 +131,11 @@ export class MusicLibrarySidePanelComponent {
   ];
 
   qualityLevel(): string {
-    const q = this.averageQuality();
-    if (q <= 1) return 'low';
-    if (q <= 2) return 'medium';
-    if (q <= 3) return 'high';
-    return 'max';
+    return ratingLevel(Math.round(this.averageQuality()));
   }
 
   levelOf(r: Rating): string {
-    return ['low', 'medium', 'high', 'max'][r - 1];
+    return ratingLevel(r);
   }
 
   isGenreSelected(g: MusicGenre): boolean {

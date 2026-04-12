@@ -6,12 +6,9 @@
       <span class="card-artist">{{ entry().reference.originalArtist }}</span>
     </div>
     <div class="card-header-actions">
-      @if (confirmingDeleteId() === 'entry') {
-        <button class="btn-confirm-delete" type="button" (click)="requestDeleteEntry()">Remove?</button>
-        <button class="btn-cancel-delete" type="button" aria-label="Cancel" (click)="cancelDelete()">×</button>
-      } @else {
-        <button class="btn-delete-entry" type="button" aria-label="Remove from repertoire" title="Remove from repertoire" (click)="requestDeleteEntry()">×</button>
-      }
+      <sh3-inline-confirm mode="toggle" confirmLabel="Remove?" (confirmed)="confirmDeleteEntry()">
+        <button class="btn-delete-entry" type="button" aria-label="Remove from repertoire" title="Remove from repertoire">×</button>
+      </sh3-inline-confirm>
     </div>
   </div>
 
@@ -97,14 +94,11 @@
           }
 
           <div class="version-actions-right">
-            @if (confirmingDeleteId() === version.id) {
-              <button class="btn-confirm-delete" type="button" aria-label="Confirm delete" (click)="requestDeleteVersion(version.id)">Confirm?</button>
-              <button class="btn-cancel-delete" type="button" aria-label="Cancel" (click)="cancelDelete()">×</button>
-            } @else {
-              <sh3-button [variant]="hasTrack(version) ? 'ghost' : 'critical'" size="sm" (clicked)="trackUploadRequested.emit({ entryId: entry().id, versionId: version.id })">+ Track</sh3-button>
-              <button class="btn-edit-version" type="button" aria-label="Edit version" title="Edit version" (click)="editRequested.emit(version.id)">✎</button>
-              <button class="btn-delete-version" type="button" aria-label="Delete version" title="Delete version" (click)="requestDeleteVersion(version.id)">🗑</button>
-            }
+            <sh3-button [variant]="hasTrack(version) ? 'ghost' : 'critical'" size="sm" (clicked)="trackUploadRequested.emit({ entryId: entry().id, versionId: version.id })">+ Track</sh3-button>
+            <button class="btn-edit-version" type="button" aria-label="Edit version" title="Edit version" (click)="editRequested.emit(version.id)">✎</button>
+            <sh3-inline-confirm mode="toggle" (confirmed)="confirmDeleteVersion(version.id)">
+              <button class="btn-delete-version" type="button" aria-label="Delete version" title="Delete version">🗑</button>
+            </sh3-inline-confirm>
           </div>
         </div>
 

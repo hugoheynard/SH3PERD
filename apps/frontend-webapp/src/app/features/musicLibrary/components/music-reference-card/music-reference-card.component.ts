@@ -1,9 +1,12 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { ButtonComponent } from '../../../../shared/button/button.component';
 import { BadgeComponent } from '../../../../shared/badge/badge.component';
+import { InlineConfirmComponent } from '../../../../shared/inline-confirm/inline-confirm.component';
+import { RATING_DOTS, ratingLevel } from '../../../../shared/utils/rating.utils';
+import { formatDuration } from '../../../../shared/utils/duration.utils';
 import { AddVersionFormComponent } from '../add-version-form/add-version-form.component';
 import type { AddVersionPayload } from '../../services/mutations-layer/music-library-mutation.service';
-import type { LibraryEntry, MusicVersion, Rating } from '../../music-library-types';
+import type { LibraryEntry, MusicVersion } from '../../music-library-types';
 import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
 import { AudioPlayerService } from '../../audio-player/audio-player.service';
 import { toPlayableTrack } from '../../audio-player/audio-player.types';
@@ -12,7 +15,7 @@ import type { TMusicVersionId } from '@sh3pherd/shared-types';
 @Component({
   selector: 'app-music-reference-card',
   standalone: true,
-  imports: [AddVersionFormComponent, ButtonComponent, BadgeComponent],
+  imports: [AddVersionFormComponent, ButtonComponent, BadgeComponent, InlineConfirmComponent],
   templateUrl: './music-reference-card.component.html',
   styleUrl: './music-reference-card.component.scss',
 })
@@ -32,10 +35,9 @@ export class MusicReferenceCardComponent {
   readonly favoriteChanged        = output<{ entryId: string; versionId: string; trackId: string }>();
 
   readonly showForm = signal(false);
-  readonly confirmingDeleteId = signal<string | null>(null);
   readonly expandedVersionId = signal<string | null>(null);
 
-  readonly ratingDots = [1, 2, 3, 4] as const;
+  readonly ratingDots = RATING_DOTS;
 
   /* ── Track helpers ── */
 
@@ -66,46 +68,20 @@ export class MusicReferenceCardComponent {
     this.showForm.set(false);
   }
 
-  requestDeleteVersion(versionId: string): void {
-    if (this.confirmingDeleteId() === versionId) {
-      this.confirmingDeleteId.set(null);
-      this.versionDeleted.emit({ entryId: this.entry().id, versionId });
-    } else {
-      this.confirmingDeleteId.set(versionId);
-    }
+  confirmDeleteVersion(versionId: string): void {
+    this.versionDeleted.emit({ entryId: this.entry().id, versionId });
   }
 
-  requestDeleteEntry(): void {
-    const key = 'entry';
-    if (this.confirmingDeleteId() === key) {
-      this.confirmingDeleteId.set(null);
-      this.entryDeleted.emit(this.entry().id);
-    } else {
-      this.confirmingDeleteId.set(key);
-    }
-  }
-
-  cancelDelete(): void {
-    this.confirmingDeleteId.set(null);
+  confirmDeleteEntry(): void {
+    this.entryDeleted.emit(this.entry().id);
   }
 
   toggleExpanded(versionId: string): void {
     this.expandedVersionId.update(current => current === versionId ? null : versionId);
   }
 
-  formatDuration(seconds: number): string {
-    const total = Math.round(seconds);
-    const m = Math.floor(total / 60);
-    const s = total % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  }
-
-  ratingLevel(rating: Rating): string {
-    if (rating <= 1) return 'low';
-    if (rating === 2) return 'medium';
-    if (rating === 3) return 'high';
-    return 'max';
-  }
+  readonly formatDuration = formatDuration;
+  readonly ratingLevel = ratingLevel;
 
   /* ── Audio player ── */
 

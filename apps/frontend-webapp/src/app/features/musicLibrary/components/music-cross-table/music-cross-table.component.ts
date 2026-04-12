@@ -1,4 +1,5 @@
 import { Component, computed, input, signal } from '@angular/core';
+import { RATING_DOTS, ratingLevel } from '../../../../shared/utils/rating.utils';
 import type { ContractMember, CrossReferenceResult, CrossMemberVersion } from '../../music-library-types';
 
 type CompatFilter = 'all' | 'duo' | 'trio' | 'quartet';
@@ -20,17 +21,11 @@ export class MusicCrossTableComponent {
     return this.results().filter(r => r.compatibleCount >= min);
   });
 
-  readonly ratingDotsArr = [1, 2, 3, 4];
+  readonly ratingDotsArr = RATING_DOTS;
+  readonly ratingLevel = ratingLevel;
 
   setFilter(f: CompatFilter): void {
     this.compatFilter.set(f);
-  }
-
-  ratingLevel(val: number): string {
-    if (val >= 4) return 'max';
-    if (val >= 3) return 'high';
-    if (val >= 2) return 'medium';
-    return 'low';
   }
 
   /** Get the quality from the favorite track of the first version. */

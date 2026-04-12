@@ -1,0 +1,188 @@
+/* ──────────────────────────────────────────────────────────
+ * Shared inline confirm component
+ *
+ * Danger palette: #fc8181 (red-400) with transparency variants.
+ * Consistent across all 4 modes (toggle, inline, danger-zone,
+ * type-confirm) so every confirmation UX in the app shares the
+ * same visual language.
+ * ────────────────────────────────────────────────────────── */
+
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+// ── Trigger wrapper (toggle / inline modes) ──────────────
+
+.sh3-ic-trigger {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+// ── Danger trigger (danger-zone / type-confirm modes) ────
+
+.sh3-ic-danger-trigger {
+  all: unset;
+  width: 100%;
+  padding: 6px 12px;
+  background: none;
+  border: 1px solid rgba(252, 129, 129, 0.2);
+  border-radius: var(--radius-sm, 6px);
+  color: rgba(252, 129, 129, 0.6);
+  font-size: var(--text-xs, 11px);
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 150ms ease;
+
+  &:hover {
+    background: rgba(252, 129, 129, 0.08);
+    color: #fc8181;
+    border-color: rgba(252, 129, 129, 0.4);
+  }
+
+  &.sm {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+}
+
+// ── Row container (button pair) ─────────────────────────
+
+.sh3-ic-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  &.sm {
+    gap: 4px;
+  }
+}
+
+// ── Block container (danger-zone / type-confirm) ────────
+
+.sh3-ic-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+// ── Warning text ────────────────────────────────────────
+
+.sh3-ic-warning {
+  font-size: var(--text-xs, 11px);
+  color: var(--text-secondary, rgba(231, 234, 240, 0.72));
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sh3-ic-match-value {
+  color: #fc8181;
+  font-weight: 600;
+}
+
+// ── Text input (type-confirm) ───────────────────────────
+
+.sh3-ic-input {
+  width: 100%;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(252, 129, 129, 0.3);
+  border-radius: var(--radius-xs, 4px);
+  color: var(--text-primary, #e7eaf0);
+  font-size: var(--text-xs, 11px);
+  outline: none;
+
+  &:focus {
+    border-color: rgba(252, 129, 129, 0.6);
+  }
+
+  &::placeholder {
+    color: var(--text-muted, rgba(231, 234, 240, 0.35));
+  }
+}
+
+// ── Buttons ─────────────────────────────────────────────
+
+.sh3-ic-btn {
+  all: unset;
+  cursor: pointer;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm, 6px);
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 120ms ease, opacity 120ms ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-color, #06a4a4);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  &.sm {
+    padding: 2px 8px;
+    font-size: 9px;
+  }
+}
+
+// Alert pulsing button (toggle mode "Confirm?")
+.sh3-ic-btn--alert {
+  background: var(--color-alert-dim, rgba(252, 129, 129, 0.1));
+  border: 1px solid var(--color-alert-border, rgba(252, 129, 129, 0.25));
+  color: var(--color-alert-light, #fc8181);
+  animation: sh3-ic-pulse 0.8s ease infinite alternate;
+}
+
+// Danger button ("Remove", "Yes, delete permanently")
+.sh3-ic-btn--danger {
+  background: rgba(252, 129, 129, 0.15);
+  border: 1px solid rgba(252, 129, 129, 0.3);
+  color: #fc8181;
+
+  &:hover:not(:disabled) {
+    background: rgba(252, 129, 129, 0.25);
+  }
+}
+
+// Ghost / cancel button
+.sh3-ic-btn--ghost {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted, rgba(231, 234, 240, 0.55));
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+// Cancel icon button (toggle mode "×")
+.sh3-ic-btn--cancel-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 11px;
+  color: var(--text-faded, rgba(231, 234, 240, 0.4));
+  border-radius: var(--radius-xs, 4px);
+
+  &:hover {
+    background: var(--hover-color, rgba(255, 255, 255, 0.06));
+    color: var(--text-muted, rgba(231, 234, 240, 0.55));
+  }
+}
+
+// ── Pulse animation ─────────────────────────────────────
+
+@keyframes sh3-ic-pulse {
+  from { opacity: 0.8; }
+  to   { opacity: 1; }
+}

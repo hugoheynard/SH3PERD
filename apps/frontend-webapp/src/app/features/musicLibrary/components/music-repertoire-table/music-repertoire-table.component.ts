@@ -3,6 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../../shared/button/button.component';
 import { InputComponent } from '../../../../shared/forms/input/input.component';
 import { BadgeComponent } from '../../../../shared/badge/badge.component';
+import { InlineConfirmComponent } from '../../../../shared/inline-confirm/inline-confirm.component';
+import { RATING_DOTS, ratingLevel } from '../../../../shared/utils/rating.utils';
+import { formatDuration } from '../../../../shared/utils/duration.utils';
 import { AddVersionFormComponent } from '../add-version-form/add-version-form.component';
 import { Genre, MUSIC_GENRES } from '../../music-library-types';
 import type { AddVersionPayload } from '../../services/mutations-layer/music-library-mutation.service';
@@ -28,7 +31,7 @@ export type VersionEditPayload = {
 @Component({
   selector: 'app-music-repertoire-table',
   standalone: true,
-  imports: [AddVersionFormComponent, FormsModule, ButtonComponent, InputComponent, BadgeComponent, WaveformThumbnailComponent],
+  imports: [AddVersionFormComponent, FormsModule, ButtonComponent, InputComponent, BadgeComponent, WaveformThumbnailComponent, InlineConfirmComponent],
   templateUrl: './music-repertoire-table.component.html',
   styleUrl: './music-repertoire-table.component.scss',
 })
@@ -49,10 +52,9 @@ export class MusicRepertoireTableComponent {
 
   readonly addingEntryId = signal<string | null>(null);
   readonly editingVersionId = signal<string | null>(null);
-  readonly confirmingDeleteId = signal<string | null>(null);
 
   readonly genres = MUSIC_GENRES;
-  readonly ratingDots = [1, 2, 3, 4] as const;
+  readonly ratingDots = RATING_DOTS;
 
   readonly editRatingFields: { field: 'editMastery' | 'editEnergy' | 'editEffort'; label: string }[] = [
     { field: 'editMastery', label: 'MST' },
@@ -110,47 +112,20 @@ export class MusicRepertoireTableComponent {
     this[key] = val;
   }
 
-  /* ── Delete (inline confirm) ── */
+  /* ── Delete (via shared inline-confirm) ── */
 
-  requestDeleteVersion(entryId: string, versionId: string): void {
-    if (this.confirmingDeleteId() === versionId) {
-      this.confirmingDeleteId.set(null);
-      this.versionDeleted.emit({ entryId, versionId });
-    } else {
-      this.confirmingDeleteId.set(versionId);
-    }
+  confirmDeleteVersion(entryId: string, versionId: string): void {
+    this.versionDeleted.emit({ entryId, versionId });
   }
 
-  requestEntryDelete(entryId: string): void {
-    const key = `entry_${entryId}`;
-    if (this.confirmingDeleteId() === key) {
-      this.confirmingDeleteId.set(null);
-      this.entryDeleted.emit(entryId);
-    } else {
-      this.confirmingDeleteId.set(key);
-    }
-  }
-
-  cancelDelete(): void {
-    this.confirmingDeleteId.set(null);
+  confirmDeleteEntry(entryId: string): void {
+    this.entryDeleted.emit(entryId);
   }
 
   /* ── Utils ── */
 
-  formatDuration(seconds?: number): string {
-    if (!seconds) return '—';
-    const total = Math.round(seconds);
-    const m = Math.floor(total / 60);
-    const s = total % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  }
-
-  ratingLevel(r: number): string {
-    if (r <= 1) return 'low';
-    if (r === 2) return 'medium';
-    if (r === 3) return 'high';
-    return 'max';
-  }
+  readonly formatDuration = formatDuration;
+  readonly ratingLevel = ratingLevel;
 
   /* ── Track helpers ── */
 

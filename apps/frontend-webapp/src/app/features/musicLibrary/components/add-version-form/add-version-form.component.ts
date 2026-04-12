@@ -2,6 +2,7 @@ import { Component, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../../shared/button/button.component';
 import { InputComponent } from '../../../../shared/forms/input/input.component';
+import { RATING_DOTS, ratingLevel } from '../../../../shared/utils/rating.utils';
 import { Genre, MUSIC_GENRES } from '../../music-library-types';
 import type { AddVersionPayload } from '../../services/mutations-layer/music-library-mutation.service';
 import type { MusicGenre, Rating } from '../../music-library-types';
@@ -19,7 +20,7 @@ export class AddVersionFormComponent {
   readonly cancelled = output<void>();
 
   readonly genres = MUSIC_GENRES;
-  readonly ratingDots = [1, 2, 3, 4] as const;
+  readonly ratingDots = RATING_DOTS;
 
   readonly label    = signal('');
   readonly genre    = signal<MusicGenre>(Genre.Pop);
@@ -45,9 +46,7 @@ export class AddVersionFormComponent {
     this.ratingSignals[key].set(value);
   }
 
-  ratingLevel(r: Rating): string {
-    return ['low', 'medium', 'high', 'max'][r - 1];
-  }
+  readonly ratingLevel = ratingLevel;
 
   canSubmit(): boolean {
     return this.label().trim().length > 0;
