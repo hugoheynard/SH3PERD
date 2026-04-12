@@ -7,7 +7,6 @@ import { MusicTrackController } from './api/music-track.controller.js';
 import { MusicTrackProcessingController } from './api/music-track-processing.controller.js';
 import { MusicLibraryController } from './api/music-library.controller.js';
 import { MusicTabConfigsController } from './api/music-tab-configs.controller.js';
-
 @Module({
   imports: [MusicHandlersModule],
   controllers: [

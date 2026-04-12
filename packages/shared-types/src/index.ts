@@ -71,6 +71,9 @@ export { createIdSchema } from './utils/createIdSchema.js';
 //Utils
 export * from './utils/form.js';
 
+//CROSS SEARCH
+export * from './music-cross-search.types.js';
+
 //Microservices
 export * from './microservice-patterns.js';
 

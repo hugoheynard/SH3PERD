@@ -21,6 +21,7 @@ import { CompanyModule } from '../company/company.module.js';
 import { PlaylistModule } from '../playlists-v2/playlist.module.js';
 import { IntegrationsModule } from '../integrations/integrations.module.js';
 import { PrintModule } from '../print/print.module.js';
+import { MusicCrossModule } from '../music/music-cross.module.js';
 import { PlatformContractModule } from '../platform-contract/platform-contract.module.js';
 import { QuotaModule } from '../quota/quota.module.js';
 import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionFilter.js';
@@ -53,6 +54,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
     ContractModule,
     PlatformContractModule,
     QuotaModule,
+    MusicCrossModule,
     ProtectedModule,
     PlaylistModule,
     PrintModule,
@@ -75,6 +77,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
           { path: 'contracts', module: ContractModule },
           { path: 'user-groups', module: UserGroupsModule },
           { path: 'companies', module: CompanyModule },
+          { path: 'companies', module: MusicCrossModule },
           { path: '', module: PrintModule },
           { path: 'integrations', module: IntegrationsModule },
           { path: 'playlists', module: PlaylistModule },

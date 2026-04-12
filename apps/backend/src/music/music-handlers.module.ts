@@ -39,6 +39,7 @@ import { GetUserRepertoireHandler } from './application/queries/GetUserRepertoir
 import { GetUserMusicLibraryHandler } from './application/queries/GetUserMusicLibraryQuery.js';
 import { GetTrackDownloadUrlHandler } from './application/queries/GetTrackDownloadUrlQuery.js';
 import { GetMusicTabConfigsHandler } from './application/queries/GetMusicTabConfigsQuery.js';
+import { GetCompanyCrossLibraryHandler } from './application/queries/GetCompanyCrossLibraryQuery.js';
 
 const CommandHandlers = [
   CreateMusicReferenceHandler,
@@ -63,6 +64,7 @@ const QueryHandlers = [
   GetUserMusicLibraryHandler,
   GetTrackDownloadUrlHandler,
   GetMusicTabConfigsHandler,
+  GetCompanyCrossLibraryHandler,
 ];
 
 const EventHandlers = [
