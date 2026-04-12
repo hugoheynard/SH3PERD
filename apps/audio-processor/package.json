@@ -79,6 +79,13 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@sh3pherd/shared-types$": "<rootDir>/../../../packages/shared-types/src",
+      "^@sh3pherd/shared-types/(.*)$": "<rootDir>/../../../packages/shared-types/src/$1",
+      "^@sh3pherd/storage$": "<rootDir>/../../../packages/storage/src",
+      "^@sh3pherd/storage/(.*)$": "<rootDir>/../../../packages/storage/src/$1",
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    }
   }
 }

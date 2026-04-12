@@ -10,7 +10,7 @@
  * @module analyze
  */
 import { encodePeaks, extractPeaks } from '@sh3pherd/shared-types';
-import type { TAudioAnalysisSnapshot, TRating } from '@sh3pherd/shared-types';
+import type { TAudioAnalysisSnapshot, TMusicRating } from '@sh3pherd/shared-types';
 import { spawn } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -65,7 +65,7 @@ function kWeightingFilters(fs: number): [Biquad, Biquad] {
 
 /* ── Block loudness ──────────────────────────────────────────────────── */
 
-function blockLoudness(weighted: Float32Array[], start: number, len: number): number {
+export function blockLoudness(weighted: Float32Array[], start: number, len: number): number {
   let sum = 0;
   for (const ch of weighted) {
     const end = Math.min(start + len, ch.length);
@@ -100,7 +100,7 @@ function loudnessRange(shortTerm: number[]): number {
 
 /* ── True Peak (Hermite cubic interpolation at 4×) ───────────────────── */
 
-function truePeakLinear(ch: Float32Array): number {
+export function truePeakLinear(ch: Float32Array): number {
   const n = ch.length;
   if (n === 0) return 0;
   let peak = Math.abs(ch[0]);
@@ -248,7 +248,7 @@ function analyzeWithEssentia(monoSamples: Float32Array): EssentiaResult {
 }
 
 /** Mix channels down to mono for essentia analysis. */
-function mixToMono(channels: Float32Array[]): Float32Array {
+export function mixToMono(channels: Float32Array[]): Float32Array {
   if (channels.length === 1) return channels[0];
   const n = channels[0].length;
   const mono = new Float32Array(n);
@@ -331,7 +331,7 @@ function computeAnalysis(
   };
 }
 
-function computeQuality(snapshot: Omit<TAudioAnalysisSnapshot, 'quality'>): TRating {
+export function computeQuality(snapshot: Omit<TAudioAnalysisSnapshot, 'quality'>): TMusicRating {
   if (snapshot.clippingRatio < 0.001 && snapshot.SNRdB > 50 && snapshot.truePeakdBTP < -1) return 4;
   if (snapshot.clippingRatio < 0.005 && snapshot.SNRdB > 35) return 3;
   if (snapshot.clippingRatio < 0.02 && snapshot.SNRdB > 20) return 2;

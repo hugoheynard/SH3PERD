@@ -14,6 +14,10 @@ const envSchema = z.object({
   S3_ENDPOINT:           z.string().min(1, 'S3_ENDPOINT is required'),
   S3_ACCESS_KEY_ID:      z.string().min(1, 'S3_ACCESS_KEY_ID is required'),
   S3_SECRET_ACCESS_KEY:  z.string().min(1, 'S3_SECRET_ACCESS_KEY is required'),
+  // AI mastering (optional — only required if AI_MASTER_TRACK is used)
+  DEEPAFX_CHECKPOINT_PATH: z.string().optional(),
+  DEEPAFX_PYTHON:          z.string().default('python3'),
+  DEEPAFX_WORKER_PATH:     z.string().optional(),
 });
 
 function validateEnv(config: Record<string, unknown>) {

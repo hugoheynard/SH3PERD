@@ -1,0 +1,11 @@
+# DeepAFx-ST autodiff mastering worker dependencies.
+# Install in a venv: python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+#
+# torch CPU-only — pass --index-url https://download.pytorch.org/whl/cpu
+# to pip install for a lighter download (~400 MB vs ~2 GB with CUDA).
+
+deepafx-st>=0.1.0
+torch>=2.0,<3.0
+torchaudio>=2.0,<3.0
+soundfile>=0.12
+numpy>=1.24

@@ -8,18 +8,23 @@ import {
   type TMasteringResult,
   type TPitchShiftTrackPayload,
   type TPitchShiftResult,
+  type TAiMasterTrackPayload,
+  type TAiMasteringResult,
 } from '@sh3pherd/shared-types';
 import { S3Service } from './s3/s3.service';
 import { analyzeAudioFile } from './core/analyze';
 import { masterAudio } from './core/master';
 import { pitchShift } from './core/pitch-shift';
+import { aiMasterAudio } from './core/ai-master';
 
 /**
  * Handles audio processing requests from the backend via TCP.
  *
- * Two operations:
- * - **ANALYZE_TRACK** — download from R2, run loudness + BPM/key analysis, return snapshot.
- * - **MASTER_TRACK**  — download from R2, apply loudnorm pass-2 with measured values, upload master to R2.
+ * Four operations:
+ * - **ANALYZE_TRACK**    — download from R2, run loudness + BPM/key analysis, return snapshot.
+ * - **MASTER_TRACK**     — download from R2, apply loudnorm pass-2 with measured values, upload master to R2.
+ * - **PITCH_SHIFT_TRACK**— download from R2, apply pitch shift via ffmpeg, upload to R2.
+ * - **AI_MASTER_TRACK**  — download input + reference from R2, run DeepAFx-ST + optional loudnorm, upload to R2.
  */
 @Controller()
 export class AudioProcessorController {
@@ -104,5 +109,41 @@ export class AudioProcessorController {
     this.logger.log(`Pitch shift complete — uploaded ${outputS3Key} (${sizeBytes} bytes)`);
 
     return { shiftedS3Key: outputS3Key, sizeBytes };
+  };
+
+  /**
+   * AI-master a track: download input + reference from R2, run DeepAFx-ST
+   * autodiff inference (+ optional loudnorm pass-2), upload the mastered
+   * audio to R2, return the new S3 key + predicted DSP parameters.
+   */
+  @MessagePattern(MicroservicePatterns.AudioProcessor.AI_MASTER_TRACK)
+  async aiMasterTrack(@Payload() payload: TAiMasterTrackPayload): Promise<TAiMasteringResult> {
+    const { s3Key, referenceS3Key, outputS3Key, trackId, versionId, loudnormTarget } = payload;
+
+    this.logger.log(`AI-mastering track ${trackId} [version=${versionId}]`);
+
+    // Download both files in parallel
+    const [fileBuffer, referenceBuffer] = await Promise.all([
+      this.s3.downloadToBuffer(s3Key),
+      this.s3.downloadToBuffer(referenceS3Key),
+    ]);
+    this.logger.log(
+      `Downloaded input (${fileBuffer.byteLength} bytes) + reference (${referenceBuffer.byteLength} bytes)`,
+    );
+
+    const checkpointPath = process.env['DEEPAFX_CHECKPOINT_PATH'] ?? '';
+
+    const { processedBuffer, predictedParams, loudnormReport } =
+      await aiMasterAudio(fileBuffer, referenceBuffer, checkpointPath, loudnormTarget);
+
+    // Upload mastered file
+    const sizeBytes = await this.s3.uploadBuffer(outputS3Key, processedBuffer);
+
+    this.logger.log(
+      `AI mastering complete — uploaded ${outputS3Key} (${sizeBytes} bytes), ` +
+      `EQ bands: ${predictedParams.eq.length}, ratio: ${predictedParams.compressor.ratio}:1`,
+    );
+
+    return { masteredS3Key: outputS3Key, sizeBytes, predictedParams, loudnormReport };
   };
 }
