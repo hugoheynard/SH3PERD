@@ -58,7 +58,6 @@ export class WaveformThumbnailComponent implements AfterViewInit, OnChanges {
   @ViewChild('canvas', { static: false })
   private canvasRef?: ElementRef<HTMLCanvasElement>;
 
-  private painted = false;
 
   ngAfterViewInit(): void {
     this.paint();
@@ -119,6 +118,5 @@ export class WaveformThumbnailComponent implements AfterViewInit, OnChanges {
       ctx.fillRect(x, midY - barH, Math.max(1, barWidth - 0.5), barH * 2);
     }
 
-    this.painted = true;
   }
 }

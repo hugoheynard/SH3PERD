@@ -11,7 +11,7 @@
   [attr.readonly]="readonly() || null"
   [attr.disabled]="disabled || null"
   [attr.autofocus]="autofocus() || null"
-  [value]="value ?? ''"
+  [value]="value"
   (input)="onInputChange($event)"
   (blur)="onTouched()"
 />

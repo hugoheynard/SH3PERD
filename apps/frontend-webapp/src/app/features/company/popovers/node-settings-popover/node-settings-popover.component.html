@@ -20,7 +20,7 @@
     @if (activeTab() === 'members') {
 
       <!-- Member list -->
-      @if (config.node.members.length > 0 || (config.node.guest_members?.length ?? 0) > 0) {
+      @if (config.node.members.length > 0 || config.node.guest_members.length > 0) {
         <div class="popover-members-list">
           @for (member of config.node.members; track member.user_id) {
             <div class="popover-member-row">
@@ -41,7 +41,7 @@
               }
             </div>
           }
-          @for (guest of config.node.guest_members ?? []; track guest.id) {
+          @for (guest of config.node.guest_members; track guest.id) {
             <div class="popover-member-row popover-member-row--guest">
               <sh3-avatar [name]="guest.display_name" variant="ghost" size="sm" />
               <div class="popover-member-info">

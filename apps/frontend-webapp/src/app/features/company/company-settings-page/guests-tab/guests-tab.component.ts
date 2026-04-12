@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { CompanyService } from '../../company.service';
 import { ToastService } from '../../../../shared/toast/toast.service';
 import { ButtonComponent } from '../../../../shared/button/button.component';
-import { InputComponent } from '../../../../shared/forms/input/input.component';
 import { AvatarComponent } from '../../../../shared/avatar/avatar.component';
 import type { TCompanyId } from '@sh3pherd/shared-types';
 
@@ -19,7 +18,7 @@ type GuestVM = {
 @Component({
   selector: 'app-guests-tab',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, InputComponent, AvatarComponent],
+  imports: [CommonModule, ButtonComponent, AvatarComponent],
   templateUrl: './guests-tab.component.html',
   styleUrl: './guests-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,14 +1,11 @@
 import { InsertLineComponent } from '../../insert-interaction-system/insert-line/insert-line.component';
 import { Component, computed, inject, input } from '@angular/core';
-import { TimelineCueComponent } from '../../elements/timeline-cue/timeline-cue.component';
-import { SlotPlannerComponent } from '../../elements/slot-planner/slot-planner.component';
 import { InsertLineService } from '../../insert-interaction-system/state-services/insert-line.service';
 import { PlannerResolutionService } from '../../../services/planner-resolution.service';
 import { SlotService } from '../../../services/mutations-layer/slot.service';
 import { CueService } from '../../../services/mutations-layer/cue.service';
 import type { ArtistPerformanceSlot, Room } from '../../../program-types';
 import { BufferService } from '../../../services/mutations-layer/buffer.service';
-import { BufferSlotComponent } from '../../elements/bufferblock/buffer-slot.component';
 import { InsertActionType } from '../../insert-interaction-system/actions-services/insert-action.types';
 import { NgComponentOutlet } from '@angular/common';
 import { InsertRenderRegistry } from '../../insert-interaction-system/InsertElementRenderRegistry';
@@ -135,9 +132,6 @@ import { InsertRenderRegistry } from '../../insert-interaction-system/InsertElem
   standalone: true,
   imports: [
     InsertLineComponent,
-    TimelineCueComponent,
-    SlotPlannerComponent,
-    BufferSlotComponent,
     NgComponentOutlet,
   ],
   templateUrl: './room-insert-layer.component.html',
