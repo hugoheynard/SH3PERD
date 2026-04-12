@@ -45,6 +45,9 @@ export { SRecordMetadata } from './metadata.types.js';
 //PERMISSIONS
 export * from './permissions.types.js';
 
+//PLATFORM CONTRACT
+export * from './platform-contract.types.js';
+
 //COMPANY
 export * from './company/communication.types.js';
 export * from './company/company.types.js';

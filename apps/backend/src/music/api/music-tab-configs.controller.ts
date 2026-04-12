@@ -6,11 +6,13 @@ import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
 import { GetMusicTabConfigsQuery } from '../application/queries/GetMusicTabConfigsQuery.js';
 import { SaveMusicTabConfigsCommand, type TSaveMusicTabConfigsPayload } from '../application/commands/SaveMusicTabConfigsCommand.js';
 import { DeleteMusicTabConfigsCommand } from '../application/commands/DeleteMusicTabConfigsCommand.js';
+import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
 import type { TUserId, TApiResponse, TMusicTabConfigsDomainModel } from '@sh3pherd/shared-types';
 
 @ApiTags('music / tab configs')
 @ApiBearerAuth('bearer')
-@ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
+@ApiUnauthorizedResponse({ description: 'Authentication required.' })
+@PlatformScoped()
 @Controller('tab-configs')
 export class MusicTabConfigsController {
   constructor(
@@ -25,7 +27,9 @@ export class MusicTabConfigsController {
   ): Promise<TApiResponse<TMusicTabConfigsDomainModel | null>> {
     return buildApiResponseDTO(
       MusicApiCodes.TAB_CONFIGS_FETCHED,
-      await this.qryBus.execute(new GetMusicTabConfigsQuery(actorId)),
+      await this.qryBus.execute<GetMusicTabConfigsQuery, TMusicTabConfigsDomainModel | null>(
+        new GetMusicTabConfigsQuery(actorId),
+      ),
     );
   }
 
@@ -37,7 +41,9 @@ export class MusicTabConfigsController {
   ): Promise<TApiResponse<boolean>> {
     return buildApiResponseDTO(
       MusicApiCodes.TAB_CONFIGS_SAVED,
-      await this.cmdBus.execute(new SaveMusicTabConfigsCommand(actorId, payload)),
+      await this.cmdBus.execute<SaveMusicTabConfigsCommand, boolean>(
+        new SaveMusicTabConfigsCommand(actorId, payload),
+      ),
     );
   }
 
@@ -48,7 +54,9 @@ export class MusicTabConfigsController {
   ): Promise<TApiResponse<boolean>> {
     return buildApiResponseDTO(
       MusicApiCodes.TAB_CONFIGS_DELETED,
-      await this.cmdBus.execute(new DeleteMusicTabConfigsCommand(actorId)),
+      await this.cmdBus.execute<DeleteMusicTabConfigsCommand, boolean>(
+        new DeleteMusicTabConfigsCommand(actorId),
+      ),
     );
   }
 }

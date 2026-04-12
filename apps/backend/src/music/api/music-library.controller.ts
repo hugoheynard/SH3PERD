@@ -6,7 +6,7 @@ import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
 import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { GetUserMusicLibraryQuery } from '../application/queries/GetUserMusicLibraryQuery.js';
 import { UserMusicLibraryViewModelPayload } from '../dto/music.dto.js';
-import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
+import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
 import { P } from '@sh3pherd/shared-types';
 import type { TUserId, TApiResponse, TUserMusicLibraryViewModel } from '@sh3pherd/shared-types';
@@ -14,7 +14,7 @@ import type { TUserId, TApiResponse, TUserMusicLibraryViewModel } from '@sh3pher
 @ApiTags('music / library')
 @ApiBearerAuth('bearer')
 @ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
-@ContractScoped()
+@PlatformScoped()
 @Controller('library')
 export class MusicLibraryController {
   constructor(private readonly qryBus: QueryBus) {}
@@ -28,7 +28,9 @@ export class MusicLibraryController {
   ): Promise<TApiResponse<TUserMusicLibraryViewModel>> {
     return buildApiResponseDTO(
       MusicApiCodes.MUSIC_LIBRARY_SINGLE_USER_SUCCESS,
-      await this.qryBus.execute(new GetUserMusicLibraryQuery(actorId)),
+      await this.qryBus.execute<GetUserMusicLibraryQuery, TUserMusicLibraryViewModel>(
+        new GetUserMusicLibraryQuery(actorId),
+      ),
     );
-  };
+  }
 }

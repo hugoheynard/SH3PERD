@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { Reflector } from '@nestjs/core';
-import { ROLE_TEMPLATES, type TContractRole, type TPermission } from '@sh3pherd/shared-types';
+import { ROLE_TEMPLATES, PLATFORM_ROLE_TEMPLATES, type TContractRole, type TPlatformRole, type TPermission } from '@sh3pherd/shared-types';
 
 const REQUIRED_PERMISSION_KEY = 'required_permission';
 
@@ -141,15 +141,26 @@ export function RequirePermission(...permissions: TPermission[]) {
 // ── Permission helpers ─────────────────────────────
 
 /**
- * Expand contract roles into a flat list of granted permissions
- * using ROLE_TEMPLATES from shared-types.
+ * Expand roles into a flat list of granted permissions.
+ *
+ * Checks BOTH `ROLE_TEMPLATES` (company roles: owner, admin, artist,
+ * viewer) and `PLATFORM_ROLE_TEMPLATES` (SaaS plans: plan_free,
+ * plan_pro, plan_band, plan_business). Since the two role sets are
+ * disjoint strings, only one lookup matches per role.
  */
-export function expandRolesToPermissions(roles: TContractRole[]): TPermission[] {
+export function expandRolesToPermissions(roles: (TContractRole | TPlatformRole)[]): TPermission[] {
   const permissions = new Set<TPermission>();
   for (const role of roles) {
-    const template = ROLE_TEMPLATES[role];
-    if (template) {
-      for (const p of template) permissions.add(p);
+    // Check company role templates first
+    const companyTemplate = ROLE_TEMPLATES[role as TContractRole];
+    if (companyTemplate) {
+      for (const p of companyTemplate) permissions.add(p);
+      continue;
+    }
+    // Then check platform role templates
+    const platformTemplate = PLATFORM_ROLE_TEMPLATES[role as TPlatformRole];
+    if (platformTemplate) {
+      for (const p of platformTemplate) permissions.add(p);
     }
   }
   return [...permissions];

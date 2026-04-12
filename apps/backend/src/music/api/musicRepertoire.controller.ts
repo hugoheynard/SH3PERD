@@ -9,16 +9,24 @@ import { CreateRepertoireEntryCommand } from '../application/commands/CreateRepe
 import { DeleteRepertoireEntryCommand } from '../application/commands/DeleteRepertoireEntryCommand.js';
 import { GetUserRepertoireQuery } from '../application/queries/GetUserRepertoireQuery.js';
 import { RepertoireEntryPayload } from '../dto/music.dto.js';
-import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
+import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
-import { P } from '@sh3pherd/shared-types';
-import type { TUserId, TApiResponse, TMusicRepertoireEntryDomainModel, TRepertoireEntryId } from '@sh3pherd/shared-types';
-import { SCreateRepertoireEntryPayload } from '@sh3pherd/shared-types';
+import { P, SCreateRepertoireEntryPayload } from '@sh3pherd/shared-types';
+import type {
+  TUserId,
+  TApiResponse,
+  TMusicRepertoireEntryDomainModel,
+  TRepertoireEntryId,
+  TCreateRepertoireEntryPayload,
+} from '@sh3pherd/shared-types';
 
+/**
+ * Repertoire controller — user-scoped (no contract required).
+ */
 @ApiTags('music / repertoire')
 @ApiBearerAuth('bearer')
-@ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
-@ContractScoped()
+@ApiUnauthorizedResponse({ description: 'Authentication required.' })
+@PlatformScoped()
 @Controller('repertoire')
 export class MusicRepertoireController {
   constructor(
@@ -35,27 +43,30 @@ export class MusicRepertoireController {
   ): Promise<TApiResponse<TMusicRepertoireEntryDomainModel[]>> {
     return buildApiResponseDTO(
       MusicApiCodes.REPERTOIRE_ENTRIES_FETCHED,
-      await this.qryBus.execute(new GetUserRepertoireQuery(actorId)),
+      await this.qryBus.execute<GetUserRepertoireQuery, TMusicRepertoireEntryDomainModel[]>(
+        new GetUserRepertoireQuery(actorId),
+      ),
     );
   }
 
-  @ApiOperation({ summary: 'Add song to repertoire', description: 'Creates a repertoire entry linking the user to a music reference — "this song is in my repertoire".' })
+  @ApiOperation({ summary: 'Add song to repertoire', description: 'Creates a repertoire entry linking the user to a music reference.' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.REPERTOIRE_ENTRY_CREATED, RepertoireEntryPayload, 200))
   @RequirePermission(P.Music.Library.Write)
   @Post()
   async createEntry(
     @ActorId() actorId: TUserId,
-    @Body('payload', new ZodValidationPipe(SCreateRepertoireEntryPayload)) payload: any,
+    @Body('payload', new ZodValidationPipe(SCreateRepertoireEntryPayload)) payload: TCreateRepertoireEntryPayload,
   ): Promise<TApiResponse<TMusicRepertoireEntryDomainModel>> {
     return buildApiResponseDTO(
       MusicApiCodes.REPERTOIRE_ENTRY_CREATED,
-      await this.cmdBus.execute(new CreateRepertoireEntryCommand(actorId, payload)),
+      await this.cmdBus.execute<CreateRepertoireEntryCommand, TMusicRepertoireEntryDomainModel>(
+        new CreateRepertoireEntryCommand(actorId, payload),
+      ),
     );
   }
 
-  @ApiOperation({ summary: 'Remove song from repertoire', description: 'Deletes a repertoire entry. Ownership is verified — only the owner can delete.' })
+  @ApiOperation({ summary: 'Remove song from repertoire', description: 'Deletes a repertoire entry. Ownership is verified.' })
   @ApiParam({ name: 'id', description: 'Repertoire entry ID to delete' })
-  @ApiResponse(apiSuccessDTO(MusicApiCodes.REPERTOIRE_ENTRY_DELETED, undefined as any, 200))
   @RequirePermission(P.Music.Library.Write)
   @Delete(':id')
   async deleteEntry(
@@ -64,7 +75,9 @@ export class MusicRepertoireController {
   ): Promise<TApiResponse<boolean>> {
     return buildApiResponseDTO(
       MusicApiCodes.REPERTOIRE_ENTRY_DELETED,
-      await this.cmdBus.execute(new DeleteRepertoireEntryCommand(actorId, entryId)),
+      await this.cmdBus.execute<DeleteRepertoireEntryCommand, boolean>(
+        new DeleteRepertoireEntryCommand(actorId, entryId),
+      ),
     );
   }
 }

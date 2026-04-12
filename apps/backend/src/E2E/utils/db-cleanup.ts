@@ -85,5 +85,6 @@ export async function resetAuthCollections(db: Db): Promise<void> {
     'user_profiles',
     'user_preferences',
     'refresh_tokens',
+    'platform_contracts',
   ]);
 }

@@ -10,7 +10,7 @@ import { DeleteTrackCommand } from '../application/commands/DeleteTrackCommand.j
 import { SetTrackFavoriteCommand } from '../application/commands/SetTrackFavoriteCommand.js';
 import { GetTrackDownloadUrlQuery } from '../application/queries/GetTrackDownloadUrlQuery.js';
 import { VersionTrackPayload, TrackDownloadUrlPayload } from '../dto/music.dto.js';
-import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
+import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
 import { P } from '@sh3pherd/shared-types';
 import type {
@@ -19,17 +19,15 @@ import type {
 } from '@sh3pherd/shared-types';
 
 /**
- * Track CRUD + download + favorite.
+ * Track CRUD + download + favorite — user-scoped (no contract required).
  *
  * Processing operations (mastering, AI mastering, pitch-shift) live
- * in {@link MusicTrackProcessingController} — same route prefix,
- * separate controller — because they have different concerns (heavier
- * latency, microservice dispatch, will grow independently).
+ * in {@link MusicTrackProcessingController}.
  */
 @ApiTags('music / tracks')
 @ApiBearerAuth('bearer')
-@ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
-@ContractScoped()
+@ApiUnauthorizedResponse({ description: 'Authentication required.' })
+@PlatformScoped()
 @Controller('versions/:versionId/tracks')
 export class MusicTrackController {
   constructor(
@@ -51,14 +49,15 @@ export class MusicTrackController {
   ): Promise<TApiResponse<TVersionTrackDomainModel>> {
     return buildApiResponseDTO(
       MusicApiCodes.TRACK_UPLOADED,
-      await this.cmdBus.execute(new UploadTrackCommand(actorId, versionId, file.buffer, file.mimetype, { fileName: file.originalname })),
+      await this.cmdBus.execute<UploadTrackCommand, TVersionTrackDomainModel>(
+        new UploadTrackCommand(actorId, versionId, file.buffer, file.mimetype, { fileName: file.originalname }),
+      ),
     );
   }
 
   @ApiOperation({ summary: 'Delete a track', description: 'Deletes a track from a version and removes the file from storage.' })
   @ApiParam({ name: 'versionId', description: 'Version owning the track' })
   @ApiParam({ name: 'trackId', description: 'Track to delete' })
-  @ApiResponse(apiSuccessDTO(MusicApiCodes.TRACK_DELETED, undefined as any, 200))
   @RequirePermission(P.Music.Track.Write)
   @Delete(':trackId')
   async deleteTrack(
@@ -68,14 +67,15 @@ export class MusicTrackController {
   ): Promise<TApiResponse<boolean>> {
     return buildApiResponseDTO(
       MusicApiCodes.TRACK_DELETED,
-      await this.cmdBus.execute(new DeleteTrackCommand(actorId, versionId, trackId)),
+      await this.cmdBus.execute<DeleteTrackCommand, boolean>(
+        new DeleteTrackCommand(actorId, versionId, trackId),
+      ),
     );
   }
 
   @ApiOperation({ summary: 'Set track as favorite', description: 'Marks a track as the favorite for its version. Only one favorite per version.' })
   @ApiParam({ name: 'versionId', description: 'Version owning the track' })
   @ApiParam({ name: 'trackId', description: 'Track to set as favorite' })
-  @ApiResponse(apiSuccessDTO(MusicApiCodes.TRACK_FAVORITE_SET, undefined as any, 200))
   @RequirePermission(P.Music.Track.Write)
   @Patch(':trackId/favorite')
   async setFavorite(
@@ -85,7 +85,9 @@ export class MusicTrackController {
   ): Promise<TApiResponse<boolean>> {
     return buildApiResponseDTO(
       MusicApiCodes.TRACK_FAVORITE_SET,
-      await this.cmdBus.execute(new SetTrackFavoriteCommand(actorId, versionId, trackId)),
+      await this.cmdBus.execute<SetTrackFavoriteCommand, boolean>(
+        new SetTrackFavoriteCommand(actorId, versionId, trackId),
+      ),
     );
   }
 
@@ -102,7 +104,9 @@ export class MusicTrackController {
   ): Promise<TApiResponse<{ url: string }>> {
     return buildApiResponseDTO(
       MusicApiCodes.TRACK_DOWNLOAD_URL,
-      await this.qryBus.execute(new GetTrackDownloadUrlQuery(actorId, versionId, trackId)),
+      await this.qryBus.execute<GetTrackDownloadUrlQuery, { url: string }>(
+        new GetTrackDownloadUrlQuery(actorId, versionId, trackId),
+      ),
     );
   }
 }

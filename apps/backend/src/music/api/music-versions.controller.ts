@@ -9,17 +9,25 @@ import { CreateMusicVersionCommand } from '../application/commands/CreateMusicVe
 import { UpdateMusicVersionCommand } from '../application/commands/UpdateMusicVersionCommand.js';
 import { DeleteMusicVersionCommand } from '../application/commands/DeleteMusicVersionCommand.js';
 import { MusicVersionPayload } from '../dto/music.dto.js';
-import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
+import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
-import { P } from '@sh3pherd/shared-types';
-import type { TUserId, TApiResponse, TMusicVersionDomainModel, TMusicVersionId } from '@sh3pherd/shared-types';
-import { SCreateMusicVersionPayload, SUpdateMusicVersionPayload } from '@sh3pherd/shared-types';
+import { P, SCreateMusicVersionPayload, SUpdateMusicVersionPayload } from '@sh3pherd/shared-types';
+import type {
+  TUserId,
+  TApiResponse,
+  TMusicVersionDomainModel,
+  TMusicVersionId,
+  TCreateMusicVersionPayload,
+  TUpdateMusicVersionPayload,
+} from '@sh3pherd/shared-types';
 
-
+/**
+ * Music Version controller — user-scoped (no contract required).
+ */
 @ApiTags('music / versions')
 @ApiBearerAuth('bearer')
-@ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
-@ContractScoped()
+@ApiUnauthorizedResponse({ description: 'Authentication required.' })
+@PlatformScoped()
 @Controller('versions')
 export class MusicVersionsController {
   constructor(private readonly cmdBus: CommandBus) {}
@@ -30,11 +38,13 @@ export class MusicVersionsController {
   @Post()
   async createVersion(
     @ActorId() actorId: TUserId,
-    @Body('payload', new ZodValidationPipe(SCreateMusicVersionPayload)) payload: any,
+    @Body('payload', new ZodValidationPipe(SCreateMusicVersionPayload)) payload: TCreateMusicVersionPayload,
   ): Promise<TApiResponse<TMusicVersionDomainModel>> {
     return buildApiResponseDTO(
       MusicApiCodes.MUSIC_VERSION_CREATED,
-      await this.cmdBus.execute(new CreateMusicVersionCommand(actorId, payload)),
+      await this.cmdBus.execute<CreateMusicVersionCommand, TMusicVersionDomainModel>(
+        new CreateMusicVersionCommand(actorId, payload),
+      ),
     );
   }
 
@@ -46,17 +56,18 @@ export class MusicVersionsController {
   async updateVersion(
     @ActorId() actorId: TUserId,
     @Param('id') versionId: TMusicVersionId,
-    @Body('payload', new ZodValidationPipe(SUpdateMusicVersionPayload)) payload: any,
+    @Body('payload', new ZodValidationPipe(SUpdateMusicVersionPayload)) payload: TUpdateMusicVersionPayload,
   ): Promise<TApiResponse<TMusicVersionDomainModel>> {
     return buildApiResponseDTO(
       MusicApiCodes.MUSIC_VERSION_UPDATED,
-      await this.cmdBus.execute(new UpdateMusicVersionCommand(actorId, versionId, payload)),
+      await this.cmdBus.execute<UpdateMusicVersionCommand, TMusicVersionDomainModel>(
+        new UpdateMusicVersionCommand(actorId, versionId, payload),
+      ),
     );
   }
 
   @ApiOperation({ summary: 'Delete a version', description: 'Deletes a version and all its tracks (storage + DB). Ownership is verified.' })
   @ApiParam({ name: 'id', description: 'Version ID to delete' })
-  @ApiResponse(apiSuccessDTO(MusicApiCodes.MUSIC_VERSION_DELETED, undefined as any, 200))
   @RequirePermission(P.Music.Library.Write)
   @Delete(':id')
   async deleteVersion(
@@ -65,7 +76,9 @@ export class MusicVersionsController {
   ): Promise<TApiResponse<boolean>> {
     return buildApiResponseDTO(
       MusicApiCodes.MUSIC_VERSION_DELETED,
-      await this.cmdBus.execute(new DeleteMusicVersionCommand(actorId, versionId)),
+      await this.cmdBus.execute<DeleteMusicVersionCommand, boolean>(
+        new DeleteMusicVersionCommand(actorId, versionId),
+      ),
     );
   }
 }

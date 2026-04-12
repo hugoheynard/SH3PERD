@@ -1,71 +1,71 @@
 /**
- * DB Factories — direct MongoDB inserts for fast test seeding.
+ * DB Factories — direct MongoDB inserts using domain entities.
  *
- * ## Why factories instead of HTTP calls?
+ * ## Principle: always use entities
  *
- * `WorkspaceSetup.build()` does 4 HTTP round-trips (register, login,
- * create company, set preferences) → ~3 seconds. That's fine for a
- * few tests but becomes the bottleneck in a 100-test suite.
+ * Factories construct domain entities via their real constructors,
+ * then insert `entity.toDomain` into MongoDB. This guarantees:
  *
- * Factories insert directly into MongoDB collections, bypassing the
- * HTTP stack entirely. A full workspace seed takes ~10 ms instead of
- * ~3000 ms — 300× faster.
+ * - **Schema fidelity**: if the entity evolves (new required field,
+ *   renamed field), the factory breaks at compile time — not silently.
+ * - **Invariant enforcement**: entity constructors validate (non-empty
+ *   name, valid status, etc.) — test data passes the same checks as
+ *   production data.
+ * - **ID format correctness**: the base `Entity` class generates IDs
+ *   with the right prefix (`userCredential_`, `company_`, etc.).
  *
- * ## When to use factories vs. WorkspaceSetup
+ * ## Never insert raw objects
  *
- * - **WorkspaceSetup** — tests that verify the HTTP flow itself (auth,
- *   company creation, contract scoping). The setup IS the test.
- * - **Factories** — tests that need a pre-existing workspace as context
- *   but are testing something else (music CRUD, orgchart mutations).
- *   The setup is overhead; the test is the feature.
+ * ```ts
+ * // ❌ BAD — hardcoded fields, can drift from the real schema
+ * await db.collection('user_credentials').insertOne({ id: 'user_xxx', ... });
+ *
+ * // ✅ GOOD — constructed via the domain entity
+ * const entity = new UserCredentialEntity({ email, password, ... });
+ * await db.collection('user_credentials').insertOne(entity.toDomain);
+ * ```
+ *
+ * ## Performance
+ *
+ * Factories are ~300× faster than HTTP builders (WorkspaceSetup) because
+ * they bypass the HTTP stack entirely. A full workspace seed takes ~10 ms.
  *
  * ## Usage
  *
  * ```ts
  * const seed = await seedWorkspace(db, { companyName: 'Studio X' });
- * // seed.userId, seed.companyId, seed.contractId
- * // seed.authToken — a valid JWT for this user
- * // seed.authHeader — 'Bearer ...'
+ * // seed.userId, seed.companyId, seed.contractId, seed.authHeader
  * ```
  */
 
-import { randomUUID } from 'node:crypto';
 import * as jwt from 'jsonwebtoken';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import type { Db } from 'mongodb';
+import type { TCompanyId, TContractId, TUserId } from '@sh3pherd/shared-types';
+import { TCompanyStatus } from '@sh3pherd/shared-types';
+import { UserCredentialEntity } from '../../user/domain/UserCredential.entity.js';
+import { UserProfileEntity } from '../../user/domain/UserProfileEntity.js';
+import { UserPreferences } from '../../user/domain/UserPreferences.entity.js';
+import { PlatformContractEntity } from '../../platform-contract/domain/PlatformContractEntity.js';
+import { CompanyEntity } from '../../company/domain/CompanyEntity.js';
+import { ContractEntity } from '../../contracts/domain/ContractEntity.js';
 
-// ── ID generators (matching the app's prefix patterns) ──────
-
-// ID prefixes match what the real entities generate
-const userId = () => `userCredential_${randomUUID()}`;
-const companyId = () => `company_${randomUUID()}`;
-const contractId = () => `contract_${randomUUID()}`;
-const profileId = () => `profile_${randomUUID()}`;
-const preferencesId = () => `userPref_${randomUUID()}`;
-
-// ── JWT signing for factories ───────────────────────────────
+// ── JWT signing ─────────────────────────────────────────────
 
 /**
- * Sign a fake auth token that the AuthGuard will accept.
- * Uses the same private key as the app (loaded from env / keys/).
- *
- * If the key isn't available (MongoMemoryServer env), falls back to
- * a symmetric HMAC secret that must match what loadEnv() provides.
+ * Sign a test JWT using the app's RSA private key — the AuthGuard
+ * accepts it as a valid token.
  */
 function signTestToken(uid: string): string {
-  const fs = require('node:fs');
-  const path = require('node:path');
-
-  // Try RSA key first (same as production auth)
-  const keyPath = path.join(process.cwd(), 'keys', 'private.pem');
+  const keyPath = join(process.cwd(), 'keys', 'private.pem');
   try {
-    const privateKey = fs.readFileSync(keyPath, 'utf-8');
+    const privateKey = readFileSync(keyPath, 'utf-8');
     return jwt.sign({ user_id: uid }, privateKey, {
       algorithm: 'RS256',
       expiresIn: '1h',
     });
   } catch {
-    // No key file — this shouldn't happen in a properly configured
-    // test env, but we throw explicitly so the error is clear.
     throw new Error(
       `[Factories] Cannot sign test JWT: private key not found at ${keyPath}. ` +
       `Make sure the keys/ directory exists in apps/backend/.`,
@@ -73,19 +73,19 @@ function signTestToken(uid: string): string {
   }
 }
 
-// ── Factory types ───────────────────────────────────────────
+// ── Result types ────────────────────────────────────────────
 
 export interface SeededUser {
-  userId: string;
+  userId: TUserId;
   email: string;
   authToken: string;
   authHeader: string;
 }
 
 export interface SeededWorkspace extends SeededUser {
-  companyId: string;
+  companyId: TCompanyId;
   companyName: string;
-  contractId: string;
+  contractId: TContractId;
   contractHeader: Record<string, string>;
 }
 
@@ -95,46 +95,50 @@ export async function seedUser(
   db: Db,
   overrides: { email?: string; firstName?: string; lastName?: string } = {},
 ): Promise<SeededUser> {
-  const uid = userId();
-  const email = overrides.email ?? `factory-${randomUUID().slice(0, 8)}@e2e.local`;
+  const email = overrides.email ?? `factory-${crypto.randomUUID().slice(0, 8)}@e2e.local`;
   const firstName = overrides.firstName ?? 'Factory';
   const lastName = overrides.lastName ?? 'User';
 
-  // Insert credentials (password hash not needed — we sign the JWT directly)
-  await db.collection('user_credentials').insertOne({
-    id: uid,
+  // Construct entities via their real constructors
+  const credential = new UserCredentialEntity({
     email,
     password: '$argon2id$v=19$m=65536,t=3,p=4$fakehashfortesting',
     active: true,
     email_verified: false,
     is_guest: false,
-    created_at: new Date(),
-    updated_at: new Date(),
   });
 
-  // Insert profile
-  await db.collection('user_profiles').insertOne({
-    id: profileId(),
-    user_id: uid,
+  const profile = new UserProfileEntity({
+    user_id: credential.id as TUserId,
     first_name: firstName,
     last_name: lastName,
-    created_at: new Date(),
-    updated_at: new Date(),
+    active: true,
   });
 
-  // Insert preferences
-  await db.collection('user_preferences').insertOne({
-    id: preferencesId(),
-    user_id: uid,
+  const preferences = new UserPreferences({
+    user_id: credential.id as TUserId,
     theme: 'dark',
-    created_at: new Date(),
-    updated_at: new Date(),
+    contract_workspace: '' as TContractId,
   });
 
-  const authToken = signTestToken(uid);
+  // Every user gets a platform contract at registration (SaaS subscription)
+  const platformContract = new PlatformContractEntity({
+    user_id: credential.id as TUserId,
+    plan: 'plan_free',
+    status: 'active',
+    startDate: new Date(),
+  });
+
+  // Insert the entity snapshots into MongoDB
+  await db.collection('user_credentials').insertOne(credential.toDomain);
+  await db.collection('user_profiles').insertOne(profile.toDomain);
+  await db.collection('user_preferences').insertOne(preferences.toDomain);
+  await db.collection('platform_contracts').insertOne(platformContract.toDomain);
+
+  const authToken = signTestToken(credential.id);
 
   return {
-    userId: uid,
+    userId: credential.id as TUserId,
     email,
     authToken,
     authHeader: `Bearer ${authToken}`,
@@ -145,48 +149,45 @@ export async function seedUser(
 
 export async function seedCompany(
   db: Db,
-  ownerId: string,
+  ownerId: TUserId,
   overrides: { name?: string } = {},
-): Promise<{ companyId: string; contractId: string; companyName: string }> {
-  const cid = companyId();
-  const ctid = contractId();
+): Promise<{ companyId: TCompanyId; contractId: TContractId; companyName: string }> {
   const name = overrides.name ?? 'Factory Company';
 
-  // Insert company
-  await db.collection('companies').insertOne({
-    id: cid,
-    name,
+  const company = new CompanyEntity({
     owner_id: ownerId,
+    name,
     description: '',
     address: { street: '', city: '', zip: '', country: '' },
-    orgLayers: ['Department', 'Team', 'Sub-team'],
-    status: 'active',
-    created_at: new Date(),
-    updated_at: new Date(),
+    orgLayers: CompanyEntity.DEFAULT_ORG_LAYERS,
+    status: TCompanyStatus.ACTIVE,
   });
 
-  // Insert owner contract
-  await db.collection('contracts').insertOne({
-    id: ctid,
+  const contract = new ContractEntity({
     user_id: ownerId,
-    company_id: cid,
+    company_id: company.id as TCompanyId,
     roles: ['owner'],
     status: 'active',
     startDate: new Date(),
-    created_at: new Date(),
-    updated_at: new Date(),
   });
 
-  // Set the contract as the active workspace
+  await db.collection('companies').insertOne(company.toDomain);
+  await db.collection('contracts').insertOne(contract.toDomain);
+
+  // Set the contract as the active workspace in user preferences
   await db.collection('user_preferences').updateOne(
     { user_id: ownerId },
-    { $set: { contract_workspace: ctid } },
+    { $set: { contract_workspace: contract.id } },
   );
 
-  return { companyId: cid, contractId: ctid, companyName: name };
+  return {
+    companyId: company.id as TCompanyId,
+    contractId: contract.id as TContractId,
+    companyName: name,
+  };
 }
 
-// ── Full Workspace Factory (user + company + contract) ──────
+// ── Full Workspace Factory ──────────────────────────────────
 
 export async function seedWorkspace(
   db: Db,

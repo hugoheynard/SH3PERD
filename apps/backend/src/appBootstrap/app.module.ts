@@ -21,6 +21,7 @@ import { CompanyModule } from '../company/company.module.js';
 import { PlaylistModule } from '../playlists-v2/playlist.module.js';
 import { IntegrationsModule } from '../integrations/integrations.module.js';
 import { PrintModule } from '../print/print.module.js';
+import { PlatformContractModule } from '../platform-contract/platform-contract.module.js';
 import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionFilter.js';
 
 @Module({
@@ -49,6 +50,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
     UserModule,
     UserProfileModule,
     ContractModule,
+    PlatformContractModule,
     ProtectedModule,
     PlaylistModule,
     PrintModule,

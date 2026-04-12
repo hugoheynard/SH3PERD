@@ -7,6 +7,7 @@ import {
   MUSIC_REPERTOIRE_REPO,
   MUSIC_VERSION_REPO,
   MUSIC_TAB_CONFIGS_REPO,
+  PLATFORM_CONTRACT_REPO,
   REFRESH_TOKEN_REPO,
   USER_CREDENTIALS_REPO, USER_GROUPS_REPO,
   USER_PREFERENCES_REPO,
@@ -59,6 +60,10 @@ import {
   type IGuestCompanyRepository,
   GuestCompanyMongoRepository,
 } from '../../user/infra/GuestCompanyMongoRepo.repository.js';
+import {
+  type IPlatformContractRepository,
+  PlatformContractMongoRepository,
+} from '../../platform-contract/infra/PlatformContractMongoRepo.js';
 import { MONGO_CLIENT } from './db.tokens.js';
 import { ContractReadRepository } from '../../contracts/repositories/ContractReadRepository.js';
 import { CompanyMongoRepository, type ICompanyRepository } from '../../company/repositories/CompanyMongoRepository.js';
@@ -140,6 +145,7 @@ export type TCoreRepositories = {
     mongoRepoProvider<IUserPreferencesRepository>(USER_PREFERENCES_REPO, UserPreferencesMongoRepository, 'user_preferences'),
     mongoRepoProvider<IUserGroupsMongoRepository>(USER_GROUPS_REPO, UserGroupsMongoRepository, 'user_groups'),
     mongoRepoProvider<IGuestCompanyRepository>(GUEST_COMPANY_REPO, GuestCompanyMongoRepository, 'guest_company'),
+    mongoRepoProvider<IPlatformContractRepository>(PLATFORM_CONTRACT_REPO, PlatformContractMongoRepository, 'platform_contracts'),
     mongoRepoProvider<IContractRepository>(CONTRACT_REPO, ContractMongoRepository, 'contracts'),
     { provide: CONTRACT_READ_REPO, useClass: ContractReadRepository },
     mongoRepoProvider<IEventUnitRepository>(EVENT_UNIT_REPO, EventUnitMongoRepository, 'eventUnits'),
@@ -163,6 +169,7 @@ export type TCoreRepositories = {
     CONTRACT_READ_REPO,
     USER_GROUPS_REPO,
     GUEST_COMPANY_REPO,
+    PLATFORM_CONTRACT_REPO,
     EVENT_UNIT_REPO,
     MUSIC_REFERENCE_REPO,
     MUSIC_VERSION_REPO,

@@ -190,6 +190,50 @@ export const ROLE_TEMPLATES: Record<TContractRole, TPermission[]> = {
   ],
 } as const;
 
+// ─── Platform Roles (SaaS subscription plans) ────────────
+
+/**
+ * Platform-level roles representing SaaS subscription plans.
+ * Each user gets a platform contract at registration with one of these roles.
+ * Disjoint from TContractRole — the two never mix in the same contract.
+ */
+export type TPlatformRole = 'plan_free' | 'plan_pro' | 'plan_band' | 'plan_business';
+export const SPlatformRole: ZodOutput<TPlatformRole> =
+  z.enum(['plan_free', 'plan_pro', 'plan_band', 'plan_business']);
+
+/**
+ * Permission templates for platform roles.
+ *
+ * plan_free gives full music CRUD access — quantity limits (50 songs,
+ * 3 masters/month) are enforced by MusicPolicy / quotas, NOT by the
+ * permission system. The permission layer answers "can you do this
+ * action at all?", quotas answer "have you exceeded your allowance?".
+ */
+export const PLATFORM_ROLE_TEMPLATES: Record<TPlatformRole, TPermission[]> = {
+  plan_free: [
+    P.Music.Library.Read,
+    P.Music.Library.Write,
+    P.Music.Track.Read,
+    P.Music.Track.Write,
+    P.Music.Playlist.Read,
+  ],
+  plan_pro: [
+    P.Music.Library.Read,
+    P.Music.Library.Write,
+    P.Music.Track.Read,
+    P.Music.Track.Write,
+    P.Music.Track.Delete,
+    P.Music.Playlist.Read,
+    P.Music.Playlist.Write,
+    P.Music.Playlist.Delete,
+    P.Music.Playlist.Own,
+    P.Music.Setlist.Read,
+    P.Music.Setlist.Write,
+  ],
+  plan_band: ['music:*'],
+  plan_business: ['music:*', 'event:*'],
+} as const;
+
 /**
  * Default permission sets for each team-level role.
  * These use a simplified format (no domain prefix) because the domain
