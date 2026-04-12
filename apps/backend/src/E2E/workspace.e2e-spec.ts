@@ -18,7 +18,7 @@ import {
   teardownE2E,
   resetAllCollections,
   WorkspaceSetup,
-} from './utils';
+} from './utils/index.js';
 
 describe('Workspace Setup E2E', () => {
   let app: INestApplication;

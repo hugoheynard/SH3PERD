@@ -16,7 +16,7 @@ import {
   teardownE2E,
   resetAllCollections,
   UserBuilder,
-} from './utils';
+} from './utils/index.js';
 
 describe('Auth E2E', () => {
   let app: INestApplication;

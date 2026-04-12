@@ -142,7 +142,10 @@ export class QuotaService {
   private async getUserPlan(userId: TUserId): Promise<TPlatformRole> {
     const contract = await this.platformRepo.findByUserId(userId);
     if (!contract) {
-      throw new QuotaExceededError('repertoire_entry' as TQuotaResource, 0, 0, 'plan_free');
+      // No platform contract = no subscription. This shouldn't happen
+      // (registration creates one), but if it does, fall back to
+      // plan_free so the user isn't completely locked out.
+      return 'plan_free';
     }
     return contract.plan;
   }

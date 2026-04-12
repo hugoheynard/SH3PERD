@@ -60,7 +60,7 @@ export async function bootstrapE2E(): Promise<E2EContext> {
   }
 
   process.env['NODE_ENV'] = 'test';
-  loadEnv(process.env.NODE_ENV);
+  loadEnv(process.env['NODE_ENV']);
 
   const moduleRef = await Test.createTestingModule({
     imports: [AppModule],

@@ -19,7 +19,7 @@ import type { Db } from 'mongodb';
 const ALLOWED_ENVS = new Set(['test', 'e2e', 'ci']);
 
 function assertTestEnv(): void {
-  const env = process.env.NODE_ENV ?? '';
+  const env = process.env['NODE_ENV'] ?? '';
   if (!ALLOWED_ENVS.has(env)) {
     throw new Error(
       `[db-cleanup] Refusing to reset DB in NODE_ENV="${env}". ` +
