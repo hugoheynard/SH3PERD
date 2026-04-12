@@ -166,6 +166,11 @@
               </td>
               <td class="col-actions">
                 <sh3-button [variant]="hasTrack(version) ? 'ghost' : 'critical'" size="sm" (clicked)="trackUploadRequested.emit({ entryId: entry.id, versionId: version.id })">+ Track</sh3-button>
+                @if (hasTrack(version)) {
+                  <button class="btn-master" type="button" aria-label="Master track" title="Master" (click)="openMastering(entry, version)">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h.01M7 20v-4M12 20v-8M17 20V8M22 4v16"/></svg>
+                  </button>
+                }
                 <button class="btn-edit" type="button" aria-label="Edit version" title="Edit" (click)="startEdit(version)">✎</button>
                 <sh3-inline-confirm mode="toggle" (confirmed)="confirmDeleteVersion(entry.id, version.id)">
                   <button class="btn-delete" type="button" aria-label="Delete version" title="Delete version">🗑</button>
@@ -192,3 +197,8 @@
     </tbody>
   </table>
 </div>
+
+<!-- Mastering modal -->
+@if (masteringContext(); as ctx) {
+  <sh3-mastering-modal [context]="ctx" (closed)="onMasteringClosed($event)" />
+}

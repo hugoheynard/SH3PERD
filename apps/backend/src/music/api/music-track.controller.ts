@@ -1,4 +1,4 @@
-import { Controller, Post, Delete, Patch, Get, Param, Body, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Post, Delete, Patch, Get, Param, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -8,19 +8,24 @@ import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js'
 import { UploadTrackCommand } from '../application/commands/UploadTrackCommand.js';
 import { DeleteTrackCommand } from '../application/commands/DeleteTrackCommand.js';
 import { SetTrackFavoriteCommand } from '../application/commands/SetTrackFavoriteCommand.js';
-import { MasterTrackCommand } from '../application/commands/MasterTrackCommand.js';
-import { PitchShiftVersionCommand } from '../application/commands/PitchShiftVersionCommand.js';
 import { GetTrackDownloadUrlQuery } from '../application/queries/GetTrackDownloadUrlQuery.js';
-import { VersionTrackPayload, TrackDownloadUrlPayload, MusicVersionPayload } from '../dto/music.dto.js';
+import { VersionTrackPayload, TrackDownloadUrlPayload } from '../dto/music.dto.js';
 import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
 import { P } from '@sh3pherd/shared-types';
 import type {
   TUserId, TApiResponse, TMusicVersionId, TVersionTrackId,
-  TVersionTrackDomainModel, TMusicVersionDomainModel, TMasteringTargetSpecs,
+  TVersionTrackDomainModel,
 } from '@sh3pherd/shared-types';
 
-
+/**
+ * Track CRUD + download + favorite.
+ *
+ * Processing operations (mastering, AI mastering, pitch-shift) live
+ * in {@link MusicTrackProcessingController} — same route prefix,
+ * separate controller — because they have different concerns (heavier
+ * latency, microservice dispatch, will grow independently).
+ */
 @ApiTags('music / tracks')
 @ApiBearerAuth('bearer')
 @ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
@@ -98,42 +103,6 @@ export class MusicTrackController {
     return buildApiResponseDTO(
       MusicApiCodes.TRACK_DOWNLOAD_URL,
       await this.qryBus.execute(new GetTrackDownloadUrlQuery(actorId, versionId, trackId)),
-    );
-  }
-
-  @ApiOperation({ summary: 'Master a track', description: 'Creates a mastered copy of a track with target loudness specs. Uses analysis data from the original for precision.' })
-  @ApiParam({ name: 'versionId', description: 'Version owning the source track' })
-  @ApiParam({ name: 'trackId', description: 'Source track to master' })
-  @ApiResponse(apiSuccessDTO(MusicApiCodes.TRACK_MASTERED, VersionTrackPayload, 200))
-  @RequirePermission(P.Music.Track.Write)
-  @Post(':trackId/master')
-  async masterTrack(
-    @ActorId() actorId: TUserId,
-    @Param('versionId') versionId: TMusicVersionId,
-    @Param('trackId') trackId: TVersionTrackId,
-    @Body() body: TMasteringTargetSpecs,
-  ): Promise<TApiResponse<TVersionTrackDomainModel>> {
-    return buildApiResponseDTO(
-      MusicApiCodes.TRACK_MASTERED,
-      await this.cmdBus.execute(new MasterTrackCommand(actorId, versionId, trackId, body)),
-    );
-  }
-
-  @ApiOperation({ summary: 'Pitch-shift a version', description: 'Creates a new version with all tracks pitch-shifted by the specified semitones. The new version is linked to the original via parentVersionId.' })
-  @ApiParam({ name: 'versionId', description: 'Source version to pitch-shift' })
-  @ApiParam({ name: 'trackId', description: 'Reference track for the operation' })
-  @ApiResponse(apiSuccessDTO(MusicApiCodes.VERSION_PITCH_SHIFTED, MusicVersionPayload, 200))
-  @RequirePermission(P.Music.Track.Write)
-  @Post(':trackId/pitch-shift')
-  async pitchShiftTrack(
-    @ActorId() actorId: TUserId,
-    @Param('versionId') versionId: TMusicVersionId,
-    @Param('trackId') trackId: TVersionTrackId,
-    @Body() body: { semitones: number },
-  ): Promise<TApiResponse<TMusicVersionDomainModel>> {
-    return buildApiResponseDTO(
-      MusicApiCodes.VERSION_PITCH_SHIFTED,
-      await this.cmdBus.execute(new PitchShiftVersionCommand(actorId, versionId, trackId, body.semitones)),
     );
   }
 }

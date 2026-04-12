@@ -32,7 +32,12 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
       load: [configuration], // You can load additional configuration files or functions here
     }),
     GlobalCqrsModule,
-    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 30 }]),
+    ThrottlerModule.forRoot([{
+      ttl: 60_000,
+      // In test/e2e environments, effectively disable throttling so
+      // tests can make rapid API calls without hitting 429s.
+      limit: process.env['NODE_ENV'] === 'test' ? 10_000 : 30,
+    }]),
     // Database module, returns MongoClient instance
     MongoModule,
     // Token verification for AuthGuard

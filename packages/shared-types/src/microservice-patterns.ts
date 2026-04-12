@@ -7,5 +7,6 @@ export const MicroservicePatterns = {
     ANALYZE_TRACK:      'analyze_track',
     MASTER_TRACK:       'master_track',
     PITCH_SHIFT_TRACK:  'pitch_shift_track',
+    AI_MASTER_TRACK:    'ai_master_track',
   },
 } as const;

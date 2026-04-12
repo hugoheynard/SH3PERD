@@ -16,5 +16,12 @@ module.exports = {
     moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1',
         '^@sh3pherd/shared-types$': '<rootDir>/../../packages/shared-types/src/index.ts',
+        '^@sh3pherd/shared-types/(.*)$': '<rootDir>/../../packages/shared-types/src/$1',
+        '^@sh3pherd/storage$': '<rootDir>/../../packages/storage/src/index.ts',
+        '^@sh3pherd/storage/(.*)$': '<rootDir>/../../packages/storage/src/$1',
     },
+    // MongoMemoryServer: starts an in-memory MongoDB before any test,
+    // stops it after all suites finish. No external MongoDB required.
+    globalSetup: './src/E2E/global-setup.ts',
+    globalTeardown: './src/E2E/global-teardown.ts',
 };

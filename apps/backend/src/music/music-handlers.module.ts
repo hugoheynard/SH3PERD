@@ -24,6 +24,7 @@ import { UploadTrackHandler } from './application/commands/UploadTrackCommand.js
 import { DeleteTrackHandler } from './application/commands/DeleteTrackCommand.js';
 import { SetTrackFavoriteHandler } from './application/commands/SetTrackFavoriteCommand.js';
 import { MasterTrackHandler } from './application/commands/MasterTrackCommand.js';
+import { AiMasterTrackHandler } from './application/commands/AiMasterTrackCommand.js';
 import { PitchShiftVersionHandler } from './application/commands/PitchShiftVersionCommand.js';
 import { SaveMusicTabConfigsHandler } from './application/commands/SaveMusicTabConfigsCommand.js';
 import { DeleteMusicTabConfigsHandler } from './application/commands/DeleteMusicTabConfigsCommand.js';
@@ -49,6 +50,7 @@ const CommandHandlers = [
   DeleteTrackHandler,
   SetTrackFavoriteHandler,
   MasterTrackHandler,
+  AiMasterTrackHandler,
   PitchShiftVersionHandler,
   SaveMusicTabConfigsHandler,
   DeleteMusicTabConfigsHandler,

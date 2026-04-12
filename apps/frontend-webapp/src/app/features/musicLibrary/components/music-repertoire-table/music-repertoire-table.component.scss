@@ -198,9 +198,15 @@ td {
 .btn-add-ver,
 .btn-save,
 .btn-cancel-edit,
-.btn-track-action {
+.btn-track-action,
+.btn-master {
   @include btn-icon(22);
   &:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
+}
+
+.btn-master {
+  color: var(--accent-color-light);
+  &:hover { background: var(--accent-color-dim); }
 }
 
 .btn-track-action {

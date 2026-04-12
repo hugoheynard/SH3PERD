@@ -1,0 +1,259 @@
+<div class="mastering-overlay" (click)="cancel()">
+  <div class="mastering-modal" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <header class="mastering-header">
+      <div>
+        <span class="mastering-eyebrow">Mastering</span>
+        <h2 class="mastering-title">{{ context().title }}</h2>
+        <span class="mastering-subtitle">{{ context().subtitle }} · {{ context().trackFileName }}</span>
+      </div>
+      <button class="mastering-close" type="button" (click)="cancel()" [disabled]="processing()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </header>
+
+    @if (!hasResult()) {
+      <!-- ═══════════════════════════════════════════════
+           MODE SELECTION + OPTIONS
+           ═══════════════════════════════════════════════ -->
+
+      <!-- Mode picker -->
+      <section class="mastering-section">
+        <h3 class="mastering-section-title">Mode</h3>
+        <div class="mastering-mode-grid">
+          <button
+            class="mastering-mode-card"
+            [class.is-selected]="mode() === 'standard'"
+            (click)="selectMode('standard')"
+            type="button"
+          >
+            <span class="mode-icon">🎚️</span>
+            <span class="mode-title">Standard</span>
+            <span class="mode-desc">Loudness normalisation only (LUFS / TP / LRA). Fast, deterministic.</span>
+          </button>
+
+          <button
+            class="mastering-mode-card"
+            [class.is-selected]="mode() === 'ai'"
+            (click)="selectMode('ai')"
+            type="button"
+          >
+            <span class="mode-icon">🧠</span>
+            <span class="mode-title">AI Master</span>
+            <span class="mode-desc">Intelligent EQ + compression matched to a reference track of your choice.</span>
+          </button>
+
+          <button
+            class="mastering-mode-card"
+            [class.is-selected]="mode() === 'auto'"
+            (click)="selectMode('auto')"
+            type="button"
+          >
+            <span class="mode-icon">⚡</span>
+            <span class="mode-title">Full Auto</span>
+            <span class="mode-desc">One-click AI master using a built-in preset. Zero decisions needed.</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- AI reference picker (ai mode) -->
+      @if (mode() === 'ai') {
+        <section class="mastering-section">
+          <h3 class="mastering-section-title">Reference track</h3>
+          <div class="mastering-reference-placeholder">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18V5l12-2v13"/>
+              <circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+            </svg>
+            <span>Pick a track from your library that sounds like what you want</span>
+            <span class="mastering-reference-note">Coming soon — the AI mastering backend is not yet deployed.</span>
+          </div>
+        </section>
+      }
+
+      <!-- Preset picker (auto mode) -->
+      @if (mode() === 'auto') {
+        <section class="mastering-section">
+          <h3 class="mastering-section-title">Preset</h3>
+          <div class="mastering-preset-grid">
+            @for (p of presets; track p.value) {
+              <button
+                class="mastering-preset-chip"
+                [class.is-selected]="preset() === p.value"
+                (click)="preset.set(p.value)"
+                type="button"
+              >
+                <span class="preset-name">{{ p.label }}</span>
+                <span class="preset-desc">{{ p.description }}</span>
+              </button>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- Loudness targets -->
+      <section class="mastering-section">
+        <h3 class="mastering-section-title">Loudness target</h3>
+
+        <!-- Quick-fill chips -->
+        <div class="mastering-lufs-chips">
+          @for (t of lufsTargets; track t.label) {
+            <button
+              class="lufs-chip"
+              [class.is-selected]="targetLUFS() === t.lufs && targetTP() === t.tp"
+              (click)="applyLufsPreset(t.lufs, t.tp)"
+              type="button"
+            >{{ t.label }}</button>
+          }
+        </div>
+
+        <!-- Manual inputs -->
+        <div class="mastering-targets-row">
+          <label class="mastering-target">
+            <span class="target-label">LUFS</span>
+            <input
+              class="target-input"
+              type="number"
+              [ngModel]="targetLUFS()"
+              (ngModelChange)="targetLUFS.set($event)"
+              step="0.5"
+              min="-30"
+              max="-5"
+            />
+          </label>
+          <label class="mastering-target">
+            <span class="target-label">True Peak</span>
+            <input
+              class="target-input"
+              type="number"
+              [ngModel]="targetTP()"
+              (ngModelChange)="targetTP.set($event)"
+              step="0.1"
+              min="-5"
+              max="0"
+            />
+            <span class="target-unit">dBTP</span>
+          </label>
+          <label class="mastering-target">
+            <span class="target-label">LRA</span>
+            <input
+              class="target-input"
+              type="number"
+              [ngModel]="targetLRA()"
+              (ngModelChange)="targetLRA.set($event)"
+              step="0.5"
+              min="1"
+              max="20"
+            />
+            <span class="target-unit">LU</span>
+          </label>
+        </div>
+
+        <!-- Current values for comparison -->
+        @if (beforeLUFS() != null) {
+          <div class="mastering-current">
+            <span class="current-label">Current:</span>
+            <span class="current-value">{{ lufsLabel(beforeLUFS()) }}</span>
+            @if (context().currentTP != null) {
+              <span class="current-value">{{ context().currentTP?.toFixed(1) }} dBTP</span>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- Submit -->
+      <footer class="mastering-footer">
+        <button class="mastering-btn mastering-btn--ghost" type="button" (click)="cancel()" [disabled]="processing()">
+          Cancel
+        </button>
+        <button
+          class="mastering-btn mastering-btn--primary"
+          type="button"
+          [disabled]="!canSubmit()"
+          (click)="submit()"
+        >
+          @if (processing()) {
+            <span class="mastering-spinner"></span>
+            Mastering…
+          } @else {
+            @if (isAiMode()) { 🧠 } Master
+          }
+        </button>
+      </footer>
+
+    } @else {
+      <!-- ═══════════════════════════════════════════════
+           RESULTS
+           ═══════════════════════════════════════════════ -->
+
+      <section class="mastering-section">
+        <h3 class="mastering-section-title">Result</h3>
+
+        <!-- Before / After LUFS comparison -->
+        <div class="mastering-comparison">
+          <div class="comparison-card">
+            <span class="comparison-label">Before</span>
+            <span class="comparison-value">{{ lufsLabel(beforeLUFS()) }}</span>
+          </div>
+          <svg class="comparison-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+          <div class="comparison-card comparison-card--after">
+            <span class="comparison-label">After</span>
+            <span class="comparison-value">{{ lufsLabel(afterLUFS()) }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- EQ curve (AI modes only) -->
+      @if (eqParams(); as eq) {
+        <section class="mastering-section">
+          <h3 class="mastering-section-title">EQ applied</h3>
+          <sh3-eq-curve [params]="eq" />
+        </section>
+      }
+
+      <!-- Compressor settings (AI modes only) -->
+      @if (compressorParams(); as comp) {
+        <section class="mastering-section">
+          <h3 class="mastering-section-title">Compressor</h3>
+          <div class="compressor-grid">
+            <div class="comp-param">
+              <span class="comp-value">{{ formatDb(comp.threshold) }}</span>
+              <span class="comp-label">Threshold</span>
+            </div>
+            <div class="comp-param">
+              <span class="comp-value">{{ formatRatio(comp.ratio) }}</span>
+              <span class="comp-label">Ratio</span>
+            </div>
+            <div class="comp-param">
+              <span class="comp-value">{{ formatMs(comp.attack) }}</span>
+              <span class="comp-label">Attack</span>
+            </div>
+            <div class="comp-param">
+              <span class="comp-value">{{ formatMs(comp.release) }}</span>
+              <span class="comp-label">Release</span>
+            </div>
+            <div class="comp-param">
+              <span class="comp-value">{{ formatDb(comp.knee) }}</span>
+              <span class="comp-label">Knee</span>
+            </div>
+            <div class="comp-param">
+              <span class="comp-value">{{ formatDb(comp.makeupGain) }}</span>
+              <span class="comp-label">Makeup</span>
+            </div>
+          </div>
+        </section>
+      }
+
+      <footer class="mastering-footer">
+        <button class="mastering-btn mastering-btn--primary" type="button" (click)="closeWithResult()">
+          Done
+        </button>
+      </footer>
+    }
+  </div>
+</div>

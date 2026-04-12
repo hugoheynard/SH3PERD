@@ -86,6 +86,10 @@ export const MusicApiCodes = {
     code: 'VERSION_PITCH_SHIFTED',
     message: 'Version pitch-shifted successfully',
   },
+  TRACK_AI_MASTERED: {
+    code: 'TRACK_AI_MASTERED',
+    message: 'Track AI-mastered successfully',
+  },
 } as const satisfies Record<string, TApiMessage>;
 
 

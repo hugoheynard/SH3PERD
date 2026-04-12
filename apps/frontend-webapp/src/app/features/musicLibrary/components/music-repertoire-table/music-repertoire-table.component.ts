@@ -14,8 +14,10 @@ import { MusicLibrarySelectorService } from '../../services/selector-layer/music
 import { AudioPlayerService } from '../../audio-player/audio-player.service';
 import { toPlayableTrack } from '../../audio-player/audio-player.types';
 import { WaveformThumbnailComponent } from '../../audio-player/waveform-thumbnail.component';
+import { MasteringModalComponent } from '../../mastering/mastering-modal.component';
 import { decodePeaks } from '@sh3pherd/shared-types';
 import type { TMusicVersionId } from '@sh3pherd/shared-types';
+import type { TMasteringModalContext, TMasteringResult } from '../../mastering/mastering.types';
 
 export type VersionEditPayload = {
   entryId: string;
@@ -31,7 +33,7 @@ export type VersionEditPayload = {
 @Component({
   selector: 'app-music-repertoire-table',
   standalone: true,
-  imports: [AddVersionFormComponent, FormsModule, ButtonComponent, InputComponent, BadgeComponent, WaveformThumbnailComponent, InlineConfirmComponent],
+  imports: [AddVersionFormComponent, FormsModule, ButtonComponent, InputComponent, BadgeComponent, WaveformThumbnailComponent, InlineConfirmComponent, MasteringModalComponent],
   templateUrl: './music-repertoire-table.component.html',
   styleUrl: './music-repertoire-table.component.scss',
 })
@@ -52,6 +54,7 @@ export class MusicRepertoireTableComponent {
 
   readonly addingEntryId = signal<string | null>(null);
   readonly editingVersionId = signal<string | null>(null);
+  readonly masteringContext = signal<TMasteringModalContext | null>(null);
 
   readonly genres = MUSIC_GENRES;
   readonly ratingDots = RATING_DOTS;
@@ -221,5 +224,30 @@ export class MusicRepertoireTableComponent {
     const current = this.audioPlayer.currentTrack();
     if (!current) return false;
     return current.versionId === version.id && this.audioPlayer.isPlaying();
+  }
+
+  /* ── Mastering modal ── */
+
+  openMastering(entry: LibraryEntry, version: MusicVersion): void {
+    const track = version.tracks.find(t => t.favorite) ?? version.tracks[0];
+    if (!track) return;
+    this.masteringContext.set({
+      versionId: version.id as TMusicVersionId,
+      trackId: track.id,
+      trackFileName: track.fileName,
+      title: entry.reference.title,
+      subtitle: `${entry.reference.originalArtist} · ${version.label}`,
+      currentLUFS: track.analysisResult?.integratedLUFS,
+      currentTP: track.analysisResult?.truePeakdBTP,
+      currentLRA: track.analysisResult?.loudnessRange,
+    });
+  }
+
+  onMasteringClosed(result: TMasteringResult | null): void {
+    this.masteringContext.set(null);
+    if (result?.track) {
+      // TODO: add the mastered track to the version in the local state
+      // via mutation service once the backend returns the new track.
+    }
   }
 }

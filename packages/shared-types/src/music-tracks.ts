@@ -126,7 +126,7 @@ export function extractPeaks(
 // ─── Version track domain model ────────────────────────────
 
 /** Audio processing type — how a track was derived from another track. */
-export const STrackProcessingType = z.enum(['master']);
+export const STrackProcessingType = z.enum(['master', 'ai_master']);
 export type TTrackProcessingType = z.infer<typeof STrackProcessingType>;
 
 /** A single audio file attached to a version. One per version must be `favorite`. */
@@ -232,4 +232,64 @@ export interface TPitchShiftTrackPayload {
 export interface TPitchShiftResult {
   shiftedS3Key: string;
   sizeBytes:    number;
+}
+
+// ─── AI Mastering (DeepAFx-ST) ────────────────────────────
+
+/**
+ * Predicted DSP parameters from DeepAFx-ST autodiff inference.
+ * Each value maps 1:1 to a physical control on the processing chain.
+ * Interpretable and displayable to the user.
+ */
+export interface TAiMasterEqBand {
+  type: 'low-shelf' | 'peaking' | 'high-shelf';
+  /** Center/cutoff frequency in Hz. */
+  freq: number;
+  /** Gain in dB (negative = cut, positive = boost). */
+  gain: number;
+  /** Q factor (bandwidth). */
+  q: number;
+}
+
+export interface TAiMasterCompressorParams {
+  /** Threshold in dB. */
+  threshold: number;
+  /** Compression ratio (e.g. 3.2 means 3.2:1). */
+  ratio: number;
+  /** Attack time in seconds. */
+  attack: number;
+  /** Release time in seconds. */
+  release: number;
+  /** Knee width in dB. */
+  knee: number;
+  /** Makeup gain in dB. */
+  makeupGain: number;
+}
+
+export interface TAiMasterPredictedParams {
+  eq: TAiMasterEqBand[];
+  compressor: TAiMasterCompressorParams;
+}
+
+/** Sent from backend to audio-processor via TCP to request AI mastering. */
+export interface TAiMasterTrackPayload {
+  s3Key:          string;
+  /** S3 key of the reference track to match the style of. */
+  referenceS3Key: string;
+  outputS3Key:    string;
+  trackId:        TVersionTrackId;
+  versionId:      TMusicVersionId;
+  ownerId:        TUserId;
+  /** Optional loudnorm target applied as stage 2 after DeepAFx-ST. */
+  loudnormTarget?: TMasteringTargetSpecs;
+}
+
+/** Returned by audio-processor after AI mastering. */
+export interface TAiMasteringResult {
+  masteredS3Key:    string;
+  sizeBytes:        number;
+  /** The predicted DSP parameters — interpretable by the frontend. */
+  predictedParams:  TAiMasterPredictedParams;
+  /** ffmpeg loudnorm report from stage 2, if loudnormTarget was provided. */
+  loudnormReport?:  string;
 }
