@@ -3,6 +3,7 @@ import { Inject } from '@nestjs/common';
 import type { TRefreshToken, TUserId } from '@sh3pherd/shared-types';
 import type { IRefreshTokenRepository } from '../../repositories/RefreshTokenMongoRepository.js';
 import { REFRESH_TOKEN_REPO } from '../../../appBootstrap/nestTokens.js';
+import { hashToken } from '../../core/token-manager/hashToken.js';
 
 export class LogoutCommand {
   constructor(
@@ -19,12 +20,17 @@ export class LogoutHandler implements ICommandHandler<LogoutCommand, void> {
 
   async execute(cmd: LogoutCommand): Promise<void> {
     if (cmd.refreshToken) {
-      // Find the token to get its family, then delete the entire family
+      // Hash the raw cookie value to match the stored hash
+      const hashedToken = hashToken(cmd.refreshToken);
       const token = await this.refreshTokenRepo.findOne({
-        filter: { refreshToken: cmd.refreshToken },
+        filter: { refreshToken: hashedToken },
       });
       if (token) {
-        await this.refreshTokenRepo.deleteMany({ family_id: token.family_id } as any);
+        // Soft-delete the entire family (preserves reuse detection)
+        await this.refreshTokenRepo.updateOne({
+          filter: { family_id: token.family_id } as Record<string, unknown>,
+          update: { $set: { isRevoked: true } } as Record<string, unknown>,
+        });
       }
     } else {
       // No specific token — revoke all sessions for this user

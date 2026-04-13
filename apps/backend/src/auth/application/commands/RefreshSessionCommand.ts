@@ -8,6 +8,7 @@ import type { TRefreshTokenSecureCookie } from '../../types/auth.domain.tokens.j
 import { AUTH_SERVICE, REFRESH_TOKEN_SERVICE } from '../../auth.tokens.js';
 import { REFRESH_TOKEN_REPO } from '../../../appBootstrap/nestTokens.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { hashToken } from '../../core/token-manager/hashToken.js';
 
 export type TRefreshSessionResult = {
   authToken: string;
@@ -32,8 +33,11 @@ export class RefreshSessionHandler implements ICommandHandler<
   ) {}
 
   async execute(cmd: RefreshSessionCommand): Promise<TRefreshSessionResult> {
+    // Hash the raw cookie value to match the stored hash
+    const hashedToken = hashToken(cmd.refreshToken);
+
     const token = await this.refreshTokenRepo.findOne({
-      filter: { refreshToken: cmd.refreshToken },
+      filter: { refreshToken: hashedToken },
     });
 
     if (!token) {
@@ -53,14 +57,14 @@ export class RefreshSessionHandler implements ICommandHandler<
     const isValid = this.refreshTokenService.verifyRefreshToken({ refreshTokenDomainModel: token });
 
     if (!isValid) {
-      await this.refreshTokenRepo.deleteOne({ refreshToken: cmd.refreshToken });
+      await this.refreshTokenRepo.deleteOne({ refreshToken: hashedToken });
       throw new BusinessError('Invalid tokens', { code: 'INVALID_TOKENS', status: 401 });
     }
 
     // Mark current token as revoked (soft-delete for reuse detection)
     await this.refreshTokenRepo.updateOne({
-      filter: { refreshToken: cmd.refreshToken } as any,
-      update: { $set: { isRevoked: true } } as any,
+      filter: { refreshToken: hashedToken } as Record<string, unknown>,
+      update: { $set: { isRevoked: true } } as Record<string, unknown>,
     });
 
     // Rotate: create new tokens within the same family

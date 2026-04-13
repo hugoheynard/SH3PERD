@@ -13,6 +13,7 @@ import type { TGenerateRefreshTokenCookie } from '../../types/auth.core.contract
 import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from '../../auth.constants.js';
 import { REFRESH_TOKEN_REPO } from '../../../appBootstrap/nestTokens.js';
 import { randomUUID } from 'crypto';
+import { hashToken } from './hashToken.js';
 
 export type TGenerateRefreshTokenFn = (input: {
   user_id: TUserId;
@@ -61,9 +62,12 @@ export class RefreshTokenService implements IAbstractRefreshTokenService {
         });
       }
 
+      // Hash the token before storing — the raw value is only in the cookie.
+      const hashedToken = hashToken(newRefreshToken);
+
       const record: TRefreshTokenRecord = {
         id: newRefreshToken,
-        refreshToken: newRefreshToken,
+        refreshToken: hashedToken,
         user_id: input.user_id,
         family_id: input.family_id ?? randomUUID(),
         isRevoked: false,
@@ -73,6 +77,7 @@ export class RefreshTokenService implements IAbstractRefreshTokenService {
 
       await this.refreshTokenRepo.save(record);
 
+      // Return the raw token (goes into the HttpOnly cookie)
       return newRefreshToken;
     } catch (error) {
       throw new TechnicalError('Unable to save refresh token', {
@@ -100,7 +105,8 @@ export class RefreshTokenService implements IAbstractRefreshTokenService {
    */
   revokeRefreshToken: TRevokeRefreshTokenFn = async (input) => {
     try {
-      await this.refreshTokenRepo.deleteOne({ refreshToken: input.refreshToken });
+      const hashed = hashToken(input.refreshToken);
+      await this.refreshTokenRepo.deleteOne({ refreshToken: hashed });
       return { revokedToken: input.refreshToken };
     } catch (error) {
       throw new Error(`Unable to revoke refresh token: ${(error as Error).message}`);
