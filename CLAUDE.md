@@ -69,6 +69,16 @@ SH3PHERD/
     storage/           — R2/S3 storage utilities
 ```
 
+## Documentation maintenance
+
+Every code change must be reflected in the relevant documentation:
+- **New endpoint or controller change** → update the technical doc in `apps/backend/documentation/` + Swagger decorators
+- **New feature started or completed** → update the corresponding TODO in `documentation/todos/`
+- **Architecture decision or pattern change** → update or create a technical doc in `apps/backend/documentation/`
+- **New module or domain** → create a new technical doc following existing naming (`sh3-<module>.md`)
+
+Documentation updates must be in the same commit as the code change (or in an immediately following `docs` commit). Never leave docs stale.
+
 ## Commit rules
 
 - **Atomic commits**: Split work into small, logically grouped commits. Each commit covers ONE concern (backend API, frontend component, docs, fix). Never batch unrelated changes.
