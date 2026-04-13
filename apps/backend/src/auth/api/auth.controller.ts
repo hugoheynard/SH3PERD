@@ -41,6 +41,14 @@ import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from '../auth.constants.js';
 export class AuthController {
   constructor(private readonly cmdBus: CommandBus) {}
 
+  @ApiOperation({
+    summary: 'Register a new user',
+    description:
+      'Creates a new user account with email, password, first name and last name. Also creates a platform contract (free plan).',
+  })
+  @ApiResponse({ status: 201, description: 'User registered successfully.' })
+  @ApiResponse({ status: 400, description: 'Validation failed.' })
+  @ApiResponse({ status: 409, description: 'Email already exists.' })
   @Public()
   @Throttle({ default: { limit: 3, ttl: 60_000 } })
   @Post('register')
@@ -50,6 +58,18 @@ export class AuthController {
     return this.cmdBus.execute(new RegisterUserCommand(requestDTO));
   }
 
+  @ApiOperation({
+    summary: 'Log in',
+    description:
+      'Authenticates with email + password. Returns a JWT access token and sets an HttpOnly refresh cookie. Includes account lockout after 5 failed attempts.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful — access token returned, refresh cookie set.',
+  })
+  @ApiResponse({ status: 400, description: 'Invalid credentials.' })
+  @ApiResponse({ status: 403, description: 'Account deactivated or not activated.' })
+  @ApiResponse({ status: 429, description: 'Account locked after too many failed attempts.' })
   @Public()
   @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('login')
@@ -72,6 +92,13 @@ export class AuthController {
     };
   }
 
+  @ApiOperation({
+    summary: 'Refresh access token',
+    description:
+      'Uses the HttpOnly refresh cookie to issue a new access token. Rotates the refresh token within the same family (reuse detection).',
+  })
+  @ApiResponse({ status: 200, description: 'New access token issued, refresh cookie rotated.' })
+  @ApiResponse({ status: 401, description: 'Invalid, expired, or reused refresh token.' })
   @Public()
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('refresh')
@@ -103,6 +130,12 @@ export class AuthController {
     };
   }
 
+  @ApiOperation({
+    summary: 'Log out',
+    description: 'Revokes the refresh token family (soft-delete) and clears the HttpOnly cookie.',
+  })
+  @ApiBearerAuth('bearer')
+  @ApiResponse({ status: 200, description: 'Logout successful.' })
   @Post('logout')
   @HttpCode(200)
   async logout(
