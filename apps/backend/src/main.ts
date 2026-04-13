@@ -15,28 +15,31 @@ async function bootstrap(): Promise<void> {
     logger: ['error', 'warn'],
   });
 
-  //TODO: Swagger setup should be done only in non-production envs and extract logic in config file
-  const config = new DocumentBuilder()
-    .setTitle('SH3PHERD API Documentation')
-    .setDescription('Plan et endpoints de mon application')
-    .setVersion('1.0')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        description: 'Enter JWT token',
-        name: 'Authorization',
-        in: 'header',
-      },
-      'bearer',
-    )
-    .build();
+  // Swagger is only available in non-production environments.
+  // In production, the /api docs endpoint is not exposed.
+  if (process.env['NODE_ENV'] !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('SH3PHERD API Documentation')
+      .setDescription('API endpoints for the SH3PHERD platform')
+      .setVersion('1.0')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Enter JWT token',
+          name: 'Authorization',
+          in: 'header',
+        },
+        'bearer',
+      )
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config, {
-    extraModels: getApiModels(),
-  });
-  SwaggerModule.setup('api', app, document);
+    const document = SwaggerModule.createDocument(app, config, {
+      extraModels: getApiModels(),
+    });
+    SwaggerModule.setup('api-docs', app, document);
+  }
 
   const corsOrigin = process.env['CORS_ORIGIN'] ?? 'http://localhost:4200';
   app.enableCors({
