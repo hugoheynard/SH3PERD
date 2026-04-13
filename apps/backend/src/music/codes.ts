@@ -90,6 +90,10 @@ export const MusicApiCodes = {
     code: 'TRACK_AI_MASTERED',
     message: 'Track AI-mastered successfully',
   },
+  CROSS_LIBRARY_FETCHED: {
+    code: 'CROSS_LIBRARY_FETCHED',
+    message: 'Cross library fetched successfully',
+  },
 } as const satisfies Record<string, TApiMessage>;
 
 

@@ -1,11 +1,11 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Subject, debounceTime, switchMap } from 'rxjs';
-import type { MusicLibraryState, LibraryEntry, MusicTab, MusicTabConfig, MusicSearchConfig, MusicDataFilter, MusicGenre, Rating, SavedTabConfig } from '../music-library-types';
+import type { MusicLibraryState, LibraryEntry, MusicTab, MusicTabConfig, MusicSearchConfig, MusicDataFilter, MusicGenre, Rating, SavedTabConfig, CrossSearchContext } from '../music-library-types';
 import type { TabStateSignal, TabSystemState } from '../../../shared/configurable-tab-bar';
-import { mockCrossContext } from '../utils/mock-music-data';
 import { MusicLibraryApiService } from './music-library-api.service';
 import { ToastService } from '../../../shared/toast/toast.service';
-import type { TMusicTabConfig, TMusicSavedTabConfig, TMusicSearchConfig } from '@sh3pherd/shared-types';
+import { ContractStore } from '../../contracts/services/contract.store';
+import type { TMusicTabConfig, TMusicSavedTabConfig, TMusicSearchConfig, TCompanyId } from '@sh3pherd/shared-types';
 
 const DEFAULT_TABS: MusicTab[] = [
   {
@@ -22,6 +22,7 @@ export class MusicLibraryStateService {
 
   private readonly libraryApi = inject(MusicLibraryApiService);
   private readonly toast = inject(ToastService);
+  private readonly contractStore = inject(ContractStore);
 
   private state = signal<MusicLibraryState>({
     entries: [],
@@ -29,8 +30,10 @@ export class MusicLibraryStateService {
     activeTabId: 'repertoire_me',
     activeConfigId: null,
     savedTabConfigs: [],
-    crossContext: mockCrossContext,
   });
+
+  /** Track which company we already loaded cross data for (avoid duplicate requests). */
+  private loadedCrossCompanyId: string | null = null;
 
   private loaded = false;
   private saveSubject = new Subject<void>();
@@ -146,6 +149,66 @@ export class MusicLibraryStateService {
         }));
       },
       error: () => this.toast.show('Failed to load tab configs', 'error'),
+    });
+  }
+
+  /**
+   * Load the cross library for a given company contract.
+   * Resolves the company ID from the contract store, then calls the API.
+   */
+  loadCrossLibrary(contractId: string): void {
+    // Find the contract to get the company_id
+    const allContracts = [
+      this.contractStore.favoriteContract(),
+      ...this.contractStore.contracts(),
+    ].filter(Boolean);
+    const contract = allContracts.find(c => c!.id === contractId);
+    if (!contract) {
+      this.toast.show('Contract not found — cannot load cross library', 'error');
+      return;
+    }
+
+    const companyId = contract.company_id;
+
+    // Skip if already loaded for this company
+    if (this.loadedCrossCompanyId === companyId) return;
+    this.loadedCrossCompanyId = companyId;
+
+    this.libraryApi.getCrossLibrary(companyId as TCompanyId).subscribe({
+      next: (result) => {
+        const crossContext: CrossSearchContext = {
+          contractId,
+          members: result.members.map(m => ({
+            userId: m.userId,
+            displayName: m.displayName,
+            avatarInitials: m.avatarInitials,
+          })),
+          results: result.results.map(r => ({
+            referenceId: r.referenceId,
+            title: r.title,
+            originalArtist: r.originalArtist,
+            members: Object.fromEntries(
+              Object.entries(r.members).map(([uid, mv]) => [uid, {
+                hasVersion: mv.hasVersion,
+                versions: mv.versions.map(v => ({
+                  id: v.id,
+                  label: v.label,
+                  mastery: v.mastery,
+                  energy: v.energy,
+                  effort: v.effort,
+                  tracks: v.tracks,
+                })),
+              }]),
+            ),
+            compatibleCount: r.compatibleCount,
+          })),
+        };
+        this.state.update(s => ({ ...s, crossContext }));
+      },
+      error: () => {
+        this.loadedCrossCompanyId = null;
+        this.toast.show('Failed to load cross library', 'error');
+      },
     });
   }
 

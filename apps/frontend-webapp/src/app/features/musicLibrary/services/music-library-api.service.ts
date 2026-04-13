@@ -7,22 +7,26 @@ import type {
   TMusicTabConfigsDomainModel,
   TMusicTabConfig,
   TMusicSavedTabConfig,
+  TCrossSearchResult,
+  TCompanyId,
 } from '@sh3pherd/shared-types';
 
 /**
  * API service for the music library.
  *
  * Endpoints:
- * - `GET    /api/protected/music/library/me`          → user's library
- * - `GET    /api/protected/music/tab-configs`          → user's tab configs
- * - `PUT    /api/protected/music/tab-configs`          → save tab configs
- * - `DELETE /api/protected/music/tab-configs`          → delete tab configs
+ * - `GET    /api/protected/music/library/me`                       → user's library
+ * - `GET    /api/protected/music/tab-configs`                      → user's tab configs
+ * - `PUT    /api/protected/music/tab-configs`                      → save tab configs
+ * - `DELETE /api/protected/music/tab-configs`                      → delete tab configs
+ * - `GET    /api/protected/companies/:id/cross-library`            → cross library matrix
  */
 @Injectable({ providedIn: 'root' })
 export class MusicLibraryApiService extends BaseHttpService {
 
   private readonly URL = this.UrlBuilder.apiProtectedRoute('music/library').build();
   private readonly TAB_CONFIGS_URL = this.UrlBuilder.apiProtectedRoute('music/tab-configs').build();
+  private readonly COMPANIES_URL = this.UrlBuilder.apiProtectedRoute('companies').build();
 
   getMyLibrary(): Observable<TUserMusicLibraryViewModel> {
     return this.http
@@ -86,6 +90,20 @@ export class MusicLibraryApiService extends BaseHttpService {
         catchError(() => {
           return of(false);
         }),
+      );
+  }
+
+  getCrossLibrary(companyId: TCompanyId): Observable<TCrossSearchResult> {
+    return this.scopedHttp.withContract()
+      .get<TApiResponse<TCrossSearchResult>>(
+        `${this.COMPANIES_URL}/${companyId}/cross-library`,
+      )
+      .pipe(
+        map(res => {
+          if (!res?.data) throw new Error('INVALID_RESPONSE');
+          return res.data;
+        }),
+        catchError((err) => throwError(() => err)),
       );
   }
 }

@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, type OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, type OnInit, signal, ViewChild } from '@angular/core';
 import { MusicLibrarySelectorService } from '../services/selector-layer/music-library-selector.service';
 import { MusicLibraryStateService } from '../services/music-library-state.service';
 import { MusicTabMutationService } from '../services/mutations-layer/music-tab-mutation.service';
@@ -59,6 +59,16 @@ export class MusicLibraryPageComponent implements OnInit {
     const tab = this.selector.activeTab();
     return tab?.config.searchQuery ?? '';
   });
+
+  constructor() {
+    // When active tab switches to cross mode, load cross library data
+    effect(() => {
+      const tab = this.selector.activeTab();
+      if (tab?.config.searchConfig.searchMode === 'cross' && tab.config.searchConfig.target.contractId) {
+        this.stateService.loadCrossLibrary(tab.config.searchConfig.target.contractId);
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.stateService.loadLibrary();

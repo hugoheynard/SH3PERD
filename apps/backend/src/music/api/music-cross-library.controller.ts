@@ -4,8 +4,9 @@ import { QueryBus } from '@nestjs/cqrs';
 import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
 import { P } from '@sh3pherd/shared-types';
-import type { TCompanyId, TCrossSearchResult } from '@sh3pherd/shared-types';
+import type { TCompanyId, TCrossSearchResult, TApiResponse } from '@sh3pherd/shared-types';
 import { GetCompanyCrossLibraryQuery } from '../application/queries/GetCompanyCrossLibraryQuery.js';
+import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
 
 /**
  * Cross library controller — **company-scoped** (not platform-scoped).
@@ -39,9 +40,10 @@ export class MusicCrossLibraryController {
   @Get(':id/cross-library')
   async getCrossLibrary(
     @Param('id') companyId: TCompanyId,
-  ): Promise<TCrossSearchResult> {
-    return this.queryBus.execute<GetCompanyCrossLibraryQuery, TCrossSearchResult>(
+  ): Promise<TApiResponse<TCrossSearchResult>> {
+    const result = await this.queryBus.execute<GetCompanyCrossLibraryQuery, TCrossSearchResult>(
       new GetCompanyCrossLibraryQuery(companyId),
     );
+    return buildApiResponseDTO(MusicApiCodes.CROSS_LIBRARY_FETCHED, result);
   }
 }
