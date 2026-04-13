@@ -77,6 +77,9 @@ export * from './music-cross-search.types.js';
 //Microservices
 export * from './microservice-patterns.js';
 
+//Password Reset
+export * from './password-reset.types.js';
+
 
 
 

@@ -15,6 +15,7 @@ import {
   USER_PREFERENCES_REPO,
   USER_PROFILE_REPO,
   GUEST_COMPANY_REPO,
+  PASSWORD_RESET_TOKEN_REPO,
 } from '../nestTokens.js';
 import { ConfigService } from '@nestjs/config';
 import type { MongoClient } from 'mongodb';
@@ -88,6 +89,10 @@ import {
   IntegrationCredentialsMongoRepository,
   type IIntegrationCredentialsRepository,
 } from '../../integrations/repositories/IntegrationCredentialsRepository.js';
+import {
+  PasswordResetTokenMongoRepository,
+  type IPasswordResetTokenRepository,
+} from '../../auth/repositories/PasswordResetTokenMongoRepo.js';
 import {
   COMPANY_REPO,
   ORG_NODE_REPO,
@@ -247,6 +252,11 @@ export type TCoreRepositories = {
       IntegrationCredentialsMongoRepository,
       'integration_credentials',
     ),
+    mongoRepoProvider<IPasswordResetTokenRepository>(
+      PASSWORD_RESET_TOKEN_REPO,
+      PasswordResetTokenMongoRepository,
+      'password_reset_tokens',
+    ),
   ],
   exports: [
     USER_PREFERENCES_REPO,
@@ -270,6 +280,7 @@ export type TCoreRepositories = {
     ORG_NODE_REPO,
     ORG_MEMBERSHIP_EVENT_REPO,
     INTEGRATION_CREDENTIALS_REPO,
+    PASSWORD_RESET_TOKEN_REPO,
   ],
 })
 export class CoreRepositoriesModule {}

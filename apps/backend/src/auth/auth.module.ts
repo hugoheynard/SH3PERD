@@ -7,6 +7,8 @@ import { LoginHandler } from './application/commands/LoginCommand.js';
 import { RefreshSessionHandler } from './application/commands/RefreshSessionCommand.js';
 import { LogoutHandler } from './application/commands/LogoutCommand.js';
 import { ChangePasswordHandler } from './application/commands/ChangePasswordCommand.js';
+import { ForgotPasswordHandler } from './application/commands/ForgotPasswordCommand.js';
+import { ResetPasswordHandler } from './application/commands/ResetPasswordCommand.js';
 
 const CommandHandlers = [
   RegisterUserHandler,
@@ -14,6 +16,8 @@ const CommandHandlers = [
   RefreshSessionHandler,
   LogoutHandler,
   ChangePasswordHandler,
+  ForgotPasswordHandler,
+  ResetPasswordHandler,
 ];
 
 @Module({
