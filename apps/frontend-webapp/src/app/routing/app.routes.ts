@@ -2,6 +2,9 @@ import {RouterModule, type Routes} from '@angular/router';
 import {NgModule} from '@angular/core';
 import {LoginLayoutComponent} from '../features/login/loginLayout/loginLayout.component';
 import {LoginComponent} from '../features/login/login/login.component';
+import {RegisterComponent} from '../features/login/register/register.component';
+import {ForgotPasswordComponent} from '../features/login/forgot-password/forgot-password.component';
+import {ResetPasswordComponent} from '../features/login/reset-password/reset-password.component';
 import {CalendarComponent} from '../features/calendar/components/calendarPage/calendar.component';
 import {authGuard} from '../../guards/auth.guard';
 import { PlaylistsPageComponent } from '../features/playlists/playlists-page/playlists-page.component';
@@ -22,7 +25,28 @@ export const routes: Routes = [
     path: 'login',
     component: LoginLayoutComponent,
     children: [
-      { path: '', component: LoginComponent }
+      { path: '', component: LoginComponent },
+    ]
+  },
+  {
+    path: 'register',
+    component: LoginLayoutComponent,
+    children: [
+      { path: '', component: RegisterComponent },
+    ]
+  },
+  {
+    path: 'forgot-password',
+    component: LoginLayoutComponent,
+    children: [
+      { path: '', component: ForgotPasswordComponent },
+    ]
+  },
+  {
+    path: 'reset-password',
+    component: LoginLayoutComponent,
+    children: [
+      { path: '', component: ResetPasswordComponent },
     ]
   },
   // Print-only route — no auth shell, no guards. Loaded exclusively by

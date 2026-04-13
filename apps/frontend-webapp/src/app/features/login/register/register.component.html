@@ -1,0 +1,125 @@
+<div class="login-page">
+
+  <!-- Left: brand panel -->
+  <aside class="brand-panel">
+    <div class="brand-inner">
+
+      <div class="brand-illustration">
+        <img
+          src="assets/logo/shepherd-dog-web.png"
+          alt="Shepherd dog"
+          class="bc-img"
+          width="360"
+          height="260"
+          loading="eager"
+        />
+      </div>
+
+      <div class="brand-text">
+        <h1 class="brand-name">SHEPHERD</h1>
+        <p class="brand-tagline">never be lost again</p>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Right: auth panel -->
+  <main class="auth-panel">
+    <div class="auth-inner">
+
+      <div class="auth-logo">
+        <img
+          src="assets/logo/shepherd-dog-icon.png"
+          alt=""
+          class="auth-logo-icon"
+          width="28"
+          height="28"
+          aria-hidden="true"
+        />
+        <span class="auth-logo-name">SHEPHERD</span>
+      </div>
+
+      <div class="auth-header">
+        <h2 class="auth-title">Create your account</h2>
+        <p class="auth-subtitle">Start your free SH3PHERD experience.</p>
+      </div>
+
+      <form class="register-form" (ngSubmit)="onRegister()" novalidate>
+
+        <div class="fields">
+
+          <div class="name-row">
+            <div class="field-group">
+              <sh3-input
+                label="First name"
+                type="text"
+                name="firstName"
+                size="lg"
+                placeholder="John"
+                [ngModel]="firstName()"
+                (ngModelChange)="firstName.set($event)"
+                required />
+            </div>
+            <div class="field-group">
+              <sh3-input
+                label="Last name"
+                type="text"
+                name="lastName"
+                size="lg"
+                placeholder="Doe"
+                [ngModel]="lastName()"
+                (ngModelChange)="lastName.set($event)"
+                required />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <sh3-input
+              label="Email"
+              type="email"
+              name="email"
+              size="lg"
+              placeholder="you@company.com"
+              [ngModel]="email()"
+              (ngModelChange)="email.set($event)"
+              required />
+          </div>
+
+          <div class="field-group">
+            <sh3-input
+              label="Password"
+              type="password"
+              name="password"
+              size="lg"
+              placeholder="Create a password"
+              [ngModel]="password()"
+              (ngModelChange)="password.set($event)"
+              required />
+
+            <ul class="password-rules">
+              <li [class.pass]="hasMinLength()">8+ characters</li>
+              <li [class.pass]="hasUppercase()">One uppercase letter</li>
+              <li [class.pass]="hasLowercase()">One lowercase letter</li>
+              <li [class.pass]="hasDigit()">One digit</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <sh3-button
+          variant="solid"
+          size="lg"
+          type="submit"
+          [disabled]="!formValid() || loading()"
+          (clicked)="onRegister()">Create account</sh3-button>
+
+      </form>
+
+      <p class="auth-footer">
+        Already have an account?&nbsp;<a routerLink="/login" class="auth-link">Sign in</a>
+      </p>
+
+    </div>
+  </main>
+
+</div>

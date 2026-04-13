@@ -3,12 +3,12 @@ import { LoginFormComponent } from '../login-form/login-form.component';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { firstValueFrom } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import type { TLoginRequestDTO } from '@sh3pherd/shared-types';
 
 @Component({
   selector: 'login',
-  imports: [LoginFormComponent],
+  imports: [LoginFormComponent, RouterLink],
   templateUrl: './login.component.html',
   standalone: true,
   styleUrl: './login.component.scss'

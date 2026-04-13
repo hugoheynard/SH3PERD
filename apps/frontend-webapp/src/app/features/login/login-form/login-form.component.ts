@@ -1,12 +1,13 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { InputComponent } from '../../../shared/forms/input/input.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 
 @Component({
   selector: 'app-login-form',
   imports: [
-    FormsModule, ButtonComponent, InputComponent,
+    FormsModule, ButtonComponent, InputComponent, RouterLink,
   ],
   templateUrl: './login-form.component.html',
   standalone: true,

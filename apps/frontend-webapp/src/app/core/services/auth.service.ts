@@ -11,7 +11,7 @@ import {AuthTokenService} from './auth-token.service';
 import {Router} from '@angular/router';
 import { BaseHttpService } from './BaseHttpService';
 import { UserContextService } from './user-context.service';
-import type { TLoginRequestDTO } from '@sh3pherd/shared-types';
+import type { TLoginRequestDTO, TRegisterUserRequestDTO } from '@sh3pherd/shared-types';
 
 @Injectable({
   providedIn: 'root'
@@ -131,6 +131,58 @@ export class AuthService extends BaseHttpService {
     }
     return this.refreshSession$();
   };
+
+  /**
+   * REGISTER
+   * Creates a new user account with email, password, first name and last name.
+   */
+  register$(payload: TRegisterUserRequestDTO): Observable<boolean> {
+    return this.http
+      .post(`${this.URL}/register`, payload)
+      .pipe(
+        map(() => true),
+        catchError(() => of(false)),
+      );
+  }
+
+  /**
+   * FORGOT PASSWORD
+   * Sends a password reset link. Always succeeds (no email enumeration).
+   */
+  forgotPassword$(email: string): Observable<boolean> {
+    return this.http
+      .post(`${this.URL}/forgot-password`, { email })
+      .pipe(
+        map(() => true),
+        catchError(() => of(false)),
+      );
+  }
+
+  /**
+   * RESET PASSWORD
+   * Sets a new password using a reset token.
+   */
+  resetPassword$(token: string, newPassword: string): Observable<boolean> {
+    return this.http
+      .post(`${this.URL}/reset-password`, { token, newPassword })
+      .pipe(
+        map(() => true),
+        catchError(() => of(false)),
+      );
+  }
+
+  /**
+   * CHANGE PASSWORD (authenticated)
+   * Changes the current password and invalidates all sessions.
+   */
+  changePassword$(currentPassword: string, newPassword: string): Observable<boolean> {
+    return this.http
+      .post(`${this.URL}/change-password`, { currentPassword, newPassword }, { withCredentials: true })
+      .pipe(
+        map(() => true),
+        catchError(() => of(false)),
+      );
+  }
 
   /**
    * PING
