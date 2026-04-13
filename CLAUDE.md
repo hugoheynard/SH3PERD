@@ -2,23 +2,35 @@
 
 ## First thing to do in every new session
 
-Read ALL documentation files in `apps/backend/documentation/` before starting any work.
+Read ALL documentation files in both locations before starting any work:
+1. `apps/backend/documentation/` — technical architecture docs
+2. `documentation/` — process docs, TODOs, feature roadmaps
+
 This is mandatory — the docs contain architecture decisions, conventions, and domain context
 that are essential for making correct changes.
 
-## Documentation index
+## Documentation convention
+
+The monorepo has two documentation locations with distinct purposes:
+
+- **`apps/backend/documentation/`** = **Technical only** — architecture, patterns, how-to guides, module design. No TODOs, no feature tracking, no roadmaps.
+- **`documentation/`** = **Process & planning** — TODOs, feature roadmaps, status tracking, open questions, user flows.
+
+When creating new docs, respect this separation. A technical doc about how a system works goes in backend. A TODO tracking what needs to be built goes in documentation/todos/.
+
+## Technical docs (apps/backend/documentation/)
 
 | Doc | Path | Description |
 |-----|------|-------------|
-| **README** | `apps/backend/documentation/README.md` | Documentation index and table of contents |
+| **README** | `apps/backend/documentation/README.md` | Technical documentation index |
 | **Auth & Context** | `apps/backend/documentation/sh3-auth-and-context.md` | Auth pipeline, JWT, `@ContractScoped`, `@PlatformScoped`, `@RequirePermission`, `P` object |
-| **Writing a Controller** | `apps/backend/documentation/sh3-writing-a-controller.md` | Complete guide: scope, permissions, Swagger, CQRS |
+| **Writing a Controller** | `apps/backend/documentation/sh3-writing-a-controller.md` | Complete guide: scope, permissions, Swagger, CQRS, Zod-to-DTO pipeline |
 | **Swagger Usage** | `apps/backend/documentation/sh3-swagger-usage.md` | Zod-first DTOs, `apiSuccessDTO`, response envelope |
 | **Error Handling** | `apps/backend/documentation/sh3-error-handling.md` | DomainError, BusinessError, TechnicalError, GlobalExceptionFilter |
 | **Dev Setup** | `apps/backend/documentation/sh3-dev-setup.md` | RSA keys, JWT config, env variables |
 | **Platform Contract** | `apps/backend/documentation/sh3-platform-contract.md` | SaaS subscription model, dual contract model (platform vs company) |
 | **Quota Service** | `apps/backend/documentation/sh3-quota-service.md` | Quota enforcement: `ensureAllowed()` / `recordUsage()`, plan limits |
-| **Music Library** | `apps/backend/documentation/sh3-music-library.md` | Full music feature roadmap, 14 features across 4 tiers |
+| **Music Library** | `apps/backend/documentation/sh3-music-library.md` | Full music feature architecture, 14 features across 4 tiers |
 | **Music Audio Player** | `apps/backend/documentation/sh3-music-audio-player.md` | wavesurfer.js inline player, peaks pipeline |
 | **Music Mastering** | `apps/backend/documentation/sh3-music-mastering.md` | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift |
 | **Persona Match** | `apps/backend/documentation/sh3-persona-match.md` | AI event programming: extraction, scoring, curation (Claude API) |
@@ -28,10 +40,21 @@ that are essential for making correct changes.
 | **Contracts** | `apps/backend/documentation/sh3-contracts.md` | Contract aggregate diagram |
 | **Calendar** | `apps/backend/documentation/sh3-calendar.md` | Event matrix, constraint programming |
 | **Integrations** | `apps/backend/documentation/sh3-integrations.md` | Slack OAuth, channel management |
-| **Integrations TODO** | `apps/backend/documentation/sh3-integrations-todo.md` | Remaining integration tasks |
 | **E2E Tests** | `apps/backend/documentation/sh3-e2e-tests.md` | MongoMemoryServer, test builders, factories |
-| **Error Mgmt TODO** | `apps/backend/documentation/TODO-2026-04-08-errorManagement-back.md` | Error refactoring task (completed) |
-| **Guest to User** | `apps/backend/documentation/TODO-guest-to-user.md` | Guest user activation flow |
+
+## Process docs (documentation/)
+
+| Doc | Path | Description |
+|-----|------|-------------|
+| **README** | `documentation/README.md` | Process documentation index |
+| **Tech Debt** | `documentation/todos/TODO-tech-debt.md` | Urgent bugs, architectural debt, functional backlog |
+| **Music Features** | `documentation/todos/TODO-music-features.md` | Music feature roadmap by phase |
+| **Company Features** | `documentation/todos/TODO-company-features.md` | Company module: settings, org chart, contracts |
+| **Guest to User** | `documentation/todos/TODO-guest-to-user.md` | Guest user activation flow (6 phases) |
+| **Integrations** | `documentation/todos/TODO-integrations.md` | Slack integration roadmap |
+| **Tab Bar** | `documentation/todos/TODO-configurable-tab-bar.md` | DnD bug fix, unit tests, component split |
+| **Programs** | `documentation/todos/TODO-programs.md` | Drag engine refactoring |
+| **Error Mgmt** | `documentation/todos/TODO-error-management.md` | Error class refactoring (completed) |
 
 ## Monorepo structure
 
