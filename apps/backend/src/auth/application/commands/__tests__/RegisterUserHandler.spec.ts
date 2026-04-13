@@ -13,6 +13,7 @@ describe('RegisterUserHandler', () => {
     const userCredsRepo = mockUserCredentialsRepo();
     const userProfileRepo = mockUserProfileRepo();
     const platformContractRepo = mockPlatformContractRepo();
+    const eventBus = { publish: jest.fn() };
 
     // Simulate startSession + withTransaction
     const mockSession = {
@@ -26,6 +27,7 @@ describe('RegisterUserHandler', () => {
       userCredsRepo,
       userProfileRepo,
       platformContractRepo,
+      eventBus,
     ) as RegisterUserHandler;
 
     return {
@@ -34,6 +36,7 @@ describe('RegisterUserHandler', () => {
       userCredsRepo,
       userProfileRepo,
       platformContractRepo,
+      eventBus,
       mockSession,
     };
   }
@@ -72,6 +75,20 @@ describe('RegisterUserHandler', () => {
       expect(result.email).toBe(validPayload.email);
       expect(result.id).toMatch(/^userCredential_/);
     });
+
+    it('should emit UserRegisteredEvent after successful registration', async () => {
+      const { handler, userCredsRepo, eventBus } = createHandler();
+      userCredsRepo.findOne.mockResolvedValue(null);
+
+      await handler.execute(new RegisterUserCommand(validPayload));
+
+      expect(eventBus.publish).toHaveBeenCalledTimes(1);
+      const event = eventBus.publish.mock.calls[0][0];
+      expect(event.email).toBe(validPayload.email);
+      expect(event.firstName).toBe(validPayload.first_name);
+      expect(event.lastName).toBe(validPayload.last_name);
+      expect(event.userId).toMatch(/^userCredential_/);
+    });
   });
 
   describe('execute — duplicate email', () => {
@@ -90,7 +107,7 @@ describe('RegisterUserHandler', () => {
     });
 
     it('should NOT hash password or save anything when email exists', async () => {
-      const { handler, userCredsRepo, passwordService, userProfileRepo } = createHandler();
+      const { handler, userCredsRepo, passwordService, userProfileRepo, eventBus } = createHandler();
       userCredsRepo.findOne.mockResolvedValue({ id: 'user_existing', email: validPayload.email });
 
       try {
@@ -102,6 +119,7 @@ describe('RegisterUserHandler', () => {
       expect(passwordService.hashPassword).not.toHaveBeenCalled();
       expect(userCredsRepo.save).not.toHaveBeenCalled();
       expect(userProfileRepo.save).not.toHaveBeenCalled();
+      expect(eventBus.publish).not.toHaveBeenCalled();
     });
   });
 });

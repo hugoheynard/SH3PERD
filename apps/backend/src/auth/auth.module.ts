@@ -9,6 +9,7 @@ import { LogoutHandler } from './application/commands/LogoutCommand.js';
 import { ChangePasswordHandler } from './application/commands/ChangePasswordCommand.js';
 import { ForgotPasswordHandler } from './application/commands/ForgotPasswordCommand.js';
 import { ResetPasswordHandler } from './application/commands/ResetPasswordCommand.js';
+import { UserRegisteredHandler } from './application/events/UserRegisteredHandler.js';
 
 const CommandHandlers = [
   RegisterUserHandler,
@@ -23,7 +24,7 @@ const CommandHandlers = [
 @Module({
   imports: [CqrsModule, AuthCoreModule],
   controllers: [AuthController],
-  providers: [...CommandHandlers],
+  providers: [...CommandHandlers, UserRegisteredHandler],
   exports: [...CommandHandlers],
 })
 export class AuthModule {}

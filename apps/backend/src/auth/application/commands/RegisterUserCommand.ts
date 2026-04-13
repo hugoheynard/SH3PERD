@@ -1,4 +1,4 @@
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import type { TRegisterUserRequestDTO, TRegisterUserResponseDTO } from '@sh3pherd/shared-types';
 import type { IPasswordService } from '../../core/password-manager/types/Interfaces.js';
@@ -16,6 +16,7 @@ import { UserProfileEntity } from '../../../user/domain/UserProfileEntity.js';
 import { PlatformContractEntity } from '../../../platform-contract/domain/PlatformContractEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { UserRegisteredEvent } from '../events/UserRegisteredEvent.js';
 
 export class RegisterUserCommand {
   constructor(public readonly payload: TRegisterUserRequestDTO) {}
@@ -32,6 +33,7 @@ export class RegisterUserHandler implements ICommandHandler<
     @Inject(USER_PROFILE_REPO) private readonly userProfileRepo: IUserProfileRepository,
     @Inject(PLATFORM_CONTRACT_REPO)
     private readonly platformContractRepo: IPlatformContractRepository,
+    private readonly eventBus: EventBus,
   ) {}
 
   async execute(cmd: RegisterUserCommand): Promise<TRegisterUserResponseDTO> {
@@ -77,6 +79,17 @@ export class RegisterUserHandler implements ICommandHandler<
           session,
         );
       });
+
+      // Emit event AFTER successful transaction — listeners handle
+      // side effects (welcome email, verification, analytics)
+      this.eventBus.publish(
+        new UserRegisteredEvent(
+          credentials.id,
+          cmd.payload.email,
+          cmd.payload.first_name,
+          cmd.payload.last_name,
+        ),
+      );
 
       return credentials.toDomain;
     } finally {
