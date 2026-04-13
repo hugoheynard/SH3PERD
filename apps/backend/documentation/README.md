@@ -5,7 +5,7 @@
 | Doc | Description |
 |-----|-------------|
 | [Writing a Controller](sh3-writing-a-controller.md) | Complete guide to writing a NestJS controller — scope, permissions, Swagger, CQRS, checklist |
-| [Auth & Contract Context](sh3-auth-and-context.md) | Auth pipeline, `@ContractScoped`, `@RequirePermission`, `P` object, permission registry, wildcard matching |
+| [Auth & Contract Context](sh3-auth-and-context.md) | Auth pipeline, `@ContractScoped`, `@PlatformScoped`, `@RequirePermission`, `P` object, wildcard matching |
 | [Swagger Usage](sh3-swagger-usage.md) | Zod-derived DTOs, `apiSuccessDTO`, `apiRequestDTO`, `@ApiModel`, response envelope |
 | [Error Handling](sh3-error-handling.md) | DomainError, BusinessError, TechnicalError — when to use, response shape, logging |
 
@@ -14,13 +14,39 @@
 | Doc | Description |
 |-----|-------------|
 | [Dev Setup](sh3-dev-setup.md) | RSA key pair generation, JWT config, env variables |
+| [E2E Tests](sh3-e2e-tests.md) | MongoMemoryServer infrastructure, test builders, entity-based factories |
 
-## Domain Modules
+## Platform & Billing
+
+| Doc | Description |
+|-----|-------------|
+| [Platform Contract](sh3-platform-contract.md) | SaaS subscription model — dual contract architecture (platform vs company) |
+| [Quota Service](sh3-quota-service.md) | Quota enforcement: `ensureAllowed()` / `recordUsage()`, plan limits per tier |
+
+## Music
+
+| Doc | Description |
+|-----|-------------|
+| [Music Library](sh3-music-library.md) | Full music feature roadmap — 14 features across 4 tiers, current status |
+| [Audio Player](sh3-music-audio-player.md) | wavesurfer.js inline player, waveform peaks pipeline |
+| [Mastering](sh3-music-mastering.md) | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift architecture |
+| [Persona Match](sh3-persona-match.md) | AI event programming — extraction, cross-library scoring, Claude API curation |
+
+## Company & Org
 
 | Doc | Description |
 |-----|-------------|
 | [Org Chart](sh3-orgchart.md) | Org chart features, API endpoints, architecture, file locations |
+| [Orgchart Export](sh3-orgchart-export.md) | PDF/SVG export via headless Chromium (Puppeteer) |
+| [Orgchart Print](sh3-orgchart-print.md) | Print layer reusing live OrgchartTabComponent for pixel-identical rendering |
 | [Contracts](sh3-contracts.md) | Contract aggregate diagram (contract + addendums) |
 | [Calendar](sh3-calendar.md) | Event matrix — manual and CP-generated with OR-Tools |
 | [Integrations](sh3-integrations.md) | Slack OAuth, channel management, architecture, routes |
 | [Integrations TODO](sh3-integrations-todo.md) | Remaining tasks — channel sync, notifications, new providers |
+
+## Internal TODOs
+
+| Doc | Description |
+|-----|-------------|
+| [Error Mgmt Refactoring](TODO-2026-04-08-errorManagement-back.md) | Error class taxonomy refactoring (completed) |
+| [Guest to User](TODO-guest-to-user.md) | Guest user activation flow — phased implementation |
