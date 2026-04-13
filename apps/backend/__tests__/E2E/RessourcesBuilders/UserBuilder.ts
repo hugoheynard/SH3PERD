@@ -27,7 +27,7 @@ export class UserBuilder {
   };
 
   //User actions
-  async register(expectedStatus = 201): this {
+  async register(expectedStatus = 201): Promise<this> {
     if (!this.credentials) {
       throw new Error('[TEST UserBuilder] Missing credentials before register');
     }
@@ -44,7 +44,7 @@ export class UserBuilder {
     return this;
   }
 
-  async login(expectedStatus = 200): this {
+  async login(expectedStatus = 200): Promise<this> {
     if (!this.credentials) {
       throw new Error('[TEST UserBuilder] Missing credentials before login');
     }
@@ -81,7 +81,7 @@ export class UserBuilder {
     return this;
   };
 
-  async registerAndLogin(): this {
+  async registerAndLogin(): Promise<this> {
     await this.register();
     await this.login();
     return this;

@@ -1,14 +1,15 @@
 import { afterEach, beforeEach } from '@jest/globals';
 import type { INestApplication } from '@nestjs/common';
-import { bootstrapTestApp } from '../../../../__tests__/utils/bootstrapTestApp';
+import { bootstrapTestApp } from '../../../../__tests__/utils/bootstrapTestApp.js';
 import request from 'supertest';
-import { getTestDb } from '../../../../__tests__/utils/getTestDb';
-import { UserBuilder } from '../../../../__tests__/E2E/RessourcesBuilders/UserBuilder';
-import { resetDbMongo } from '../../../../__tests__/utils/resetDbMongo';
+import { getTestDb } from '../../../../__tests__/utils/getTestDb.js';
+import { UserBuilder } from '../../../../__tests__/E2E/RessourcesBuilders/UserBuilder.js';
+import { resetDbMongo } from '../../../../__tests__/utils/resetDbMongo.js';
+import type { Db } from 'mongodb';
 
 describe('E2E - Auth', () => {
   let app: INestApplication;
-  let testDb;
+  let testDb: Db;
 
   beforeEach(async () => {
     app = await bootstrapTestApp();
