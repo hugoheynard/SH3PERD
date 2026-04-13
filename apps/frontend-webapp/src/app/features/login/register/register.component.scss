@@ -239,9 +239,11 @@ $text-2:     #8892b0;
   all: unset;
   box-sizing: border-box;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
+  text-align: center;
+  gap: 12px;
+  padding: 24px 20px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, .06);
   background: rgba(255, 255, 255, .02);
@@ -257,13 +259,12 @@ $text-2:     #8892b0;
   &:active { transform: translateY(0); }
 
   &__icon {
-    flex-shrink: 0;
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
+    border-radius: 12px;
     background: rgba(6, 164, 164, .08);
     color: $accent;
   }
@@ -272,15 +273,12 @@ $text-2:     #8892b0;
     font-size: 15px;
     font-weight: 700;
     color: $text-1;
-    display: block;
   }
 
   &__desc {
     font-size: 12px;
     color: $text-2;
     line-height: 1.4;
-    display: block;
-    margin-top: 2px;
   }
 }
 
@@ -352,30 +350,37 @@ sh3-button {
 
 // ── Password rules ───────────────────────────────────────────────────
 .password-rules {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   padding: 0;
   list-style: none;
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px 12px;
+  flex-direction: column;
+  gap: 6px;
 
   li {
-    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
     color: $text-2;
-    opacity: .6;
-    transition: color .15s, opacity .15s;
+    transition: color .2s;
 
     &::before {
-      content: '\2715 '; // cross
-      font-size: 9px;
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #c59926; // warning
+      flex-shrink: 0;
+      transition: background .2s;
     }
 
     &.pass {
-      color: $accent;
-      opacity: 1;
+      color: $text-1;
 
       &::before {
-        content: '\2713 '; // check
+        background: $accent; // primary
       }
     }
   }
