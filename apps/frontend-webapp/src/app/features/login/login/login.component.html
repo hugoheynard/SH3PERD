@@ -39,16 +39,17 @@
         <span class="auth-logo-name">SHEPHERD</span>
       </div>
 
+      <nav class="auth-tabs">
+        <a class="auth-tab auth-tab--active" routerLink="/login">Sign in</a>
+        <a class="auth-tab" routerLink="/register">Sign up</a>
+      </nav>
+
       <div class="auth-header">
         <h2 class="auth-title">Welcome back</h2>
         <p class="auth-subtitle">Sign in to your workspace to continue.</p>
       </div>
 
       <app-login-form (login)="onLogin($event)" />
-
-      <p class="auth-footer">
-        Don't have an account?&nbsp;<a routerLink="/register" class="auth-link">Create one</a>
-      </p>
 
     </div>
   </main>

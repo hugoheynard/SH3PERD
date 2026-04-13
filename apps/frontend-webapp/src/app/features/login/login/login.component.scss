@@ -144,6 +144,34 @@ $text-2:     #8892b0;
   --text-sm:               0.75rem;
 }
 
+// Auth tabs (Sign in / Sign up)
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid $border;
+  margin-bottom: 4px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: $text-2;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color .15s, border-color .15s;
+
+  &:hover { color: $text-1; }
+
+  &--active {
+    color: $accent;
+    border-bottom-color: $accent;
+  }
+}
+
 // Mini logo
 .auth-logo {
   display: flex;
