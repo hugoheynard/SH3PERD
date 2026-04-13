@@ -7,12 +7,13 @@ import { ButtonComponent } from '../../../shared/button/button.component';
 import { PasswordFieldComponent } from '../../../shared/forms/password-field/password-field.component';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { BrandPanelComponent } from '../brand-panel/brand-panel.component';
 
 export type AccountType = 'artist' | 'company';
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, InputComponent, ButtonComponent, PasswordFieldComponent, RouterLink],
+  imports: [FormsModule, InputComponent, ButtonComponent, PasswordFieldComponent, RouterLink, BrandPanelComponent],
   templateUrl: './register.component.html',
   standalone: true,
   styleUrl: './register.component.scss',

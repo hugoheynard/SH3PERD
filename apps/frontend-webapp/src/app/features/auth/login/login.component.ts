@@ -5,10 +5,11 @@ import { AuthService } from '../../../core/services/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import type { TLoginRequestDTO } from '@sh3pherd/shared-types';
+import { BrandPanelComponent } from '../brand-panel/brand-panel.component';
 
 @Component({
   selector: 'login',
-  imports: [LoginFormComponent, RouterLink],
+  imports: [LoginFormComponent, RouterLink, BrandPanelComponent],
   templateUrl: './login.component.html',
   standalone: true,
   styleUrl: './login.component.scss'

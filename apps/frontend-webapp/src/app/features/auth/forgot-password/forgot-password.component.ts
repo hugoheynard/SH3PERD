@@ -5,10 +5,11 @@ import { firstValueFrom } from 'rxjs';
 import { InputComponent } from '../../../shared/forms/input/input.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { BrandPanelComponent } from '../brand-panel/brand-panel.component';
 
 @Component({
   selector: 'app-forgot-password',
-  imports: [FormsModule, InputComponent, ButtonComponent, RouterLink],
+  imports: [FormsModule, InputComponent, ButtonComponent, RouterLink, BrandPanelComponent],
   templateUrl: './forgot-password.component.html',
   standalone: true,
   styleUrl: './forgot-password.component.scss',

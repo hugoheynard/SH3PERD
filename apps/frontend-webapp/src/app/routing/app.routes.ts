@@ -1,10 +1,10 @@
 import {RouterModule, type Routes} from '@angular/router';
 import {NgModule} from '@angular/core';
-import {LoginLayoutComponent} from '../features/login/loginLayout/loginLayout.component';
-import {LoginComponent} from '../features/login/login/login.component';
-import {RegisterComponent} from '../features/login/register/register.component';
-import {ForgotPasswordComponent} from '../features/login/forgot-password/forgot-password.component';
-import {ResetPasswordComponent} from '../features/login/reset-password/reset-password.component';
+import {LoginLayoutComponent} from '../features/auth/loginLayout/loginLayout.component';
+import {LoginComponent} from '../features/auth/login/login.component';
+import {RegisterComponent} from '../features/auth/register/register.component';
+import {ForgotPasswordComponent} from '../features/auth/forgot-password/forgot-password.component';
+import {ResetPasswordComponent} from '../features/auth/reset-password/reset-password.component';
 import {CalendarComponent} from '../features/calendar/components/calendarPage/calendar.component';
 import {authGuard} from '../../guards/auth.guard';
 import { PlaylistsPageComponent } from '../features/playlists/playlists-page/playlists-page.component';
