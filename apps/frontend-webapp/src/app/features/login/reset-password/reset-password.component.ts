@@ -5,12 +5,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { firstValueFrom, map } from 'rxjs';
 import { InputComponent } from '../../../shared/forms/input/input.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
+import { PasswordFieldComponent } from '../../../shared/forms/password-field/password-field.component';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-reset-password',
-  imports: [FormsModule, InputComponent, ButtonComponent, RouterLink],
+  imports: [FormsModule, InputComponent, ButtonComponent, PasswordFieldComponent, RouterLink],
   templateUrl: './reset-password.component.html',
   standalone: true,
   styleUrl: './reset-password.component.scss',
@@ -26,23 +27,16 @@ export class ResetPasswordComponent {
   );
 
   readonly newPassword = signal('');
+  readonly passwordValid = signal(false);
   readonly confirmPassword = signal('');
   readonly loading = signal(false);
-
-  readonly hasMinLength = computed(() => this.newPassword().length >= 8);
-  readonly hasUppercase = computed(() => /[A-Z]/.test(this.newPassword()));
-  readonly hasLowercase = computed(() => /[a-z]/.test(this.newPassword()));
-  readonly hasDigit = computed(() => /\d/.test(this.newPassword()));
-  readonly allRulesPass = computed(
-    () => this.hasMinLength() && this.hasUppercase() && this.hasLowercase() && this.hasDigit(),
-  );
 
   readonly passwordsMatch = computed(
     () => this.newPassword().length > 0 && this.newPassword() === this.confirmPassword(),
   );
 
   readonly formValid = computed(
-    () => this.allRulesPass() && this.passwordsMatch() && !!this.token(),
+    () => this.passwordValid() && this.passwordsMatch() && !!this.token(),
   );
 
   async onReset(): Promise<void> {

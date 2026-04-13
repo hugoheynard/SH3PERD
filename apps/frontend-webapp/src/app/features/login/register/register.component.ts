@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { InputComponent } from '../../../shared/forms/input/input.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
+import { PasswordFieldComponent } from '../../../shared/forms/password-field/password-field.component';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -11,7 +12,7 @@ export type AccountType = 'artist' | 'company';
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, InputComponent, ButtonComponent, RouterLink],
+  imports: [FormsModule, InputComponent, ButtonComponent, PasswordFieldComponent, RouterLink],
   templateUrl: './register.component.html',
   standalone: true,
   styleUrl: './register.component.scss',
@@ -33,16 +34,8 @@ export class RegisterComponent {
   // ── Step 3: credentials ───────────────────────────
   readonly email = signal('');
   readonly password = signal('');
+  readonly passwordValid = signal(false);
   readonly loading = signal(false);
-
-  // ── Password rules ────────────────────────────────
-  readonly hasMinLength = computed(() => this.password().length >= 8);
-  readonly hasUppercase = computed(() => /[A-Z]/.test(this.password()));
-  readonly hasLowercase = computed(() => /[a-z]/.test(this.password()));
-  readonly hasDigit = computed(() => /\d/.test(this.password()));
-  readonly allRulesPass = computed(
-    () => this.hasMinLength() && this.hasUppercase() && this.hasLowercase() && this.hasDigit(),
-  );
 
   // ── Step validations ──────────────────────────────
   readonly step2Valid = computed(() => {
@@ -54,7 +47,7 @@ export class RegisterComponent {
   });
 
   readonly step3Valid = computed(
-    () => this.email().trim().length > 0 && this.allRulesPass(),
+    () => this.email().trim().length > 0 && this.passwordValid(),
   );
 
   // ── Navigation ────────────────────────────────────

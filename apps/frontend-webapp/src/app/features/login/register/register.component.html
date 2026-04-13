@@ -176,24 +176,9 @@
                 required />
             </div>
 
-            <div class="field-group">
-              <sh3-input
-                label="Password"
-                type="password"
-                name="password"
-                size="lg"
-                placeholder="Create a password"
-                [ngModel]="password()"
-                (ngModelChange)="password.set($event)"
-                required />
-
-              <ul class="password-rules">
-                <li [class.pass]="hasMinLength()">8+ characters</li>
-                <li [class.pass]="hasUppercase()">One uppercase letter</li>
-                <li [class.pass]="hasLowercase()">One lowercase letter</li>
-                <li [class.pass]="hasDigit()">One digit</li>
-              </ul>
-            </div>
+            <sh3-password-field
+              (valueChange)="password.set($event)"
+              (validChange)="passwordValid.set($event)" />
           </div>
 
           <div class="wizard-nav">
