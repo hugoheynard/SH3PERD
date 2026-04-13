@@ -67,10 +67,10 @@ $text-2:     #8892b0;
 }
 
 .bc-img {
-  width: 320px;
+  width: 420px;
   height: auto;
-  border-radius: 16px;
-  filter: drop-shadow(0 0 40px rgba(6, 164, 164, .22));
+  border-radius: 20px;
+  filter: drop-shadow(0 0 50px rgba(6, 164, 164, .25));
   object-fit: cover;
 }
 
@@ -90,7 +90,7 @@ $text-2:     #8892b0;
 
 .brand-name {
   margin: 0;
-  font-size: 40px;
+  font-size: 52px;
   font-weight: 800;
   letter-spacing: .24em;
   color: $text-1;
