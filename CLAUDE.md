@@ -107,6 +107,9 @@ Swagger must be updated in the same commit as the controller change. Stale docs 
   - Backend: `pnpm --filter @sh3pherd/backend test`
   - Audio processor: `pnpm --filter @sh3pherd/audio-processor test`
 - **No `eslint-disable` comments**: fix the root cause instead of suppressing the error.
+- **Lint before commit is BLOCKING** — if lint fails, do NOT commit. Fix first.
+- **Tests before commit are BLOCKING** — if any test fails, do NOT commit. Fix first.
+- **TypeScript compilation must pass** — run `npx tsc --noEmit` on the affected app before committing. Type errors are as blocking as lint errors.
 
 ## Key conventions
 
