@@ -3,6 +3,9 @@ module.exports = {
     testEnvironment: 'node',
     rootDir: './',
     displayName: 'backend',
+    // Suppress console.log/warn/error noise during tests.
+    // Test failures still show — only console output is silenced.
+    silent: true,
     testMatch: ['**/?(*.)+(spec|test|e2e-spec).ts'],
     testPathIgnorePatterns: ['/node_modules/', '/dist/'],
     transform: {
