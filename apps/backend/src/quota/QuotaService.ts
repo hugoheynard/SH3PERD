@@ -139,6 +139,11 @@ export class QuotaService {
 
   // ── Internal ──────────────────────────────────────────────
 
+  /** Resolve the user's current plan (public for the quota controller). */
+  async getPlan(userId: TUserId): Promise<TPlatformRole> {
+    return this.getUserPlan(userId);
+  }
+
   private async getUserPlan(userId: TUserId): Promise<TPlatformRole> {
     const contract = await this.platformRepo.findByUserId(userId);
     if (!contract) {

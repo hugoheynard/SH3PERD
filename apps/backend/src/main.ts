@@ -53,6 +53,7 @@ async function bootstrap(): Promise<void> {
       //   an access token for this request (Puppeteer has none).
       'X-Print-Token',
       'X-Skip-Auth',
+      'X-Retry',
     ],
     // Expose the telemetry headers the export endpoint sets so the
     // frontend export service can read them off the response.

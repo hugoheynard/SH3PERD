@@ -68,6 +68,78 @@
   }
 }
 
+/* ── Plan badge ──────────────────────────────── */
+
+.plan-badge-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plan-badge {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-lg);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+  cursor: pointer;
+  transition: opacity var(--t-fast);
+
+  &:hover { opacity: 0.8; }
+
+  &--free {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &--pro {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+  }
+
+  &--band {
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(6, 182, 212, 0.2));
+    color: #22d3ee;
+    border: 1px solid rgba(6, 182, 212, 0.3);
+  }
+
+  &--business {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(234, 179, 8, 0.2));
+    color: #fbbf24;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+  }
+}
+
+.upgrade-btn {
+  all: unset;
+  padding: 3px 10px;
+  border-radius: var(--radius-lg);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--accent-color), #8b5cf6);
+  color: #fff;
+  transition: opacity var(--t-fast), transform var(--t-fast);
+
+  &:hover {
+    opacity: 0.9;
+    transform: scale(1.03);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+  }
+}
+
 /* ── Help button ─────────────────────────────── */
 
 .help-btn {

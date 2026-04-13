@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, HostListener, inject, signal } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { NavigationService } from '../../services/navigation.service';
@@ -6,6 +6,7 @@ import { NotificationService } from '../../notifications/notification.service';
 import { LayoutService } from '../../services/layout.service';
 import { NotificationPanelComponent } from '../../notifications/notification-panel/notification-panel.component';
 import { HelpPanelComponent } from '../../../shared/help/help-panel.component';
+import { UpgradePanelComponent } from '../upgrade-panel/upgrade-panel.component';
 import { UserContextService } from '../../services/user-context.service';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
@@ -35,6 +36,24 @@ export class HeaderComponent {
   readonly showProfileMenu = signal(false);
   readonly userInitial = this.userCtx.userInitial;
   readonly userDisplayName = this.userCtx.displayName;
+  readonly userPlan = this.userCtx.plan;
+
+  readonly planLabel = computed(() => {
+    const plan = this.userPlan();
+    if (!plan) return '';
+    const labels: Record<string, string> = {
+      plan_free: 'Free',
+      plan_pro: 'Pro',
+      plan_band: 'Band',
+      plan_business: 'Business',
+    };
+    return labels[plan] ?? plan;
+  });
+
+  readonly showUpgrade = computed(() => {
+    const plan = this.userPlan();
+    return plan === 'plan_free' || plan === 'plan_pro';
+  });
 
   onMenuClick(): void {
     this.layout.openMobileMenu();
@@ -62,6 +81,10 @@ export class HeaderComponent {
 
   toggleProfileMenu(): void {
     this.showProfileMenu.update(v => !v);
+  }
+
+  goToUpgrade(): void {
+    this.layout.setRightPanel(UpgradePanelComponent);
   }
 
   goToProfile(): void {

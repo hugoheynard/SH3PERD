@@ -11,6 +11,21 @@
 </div>
 
 <div class="right">
+  @if (planLabel()) {
+    <div class="plan-badge-area">
+      <button class="plan-badge" type="button" (click)="goToUpgrade()"
+            [class.plan-badge--free]="userPlan() === 'plan_free'"
+            [class.plan-badge--pro]="userPlan() === 'plan_pro'"
+            [class.plan-badge--band]="userPlan() === 'plan_band'"
+            [class.plan-badge--business]="userPlan() === 'plan_business'">
+        {{ planLabel() }}
+      </button>
+      @if (showUpgrade()) {
+        <button class="upgrade-btn" type="button" (click)="goToUpgrade()">Upgrade</button>
+      }
+    </div>
+  }
+
   <sh3-theme-toggle />
 
   <button class="help-btn" type="button" (click)="openHelp()" aria-label="Help">

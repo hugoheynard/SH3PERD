@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Shared types (must build first — other apps depend on it) ──
+  shared-types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build shared-types
+        run: pnpm --filter @sh3pherd/shared-types build
+
+  # ── Backend: lint + typecheck + tests ──
+  backend:
+    needs: shared-types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @sh3pherd/shared-types build
+
+      - name: Lint
+        run: pnpm --filter @sh3pherd/backend lint
+
+      - name: Type check
+        run: pnpm --filter @sh3pherd/backend exec tsc --noEmit
+
+      - name: Unit tests
+        run: pnpm --filter @sh3pherd/backend test
+
+  # ── Audio processor: lint + tests ──
+  audio-processor:
+    needs: shared-types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @sh3pherd/shared-types build
+
+      - name: Lint
+        run: pnpm --filter @sh3pherd/audio-processor lint
+
+      - name: Unit tests
+        run: pnpm --filter @sh3pherd/audio-processor test
+
+  # ── Frontend: build (compilation check) ──
+  frontend:
+    needs: shared-types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @sh3pherd/shared-types build
+
+      - name: Build
+        run: pnpm --filter @sh3pherd/frontend-webapp build

@@ -1,0 +1,62 @@
+<div class="upgrade-panel">
+  <div class="upgrade-header">
+    <h3 class="upgrade-title">Plans & Pricing</h3>
+    <button class="upgrade-close" type="button" aria-label="Close" (click)="close()">×</button>
+  </div>
+
+  <!-- Plan cards row -->
+  <div class="plans-row">
+    @for (plan of plans; track plan.key) {
+      <div class="plan-card"
+           [class.plan-card--current]="isCurrentPlan(plan.key)"
+           [style.--plan-accent]="plan.accent">
+        <span class="plan-label">{{ plan.label }}</span>
+        <div class="plan-price">
+          <span class="plan-price__amount">{{ plan.price }}</span>
+          <span class="plan-price__period">/mo</span>
+        </div>
+        @if (isCurrentPlan(plan.key)) {
+          <span class="plan-current-tag">Current</span>
+        } @else if (!isBelowCurrent(plan.key)) {
+          <button class="plan-select-btn" type="button">Upgrade</button>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Feature comparison table -->
+  <div class="features-table-wrap">
+    <table class="features-table">
+      <thead>
+        <tr>
+          <th class="features-table__feature-col">Feature</th>
+          @for (plan of plans; track plan.key) {
+            <th class="features-table__plan-col"
+                [class.features-table__plan-col--current]="isCurrentPlan(plan.key)">
+              {{ plan.label }}
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (feature of features; track feature.label) {
+          <tr>
+            <td class="features-table__label">{{ feature.label }}</td>
+            @for (plan of plans; track plan.key) {
+              <td class="features-table__cell"
+                  [class.features-table__cell--current]="isCurrentPlan(plan.key)">
+                @if (cellValue(feature, plan.key) === true) {
+                  <span class="cell-dot cell-dot--yes"></span>
+                } @else if (cellValue(feature, plan.key) === false) {
+                  <span class="cell-dot cell-dot--no"></span>
+                } @else {
+                  <span class="cell-text">{{ cellValue(feature, plan.key) }}</span>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

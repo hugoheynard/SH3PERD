@@ -25,8 +25,11 @@ export class QuotaController {
   @Get('me')
   async getMyUsage(
     @ActorId() actorId: TUserId,
-  ): Promise<{ data: TUsageItem[] }> {
-    const items = await this.quotaService.getUsageSummary(actorId);
-    return { data: items };
+  ): Promise<{ data: { plan: string; usage: TUsageItem[] } }> {
+    const [plan, usage] = await Promise.all([
+      this.quotaService.getPlan(actorId),
+      this.quotaService.getUsageSummary(actorId),
+    ]);
+    return { data: { plan, usage } };
   }
 }

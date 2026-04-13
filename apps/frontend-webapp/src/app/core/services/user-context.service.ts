@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import type { TApiResponse, TUserMeViewModel, TUserPreferencesDomainModel } from '@sh3pherd/shared-types';
+import type { TApiResponse, TUserMeViewModel, TUserPreferencesDomainModel, TPlatformRole } from '@sh3pherd/shared-types';
 import type { TContractId } from '@sh3pherd/shared-types';
 import { strictComputed } from '../utils/strictComputed';
 import { HttpClient } from '@angular/common/http';
@@ -13,10 +13,15 @@ export class UserContextService {
   private readonly http = inject(HttpClient);
   private readonly url = inject(ApiURLService);
   private readonly userURL = this.url.apiProtectedRoute('user').build();
+  private readonly quotaURL = this.url.apiProtectedRoute('quota').build();
   private readonly _user = signal<TUserMeViewModel | null>(null);
+  private readonly _plan = signal<TPlatformRole | null>(null);
 
   /** Raw user view model — null until loaded. */
   readonly userMe = this._user.asReadonly();
+
+  /** The user's current platform plan (null until loaded). */
+  readonly plan = this._plan.asReadonly();
 
   // ── Derived identity signals (safe defaults, never throw) ──
 
@@ -64,6 +69,7 @@ export class UserContextService {
     this.http.get<TApiResponse<TUserMeViewModel>>(`${this.userURL}/me`).subscribe({
       next: (res) => {
         this.setUser(res.data);
+        this.loadPlan();
       },
       error: (err) => {
         console.error('Failed to load user profile', err);
@@ -71,6 +77,13 @@ export class UserContextService {
       }
     });
   };
+
+  private loadPlan(): void {
+    this.http.get<{ data: { plan: TPlatformRole } }>(`${this.quotaURL}/me`).subscribe({
+      next: (res) => this._plan.set(res.data.plan),
+      error: () => this._plan.set('plan_free'),
+    });
+  }
 
   // ── Preference setters (optimistic update + backend sync) ──
 
