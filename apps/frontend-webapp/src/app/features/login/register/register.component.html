@@ -44,15 +44,64 @@
         <a class="auth-tab auth-tab--active" routerLink="/register">Sign up</a>
       </nav>
 
-      <div class="auth-header">
-        <h2 class="auth-title">Create your account</h2>
-        <p class="auth-subtitle">Start your free SH3PHERD experience.</p>
+      <!-- Step indicator -->
+      <div class="step-indicator">
+        <div class="step-dot" [class.step-dot--active]="step() >= 1" [class.step-dot--done]="step() > 1"></div>
+        <div class="step-line" [class.step-line--active]="step() > 1"></div>
+        <div class="step-dot" [class.step-dot--active]="step() >= 2" [class.step-dot--done]="step() > 2"></div>
+        <div class="step-line" [class.step-line--active]="step() > 2"></div>
+        <div class="step-dot" [class.step-dot--active]="step() >= 3"></div>
       </div>
 
-      <form class="register-form" (ngSubmit)="onRegister()" novalidate>
+      <!-- ── Step 1: Account type ── -->
+      @if (step() === 1) {
+        <div class="auth-header">
+          <h2 class="auth-title">What describes you best?</h2>
+          <p class="auth-subtitle">This helps us tailor your experience.</p>
+        </div>
+
+        <div class="type-cards">
+          <button class="type-card" (click)="selectAccountType('artist')">
+            <div class="type-card__icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18V5l12-2v13"/>
+                <circle cx="6" cy="18" r="3"/>
+                <circle cx="18" cy="16" r="3"/>
+              </svg>
+            </div>
+            <span class="type-card__title">I'm an Artist</span>
+            <span class="type-card__desc">Manage your music library, tracks, and setlists</span>
+          </button>
+
+          <button class="type-card" (click)="selectAccountType('company')">
+            <div class="type-card__icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                <path d="M1 21h22"/>
+                <path d="M10 9h4"/>
+                <path d="M10 13h4"/>
+              </svg>
+            </div>
+            <span class="type-card__title">I'm a Company</span>
+            <span class="type-card__desc">Manage artists, events, org chart, and contracts</span>
+          </button>
+        </div>
+      }
+
+      <!-- ── Step 2: Profile info ── -->
+      @if (step() === 2) {
+        <div class="auth-header">
+          <h2 class="auth-title">Tell us about you</h2>
+          <p class="auth-subtitle">
+            @if (accountType() === 'company') {
+              Set up your profile and company.
+            } @else {
+              Set up your artist profile.
+            }
+          </p>
+        </div>
 
         <div class="fields">
-
           <div class="name-row">
             <div class="field-group">
               <sh3-input
@@ -78,48 +127,89 @@
             </div>
           </div>
 
-          <div class="field-group">
-            <sh3-input
-              label="Email"
-              type="email"
-              name="email"
-              size="lg"
-              placeholder="you@company.com"
-              [ngModel]="email()"
-              (ngModelChange)="email.set($event)"
-              required />
-          </div>
-
-          <div class="field-group">
-            <sh3-input
-              label="Password"
-              type="password"
-              name="password"
-              size="lg"
-              placeholder="Create a password"
-              [ngModel]="password()"
-              (ngModelChange)="password.set($event)"
-              required />
-
-            <ul class="password-rules">
-              <li [class.pass]="hasMinLength()">8+ characters</li>
-              <li [class.pass]="hasUppercase()">One uppercase letter</li>
-              <li [class.pass]="hasLowercase()">One lowercase letter</li>
-              <li [class.pass]="hasDigit()">One digit</li>
-            </ul>
-          </div>
-
+          @if (accountType() === 'company') {
+            <div class="field-group">
+              <sh3-input
+                label="Company name"
+                type="text"
+                name="companyName"
+                size="lg"
+                placeholder="La Folie Douce"
+                [ngModel]="companyName()"
+                (ngModelChange)="companyName.set($event)"
+                required />
+            </div>
+          }
         </div>
 
-        <sh3-button
-          variant="solid"
-          size="lg"
-          type="submit"
-          [disabled]="!formValid() || loading()"
-          (clicked)="onRegister()">Create account</sh3-button>
+        <div class="wizard-nav">
+          <button class="back-link" type="button" (click)="goBack()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back
+          </button>
+          <sh3-button
+            variant="solid"
+            size="lg"
+            [disabled]="!step2Valid()"
+            (clicked)="goToStep3()">Continue</sh3-button>
+        </div>
+      }
 
-      </form>
+      <!-- ── Step 3: Credentials ── -->
+      @if (step() === 3) {
+        <div class="auth-header">
+          <h2 class="auth-title">Create your credentials</h2>
+          <p class="auth-subtitle">Almost there — set your email and password.</p>
+        </div>
 
+        <form class="register-form" (ngSubmit)="onRegister()" novalidate>
+          <div class="fields">
+            <div class="field-group">
+              <sh3-input
+                label="Email"
+                type="email"
+                name="email"
+                size="lg"
+                placeholder="you@company.com"
+                [ngModel]="email()"
+                (ngModelChange)="email.set($event)"
+                required />
+            </div>
+
+            <div class="field-group">
+              <sh3-input
+                label="Password"
+                type="password"
+                name="password"
+                size="lg"
+                placeholder="Create a password"
+                [ngModel]="password()"
+                (ngModelChange)="password.set($event)"
+                required />
+
+              <ul class="password-rules">
+                <li [class.pass]="hasMinLength()">8+ characters</li>
+                <li [class.pass]="hasUppercase()">One uppercase letter</li>
+                <li [class.pass]="hasLowercase()">One lowercase letter</li>
+                <li [class.pass]="hasDigit()">One digit</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="wizard-nav">
+            <button class="back-link" type="button" (click)="goBack()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              Back
+            </button>
+            <sh3-button
+              variant="solid"
+              size="lg"
+              type="submit"
+              [disabled]="!step3Valid() || loading()"
+              (clicked)="onRegister()">Create account</sh3-button>
+          </div>
+        </form>
+      }
 
     </div>
   </main>

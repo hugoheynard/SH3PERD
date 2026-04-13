@@ -31,6 +31,15 @@
 - [ ] Templates HTML transactionnels (verification, password reset, welcome)
 - [ ] Brancher `UserRegisteredHandler` et `ForgotPasswordHandler` sur le mailer
 
+### Register Wizard — Company Creation at Signup
+- [ ] Extend `RegisterUserCommand` (or create `RegisterCompanyCommand`) to accept `account_type: 'artist' | 'company'`
+- [ ] If `account_type === 'company'` and `company_name` is provided:
+  - Create `CompanyEntity` with the given name
+  - Create a `ContractEntity` linking the user to the company with role `owner`
+  - All in the same transaction as user creation
+- [ ] Add `account_type` and `company_name` optional fields to `TRegisterUserRequestDTO` + Zod schema
+- [ ] Frontend already sends the wizard data — backend just needs to handle it
+
 ### Auth0 Integration (Social Login / SSO)
 - [ ] Intégrer Auth0 comme provider OAuth supplémentaire (Google, Apple, GitHub)
 - [ ] Flow : Auth0 renvoie un `id_token` → backend vérifie le token → crée ou lie un user local
