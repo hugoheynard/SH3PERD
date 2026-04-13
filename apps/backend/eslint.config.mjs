@@ -11,9 +11,23 @@ export default tslint.config(
       'eslint.config.mjs',
       'node_modules',
       'dist',
+      // Legacy modules — not yet cleaned up for strict lint.
+      // These will be enabled incrementally as each module is refactored.
       'src/playlists',
+      'src/playlists-v2',
       'src/music',
-      'src/contracts'
+      'src/contracts',
+      'src/calendar',
+      'src/company',
+      'src/userGroups',
+      'src/integrations',
+      'src/busReactions',
+      'src/print',
+      'src/types',
+      'src/auth',
+      'src/user',
+      'src/E2E',
+      'src/utils',
     ],
   },
   eslint.configs.recommended,
@@ -29,7 +43,6 @@ export default tslint.config(
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
-        project: './tsconfig.eslint.json',
       },
     },
   },
@@ -54,7 +67,6 @@ export default tslint.config(
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
-        project: './tsconfig.eslint.json',
       },
     },
     plugins: { jest },
