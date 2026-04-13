@@ -62,8 +62,8 @@ export class PlatformContractContextGuard implements CanActivate {
 
     // Attach the plan as the role — PermissionGuard will expand it
     // via PLATFORM_ROLE_TEMPLATES automatically.
-    (req as Record<string, unknown>).contract_roles = [platformContract.plan];
-    (req as Record<string, unknown>).platform_contract_id = platformContract.id;
+    (req as unknown as Record<string, unknown>)['contract_roles'] = [platformContract.plan];
+    (req as unknown as Record<string, unknown>)['platform_contract_id'] = platformContract.id;
 
     return true;
   }

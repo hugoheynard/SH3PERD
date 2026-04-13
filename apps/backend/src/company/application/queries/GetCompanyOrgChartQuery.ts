@@ -6,7 +6,6 @@ import type {
   TOrgNodeHierarchyViewModel,
   TOrgNodeMemberViewModel,
   TOrgNodeRecord,
-  TUserId,
 } from '@sh3pherd/shared-types';
 import { ORG_NODE_REPO, COMPANY_REPO, USER_PROFILE_REPO } from '../../company.tokens.js';
 import type { IOrgNodeRepository } from '../../repositories/OrgNodeMongoRepository.js';
