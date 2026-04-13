@@ -11,6 +11,8 @@ export const SUserCredentialsDomainModel = z.object({
   email_verified: z.boolean(),
   /** True for guest users who haven't activated their account yet. */
   is_guest: z.boolean().default(false),
+  failed_login_count: z.number().int().default(0).optional(),
+  locked_until: z.date().nullable().optional(),
 });
 
 /**
@@ -42,5 +44,9 @@ export type TUserCredentialsDomainModel = {
   email_verified: boolean;
   /** True for guest users who haven't activated their account yet. */
   is_guest: boolean;
+  /** Number of consecutive failed login attempts. Reset on successful login. */
+  failed_login_count?: number;
+  /** Account locked until this date. Null = not locked. */
+  locked_until?: Date | null;
 };
 export type TUserCredentialsRecord = TUserCredentialsDomainModel & TRecordMetadata;

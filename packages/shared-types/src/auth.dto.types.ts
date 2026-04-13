@@ -25,3 +25,16 @@ export type TLoginRequestDTO = TUserCredentials;
 export type TLoginResponseDTO = { authToken: string; user_id: TUserId };
 
 export type TRefreshSessionRequestDTO = { refreshToken: TRefreshToken };
+
+export type TChangePasswordRequestDTO = { currentPassword: string; newPassword: string };
+
+export const SChangePasswordRequestDTO = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(128, 'Password must be at most 128 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one digit'),
+});

@@ -96,11 +96,12 @@ export function mockRefreshTokenRepo(): jest.Mocked<IRefreshTokenRepository> {
 }
 
 export function mockUserCredentialsRepo(): jest.Mocked<
-  Pick<IUserCredentialsRepository, 'findOne' | 'save' | 'startSession'>
+  Pick<IUserCredentialsRepository, 'findOne' | 'save' | 'updateOne' | 'startSession'>
 > {
   return {
     findOne: jest.fn().mockResolvedValue(null),
     save: jest.fn().mockResolvedValue(true),
+    updateOne: jest.fn().mockResolvedValue(null),
     startSession: jest.fn(),
   } as any;
 }

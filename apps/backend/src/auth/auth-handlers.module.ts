@@ -5,8 +5,15 @@ import { RegisterUserHandler } from './application/commands/RegisterUserCommand.
 import { LoginHandler } from './application/commands/LoginCommand.js';
 import { RefreshSessionHandler } from './application/commands/RefreshSessionCommand.js';
 import { LogoutHandler } from './application/commands/LogoutCommand.js';
+import { ChangePasswordHandler } from './application/commands/ChangePasswordCommand.js';
 
-const CommandHandlers = [RegisterUserHandler, LoginHandler, RefreshSessionHandler, LogoutHandler];
+const CommandHandlers = [
+  RegisterUserHandler,
+  LoginHandler,
+  RefreshSessionHandler,
+  LogoutHandler,
+  ChangePasswordHandler,
+];
 
 @Module({
   imports: [CqrsModule, AuthCoreModule],
