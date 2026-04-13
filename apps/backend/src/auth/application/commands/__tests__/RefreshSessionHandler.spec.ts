@@ -1,7 +1,4 @@
-import {
-  RefreshSessionCommand,
-  RefreshSessionHandler,
-} from '../../application/commands/RefreshSessionCommand';
+import { RefreshSessionCommand, RefreshSessionHandler } from '../RefreshSessionCommand';
 import {
   userId,
   refreshTokenId,
@@ -12,9 +9,9 @@ import {
   makeExpiredRefreshToken,
   makeRevokedRefreshToken,
   makeSessionResult,
-} from '../test-helpers';
-import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
-import { hashToken } from '../../core/token-manager/hashToken.js';
+} from '../../../__tests__/test-helpers';
+import { BusinessError } from '../../../../utils/errorManagement/BusinessError.js';
+import { hashToken } from '../../../core/token-manager/hashToken.js';
 
 describe('RefreshSessionHandler', () => {
   function createHandler() {

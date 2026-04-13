@@ -126,6 +126,7 @@ Swagger must be updated in the same commit as the controller change. Stale docs 
   - Policy (structural: domain invariants) — entity validation
 - **API responses**: Wrap in `TApiResponse<T>` via `buildApiResponseDTO()`
 - **Imports**: Use `.js` extension for relative imports in backend (NodeNext resolution)
+- **Colocate tests**: Unit tests live in a `__tests__/` folder adjacent to the source file they test (e.g. `commands/__tests__/LoginHandler.spec.ts`). Never put tests in a root-level `__tests__/` folder far from the source. Exception: E2E tests and shared test helpers.
 
 ## Useful commands
 

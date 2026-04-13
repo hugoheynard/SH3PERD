@@ -11,7 +11,7 @@ import {
 import { CoreRepositoriesModule } from '../../appBootstrap/database/CoreRepositoriesModule.js';
 import { secureCookieConfig } from '../../appBootstrap/config/secureCookieConfig.js';
 import type { IRefreshTokenRepository } from '../repositories/RefreshTokenMongoRepository.js';
-import { AuthService } from '../services/auth.service.js';
+import { AuthService } from './auth.service.js';
 import {
   AUTH_SERVICE,
   JWT_SERVICE,

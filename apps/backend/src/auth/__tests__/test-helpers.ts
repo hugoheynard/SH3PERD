@@ -8,7 +8,7 @@ import type { IRefreshTokenRepository } from '../repositories/RefreshTokenMongoR
 import type { IPasswordService } from '../core/password-manager/types/Interfaces';
 import type { IAbstractJWTService } from '../core/token-manager/JwtService';
 import type { IAbstractRefreshTokenService } from '../core/token-manager/RefreshTokenService';
-import type { IAuthTokenService } from '../services/auth.service';
+import type { IAuthTokenService } from '../core/auth.service';
 import type {
   TCreateAuthSessionResult,
   TRefreshTokenSecureCookie,

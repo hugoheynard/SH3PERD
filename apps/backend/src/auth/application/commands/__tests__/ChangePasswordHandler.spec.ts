@@ -1,8 +1,5 @@
-import {
-  ChangePasswordCommand,
-  ChangePasswordHandler,
-} from '../../application/commands/ChangePasswordCommand.js';
-import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { ChangePasswordCommand, ChangePasswordHandler } from '../ChangePasswordCommand.js';
+import { BusinessError } from '../../../../utils/errorManagement/BusinessError.js';
 
 describe('ChangePasswordHandler', () => {
   const mockUserId = 'user_test-change-pw' as any;

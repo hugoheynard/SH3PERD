@@ -2,7 +2,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject, Logger } from '@nestjs/common';
 import type { TLoginRequestDTO, TLoginResponseDTO } from '@sh3pherd/shared-types';
 import type { IPasswordService } from '../../core/password-manager/types/Interfaces.js';
-import type { IAuthTokenService } from '../../services/auth.service.js';
+import type { IAuthTokenService } from '../../core/auth.service.js';
 import type { IUserCredentialsRepository } from '../../../user/infra/UserCredentialsMongoRepo.repository.js';
 import type { TRefreshTokenSecureCookie } from '../../types/auth.domain.tokens.js';
 import { AUTH_SERVICE, PASSWORD_SERVICE } from '../../auth.tokens.js';

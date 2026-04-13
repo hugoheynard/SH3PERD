@@ -1,7 +1,7 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import type { TRefreshToken, TUserId } from '@sh3pherd/shared-types';
-import type { IAuthTokenService } from '../../services/auth.service.js';
+import type { IAuthTokenService } from '../../core/auth.service.js';
 import type { IAbstractRefreshTokenService } from '../../core/token-manager/RefreshTokenService.js';
 import type { IRefreshTokenRepository } from '../../repositories/RefreshTokenMongoRepository.js';
 import type { TRefreshTokenSecureCookie } from '../../types/auth.domain.tokens.js';

@@ -1,7 +1,7 @@
 import { CalendarService } from '../../calendar/core/services/CalendarService.js';
 import { buildCalendar } from '../../calendar/core/builders/buildCalendar.js';
 import { computeEventIntersections } from '../../calendar/core/colliders/computeEventIntersection.js';
-import type { IAuthTokenService } from '../../auth/services/auth.service.js';
+import type { IAuthTokenService } from '../../auth/core/auth.service.js';
 
 /**
  * Type representing the core services of the application.

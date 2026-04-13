@@ -1,14 +1,11 @@
-import {
-  RegisterUserCommand,
-  RegisterUserHandler,
-} from '../../application/commands/RegisterUserCommand';
+import { RegisterUserCommand, RegisterUserHandler } from '../RegisterUserCommand';
 import {
   mockPasswordService,
   mockUserCredentialsRepo,
   mockUserProfileRepo,
   mockPlatformContractRepo,
-} from '../test-helpers';
-import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+} from '../../../__tests__/test-helpers';
+import { BusinessError } from '../../../../utils/errorManagement/BusinessError.js';
 
 describe('RegisterUserHandler', () => {
   function createHandler() {

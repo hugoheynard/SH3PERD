@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import { AuthService } from '../auth.service.js';
-import type { IAbstractRefreshTokenService } from '../../core/token-manager/RefreshTokenService.js';
-import type { IAbstractJWTService } from '../../core/token-manager/JwtService.js';
+import type { IAbstractRefreshTokenService } from '../token-manager/RefreshTokenService.js';
+import type { IAbstractJWTService } from '../token-manager/JwtService.js';
 import type { IRefreshTokenRepository } from '../../repositories/RefreshTokenMongoRepository.js';
 import type { TUserId, TRefreshToken } from '@sh3pherd/shared-types';
 
