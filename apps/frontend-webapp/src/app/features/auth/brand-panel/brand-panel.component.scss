@@ -1,6 +1,19 @@
-@use '../auth-layout' as *;
+// ══════════════════════════════════════════════════════════════════════
+// Brand panel — left side of auth pages (logo, illustration, tagline)
+// Self-contained: does NOT @use _auth-layout (which would leak
+// parent-page styles into this component's encapsulated scope).
+// ══════════════════════════════════════════════════════════════════════
 
-// ── Brand panel (left) ───────────────────────────────────────────────
+$bg-left:  #0b0f1c;
+$text-1:   #eef1ff;
+$text-2:   #8892b0;
+
+// ── Host — takes full height in the flex parent (.login-page) ───────
+:host {
+  display: contents;
+}
+
+// ── Brand panel (left) ──────────────────────────────────────────────
 .brand-panel {
   flex: 0 0 56%;
   position: relative;
@@ -15,9 +28,9 @@
     position: absolute;
     inset: 0;
     background: radial-gradient(
-        ellipse 60% 55% at 50% 48%,
-        rgba(6, 164, 164, .08) 0%,
-        transparent 68%
+      ellipse 60% 55% at 50% 48%,
+      rgba(6, 164, 164, .08) 0%,
+      transparent 68%
     );
     pointer-events: none;
   }
@@ -26,7 +39,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(255,255,255,.025) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px);
     background-size: 30px 30px;
     pointer-events: none;
   }
@@ -83,4 +96,20 @@
   text-transform: lowercase;
   font-style: italic;
   opacity: .75;
+}
+
+// ── Responsive ──────────────────────────────────────────────────────
+@media (max-width: 860px) {
+  .brand-panel {
+    flex: none;
+    padding: 48px 24px 32px;
+  }
+
+  .bc-img {
+    width: 220px;
+  }
+
+  .brand-name {
+    font-size: 30px;
+  }
 }

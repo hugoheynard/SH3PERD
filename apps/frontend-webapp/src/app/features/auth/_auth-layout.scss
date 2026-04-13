@@ -183,9 +183,6 @@ sh3-button {
 // ── Responsive ──────────────────────────────────────────────────────
 @media (max-width: 860px) {
   .login-page  { flex-direction: column; overflow-y: auto; height: auto; min-height: 100vh; }
-  .brand-panel { flex: none; padding: 48px 24px 32px; }
-  .bc-img      { width: 220px; }
-  .brand-name  { font-size: 30px; }
   .auth-panel  { flex: none; border-left: none; border-top: 1px solid $border; }
   .auth-inner  { padding: 36px 24px 52px; }
 }
