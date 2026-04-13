@@ -80,6 +80,8 @@ Every code change must be reflected in the relevant documentation:
 
 Documentation updates must be in the same commit as the code change (or in an immediately following `docs` commit). Never leave docs stale.
 
+Use **Mermaid diagrams** (sequence, flowchart, state, graph) in technical docs to illustrate flows, architectures, and state machines. Diagrams complement text — they don't replace it. Every non-trivial flow should have both a diagram and a textual explanation.
+
 ## Commit rules
 
 - **Atomic commits**: Split work into small, logically grouped commits. Each commit covers ONE concern (backend API, frontend component, docs, fix). Never batch unrelated changes.
