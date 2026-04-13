@@ -112,19 +112,111 @@ P.Event.Planning.{Read, Write}
 
 ### 3. Create the DTO (Swagger payload)
 
-DTOs are Zod-derived classes that Swagger uses to document request/response shapes.
+DTOs bridge Zod schemas (source of truth for types) to Swagger (API documentation). The pipeline is:
+
+```
+Zod schema (shared-types)  →  createZodDto()  →  @ApiModel() class  →  Swagger extraModels
+```
+
+#### How it works end-to-end
+
+**Step 1 — Define the Zod schema in `shared-types`:**
 
 ```ts
-// In src/<domain>/dto/<domain>.dto.ts
+// packages/shared-types/src/company/company.types.ts
+export type TCompanyInfo = { name: string; description: string; address: TCompanyAddress };
+
+export const SCompanyInfo: ZodOutput<TCompanyInfo> = z.object({
+  name:        z.string().min(1),
+  description: z.string(),
+  address:     SCompanyAddress,
+});
+```
+
+The `T` type is the TypeScript interface, the `S` schema is the Zod runtime validator. Both live in `shared-types` and are shared across all apps.
+
+**Step 2 — Create a DTO class in the backend:**
+
+```ts
+// src/<domain>/dto/<domain>.dto.ts
 import { createZodDto } from 'nestjs-zod';
 import { ApiModel } from '../../utils/swagger/api-model.swagger.util.js';
 import { SCompanyInfo } from '@sh3pherd/shared-types';
 
-@ApiModel()  // auto-registers in Swagger extraModels
+@ApiModel()  // registers in Swagger extraModels automatically
 export class CompanyInfoPayload extends createZodDto(SCompanyInfo) {}
 ```
 
-If no Zod schema exists, use manual `@ApiProperty()`:
+`createZodDto(SCompanyInfo)` generates a class with `@ApiProperty()` decorators inferred from the Zod schema fields. `@ApiModel()` registers it in the global Swagger model registry so `getSchemaPath()` can reference it.
+
+**Step 3 — Use it in controller decorators:**
+
+```ts
+// Request body — tells Swagger "the body shape is CompanyInfoPayload"
+@ApiBody(apiRequestDTO(CompanyInfoPayload))
+
+// Response — tells Swagger "the response is { code, message, data: CompanyInfoPayload }"
+@ApiResponse(apiSuccessDTO(MY_CODE, CompanyInfoPayload))
+```
+
+#### What `@ApiModel()` does
+
+```ts
+// src/utils/swagger/api-model.swagger.util.ts
+export function ApiModel(): ClassDecorator {
+  return (target) => {
+    const existing = Reflect.getMetadata(API_MODELS_KEY, globalThis) || [];
+    Reflect.defineMetadata(API_MODELS_KEY, [...existing, target], globalThis);
+  };
+}
+```
+
+It collects all DTO classes into a global array. At startup, `SwaggerModule.createDocument()` receives them via `extraModels: getApiModels()`, making them available for `$ref` references in the OpenAPI spec.
+
+**Without `@ApiModel()`**, Swagger won't know about the class and `getSchemaPath(MyPayload)` will produce a broken `$ref`.
+
+#### What `apiSuccessDTO()` does
+
+Wraps the DTO in the standard `{ code, message, data }` response envelope:
+
+```ts
+apiSuccessDTO(COMPANY_CODES.UPDATE_INFO, CompanyInfoPayload)
+// Generates:
+// {
+//   status: 200,
+//   content: {
+//     'application/json': {
+//       schema: {
+//         allOf: [
+//           { $ref: '#/components/schemas/ApiResponseDTO' },
+//           {
+//             properties: {
+//               code: { example: 'COMPANY_INFO_UPDATED' },
+//               message: { example: 'Company info updated successfully.' },
+//               data: { $ref: '#/components/schemas/CompanyInfoPayload' },
+//             },
+//           },
+//         ],
+//       },
+//     },
+//   },
+// }
+```
+
+This ensures every endpoint in Swagger shows the same envelope shape with the actual payload nested under `data`.
+
+#### What `apiRequestDTO()` does
+
+References the DTO for the request body:
+
+```ts
+apiRequestDTO(CompanyInfoPayload)
+// Generates: { schema: { $ref: '#/components/schemas/CompanyInfoPayload' } }
+```
+
+#### When to use manual `@ApiProperty()` instead
+
+If the response model is complex (recursive trees, computed fields, no matching Zod schema), define properties manually:
 
 ```ts
 @ApiModel()
@@ -132,8 +224,11 @@ export class CompanyDetailPayload {
   @ApiProperty() id!: string;
   @ApiProperty() name!: string;
   @ApiProperty({ required: false }) description?: string;
+  @ApiProperty() activeTeamCount!: number;   // computed, not in Zod
 }
 ```
+
+**Rule of thumb:** if a Zod schema `S*` exists in `shared-types`, always use `createZodDto(S*)`. Only fall back to manual `@ApiProperty()` for view models with computed or aggregated fields.
 
 ### 4. Define API codes
 
