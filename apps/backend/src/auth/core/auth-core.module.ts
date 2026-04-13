@@ -10,6 +10,7 @@ import {
 } from './token-manager/RefreshTokenService.js';
 import { CoreRepositoriesModule } from '../../appBootstrap/database/CoreRepositoriesModule.js';
 import { secureCookieConfig } from '../../appBootstrap/config/secureCookieConfig.js';
+import type { IRefreshTokenRepository } from '../repositories/RefreshTokenMongoRepository.js';
 import { AuthService } from '../services/auth.service.js';
 import {
   AUTH_SERVICE,
@@ -56,7 +57,9 @@ import { REFRESH_TOKEN_REPO } from '../../appBootstrap/nestTokens.js';
     },
     {
       provide: REFRESH_TOKEN_SERVICE,
-      useFactory: (refreshTokenRepository): IAbstractRefreshTokenService => {
+      useFactory: (
+        refreshTokenRepository: IRefreshTokenRepository,
+      ): IAbstractRefreshTokenService => {
         return new RefreshTokenService(refreshTokenRepository, secureCookieConfig);
       },
       inject: [REFRESH_TOKEN_REPO],

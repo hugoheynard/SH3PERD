@@ -65,7 +65,7 @@ export class RegisterUserHandler implements ICommandHandler<
       startDate: new Date(),
     });
 
-    const session = await this.userCredsRepo.startSession();
+    const session = this.userCredsRepo.startSession();
 
     try {
       await session.withTransaction(async () => {

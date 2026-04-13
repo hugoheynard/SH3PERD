@@ -24,7 +24,6 @@ export default tslint.config(
       'src/busReactions',
       'src/print',
       'src/types',
-      'src/auth',
       'src/user',
       'src/E2E',
       'src/utils',
@@ -75,7 +74,7 @@ export default tslint.config(
   },
   // ── Test files — relaxed rules ───────────────────────
   {
-    files: ['**/*.spec.ts', '**/*.test.ts'],
+    files: ['**/*.spec.ts', '**/*.test.ts', '**/__tests__/**/*.ts'],
     languageOptions: {
       globals: { ...globals.node, ...globals.jest },
       parserOptions: {
@@ -94,6 +93,8 @@ export default tslint.config(
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/unbound-method': 'off',
     },
   },

@@ -61,7 +61,7 @@ export class JwtService implements IAbstractJWTService {
    * @param input - Object containing the JWT string to verify.
    * @returns The decoded payload if valid, or throws if invalid/expired.
    */
-  verifyAuthToken: TVerifyAuthTokenFn = async (input) => {
+  verifyAuthToken: TVerifyAuthTokenFn = (input) => {
     try {
       const { authToken } = input;
 
@@ -70,8 +70,8 @@ export class JwtService implements IAbstractJWTService {
       });
 
       return Promise.resolve(payload as TAuthTokenPayload);
-    } catch (error) {
-      return null;
+    } catch {
+      return Promise.resolve(null);
     }
   };
 }

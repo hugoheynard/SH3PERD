@@ -38,14 +38,14 @@ async function bootstrap(): Promise<void> {
   });
   SwaggerModule.setup('api', app, document);
 
+  const corsOrigin = process.env['CORS_ORIGIN'] ?? 'http://localhost:4200';
   app.enableCors({
-    origin: 'http://localhost:4200', //TODO manager CORS avec env
+    origin: corsOrigin,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
       'Authorization',
-      'X-XSRF-TOKEN',
       'X-Feature',
       'X-Contract-Id',
       // Print export headers (used by the orgchart PDF pipeline):
