@@ -58,12 +58,7 @@ export class RegisterUserHandler implements ICommandHandler<
 
     // Every user gets a platform contract at registration (SaaS subscription).
     // Starts on the Free plan — upgrade is a separate operation.
-    const platformContract = new PlatformContractEntity({
-      user_id: credentials.id,
-      plan: 'plan_free',
-      status: 'active',
-      startDate: new Date(),
-    });
+    const platformContract = PlatformContractEntity.create(credentials.id);
 
     const session = this.userCredsRepo.startSession();
 

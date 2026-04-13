@@ -39,6 +39,22 @@ export class PlatformContractEntity extends Entity<TPlatformContractDomainModel>
     super(props, 'platformContract');
   }
 
+  // ── Factory ──────────────────────────────────────────
+
+  /**
+   * Single entry point for creating a new platform contract.
+   * Defaults to plan_free + active. Use this instead of calling
+   * the constructor directly — ensures consistent defaults.
+   */
+  static create(userId: TUserId, plan: TPlatformRole = 'plan_free'): PlatformContractEntity {
+    return new PlatformContractEntity({
+      user_id: userId,
+      plan,
+      status: 'active',
+      startDate: new Date(),
+    });
+  }
+
   // ── Getters ──────────────────────────────────────────
 
   get user_id(): TUserId {
