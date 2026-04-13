@@ -1,4 +1,8 @@
-# SH3PHERD Backend — Documentation Index
+# SH3PHERD Backend — Technical Documentation
+
+Architecture, patterns, and how-to guides for the NestJS backend.
+
+> **Convention:** This directory contains only technical docs. For TODOs, feature roadmaps, and process docs, see [`documentation/`](../../../documentation/README.md).
 
 ## Architecture & Patterns
 
@@ -42,11 +46,7 @@
 | [Contracts](sh3-contracts.md) | Contract aggregate diagram (contract + addendums) |
 | [Calendar](sh3-calendar.md) | Event matrix — manual and CP-generated with OR-Tools |
 | [Integrations](sh3-integrations.md) | Slack OAuth, channel management, architecture, routes |
-| [Integrations TODO](sh3-integrations-todo.md) | Remaining tasks — channel sync, notifications, new providers |
 
-## Internal TODOs
+## See also
 
-| Doc | Description |
-|-----|-------------|
-| [Error Mgmt Refactoring](TODO-2026-04-08-errorManagement-back.md) | Error class taxonomy refactoring (completed) |
-| [Guest to User](TODO-guest-to-user.md) | Guest user activation flow — phased implementation |
+- [Monorepo documentation](../../../documentation/README.md) — TODOs, feature roadmaps, user flows
