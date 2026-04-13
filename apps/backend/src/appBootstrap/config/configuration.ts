@@ -16,7 +16,7 @@ export default (): {
 } => ({
   ATLAS_URI: process.env['ATLAS_URI'],
   CORE_DB_NAME: process.env['CORE_DB_NAME'],
-  port: parseInt(process.env['PORT'] || '3000', 10),
+  port: parseInt(process.env['PORT'] ?? '3000', 10),
   slackClientId: process.env['SLACK_CLIENT_ID'],
   slackClientSecret: process.env['SLACK_CLIENT_SECRET'],
   slackRedirectUri: process.env['SLACK_REDIRECT_URI'],

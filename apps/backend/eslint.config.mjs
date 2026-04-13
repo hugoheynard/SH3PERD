@@ -12,7 +12,7 @@ export default tslint.config(
       'node_modules',
       'dist',
       // Legacy modules — not yet cleaned up for strict lint.
-      // These will be enabled incrementally as each module is refactored.
+      // Remove a module from this list BEFORE working on it.
       'src/playlists',
       'src/playlists-v2',
       'src/music',
@@ -39,7 +39,7 @@ export default tslint.config(
         ...globals.node,
         ...globals.jest,
       },
-      sourceType: 'commonjs',
+      sourceType: 'module',
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
@@ -48,18 +48,32 @@ export default tslint.config(
   },
   {
     rules: {
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-floating-promises': 'error',
+      // ── Type safety ──────────────────────────────────
+      '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unsafe-argument': 'error',
-      '@typescript-eslint/consistent-type-imports': 'warn',
-      '@typescript-eslint/explicit-function-return-type': ['warn', { allowExpressions: true }],
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+
+      // ── Async safety ─────────────────────────────────
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/await-thenable': 'error',
+
+      // ── Code style ───────────────────────────────────
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
-      '@typescript-eslint/member-ordering': 'warn',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
+      '@typescript-eslint/prefer-nullish-coalescing': 'warn',
+
+      // ── Formatting ───────────────────────────────────
       'prettier/prettier': 'error',
     },
   },
-  // 🔹 JEST - TEST CONFIGURATION
+  // ── Test files — relaxed rules ───────────────────────
   {
     files: ['**/*.spec.ts', '**/*.test.ts'],
     languageOptions: {
@@ -78,8 +92,9 @@ export default tslint.config(
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/unbound-method': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
-    }
+      '@typescript-eslint/unbound-method': 'off',
+    },
   },
 );

@@ -8,7 +8,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { getApiModels } from './utils/swagger/api-model.swagger.util.js';
 //import { ApiResponseDTO } from './utils/swagger/api-response.swagger.util.js';
 
-loadEnv(process.env['NODE_ENV'] || 'dev');
+loadEnv(process.env['NODE_ENV'] ?? 'dev');
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
