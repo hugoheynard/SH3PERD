@@ -63,6 +63,15 @@ Every controller endpoint MUST have complete Swagger decorators following `apps/
 
 Swagger must be updated in the same commit as the controller change. Stale docs are not acceptable.
 
+## Lint rules
+
+- **Before working on a module**: if it is in the ESLint `ignores` list (`apps/backend/eslint.config.mjs`), REMOVE it from `ignores` first. Fix all existing lint errors in that module, then proceed with the feature work.
+- **Before every commit**: run lint on the affected app(s) and fix all errors. Never commit code that fails lint.
+  - Backend: `pnpm --filter @sh3pherd/backend lint`
+  - Audio processor: `pnpm --filter @sh3pherd/audio-processor lint`
+  - Frontend: `cd apps/frontend-webapp && npx tsc --noEmit`
+- **No `eslint-disable` comments**: fix the root cause instead of suppressing the error.
+
 ## Key conventions
 
 - **DDD entities**: Always use `Entity<T>` base class with `toDomain` getter. Prefix IDs (`user_`, `contract_`, `platformContract_`, etc.)
