@@ -23,7 +23,8 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | Doc | Path | Description |
 |-----|------|-------------|
 | **README** | `apps/backend/documentation/README.md` | Technical documentation index |
-| **Auth & Context** | `apps/backend/documentation/sh3-auth-and-context.md` | Auth pipeline, JWT, `@ContractScoped`, `@PlatformScoped`, `@RequirePermission`, `P` object |
+| **Auth System** | `apps/backend/documentation/sh3-auth-system.md` | Complete auth: login, tokens, password, security hardening (Mermaid diagrams) |
+| **Auth & Context** | `apps/backend/documentation/sh3-auth-and-context.md` | Request pipeline: `@ContractScoped`, `@PlatformScoped`, `@RequirePermission`, `P` object |
 | **Writing a Controller** | `apps/backend/documentation/sh3-writing-a-controller.md` | Complete guide: scope, permissions, Swagger, CQRS, Zod-to-DTO pipeline |
 | **Swagger Usage** | `apps/backend/documentation/sh3-swagger-usage.md` | Zod-first DTOs, `apiSuccessDTO`, response envelope |
 | **Error Handling** | `apps/backend/documentation/sh3-error-handling.md` | DomainError, BusinessError, TechnicalError, GlobalExceptionFilter |

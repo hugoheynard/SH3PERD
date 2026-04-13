@@ -9,7 +9,8 @@ Architecture, patterns, and how-to guides for the NestJS backend.
 | Doc | Description |
 |-----|-------------|
 | [Writing a Controller](sh3-writing-a-controller.md) | Complete guide to writing a NestJS controller — scope, permissions, Swagger, CQRS, checklist |
-| [Auth & Contract Context](sh3-auth-and-context.md) | Auth pipeline, `@ContractScoped`, `@PlatformScoped`, `@RequirePermission`, `P` object, wildcard matching |
+| [Auth System](sh3-auth-system.md) | Complete auth architecture: login, tokens, password management, security hardening |
+| [Auth & Contract Context](sh3-auth-and-context.md) | Request pipeline: `@ContractScoped`, `@PlatformScoped`, `@RequirePermission`, `P` object |
 | [Swagger Usage](sh3-swagger-usage.md) | Zod-derived DTOs, `apiSuccessDTO`, `apiRequestDTO`, `@ApiModel`, response envelope |
 | [Error Handling](sh3-error-handling.md) | DomainError, BusinessError, TechnicalError — when to use, response shape, logging |
 
