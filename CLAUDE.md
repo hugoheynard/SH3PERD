@@ -112,3 +112,10 @@ pnpm --filter @sh3pherd/backend build         # Build NestJS backend
 cd apps/backend && npx tsc --noEmit
 cd apps/frontend-webapp && npx tsc --noEmit
 ```
+
+## Session start confirmation
+
+After reading all documentation files listed above, explicitly confirm to the user:
+"I have read all 22 documentation files in apps/backend/documentation/. Ready to work."
+
+Do NOT start any work before this confirmation.
