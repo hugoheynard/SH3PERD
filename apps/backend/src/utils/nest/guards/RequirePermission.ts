@@ -9,7 +9,13 @@ import {
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { Reflector } from '@nestjs/core';
-import { ROLE_TEMPLATES, PLATFORM_ROLE_TEMPLATES, type TContractRole, type TPlatformRole, type TPermission } from '@sh3pherd/shared-types';
+import {
+  ROLE_TEMPLATES,
+  PLATFORM_ROLE_TEMPLATES,
+  type TContractRole,
+  type TPlatformRole,
+  type TPermission,
+} from '@sh3pherd/shared-types';
 
 const REQUIRED_PERMISSION_KEY = 'required_permission';
 
@@ -32,7 +38,6 @@ const _registry = new Set<TPermission>();
  * ```
  */
 export const PermissionRegistry = {
-
   /** Register one or more permissions (called by @RequirePermission). */
   register(...permissions: TPermission[]): void {
     for (const p of permissions) _registry.add(p);
@@ -53,7 +58,6 @@ export const PermissionRegistry = {
     return _registry.size;
   },
 } as const;
-
 
 // ── Guard ──────────────────────────────────────────
 
@@ -90,8 +94,8 @@ export class PermissionGuard implements CanActivate {
     const grantedPermissions = expandRolesToPermissions(roles);
 
     // Check every required permission is granted
-    const hasAll = requiredPermissions.every(required =>
-      grantedPermissions.some(granted => matchPermission(granted, required)),
+    const hasAll = requiredPermissions.every((required) =>
+      grantedPermissions.some((granted) => matchPermission(granted, required)),
     );
 
     if (!hasAll) {

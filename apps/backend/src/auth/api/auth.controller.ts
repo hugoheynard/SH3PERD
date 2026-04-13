@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller, Get,
-  HttpCode,
-  Post,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Req, Res } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
 import type {
@@ -22,7 +15,10 @@ import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js'
 import { Public } from '../../utils/nest/decorators/IsPublic.js';
 import { RegisterUserCommand } from '../application/commands/RegisterUserCommand.js';
 import { LoginCommand, type TLoginCommandResult } from '../application/commands/LoginCommand.js';
-import { RefreshSessionCommand, type TRefreshSessionResult } from '../application/commands/RefreshSessionCommand.js';
+import {
+  RefreshSessionCommand,
+  type TRefreshSessionResult,
+} from '../application/commands/RefreshSessionCommand.js';
 import { LogoutCommand } from '../application/commands/LogoutCommand.js';
 import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from '../auth.constants.js';
 
@@ -47,9 +43,7 @@ export class AuthController {
     @Body(new ZodValidationPipe(SuserCredentialsDTO)) requestDTO: TLoginRequestDTO,
     @Res({ passthrough: true }) res: Response,
   ): Promise<TLoginResponseDTO> {
-    const result: TLoginCommandResult = await this.cmdBus.execute(
-      new LoginCommand(requestDTO),
-    );
+    const result: TLoginCommandResult = await this.cmdBus.execute(new LoginCommand(requestDTO));
 
     res.cookie(
       result.refreshTokenSecureCookie.name,

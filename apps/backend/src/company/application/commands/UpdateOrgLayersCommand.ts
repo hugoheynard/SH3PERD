@@ -33,13 +33,9 @@ export class UpdateOrgLayersCommand {
  */
 @CommandHandler(UpdateOrgLayersCommand)
 export class UpdateOrgLayersHandler implements ICommandHandler<UpdateOrgLayersCommand, TOrgLayers> {
-
-  constructor(
-    @Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository,
-  ) {}
+  constructor(@Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository) {}
 
   async execute(cmd: UpdateOrgLayersCommand): Promise<TOrgLayers> {
-
     const record = await this.companyRepo.findOne({ filter: { id: cmd.companyId } });
     if (!record) {
       throw new BusinessError('Company not found', { code: 'COMPANY_NOT_FOUND', status: 404 });

@@ -37,7 +37,11 @@ export class UpdateGuestProfileHandler implements ICommandHandler<UpdateGuestPro
 
     const creds = await this.credsRepo.findOne({ filter: { id: userId } });
     if (!creds) throw new BusinessError('User not found', { code: 'USER_NOT_FOUND', status: 404 });
-    if (!creds.is_guest) throw new BusinessError('Cannot edit a non-guest user here', { code: 'NOT_A_GUEST', status: 400 });
+    if (!creds.is_guest)
+      throw new BusinessError('Cannot edit a non-guest user here', {
+        code: 'NOT_A_GUEST',
+        status: 400,
+      });
 
     // Update email on credentials if changed
     if (patch.email && patch.email !== creds.email) {

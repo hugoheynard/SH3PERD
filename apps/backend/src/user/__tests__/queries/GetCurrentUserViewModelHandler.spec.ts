@@ -43,8 +43,9 @@ describe('GetCurrentUserViewModelHandler', () => {
   it('should throw if credentials not found', async () => {
     credsRepo.findOne.mockResolvedValue(null);
 
-    await expect(handler.execute(new GetCurrentUserViewModelQuery(uid)))
-      .rejects.toThrow(BusinessError);
+    await expect(handler.execute(new GetCurrentUserViewModelQuery(uid))).rejects.toThrow(
+      BusinessError,
+    );
   });
 
   it('should return undefined profile/preferences when they dont exist', async () => {

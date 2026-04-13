@@ -13,10 +13,10 @@ const SLACK_SCOPES = [
   'files:write',
 ].join(',');
 
-interface TSlackOAuthState {
+type TSlackOAuthState = {
   companyId: TCompanyId;
   userId: TUserId;
-}
+};
 
 @Injectable()
 export class SlackOAuthService {
@@ -65,7 +65,7 @@ export class SlackOAuthService {
       body: body.toString(),
     });
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       ok: boolean;
       access_token?: string;
       team?: { id: string };
@@ -82,7 +82,9 @@ export class SlackOAuthService {
   /** Verifies and decodes the state JWT. */
   verifyState(state: string): TSlackOAuthState {
     try {
-      const payload = jwt.verify(state, this.stateSecret, { algorithms: ['HS256'] }) as TSlackOAuthState;
+      const payload = jwt.verify(state, this.stateSecret, {
+        algorithms: ['HS256'],
+      }) as TSlackOAuthState;
       return { companyId: payload.companyId, userId: payload.userId };
     } catch {
       throw new Error('SLACK_INVALID_STATE');

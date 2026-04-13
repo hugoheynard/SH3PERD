@@ -27,7 +27,10 @@ export class UpdateUserProfileCommand {
  * Pattern: repo.findOne → hydrate entity → policy check → entity.mutate → repo.updateOne
  */
 @CommandHandler(UpdateUserProfileCommand)
-export class UpdateUserProfileHandler implements ICommandHandler<UpdateUserProfileCommand, UserProfileResponseDTO | null> {
+export class UpdateUserProfileHandler implements ICommandHandler<
+  UpdateUserProfileCommand,
+  UserProfileResponseDTO | null
+> {
   private readonly policy = new UserProfilePolicy();
 
   constructor(
@@ -40,7 +43,10 @@ export class UpdateUserProfileHandler implements ICommandHandler<UpdateUserProfi
     const record = await this.userProfileRepo.findOne({ filter: { user_id: targetUser_id } });
 
     if (!record) {
-      throw new BusinessError('User profile not found', { code: 'USER_PROFILE_NOT_FOUND', status: 404 });
+      throw new BusinessError('User profile not found', {
+        code: 'USER_PROFILE_NOT_FOUND',
+        status: 404,
+      });
     }
 
     const entity = new UserProfileEntity(record);

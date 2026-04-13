@@ -13,7 +13,10 @@ export class SearchUserByEmailQuery {
  * Searches for a user by email. Returns basic profile info if found, null otherwise.
  */
 @QueryHandler(SearchUserByEmailQuery)
-export class SearchUserByEmailHandler implements IQueryHandler<SearchUserByEmailQuery, TUserSearchResult | null> {
+export class SearchUserByEmailHandler implements IQueryHandler<
+  SearchUserByEmailQuery,
+  TUserSearchResult | null
+> {
   constructor(
     @Inject(USER_CREDENTIALS_REPO) private readonly credsRepo: IUserCredentialsRepository,
     @Inject(USER_PROFILE_REPO) private readonly profileRepo: IUserProfileRepository,

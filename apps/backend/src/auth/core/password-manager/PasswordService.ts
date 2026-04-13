@@ -7,7 +7,6 @@ import type { TComparePasswordResult } from '../../types/auth.core.contracts.js'
 import { HashParser } from './utils/HashParser.js';
 import { isRehashDueFromLastHashDate } from './utils/isRehashDueFromLastHashDate.js';
 
-
 export class PasswordService implements IPasswordService {
   private readonly registry: Record<string, IHasherStrategy>;
   private readonly currentStrategyKey: string;

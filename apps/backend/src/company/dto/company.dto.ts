@@ -80,7 +80,8 @@ export class TeamViewModelPayload {
   @ApiProperty({ required: false }) type?: string;
   @ApiProperty({ required: false }) color?: string;
   @ApiProperty() status!: string;
-  @ApiProperty({ type: () => [TeamMemberViewModelPayload] }) activeMembers!: TeamMemberViewModelPayload[];
+  @ApiProperty({ type: () => [TeamMemberViewModelPayload] })
+  activeMembers!: TeamMemberViewModelPayload[];
 }
 
 // ─── Org Node Hierarchy (recursive tree node) ─────────────

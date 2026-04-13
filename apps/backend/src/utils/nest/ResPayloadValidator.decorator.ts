@@ -9,11 +9,13 @@ import { PayloadValidationErrorResponseDto } from './PayloadValidationErrorRespo
  * @param options
  * @constructor
  */
-export function ResPayloadValidator(dtoOrSchema: any, options: { active?: boolean } = { active: true }) {
-
+export function ResPayloadValidator(
+  dtoOrSchema: any,
+  options: { active?: boolean } = { active: true },
+) {
   const schema = 'schema' in dtoOrSchema ? dtoOrSchema.schema.strict() : dtoOrSchema;
 
-  if( !options.active) {
+  if (!options.active) {
     return applyDecorators();
   }
   return applyDecorators(

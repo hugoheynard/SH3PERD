@@ -11,25 +11,19 @@ export type TCoreServices = {
   calendarService: CalendarService;
 };
 
-
 /**
  * Factory function to create core services.
  * @param deps
  * @returns An object containing the initialized core services.
  */
-export function createCoreServices(): TCoreServices{
-
-
-
+export function createCoreServices(): TCoreServices {
   try {
-
     /*
     const permissionService = new PermissionService({
       findContractPermissionsFn: repositories.contractRepository.getContractPermissions,
     });
 
      */
-
 
     const calendarService = new CalendarService({
       buildCalendarFn: buildCalendar,
@@ -38,10 +32,8 @@ export function createCoreServices(): TCoreServices{
       },
     });
 
-
     return {
-
-      calendarService
+      calendarService,
     };
   } catch (e: unknown) {
     if (e instanceof Error) {
@@ -49,4 +41,4 @@ export function createCoreServices(): TCoreServices{
     }
     throw new Error('Failed to initialize core services: unknown error');
   }
-};
+}

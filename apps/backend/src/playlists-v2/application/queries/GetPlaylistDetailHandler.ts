@@ -10,7 +10,12 @@ import type { IPlaylistRepository } from '../../repositories/PlaylistRepository.
 import type { IPlaylistTrackRepository } from '../../repositories/PlaylistTrackRepository.js';
 import type { IMusicReferenceRepository } from '../../../music/types/musicReferences.types.js';
 import type { IMusicVersionRepository } from '../../../music/repositories/MusicVersionRepository.js';
-import type { TUserId, TPlaylistId, TPlaylistDetailViewModel, TPlaylistTrackView } from '@sh3pherd/shared-types';
+import type {
+  TUserId,
+  TPlaylistId,
+  TPlaylistDetailViewModel,
+  TPlaylistTrackView,
+} from '@sh3pherd/shared-types';
 import { PlaylistEntity } from '../../domain/PlaylistEntity.js';
 
 export class GetPlaylistDetailQuery {
@@ -21,7 +26,10 @@ export class GetPlaylistDetailQuery {
 }
 
 @QueryHandler(GetPlaylistDetailQuery)
-export class GetPlaylistDetailHandler implements IQueryHandler<GetPlaylistDetailQuery, TPlaylistDetailViewModel> {
+export class GetPlaylistDetailHandler implements IQueryHandler<
+  GetPlaylistDetailQuery,
+  TPlaylistDetailViewModel
+> {
   constructor(
     @Inject(PLAYLIST_REPO) private readonly playlistRepo: IPlaylistRepository,
     @Inject(PLAYLIST_TRACK_REPO) private readonly trackRepo: IPlaylistTrackRepository,
@@ -40,21 +48,21 @@ export class GetPlaylistDetailHandler implements IQueryHandler<GetPlaylistDetail
     const tracks = await this.trackRepo.findByPlaylistId(query.playlistId);
 
     // Resolve references and versions
-    const refIds = [...new Set(tracks.map(t => t.referenceId))];
-    const versionIds = [...new Set(tracks.map(t => t.versionId))];
+    const refIds = [...new Set(tracks.map((t) => t.referenceId))];
+    const versionIds = [...new Set(tracks.map((t) => t.versionId))];
 
     const [refs, versions] = await Promise.all([
       refIds.length > 0 ? this.refRepo.findByIds(refIds) : Promise.resolve([]),
-      Promise.all(versionIds.map(vid => this.versionRepo.findOneByVersionId(vid))),
+      Promise.all(versionIds.map((vid) => this.versionRepo.findOneByVersionId(vid))),
     ]);
 
-    const refMap = new Map(refs.map(r => [r.id, r]));
+    const refMap = new Map(refs.map((r) => [r.id, r]));
     const versionMap = new Map(
-      versions.filter((v): v is NonNullable<typeof v> => v !== null).map(v => [v.id, v]),
+      versions.filter((v): v is NonNullable<typeof v> => v !== null).map((v) => [v.id, v]),
     );
 
     // Build track views
-    const trackViews: TPlaylistTrackView[] = tracks.map(t => {
+    const trackViews: TPlaylistTrackView[] = tracks.map((t) => {
       const ref = refMap.get(t.referenceId);
       const version = versionMap.get(t.versionId);
       return {

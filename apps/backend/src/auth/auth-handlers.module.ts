@@ -6,12 +6,7 @@ import { LoginHandler } from './application/commands/LoginCommand.js';
 import { RefreshSessionHandler } from './application/commands/RefreshSessionCommand.js';
 import { LogoutHandler } from './application/commands/LogoutCommand.js';
 
-const CommandHandlers = [
-  RegisterUserHandler,
-  LoginHandler,
-  RefreshSessionHandler,
-  LogoutHandler,
-];
+const CommandHandlers = [RegisterUserHandler, LoginHandler, RefreshSessionHandler, LogoutHandler];
 
 @Module({
   imports: [CqrsModule, AuthCoreModule],

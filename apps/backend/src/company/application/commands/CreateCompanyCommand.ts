@@ -49,7 +49,10 @@ export class CreateCompanyCommand {
  * @throws TechnicalError COMPANY_CREATE_FAILED (500) — transaction failed.
  */
 @CommandHandler(CreateCompanyCommand)
-export class CreateCompanyHandler implements ICommandHandler<CreateCompanyCommand, TCreateCompanyResult> {
+export class CreateCompanyHandler implements ICommandHandler<
+  CreateCompanyCommand,
+  TCreateCompanyResult
+> {
   constructor(
     @Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository,
     @Inject(CONTRACT_REPO) private readonly contractRepo: IContractRepository,

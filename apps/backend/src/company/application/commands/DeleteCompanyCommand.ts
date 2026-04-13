@@ -25,10 +25,11 @@ export type TDeleteCompanyResult = { id: TCompanyId };
  * @throws BusinessError COMPANY_NOT_OWNED (403) — actor is not the owner
  */
 @CommandHandler(DeleteCompanyCommand)
-export class DeleteCompanyHandler implements ICommandHandler<DeleteCompanyCommand, TDeleteCompanyResult> {
-  constructor(
-    @Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository,
-  ) {}
+export class DeleteCompanyHandler implements ICommandHandler<
+  DeleteCompanyCommand,
+  TDeleteCompanyResult
+> {
+  constructor(@Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository) {}
 
   async execute(cmd: DeleteCompanyCommand): Promise<TDeleteCompanyResult> {
     const { companyId, actorId } = cmd;
@@ -38,7 +39,10 @@ export class DeleteCompanyHandler implements ICommandHandler<DeleteCompanyComman
       throw new BusinessError('Company not found', { code: 'COMPANY_NOT_FOUND', status: 404 });
     }
     if (record.owner_id !== actorId) {
-      throw new BusinessError('Only the owner can delete', { code: 'COMPANY_NOT_OWNED', status: 403 });
+      throw new BusinessError('Only the owner can delete', {
+        code: 'COMPANY_NOT_OWNED',
+        status: 403,
+      });
     }
 
     await this.companyRepo.deleteOne({ id: companyId });

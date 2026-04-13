@@ -1,17 +1,14 @@
-import { BaseUseCaseBuilder } from "./BaseUseCaseBuilder.js";
-
+import { BaseUseCaseBuilder } from './BaseUseCaseBuilder.js';
 
 export type RepoConfig<TFn> = {
   fn: TFn;
   error?: string;
-}
-
+};
 
 export class BaseCRUDUseCaseBuilder<
   TFn extends (input: any) => Promise<any>,
-  TRepoFn extends (input: any) => Promise<any>
->
-  extends BaseUseCaseBuilder <TFn>{
+  TRepoFn extends (input: any) => Promise<any>,
+> extends BaseUseCaseBuilder<TFn> {
   repo?: RepoConfig<TRepoFn>;
   private postProcessors: ((doc: any) => Promise<ReturnType<TFn>>)[] = [];
 
@@ -20,14 +17,13 @@ export class BaseCRUDUseCaseBuilder<
    * @param input
    */
   withRepo(input: RepoConfig<TRepoFn>): this {
-
     if (this.repo?.fn) {
-      throw new Error("REPO_FN_ALREADY_CONFIGURED");
+      throw new Error('REPO_FN_ALREADY_CONFIGURED');
     }
 
     this.repo = input;
     return this;
-  };
+  }
 
   /**
    * Core processing function that invokes the configured repository function
@@ -37,11 +33,11 @@ export class BaseCRUDUseCaseBuilder<
    */
   protected async processCoreFn(input: Parameters<TRepoFn>[0]): Promise<ReturnType<TRepoFn>> {
     if (!this.repo) {
-      throw new Error("REPO_NOT_CONFIGURED");
+      throw new Error('REPO_NOT_CONFIGURED');
     }
 
     return this.repo.fn(input);
-  };
+  }
 
   /**
    * Post treatment of the document before returning it
@@ -50,6 +46,5 @@ export class BaseCRUDUseCaseBuilder<
   withPostProcessing(fn: (doc: any) => Promise<ReturnType<TFn>>) {
     this.postProcessors.push(fn);
     return this;
-  };
-
+  }
 }

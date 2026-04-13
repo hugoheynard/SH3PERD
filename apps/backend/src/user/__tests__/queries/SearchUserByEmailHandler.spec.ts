@@ -1,5 +1,14 @@
-import { SearchUserByEmailQuery, SearchUserByEmailHandler } from '../../application/query/SearchUserByEmailQuery.js';
-import { userId, makeCredentialsRecord, makeProfileRecord, mockCredsRepo, mockProfileRepo } from '../test-helpers.js';
+import {
+  SearchUserByEmailQuery,
+  SearchUserByEmailHandler,
+} from '../../application/query/SearchUserByEmailQuery.js';
+import {
+  userId,
+  makeCredentialsRecord,
+  makeProfileRecord,
+  mockCredsRepo,
+  mockProfileRepo,
+} from '../test-helpers.js';
 
 describe('SearchUserByEmailHandler', () => {
   const credsRepo = mockCredsRepo();

@@ -1,8 +1,4 @@
-import {
-  applyDecorators,
-  SetMetadata,
-  UseGuards,
-} from '@nestjs/common';
+import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
 import { PlatformContractContextGuard } from '../../../platform-contract/api/platform-contract-context.guard.js';
 
 export const PLATFORM_SCOPED_KEY: string = 'platformScoped';

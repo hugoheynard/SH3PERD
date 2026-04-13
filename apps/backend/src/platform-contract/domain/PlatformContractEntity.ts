@@ -20,7 +20,10 @@ import type { TPlatformRole, TUserId } from '@sh3pherd/shared-types';
 export class PlatformContractEntity extends Entity<TPlatformContractDomainModel> {
   private static readonly VALID_STATUSES = new Set(['active', 'suspended']);
   private static readonly VALID_PLANS = new Set([
-    'plan_free', 'plan_pro', 'plan_band', 'plan_business',
+    'plan_free',
+    'plan_pro',
+    'plan_band',
+    'plan_business',
   ]);
 
   constructor(props: TEntityInput<TPlatformContractDomainModel>) {
@@ -38,12 +41,22 @@ export class PlatformContractEntity extends Entity<TPlatformContractDomainModel>
 
   // ── Getters ──────────────────────────────────────────
 
-  get user_id(): TUserId { return this.props.user_id; }
-  get plan(): TPlatformRole { return this.props.plan; }
-  get status(): 'active' | 'suspended' { return this.props.status; }
-  get startDate(): Date { return this.props.startDate; }
+  get user_id(): TUserId {
+    return this.props.user_id;
+  }
+  get plan(): TPlatformRole {
+    return this.props.plan;
+  }
+  get status(): 'active' | 'suspended' {
+    return this.props.status;
+  }
+  get startDate(): Date {
+    return this.props.startDate;
+  }
 
-  get isActive(): boolean { return this.props.status === 'active'; }
+  get isActive(): boolean {
+    return this.props.status === 'active';
+  }
 
   // ── Mutations ────────────────────────────────────────
 

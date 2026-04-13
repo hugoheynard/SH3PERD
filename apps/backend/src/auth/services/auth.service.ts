@@ -13,7 +13,8 @@ import type { IRefreshTokenRepository } from '../repositories/RefreshTokenMongoR
 import type { TAuthConfig } from '../types/auth.domain.config.js';
 import type { TCreateAuthSessionResult, TSecureCookieConfig } from '../types/auth.domain.tokens.js';
 import type {
-  TGenericRepoFindOneFn, TGenericSaveFn,
+  TGenericRepoFindOneFn,
+  TGenericSaveFn,
 } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 import type { TRefreshTokenRecord, TUserId } from '@sh3pherd/shared-types';
 import { Inject, Injectable } from '@nestjs/common';
@@ -40,7 +41,10 @@ export type TAuthTokenServiceDeps = {
   deleteAllRefreshTokensForUserFn: IRefreshTokenRepository['deleteMany'];
   secureCookieConfig: TSecureCookieConfig;
 };
-export type TRotateSessionFn = (input: { user_id: TUserId; family_id: string }) => Promise<TCreateAuthSessionResult>;
+export type TRotateSessionFn = (input: {
+  user_id: TUserId;
+  family_id: string;
+}) => Promise<TCreateAuthSessionResult>;
 
 export type IAuthTokenService = {
   createAuthSession: TCreateAuthSessionFn;
@@ -62,14 +66,13 @@ export type IAuthTokenService = {
  * - Revoking refresh tokens
  */
 @Injectable()
-export class AuthService
-  implements IAuthTokenService {
-
+export class AuthService implements IAuthTokenService {
   constructor(
-    @Inject(REFRESH_TOKEN_SERVICE) private readonly refreshTokenService:IAbstractRefreshTokenService,
+    @Inject(REFRESH_TOKEN_SERVICE)
+    private readonly refreshTokenService: IAbstractRefreshTokenService,
     @Inject(JWT_SERVICE) private readonly jwtService: IAbstractJWTService,
     @Inject(REFRESH_TOKEN_REPO) private readonly refreshRepo: IRefreshTokenRepository,
-    ){}
+  ) {}
 
   /**
    * Creates a full authentication session for a given user.
@@ -92,7 +95,9 @@ export class AuthService
     //generate a new refresh and auth token
     const authToken = await this.jwtService.generateAuthToken({ payload: { user_id } });
     const refreshToken = await this.refreshTokenService.generateRefreshToken({ user_id });
-    const refreshTokenSecureCookie = this.refreshTokenService.generateRefreshTokenCookie({ refreshToken });
+    const refreshTokenSecureCookie = this.refreshTokenService.generateRefreshTokenCookie({
+      refreshToken,
+    });
 
     return { authToken, refreshToken, refreshTokenSecureCookie };
   };
@@ -105,8 +110,13 @@ export class AuthService
     const { user_id, family_id } = input;
 
     const authToken = await this.jwtService.generateAuthToken({ payload: { user_id } });
-    const refreshToken = await this.refreshTokenService.generateRefreshToken({ user_id, family_id });
-    const refreshTokenSecureCookie = this.refreshTokenService.generateRefreshTokenCookie({ refreshToken });
+    const refreshToken = await this.refreshTokenService.generateRefreshToken({
+      user_id,
+      family_id,
+    });
+    const refreshTokenSecureCookie = this.refreshTokenService.generateRefreshTokenCookie({
+      refreshToken,
+    });
 
     return { authToken, refreshToken, refreshTokenSecureCookie };
   };

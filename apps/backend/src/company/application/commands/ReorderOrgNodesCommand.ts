@@ -25,15 +25,15 @@ export class ReorderOrgNodesCommand {
  */
 @CommandHandler(ReorderOrgNodesCommand)
 export class ReorderOrgNodesHandler implements ICommandHandler<ReorderOrgNodesCommand, void> {
-  constructor(
-    @Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository,
-  ) {}
+  constructor(@Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository) {}
 
   async execute(cmd: ReorderOrgNodesCommand): Promise<void> {
     const { companyId, parentId, orderedIds } = cmd;
 
     // Load all active siblings for this parent
-    const parentFilter = parentId ? { parent_id: parentId } : { $or: [{ parent_id: { $exists: false } }, { parent_id: null }] };
+    const parentFilter = parentId
+      ? { parent_id: parentId }
+      : { $or: [{ parent_id: { $exists: false } }, { parent_id: null }] };
     const allNodes = await this.orgNodeRepo.findMany({
       filter: { company_id: companyId, ...parentFilter, status: 'active' } as any,
     });
@@ -41,11 +41,14 @@ export class ReorderOrgNodesHandler implements ICommandHandler<ReorderOrgNodesCo
     const siblings = allNodes ?? [];
 
     // Validate: orderedIds must contain exactly the same IDs as siblings
-    const siblingIds = new Set(siblings.map(n => n.id));
+    const siblingIds = new Set(siblings.map((n) => n.id));
     const orderedSet = new Set(orderedIds);
 
-    if (siblingIds.size !== orderedSet.size || ![...siblingIds].every(id => orderedSet.has(id))) {
-      throw new BusinessError('Ordered IDs do not match siblings', { code: 'REORDER_IDS_MISMATCH', status: 400 });
+    if (siblingIds.size !== orderedSet.size || ![...siblingIds].every((id) => orderedSet.has(id))) {
+      throw new BusinessError('Ordered IDs do not match siblings', {
+        code: 'REORDER_IDS_MISMATCH',
+        status: 400,
+      });
     }
 
     // Batch update positions

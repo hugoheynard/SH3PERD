@@ -25,7 +25,8 @@ export default (): {
     // Dedicated HMAC secret for single-use print JWTs.
     // Falls back to JWT_PRIVATE_KEY so dev setups work out of the box; set PRINT_SECRET
     // in production to decouple the print token surface from the main auth keys.
-    secret: process.env['PRINT_SECRET'] ?? process.env['JWT_PRIVATE_KEY'] ?? 'dev-print-secret-change-me',
+    secret:
+      process.env['PRINT_SECRET'] ?? process.env['JWT_PRIVATE_KEY'] ?? 'dev-print-secret-change-me',
     // Override the Chromium binary — useful for Alpine/Lambda/slim containers
     // where you mount a layer or a system package instead of the bundled Chromium.
     chromiumPath: process.env['CHROMIUM_EXECUTABLE_PATH'],

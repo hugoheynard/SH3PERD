@@ -20,15 +20,21 @@ export class RefreshSessionCommand {
 }
 
 @CommandHandler(RefreshSessionCommand)
-export class RefreshSessionHandler implements ICommandHandler<RefreshSessionCommand, TRefreshSessionResult> {
+export class RefreshSessionHandler implements ICommandHandler<
+  RefreshSessionCommand,
+  TRefreshSessionResult
+> {
   constructor(
     @Inject(REFRESH_TOKEN_REPO) private readonly refreshTokenRepo: IRefreshTokenRepository,
-    @Inject(REFRESH_TOKEN_SERVICE) private readonly refreshTokenService: IAbstractRefreshTokenService,
+    @Inject(REFRESH_TOKEN_SERVICE)
+    private readonly refreshTokenService: IAbstractRefreshTokenService,
     @Inject(AUTH_SERVICE) private readonly authService: IAuthTokenService,
   ) {}
 
   async execute(cmd: RefreshSessionCommand): Promise<TRefreshSessionResult> {
-    const token = await this.refreshTokenRepo.findOne({ filter: { refreshToken: cmd.refreshToken } });
+    const token = await this.refreshTokenRepo.findOne({
+      filter: { refreshToken: cmd.refreshToken },
+    });
 
     if (!token) {
       throw new BusinessError('Refresh token not found', { code: 'TOKEN_NOT_FOUND', status: 401 });
@@ -38,7 +44,10 @@ export class RefreshSessionHandler implements ICommandHandler<RefreshSessionComm
     // Invalidate the entire token family to protect the user.
     if (token.isRevoked) {
       await this.refreshTokenRepo.deleteMany({ family_id: token.family_id });
-      throw new BusinessError('Token reuse detected — all sessions in this family have been revoked', { code: 'TOKEN_REUSE_DETECTED', status: 401 });
+      throw new BusinessError(
+        'Token reuse detected — all sessions in this family have been revoked',
+        { code: 'TOKEN_REUSE_DETECTED', status: 401 },
+      );
     }
 
     const isValid = this.refreshTokenService.verifyRefreshToken({ refreshTokenDomainModel: token });

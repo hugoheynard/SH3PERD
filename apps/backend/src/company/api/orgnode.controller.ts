@@ -5,7 +5,13 @@ import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { buildApiResponseDTO } from '../../music/codes.js';
 import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { P } from '@sh3pherd/shared-types';
-import type { TOrgNodeId, TCompanyId, TUserId, TOrgNodeDomainModel, TApiResponse } from '@sh3pherd/shared-types';
+import type {
+  TOrgNodeId,
+  TCompanyId,
+  TUserId,
+  TOrgNodeDomainModel,
+  TApiResponse,
+} from '@sh3pherd/shared-types';
 import type { TTeamType, TOrgNodeCommunication } from '@sh3pherd/shared-types';
 import { COMPANY_CODES_SUCCESS } from './company.codes.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
@@ -30,7 +36,8 @@ export class OrgNodeCrudController {
   @RequirePermission(P.Company.OrgChart.Write)
   @Post()
   async createOrgNode(
-    @Body() dto: {
+    @Body()
+    dto: {
       company_id: TCompanyId;
       name: string;
       parent_id?: TOrgNodeId;
@@ -76,12 +83,8 @@ export class OrgNodeCrudController {
   @ApiResponse({ status: 200, description: 'Node ungrouped.' })
   @RequirePermission(P.Company.OrgChart.Write)
   @Post('ungroup')
-  async ungroupOrgNode(
-    @Body() body: { companyId: TCompanyId; nodeId: TOrgNodeId },
-  ) {
-    await this.commandBus.execute(
-      new UngroupOrgNodeCommand(body.companyId, body.nodeId),
-    );
+  async ungroupOrgNode(@Body() body: { companyId: TCompanyId; nodeId: TOrgNodeId }) {
+    await this.commandBus.execute(new UngroupOrgNodeCommand(body.companyId, body.nodeId));
     return { ok: true };
   }
 
@@ -92,7 +95,13 @@ export class OrgNodeCrudController {
   @Patch(':nodeId')
   async updateOrgNode(
     @Param('nodeId') nodeId: TOrgNodeId,
-    @Body() body: { name?: string; color?: string; type?: TTeamType; communications?: TOrgNodeCommunication[] },
+    @Body()
+    body: {
+      name?: string;
+      color?: string;
+      type?: TTeamType;
+      communications?: TOrgNodeCommunication[];
+    },
     @ActorId() actorId: TUserId,
   ) {
     const result = await this.commandBus.execute(
@@ -107,10 +116,7 @@ export class OrgNodeCrudController {
   @RequirePermission(P.Company.OrgChart.Write)
   @HttpCode(204)
   @Delete(':nodeId')
-  async archiveOrgNode(
-    @Param('nodeId') nodeId: TOrgNodeId,
-    @ActorId() actorId: TUserId,
-  ) {
+  async archiveOrgNode(@Param('nodeId') nodeId: TOrgNodeId, @ActorId() actorId: TUserId) {
     await this.commandBus.execute(new ArchiveOrgNodeCommand(nodeId, actorId));
   }
 }

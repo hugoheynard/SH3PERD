@@ -14,14 +14,16 @@ export class GetOrgNodeMembersQuery {
 }
 
 @QueryHandler(GetOrgNodeMembersQuery)
-export class GetOrgNodeMembersHandler implements IQueryHandler<GetOrgNodeMembersQuery, TOrgNodeMember[]> {
-  constructor(
-    @Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository,
-  ) {}
+export class GetOrgNodeMembersHandler implements IQueryHandler<
+  GetOrgNodeMembersQuery,
+  TOrgNodeMember[]
+> {
+  constructor(@Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository) {}
 
   async execute(query: GetOrgNodeMembersQuery): Promise<TOrgNodeMember[]> {
     const record = await this.orgNodeRepo.findOne({ filter: { id: query.orgNodeId } });
-    if (!record) throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
+    if (!record)
+      throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
 
     const entity = new OrgNodeEntity(record);
     return query.at ? entity.getMembersAt(query.at) : entity.getActiveMembers();

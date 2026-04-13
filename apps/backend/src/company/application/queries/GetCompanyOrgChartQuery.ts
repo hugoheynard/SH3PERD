@@ -23,7 +23,10 @@ export class GetCompanyOrgChartQuery {
  * Depth is computed at read time — not stored.
  */
 @QueryHandler(GetCompanyOrgChartQuery)
-export class GetCompanyOrgChartHandler implements IQueryHandler<GetCompanyOrgChartQuery, TCompanyOrgChartViewModel> {
+export class GetCompanyOrgChartHandler implements IQueryHandler<
+  GetCompanyOrgChartQuery,
+  TCompanyOrgChartViewModel
+> {
   constructor(
     @Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository,
     @Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository,
@@ -38,18 +41,18 @@ export class GetCompanyOrgChartHandler implements IQueryHandler<GetCompanyOrgCha
 
     // Collect all active member user IDs for profile enrichment
     const allUserIds = [
-      ...new Set(
-        allNodes.flatMap(n => n.members.filter(m => !m.leftAt).map(m => m.user_id)),
-      ),
+      ...new Set(allNodes.flatMap((n) => n.members.filter((m) => !m.leftAt).map((m) => m.user_id))),
     ];
 
-    const profiles = allUserIds.length > 0
-      ? ((await this.profileRepo.findMany({ filter: { user_id: { $in: allUserIds } } as any })) ?? [])
-      : [];
-    const profileMap = new Map(profiles.map(p => [p.user_id as TUserId, p]));
+    const profiles =
+      allUserIds.length > 0
+        ? ((await this.profileRepo.findMany({ filter: { user_id: { $in: allUserIds } } as any })) ??
+          [])
+        : [];
+    const profileMap = new Map(profiles.map((p) => [p.user_id, p]));
 
     const toMemberVM = (m: TOrgNodeRecord['members'][number]): TOrgNodeMemberViewModel => {
-      const profile = profileMap.get(m.user_id as TUserId);
+      const profile = profileMap.get(m.user_id);
       return {
         user_id: m.user_id,
         contract_id: m.contract_id,
@@ -64,24 +67,30 @@ export class GetCompanyOrgChartHandler implements IQueryHandler<GetCompanyOrgCha
 
     // Build tree recursively — depth computed by position in the tree
     const buildTree = (parentId: string | undefined): TOrgNodeHierarchyViewModel[] => {
-      const children = allNodes.filter(n =>
+      const children = allNodes.filter((n) =>
         parentId === undefined ? !n.parent_id : n.parent_id === parentId,
       );
 
       return children
-        .sort((a, b) => (a.position ?? Infinity) - (b.position ?? Infinity) || (a.name ?? '').localeCompare(b.name ?? ''))
-        .map((node): TOrgNodeHierarchyViewModel => ({
-          id: node.id,
-          name: node.name,
-          parent_id: node.parent_id,
-          type: node.type,
-          color: node.color,
-          communications: node.communications ?? [],
-          status: node.status,
-          members: node.members.filter(m => !m.leftAt).map(toMemberVM),
-          guest_members: node.guest_members ?? [],
-          children: buildTree(node.id),
-        }));
+        .sort(
+          (a, b) =>
+            (a.position ?? Infinity) - (b.position ?? Infinity) ||
+            (a.name ?? '').localeCompare(b.name ?? ''),
+        )
+        .map(
+          (node): TOrgNodeHierarchyViewModel => ({
+            id: node.id,
+            name: node.name,
+            parent_id: node.parent_id,
+            type: node.type,
+            color: node.color,
+            communications: node.communications ?? [],
+            status: node.status,
+            members: node.members.filter((m) => !m.leftAt).map(toMemberVM),
+            guest_members: node.guest_members ?? [],
+            children: buildTree(node.id),
+          }),
+        );
     };
 
     return {

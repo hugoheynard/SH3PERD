@@ -22,10 +22,7 @@ export class BusinessError extends Error {
   public readonly code: string;
   public readonly status: number;
 
-  constructor(
-    message: string,
-    options: { code: string; status?: number },
-  ) {
+  constructor(message: string, options: { code: string; status?: number }) {
     super(message);
     this.code = options.code;
     this.status = options.status ?? 400;

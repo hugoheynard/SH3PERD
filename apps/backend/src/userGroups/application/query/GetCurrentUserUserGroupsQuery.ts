@@ -6,8 +6,10 @@ import { USER_GROUPS_BY_CONTRACT_ASSEMBLER } from '../../user-groups.tokens.js';
 import type { UserGroupListByContractAssembler } from '../UserGroupListByContractAssembler.js';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-export type TGetCurrentUserUserGroupsUseCase = (input: { requestDTO: Filter<TUserGroupRecord>; context: TUseCaseContext<'scoped'>; }) => Promise<TUserGroupListViewModel>;
-
+export type TGetCurrentUserUserGroupsUseCase = (input: {
+  requestDTO: Filter<TUserGroupRecord>;
+  context: TUseCaseContext<'scoped'>;
+}) => Promise<TUserGroupListViewModel>;
 
 export class GetCurrentUserUserGroupsQuery {
   constructor(
@@ -16,7 +18,6 @@ export class GetCurrentUserUserGroupsQuery {
   ) {}
 }
 
-
 /**
  * GetCurrentUserUserGroups use case
  * @description Use case to get the user groups of the current user scoped to the current contract
@@ -24,10 +25,14 @@ export class GetCurrentUserUserGroupsQuery {
  */
 @QueryHandler(GetCurrentUserUserGroupsQuery)
 @Injectable()
-export class GetCurrentUserUserGroupsHandler implements IQueryHandler<GetCurrentUserUserGroupsQuery, TUserGroupListViewModel>{
+export class GetCurrentUserUserGroupsHandler implements IQueryHandler<
+  GetCurrentUserUserGroupsQuery,
+  TUserGroupListViewModel
+> {
   constructor(
-    @Inject(USER_GROUPS_BY_CONTRACT_ASSEMBLER) private readonly assembler: UserGroupListByContractAssembler,
-  ) {};
+    @Inject(USER_GROUPS_BY_CONTRACT_ASSEMBLER)
+    private readonly assembler: UserGroupListByContractAssembler,
+  ) {}
 
   async execute(input: GetCurrentUserUserGroupsQuery): Promise<TUserGroupListViewModel> {
     const { requestDTO, context } = input;
@@ -37,6 +42,5 @@ export class GetCurrentUserUserGroupsHandler implements IQueryHandler<GetCurrent
     console.log('GetCurrentUserUserGroupsUseCase', requestDTO);
 
     return result;
-  };
+  }
 }
-

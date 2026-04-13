@@ -1,4 +1,7 @@
-import { GetUserProfileQuery, GetUserProfileHandler } from '../../application/query/GetUserProfileQuery.js';
+import {
+  GetUserProfileQuery,
+  GetUserProfileHandler,
+} from '../../application/query/GetUserProfileQuery.js';
 import { userId, makeProfileRecord, mockProfileRepo } from '../test-helpers.js';
 
 describe('GetUserProfileHandler', () => {

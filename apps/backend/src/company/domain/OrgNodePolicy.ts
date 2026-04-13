@@ -10,7 +10,9 @@ export class OrgNodePolicy {
 
   ensureCanManageMembers(actorId: string | undefined): void {
     if (!actorId) {
-      throw new DomainError('Actor required to manage node members', { code: 'ORGNODE_UNAUTHORIZED' });
+      throw new DomainError('Actor required to manage node members', {
+        code: 'ORGNODE_UNAUTHORIZED',
+      });
     }
   }
 }

@@ -28,7 +28,10 @@ export class RemoveOrgNodeMemberCommand {
  * Removes a member from an org node. Creates an audit event.
  */
 @CommandHandler(RemoveOrgNodeMemberCommand)
-export class RemoveOrgNodeMemberHandler implements ICommandHandler<RemoveOrgNodeMemberCommand, TOrgMembershipEventRecord> {
+export class RemoveOrgNodeMemberHandler implements ICommandHandler<
+  RemoveOrgNodeMemberCommand,
+  TOrgMembershipEventRecord
+> {
   private readonly policy = new OrgNodePolicy();
 
   constructor(
@@ -40,7 +43,8 @@ export class RemoveOrgNodeMemberHandler implements ICommandHandler<RemoveOrgNode
     const { dto, actorId } = cmd;
 
     const record = await this.orgNodeRepo.findOne({ filter: { id: dto.org_node_id } });
-    if (!record) throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
+    if (!record)
+      throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
 
     const entity = new OrgNodeEntity(record);
     this.policy.ensureActive(entity);

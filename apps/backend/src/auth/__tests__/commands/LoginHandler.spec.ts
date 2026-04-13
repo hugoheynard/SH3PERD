@@ -14,7 +14,11 @@ describe('LoginHandler', () => {
     const passwordService = mockPasswordService();
     const authService = mockAuthService();
 
-    const handler = new (LoginHandler as any)(userCredRepo, passwordService, authService) as LoginHandler;
+    const handler = new (LoginHandler as any)(
+      userCredRepo,
+      passwordService,
+      authService,
+    ) as LoginHandler;
     return { handler, userCredRepo, passwordService, authService };
   }
 
@@ -62,9 +66,7 @@ describe('LoginHandler', () => {
       userCredRepo.findOne.mockResolvedValue({ ...validUser, active: false });
 
       try {
-        await handler.execute(
-          new LoginCommand({ email: 'test@example.com', password: 'correct' }),
-        );
+        await handler.execute(new LoginCommand({ email: 'test@example.com', password: 'correct' }));
         fail('Should have thrown');
       } catch (e) {
         expect((e as BusinessError).errorCode).toBe('USER_DEACTIVATED');
@@ -78,9 +80,7 @@ describe('LoginHandler', () => {
       passwordService.comparePassword.mockResolvedValue({ isValid: false, wasRehashed: false });
 
       try {
-        await handler.execute(
-          new LoginCommand({ email: 'test@example.com', password: 'wrong' }),
-        );
+        await handler.execute(new LoginCommand({ email: 'test@example.com', password: 'wrong' }));
         fail('Should have thrown');
       } catch (e) {
         expect((e as BusinessError).errorCode).toBe('INVALID_CREDENTIALS');
@@ -92,9 +92,7 @@ describe('LoginHandler', () => {
       userCredRepo.findOne.mockResolvedValue(validUser);
       passwordService.comparePassword.mockResolvedValue({ isValid: true, wasRehashed: false });
 
-      await handler.execute(
-        new LoginCommand({ email: 'test@example.com', password: 'correct' }),
-      );
+      await handler.execute(new LoginCommand({ email: 'test@example.com', password: 'correct' }));
 
       expect(authService.createAuthSession).toHaveBeenCalledWith({ user_id: validUser.id });
     });

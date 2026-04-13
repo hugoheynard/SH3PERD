@@ -13,7 +13,7 @@ export function resolveAncestors(
   allTeams: Pick<TTeamDomainModel, 'id' | 'parent_id'>[],
 ): TTeamId[] {
   const ancestors: TTeamId[] = [];
-  const teamMap = new Map(allTeams.map(t => [t.id, t]));
+  const teamMap = new Map(allTeams.map((t) => [t.id, t]));
 
   let current = teamMap.get(teamId);
   while (current?.parent_id) {
@@ -41,7 +41,7 @@ export function resolveDescendants(
 
   while (queue.length > 0) {
     const currentId = queue.shift()!;
-    const children = allTeams.filter(t => t.parent_id === currentId);
+    const children = allTeams.filter((t) => t.parent_id === currentId);
     for (const child of children) {
       descendants.push(child.id);
       queue.push(child.id);
@@ -70,15 +70,13 @@ export function resolveTeamRole(
   targetTeamId: TTeamId,
   allTeams: Pick<TTeamDomainModel, 'id' | 'parent_id' | 'members'>[],
 ): TTeamRole | null {
-  const teamMap = new Map(allTeams.map(t => [t.id, t]));
+  const teamMap = new Map(allTeams.map((t) => [t.id, t]));
 
   // 1. Direct membership (overrides inherited)
   const targetTeam = teamMap.get(targetTeamId);
   if (!targetTeam) return null;
 
-  const directMember = targetTeam.members.find(
-    m => m.user_id === userId && !m.leftAt,
-  );
+  const directMember = targetTeam.members.find((m) => m.user_id === userId && !m.leftAt);
   if (directMember) return directMember.team_role;
 
   // 2. Walk ancestors upward
@@ -87,9 +85,7 @@ export function resolveTeamRole(
     const ancestor = teamMap.get(ancestorId);
     if (!ancestor) continue;
 
-    const inheritedMember = ancestor.members.find(
-      m => m.user_id === userId && !m.leftAt,
-    );
+    const inheritedMember = ancestor.members.find((m) => m.user_id === userId && !m.leftAt);
     if (inheritedMember) return inheritedMember.team_role;
   }
 

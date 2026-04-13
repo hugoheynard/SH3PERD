@@ -19,7 +19,10 @@ export class UpdateUserPreferencesCommand {
  * Pattern: repo.findOne → hydrate entity → mutate → repo.updateOne
  */
 @CommandHandler(UpdateUserPreferencesCommand)
-export class UpdateUserPreferencesHandler implements ICommandHandler<UpdateUserPreferencesCommand, TUserPreferencesDomainModel> {
+export class UpdateUserPreferencesHandler implements ICommandHandler<
+  UpdateUserPreferencesCommand,
+  TUserPreferencesDomainModel
+> {
   constructor(
     @Inject(USER_PREFERENCES_REPO) private readonly prefsRepo: IUserPreferencesRepository,
   ) {}
@@ -27,7 +30,10 @@ export class UpdateUserPreferencesHandler implements ICommandHandler<UpdateUserP
   async execute(cmd: UpdateUserPreferencesCommand): Promise<TUserPreferencesDomainModel> {
     const record = await this.prefsRepo.findOne({ filter: { user_id: cmd.userId } });
     if (!record) {
-      throw new BusinessError('User preferences not found', { code: 'USER_PREFERENCES_NOT_FOUND', status: 404 });
+      throw new BusinessError('User preferences not found', {
+        code: 'USER_PREFERENCES_NOT_FOUND',
+        status: 404,
+      });
     }
 
     const entity = new UserPreferences(RecordMetadataUtils.stripDocMetadata(record));

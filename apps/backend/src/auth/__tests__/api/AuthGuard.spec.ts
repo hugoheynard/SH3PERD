@@ -14,10 +14,12 @@ describe('AuthGuard', () => {
     return { guard, reflector, verifyAuthTokenFn };
   }
 
-  function mockContext(options: {
-    authHeader?: string;
-    isPublic?: boolean;
-  } = {}) {
+  function mockContext(
+    options: {
+      authHeader?: string;
+      isPublic?: boolean;
+    } = {},
+  ) {
     const request: any = {
       headers: {},
     };

@@ -22,7 +22,10 @@ export const getMongoClient = async (input: { uri: string }): Promise<MongoClien
     return cachedClient;
   } catch (error: unknown) {
     if (error instanceof Error) {
-      throw new TechnicalError('MongoDB connection failed', { code: 'MONGO_CLIENT_INIT_FAILED', cause: error as Error });
+      throw new TechnicalError('MongoDB connection failed', {
+        code: 'MONGO_CLIENT_INIT_FAILED',
+        cause: error,
+      });
     }
 
     // fallback pour les erreurs non typées

@@ -1,11 +1,12 @@
-import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import {
+  BaseMongoRepository,
+  type TBaseMongoRepoDeps,
+} from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { TRefreshTokenRecord } from '@sh3pherd/shared-types';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 import { Injectable } from '@nestjs/common';
 
-
 export type IRefreshTokenRepository = IBaseCRUD<TRefreshTokenRecord> & {};
-
 
 /**
  * MongoDB-based implementation of the `IRefreshTokenRepository` interface.

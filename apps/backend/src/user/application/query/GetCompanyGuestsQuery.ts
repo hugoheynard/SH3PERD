@@ -1,7 +1,11 @@
 import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import type { TCompanyId, TUserId } from '@sh3pherd/shared-types';
-import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO, GUEST_COMPANY_REPO } from '../../../appBootstrap/nestTokens.js';
+import {
+  USER_CREDENTIALS_REPO,
+  USER_PROFILE_REPO,
+  GUEST_COMPANY_REPO,
+} from '../../../appBootstrap/nestTokens.js';
 import type { IUserCredentialsRepository } from '../../infra/UserCredentialsMongoRepo.repository.js';
 import type { IUserProfileRepository } from '../../infra/UserProfileMongoRepo.repository.js';
 import type { IGuestCompanyRepository } from '../../infra/GuestCompanyMongoRepo.repository.js';
@@ -27,7 +31,10 @@ export class GetCompanyGuestsQuery {
  * companies — the junction allows it.
  */
 @QueryHandler(GetCompanyGuestsQuery)
-export class GetCompanyGuestsHandler implements IQueryHandler<GetCompanyGuestsQuery, TGuestViewModel[]> {
+export class GetCompanyGuestsHandler implements IQueryHandler<
+  GetCompanyGuestsQuery,
+  TGuestViewModel[]
+> {
   constructor(
     @Inject(USER_CREDENTIALS_REPO) private readonly credsRepo: IUserCredentialsRepository,
     @Inject(USER_PROFILE_REPO) private readonly profileRepo: IUserProfileRepository,
@@ -44,9 +51,9 @@ export class GetCompanyGuestsHandler implements IQueryHandler<GetCompanyGuestsQu
     ]);
 
     const credsList = creds ?? [];
-    const profileMap = new Map((profiles ?? []).map(p => [p.user_id as TUserId, p]));
+    const profileMap = new Map((profiles ?? []).map((p) => [p.user_id, p]));
 
-    return credsList.map(c => {
+    return credsList.map((c) => {
       const profile = profileMap.get(c.id);
       return {
         user_id: c.id,

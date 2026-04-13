@@ -2,7 +2,6 @@ import { TCompanyStatus } from '@sh3pherd/shared-types';
 import { makeCompany, userId } from './test-helpers.js';
 
 describe('CompanyEntity', () => {
-
   // ─── Construction invariants ────────────────────────────
 
   describe('constructor', () => {
@@ -88,38 +87,57 @@ describe('CompanyEntity', () => {
       });
       expect(company.name).toBe('New Name');
       expect(company.description).toBe('A great company');
-      expect(company.address).toEqual({ street: '1 Rue', city: 'Paris', zip: '75001', country: 'France' });
+      expect(company.address).toEqual({
+        street: '1 Rue',
+        city: 'Paris',
+        zip: '75001',
+        country: 'France',
+      });
     });
 
     it('should trim the name', () => {
       const company = makeCompany();
-      company.updateInfo({ name: '  Trimmed  ', description: '', address: { street: '', city: '', zip: '', country: '' } });
+      company.updateInfo({
+        name: '  Trimmed  ',
+        description: '',
+        address: { street: '', city: '', zip: '', country: '' },
+      });
       expect(company.name).toBe('Trimmed');
     });
 
     it('should reject empty name', () => {
       const company = makeCompany();
-      expect(() => company.updateInfo({
-        name: '',
-        description: '',
-        address: { street: '', city: '', zip: '', country: '' },
-      })).toThrow('COMPANY_NAME_REQUIRED');
+      expect(() =>
+        company.updateInfo({
+          name: '',
+          description: '',
+          address: { street: '', city: '', zip: '', country: '' },
+        }),
+      ).toThrow('COMPANY_NAME_REQUIRED');
     });
 
     it('should reject whitespace-only name', () => {
       const company = makeCompany();
-      expect(() => company.updateInfo({
-        name: '   ',
-        description: '',
-        address: { street: '', city: '', zip: '', country: '' },
-      })).toThrow('COMPANY_NAME_REQUIRED');
+      expect(() =>
+        company.updateInfo({
+          name: '   ',
+          description: '',
+          address: { street: '', city: '', zip: '', country: '' },
+        }),
+      ).toThrow('COMPANY_NAME_REQUIRED');
     });
 
     it('should not mutate previous values on failure', () => {
       const company = makeCompany({ name: 'Original' });
       try {
-        company.updateInfo({ name: '', description: 'new', address: { street: '', city: '', zip: '', country: '' } });
-      } catch { /* expected */ }
+        company.updateInfo({
+          name: '',
+          description: 'new',
+          address: { street: '', city: '', zip: '', country: '' },
+        });
+      } catch {
+        /* expected */
+      }
       expect(company.name).toBe('Original');
     });
   });
@@ -146,7 +164,9 @@ describe('CompanyEntity', () => {
 
     it('should reject blank layer in array', () => {
       const company = makeCompany();
-      expect(() => company.updateOrgLayers(['Valid', '   ', 'Also valid'])).toThrow('COMPANY_ORG_LAYER_BLANK');
+      expect(() => company.updateOrgLayers(['Valid', '   ', 'Also valid'])).toThrow(
+        'COMPANY_ORG_LAYER_BLANK',
+      );
     });
 
     it('should accept single layer', () => {
@@ -208,9 +228,17 @@ describe('CompanyEntity', () => {
 
   describe('companyInfo', () => {
     it('should return only name, description and address', () => {
-      const company = makeCompany({ name: 'Acme', description: 'A company', address: { street: '1', city: 'Paris', zip: '75001', country: 'FR' } });
+      const company = makeCompany({
+        name: 'Acme',
+        description: 'A company',
+        address: { street: '1', city: 'Paris', zip: '75001', country: 'FR' },
+      });
       const info = company.companyInfo;
-      expect(info).toEqual({ name: 'Acme', description: 'A company', address: { street: '1', city: 'Paris', zip: '75001', country: 'FR' } });
+      expect(info).toEqual({
+        name: 'Acme',
+        description: 'A company',
+        address: { street: '1', city: 'Paris', zip: '75001', country: 'FR' },
+      });
       expect(info).not.toHaveProperty('id');
       expect(info).not.toHaveProperty('owner_id');
       expect(info).not.toHaveProperty('status');
@@ -219,7 +247,11 @@ describe('CompanyEntity', () => {
 
     it('should reflect mutations', () => {
       const company = makeCompany();
-      company.updateInfo({ name: 'New', description: 'Desc', address: { street: 'A', city: 'B', zip: 'C', country: 'D' } });
+      company.updateInfo({
+        name: 'New',
+        description: 'Desc',
+        address: { street: 'A', city: 'B', zip: 'C', country: 'D' },
+      });
       expect(company.companyInfo.name).toBe('New');
       expect(company.companyInfo.description).toBe('Desc');
     });
@@ -246,7 +278,11 @@ describe('CompanyEntity', () => {
 
     it('should reflect mutations', () => {
       const company = makeCompany({ name: 'Before' });
-      company.updateInfo({ name: 'After', description: 'Updated', address: { street: '1', city: '2', zip: '3', country: '4' } });
+      company.updateInfo({
+        name: 'After',
+        description: 'Updated',
+        address: { street: '1', city: '2', zip: '3', country: '4' },
+      });
       company.updateOrgLayers(['A', 'B']);
       const domain = company.toDomain;
       expect(domain.name).toBe('After');

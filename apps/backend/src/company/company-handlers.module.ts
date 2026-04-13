@@ -15,7 +15,10 @@ import { CreateOrgNodeHandler } from './application/commands/CreateTeamCommand.j
 import { UpdateOrgNodeInfoHandler } from './application/commands/UpdateOrgNodeInfoCommand.js';
 import { AddOrgNodeMemberHandler } from './application/commands/AddTeamMemberCommand.js';
 import { RemoveOrgNodeMemberHandler } from './application/commands/RemoveTeamMemberCommand.js';
-import { AddGuestMemberHandler, RemoveGuestMemberHandler } from './application/commands/GuestMemberCommands.js';
+import {
+  AddGuestMemberHandler,
+  RemoveGuestMemberHandler,
+} from './application/commands/GuestMemberCommands.js';
 import { ArchiveOrgNodeHandler } from './application/commands/ArchiveOrgNodeCommand.js';
 import { ReorderOrgNodesHandler } from './application/commands/ReorderOrgNodesCommand.js';
 import { GroupOrgNodesHandler } from './application/commands/GroupOrgNodesCommand.js';

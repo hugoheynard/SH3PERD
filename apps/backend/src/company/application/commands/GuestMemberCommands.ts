@@ -26,16 +26,18 @@ export class AddGuestMemberCommand {
 }
 
 @CommandHandler(AddGuestMemberCommand)
-export class AddGuestMemberHandler implements ICommandHandler<AddGuestMemberCommand, TOrgNodeGuestMember> {
-  constructor(
-    @Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository,
-  ) {}
+export class AddGuestMemberHandler implements ICommandHandler<
+  AddGuestMemberCommand,
+  TOrgNodeGuestMember
+> {
+  constructor(@Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository) {}
 
   async execute(cmd: AddGuestMemberCommand): Promise<TOrgNodeGuestMember> {
     const { dto } = cmd;
 
     const record = await this.orgNodeRepo.findOne({ filter: { id: dto.org_node_id } });
-    if (!record) throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
+    if (!record)
+      throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
 
     const guest: TOrgNodeGuestMember = {
       id: `guest_${randomUUID()}`,
@@ -52,7 +54,8 @@ export class AddGuestMemberHandler implements ICommandHandler<AddGuestMemberComm
       },
     });
 
-    if (!saved) throw new TechnicalError('Failed to add guest member', { code: 'ORGNODE_ADD_GUEST_FAILED' });
+    if (!saved)
+      throw new TechnicalError('Failed to add guest member', { code: 'ORGNODE_ADD_GUEST_FAILED' });
     return guest;
   }
 }
@@ -72,10 +75,11 @@ export class RemoveGuestMemberCommand {
 }
 
 @CommandHandler(RemoveGuestMemberCommand)
-export class RemoveGuestMemberHandler implements ICommandHandler<RemoveGuestMemberCommand, boolean> {
-  constructor(
-    @Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository,
-  ) {}
+export class RemoveGuestMemberHandler implements ICommandHandler<
+  RemoveGuestMemberCommand,
+  boolean
+> {
+  constructor(@Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository) {}
 
   async execute(cmd: RemoveGuestMemberCommand): Promise<boolean> {
     const { dto } = cmd;
@@ -88,7 +92,10 @@ export class RemoveGuestMemberHandler implements ICommandHandler<RemoveGuestMemb
       },
     });
 
-    if (!saved) throw new TechnicalError('Failed to remove guest member', { code: 'ORGNODE_REMOVE_GUEST_FAILED' });
+    if (!saved)
+      throw new TechnicalError('Failed to remove guest member', {
+        code: 'ORGNODE_REMOVE_GUEST_FAILED',
+      });
     return true;
   }
 }

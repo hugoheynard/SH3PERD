@@ -4,5 +4,5 @@ import { RepositoryContainer } from '../../appBootstrap/core_modules/repositorie
 const eventUnitRepo = RepositoryContainer.get('eventUnit');
 
 export const createEventUnit = createEventUnitUseCaseFactory({
-  saveEventUnit: (input: any) =>eventUnitRepo.save(input)
+  saveEventUnit: (input: any) => eventUnitRepo.save(input),
 });

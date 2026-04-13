@@ -22,19 +22,15 @@ import type { TPlatformRole } from '@sh3pherd/shared-types';
  * ```
  */
 export class QuotaExceededError extends HttpException {
-  constructor(
-    resource: TQuotaResource,
-    current: number,
-    limit: number,
-    plan: TPlatformRole,
-  ) {
+  constructor(resource: TQuotaResource, current: number, limit: number, plan: TPlatformRole) {
     super(
       {
         statusCode: 402,
         errorCode: 'QUOTA_EXCEEDED',
-        message: limit === 0
-          ? `Feature "${resource}" is not available on your plan (${plan})`
-          : `Quota exceeded for ${resource}: ${current}/${limit} (plan: ${plan})`,
+        message:
+          limit === 0
+            ? `Feature "${resource}" is not available on your plan (${plan})`
+            : `Quota exceeded for ${resource}: ${current}/${limit} (plan: ${plan})`,
         resource,
         current,
         limit,

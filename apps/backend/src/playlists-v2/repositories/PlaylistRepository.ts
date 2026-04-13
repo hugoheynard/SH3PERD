@@ -1,17 +1,19 @@
-import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type {
-  TPlaylistDomainModel,
-  TPlaylistId,
-  TUserId,
-} from '@sh3pherd/shared-types';
+import {
+  BaseMongoRepository,
+  type TBaseMongoRepoDeps,
+} from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import type { TPlaylistDomainModel, TPlaylistId, TUserId } from '@sh3pherd/shared-types';
 
-export interface IPlaylistRepository {
+export type IPlaylistRepository = {
   saveOne(document: TPlaylistDomainModel): Promise<boolean>;
   findOneById(playlistId: TPlaylistId): Promise<TPlaylistDomainModel | null>;
   findByOwnerId(ownerId: TUserId): Promise<TPlaylistDomainModel[]>;
-  updatePlaylist(playlistId: TPlaylistId, patch: Record<string, unknown>): Promise<TPlaylistDomainModel | null>;
+  updatePlaylist(
+    playlistId: TPlaylistId,
+    patch: Record<string, unknown>,
+  ): Promise<TPlaylistDomainModel | null>;
   deleteOneById(playlistId: TPlaylistId): Promise<boolean>;
-}
+};
 
 export class PlaylistMongoRepository
   extends BaseMongoRepository<TPlaylistDomainModel>
@@ -27,11 +29,15 @@ export class PlaylistMongoRepository
   }
 
   async findOneById(playlistId: TPlaylistId): Promise<TPlaylistDomainModel | null> {
-    return this.collection.findOne({ id: playlistId } as any) as Promise<TPlaylistDomainModel | null>;
+    return this.collection.findOne({
+      id: playlistId,
+    } as any) as Promise<TPlaylistDomainModel | null>;
   }
 
   async findByOwnerId(ownerId: TUserId): Promise<TPlaylistDomainModel[]> {
-    return this.collection.find({ owner_id: ownerId } as any).toArray() as Promise<TPlaylistDomainModel[]>;
+    return this.collection.find({ owner_id: ownerId } as any).toArray() as Promise<
+      TPlaylistDomainModel[]
+    >;
   }
 
   async updatePlaylist(

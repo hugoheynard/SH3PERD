@@ -1,6 +1,5 @@
 import type { ZodError } from 'zod';
 
-
 /**
  * Formats a ZodError into a more readable structure.
  * @param error

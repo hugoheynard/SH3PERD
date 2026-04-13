@@ -1,12 +1,8 @@
-import {
-  ApiProperty,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { type Type } from '@nestjs/common';
 import { ApiModel } from './api-model.swagger.util.js';
 
 //import type { TApiResponse } from '@sh3pherd/shared-types';
-
 
 @ApiModel()
 export class ApiResponseDTO<T> {
@@ -69,7 +65,6 @@ export function apiSuccessDTO<T extends Type<any>>(
   };
 }
 
-
 /**
  * Swagger request body factory — references a Zod-derived DTO class.
  *
@@ -86,16 +81,12 @@ export function apiSuccessDTO<T extends Type<any>>(
  * create(@Body() dto: TCompanyInfo) { ... }
  * ```
  */
-export function apiRequestDTO<T extends Type<any>>(
-  model: T,
-  description?: string,
-) {
+export function apiRequestDTO<T extends Type<any>>(model: T, description?: string) {
   return {
     ...(description ? { description } : {}),
     schema: { $ref: getSchemaPath(model) },
   };
 }
-
 
 /**
  * Crée une réponse Swagger standardisée pour les erreurs.

@@ -10,9 +10,6 @@ import { IntegrationsModule } from '../integrations/integrations.module.js';
 import { PlaylistModule } from '../playlists-v2/playlist.module.js';
 import { CONTRACT_SCOPED_GUARD } from './nestTokens.js';
 
-
-
-
 @Module({
   imports: [
     TokenFunctionsModule,
@@ -24,9 +21,7 @@ import { CONTRACT_SCOPED_GUARD } from './nestTokens.js';
     IntegrationsModule,
     PlaylistModule,
   ],
-  providers: [
-    { provide: CONTRACT_SCOPED_GUARD, useClass: ContractContextGuard }
-    ],
+  providers: [{ provide: CONTRACT_SCOPED_GUARD, useClass: ContractContextGuard }],
   exports: [],
 })
 export class ProtectedModule {

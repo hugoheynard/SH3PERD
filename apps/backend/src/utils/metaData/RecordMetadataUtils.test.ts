@@ -1,7 +1,6 @@
 import type { TRecordMetadata, TUserId } from '@sh3pherd/shared-types';
 import { RecordMetadataUtils } from './RecordMetadataUtils.js';
 
-
 describe('RecordMetadataUtils', () => {
   const creatorId: TUserId = 'user_123';
 
@@ -44,7 +43,9 @@ describe('RecordMetadataUtils', () => {
       const reactivated = RecordMetadataUtils.reactivate(original);
 
       expect(reactivated.active).toBe(true);
-      expect(reactivated.updated_at.getTime()).toBeGreaterThanOrEqual(original.updated_at.getTime());
+      expect(reactivated.updated_at.getTime()).toBeGreaterThanOrEqual(
+        original.updated_at.getTime(),
+      );
     });
   });
 });

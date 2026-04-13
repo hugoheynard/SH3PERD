@@ -27,9 +27,7 @@ import { TechnicalError } from '../../utils/errorManagement/TechnicalError.js';
  */
 @Injectable()
 export class TransactionRunner {
-  constructor(
-    @Inject(MONGO_CLIENT) private readonly client: MongoClient,
-  ) {}
+  constructor(@Inject(MONGO_CLIENT) private readonly client: MongoClient) {}
 
   /**
    * Runs the callback inside a MongoDB transaction.
@@ -45,12 +43,10 @@ export class TransactionRunner {
       return result!;
     } catch (err) {
       if (err instanceof TechnicalError) throw err;
-      throw new TechnicalError("Transaction failed", { code: "TRANSACTION_FAILED", cause: err as Error });
-
-
-
-
-
+      throw new TechnicalError('Transaction failed', {
+        code: 'TRANSACTION_FAILED',
+        cause: err as Error,
+      });
     } finally {
       await session.endSession();
     }

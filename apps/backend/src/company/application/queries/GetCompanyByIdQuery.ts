@@ -23,7 +23,10 @@ export class GetCompanyByIdQuery {
  * @throws BusinessError COMPANY_NOT_FOUND (404) — company does not exist.
  */
 @QueryHandler(GetCompanyByIdQuery)
-export class GetCompanyByIdHandler implements IQueryHandler<GetCompanyByIdQuery, TCompanyDetailViewModel> {
+export class GetCompanyByIdHandler implements IQueryHandler<
+  GetCompanyByIdQuery,
+  TCompanyDetailViewModel
+> {
   constructor(
     @Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository,
     @Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository,
@@ -32,7 +35,8 @@ export class GetCompanyByIdHandler implements IQueryHandler<GetCompanyByIdQuery,
 
   async execute(query: GetCompanyByIdQuery): Promise<TCompanyDetailViewModel> {
     const record = await this.companyRepo.findById(query.companyId);
-    if (!record) throw new BusinessError('Company not found', { code: 'COMPANY_NOT_FOUND', status: 404 });
+    if (!record)
+      throw new BusinessError('Company not found', { code: 'COMPANY_NOT_FOUND', status: 404 });
 
     const entity = new CompanyEntity(RecordMetadataUtils.stripDocMetadata(record));
     const domain = entity.toDomain;
@@ -43,7 +47,7 @@ export class GetCompanyByIdHandler implements IQueryHandler<GetCompanyByIdQuery,
       this.contractRepo.findMany({ filter: { company_id: query.companyId, status: 'active' } }),
     ]);
 
-    const activeTeamCount = orgNodes.filter(n => n.status === 'active').length;
+    const activeTeamCount = orgNodes.filter((n) => n.status === 'active').length;
     const activeContractCount = contracts?.length ?? 0;
 
     return {

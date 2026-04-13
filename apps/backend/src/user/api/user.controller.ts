@@ -4,14 +4,19 @@ import { type TAsyncApiResponseDTO, type TUserMeViewModel } from '@sh3pherd/shar
 import { buildApiResponseDTO } from '../../music/codes.js';
 import { USER_CODES_SUCCESS } from './codes/user.codes.js';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { ResPayloadValidator } from '../../utils/nest/ResPayloadValidator.decorator.js';
 import { UserMeViewModelPayload } from '../dtos/user.dto.js';
 import { GetCurrentUserViewModelQuery } from '../application/query/GetCurrentUserViewModel.js';
 import { UpdateUserPreferencesCommand } from '../application/commands/UpdateUserPreferencesCommand.js';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-
 
 @ApiTags('user')
 @ApiBearerAuth('bearer')
@@ -23,22 +28,23 @@ export class UserController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
-  ) {};
+  ) {}
 
   @ApiOperation({
     summary: 'Get current user informations',
-    description: "Returns the current user's information." +
-      " This includes user profile details and preferences."
+    description:
+      "Returns the current user's information." +
+      ' This includes user profile details and preferences.',
   })
-  @ApiResponse(apiSuccessDTO(USER_CODES_SUCCESS.GET_USER_ME, UserMeViewModelPayload , 200))
+  @ApiResponse(apiSuccessDTO(USER_CODES_SUCCESS.GET_USER_ME, UserMeViewModelPayload, 200))
   @ResPayloadValidator(UserMeViewModelPayload, { active: false })
   @Get('me')
   async getUserMe(@ActorId() id: TUserId): TAsyncApiResponseDTO<TUserMeViewModel> {
     return buildApiResponseDTO<TUserMeViewModel>(
       USER_CODES_SUCCESS.GET_USER_ME,
-      await this.queryBus.execute(new GetCurrentUserViewModelQuery(id))
+      await this.queryBus.execute(new GetCurrentUserViewModelQuery(id)),
     );
-  };
+  }
 
   /**
    * Update current user's preferences (theme, workspace, etc.).
@@ -46,7 +52,8 @@ export class UserController {
    */
   @ApiOperation({
     summary: 'Update user preferences',
-    description: 'Partially updates the authenticated user preferences (theme, contract_workspace).',
+    description:
+      'Partially updates the authenticated user preferences (theme, contract_workspace).',
   })
   @ApiResponse({ status: 200, description: 'Updated preferences.' })
   @Patch('preferences')

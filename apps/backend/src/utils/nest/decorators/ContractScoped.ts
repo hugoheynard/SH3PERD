@@ -1,10 +1,5 @@
-import {
-  applyDecorators,
-  SetMetadata,
-  UseGuards,
-} from '@nestjs/common';
+import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
 import { ContractContextGuard } from '../../../contracts/api/contract-context.guard.js';
-
 
 export const CONTRACT_SCOPED_KEY = 'scoped';
 

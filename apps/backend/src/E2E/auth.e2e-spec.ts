@@ -11,12 +11,7 @@
 import type { INestApplication } from '@nestjs/common';
 import type { Db } from 'mongodb';
 import request from 'supertest';
-import {
-  bootstrapE2E,
-  teardownE2E,
-  resetAllCollections,
-  UserBuilder,
-} from './utils/index.js';
+import { bootstrapE2E, teardownE2E, resetAllCollections, UserBuilder } from './utils/index.js';
 
 describe('Auth E2E', () => {
   let app: INestApplication;
@@ -72,14 +67,12 @@ describe('Auth E2E', () => {
         })
         .expect(201);
 
-      const res = await request(app.getHttpServer())
-        .post('/api/auth/register')
-        .send({
-          email: 'dup@test.com',
-          password: 'SecurePass123!',
-          first_name: 'Dup',
-          last_name: 'Again',
-        });
+      const res = await request(app.getHttpServer()).post('/api/auth/register').send({
+        email: 'dup@test.com',
+        password: 'SecurePass123!',
+        first_name: 'Dup',
+        last_name: 'Again',
+      });
 
       expect(res.status).toBeGreaterThanOrEqual(400);
     });
@@ -93,27 +86,23 @@ describe('Auth E2E', () => {
     });
 
     it('should reject registration with invalid email', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/api/auth/register')
-        .send({
-          email: 'not-an-email',
-          password: 'SecurePass123!',
-          first_name: 'Bad',
-          last_name: 'Email',
-        });
+      const res = await request(app.getHttpServer()).post('/api/auth/register').send({
+        email: 'not-an-email',
+        password: 'SecurePass123!',
+        first_name: 'Bad',
+        last_name: 'Email',
+      });
 
       expect(res.status).toBeGreaterThanOrEqual(400);
     });
 
     it('should reject registration with short password', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/api/auth/register')
-        .send({
-          email: 'short@test.com',
-          password: 'abc',
-          first_name: 'Short',
-          last_name: 'Pass',
-        });
+      const res = await request(app.getHttpServer()).post('/api/auth/register').send({
+        email: 'short@test.com',
+        password: 'abc',
+        first_name: 'Short',
+        last_name: 'Pass',
+      });
 
       expect(res.status).toBeGreaterThanOrEqual(400);
     });
@@ -154,18 +143,18 @@ describe('Auth E2E', () => {
 
     it('should reject login with wrong password', async () => {
       // Register with a known-good password format
-      const res1 = await request(app.getHttpServer())
-        .post('/api/auth/register')
-        .send({
-          email: 'wrongpw@test.com',
-          password: 'CorrectPass123',
-          first_name: 'Wrong',
-          last_name: 'PW',
-        });
+      const res1 = await request(app.getHttpServer()).post('/api/auth/register').send({
+        email: 'wrongpw@test.com',
+        password: 'CorrectPass123',
+        first_name: 'Wrong',
+        last_name: 'PW',
+      });
 
       // If register itself fails, skip the rest (env issue)
       if (res1.status !== 201) {
-        console.warn(`[SKIP] register returned ${res1.status}: ${JSON.stringify(res1.body).slice(0, 200)}`);
+        console.warn(
+          `[SKIP] register returned ${res1.status}: ${JSON.stringify(res1.body).slice(0, 200)}`,
+        );
         return;
       }
 
@@ -196,9 +185,7 @@ describe('Auth E2E', () => {
 
       const res = await request(app.getHttpServer())
         .post('/api/auth/refresh')
-        .set('Cookie', user.getRefreshCookie())
-        ;
-
+        .set('Cookie', user.getRefreshCookie());
       // NestJS @Post() defaults to 201 — accept both 200 and 201
       expect([200, 201]).toContain(res.status);
       expect(res.body).toHaveProperty('authToken');
@@ -214,8 +201,7 @@ describe('Auth E2E', () => {
     });
 
     it('should reject refresh without a cookie', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/api/auth/refresh');
+      const res = await request(app.getHttpServer()).post('/api/auth/refresh');
 
       // The API may return 201 with { authToken: null }, 200, or 401
       // depending on the refresh token service. All are acceptable.
@@ -261,9 +247,7 @@ describe('Auth E2E', () => {
     });
 
     it('should reject logout without auth token', async () => {
-      await request(app.getHttpServer())
-        .post('/api/auth/logout')
-        .expect(401);
+      await request(app.getHttpServer()).post('/api/auth/logout').expect(401);
     });
   });
 
@@ -271,9 +255,7 @@ describe('Auth E2E', () => {
 
   describe('AuthGuard (protected routes)', () => {
     it('should return 401 for protected routes without Authorization header', async () => {
-      await request(app.getHttpServer())
-        .get('/api/protected/user/me')
-        .expect(401);
+      await request(app.getHttpServer()).get('/api/protected/user/me').expect(401);
     });
 
     it('should return 401 for protected routes with invalid token', async () => {
@@ -298,9 +280,7 @@ describe('Auth E2E', () => {
     });
 
     it('should allow public endpoints without auth (e.g. /auth/ping)', async () => {
-      await request(app.getHttpServer())
-        .get('/api/auth/ping')
-        .expect(200);
+      await request(app.getHttpServer()).get('/api/auth/ping').expect(200);
     });
   });
 

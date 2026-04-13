@@ -124,7 +124,9 @@ export class PuppeteerPoolService implements OnModuleDestroy {
     this.busy.delete(browser);
 
     if (crashed || !browser.connected) {
-      this.disposeBrowser(browser).catch(() => { /* already dead */ });
+      this.disposeBrowser(browser).catch(() => {
+        /* already dead */
+      });
       // Serve the next waiter with a fresh browser.
       const waiter = this.waiters.shift();
       if (waiter) {
@@ -190,7 +192,9 @@ export class PuppeteerPoolService implements OnModuleDestroy {
   private async disposeBrowser(browser: Browser): Promise<void> {
     try {
       if (browser.connected) await browser.close();
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   async onModuleDestroy(): Promise<void> {

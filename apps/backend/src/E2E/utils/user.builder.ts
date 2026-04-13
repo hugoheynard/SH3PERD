@@ -19,15 +19,15 @@
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 
-export interface UserCredentials {
+export type UserCredentials = {
   email: string;
   password: string;
-}
+};
 
-export interface UserProfile {
+export type UserProfile = {
   first_name: string;
   last_name: string;
-}
+};
 
 export class UserBuilder {
   private readonly app: INestApplication;
@@ -93,7 +93,7 @@ export class UserBuilder {
     // Extract refresh cookie
     const setCookie = res.headers['set-cookie'];
     this.refreshCookie = Array.isArray(setCookie)
-      ? setCookie.find((c: string) => c.startsWith('sh3pherd_refreshToken=')) ?? null
+      ? (setCookie.find((c: string) => c.startsWith('sh3pherd_refreshToken=')) ?? null)
       : null;
 
     return this;

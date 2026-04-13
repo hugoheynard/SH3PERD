@@ -36,10 +36,10 @@ import { TransactionRunner } from './TransactionRunner.js';
     },
     {
       provide: MONGO_CORE_DB,
-      useFactory: async (client: MongoClient, config: ConfigService): Promise<Db> => {
+      useFactory: (client: MongoClient, config: ConfigService): Db => {
         return client.db(config.get<string>('CORE_DB_NAME'));
       },
-      inject: [MONGO_CLIENT, ConfigService]
+      inject: [MONGO_CLIENT, ConfigService],
     },
     TransactionRunner,
   ],

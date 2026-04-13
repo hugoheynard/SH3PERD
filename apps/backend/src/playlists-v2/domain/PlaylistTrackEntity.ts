@@ -6,8 +6,16 @@ export class PlaylistTrackEntity extends Entity<TPlaylistTrackDomainModel> {
     super(props, 'plTrack');
   }
 
-  get playlistId() { return this.props.playlistId; }
-  get referenceId() { return this.props.referenceId; }
-  get versionId() { return this.props.versionId; }
-  get position() { return this.props.position; }
+  get playlistId() {
+    return this.props.playlistId;
+  }
+  get referenceId() {
+    return this.props.referenceId;
+  }
+  get versionId() {
+    return this.props.versionId;
+  }
+  get position() {
+    return this.props.position;
+  }
 }

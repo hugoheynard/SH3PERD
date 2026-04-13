@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import {
+  BaseMongoRepository,
+  type TBaseMongoRepoDeps,
+} from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 import type { TUserId, TCompanyId } from '@sh3pherd/shared-types';
 
@@ -19,14 +22,14 @@ export type TGuestCompanyRecord = {
   created_at: Date;
 };
 
-export interface IGuestCompanyRepository extends IBaseCRUD<TGuestCompanyRecord> {
+export type IGuestCompanyRepository = {
   /** Returns the user IDs of all guests linked to a given company. */
   findGuestIdsByCompany(companyId: TCompanyId): Promise<TUserId[]>;
   /** Idempotent: creates the (user_id, company_id) link if it doesn't already exist. */
   link(userId: TUserId, companyId: TCompanyId): Promise<void>;
   /** Removes the (user_id, company_id) link. */
   unlink(userId: TUserId, companyId: TCompanyId): Promise<boolean>;
-}
+} & IBaseCRUD<TGuestCompanyRecord>;
 
 @Injectable()
 export class GuestCompanyMongoRepository
@@ -39,11 +42,13 @@ export class GuestCompanyMongoRepository
 
   async findGuestIdsByCompany(companyId: TCompanyId): Promise<TUserId[]> {
     const links = await this.findMany({ filter: { company_id: companyId } as any });
-    return links.map(l => l.user_id);
+    return links.map((l) => l.user_id);
   }
 
   async link(userId: TUserId, companyId: TCompanyId): Promise<void> {
-    const existing = await this.findOne({ filter: { user_id: userId, company_id: companyId } as any });
+    const existing = await this.findOne({
+      filter: { user_id: userId, company_id: companyId } as any,
+    });
     if (existing) return;
     await this.save({ user_id: userId, company_id: companyId, created_at: new Date() });
   }

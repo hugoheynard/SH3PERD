@@ -31,7 +31,7 @@ import request from 'supertest';
 import { UserBuilder } from './user.builder.js';
 import type { UserCredentials, UserProfile } from './user.builder.js';
 
-export interface WorkspaceContext {
+export type WorkspaceContext = {
   user: UserBuilder;
   companyId: string;
   companyName: string;
@@ -40,7 +40,7 @@ export interface WorkspaceContext {
   authHeader: string;
   /** Contract ID for explicit X-Contract-Id headers if needed. */
   contractHeader: Record<string, string>;
-}
+};
 
 export class WorkspaceSetup {
   private readonly app: INestApplication;
@@ -98,12 +98,13 @@ export class WorkspaceSetup {
       .expect(201);
 
     const companyId: string = companyRes.body.company?.id ?? companyRes.body.data?.company?.id;
-    const contractId: string = companyRes.body.ownerContract?.id ?? companyRes.body.data?.ownerContract?.id;
+    const contractId: string =
+      companyRes.body.ownerContract?.id ?? companyRes.body.data?.ownerContract?.id;
 
     if (!companyId || !contractId) {
       throw new Error(
         `[WorkspaceSetup] Company creation response missing ids. ` +
-        `Body: ${JSON.stringify(companyRes.body).slice(0, 500)}`,
+          `Body: ${JSON.stringify(companyRes.body).slice(0, 500)}`,
       );
     }
 
@@ -123,10 +124,10 @@ export class WorkspaceSetup {
     if (prefRes.status >= 400) {
       // If preferences PATCH still fails, try using X-Contract-Id header
       // as a fallback — the guard will resolve it from the header directly.
-      // eslint-disable-next-line no-console
+
       console.warn(
         `[WorkspaceSetup] Preferences PATCH returned ${prefRes.status}. ` +
-        `Falling back to X-Contract-Id header approach.`,
+          `Falling back to X-Contract-Id header approach.`,
       );
     }
 

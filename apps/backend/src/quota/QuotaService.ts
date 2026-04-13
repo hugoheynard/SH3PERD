@@ -13,13 +13,13 @@ import {
 import { QuotaExceededError } from './domain/QuotaExceededError.js';
 
 /** A single resource's usage summary for the frontend. */
-export interface TUsageItem {
+export type TUsageItem = {
   resource: TQuotaResource;
   current: number;
   /** -1 = unlimited, 0 = not available. */
   limit: number;
   period: TQuotaPeriod;
-}
+};
 
 /**
  * Quota enforcement service.
@@ -94,11 +94,7 @@ export class QuotaService {
    * For storage_bytes, `amount` is the file size in bytes.
    * For deletions, pass a negative `amount` to decrement.
    */
-  async recordUsage(
-    userId: TUserId,
-    resource: TQuotaResource,
-    amount: number = 1,
-  ): Promise<void> {
+  async recordUsage(userId: TUserId, resource: TQuotaResource, amount: number = 1): Promise<void> {
     const plan = await this.getUserPlan(userId);
     const quotaLimit = getQuotaLimit(plan, resource);
 
@@ -123,7 +119,7 @@ export class QuotaService {
     for (const quotaLimit of limits) {
       const periodKey = computePeriodKey(quotaLimit.period);
       const counter = allCounters.find(
-        c => c.resource === quotaLimit.resource && c.period_key === periodKey,
+        (c) => c.resource === quotaLimit.resource && c.period_key === periodKey,
       );
 
       items.push({

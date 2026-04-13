@@ -1,4 +1,3 @@
-
 /**
  * Checks whether a user-held permission matches a required permission.
  *
@@ -32,5 +31,5 @@ export function wildcardMatch(held: string, required: string): boolean {
  * Checks whether a set of held permissions satisfies a required permission.
  */
 export function hasPermission(held: string[], required: string): boolean {
-  return held.some(p => wildcardMatch(p, required));
+  return held.some((p) => wildcardMatch(p, required));
 }

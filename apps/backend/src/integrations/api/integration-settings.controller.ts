@@ -1,6 +1,10 @@
 import { Body, Controller, Delete, Get, Inject, Param, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import type { TCompanyId, TCommunicationPlatform, TIntegrationViewModel } from '@sh3pherd/shared-types';
+import type {
+  TCompanyId,
+  TCommunicationPlatform,
+  TIntegrationViewModel,
+} from '@sh3pherd/shared-types';
 import { INTEGRATION_CREDENTIALS_REPO } from '../integrations.tokens.js';
 import type { IIntegrationCredentialsRepository } from '../repositories/IntegrationCredentialsRepository.js';
 import { IntegrationCredentialsEntity } from '../domain/IntegrationCredentialsEntity.js';
@@ -16,7 +20,8 @@ import { BusinessError } from '../../utils/errorManagement/BusinessError.js';
 @Controller()
 export class IntegrationSettingsController {
   constructor(
-    @Inject(INTEGRATION_CREDENTIALS_REPO) private readonly credentialsRepo: IIntegrationCredentialsRepository,
+    @Inject(INTEGRATION_CREDENTIALS_REPO)
+    private readonly credentialsRepo: IIntegrationCredentialsRepository,
   ) {}
 
   /** List all integrations for a company (hides sensitive config). */
@@ -26,7 +31,7 @@ export class IntegrationSettingsController {
     @Query('companyId') companyId: TCompanyId,
   ): Promise<TIntegrationViewModel[]> {
     const records = await this.credentialsRepo.findByCompany(companyId);
-    return records.map(r => ({
+    return records.map((r) => ({
       id: r.id,
       platform: r.platform,
       status: r.status,
@@ -44,7 +49,10 @@ export class IntegrationSettingsController {
   ): Promise<void> {
     const record = await this.credentialsRepo.findByCompanyAndPlatform(companyId, platform);
     if (!record) {
-      throw new BusinessError('Integration not found', { code: 'INTEGRATION_NOT_FOUND', status: 404 });
+      throw new BusinessError('Integration not found', {
+        code: 'INTEGRATION_NOT_FOUND',
+        status: 404,
+      });
     }
 
     const entity = new IntegrationCredentialsEntity(RecordMetadataUtils.stripDocMetadata(record));
@@ -68,7 +76,11 @@ export class IntegrationSettingsController {
     @Body() body: { name: string; url: string },
   ): Promise<TIntegrationViewModel> {
     const record = await this.credentialsRepo.findByCompanyAndPlatform(companyId, platform);
-    if (!record) throw new BusinessError('Integration not found', { code: 'INTEGRATION_NOT_FOUND', status: 404 });
+    if (!record)
+      throw new BusinessError('Integration not found', {
+        code: 'INTEGRATION_NOT_FOUND',
+        status: 404,
+      });
 
     const entity = new IntegrationCredentialsEntity(RecordMetadataUtils.stripDocMetadata(record));
     entity.addChannel(body);
@@ -81,7 +93,13 @@ export class IntegrationSettingsController {
       });
     }
 
-    return { id: entity.id, platform: entity.platform, status: entity.status, channels: [...entity.channels], connectedAt: entity.connectedAt };
+    return {
+      id: entity.id,
+      platform: entity.platform,
+      status: entity.status,
+      channels: [...entity.channels],
+      connectedAt: entity.connectedAt,
+    };
   }
 
   /** Remove a channel from an integration. */
@@ -93,7 +111,11 @@ export class IntegrationSettingsController {
     @Param('channelId') channelId: string,
   ): Promise<TIntegrationViewModel> {
     const record = await this.credentialsRepo.findByCompanyAndPlatform(companyId, platform);
-    if (!record) throw new BusinessError('Integration not found', { code: 'INTEGRATION_NOT_FOUND', status: 404 });
+    if (!record)
+      throw new BusinessError('Integration not found', {
+        code: 'INTEGRATION_NOT_FOUND',
+        status: 404,
+      });
 
     const entity = new IntegrationCredentialsEntity(RecordMetadataUtils.stripDocMetadata(record));
     entity.removeChannel(channelId);
@@ -106,6 +128,12 @@ export class IntegrationSettingsController {
       });
     }
 
-    return { id: entity.id, platform: entity.platform, status: entity.status, channels: [...entity.channels], connectedAt: entity.connectedAt };
+    return {
+      id: entity.id,
+      platform: entity.platform,
+      status: entity.status,
+      channels: [...entity.channels],
+      connectedAt: entity.connectedAt,
+    };
   }
 }

@@ -1,6 +1,5 @@
 import type { TRecordMetadata, TUserId, TContractId } from '@sh3pherd/shared-types';
 
-
 /**
  * Utility class to manage record metadata such as creation, update, and soft deletion timestamps.
  */
@@ -22,7 +21,7 @@ export class RecordMetadataUtils {
       created_at: dateNow,
       updated_at: dateNow,
     };
-  };
+  }
 
   /**
    * Updates the `updated_at` field of the given metadata to the current date.
@@ -31,15 +30,14 @@ export class RecordMetadataUtils {
    * @returns A new metadata object with an updated timestamp.
    */
   static update(): { updated_at: Date } {
-
     return {
-      updated_at: new Date()
+      updated_at: new Date(),
     };
-  };
+  }
 
   static patchUpdate(): Partial<TRecordMetadata> {
     return {
-      updated_at: new Date()
+      updated_at: new Date(),
     };
   }
 
@@ -54,7 +52,7 @@ export class RecordMetadataUtils {
       ...metadata,
       updated_at: new Date(),
     };
-  };
+  }
 
   /**
    * Reactivates a previously soft-deleted metadata record by setting `active` to true.
@@ -65,22 +63,18 @@ export class RecordMetadataUtils {
       ...metadata,
       updated_at: new Date(),
     };
-  };
+  }
 
   static stripDocMetadata<TRecord extends object>(
-    doc: TRecord & TRecordMetadata
+    doc: TRecord & TRecordMetadata,
   ): Omit<TRecord, keyof TRecordMetadata> {
     const { created_at, created_by, creation_context, updated_at, ...domain } = doc;
-    return domain ;
-  };
+    return domain;
+  }
 
   static stripDocArrayMetadata<TDomain extends object>(
-    docs: Array<TDomain & TRecordMetadata>
+    docs: Array<TDomain & TRecordMetadata>,
   ): Omit<TDomain, keyof TRecordMetadata>[] {
     return docs.map(({ created_at, created_by, creation_context, updated_at, ...rest }) => rest);
-  };
-
-
-
-
+  }
 }

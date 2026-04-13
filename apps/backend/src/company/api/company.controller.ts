@@ -6,10 +6,12 @@ import { buildApiResponseDTO } from '../../music/codes.js';
 import type { TCompanyId, TUserId } from '@sh3pherd/shared-types';
 import { COMPANY_CODES_SUCCESS } from './company.codes.js';
 
-import { CreateCompanyCommand, type TCreateCompanyResult } from '../application/commands/CreateCompanyCommand.js';
+import {
+  CreateCompanyCommand,
+  type TCreateCompanyResult,
+} from '../application/commands/CreateCompanyCommand.js';
 import { GetCompanyByIdQuery } from '../application/queries/GetCompanyByIdQuery.js';
 import { GetMyCompaniesQuery } from '../application/queries/GetMyCompaniesQuery.js';
-
 
 @ApiTags('companies')
 @ApiBearerAuth('bearer')
@@ -24,7 +26,8 @@ export class CompanyController {
   //       When plans/restrictions are added, guard with @RequirePlatformPermission('platform:company:create').
   @ApiOperation({
     summary: 'Create a company',
-    description: 'Creates a new company and an owner contract for the authenticated user in a single atomic transaction. The owner contract grants full access to the company.',
+    description:
+      'Creates a new company and an owner contract for the authenticated user in a single atomic transaction. The owner contract grants full access to the company.',
   })
   @ApiBody({
     description: 'Company name. Must be non-empty.',
@@ -50,7 +53,11 @@ export class CompanyController {
             owner_id: { type: 'string', example: 'user_xyz-456' },
             status: { type: 'string', example: 'active' },
             description: { type: 'string', example: '' },
-            orgLayers: { type: 'array', items: { type: 'string' }, example: ['Department', 'Team', 'Sub-team'] },
+            orgLayers: {
+              type: 'array',
+              items: { type: 'string' },
+              example: ['Department', 'Team', 'Sub-team'],
+            },
           },
         },
         ownerContract: {
@@ -69,20 +76,17 @@ export class CompanyController {
   @ApiResponse({ status: 400, description: 'Validation failed (name empty).' })
   @ApiResponse({ status: 500, description: 'Transaction failed — both inserts rolled back.' })
   @Post()
-  async createCompany(
-    @Body() dto: { name: string },
-    @ActorId() actorId: TUserId,
-  ) {
+  async createCompany(@Body() dto: { name: string }, @ActorId() actorId: TUserId) {
     const result = await this.commandBus.execute<CreateCompanyCommand, TCreateCompanyResult>(
       new CreateCompanyCommand(dto, actorId),
     );
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.CREATE_COMPANY, result);
-  };
-
+  }
 
   @ApiOperation({
     summary: 'Get all companies for current user',
-    description: 'Returns all companies where the authenticated user has an active contract (any role: owner, admin, artist, viewer). Uses a single aggregation query joining contracts → companies.',
+    description:
+      'Returns all companies where the authenticated user has an active contract (any role: owner, admin, artist, viewer). Uses a single aggregation query joining contracts → companies.',
   })
   @ApiResponse({
     status: 200,
@@ -112,5 +116,4 @@ export class CompanyController {
     const result = await this.queryBus.execute(new GetCompanyByIdQuery(id));
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_BY_ID, result);
   }
-
 }

@@ -45,13 +45,11 @@ export function technicalFailThrows500(code: string, message?: string): MethodDe
       try {
         return await originalMethod.apply(this, args);
       } catch (err) {
-        console.error(err)
-        throw new TechnicalError(message ?? `Failure in ${target.constructor.name}.${String(propertyKey)}`, { code, cause: err as Error });
-
-
-
-
-
+        console.error(err);
+        throw new TechnicalError(
+          message ?? `Failure in ${target.constructor.name}.${String(propertyKey)}`,
+          { code, cause: err as Error },
+        );
       }
     };
   };

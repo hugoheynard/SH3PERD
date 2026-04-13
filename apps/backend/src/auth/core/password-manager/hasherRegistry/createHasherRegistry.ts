@@ -14,7 +14,6 @@ import type { IHasherStrategy } from '../types/Interfaces.js';
  * @param input { hashParser: IHashParser }
  */
 export function createHasherRegistry(): Record<string, IHasherStrategy> {
-
   return {
     'argon2id:v1': new Argon2Hasher({
       configObject: argon2Hasher_config_v1,
@@ -25,4 +24,4 @@ export function createHasherRegistry(): Record<string, IHasherStrategy> {
     // Future strategies here
     // 'pbkdf2:v1': ...
   };
-};
+}

@@ -17,10 +17,7 @@ export class DomainError extends Error {
   public readonly code: string;
   public readonly context?: Record<string, unknown>;
 
-  constructor(
-    message: string,
-    options: { code: string; context?: Record<string, unknown> },
-  ) {
+  constructor(message: string, options: { code: string; context?: Record<string, unknown> }) {
     super(message);
     this.code = options.code;
     this.context = options.context;

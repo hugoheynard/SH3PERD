@@ -14,7 +14,11 @@ describe('AuthService', () => {
     const jwtService = mockJwtService();
     const refreshRepo = mockRefreshTokenRepo();
 
-    const service = new (AuthService as any)(refreshTokenService, jwtService, refreshRepo) as AuthService;
+    const service = new (AuthService as any)(
+      refreshTokenService,
+      jwtService,
+      refreshRepo,
+    ) as AuthService;
 
     return { service, refreshTokenService, jwtService, refreshRepo };
   }

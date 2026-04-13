@@ -5,9 +5,6 @@ import { PlaylistTracksController } from './api/playlist-tracks.controller.js';
 
 @Module({
   imports: [PlaylistHandlersModule],
-  controllers: [
-    PlaylistController,
-    PlaylistTracksController,
-  ],
+  controllers: [PlaylistController, PlaylistTracksController],
 })
 export class PlaylistModule {}

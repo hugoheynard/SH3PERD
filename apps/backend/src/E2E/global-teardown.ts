@@ -4,7 +4,7 @@
  * Called once after ALL test suites have finished.
  */
 
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import type { MongoMemoryServer } from 'mongodb-memory-server';
 
 export default async function globalTeardown(): Promise<void> {
   const mongod: MongoMemoryServer | undefined = (globalThis as any).__MONGO_MEMORY_SERVER__;

@@ -10,7 +10,10 @@ export class GetUserPlaylistsQuery {
 }
 
 @QueryHandler(GetUserPlaylistsQuery)
-export class GetUserPlaylistsHandler implements IQueryHandler<GetUserPlaylistsQuery, TPlaylistSummaryViewModel[]> {
+export class GetUserPlaylistsHandler implements IQueryHandler<
+  GetUserPlaylistsQuery,
+  TPlaylistSummaryViewModel[]
+> {
   constructor(
     @Inject(PLAYLIST_REPO) private readonly playlistRepo: IPlaylistRepository,
     @Inject(PLAYLIST_TRACK_REPO) private readonly trackRepo: IPlaylistTrackRepository,

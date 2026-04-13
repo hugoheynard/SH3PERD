@@ -13,12 +13,7 @@
 import type { INestApplication } from '@nestjs/common';
 import type { Db } from 'mongodb';
 import request from 'supertest';
-import {
-  bootstrapE2E,
-  teardownE2E,
-  resetAllCollections,
-  WorkspaceSetup,
-} from './utils/index.js';
+import { bootstrapE2E, teardownE2E, resetAllCollections, WorkspaceSetup } from './utils/index.js';
 
 describe('Workspace Setup E2E', () => {
   let app: INestApplication;

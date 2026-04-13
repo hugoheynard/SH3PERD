@@ -3,6 +3,6 @@ import { UserProfileController } from '../api/user-profile.controller.js';
 
 @Module({
   imports: [],
-  controllers: [UserProfileController]
+  controllers: [UserProfileController],
 })
 export class UserProfileModule {}

@@ -13,7 +13,7 @@ export type TUpdateOrgNodeInfoDTO = {
   name?: string;
   color?: string;
   type?: TTeamType;
-  parent_id?: TOrgNodeId | null;  // null = move to root
+  parent_id?: TOrgNodeId | null; // null = move to root
   communications?: TOrgNodeCommunication[];
 };
 
@@ -25,17 +25,18 @@ export class UpdateOrgNodeInfoCommand {
 }
 
 @CommandHandler(UpdateOrgNodeInfoCommand)
-export class UpdateOrgNodeInfoHandler implements ICommandHandler<UpdateOrgNodeInfoCommand, TOrgNodeRecord> {
-  constructor(
-    @Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository,
-  ) {}
+export class UpdateOrgNodeInfoHandler implements ICommandHandler<
+  UpdateOrgNodeInfoCommand,
+  TOrgNodeRecord
+> {
+  constructor(@Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository) {}
 
   async execute(cmd: UpdateOrgNodeInfoCommand): Promise<TOrgNodeRecord> {
     const { dto } = cmd;
 
     const existing = await this.orgNodeRepo.findOne({ filter: { id: dto.org_node_id } });
-    if (!existing) throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
-
+    if (!existing)
+      throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
 
     const stripped = RecordMetadataUtils.stripDocMetadata(existing);
     const entity = new OrgNodeEntity(stripped);

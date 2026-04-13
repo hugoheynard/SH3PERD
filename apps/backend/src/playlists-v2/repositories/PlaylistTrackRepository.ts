@@ -1,11 +1,14 @@
-import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import {
+  BaseMongoRepository,
+  type TBaseMongoRepoDeps,
+} from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type {
   TPlaylistTrackDomainModel,
   TPlaylistTrackId,
   TPlaylistId,
 } from '@sh3pherd/shared-types';
 
-export interface IPlaylistTrackRepository {
+export type IPlaylistTrackRepository = {
   saveOne(document: TPlaylistTrackDomainModel): Promise<boolean>;
   findByPlaylistId(playlistId: TPlaylistId): Promise<TPlaylistTrackDomainModel[]>;
   findOneById(trackId: TPlaylistTrackId): Promise<TPlaylistTrackDomainModel | null>;
@@ -13,7 +16,7 @@ export interface IPlaylistTrackRepository {
   deleteByPlaylistId(playlistId: TPlaylistId): Promise<boolean>;
   updatePosition(trackId: TPlaylistTrackId, position: number): Promise<boolean>;
   updateManyPositions(updates: { id: TPlaylistTrackId; position: number }[]): Promise<boolean>;
-}
+};
 
 export class PlaylistTrackMongoRepository
   extends BaseMongoRepository<TPlaylistTrackDomainModel>
@@ -36,7 +39,9 @@ export class PlaylistTrackMongoRepository
   }
 
   async findOneById(trackId: TPlaylistTrackId): Promise<TPlaylistTrackDomainModel | null> {
-    return this.collection.findOne({ id: trackId } as any) as Promise<TPlaylistTrackDomainModel | null>;
+    return this.collection.findOne({
+      id: trackId,
+    } as any) as Promise<TPlaylistTrackDomainModel | null>;
   }
 
   async deleteOneById(trackId: TPlaylistTrackId): Promise<boolean> {
@@ -50,15 +55,14 @@ export class PlaylistTrackMongoRepository
   }
 
   async updatePosition(trackId: TPlaylistTrackId, position: number): Promise<boolean> {
-    const result = await this.collection.updateOne(
-      { id: trackId } as any,
-      { $set: { position } },
-    );
+    const result = await this.collection.updateOne({ id: trackId } as any, { $set: { position } });
     return result.modifiedCount === 1;
   }
 
-  async updateManyPositions(updates: { id: TPlaylistTrackId; position: number }[]): Promise<boolean> {
-    const bulkOps = updates.map(u => ({
+  async updateManyPositions(
+    updates: { id: TPlaylistTrackId; position: number }[],
+  ): Promise<boolean> {
+    const bulkOps = updates.map((u) => ({
       updateOne: {
         filter: { id: u.id } as any,
         update: { $set: { position: u.position } },

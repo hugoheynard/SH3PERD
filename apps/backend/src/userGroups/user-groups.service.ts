@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-export interface IUserGroupsService {
-
-}
+export type IUserGroupsService = {};
 
 /**
  * UserGroupsService
@@ -11,9 +9,5 @@ export interface IUserGroupsService {
  */
 @Injectable()
 export class UserGroupsService implements IUserGroupsService {
-
-  constructor(
-
-  ) {
-  };
+  constructor() {}
 }

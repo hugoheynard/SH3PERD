@@ -1,10 +1,18 @@
-import type { TUserId, TRefreshToken, TRefreshTokenDomainModel, TRefreshTokenRecord } from '@sh3pherd/shared-types';
+import type {
+  TUserId,
+  TRefreshToken,
+  TRefreshTokenDomainModel,
+  TRefreshTokenRecord,
+} from '@sh3pherd/shared-types';
 import type { IRefreshTokenRepository } from '../repositories/RefreshTokenMongoRepository';
 import type { IPasswordService } from '../core/password-manager/types/Interfaces';
 import type { IAbstractJWTService } from '../core/token-manager/JwtService';
 import type { IAbstractRefreshTokenService } from '../core/token-manager/RefreshTokenService';
 import type { IAuthTokenService } from '../services/auth.service';
-import type { TCreateAuthSessionResult, TRefreshTokenSecureCookie } from '../types/auth.domain.tokens';
+import type {
+  TCreateAuthSessionResult,
+  TRefreshTokenSecureCookie,
+} from '../types/auth.domain.tokens';
 import type { IUserCredentialsRepository } from '../../user/infra/UserCredentialsMongoRepo.repository';
 import type { IUserProfileRepository } from '../../user/infra/UserProfileMongoRepo.repository';
 
@@ -13,7 +21,9 @@ export const userId = (n = 1) => `user_test-${n}` as TUserId;
 export const refreshTokenId = (n = 1) => `refreshToken_test-${n}` as TRefreshToken;
 
 // ─── Domain Model Factories ──────────────────────────────────
-export function makeRefreshTokenRecord(overrides: Partial<TRefreshTokenDomainModel> = {}): TRefreshTokenRecord {
+export function makeRefreshTokenRecord(
+  overrides: Partial<TRefreshTokenDomainModel> = {},
+): TRefreshTokenRecord {
   const token = refreshTokenId();
   return {
     id: token,
@@ -27,21 +37,27 @@ export function makeRefreshTokenRecord(overrides: Partial<TRefreshTokenDomainMod
   };
 }
 
-export function makeExpiredRefreshToken(overrides: Partial<TRefreshTokenDomainModel> = {}): TRefreshTokenRecord {
+export function makeExpiredRefreshToken(
+  overrides: Partial<TRefreshTokenDomainModel> = {},
+): TRefreshTokenRecord {
   return makeRefreshTokenRecord({
     expiresAt: new Date(Date.now() - 1000), // expired 1s ago
     ...overrides,
   });
 }
 
-export function makeRevokedRefreshToken(overrides: Partial<TRefreshTokenDomainModel> = {}): TRefreshTokenRecord {
+export function makeRevokedRefreshToken(
+  overrides: Partial<TRefreshTokenDomainModel> = {},
+): TRefreshTokenRecord {
   return makeRefreshTokenRecord({
     isRevoked: true,
     ...overrides,
   });
 }
 
-export function makeSecureCookie(token: TRefreshToken = refreshTokenId()): TRefreshTokenSecureCookie {
+export function makeSecureCookie(
+  token: TRefreshToken = refreshTokenId(),
+): TRefreshTokenSecureCookie {
   return {
     name: 'sh3pherd_refreshToken',
     value: token,
@@ -55,7 +71,9 @@ export function makeSecureCookie(token: TRefreshToken = refreshTokenId()): TRefr
   };
 }
 
-export function makeSessionResult(overrides: Partial<TCreateAuthSessionResult> = {}): TCreateAuthSessionResult {
+export function makeSessionResult(
+  overrides: Partial<TCreateAuthSessionResult> = {},
+): TCreateAuthSessionResult {
   return {
     authToken: 'jwt-test-token',
     refreshToken: refreshTokenId(),
@@ -77,7 +95,9 @@ export function mockRefreshTokenRepo(): jest.Mocked<IRefreshTokenRepository> {
   } as any;
 }
 
-export function mockUserCredentialsRepo(): jest.Mocked<Pick<IUserCredentialsRepository, 'findOne' | 'save' | 'startSession'>> {
+export function mockUserCredentialsRepo(): jest.Mocked<
+  Pick<IUserCredentialsRepository, 'findOne' | 'save' | 'startSession'>
+> {
   return {
     findOne: jest.fn().mockResolvedValue(null),
     save: jest.fn().mockResolvedValue(true),

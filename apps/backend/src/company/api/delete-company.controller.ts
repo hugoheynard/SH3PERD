@@ -9,7 +9,10 @@ import type { TCompanyId, TUserId, TApiResponse } from '@sh3pherd/shared-types';
 import { COMPANY_CODES_SUCCESS } from './company.codes.js';
 import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
-import { DeleteCompanyCommand, type TDeleteCompanyResult } from '../application/commands/DeleteCompanyCommand.js';
+import {
+  DeleteCompanyCommand,
+  type TDeleteCompanyResult,
+} from '../application/commands/DeleteCompanyCommand.js';
 import { DeletedCompanyPayload } from '../dto/company.dto.js';
 
 @ApiTags('companies')
@@ -25,7 +28,8 @@ export class DeleteCompanyController {
 
   @ApiOperation({
     summary: 'Delete a company (owner only)',
-    description: 'Permanently deletes a company. Requires owner role and `company:settings:delete` permission.',
+    description:
+      'Permanently deletes a company. Requires owner role and `company:settings:delete` permission.',
   })
   @ApiParam({ name: 'id', description: 'Company ID', example: 'company_abc-123' })
   @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.DELETE_COMPANY, DeletedCompanyPayload))

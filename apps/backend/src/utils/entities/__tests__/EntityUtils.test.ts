@@ -1,6 +1,5 @@
 import { EntityUtils } from '../EntityUtils.js';
 
-
 describe('EntityUtils', () => {
   test('isEqual: primitives and canonicalization (key order)', () => {
     const a = { x: 1, y: 2 };

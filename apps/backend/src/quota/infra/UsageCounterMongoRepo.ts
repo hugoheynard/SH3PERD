@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import type { Collection } from 'mongodb';
+import {
+  BaseMongoRepository,
+  type TBaseMongoRepoDeps,
+} from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 import type { TUserId } from '@sh3pherd/shared-types';
 import type { TQuotaResource } from '../domain/QuotaLimits.js';
@@ -12,25 +16,30 @@ import type { TQuotaResource } from '../domain/QuotaLimits.js';
  *
  * Compound index: `{ user_id: 1, resource: 1, period_key: 1 }` (unique).
  */
-export interface TUsageCounterRecord {
+export type TUsageCounterRecord = {
   id: string;
   user_id: TUserId;
   resource: TQuotaResource;
   period_key: string;
   count: number;
   updated_at: Date;
-}
+};
 
-export interface IUsageCounterRepository extends IBaseCRUD<TUsageCounterRecord> {
+export type IUsageCounterRepository = {
   /** Get the current count. Returns 0 if no record exists. */
   getCount(userId: TUserId, resource: TQuotaResource, periodKey: string): Promise<number>;
 
   /** Atomically increment (or create) the counter. Uses MongoDB $inc + upsert. */
-  increment(userId: TUserId, resource: TQuotaResource, periodKey: string, amount: number): Promise<void>;
+  increment(
+    userId: TUserId,
+    resource: TQuotaResource,
+    periodKey: string,
+    amount: number,
+  ): Promise<void>;
 
   /** Get all counters for a user (for the usage summary endpoint). */
   getAllForUser(userId: TUserId): Promise<TUsageCounterRecord[]>;
-}
+} & IBaseCRUD<TUsageCounterRecord>;
 
 @Injectable()
 export class UsageCounterMongoRepository
@@ -43,12 +52,17 @@ export class UsageCounterMongoRepository
 
   async getCount(userId: TUserId, resource: TQuotaResource, periodKey: string): Promise<number> {
     const record = await this.findOne({
-      filter: { user_id: userId, resource, period_key: periodKey } as any,
+      filter: { user_id: userId, resource, period_key: periodKey } as Record<string, unknown>,
     });
     return record?.count ?? 0;
   }
 
-  async increment(userId: TUserId, resource: TQuotaResource, periodKey: string, amount: number): Promise<void> {
+  async increment(
+    userId: TUserId,
+    resource: TQuotaResource,
+    periodKey: string,
+    amount: number,
+  ): Promise<void> {
     const collection = this.getCollection();
     await collection.updateOne(
       { user_id: userId, resource, period_key: periodKey },
@@ -67,16 +81,16 @@ export class UsageCounterMongoRepository
   }
 
   async getAllForUser(userId: TUserId): Promise<TUsageCounterRecord[]> {
-    return this.findMany({ filter: { user_id: userId } as any }) ?? [];
+    return this.findMany({ filter: { user_id: userId } as Record<string, unknown> }) ?? [];
   }
 
   /**
    * Expose the underlying MongoDB collection for direct operations
    * (like the atomic $inc + upsert in `increment`).
    */
-  private getCollection() {
+  private getCollection(): Collection<TUsageCounterRecord> {
     // BaseMongoRepository stores the collection reference — access it
     // via the protected `collection` property inherited from the base.
-    return (this as any).collection;
+    return this.collection;
   }
 }

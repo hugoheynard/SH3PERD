@@ -1,3 +1,3 @@
-export const USER_USE_CASES= Symbol('USER_USE_CASES');
-export const USER_USE_CASES_FACTORY= Symbol('USER_USE_CASES_FACTORY');
-export const GET_USER_ME_USE_CASE= Symbol('GET_USER_ME_USE_CASE');
+export const USER_USE_CASES = Symbol('USER_USE_CASES');
+export const USER_USE_CASES_FACTORY = Symbol('USER_USE_CASES_FACTORY');
+export const GET_USER_ME_USE_CASE = Symbol('GET_USER_ME_USE_CASE');

@@ -87,7 +87,7 @@ describe('JwtService', () => {
 
       const token = await service.generateAuthToken({ payload: { user_id: userId() } });
       // Small delay to ensure expiration
-      await new Promise(r => setTimeout(r, 50));
+      await new Promise((r) => setTimeout(r, 50));
       const result = await service.verifyAuthToken({ authToken: token });
 
       expect(result).toBeNull();

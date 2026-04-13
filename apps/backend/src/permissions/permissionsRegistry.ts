@@ -5,14 +5,13 @@ export const USER = {
     },
     READ: {
       SELF: 'user::preferences::read::self',
-    }
-  }
+    },
+  },
 } as const;
 
-
 export const PERMISSIONS = {
-  USER
-}
+  USER,
+};
 
 // Utilitaire récursif pour extraire les valeurs d’un objet imbriqué
 type Values<T> = T extends object ? Values<T[keyof T]> : T;

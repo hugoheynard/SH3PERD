@@ -1,7 +1,7 @@
 import type { ContractEntity } from '../../contracts/domain/ContractEntity.js';
-import { UserGroupEntity } from './UserGroupEntity.js';
+import type { UserGroupEntity } from './UserGroupEntity.js';
 import { DomainError } from '../../utils/errorManagement/DomainError.js';
-import  { type TContractId, UserGroupTypesEnum } from '@sh3pherd/shared-types';
+import { type TContractId, UserGroupTypesEnum } from '@sh3pherd/shared-types';
 
 export class UserGroupPolicy {
   constructor(
@@ -11,7 +11,7 @@ export class UserGroupPolicy {
     if (!this.actor.isActive()) {
       throw new DomainError('Actor contract is not active', { code: 'CONTRACT_NOT_ACTIVE' });
     }
-  };
+  }
 
   canAddOrRemoveMember(member: ContractEntity): boolean {
     this.ensureMemberIsActiveAndInParentGroup(member);
@@ -31,7 +31,7 @@ export class UserGroupPolicy {
      */
 
     return false;
-  };
+  }
 
   canChangeGroupLead(newLead: ContractEntity): boolean {
     this.ensureMemberIsActiveAndInParentGroup(newLead);
@@ -46,16 +46,12 @@ export class UserGroupPolicy {
   canUseType(type: UserGroupTypesEnum): boolean {
     this.canManageGuard(this.actor.id);
 
-    if (this.group.isGroupLead(this.actor.id)
-      && type === UserGroupTypesEnum.TEAM
-    ) {
+    if (this.group.isGroupLead(this.actor.id) && type === UserGroupTypesEnum.TEAM) {
       return true;
     }
 
-
     return false;
-  };
-
+  }
 
   /**
    * Guard to check if the requester has rights to manage the user group.
@@ -64,9 +60,11 @@ export class UserGroupPolicy {
    */
   private canManageGuard(actor_id: TContractId): void {
     if (!this.group.isGroupLead(actor_id) && !this.group.isReferent(actor_id)) {
-      throw new DomainError('Not authorized to manage this user group', { code: 'USER_GROUP_UNAUTHORIZED' });
+      throw new DomainError('Not authorized to manage this user group', {
+        code: 'USER_GROUP_UNAUTHORIZED',
+      });
     }
-  };
+  }
 
   ensureMemberIsActiveAndInParentGroup(member: ContractEntity): void {
     const inParent = this.group.isMember(member.id);
@@ -76,9 +74,9 @@ export class UserGroupPolicy {
     }
 
     if (!inParent) {
-      throw new DomainError('Member does not belong to parent group', { code: 'MEMBER_NOT_IN_GROUP' });
+      throw new DomainError('Member does not belong to parent group', {
+        code: 'MEMBER_NOT_IN_GROUP',
+      });
     }
-  };
-
-
+  }
 }

@@ -18,7 +18,6 @@ import type {
  * - channel names must be non-empty
  */
 export class IntegrationCredentialsEntity extends Entity<TIntegrationCredentialsDomainModel> {
-
   constructor(props: TEntityInput<TIntegrationCredentialsDomainModel>) {
     if (!props.company_id) {
       throw new Error('INTEGRATION_COMPANY_REQUIRED');
@@ -31,12 +30,24 @@ export class IntegrationCredentialsEntity extends Entity<TIntegrationCredentials
 
   /* ── Getters ── */
 
-  get company_id() { return this.props.company_id; }
-  get platform(): TCommunicationPlatform { return this.props.platform; }
-  get status() { return this.props.status; }
-  get config() { return this.props.config; }
-  get channels(): readonly TIntegrationChannel[] { return this.props.channels; }
-  get connectedAt() { return this.props.connectedAt; }
+  get company_id() {
+    return this.props.company_id;
+  }
+  get platform(): TCommunicationPlatform {
+    return this.props.platform;
+  }
+  get status() {
+    return this.props.status;
+  }
+  get config() {
+    return this.props.config;
+  }
+  get channels(): readonly TIntegrationChannel[] {
+    return this.props.channels;
+  }
+  get connectedAt() {
+    return this.props.connectedAt;
+  }
 
   /* ── Connection lifecycle ── */
 
@@ -72,14 +83,14 @@ export class IntegrationCredentialsEntity extends Entity<TIntegrationCredentials
 
   /** Remove a channel by ID. */
   removeChannel(channelId: string): void {
-    if (!this.props.channels.some(ch => ch.id === channelId)) {
+    if (!this.props.channels.some((ch) => ch.id === channelId)) {
       throw new Error('CHANNEL_NOT_FOUND');
     }
-    this.props.channels = this.props.channels.filter(ch => ch.id !== channelId);
+    this.props.channels = this.props.channels.filter((ch) => ch.id !== channelId);
   }
 
   /** Find a channel by ID. */
   findChannel(channelId: string): TIntegrationChannel | undefined {
-    return this.props.channels.find(ch => ch.id === channelId);
+    return this.props.channels.find((ch) => ch.id === channelId);
   }
 }

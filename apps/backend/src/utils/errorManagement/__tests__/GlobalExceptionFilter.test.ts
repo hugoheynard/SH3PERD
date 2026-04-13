@@ -41,7 +41,10 @@ describe('GlobalExceptionFilter', () => {
   // ── BusinessError ────────────────────────────────────
 
   it('should handle BusinessError with custom status → 404', () => {
-    const error = new BusinessError('Company not found', { code: 'COMPANY_NOT_FOUND', status: 404 });
+    const error = new BusinessError('Company not found', {
+      code: 'COMPANY_NOT_FOUND',
+      status: 404,
+    });
 
     filter.catch(error, mockHost);
 

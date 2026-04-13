@@ -1,9 +1,8 @@
-import { RegisterUserCommand, RegisterUserHandler } from '../../application/commands/RegisterUserCommand';
 import {
-  mockPasswordService,
-  mockUserCredentialsRepo,
-  mockUserProfileRepo,
-} from '../test-helpers';
+  RegisterUserCommand,
+  RegisterUserHandler,
+} from '../../application/commands/RegisterUserCommand';
+import { mockPasswordService, mockUserCredentialsRepo, mockUserProfileRepo } from '../test-helpers';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 describe('RegisterUserHandler', () => {
@@ -37,13 +36,16 @@ describe('RegisterUserHandler', () => {
 
   describe('execute — success', () => {
     it('should hash the password and save credentials + profile in a transaction', async () => {
-      const { handler, passwordService, userCredsRepo, userProfileRepo, mockSession } = createHandler();
+      const { handler, passwordService, userCredsRepo, userProfileRepo, mockSession } =
+        createHandler();
       userCredsRepo.findOne.mockResolvedValue(null); // no existing user
 
       const result = await handler.execute(new RegisterUserCommand(validPayload));
 
       // Password was hashed
-      expect(passwordService.hashPassword).toHaveBeenCalledWith({ password: validPayload.password });
+      expect(passwordService.hashPassword).toHaveBeenCalledWith({
+        password: validPayload.password,
+      });
 
       // Transaction was used
       expect(userCredsRepo.startSession).toHaveBeenCalled();

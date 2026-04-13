@@ -40,18 +40,34 @@ export class CompanyEntity extends Entity<TCompanyDomainModel> {
 
   /* ── Getters ── */
 
-  get name(): string { return this.props.name; }
-  get owner_id(): TUserId { return this.props.owner_id; }
-  get description(): string { return this.props.description; }
-  get address(): TCompanyAddress { return { ...this.props.address }; }
-  get orgLayers(): readonly string[] { return this.props.orgLayers; }
-  get status(): TCompanyStatus { return this.props.status; }
+  get name(): string {
+    return this.props.name;
+  }
+  get owner_id(): TUserId {
+    return this.props.owner_id;
+  }
+  get description(): string {
+    return this.props.description;
+  }
+  get address(): TCompanyAddress {
+    return { ...this.props.address };
+  }
+  get orgLayers(): readonly string[] {
+    return this.props.orgLayers;
+  }
+  get status(): TCompanyStatus {
+    return this.props.status;
+  }
 
   /* ── Projections ── */
 
   /** Returns the public info subset (name, description, address). */
   get companyInfo(): TCompanyInfo {
-    return { name: this.props.name, description: this.props.description, address: { ...this.props.address } };
+    return {
+      name: this.props.name,
+      description: this.props.description,
+      address: { ...this.props.address },
+    };
   }
 
   /** Returns the org layers projection. */
@@ -85,8 +101,8 @@ export class CompanyEntity extends Entity<TCompanyDomainModel> {
     if (layers.length === 0) {
       throw new Error('COMPANY_ORG_LAYERS_EMPTY');
     }
-    const trimmed = layers.map(l => l.trim());
-    if (trimmed.some(l => !l)) {
+    const trimmed = layers.map((l) => l.trim());
+    if (trimmed.some((l) => !l)) {
       throw new Error('COMPANY_ORG_LAYER_BLANK');
     }
     this.props.orgLayers = trimmed;

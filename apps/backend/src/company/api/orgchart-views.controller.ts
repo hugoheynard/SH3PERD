@@ -4,14 +4,18 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@ne
 import { buildApiResponseDTO } from '../../music/codes.js';
 import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { P } from '@sh3pherd/shared-types';
-import type { TCompanyId, TCompanyOrgChartViewModel, TOrgNodeRecord, TApiResponse } from '@sh3pherd/shared-types';
+import type {
+  TCompanyId,
+  TCompanyOrgChartViewModel,
+  TOrgNodeRecord,
+  TApiResponse,
+} from '@sh3pherd/shared-types';
 import { COMPANY_CODES_SUCCESS } from './company.codes.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
 import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
 import { CompanyOrgChartPayload, TeamViewModelPayload } from '../dto/company.dto.js';
 import { GetCompanyOrgChartQuery } from '../application/queries/GetCompanyOrgChartQuery.js';
 import { GetCompanyOrgNodesQuery } from '../application/queries/GetCompanyTeamsQuery.js';
-
 
 @ApiTags('company / org-chart views')
 @ApiBearerAuth('bearer')

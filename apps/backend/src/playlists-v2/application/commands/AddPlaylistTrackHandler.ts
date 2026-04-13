@@ -3,7 +3,12 @@ import { Inject } from '@nestjs/common';
 import { PLAYLIST_REPO, PLAYLIST_TRACK_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IPlaylistRepository } from '../../repositories/PlaylistRepository.js';
 import type { IPlaylistTrackRepository } from '../../repositories/PlaylistTrackRepository.js';
-import type { TUserId, TPlaylistId, TAddPlaylistTrackPayload, TPlaylistTrackDomainModel } from '@sh3pherd/shared-types';
+import type {
+  TUserId,
+  TPlaylistId,
+  TAddPlaylistTrackPayload,
+  TPlaylistTrackDomainModel,
+} from '@sh3pherd/shared-types';
 import { PlaylistEntity } from '../../domain/PlaylistEntity.js';
 import { PlaylistTrackEntity } from '../../domain/PlaylistTrackEntity.js';
 
@@ -16,7 +21,10 @@ export class AddPlaylistTrackCommand {
 }
 
 @CommandHandler(AddPlaylistTrackCommand)
-export class AddPlaylistTrackHandler implements ICommandHandler<AddPlaylistTrackCommand, TPlaylistTrackDomainModel> {
+export class AddPlaylistTrackHandler implements ICommandHandler<
+  AddPlaylistTrackCommand,
+  TPlaylistTrackDomainModel
+> {
   constructor(
     @Inject(PLAYLIST_REPO) private readonly playlistRepo: IPlaylistRepository,
     @Inject(PLAYLIST_TRACK_REPO) private readonly trackRepo: IPlaylistTrackRepository,
@@ -31,9 +39,7 @@ export class AddPlaylistTrackHandler implements ICommandHandler<AddPlaylistTrack
 
     // Determine next position
     const siblings = await this.trackRepo.findByPlaylistId(cmd.playlistId);
-    const nextPosition = siblings.length > 0
-      ? Math.max(...siblings.map(t => t.position)) + 1
-      : 0;
+    const nextPosition = siblings.length > 0 ? Math.max(...siblings.map((t) => t.position)) + 1 : 0;
 
     const track = new PlaylistTrackEntity({
       playlistId: cmd.playlistId,

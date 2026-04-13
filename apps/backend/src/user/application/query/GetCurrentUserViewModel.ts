@@ -3,14 +3,16 @@ import { Inject } from '@nestjs/common';
 import type { IUserCredentialsRepository } from '../../infra/UserCredentialsMongoRepo.repository.js';
 import type { IUserProfileRepository } from '../../infra/UserProfileMongoRepo.repository.js';
 import type { IUserPreferencesRepository } from '../../infra/UserPreferencesMongoRepo.repository.js';
-import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO, USER_PREFERENCES_REPO } from '../../../appBootstrap/nestTokens.js';
+import {
+  USER_CREDENTIALS_REPO,
+  USER_PROFILE_REPO,
+  USER_PREFERENCES_REPO,
+} from '../../../appBootstrap/nestTokens.js';
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class GetCurrentUserViewModelQuery {
-  constructor(
-    public readonly user_id: TUserId,
-  ) {}
+  constructor(public readonly user_id: TUserId) {}
 }
 
 /**
@@ -18,9 +20,10 @@ export class GetCurrentUserViewModelQuery {
  * credentials, profile, and preferences collections in parallel.
  */
 @QueryHandler(GetCurrentUserViewModelQuery)
-export class GetCurrentUserViewModelHandler
-  implements IQueryHandler<GetCurrentUserViewModelQuery, TUserMeViewModel>
-{
+export class GetCurrentUserViewModelHandler implements IQueryHandler<
+  GetCurrentUserViewModelQuery,
+  TUserMeViewModel
+> {
   constructor(
     @Inject(USER_CREDENTIALS_REPO) private readonly credsRepo: IUserCredentialsRepository,
     @Inject(USER_PROFILE_REPO) private readonly profileRepo: IUserProfileRepository,

@@ -36,10 +36,10 @@ import cookieParser from 'cookie-parser';
 import type { INestApplication } from '@nestjs/common';
 import type { Db, MongoClient } from 'mongodb';
 
-export interface E2EContext {
+export type E2EContext = {
   app: INestApplication;
   db: Db;
-}
+};
 
 /**
  * Boot the test app and return it alongside the test DB handle.

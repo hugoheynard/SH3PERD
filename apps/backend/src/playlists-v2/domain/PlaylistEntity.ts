@@ -3,15 +3,22 @@ import type { TPlaylistDomainModel, TUserId } from '@sh3pherd/shared-types';
 
 export class PlaylistEntity extends Entity<TPlaylistDomainModel> {
   constructor(props: TEntityInput<TPlaylistDomainModel>) {
-    super({
-      ...props,
-      name: props.name.trim(),
-      description: props.description?.trim(),
-    }, 'playlist');
+    super(
+      {
+        ...props,
+        name: props.name.trim(),
+        description: props.description?.trim(),
+      },
+      'playlist',
+    );
   }
 
-  get name(): string { return this.props.name; }
-  get owner_id(): TUserId { return this.props.owner_id; }
+  get name(): string {
+    return this.props.name;
+  }
+  get owner_id(): TUserId {
+    return this.props.owner_id;
+  }
 
   isOwnedBy(userId: TUserId): boolean {
     return this.props.owner_id === userId;

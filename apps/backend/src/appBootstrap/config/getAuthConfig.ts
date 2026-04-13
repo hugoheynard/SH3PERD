@@ -29,7 +29,9 @@ export const getAuthConfig = (): TAuthConfig => {
   }
 
   return {
-    privateKey: isProd ? (process.env['JWT_PRIVATE_KEY'] as string) : loadKeysFromFiles().privateKey,
+    privateKey: isProd
+      ? (process.env['JWT_PRIVATE_KEY'] as string)
+      : loadKeysFromFiles().privateKey,
     publicKey: isProd ? (process.env['JWT_PUBLIC_KEY'] as string) : loadKeysFromFiles().publicKey,
     authToken_TTL_SECONDS: 60 * 15,
     refreshTokenTTL_MS: 604800000,

@@ -1,4 +1,10 @@
-import { type CanActivate, type ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  type CanActivate,
+  type ExecutionContext,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { PLATFORM_SCOPED_KEY } from '../../utils/nest/decorators/PlatformScoped.js';
@@ -39,7 +45,9 @@ export class PlatformContractContextGuard implements CanActivate {
     const userId = req.user_id;
 
     if (!userId) {
-      throw new UnauthorizedException('No authenticated user — platform contract cannot be resolved');
+      throw new UnauthorizedException(
+        'No authenticated user — platform contract cannot be resolved',
+      );
     }
 
     const platformContract = await this.platformRepo.findByUserId(userId);
@@ -54,8 +62,8 @@ export class PlatformContractContextGuard implements CanActivate {
 
     // Attach the plan as the role — PermissionGuard will expand it
     // via PLATFORM_ROLE_TEMPLATES automatically.
-    req.contract_roles = [platformContract.plan] as any;
-    (req as any).platform_contract_id = platformContract.id;
+    (req as Record<string, unknown>).contract_roles = [platformContract.plan];
+    (req as Record<string, unknown>).platform_contract_id = platformContract.id;
 
     return true;
   }

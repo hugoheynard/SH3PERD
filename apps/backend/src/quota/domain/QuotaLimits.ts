@@ -25,38 +25,38 @@ export type TQuotaResource =
 /** How the counter resets. */
 export type TQuotaPeriod = 'monthly' | 'lifetime';
 
-export interface TQuotaLimit {
+export type TQuotaLimit = {
   resource: TQuotaResource;
   period: TQuotaPeriod;
   /** Max allowed count. -1 = unlimited. 0 = not available. */
   limit: number;
-}
+};
 
 // ── Plan quotas ─────────────────────────────────────────────
 
 export const PLAN_QUOTAS: Record<TPlatformRole, TQuotaLimit[]> = {
   plan_free: [
     { resource: 'repertoire_entry', period: 'lifetime', limit: 50 },
-    { resource: 'track_upload',     period: 'lifetime', limit: 50 },
-    { resource: 'master_standard',  period: 'monthly',  limit: 3 },
-    { resource: 'master_ai',       period: 'monthly',  limit: 0 },
-    { resource: 'pitch_shift',     period: 'monthly',  limit: 3 },
-    { resource: 'storage_bytes',   period: 'lifetime', limit: 500 * 1024 * 1024 }, // 500 Mo
+    { resource: 'track_upload', period: 'lifetime', limit: 50 },
+    { resource: 'master_standard', period: 'monthly', limit: 3 },
+    { resource: 'master_ai', period: 'monthly', limit: 0 },
+    { resource: 'pitch_shift', period: 'monthly', limit: 3 },
+    { resource: 'storage_bytes', period: 'lifetime', limit: 500 * 1024 * 1024 }, // 500 Mo
   ],
   plan_pro: [
     { resource: 'repertoire_entry', period: 'lifetime', limit: -1 },
-    { resource: 'track_upload',     period: 'lifetime', limit: -1 },
-    { resource: 'master_standard',  period: 'monthly',  limit: -1 },
-    { resource: 'master_ai',       period: 'monthly',  limit: 10 },
-    { resource: 'pitch_shift',     period: 'monthly',  limit: -1 },
-    { resource: 'storage_bytes',   period: 'lifetime', limit: 5 * 1024 * 1024 * 1024 }, // 5 Go
+    { resource: 'track_upload', period: 'lifetime', limit: -1 },
+    { resource: 'master_standard', period: 'monthly', limit: -1 },
+    { resource: 'master_ai', period: 'monthly', limit: 10 },
+    { resource: 'pitch_shift', period: 'monthly', limit: -1 },
+    { resource: 'storage_bytes', period: 'lifetime', limit: 5 * 1024 * 1024 * 1024 }, // 5 Go
   ],
   plan_band: [
-    { resource: 'storage_bytes',   period: 'lifetime', limit: 20 * 1024 * 1024 * 1024 }, // 20 Go
+    { resource: 'storage_bytes', period: 'lifetime', limit: 20 * 1024 * 1024 * 1024 }, // 20 Go
     // All other resources: unlimited (not listed)
   ],
   plan_business: [
-    { resource: 'storage_bytes',   period: 'lifetime', limit: 100 * 1024 * 1024 * 1024 }, // 100 Go
+    { resource: 'storage_bytes', period: 'lifetime', limit: 100 * 1024 * 1024 * 1024 }, // 100 Go
   ],
 };
 
@@ -67,7 +67,7 @@ export const PLAN_QUOTAS: Record<TPlatformRole, TQuotaLimit[]> = {
  * Returns -1 (unlimited) if the resource is not listed for the plan.
  */
 export function getQuotaLimit(plan: TPlatformRole, resource: TQuotaResource): TQuotaLimit | null {
-  return PLAN_QUOTAS[plan]?.find(q => q.resource === resource) ?? null;
+  return PLAN_QUOTAS[plan]?.find((q) => q.resource === resource) ?? null;
 }
 
 /**

@@ -1,21 +1,28 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { TContractId,  TUserProfileDomainModel,TContractDomainModel, TUserGroupDomainModel, TUserGroupListViewModel } from '@sh3pherd/shared-types';
-import { CONTRACT_REPO, USER_GROUPS_REPO, USER_PROFILE_REPO } from '../../appBootstrap/nestTokens.js';
+import type {
+  TContractId,
+  TUserProfileDomainModel,
+  TContractDomainModel,
+  TUserGroupDomainModel,
+  TUserGroupListViewModel,
+} from '@sh3pherd/shared-types';
+import {
+  CONTRACT_REPO,
+  USER_GROUPS_REPO,
+  USER_PROFILE_REPO,
+} from '../../appBootstrap/nestTokens.js';
 import type { IUserGroupsMongoRepository } from '../infra/UserGroupsMongoRepository.js';
 import type { IContractRepository } from '../../contracts/repositories/ContractMongoRepository.js';
 import type { IUserProfileRepository } from '../../user/infra/UserProfileMongoRepo.repository.js';
 import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js';
 
-
-
 @Injectable()
 export class UserGroupListByContractAssembler {
-
   constructor(
     @Inject(USER_GROUPS_REPO) private readonly userGroupsRepo: IUserGroupsMongoRepository,
     @Inject(CONTRACT_REPO) private readonly contractRepo: IContractRepository,
     @Inject(USER_PROFILE_REPO) private readonly userProfileRepo: IUserProfileRepository,
-  ) {};
+  ) {}
 
   /**
    * Get user group list view model for a specific contract scope
@@ -29,38 +36,42 @@ export class UserGroupListByContractAssembler {
 
     for (const ug of userGroupsRecord) {
       uniqueContractIds.add(ug.groupLead);
-      ug.members.forEach(id => uniqueContractIds.add(id));
-      ug.referents.forEach(id => uniqueContractIds.add(id));
+      ug.members.forEach((id) => uniqueContractIds.add(id));
+      ug.referents.forEach((id) => uniqueContractIds.add(id));
       userGroups.push(RecordMetadataUtils.stripDocMetadata(ug));
     }
 
-    const { contracts, userProfiles } = await this.generateContractAndUserProfileObjects([...uniqueContractIds]);
+    const { contracts, userProfiles } = await this.generateContractAndUserProfileObjects([
+      ...uniqueContractIds,
+    ]);
 
     return {
       userGroups,
       contracts,
       userProfiles,
     };
-  };
+  }
 
   /**
    * Generates contract and user profile objects for the given contract IDs.
    * @param contractIds
    * @private
    */
-  private async generateContractAndUserProfileObjects(
-    contractIds: TContractId[],
-  ): Promise<{
+  private async generateContractAndUserProfileObjects(contractIds: TContractId[]): Promise<{
     contracts: Record<TContractId, TContractDomainModel>;
     userProfiles: Record<TContractId, TUserProfileDomainModel>;
   }> {
-    const contracts = await this.contractRepo.findMany({ filter: { id: { $in: contractIds } }, }) ?? [];
+    const contracts =
+      (await this.contractRepo.findMany({ filter: { id: { $in: contractIds } } })) ?? [];
 
-    const userIds = [...new Set(contracts.map(c => c.user_id))];
+    const userIds = [...new Set(contracts.map((c) => c.user_id))];
 
-    const userProfiles = await this.userProfileRepo.findMany({ filter: { user_id: { $in: userIds } }, }) ?? [];
+    const userProfiles =
+      (await this.userProfileRepo.findMany({ filter: { user_id: { $in: userIds } } })) ?? [];
 
-    const userProfileMap = new Map(userProfiles.map(u => [u.user_id, RecordMetadataUtils.stripDocMetadata(u)]));
+    const userProfileMap = new Map(
+      userProfiles.map((u) => [u.user_id, RecordMetadataUtils.stripDocMetadata(u)]),
+    );
 
     const contractObject: Record<TContractId, TContractDomainModel> = {};
     const contractUserProfiles: Record<TContractId, TUserProfileDomainModel> = {};
@@ -77,5 +88,5 @@ export class UserGroupListByContractAssembler {
     }
 
     return { contracts: contractObject, userProfiles: contractUserProfiles };
-  };
+  }
 }

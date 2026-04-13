@@ -7,10 +7,10 @@ import { BusinessError } from '../../utils/errorManagement/BusinessError.js';
 import type { ICompanyRepository } from './CompanyMongoRepository.js';
 import type { IOrgNodeRepository } from './OrgNodeMongoRepository.js';
 
-export interface ICompanyAggregateRepository {
+export type ICompanyAggregateRepository = {
   loadByCompanyId(companyId: TCompanyId): Promise<CompanyAggregate>;
   save(aggregate: CompanyAggregate, actorId: TUserId): Promise<void>;
-}
+};
 
 export class CompanyAggregateRepository implements ICompanyAggregateRepository {
   constructor(
@@ -29,7 +29,9 @@ export class CompanyAggregateRepository implements ICompanyAggregateRepository {
     }
 
     const company = new CompanyEntity(RecordMetadataUtils.stripDocMetadata(companyRecord));
-    const nodes = nodeRecords.map(r => new OrgNodeEntity(RecordMetadataUtils.stripDocMetadata(r)));
+    const nodes = nodeRecords.map(
+      (r) => new OrgNodeEntity(RecordMetadataUtils.stripDocMetadata(r)),
+    );
 
     return new CompanyAggregate(company, nodes);
   }

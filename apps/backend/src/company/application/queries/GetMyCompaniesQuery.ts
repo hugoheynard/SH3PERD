@@ -13,19 +13,22 @@ export class GetMyCompaniesQuery {
  * The repository handles the contract → company join internally.
  */
 @QueryHandler(GetMyCompaniesQuery)
-export class GetMyCompaniesHandler implements IQueryHandler<GetMyCompaniesQuery, TCompanyCardViewModel[]> {
-  constructor(
-    @Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository,
-  ) {}
+export class GetMyCompaniesHandler implements IQueryHandler<
+  GetMyCompaniesQuery,
+  TCompanyCardViewModel[]
+> {
+  constructor(@Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository) {}
 
   async execute(query: GetMyCompaniesQuery): Promise<TCompanyCardViewModel[]> {
     const companies = await this.companyRepo.findByUser(query.userId);
 
-    return companies.map((c): TCompanyCardViewModel => ({
-      id: c.id,
-      name: c.name,
-      status: c.status,
-      createdAt: c.created_at ?? new Date(),
-    }));
+    return companies.map(
+      (c): TCompanyCardViewModel => ({
+        id: c.id,
+        name: c.name,
+        status: c.status,
+        createdAt: c.created_at ?? new Date(),
+      }),
+    );
   }
 }

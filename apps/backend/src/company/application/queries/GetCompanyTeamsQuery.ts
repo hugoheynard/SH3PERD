@@ -9,10 +9,11 @@ export class GetCompanyOrgNodesQuery {
 }
 
 @QueryHandler(GetCompanyOrgNodesQuery)
-export class GetCompanyOrgNodesHandler implements IQueryHandler<GetCompanyOrgNodesQuery, TOrgNodeRecord[]> {
-  constructor(
-    @Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository,
-  ) {}
+export class GetCompanyOrgNodesHandler implements IQueryHandler<
+  GetCompanyOrgNodesQuery,
+  TOrgNodeRecord[]
+> {
+  constructor(@Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository) {}
 
   async execute(query: GetCompanyOrgNodesQuery): Promise<TOrgNodeRecord[]> {
     return this.orgNodeRepo.findByCompany(query.companyId);

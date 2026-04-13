@@ -11,8 +11,19 @@ import { UpdateGuestProfileHandler } from './application/commands/UpdateGuestPro
 import { GetCompanyGuestsHandler } from './application/query/GetCompanyGuestsQuery.js';
 import { AuthCoreModule } from '../auth/core/auth-core.module.js';
 
-const CommandHandlers = [UpdateUserProfileHandler, UpdateUserPreferencesHandler, InviteUserHandler, CreateGuestUserHandler, UpdateGuestProfileHandler];
-const QueryHandlers = [GetCurrentUserViewModelHandler, GetUserProfileHandler, SearchUserByEmailHandler, GetCompanyGuestsHandler];
+const CommandHandlers = [
+  UpdateUserProfileHandler,
+  UpdateUserPreferencesHandler,
+  InviteUserHandler,
+  CreateGuestUserHandler,
+  UpdateGuestProfileHandler,
+];
+const QueryHandlers = [
+  GetCurrentUserViewModelHandler,
+  GetUserProfileHandler,
+  SearchUserByEmailHandler,
+  GetCompanyGuestsHandler,
+];
 
 @Module({
   imports: [CqrsModule, AuthCoreModule],

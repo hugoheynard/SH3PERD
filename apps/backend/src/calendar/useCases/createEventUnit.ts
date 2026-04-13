@@ -7,7 +7,7 @@ import type { TGenericSaveFn } from '../../utils/repoAdaptersHelpers/repository.
  * @param deps
  */
 export const createEventUnitUseCaseFactory = (deps: {
-  saveEventUnit: TGenericSaveFn<TEventUnitDomainModel>
+  saveEventUnit: TGenericSaveFn<TEventUnitDomainModel>;
 }) => {
   const { saveEventUnit } = deps;
 
@@ -15,19 +15,17 @@ export const createEventUnitUseCaseFactory = (deps: {
    * Use case for creating an event unit.
    * @param deps
    */
-  return async function createEventUnitUseCase(input: Omit<TEventUnitDomainModel, 'id'>): Promise<TEventUnitDomainModel> {
+  return async function createEventUnitUseCase(
+    input: Omit<TEventUnitDomainModel, 'id'>,
+  ): Promise<TEventUnitDomainModel> {
     const eventUnit = new EventUnitEntity(input);
 
-
-    const result = await saveEventUnit(eventUnit.toDomain)
+    const result = await saveEventUnit(eventUnit.toDomain);
 
     if (!result) {
       throw new Error('Error saving event unit');
     }
 
     return eventUnit.toDomain;
-  }
+  };
 };
-
-
-

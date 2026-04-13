@@ -14,7 +14,9 @@ import type { IPasswordService } from '../../auth/core/password-manager/types/In
 export const userId = (n = 1) => `user_test-${n}` as TUserId;
 
 // ─── Record Factories ────────────────────────────────────────
-export function makeCredentialsRecord(overrides: Partial<TUserCredentialsRecord> = {}): TUserCredentialsRecord {
+export function makeCredentialsRecord(
+  overrides: Partial<TUserCredentialsRecord> = {},
+): TUserCredentialsRecord {
   return {
     id: userId(),
     email: 'test@example.com',
@@ -44,7 +46,9 @@ export function makeProfileRecord(overrides: Partial<TUserProfileRecord> = {}): 
   } as TUserProfileRecord;
 }
 
-export function makePreferencesRecord(overrides: Partial<TUserPreferencesRecord> = {}): TUserPreferencesRecord {
+export function makePreferencesRecord(
+  overrides: Partial<TUserPreferencesRecord> = {},
+): TUserPreferencesRecord {
   return {
     id: 'userPreferences_test-1' as any,
     user_id: userId(),

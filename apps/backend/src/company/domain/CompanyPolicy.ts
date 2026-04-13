@@ -9,7 +9,6 @@ import type { OrgNodeEntity } from './OrgNodeEntity.js';
  * Each method either passes silently or throws with an explicit error code.
  */
 export class CompanyPolicy {
-
   // ── Ownership ───────────────────────────────────────────
 
   /** Ensures the actor is the company owner. */
@@ -32,14 +31,14 @@ export class CompanyPolicy {
 
   /** Ensures the parent node belongs to the same company. */
   ensureParentBelongsToCompany(parentId: TOrgNodeId, nodes: OrgNodeEntity[]): void {
-    if (!nodes.some(n => n.id === parentId)) {
+    if (!nodes.some((n) => n.id === parentId)) {
       throw new Error('ORGNODE_PARENT_NOT_IN_COMPANY');
     }
   }
 
   /** Ensures the parent node is not archived. */
   ensureParentIsActive(parentId: TOrgNodeId, nodes: OrgNodeEntity[]): void {
-    const parent = nodes.find(n => n.id === parentId);
+    const parent = nodes.find((n) => n.id === parentId);
     if (parent?.isArchived()) {
       throw new Error('ORGNODE_PARENT_ARCHIVED');
     }
@@ -55,7 +54,7 @@ export class CompanyPolicy {
 
     while (currentId) {
       depth++;
-      const node = nodes.find(n => n.id === currentId);
+      const node = nodes.find((n) => n.id === currentId);
       currentId = node?.toDomain.parent_id;
     }
 
@@ -65,21 +64,25 @@ export class CompanyPolicy {
   }
 
   /** Ensures no active sibling has the same name (case-insensitive). */
-  ensureNameUniqueAmongSiblings(name: string, parentId: TOrgNodeId | undefined, nodes: OrgNodeEntity[]): void {
+  ensureNameUniqueAmongSiblings(
+    name: string,
+    parentId: TOrgNodeId | undefined,
+    nodes: OrgNodeEntity[],
+  ): void {
     const normalized = name.trim().toLowerCase();
-    const siblings = nodes.filter(n => {
+    const siblings = nodes.filter((n) => {
       const domain = n.toDomain;
       return domain.parent_id === parentId && !n.isArchived();
     });
 
-    if (siblings.some(s => s.toDomain.name.toLowerCase() === normalized)) {
+    if (siblings.some((s) => s.toDomain.name.toLowerCase() === normalized)) {
       throw new Error('ORGNODE_SIBLING_NAME_DUPLICATE');
     }
   }
 
   /** Ensures the node has no children (required before deletion). */
   ensureNodeHasNoChildren(nodeId: TOrgNodeId, nodes: OrgNodeEntity[]): void {
-    if (nodes.some(n => n.toDomain.parent_id === nodeId)) {
+    if (nodes.some((n) => n.toDomain.parent_id === nodeId)) {
       throw new Error('ORGNODE_HAS_CHILDREN');
     }
   }

@@ -34,14 +34,23 @@ export class LoginHandler implements ICommandHandler<LoginCommand, TLoginCommand
     }
 
     if (!user.active) {
-      throw new BusinessError('User account is deactivated.', { code: 'USER_DEACTIVATED', status: 403 });
+      throw new BusinessError('User account is deactivated.', {
+        code: 'USER_DEACTIVATED',
+        status: 403,
+      });
     }
 
     if (!user.password) {
-      throw new BusinessError('Account not activated — please use the invitation link', { code: 'GUEST_NOT_ACTIVATED', status: 403 });
+      throw new BusinessError('Account not activated — please use the invitation link', {
+        code: 'GUEST_NOT_ACTIVATED',
+        status: 403,
+      });
     }
 
-    const { isValid } = await this.passwordService.comparePassword({ password, hashedPassword: user.password });
+    const { isValid } = await this.passwordService.comparePassword({
+      password,
+      hashedPassword: user.password,
+    });
     if (!isValid) {
       throw new BusinessError('Invalid credentials', { code: 'INVALID_CREDENTIALS', status: 400 });
     }

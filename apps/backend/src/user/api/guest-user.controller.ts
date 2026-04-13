@@ -6,9 +6,19 @@ import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
 import type { TCompanyId, TUserId } from '@sh3pherd/shared-types';
-import { CreateGuestUserCommand, type TCreateGuestUserDTO, type TCreateGuestUserResult } from '../application/commands/CreateGuestUserCommand.js';
-import { UpdateGuestProfileCommand, type TUpdateGuestProfileDTO } from '../application/commands/UpdateGuestProfileCommand.js';
-import { GetCompanyGuestsQuery, type TGuestViewModel } from '../application/query/GetCompanyGuestsQuery.js';
+import {
+  CreateGuestUserCommand,
+  type TCreateGuestUserDTO,
+  type TCreateGuestUserResult,
+} from '../application/commands/CreateGuestUserCommand.js';
+import {
+  UpdateGuestProfileCommand,
+  type TUpdateGuestProfileDTO,
+} from '../application/commands/UpdateGuestProfileCommand.js';
+import {
+  GetCompanyGuestsQuery,
+  type TGuestViewModel,
+} from '../application/query/GetCompanyGuestsQuery.js';
 import { GUEST_COMPANY_REPO } from '../../appBootstrap/nestTokens.js';
 import type { IGuestCompanyRepository } from '../infra/GuestCompanyMongoRepo.repository.js';
 
@@ -23,8 +33,13 @@ export class GuestUserController {
     @Inject(GUEST_COMPANY_REPO) private readonly guestCompanyRepo: IGuestCompanyRepository,
   ) {}
 
-  @ApiOperation({ summary: 'Create a guest user (and link to a company if company_id is provided)' })
-  @ApiResponse({ status: 201, description: 'Guest user created or found (deduplication by email).' })
+  @ApiOperation({
+    summary: 'Create a guest user (and link to a company if company_id is provided)',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Guest user created or found (deduplication by email).',
+  })
   @ApiResponse({ status: 409, description: 'Email belongs to an active (non-guest) user.' })
   @RequirePermission(P.Company.Members.Write)
   @Post('guest')
@@ -36,12 +51,13 @@ export class GuestUserController {
   }
 
   @ApiOperation({ summary: 'List guest users for a company' })
-  @ApiResponse({ status: 200, description: 'List of guest users linked to the company via the guest_company junction.' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of guest users linked to the company via the guest_company junction.',
+  })
   @RequirePermission(P.Company.Members.Read)
   @Get('guests')
-  async getCompanyGuests(
-    @Query('companyId') companyId: TCompanyId,
-  ): Promise<TGuestViewModel[]> {
+  async getCompanyGuests(@Query('companyId') companyId: TCompanyId): Promise<TGuestViewModel[]> {
     return this.queryBus.execute(new GetCompanyGuestsQuery(companyId));
   }
 

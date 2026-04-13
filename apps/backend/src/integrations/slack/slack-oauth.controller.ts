@@ -18,7 +18,8 @@ export class SlackOAuthController {
 
   constructor(
     private readonly slackOAuth: SlackOAuthService,
-    @Inject(INTEGRATION_CREDENTIALS_REPO) private readonly credentialsRepo: IIntegrationCredentialsRepository,
+    @Inject(INTEGRATION_CREDENTIALS_REPO)
+    private readonly credentialsRepo: IIntegrationCredentialsRepository,
     private readonly config: ConfigService,
   ) {
     this.frontendUrl = this.config.get<string>('frontendUrl', 'http://localhost:4200');
@@ -54,11 +55,13 @@ export class SlackOAuthController {
       const { botToken, teamId } = await this.slackOAuth.exchangeCode(code);
 
       // Upsert: find existing or create new credentials for this company + slack
-      let record = await this.credentialsRepo.findByCompanyAndPlatform(companyId, 'slack');
+      const record = await this.credentialsRepo.findByCompanyAndPlatform(companyId, 'slack');
 
       if (record) {
         // Update existing
-        const entity = new IntegrationCredentialsEntity(RecordMetadataUtils.stripDocMetadata(record));
+        const entity = new IntegrationCredentialsEntity(
+          RecordMetadataUtils.stripDocMetadata(record),
+        );
         entity.connect({ bot_token: botToken, team_id: teamId });
         const diff = entity.getDiffProps();
         if (Object.keys(diff).length > 0) {

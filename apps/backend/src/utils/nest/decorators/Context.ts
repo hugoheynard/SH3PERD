@@ -2,7 +2,6 @@ import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
 import type { TUseCaseContext } from '../../../types/useCases.generic.types.js';
 import type { Request } from 'express';
 
-
 /**
  * A NestJS parameter decorator that extracts a scoped use case context from the request.
  * It retrieves the user ID and contract ID from the request object and constructs
@@ -13,7 +12,6 @@ import type { Request } from 'express';
 
 export const ContractScopedContext = createParamDecorator(
   (_: unknown, ctx: ExecutionContext): TUseCaseContext<'scoped'> => {
-
     const request: Request = ctx.switchToHttp().getRequest();
 
     const userId = request.user_id;
@@ -27,12 +25,11 @@ export const ContractScopedContext = createParamDecorator(
       user_scope: userId,
       contract_scope: contractId,
     };
-  }
+  },
 );
 
 export const UserScopedContext = createParamDecorator(
   (_: unknown, ctx: ExecutionContext): TUseCaseContext<'unscoped'> => {
-
     const request: Request = ctx.switchToHttp().getRequest();
 
     const userId = request.user_id;
@@ -44,5 +41,5 @@ export const UserScopedContext = createParamDecorator(
     return {
       user_scope: userId,
     };
-  }
+  },
 );

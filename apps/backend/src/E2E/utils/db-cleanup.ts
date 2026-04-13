@@ -23,7 +23,7 @@ function assertTestEnv(): void {
   if (!ALLOWED_ENVS.has(env)) {
     throw new Error(
       `[db-cleanup] Refusing to reset DB in NODE_ENV="${env}". ` +
-      `Only allowed in: ${[...ALLOWED_ENVS].join(', ')}`,
+        `Only allowed in: ${[...ALLOWED_ENVS].join(', ')}`,
     );
   }
 }
@@ -35,9 +35,7 @@ function assertTestEnv(): void {
 export async function resetAllCollections(db: Db): Promise<void> {
   assertTestEnv();
   const collections = await db.listCollections().toArray();
-  await Promise.all(
-    collections.map((col) => db.collection(col.name).deleteMany({})),
-  );
+  await Promise.all(collections.map((col) => db.collection(col.name).deleteMany({})));
 }
 
 /**
@@ -46,9 +44,7 @@ export async function resetAllCollections(db: Db): Promise<void> {
  */
 export async function resetCollections(db: Db, names: string[]): Promise<void> {
   assertTestEnv();
-  await Promise.all(
-    names.map((name) => db.collection(name).deleteMany({})),
-  );
+  await Promise.all(names.map((name) => db.collection(name).deleteMany({})));
 }
 
 /**
@@ -68,12 +64,7 @@ export async function resetMusicCollections(db: Db): Promise<void> {
  * Company-specific cleanup: removes company + orgchart data.
  */
 export async function resetCompanyCollections(db: Db): Promise<void> {
-  await resetCollections(db, [
-    'companies',
-    'contracts',
-    'org_nodes',
-    'guest_company',
-  ]);
+  await resetCollections(db, ['companies', 'contracts', 'org_nodes', 'guest_company']);
 }
 
 /**

@@ -22,10 +22,7 @@ const CommandHandlers = [
   ReorderPlaylistTrackHandler,
 ];
 
-const QueryHandlers = [
-  GetUserPlaylistsHandler,
-  GetPlaylistDetailHandler,
-];
+const QueryHandlers = [GetUserPlaylistsHandler, GetPlaylistDetailHandler];
 
 @Module({
   imports: [CqrsModule],

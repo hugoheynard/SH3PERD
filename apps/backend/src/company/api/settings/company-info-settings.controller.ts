@@ -1,6 +1,13 @@
 import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ActorId } from '../../../utils/nest/decorators/ActorId.js';
 import { ZodValidationPipe } from '../../../utils/nest/pipes/ZodValidation.pipe.js';
 import { buildApiResponseDTO } from '../../../music/codes.js';
@@ -26,12 +33,16 @@ import { CompanyInfoPayload } from '../../dto/company.dto.js';
 export class CompanyInfoSettingsController {
   constructor(private readonly commandBus: CommandBus) {}
 
-
   @ApiOperation({
     summary: 'Update company info',
-    description: 'Updates the company name, description and address. Requires `company:settings:write` permission.',
+    description:
+      'Updates the company name, description and address. Requires `company:settings:write` permission.',
   })
-  @ApiParam({ name: 'id', description: 'Company ID (prefixed `company_`)', example: 'company_abc-123' })
+  @ApiParam({
+    name: 'id',
+    description: 'Company ID (prefixed `company_`)',
+    example: 'company_abc-123',
+  })
   @ApiBody(apiRequestDTO(CompanyInfoPayload))
   @ApiResponse(apiSuccessDTO(COMPANY_CODES_SUCCESS.UPDATE_COMPANY_INFO, CompanyInfoPayload))
   @ApiResponse({ status: 400, description: 'Validation failed (name empty, malformed body).' })

@@ -1,6 +1,5 @@
 import type { TApiMessage } from '@sh3pherd/shared-types';
 
-
 export const USERGROUP_SUCCESS = {
   GET_CURRENT_USER_USERGROUPS: {
     code: 'GET_CURRENT_USER_USERGROUPS_SUCCESS',

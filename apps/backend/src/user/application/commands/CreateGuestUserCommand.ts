@@ -4,7 +4,11 @@ import type { TUserId, TCompanyId } from '@sh3pherd/shared-types';
 import type { IUserCredentialsRepository } from '../../infra/UserCredentialsMongoRepo.repository.js';
 import type { IUserProfileRepository } from '../../infra/UserProfileMongoRepo.repository.js';
 import type { IGuestCompanyRepository } from '../../infra/GuestCompanyMongoRepo.repository.js';
-import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO, GUEST_COMPANY_REPO } from '../../../appBootstrap/nestTokens.js';
+import {
+  USER_CREDENTIALS_REPO,
+  USER_PROFILE_REPO,
+  GUEST_COMPANY_REPO,
+} from '../../../appBootstrap/nestTokens.js';
 import { UserCredentialEntity } from '../../domain/UserCredential.entity.js';
 import { UserProfileEntity } from '../../domain/UserProfileEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
@@ -44,7 +48,10 @@ export class CreateGuestUserCommand {
  * - as a real user → throws 409 (use addMember with their user_id instead)
  */
 @CommandHandler(CreateGuestUserCommand)
-export class CreateGuestUserHandler implements ICommandHandler<CreateGuestUserCommand, TCreateGuestUserResult> {
+export class CreateGuestUserHandler implements ICommandHandler<
+  CreateGuestUserCommand,
+  TCreateGuestUserResult
+> {
   constructor(
     @Inject(USER_CREDENTIALS_REPO) private readonly credsRepo: IUserCredentialsRepository,
     @Inject(USER_PROFILE_REPO) private readonly profileRepo: IUserProfileRepository,

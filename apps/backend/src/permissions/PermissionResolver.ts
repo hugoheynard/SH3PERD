@@ -54,10 +54,7 @@ export class PermissionResolver {
   /**
    * Resolve all company-level permissions from the user's contract roles.
    */
-  async resolveCompanyPermissions(
-    userId: TUserId,
-    companyId: TCompanyId,
-  ): Promise<TPermission[]> {
+  async resolveCompanyPermissions(userId: TUserId, companyId: TCompanyId): Promise<TPermission[]> {
     const contract = await this.findActiveContract(userId, companyId);
     if (!contract) return [];
 
@@ -86,7 +83,10 @@ export class PermissionResolver {
     if (hasPermission(contractPerms, required)) return true;
 
     // 2. Team-level check (hierarchy walk)
-    const allTeams = await this.teamRepo.findMany({ filter: { company_id: companyId } as any }) ?? [];
+    const allTeams =
+      (await this.teamRepo.findMany({
+        filter: { company_id: companyId } as Record<string, unknown>,
+      })) ?? [];
     const teamRole = resolveTeamRole(actorId, targetTeamId, allTeams);
     if (!teamRole) return false;
 
@@ -94,11 +94,12 @@ export class PermissionResolver {
     const teamPerms = expandTeamRole(teamRole);
 
     // 4. Apply per-member overrides if any
-    const targetTeam = allTeams.find(t => t.id === targetTeamId);
-    const membership = targetTeam?.members.find(
-      m => m.user_id === actorId && !m.leftAt,
+    const targetTeam = allTeams.find((t) => t.id === targetTeamId);
+    const membership = targetTeam?.members.find((m) => m.user_id === actorId && !m.leftAt);
+    const finalPerms = applyOverrides(
+      teamPerms,
+      membership?.permission_overrides as { grant?: string[]; revoke?: string[] } | undefined,
     );
-    const finalPerms = applyOverrides(teamPerms, membership?.permission_overrides as any);
 
     return hasPermission(finalPerms, required);
   }
@@ -112,17 +113,19 @@ export class PermissionResolver {
     userId: TUserId,
     companyId: TCompanyId,
   ): Promise<TContractRecord | null> {
-    return this.contractRepo.findOne({ filter: { user_id: userId, company_id: companyId, status: 'active' } as any });
+    return this.contractRepo.findOne({
+      filter: { user_id: userId, company_id: companyId, status: 'active' } as Record<
+        string,
+        unknown
+      >,
+    });
   }
 
   /**
    * Get all contract roles for a user in a company.
    * Useful for the workspace switcher and context resolution.
    */
-  async getContractRoles(
-    userId: TUserId,
-    companyId: TCompanyId,
-  ): Promise<TContractRole[]> {
+  async getContractRoles(userId: TUserId, companyId: TCompanyId): Promise<TContractRole[]> {
     const contract = await this.findActiveContract(userId, companyId);
     return contract?.roles ?? [];
   }
@@ -135,7 +138,7 @@ export function expandContractRoles(roles: TContractRole[]): TPermission[] {
   const perms = new Set<TPermission>();
   for (const role of roles) {
     const template = ROLE_TEMPLATES[role];
-    if (template) template.forEach(p => perms.add(p));
+    if (template) template.forEach((p) => perms.add(p));
   }
   return [...perms];
 }
@@ -164,7 +167,7 @@ export function applyOverrides<T extends string = string>(
 
   // Remove revoked permissions (exact match only, not wildcard)
   if (overrides.revoke) {
-    result = result.filter(p => !overrides.revoke!.includes(p));
+    result = result.filter((p) => !overrides.revoke!.includes(p));
   }
 
   return result;

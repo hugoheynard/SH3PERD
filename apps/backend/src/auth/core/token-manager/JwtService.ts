@@ -1,6 +1,9 @@
 import type { Secret, SignOptions } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
-import type { TAuthTokenManagerOptions, TAuthTokenPayload } from '../../types/auth.domain.tokens.js';
+import type {
+  TAuthTokenManagerOptions,
+  TAuthTokenPayload,
+} from '../../types/auth.domain.tokens.js';
 import type { TGenerateAuthTokenFn, TVerifyAuthTokenFn } from '../../types/auth.core.contracts.js';
 import { Injectable } from '@nestjs/common';
 

@@ -1,13 +1,16 @@
-import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import {
+  BaseMongoRepository,
+  type TBaseMongoRepoDeps,
+} from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { TOrgNodeRecord, TOrgNodeId, TCompanyId } from '@sh3pherd/shared-types';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
-export interface IOrgNodeRepository extends IBaseCRUD<TOrgNodeRecord> {
+export type IOrgNodeRepository = {
   findById(id: TOrgNodeId): Promise<TOrgNodeRecord | null>;
   findByCompany(companyId: TCompanyId): Promise<TOrgNodeRecord[]>;
   findByParentId(parentId: TOrgNodeId, companyId: TCompanyId): Promise<TOrgNodeRecord[]>;
   findRootNodes(companyId: TCompanyId): Promise<TOrgNodeRecord[]>;
-}
+} & IBaseCRUD<TOrgNodeRecord>;
 
 export class OrgNodeMongoRepository
   extends BaseMongoRepository<TOrgNodeRecord>

@@ -1,4 +1,7 @@
-import { InviteUserCommand, InviteUserHandler } from '../../application/commands/InviteUserCommand.js';
+import {
+  InviteUserCommand,
+  InviteUserHandler,
+} from '../../application/commands/InviteUserCommand.js';
 import {
   userId,
   makeCredentialsRecord,
@@ -42,14 +45,17 @@ describe('InviteUserHandler', () => {
   it('should throw if email already exists', async () => {
     credsRepo.findOne.mockResolvedValue(makeCredentialsRecord({ email: dto.email }));
 
-    await expect(handler.execute(new InviteUserCommand(dto, actorId)))
-      .rejects.toThrow(BusinessError);
+    await expect(handler.execute(new InviteUserCommand(dto, actorId))).rejects.toThrow(
+      BusinessError,
+    );
   });
 
   it('should not save anything if email already exists', async () => {
     credsRepo.findOne.mockResolvedValue(makeCredentialsRecord({ email: dto.email }));
 
-    try { await handler.execute(new InviteUserCommand(dto, actorId)); } catch {}
+    try {
+      await handler.execute(new InviteUserCommand(dto, actorId));
+    } catch {}
 
     expect(credsRepo.save).not.toHaveBeenCalled();
     expect(profileRepo.save).not.toHaveBeenCalled();
@@ -63,8 +69,7 @@ describe('InviteUserHandler', () => {
     credsRepo.startSession.mockResolvedValue(mockSession as any);
     credsRepo.findOne.mockResolvedValue(null);
 
-    await expect(handler.execute(new InviteUserCommand(dto, actorId)))
-      .rejects.toThrow('tx fail');
+    await expect(handler.execute(new InviteUserCommand(dto, actorId))).rejects.toThrow('tx fail');
 
     expect(mockSession.endSession).toHaveBeenCalled();
   });

@@ -15,7 +15,7 @@ export class PayloadValidationErrorResponseDto {
 
   @ApiProperty({
     example: {
-      her: ['Unrecognized key(s) in object: \'her\''],
+      her: ["Unrecognized key(s) in object: 'her'"],
       preferences: ['Expected object, received string'],
     },
   })
@@ -23,6 +23,9 @@ export class PayloadValidationErrorResponseDto {
 
   @ApiProperty({ example: [] }) summary!: string[];
 
-  @ApiProperty({ example: 'her: Unrecognized key(s) in object: \'her\', preferences: Expected object, received string' })
+  @ApiProperty({
+    example:
+      "her: Unrecognized key(s) in object: 'her', preferences: Expected object, received string",
+  })
   details!: string;
 }

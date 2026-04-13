@@ -42,16 +42,36 @@ export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
 
   // ── Getters ────────────────────────────────────────────
 
-  get name(): string { return this.props.name; }
-  get company_id() { return this.props.company_id; }
-  get parent_id() { return this.props.parent_id; }
-  get type() { return this.props.type; }
-  get color() { return this.props.color; }
-  get position() { return this.props.position; }
-  get status() { return this.props.status; }
-  get communications() { return this.props.communications; }
-  get members() { return this.props.members; }
-  get guest_members() { return this.props.guest_members; }
+  get name(): string {
+    return this.props.name;
+  }
+  get company_id() {
+    return this.props.company_id;
+  }
+  get parent_id() {
+    return this.props.parent_id;
+  }
+  get type() {
+    return this.props.type;
+  }
+  get color() {
+    return this.props.color;
+  }
+  get position() {
+    return this.props.position;
+  }
+  get status() {
+    return this.props.status;
+  }
+  get communications() {
+    return this.props.communications;
+  }
+  get members() {
+    return this.props.members;
+  }
+  get guest_members() {
+    return this.props.guest_members;
+  }
 
   // ── Node info management ───────────────────────────────
 
@@ -60,27 +80,27 @@ export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
       throw new DomainError('Name is required', { code: 'ORGNODE_NAME_REQUIRED' });
     }
     this.props.name = name.trim();
-  };
+  }
 
   setColor(color: string): void {
     this.props.color = color;
-  };
+  }
 
   setType(type: TTeamType): void {
     this.props.type = type;
-  };
+  }
 
   setPosition(position: number): void {
     this.props.position = position;
-  };
+  }
 
   setParent(parentId: TOrgNodeId | undefined): void {
     this.props.parent_id = parentId;
-  };
+  }
 
   setCommunications(communications: TOrgNodeCommunication[]): void {
     this.props.communications = [...communications];
-  };
+  }
 
   /** Add a communication channel to this node */
   addCommunication(comm: TOrgNodeCommunication): void {
@@ -91,7 +111,7 @@ export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
   removeCommunication(platform: TCommunicationPlatform): void {
     this.props = {
       ...this.props,
-      communications: (this.props.communications ?? []).filter(c => c.platform !== platform),
+      communications: (this.props.communications ?? []).filter((c) => c.platform !== platform),
     };
   }
 
@@ -130,7 +150,7 @@ export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
     }
     this.props = {
       ...this.props,
-      members: this.props.members.map(m =>
+      members: this.props.members.map((m) =>
         m.user_id === userId && !m.leftAt ? { ...m, leftAt } : m,
       ),
     };
@@ -146,7 +166,7 @@ export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
     }
     this.props = {
       ...this.props,
-      members: this.props.members.map(m =>
+      members: this.props.members.map((m) =>
         m.user_id === userId && !m.leftAt ? { ...m, team_role: teamRole } : m,
       ),
     };
@@ -161,26 +181,27 @@ export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
 
   removeGuestMember(guestId: string): void {
     const guests = this.props.guest_members ?? [];
-    if (!guests.some(g => g.id === guestId)) {
-      throw new DomainError('Guest member not found', { code: 'ORGNODE_GUEST_NOT_FOUND', context: { guestId } });
+    if (!guests.some((g) => g.id === guestId)) {
+      throw new DomainError('Guest member not found', {
+        code: 'ORGNODE_GUEST_NOT_FOUND',
+        context: { guestId },
+      });
     }
-    this.props = { ...this.props, guest_members: guests.filter(g => g.id !== guestId) };
+    this.props = { ...this.props, guest_members: guests.filter((g) => g.id !== guestId) };
   }
 
   // ── Temporal queries ───────────────────────────────────
 
   getMembersAt(date: Date): TOrgNodeMember[] {
-    return this.props.members.filter(
-      m => m.joinedAt <= date && (!m.leftAt || m.leftAt >= date),
-    );
+    return this.props.members.filter((m) => m.joinedAt <= date && (!m.leftAt || m.leftAt >= date));
   }
 
   getActiveMembers(): TOrgNodeMember[] {
-    return this.props.members.filter(m => !m.leftAt);
+    return this.props.members.filter((m) => !m.leftAt);
   }
 
   hasActiveMember(userId: TUserId): boolean {
-    return this.props.members.some(m => m.user_id === userId && !m.leftAt);
+    return this.props.members.some((m) => m.user_id === userId && !m.leftAt);
   }
 
   // ── Hierarchy queries ──────────────────────────────────

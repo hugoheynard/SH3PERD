@@ -14,11 +14,11 @@ import { TechnicalError } from './TechnicalError.js';
 /**
  * Unified error response shape sent to the client.
  */
-interface ErrorResponse {
+type ErrorResponse = {
   statusCode: number;
   errorCode: string;
   message: string;
-}
+};
 
 /**
  * Global exception filter — catches all errors and returns a consistent JSON response.
@@ -96,12 +96,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const body = exception.getResponse();
       return {
         statusCode: status,
-        errorCode: typeof body === 'object' && body !== null && 'error' in body
-          ? String((body as any).error)
-          : 'HTTP_ERROR',
-        message: typeof body === 'object' && body !== null && 'message' in body
-          ? this.extractMessage((body as any).message)
-          : exception.message,
+        errorCode:
+          typeof body === 'object' && body !== null && 'error' in body
+            ? String((body as any).error)
+            : 'HTTP_ERROR',
+        message:
+          typeof body === 'object' && body !== null && 'message' in body
+            ? this.extractMessage((body as any).message)
+            : exception.message,
       };
     }
 

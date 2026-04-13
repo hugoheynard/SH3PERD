@@ -4,15 +4,11 @@ import type { Request } from 'express';
 
 @Controller('event-unit')
 export class EventUnitController {
-
   @Post()
-  createEvent(
-    @Req() req: Request,
-    @Body() requestDTO: any
-  ) {
+  createEvent(@Req() req: Request, @Body() requestDTO: any) {
     return createEventUnit({
       asker_id: req.user_id,
-      requestDTO
-    })
+      requestDTO,
+    });
   }
 }

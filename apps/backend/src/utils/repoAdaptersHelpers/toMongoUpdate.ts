@@ -1,11 +1,10 @@
-import type { UpdateFilter } from "mongodb";
-
+import type { UpdateFilter } from 'mongodb';
 
 /**
  * Construit les paths possibles dans un objet T
  * Exemple : "preferences.theme" | "preferences.contract_workspace" | "days"
  */
-type NestedKeys<T, Prefix extends string = ""> = {
+type NestedKeys<T, Prefix extends string = ''> = {
   [K in keyof T & string]: T[K] extends object
     ? `${Prefix}${K}` | NestedKeys<T[K], `${Prefix}${K}.`>
     : `${Prefix}${K}`;
@@ -49,7 +48,7 @@ export function toMongoUpdateAdapter<T extends object>(ops: UpdateOps<T>): Updat
     const incOps: Record<string, number> = {};
     for (const key of ops.inc) {
       const value = getNestedValue(ops.values, key);
-      if (typeof value === "number") {
+      if (typeof value === 'number') {
         incOps[key] = value;
       }
     }
@@ -59,9 +58,9 @@ export function toMongoUpdateAdapter<T extends object>(ops: UpdateOps<T>): Updat
   }
 
   if (ops.unset?.length) {
-    const unsetOps: Record<string, "" | 1 | true> = {};
+    const unsetOps: Record<string, '' | 1 | true> = {};
     for (const key of ops.unset) {
-      unsetOps[key] = "";
+      unsetOps[key] = '';
     }
     if (Object.keys(unsetOps).length > 0) {
       mongoUpdate.$unset = unsetOps as any; // ✅ cast propre
@@ -76,5 +75,5 @@ export function toMongoUpdateAdapter<T extends object>(ops: UpdateOps<T>): Updat
  * (supporte 'preferences.theme')
  */
 function getNestedValue(obj: any, path: string): unknown {
-  return path.split(".").reduce((acc, part) => acc?.[part], obj);
+  return path.split('.').reduce((acc, part) => acc?.[part], obj);
 }

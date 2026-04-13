@@ -20,7 +20,9 @@ export class LogoutHandler implements ICommandHandler<LogoutCommand, void> {
   async execute(cmd: LogoutCommand): Promise<void> {
     if (cmd.refreshToken) {
       // Find the token to get its family, then delete the entire family
-      const token = await this.refreshTokenRepo.findOne({ filter: { refreshToken: cmd.refreshToken } });
+      const token = await this.refreshTokenRepo.findOne({
+        filter: { refreshToken: cmd.refreshToken },
+      });
       if (token) {
         await this.refreshTokenRepo.deleteMany({ family_id: token.family_id } as any);
       }

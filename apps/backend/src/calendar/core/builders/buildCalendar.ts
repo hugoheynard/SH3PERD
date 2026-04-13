@@ -1,4 +1,9 @@
-import type { TContractId, TEventUnitId, TEventUnitDomainModel, TCalendarDomainModel } from '@sh3pherd/shared-types';
+import type {
+  TContractId,
+  TEventUnitId,
+  TEventUnitDomainModel,
+  TCalendarDomainModel,
+} from '@sh3pherd/shared-types';
 
 export type TBuildCalendarInput = {
   readonly eventUnits: readonly TEventUnitDomainModel[];
@@ -20,7 +25,8 @@ export function buildCalendar(input: TBuildCalendarInput): TBuildCalendarOutput 
   const { eventUnits, user_ids } = input;
 
   const eventUnitsMap: Map<TEventUnitId, TEventUnitDomainModel> = new Map();
-  const calendarMap: Map<TContractId, { user_id: TContractId; participatesIn: TEventUnitId[] }> = new Map();
+  const calendarMap: Map<TContractId, { user_id: TContractId; participatesIn: TEventUnitId[] }> =
+    new Map();
   const userSet: Set<TContractId> = new Set(user_ids);
 
   //builder logic

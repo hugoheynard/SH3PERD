@@ -22,7 +22,9 @@ export const contractId = (n = 1) => `contract_test-${n}` as TContractId;
 
 // ─── Factory helpers ─────────────────────────────────────
 
-export function makeNode(overrides: Partial<TEntityInput<TOrgNodeDomainModel>> = {}): OrgNodeEntity {
+export function makeNode(
+  overrides: Partial<TEntityInput<TOrgNodeDomainModel>> = {},
+): OrgNodeEntity {
   return new OrgNodeEntity({
     company_id: companyId(),
     name: 'Test Node',
@@ -51,7 +53,9 @@ export function makeComm(overrides: Partial<TOrgNodeCommunication> = {}): TOrgNo
   };
 }
 
-export function makeCompany(overrides: Partial<TEntityInput<TCompanyDomainModel>> = {}): CompanyEntity {
+export function makeCompany(
+  overrides: Partial<TEntityInput<TCompanyDomainModel>> = {},
+): CompanyEntity {
   return new CompanyEntity({
     owner_id: userId(),
     name: 'Test Company',

@@ -11,7 +11,10 @@ import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js'
 import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
 import { AddOrgNodeMemberCommand } from '../application/commands/AddTeamMemberCommand.js';
 import { RemoveOrgNodeMemberCommand } from '../application/commands/RemoveTeamMemberCommand.js';
-import { AddGuestMemberCommand, RemoveGuestMemberCommand } from '../application/commands/GuestMemberCommands.js';
+import {
+  AddGuestMemberCommand,
+  RemoveGuestMemberCommand,
+} from '../application/commands/GuestMemberCommands.js';
 import { GetOrgNodeMembersQuery } from '../application/queries/GetTeamMembersQuery.js';
 
 @ApiTags('org-nodes / members')
@@ -42,10 +45,7 @@ export class OrgNodeMembersController {
   @ApiResponse({ status: 200, description: 'List of node members at given date.' })
   @RequirePermission(P.Company.OrgChart.Read)
   @Get(':nodeId/members/at/:date')
-  async getOrgNodeMembersAt(
-    @Param('nodeId') nodeId: TOrgNodeId,
-    @Param('date') date: string,
-  ) {
+  async getOrgNodeMembersAt(@Param('nodeId') nodeId: TOrgNodeId, @Param('date') date: string) {
     const result = await this.queryBus.execute(new GetOrgNodeMembersQuery(nodeId, new Date(date)));
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_ORGNODE_MEMBERS, result);
   }
@@ -57,12 +57,19 @@ export class OrgNodeMembersController {
   @Post(':nodeId/members')
   async addOrgNodeMember(
     @Param('nodeId') nodeId: TOrgNodeId,
-    @Body() body: { user_id: TUserId; contract_id: string; team_role?: TTeamRole; job_title?: string },
+    @Body()
+    body: { user_id: TUserId; contract_id: string; team_role?: TTeamRole; job_title?: string },
     @ActorId() actorId: TUserId,
   ) {
     const result = await this.commandBus.execute(
       new AddOrgNodeMemberCommand(
-        { org_node_id: nodeId, user_id: body.user_id, contract_id: body.contract_id as any, team_role: body.team_role, job_title: body.job_title },
+        {
+          org_node_id: nodeId,
+          user_id: body.user_id,
+          contract_id: body.contract_id as any,
+          team_role: body.team_role,
+          job_title: body.job_title,
+        },
         actorId,
       ),
     );

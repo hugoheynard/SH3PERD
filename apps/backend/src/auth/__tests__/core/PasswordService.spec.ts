@@ -4,26 +4,30 @@ import type { IHasherStrategy } from '../../core/password-manager/types/Interfac
 describe('PasswordService', () => {
   // Simple mock hasher that prefixes with "hashed:" for testing
   const mockHasher: jest.Mocked<IHasherStrategy> = {
-    hashPassword: jest.fn().mockImplementation(({ password }) =>
-      Promise.resolve(`argon2:::argon2id:::v1:::2026-01-01:::hashed_${password}`)
-    ),
+    hashPassword: jest
+      .fn()
+      .mockImplementation(({ password }) =>
+        Promise.resolve(`argon2:::argon2id:::v1:::2026-01-01:::hashed_${password}`),
+      ),
     comparePassword: jest.fn().mockImplementation(({ password, hashedPassword }) =>
       Promise.resolve({
         isValid: hashedPassword.endsWith(`hashed_${password}`),
         wasRehashed: false,
-      })
+      }),
     ),
   };
 
   const oldHasher: jest.Mocked<IHasherStrategy> = {
-    hashPassword: jest.fn().mockImplementation(({ password }) =>
-      Promise.resolve(`bcrypt:::$2b$:::v1:::2024-01-01:::old_${password}`)
-    ),
+    hashPassword: jest
+      .fn()
+      .mockImplementation(({ password }) =>
+        Promise.resolve(`bcrypt:::$2b$:::v1:::2024-01-01:::old_${password}`),
+      ),
     comparePassword: jest.fn().mockImplementation(({ password, hashedPassword }) =>
       Promise.resolve({
         isValid: hashedPassword.endsWith(`old_${password}`),
         wasRehashed: false,
-      })
+      }),
     ),
   };
 
@@ -46,11 +50,14 @@ describe('PasswordService', () => {
 
   describe('constructor', () => {
     it('should throw if the strategy key is not in the registry', () => {
-      expect(() => new PasswordService({
-        currentStrategyKey: 'unknown:v1',
-        registry: { 'argon2id:v1': mockHasher },
-        rehashAfterDays: 30,
-      })).toThrow('Invalid strategy key');
+      expect(
+        () =>
+          new PasswordService({
+            currentStrategyKey: 'unknown:v1',
+            registry: { 'argon2id:v1': mockHasher },
+            rehashAfterDays: 30,
+          }),
+      ).toThrow('Invalid strategy key');
     });
   });
 
@@ -114,7 +121,10 @@ describe('PasswordService', () => {
       const today = new Date().toISOString().split('T')[0];
       const recentHash = `argon2:::argon2id:::v1:::${today}:::hashed_mypass`;
 
-      const result = await service.comparePassword({ password: 'mypass', hashedPassword: recentHash });
+      const result = await service.comparePassword({
+        password: 'mypass',
+        hashedPassword: recentHash,
+      });
 
       expect(result.isValid).toBe(true);
       expect(result.wasRehashed).toBe(false);
@@ -124,8 +134,9 @@ describe('PasswordService', () => {
       const service = createService();
       const unknownHash = 'scrypt:::scrypt:::v1:::2024-01-01:::somehash';
 
-      await expect(service.comparePassword({ password: 'test', hashedPassword: unknownHash }))
-        .rejects.toThrow('Unsupported hash strategy');
+      await expect(
+        service.comparePassword({ password: 'test', hashedPassword: unknownHash }),
+      ).rejects.toThrow('Unsupported hash strategy');
     });
   });
 });

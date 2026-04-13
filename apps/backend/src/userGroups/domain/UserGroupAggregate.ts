@@ -8,10 +8,10 @@ export class UserGroupAggregate {
 
   constructor(
     private readonly group: UserGroupEntity,
-    contracts: ContractEntity[]
+    contracts: ContractEntity[],
   ) {
-    this.contractMap = new Map(contracts.map(ctr => [ctr.id, ctr]));
-  };
+    this.contractMap = new Map(contracts.map((ctr) => [ctr.id, ctr]));
+  }
 
   // --- Getters ---
   /**
@@ -19,13 +19,13 @@ export class UserGroupAggregate {
    * @param id
    */
   getContractById(id: TContractId): ContractEntity {
-    const entity =  this.contractMap.get(id);
+    const entity = this.contractMap.get(id);
 
     if (!entity) {
       throw new Error(`Contract with id ${id} not found in group ${this.group.id}`);
     }
     return entity;
-  };
+  }
 
   /**
    * Get the list of members that the actor can add or remove from the group.
@@ -34,9 +34,10 @@ export class UserGroupAggregate {
   getActionableMembers(actor_id: TContractId): ContractEntity[] {
     const policy = this.getPolicy(actor_id);
 
-    return Array.from(this.contractMap.values())
-      .filter(member => policy.canAddOrRemoveMember(member));
-  };
+    return Array.from(this.contractMap.values()).filter((member) =>
+      policy.canAddOrRemoveMember(member),
+    );
+  }
 
   /**
    * Get the list of user group types that the actor is allowed to use.
@@ -44,12 +45,10 @@ export class UserGroupAggregate {
    */
   getAllowedTypes(actor_id: TContractId): UserGroupTypesEnum[] {
     const policy = this.getPolicy(actor_id);
-    const types = Object.values(UserGroupTypesEnum)
+    const types = Object.values(UserGroupTypesEnum);
 
     return types.filter((type) => policy.canUseType(type));
-  };
-
-
+  }
 
   // --- Methods ---
   /*
@@ -72,7 +71,7 @@ export class UserGroupAggregate {
   addMembersToGroup(actor_id: TContractId, newMemberIds: TContractId[]): UserGroupEntity {
     const policy = this.getPolicy(actor_id);
 
-    const allowedMemberIds = newMemberIds.filter(id => {
+    const allowedMemberIds = newMemberIds.filter((id) => {
       const member = this.getContractById(id);
 
       return policy.canAddOrRemoveMember(member);
@@ -83,14 +82,14 @@ export class UserGroupAggregate {
     }
 
     const updatedMembers = Array.from(
-      new Set([...this.group.toDomain.members, ...allowedMemberIds])
+      new Set([...this.group.toDomain.members, ...allowedMemberIds]),
     );
 
     return new UserGroupEntity({
       ...this.group.toDomain,
       members: updatedMembers,
     });
-  };
+  }
 
   /*
   removeMembers(actor_id: TContractId, memberIdsToRemove: TContractId[]): UserGroupEntity {
@@ -114,7 +113,6 @@ export class UserGroupAggregate {
 
    */
 
-
   //---Helper Methods ---
   /**
    * Get the policy for a given actor in the context of this user group.
@@ -122,8 +120,7 @@ export class UserGroupAggregate {
    */
   getPolicy(actor_id: TContractId): UserGroupPolicy {
     return new UserGroupPolicy(this.getContractById(actor_id), this.group);
-  };
-
+  }
 
   /**
    * Factory method to create a UserGroupAggregate
@@ -132,7 +129,6 @@ export class UserGroupAggregate {
    * @param contracts
    */
   static create(group: UserGroupEntity, contracts: ContractEntity[]): UserGroupAggregate {
-
     const { activeContracts, inactiveContractIds } = contracts.reduce(
       (acc, ctr) => {
         if (ctr.isActive()) {
@@ -145,13 +141,9 @@ export class UserGroupAggregate {
       {
         activeContracts: [] as ContractEntity[],
         inactiveContractIds: [] as TContractId[],
-      }
+      },
     );
 
-    return new UserGroupAggregate(
-      group.withoutMembers(inactiveContractIds),
-      activeContracts
-    );
-  };
+    return new UserGroupAggregate(group.withoutMembers(inactiveContractIds), activeContracts);
+  }
 }
-

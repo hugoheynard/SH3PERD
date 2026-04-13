@@ -13,7 +13,10 @@ describe('BusinessError', () => {
   });
 
   it('should create with explicit status', () => {
-    const error = new BusinessError('Company not found', { code: 'COMPANY_NOT_FOUND', status: 404 });
+    const error = new BusinessError('Company not found', {
+      code: 'COMPANY_NOT_FOUND',
+      status: 404,
+    });
 
     expect(error.status).toBe(404);
     expect(error.code).toBe('COMPANY_NOT_FOUND');

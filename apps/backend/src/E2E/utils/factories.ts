@@ -68,26 +68,26 @@ function signTestToken(uid: string): string {
   } catch {
     throw new Error(
       `[Factories] Cannot sign test JWT: private key not found at ${keyPath}. ` +
-      `Make sure the keys/ directory exists in apps/backend/.`,
+        `Make sure the keys/ directory exists in apps/backend/.`,
     );
   }
 }
 
 // ── Result types ────────────────────────────────────────────
 
-export interface SeededUser {
+export type SeededUser = {
   userId: TUserId;
   email: string;
   authToken: string;
   authHeader: string;
-}
+};
 
-export interface SeededWorkspace extends SeededUser {
+export type SeededWorkspace = {
   companyId: TCompanyId;
   companyName: string;
   contractId: TContractId;
   contractHeader: Record<string, string>;
-}
+} & SeededUser;
 
 // ── User Factory ────────────────────────────────────────────
 
@@ -109,21 +109,21 @@ export async function seedUser(
   });
 
   const profile = new UserProfileEntity({
-    user_id: credential.id as TUserId,
+    user_id: credential.id,
     first_name: firstName,
     last_name: lastName,
     active: true,
   });
 
   const preferences = new UserPreferences({
-    user_id: credential.id as TUserId,
+    user_id: credential.id,
     theme: 'dark',
     contract_workspace: '' as TContractId,
   });
 
   // Every user gets a platform contract at registration (SaaS subscription)
   const platformContract = new PlatformContractEntity({
-    user_id: credential.id as TUserId,
+    user_id: credential.id,
     plan: 'plan_free',
     status: 'active',
     startDate: new Date(),
@@ -138,7 +138,7 @@ export async function seedUser(
   const authToken = signTestToken(credential.id);
 
   return {
-    userId: credential.id as TUserId,
+    userId: credential.id,
     email,
     authToken,
     authHeader: `Bearer ${authToken}`,
@@ -165,7 +165,7 @@ export async function seedCompany(
 
   const contract = new ContractEntity({
     user_id: ownerId,
-    company_id: company.id as TCompanyId,
+    company_id: company.id,
     roles: ['owner'],
     status: 'active',
     startDate: new Date(),
@@ -175,14 +175,13 @@ export async function seedCompany(
   await db.collection('contracts').insertOne(contract.toDomain);
 
   // Set the contract as the active workspace in user preferences
-  await db.collection('user_preferences').updateOne(
-    { user_id: ownerId },
-    { $set: { contract_workspace: contract.id } },
-  );
+  await db
+    .collection('user_preferences')
+    .updateOne({ user_id: ownerId }, { $set: { contract_workspace: contract.id } });
 
   return {
-    companyId: company.id as TCompanyId,
-    contractId: contract.id as TContractId,
+    companyId: company.id,
+    contractId: contract.id,
     companyName: name,
   };
 }

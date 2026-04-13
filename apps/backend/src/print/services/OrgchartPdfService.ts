@@ -24,7 +24,7 @@ export type TOrgchartPdfPaginationMode = 'fit' | 'by-root' | 'poster';
  */
 export type TOrgchartPdfPaperFormat = 'A4' | 'A3' | 'A2' | 'A1' | 'Letter' | 'Legal';
 
-export interface TOrgchartPdfExportOptions {
+export type TOrgchartPdfExportOptions = {
   companyId: TCompanyId;
   actorId: TUserId;
   pagination?: TOrgchartPdfPaginationMode;
@@ -36,9 +36,9 @@ export interface TOrgchartPdfExportOptions {
   watermark?: string;
   /** When true, adds a cover page with company info + date. Default: true. */
   withCoverPage?: boolean;
-}
+};
 
-export interface TOrgchartPdfResult {
+export type TOrgchartPdfResult = {
   buffer: Buffer;
   /** Number of pages in the output — derived from PDF object count. */
   pageCount: number;
@@ -46,7 +46,7 @@ export interface TOrgchartPdfResult {
   pagination: TOrgchartPdfPaginationMode;
   /** Paper format used. */
   format: TOrgchartPdfPaperFormat;
-}
+};
 
 @Injectable()
 export class OrgchartPdfService {
@@ -61,7 +61,9 @@ export class OrgchartPdfService {
     @Inject(PUPPETEER_POOL_SERVICE) private readonly pool: PuppeteerPoolService,
   ) {
     this.frontendUrl = this.config.get<string>('frontendUrl', 'http://localhost:4200');
-    const printConfig = this.config.get<{ pageTimeoutMs: number; readySignalTimeoutMs: number }>('print');
+    const printConfig = this.config.get<{ pageTimeoutMs: number; readySignalTimeoutMs: number }>(
+      'print',
+    );
     this.pageTimeoutMs = printConfig?.pageTimeoutMs ?? 30_000;
     this.readyTimeoutMs = printConfig?.readySignalTimeoutMs ?? 20_000;
   }
@@ -146,10 +148,9 @@ export class OrgchartPdfService {
       await page.goto(url.toString(), { waitUntil: 'domcontentloaded' });
 
       // Wait for the print component to flag itself as ready.
-      await page.waitForFunction(
-        '(window).__sh3_orgchartReady === true',
-        { timeout: this.readyTimeoutMs },
-      );
+      await page.waitForFunction('(window).__sh3_orgchartReady === true', {
+        timeout: this.readyTimeoutMs,
+      });
 
       const pdfOptions = this.buildPdfOptions({
         format,

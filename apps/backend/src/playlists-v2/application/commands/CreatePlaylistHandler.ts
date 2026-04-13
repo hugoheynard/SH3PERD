@@ -13,10 +13,11 @@ export class CreatePlaylistCommand {
 }
 
 @CommandHandler(CreatePlaylistCommand)
-export class CreatePlaylistHandler implements ICommandHandler<CreatePlaylistCommand, TPlaylistDomainModel> {
-  constructor(
-    @Inject(PLAYLIST_REPO) private readonly playlistRepo: IPlaylistRepository,
-  ) {}
+export class CreatePlaylistHandler implements ICommandHandler<
+  CreatePlaylistCommand,
+  TPlaylistDomainModel
+> {
+  constructor(@Inject(PLAYLIST_REPO) private readonly playlistRepo: IPlaylistRepository) {}
 
   async execute(cmd: CreatePlaylistCommand): Promise<TPlaylistDomainModel> {
     const playlist = new PlaylistEntity({

@@ -6,17 +6,9 @@ import { IntegrationSettingsController } from './api/integration-settings.contro
 import { SlackOAuthService } from './slack/slack-oauth.service.js';
 import { SlackApiService } from './slack/slack-api.service.js';
 
-
 @Module({
   imports: [PermissionsModule],
-  controllers: [
-    SlackOAuthController,
-    SlackChannelsController,
-    IntegrationSettingsController
-  ],
-  providers: [
-    SlackOAuthService,
-    SlackApiService
-  ],
+  controllers: [SlackOAuthController, SlackChannelsController, IntegrationSettingsController],
+  providers: [SlackOAuthService, SlackApiService],
 })
 export class IntegrationsModule {}

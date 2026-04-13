@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Headers,
-  Inject,
-  Param,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Headers, Inject, Param, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { TCompanyId, TCompanyOrgChartViewModel } from '@sh3pherd/shared-types';

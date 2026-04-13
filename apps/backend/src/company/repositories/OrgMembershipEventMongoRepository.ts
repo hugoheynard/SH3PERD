@@ -1,10 +1,13 @@
-import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import {
+  BaseMongoRepository,
+  type TBaseMongoRepoDeps,
+} from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { TOrgMembershipEventRecord, TOrgNodeId } from '@sh3pherd/shared-types';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
-export interface IOrgMembershipEventRepository extends IBaseCRUD<TOrgMembershipEventRecord> {
+export type IOrgMembershipEventRepository = {
   findByOrgNode(orgNodeId: TOrgNodeId): Promise<TOrgMembershipEventRecord[]>;
-}
+} & IBaseCRUD<TOrgMembershipEventRecord>;
 
 export class OrgMembershipEventMongoRepository
   extends BaseMongoRepository<TOrgMembershipEventRecord>

@@ -1,5 +1,4 @@
 export class EntityUtils {
-
   /* ---------- Utils ---------- */
 
   private static canonicalize(value: any): any {
@@ -29,14 +28,20 @@ export class EntityUtils {
   }
 
   private static isEqual(a: any, b: any): boolean {
-    return JSON.stringify(EntityUtils.canonicalize(a)) === JSON.stringify(EntityUtils.canonicalize(b));
-  };
+    return (
+      JSON.stringify(EntityUtils.canonicalize(a)) === JSON.stringify(EntityUtils.canonicalize(b))
+    );
+  }
 
   //TODO : separate deepDiff et mongo dot path, with a dot path mapper to remove coupling with mongo
-  static deepDiffToDotSet(original: Record<string, any> = {}, updated: Record<string, any> = {}): Record<string, any> {
+  static deepDiffToDotSet(
+    original: Record<string, any> = {},
+    updated: Record<string, any> = {},
+  ): Record<string, any> {
     const changes: Record<string, any> = {};
 
-    const isObject = (v: any) => v && typeof v === 'object' && !Array.isArray(v) && !(v instanceof Date);
+    const isObject = (v: any) =>
+      v && typeof v === 'object' && !Array.isArray(v) && !(v instanceof Date);
 
     function walk(path: string, a: any, b: any) {
       // both objects -> recurse

@@ -1,6 +1,9 @@
 import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
 import type { TRefreshTokenDomainModel } from '@sh3pherd/shared-types';
-import type { TRevokeRefreshTokenResult, TSecureCookieConfig } from '../../types/auth.domain.tokens.js';
+import type {
+  TRevokeRefreshTokenResult,
+  TSecureCookieConfig,
+} from '../../types/auth.domain.tokens.js';
 import type { IRefreshTokenRepository } from '../../repositories/RefreshTokenMongoRepository.js';
 import type { TUserId, TRefreshToken, TRefreshTokenRecord } from '@sh3pherd/shared-types';
 import { Inject } from '@nestjs/common';
@@ -11,9 +14,16 @@ import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from '../../auth.constants.j
 import { REFRESH_TOKEN_REPO } from '../../../appBootstrap/nestTokens.js';
 import { randomUUID } from 'crypto';
 
-export type TGenerateRefreshTokenFn = (input: { user_id: TUserId; family_id?: string }) => Promise<TRefreshToken>;
-export type TVerifyRefreshTokenFn = (input: { refreshTokenDomainModel: TRefreshTokenDomainModel; }) => boolean;
-export type TRevokeRefreshTokenFn = (input: { refreshToken: TRefreshToken; }) => Promise<TRevokeRefreshTokenResult>;
+export type TGenerateRefreshTokenFn = (input: {
+  user_id: TUserId;
+  family_id?: string;
+}) => Promise<TRefreshToken>;
+export type TVerifyRefreshTokenFn = (input: {
+  refreshTokenDomainModel: TRefreshTokenDomainModel;
+}) => boolean;
+export type TRevokeRefreshTokenFn = (input: {
+  refreshToken: TRefreshToken;
+}) => Promise<TRevokeRefreshTokenResult>;
 export type IAbstractRefreshTokenService = {
   generateRefreshToken: TGenerateRefreshTokenFn;
   verifyRefreshToken: TVerifyRefreshTokenFn;
@@ -30,12 +40,11 @@ export type IAbstractRefreshTokenService = {
  * - Each refresh rotates the token within the same family
  * - Reuse of a revoked token invalidates the entire family (theft detection)
  */
-export class RefreshTokenService
-  implements IAbstractRefreshTokenService {
-
+export class RefreshTokenService implements IAbstractRefreshTokenService {
   constructor(
     @Inject(REFRESH_TOKEN_REPO) protected readonly refreshTokenRepo: IRefreshTokenRepository,
-    private readonly secureCookieConfig: TSecureCookieConfig) {};
+    private readonly secureCookieConfig: TSecureCookieConfig,
+  ) {}
 
   /**
    * Generates a new refresh token for a given user.
@@ -47,12 +56,9 @@ export class RefreshTokenService
       const newRefreshToken = generateTypedId('refreshToken');
 
       if (!newRefreshToken) {
-        throw new TechnicalError("Failed to generate refresh token", { code: "REFRESH_TOKEN_GENERATION_FAILED" });
-
-
-
-
-
+        throw new TechnicalError('Failed to generate refresh token', {
+          code: 'REFRESH_TOKEN_GENERATION_FAILED',
+        });
       }
 
       const record: TRefreshTokenRecord = {
@@ -69,12 +75,11 @@ export class RefreshTokenService
 
       return newRefreshToken;
     } catch (error) {
-      throw new TechnicalError("Unable to save refresh token", { code: "REFRESH_TOKEN_SAVE_FAILED", cause: error as Error, context: { user_id: input.user_id } });
-
-
-
-
-
+      throw new TechnicalError('Unable to save refresh token', {
+        code: 'REFRESH_TOKEN_SAVE_FAILED',
+        cause: error as Error,
+        context: { user_id: input.user_id },
+      });
     }
   };
 

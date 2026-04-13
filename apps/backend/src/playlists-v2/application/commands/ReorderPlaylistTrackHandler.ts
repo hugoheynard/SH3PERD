@@ -16,7 +16,10 @@ export class ReorderPlaylistTrackCommand {
 }
 
 @CommandHandler(ReorderPlaylistTrackCommand)
-export class ReorderPlaylistTrackHandler implements ICommandHandler<ReorderPlaylistTrackCommand, boolean> {
+export class ReorderPlaylistTrackHandler implements ICommandHandler<
+  ReorderPlaylistTrackCommand,
+  boolean
+> {
   constructor(
     @Inject(PLAYLIST_REPO) private readonly playlistRepo: IPlaylistRepository,
     @Inject(PLAYLIST_TRACK_REPO) private readonly trackRepo: IPlaylistTrackRepository,
@@ -37,7 +40,7 @@ export class ReorderPlaylistTrackHandler implements ICommandHandler<ReorderPlayl
     const siblings = await this.trackRepo.findByPlaylistId(cmd.playlistId);
 
     // Remove the track from its current position
-    const reordered = siblings.filter(s => s.id !== cmd.trackId);
+    const reordered = siblings.filter((s) => s.id !== cmd.trackId);
 
     // Clamp the new position
     const clampedPosition = Math.max(0, Math.min(cmd.newPosition, reordered.length));

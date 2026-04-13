@@ -13,7 +13,6 @@ function expectDomainError(fn: () => void, code: string): void {
 }
 
 describe('OrgNodeEntity', () => {
-
   // ─── Construction invariants ────────────────────────────
 
   describe('constructor', () => {
@@ -140,7 +139,12 @@ describe('OrgNodeEntity', () => {
 
   describe('removeCommunication', () => {
     it('should remove by platform', () => {
-      const node = makeNode({ communications: [makeComm(), makeComm({ platform: 'discord', url: 'https://discord.gg/xxx' })] });
+      const node = makeNode({
+        communications: [
+          makeComm(),
+          makeComm({ platform: 'discord', url: 'https://discord.gg/xxx' }),
+        ],
+      });
       node.removeCommunication('slack');
       expect(node.communications).toHaveLength(1);
       expect(node.communications[0].platform).toBe('discord');
@@ -173,7 +177,10 @@ describe('OrgNodeEntity', () => {
     it('should reject duplicate active member', () => {
       const node = makeNode();
       node.addMember(userId(1), contractId(1));
-      expectDomainError(() => node.addMember(userId(1), contractId(2)), 'ORGNODE_MEMBER_ALREADY_EXISTS');
+      expectDomainError(
+        () => node.addMember(userId(1), contractId(2)),
+        'ORGNODE_MEMBER_ALREADY_EXISTS',
+      );
     });
 
     it('should allow re-adding a removed member', () => {
@@ -218,7 +225,10 @@ describe('OrgNodeEntity', () => {
 
     it('should reject if member not active', () => {
       const node = makeNode();
-      expectDomainError(() => node.updateMemberRole(userId(99), 'manager'), 'ORGNODE_MEMBER_NOT_FOUND');
+      expectDomainError(
+        () => node.updateMemberRole(userId(99), 'manager'),
+        'ORGNODE_MEMBER_NOT_FOUND',
+      );
     });
   });
 

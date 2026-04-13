@@ -2,11 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class OnContractInactive {
-
-  constructor(
-
-  ) {};
-
+  constructor() {}
 
   removeContractFromUserGroups() {
     /*
@@ -19,6 +15,4 @@ export class OnContractInactive {
     contractRepository.markAsInactive(contractId);
      */
   }
-
 }
-

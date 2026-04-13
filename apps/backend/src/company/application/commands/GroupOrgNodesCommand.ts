@@ -21,7 +21,10 @@ export class GroupOrgNodesCommand {
  * Permission check handled by @RequirePermission(P.Company.OrgChart.Write) on controller.
  */
 @CommandHandler(GroupOrgNodesCommand)
-export class GroupOrgNodesHandler implements ICommandHandler<GroupOrgNodesCommand, TOrgNodeDomainModel> {
+export class GroupOrgNodesHandler implements ICommandHandler<
+  GroupOrgNodesCommand,
+  TOrgNodeDomainModel
+> {
   constructor(
     @Inject(COMPANY_AGGREGATE_REPO) private readonly aggregateRepo: ICompanyAggregateRepository,
   ) {}

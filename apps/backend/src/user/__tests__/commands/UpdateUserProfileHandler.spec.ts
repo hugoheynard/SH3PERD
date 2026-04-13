@@ -1,4 +1,7 @@
-import { UpdateUserProfileCommand, UpdateUserProfileHandler } from '../../application/commands/UpdateUserProfileCommand.js';
+import {
+  UpdateUserProfileCommand,
+  UpdateUserProfileHandler,
+} from '../../application/commands/UpdateUserProfileCommand.js';
 import { userId, makeProfileRecord, mockProfileRepo } from '../test-helpers.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 import { DomainError } from '../../../utils/errorManagement/DomainError.js';
@@ -14,7 +17,11 @@ describe('UpdateUserProfileHandler', () => {
 
   it('should rename profile when actor is owner', async () => {
     profileRepo.findOne.mockResolvedValue(record);
-    profileRepo.updateOne.mockResolvedValue({ ...record, first_name: 'Updated', last_name: 'Name' } as any);
+    profileRepo.updateOne.mockResolvedValue({
+      ...record,
+      first_name: 'Updated',
+      last_name: 'Name',
+    } as any);
 
     const cmd = new UpdateUserProfileCommand({ actor_id: ownerId }, ownerId, {
       first_name: 'Updated',

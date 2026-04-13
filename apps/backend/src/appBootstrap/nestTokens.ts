@@ -1,14 +1,6 @@
-
-
-
-
-
-
-
 // FNS
 export const VERIFY_AUTH_TOKEN_FN = Symbol('VERIFY_AUTH_TOKEN_FN');
 export const VERIFY_REFRESH_TOKEN_FN = Symbol('VERIFY_REFRESH_TOKEN_FN');
-
 
 // --- REPOSITORIES TOKENS ---
 export const REFRESH_TOKEN_REPO = Symbol('REFRESH_TOKEN_REPO');
@@ -30,21 +22,21 @@ export const REPERTOIRE_ENTRY_AGGREGATE_REPO = Symbol('REPERTOIRE_ENTRY_AGGREGAT
 export const CONTRACT_SCOPED_GUARD = Symbol('CONTRACT_SCOPED_GUARD');
 
 // PLAYLISTS
-export const PLAYLIST_REPO       = Symbol('PLAYLIST_REPO');
+export const PLAYLIST_REPO = Symbol('PLAYLIST_REPO');
 export const PLAYLIST_TRACK_REPO = Symbol('PLAYLIST_TRACK_REPO');
 
 // PLATFORM CONTRACT
-export const PLATFORM_CONTRACT_REPO     = Symbol('PLATFORM_CONTRACT_REPO');
+export const PLATFORM_CONTRACT_REPO = Symbol('PLATFORM_CONTRACT_REPO');
 
 // QUOTA
-export const USAGE_COUNTER_REPO         = Symbol('USAGE_COUNTER_REPO');
+export const USAGE_COUNTER_REPO = Symbol('USAGE_COUNTER_REPO');
 
 // COMPANY
-export const COMPANY_REPO               = Symbol('COMPANY_REPO');
-export const COMPANY_AGGREGATE_REPO     = Symbol('COMPANY_AGGREGATE_REPO');
-export const ORG_NODE_REPO              = Symbol('ORG_NODE_REPO');
-export const ORG_MEMBERSHIP_EVENT_REPO  = Symbol('ORG_MEMBERSHIP_EVENT_REPO');
+export const COMPANY_REPO = Symbol('COMPANY_REPO');
+export const COMPANY_AGGREGATE_REPO = Symbol('COMPANY_AGGREGATE_REPO');
+export const ORG_NODE_REPO = Symbol('ORG_NODE_REPO');
+export const ORG_MEMBERSHIP_EVENT_REPO = Symbol('ORG_MEMBERSHIP_EVENT_REPO');
 /** @deprecated Use ORG_NODE_REPO */
-export const CAST_REPO                  = ORG_NODE_REPO;
+export const CAST_REPO = ORG_NODE_REPO;
 /** @deprecated Use ORG_MEMBERSHIP_EVENT_REPO */
 export const CAST_MEMBERSHIP_EVENT_REPO = ORG_MEMBERSHIP_EVENT_REPO;

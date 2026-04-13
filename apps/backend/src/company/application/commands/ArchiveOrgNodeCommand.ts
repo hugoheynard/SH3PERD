@@ -21,24 +21,26 @@ export class ArchiveOrgNodeCommand {
  */
 @CommandHandler(ArchiveOrgNodeCommand)
 export class ArchiveOrgNodeHandler implements ICommandHandler<ArchiveOrgNodeCommand, void> {
-  constructor(
-    @Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository,
-  ) {}
+  constructor(@Inject(ORG_NODE_REPO) private readonly orgNodeRepo: IOrgNodeRepository) {}
 
   async execute(cmd: ArchiveOrgNodeCommand): Promise<void> {
     const { nodeId } = cmd;
 
     const existing = await this.orgNodeRepo.findOne({ filter: { id: nodeId } });
-    if (!existing) throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
+    if (!existing)
+      throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
 
     // Idempotent: archiving an already-archived node is a no-op (avoid 400 in UI race conditions)
     if (existing.status === 'archived') return;
 
     // Block only on ACTIVE children — archived children are ignored
     const children = await this.orgNodeRepo.findByParentId(nodeId, existing.company_id);
-    const activeChildren = children.filter(c => c.status === 'active');
+    const activeChildren = children.filter((c) => c.status === 'active');
     if (activeChildren.length > 0) {
-      throw new BusinessError('Cannot archive node with children', { code: 'ORGNODE_HAS_CHILDREN', status: 400 });
+      throw new BusinessError('Cannot archive node with children', {
+        code: 'ORGNODE_HAS_CHILDREN',
+        status: 400,
+      });
     }
 
     const entity = new OrgNodeEntity(RecordMetadataUtils.stripDocMetadata(existing));

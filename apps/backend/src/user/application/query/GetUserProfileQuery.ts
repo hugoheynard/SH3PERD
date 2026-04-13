@@ -21,7 +21,10 @@ export class GetUserProfileQuery {
  * Fetches a user profile by user_id. Uses repo.findOne directly (no aggregate root).
  */
 @QueryHandler(GetUserProfileQuery)
-export class GetUserProfileHandler implements IQueryHandler<GetUserProfileQuery, TUserProfileDomainModel | null> {
+export class GetUserProfileHandler implements IQueryHandler<
+  GetUserProfileQuery,
+  TUserProfileDomainModel | null
+> {
   constructor(
     @Inject(USER_PROFILE_REPO) private readonly userProfileRepo: IUserProfileRepository,
   ) {}

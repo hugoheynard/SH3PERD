@@ -1,7 +1,12 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import type { TOrgNodeId, TContractId, TUserId, TOrgMembershipEventRecord } from '@sh3pherd/shared-types';
+import type {
+  TOrgNodeId,
+  TContractId,
+  TUserId,
+  TOrgMembershipEventRecord,
+} from '@sh3pherd/shared-types';
 import type { TTeamRole } from '@sh3pherd/shared-types';
 import { ORG_NODE_REPO, ORG_MEMBERSHIP_EVENT_REPO } from '../../company.tokens.js';
 import type { IOrgNodeRepository } from '../../repositories/OrgNodeMongoRepository.js';
@@ -35,7 +40,10 @@ export class AddOrgNodeMemberCommand {
  * Pattern: repo.findOne -> OrgNodeEntity -> policy check -> entity.addMember -> repo.updateOne
  */
 @CommandHandler(AddOrgNodeMemberCommand)
-export class AddOrgNodeMemberHandler implements ICommandHandler<AddOrgNodeMemberCommand, TOrgMembershipEventRecord> {
+export class AddOrgNodeMemberHandler implements ICommandHandler<
+  AddOrgNodeMemberCommand,
+  TOrgMembershipEventRecord
+> {
   private readonly policy = new OrgNodePolicy();
 
   constructor(
@@ -49,13 +57,19 @@ export class AddOrgNodeMemberHandler implements ICommandHandler<AddOrgNodeMember
     const { dto, actorId } = cmd;
 
     const record = await this.orgNodeRepo.findOne({ filter: { id: dto.org_node_id } });
-    if (!record) throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
+    if (!record)
+      throw new BusinessError('Org node not found', { code: 'ORGNODE_NOT_FOUND', status: 404 });
 
     const entity = new OrgNodeEntity(record);
     this.policy.ensureActive(entity);
     this.policy.ensureCanManageMembers(actorId);
 
-    const member = entity.addMember(dto.user_id, dto.contract_id, dto.team_role ?? 'member', dto.job_title);
+    const member = entity.addMember(
+      dto.user_id,
+      dto.contract_id,
+      dto.team_role ?? 'member',
+      dto.job_title,
+    );
 
     const membershipEvent: TOrgMembershipEventRecord = {
       id: `orgevt_${randomUUID()}`,

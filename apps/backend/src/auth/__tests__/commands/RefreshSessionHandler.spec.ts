@@ -1,4 +1,7 @@
-import { RefreshSessionCommand, RefreshSessionHandler } from '../../application/commands/RefreshSessionCommand';
+import {
+  RefreshSessionCommand,
+  RefreshSessionHandler,
+} from '../../application/commands/RefreshSessionCommand';
 import {
   userId,
   refreshTokenId,
@@ -106,7 +109,9 @@ describe('RefreshSessionHandler', () => {
         expect((e as BusinessError).errorCode).toBe('INVALID_TOKENS');
       }
 
-      expect(refreshTokenRepo.deleteOne).toHaveBeenCalledWith({ refreshToken: expired.refreshToken });
+      expect(refreshTokenRepo.deleteOne).toHaveBeenCalledWith({
+        refreshToken: expired.refreshToken,
+      });
     });
   });
 

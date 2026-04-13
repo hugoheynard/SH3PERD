@@ -2,12 +2,13 @@ import type { TContractId } from '@sh3pherd/shared-types';
 import type { TPermissionKey } from '../permissionsRegistry.js';
 
 export type TPermissionServiceDeps = {
-  findContractPermissionsFn: (contract_id: TContractId) => Promise<Record<TPermissionKey, boolean> | null>;
-}
-
+  findContractPermissionsFn: (
+    contract_id: TContractId,
+  ) => Promise<Record<TPermissionKey, boolean> | null>;
+};
 
 export class PermissionService {
-  constructor(private readonly deps: TPermissionServiceDeps) {};
+  constructor(private readonly deps: TPermissionServiceDeps) {}
 
   /**
    * Check if a contract has a specific permission.
@@ -22,5 +23,5 @@ export class PermissionService {
     }
 
     return contractPermissions[permission];
-  };
+  }
 }

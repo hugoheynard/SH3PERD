@@ -63,8 +63,9 @@ describe('RefreshTokenService', () => {
       repo.save.mockRejectedValue(new Error('DB connection lost'));
       const { service } = createService(repo);
 
-      await expect(service.generateRefreshToken({ user_id: userId() }))
-        .rejects.toThrow('Unable to save refresh token');
+      await expect(service.generateRefreshToken({ user_id: userId() })).rejects.toThrow(
+        'Unable to save refresh token',
+      );
     });
   });
 
@@ -107,8 +108,9 @@ describe('RefreshTokenService', () => {
       repo.deleteOne.mockRejectedValue(new Error('DB error'));
       const { service } = createService(repo);
 
-      await expect(service.revokeRefreshToken({ refreshToken: refreshTokenId() }))
-        .rejects.toThrow('Unable to revoke refresh token');
+      await expect(service.revokeRefreshToken({ refreshToken: refreshTokenId() })).rejects.toThrow(
+        'Unable to revoke refresh token',
+      );
     });
   });
 

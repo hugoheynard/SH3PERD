@@ -13,9 +13,7 @@ export const USER_CODES_SUCCESS = {
     code: 'USER_INVITED',
     message: 'User invited successfully.',
   },
-} as const satisfies Record<string, TApiMessage>
-
-
+} as const satisfies Record<string, TApiMessage>;
 
 export const USER_CODES_ERROR = {
   GET_USER_ME_UNAUTHORIZED: {
@@ -26,4 +24,4 @@ export const USER_CODES_ERROR = {
     code: 'USER_404',
     message: 'User not found',
   },
-} as const satisfies Record<string, TApiMessage>
+} as const satisfies Record<string, TApiMessage>;

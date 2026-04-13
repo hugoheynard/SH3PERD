@@ -35,7 +35,6 @@ export const PlaylistApiCodes = {
   },
 } as const satisfies Record<string, TApiMessage>;
 
-
 export function buildPlaylistApiResponse<TResponsePayload>(
   entry: TApiMessage,
   data: TResponsePayload,

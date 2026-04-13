@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-export interface TSlackChannel {
+export type TSlackChannel = {
   id: string;
   name: string;
   is_private: boolean;
   num_members: number;
-}
+};
 
 /**
  * Slack Web API client.
@@ -15,7 +15,6 @@ export interface TSlackChannel {
  */
 @Injectable()
 export class SlackApiService {
-
   /**
    * Search channels by name prefix.
    * Fetches all conversations the bot can see, then filters client-side by query.
@@ -35,12 +34,15 @@ export class SlackApiService {
       });
       if (cursor) params.set('cursor', cursor);
 
-      const response = await fetch(`https://slack.com/api/conversations.list?${params.toString()}`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${botToken}` },
-      });
+      const response = await fetch(
+        `https://slack.com/api/conversations.list?${params.toString()}`,
+        {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${botToken}` },
+        },
+      );
 
-      const data = await response.json() as {
+      const data = (await response.json()) as {
         ok: boolean;
         channels?: Array<{
           id: string;
@@ -57,7 +59,7 @@ export class SlackApiService {
       }
 
       channels.push(
-        ...data.channels.map(ch => ({
+        ...data.channels.map((ch) => ({
           id: ch.id,
           name: ch.name,
           is_private: ch.is_private,
@@ -71,7 +73,7 @@ export class SlackApiService {
 
     // Filter by query
     if (!normalizedQuery) return channels;
-    return channels.filter(ch => ch.name.toLowerCase().includes(normalizedQuery));
+    return channels.filter((ch) => ch.name.toLowerCase().includes(normalizedQuery));
   }
 
   /**
@@ -100,7 +102,7 @@ export class SlackApiService {
       body: JSON.stringify({ name: normalizedName, is_private: isPrivate }),
     });
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       ok: boolean;
       channel?: { id: string; name: string; is_private: boolean; num_members: number };
       error?: string;
@@ -109,7 +111,7 @@ export class SlackApiService {
     // If channel name already exists, find and return the existing one
     if (!data.ok && data.error === 'name_taken') {
       const existing = await this.searchChannels(botToken, normalizedName);
-      const match = existing.find(ch => ch.name === normalizedName);
+      const match = existing.find((ch) => ch.name === normalizedName);
       if (match) return match;
       throw new Error('SLACK_CREATE_CHANNEL_FAILED: name_taken_but_not_found');
     }

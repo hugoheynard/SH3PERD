@@ -15,7 +15,10 @@ export class RemovePlaylistTrackCommand {
 }
 
 @CommandHandler(RemovePlaylistTrackCommand)
-export class RemovePlaylistTrackHandler implements ICommandHandler<RemovePlaylistTrackCommand, boolean> {
+export class RemovePlaylistTrackHandler implements ICommandHandler<
+  RemovePlaylistTrackCommand,
+  boolean
+> {
   constructor(
     @Inject(PLAYLIST_REPO) private readonly playlistRepo: IPlaylistRepository,
     @Inject(PLAYLIST_TRACK_REPO) private readonly trackRepo: IPlaylistTrackRepository,

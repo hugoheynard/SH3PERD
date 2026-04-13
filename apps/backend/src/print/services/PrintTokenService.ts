@@ -11,13 +11,13 @@ import type { TCompanyId, TUserId } from '@sh3pherd/shared-types';
  */
 export type TPrintScope = 'orgchart';
 
-export interface TPrintTokenPayload {
+export type TPrintTokenPayload = {
   scope: TPrintScope;
   companyId: TCompanyId;
   actorId: TUserId;
   /** JWT id — the unique identifier of this token, used for the single-use store. */
   jti: string;
-}
+};
 
 /**
  * Signs and verifies short-lived, single-use JWTs that allow a headless
@@ -113,9 +113,7 @@ export class PrintTokenService {
     // Mark consumed — expiration is derived from the JWT `exp` claim to
     // auto-free the entry once the token couldn't be used anyway.
     const expUnix = (payload as unknown as { exp?: number }).exp;
-    const expiresAt = expUnix
-      ? expUnix * 1000
-      : Date.now() + PrintTokenService.TTL_SECONDS * 1000;
+    const expiresAt = expUnix ? expUnix * 1000 : Date.now() + PrintTokenService.TTL_SECONDS * 1000;
     this.consumed.set(payload.jti, expiresAt);
 
     return payload;

@@ -9,7 +9,7 @@ type TGroupType = keyof typeof typeHierarchyMap;
 
 export function getAllAllowedChildTypes(
   parentType: TGroupType,
-  visited: Set<TGroupType> = new Set()
+  visited: Set<TGroupType> = new Set(),
 ): TGroupType[] {
   const directChildren = typeHierarchyMap[parentType] ?? [];
   const allChildren = new Set<TGroupType>(directChildren);
@@ -18,7 +18,7 @@ export function getAllAllowedChildTypes(
     if (!visited.has(child)) {
       visited.add(child);
       const subChildren = getAllAllowedChildTypes(child, visited);
-      subChildren.forEach(sc => allChildren.add(sc));
+      subChildren.forEach((sc) => allChildren.add(sc));
     }
   }
 

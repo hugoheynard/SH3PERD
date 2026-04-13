@@ -47,7 +47,14 @@ export class OrgchartExportRequestDto {
 }
 
 const VALID_PAGINATION: ReadonlyArray<TOrgchartPdfPaginationMode> = ['fit', 'by-root', 'poster'];
-const VALID_FORMATS: ReadonlyArray<TOrgchartPdfPaperFormat> = ['A4', 'A3', 'A2', 'A1', 'Letter', 'Legal'];
+const VALID_FORMATS: ReadonlyArray<TOrgchartPdfPaperFormat> = [
+  'A4',
+  'A3',
+  'A2',
+  'A1',
+  'Letter',
+  'Legal',
+];
 
 /**
  * Authenticated orgchart export endpoint.
@@ -79,9 +86,7 @@ const VALID_FORMATS: ReadonlyArray<TOrgchartPdfPaperFormat> = ['A4', 'A3', 'A2',
 export class OrgchartExportController {
   private readonly logger = new Logger(OrgchartExportController.name);
 
-  constructor(
-    @Inject(ORGCHART_PDF_SERVICE) private readonly pdfService: OrgchartPdfService,
-  ) {}
+  constructor(@Inject(ORGCHART_PDF_SERVICE) private readonly pdfService: OrgchartPdfService) {}
 
   @ApiOperation({ summary: 'Export the company org chart as a PDF' })
   @ApiParam({ name: 'id', description: 'Company ID' })
@@ -130,7 +135,9 @@ export class OrgchartExportController {
     }
   }
 
-  private validateOptions(body: OrgchartExportRequestDto): Omit<TOrgchartPdfExportOptions, 'companyId' | 'actorId'> {
+  private validateOptions(
+    body: OrgchartExportRequestDto,
+  ): Omit<TOrgchartPdfExportOptions, 'companyId' | 'actorId'> {
     if (body.pagination && !VALID_PAGINATION.includes(body.pagination)) {
       throw new BadRequestException(`Invalid pagination mode: ${body.pagination}`);
     }

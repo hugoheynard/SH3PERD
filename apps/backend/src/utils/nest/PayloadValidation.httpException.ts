@@ -3,7 +3,6 @@ import type { ZodError } from 'zod';
 
 import { formatZodError } from '../zod/formatZodError.js';
 
-
 /**
  * Exception thrown when response payload validation fails.
  */
@@ -21,5 +20,5 @@ export class PayloadValidationException extends HttpException {
       },
       555,
     );
-  };
+  }
 }

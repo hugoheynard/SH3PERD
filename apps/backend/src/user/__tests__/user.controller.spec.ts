@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { QueryBus } from '@nestjs/cqrs';
 import { UserController } from '../api/user.controller.js';
 

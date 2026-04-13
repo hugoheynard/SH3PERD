@@ -36,15 +36,14 @@ export class UpdateCompanyInfoCommand {
  * @throws TechnicalError COMPANY_UPDATE_FAILED (500) — repository write failed.
  */
 @CommandHandler(UpdateCompanyInfoCommand)
-export class UpdateCompanyInfoHandler implements ICommandHandler<UpdateCompanyInfoCommand, TCompanyInfo> {
-
-  constructor(
-    @Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository,
-  ) {}
+export class UpdateCompanyInfoHandler implements ICommandHandler<
+  UpdateCompanyInfoCommand,
+  TCompanyInfo
+> {
+  constructor(@Inject(COMPANY_REPO) private readonly companyRepo: ICompanyRepository) {}
 
   async execute(cmd: UpdateCompanyInfoCommand): Promise<TCompanyInfo> {
     const { dto } = cmd;
-
 
     const record = await this.companyRepo.findOne({ filter: { id: dto.company_id } });
 

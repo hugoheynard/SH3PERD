@@ -23,35 +23,35 @@ export abstract class BaseMongoRepository<TRecord extends Document> implements I
   protected constructor(protected readonly input: TBaseMongoRepoDeps) {
     this.client = input.client;
     this.collection = this.client.db(input.dbName).collection<TRecord>(input.collectionName);
-  };
+  }
 
   //--------- CRUD HELPERS ---------
   /**
    * Generic find method that can be reused by specific child implementations.
    */
   async findOne(input: { filter: Filter<TRecord> }): Promise<TRecord | null> {
-
     const result = await this.collection.findOne(input.filter);
-    return result ? this.mapMongoDocToDomainModel(result): null;
-  };
+    return result ? this.mapMongoDocToDomainModel(result) : null;
+  }
 
-  async findMany(input: { filter: Filter<TRecord>, options?: FindOptions }): Promise<TRecord[]> {
-    const results = await this.collection.find(
-      input.filter,
-      {
+  async findMany(input: { filter: Filter<TRecord>; options?: FindOptions }): Promise<TRecord[]> {
+    const results = await this.collection
+      .find(input.filter, {
         ...input.options,
-        projection: { ...(input.options?.projection ?? {}), _id: 0 }
-      }
-    ).toArray();
+        projection: { ...(input.options?.projection ?? {}), _id: 0 },
+      })
+      .toArray();
 
-    return results.length > 0 ? results.map(r => this.mapMongoDocToDomainModel(r)) : [];
-  };
+    return results.length > 0 ? results.map((r) => this.mapMongoDocToDomainModel(r)) : [];
+  }
 
   /**
    * Generic update method that can be reused by specific child implementations.
    * @param input
    */
-  async updateOne(input: Parameters<TUpdateOneMongoFn<TRecord>>[0]): ReturnType<TUpdateOneMongoFn<TRecord>> {
+  async updateOne(
+    input: Parameters<TUpdateOneMongoFn<TRecord>>[0],
+  ): ReturnType<TUpdateOneMongoFn<TRecord>> {
     const { filter, update, options } = input;
 
     const result = await this.collection.findOneAndUpdate(filter, update, {
@@ -62,20 +62,23 @@ export abstract class BaseMongoRepository<TRecord extends Document> implements I
 
     // MongoDB driver v6+ returns the document directly (not { value: doc })
     if (!result) return null;
-    return this.mapMongoDocToDomainModel(result as WithId<TRecord>);
-  };
+    return this.mapMongoDocToDomainModel(result);
+  }
 
   /**
    * Generic create method that can be reused by specific child implementations.
    */
-  async save(docOrDocs: OptionalUnlessRequiredId<TRecord> | OptionalUnlessRequiredId<TRecord>[], session?: ClientSession): Promise<boolean> {
+  async save(
+    docOrDocs: OptionalUnlessRequiredId<TRecord> | OptionalUnlessRequiredId<TRecord>[],
+    session?: ClientSession,
+  ): Promise<boolean> {
     if (!Array.isArray(docOrDocs)) {
       const result = await this.collection.insertOne(docOrDocs, { session });
       return result.acknowledged && !!result.insertedId;
     }
     const result = await this.collection.insertMany(docOrDocs, { session });
     return result.acknowledged && result.insertedCount === docOrDocs.length;
-  };
+  }
 
   /**
    * Generic delete method that can be reused by specific child implementations.
@@ -84,13 +87,12 @@ export abstract class BaseMongoRepository<TRecord extends Document> implements I
   async deleteMany(filter: Filter<TRecord>): Promise<boolean> {
     const result = await this.collection.deleteMany(filter);
     return result.acknowledged && (result.deletedCount ?? 0) > 0;
-  };
+  }
 
   async deleteOne(filter: Filter<TRecord>): Promise<boolean> {
     const result = await this.collection.deleteOne(filter);
     return result.acknowledged && result.deletedCount === 1;
-  };
-
+  }
 
   //--------- TRANSACTION HELPERS ---------
   /**
@@ -99,7 +101,7 @@ export abstract class BaseMongoRepository<TRecord extends Document> implements I
    */
   startSession(): ClientSession {
     return this.client.startSession();
-  };
+  }
 
   //--------- MAPPING HELPERS ---------
   /**
@@ -108,5 +110,5 @@ export abstract class BaseMongoRepository<TRecord extends Document> implements I
   protected mapMongoDocToDomainModel(doc: WithId<TRecord>): TRecord {
     const { _id: _, ...rest } = doc;
     return rest as unknown as TRecord;
-  };
+  }
 }

@@ -52,7 +52,8 @@ export class InviteUserHandler implements ICommandHandler<InviteUserCommand, TUs
       email: payload.email,
       password: tempPasswordHash,
       email_verified: false,
-      active: false, is_guest: false,
+      active: false,
+      is_guest: false,
     });
 
     const profile = new UserProfileEntity({

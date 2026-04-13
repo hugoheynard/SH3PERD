@@ -19,7 +19,9 @@ export const ContractId = createParamDecorator(
     const request = ctx.switchToHttp().getRequest();
     const contractId = request.contract_id;
     if (!contractId) {
-      throw new Error('ContractId decorator used without @ContractScoped() — contract_id is missing from request');
+      throw new Error(
+        'ContractId decorator used without @ContractScoped() — contract_id is missing from request',
+      );
     }
     return contractId;
   },

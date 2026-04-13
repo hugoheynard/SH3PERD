@@ -4,21 +4,21 @@ import { ContractScopedContext } from '../utils/nest/decorators/Context.js';
 import type { TUseCaseContext } from '../types/useCases.generic.types.js';
 import type { TUserGroupId, TAsyncApiResponseDTO } from '@sh3pherd/shared-types';
 import { ApiOkResponse, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { SubgroupInitialFormValuesObjectDTO, UserGroupListDTO } from './application/dto/user-groups.dto.js';
+import {
+  SubgroupInitialFormValuesObjectDTO,
+  UserGroupListDTO,
+} from './application/dto/user-groups.dto.js';
 import { ResPayloadValidator } from '../utils/nest/ResPayloadValidator.decorator.js';
 import { apiSuccessDTO } from '../utils/swagger/api-response.swagger.util.js';
 import { USERGROUP_SUCCESS } from './user-groups.codes.js';
 import { buildApiResponseDTO } from '../music/codes.js';
 import { QueryBus } from '@nestjs/cqrs';
 import { GetCurrentUserUserGroupsQuery } from './application/query/GetCurrentUserUserGroupsQuery.js';
-import { GetSubGroupInitialFormValueObjectQuery, } from './application/query/GetSubGroupInitialFormValueObjectQuery.js';
-
+import { GetSubGroupInitialFormValueObjectQuery } from './application/query/GetSubGroupInitialFormValueObjectQuery.js';
 
 @Controller()
 export class UserGroupsController {
-  constructor(
-    private readonly queryBus: QueryBus,
-  ) {};
+  constructor(private readonly queryBus: QueryBus) {}
 
   //--- get/me ---
   @ApiOperation({
@@ -38,50 +38,50 @@ export class UserGroupsController {
   })
   @ApiResponse(apiSuccessDTO(USERGROUP_SUCCESS.GET_CURRENT_USER_USERGROUPS, UserGroupListDTO, 200))
   //--//
-  @ResPayloadValidator(UserGroupListDTO, { active: false})
+  @ResPayloadValidator(UserGroupListDTO, { active: false })
   @ContractScoped()
   @Post('me')
   async getCurrentUserContractsUserGroups(
     @ContractScopedContext() context: TUseCaseContext<'scoped'>,
-    @Body() requestDTO: any
+    @Body() requestDTO: any,
   ): TAsyncApiResponseDTO<UserGroupListDTO> {
     return buildApiResponseDTO(
       USERGROUP_SUCCESS.GET_CURRENT_USER_USERGROUPS,
-      await this.queryBus.execute(
-        new GetCurrentUserUserGroupsQuery(context, requestDTO.filter)
-      )
+      await this.queryBus.execute(new GetCurrentUserUserGroupsQuery(context, requestDTO.filter)),
     );
-  };
+  }
 
   //--- GET subgroupInitialFormValues ---
   @ApiOperation({
-  summary: 'Get initial form values for creating a subgroup',
-  description: `
+    summary: 'Get initial form values for creating a subgroup',
+    description: `
   Retrieves the initial form values required to create a **subgroup** under the specified **user group**.
   Returns default settings and configurations to pre-fill the subgroup creation form.`,
   })
-  @ApiParam({ name: 'id', description: 'The ID of the parent user group under which the subgroup will be created.' })
-  @ApiResponse(apiSuccessDTO(USERGROUP_SUCCESS.GET_SUBGROUP_INITIAL_FORM_VALUES, SubgroupInitialFormValuesObjectDTO, 200))
+  @ApiParam({
+    name: 'id',
+    description: 'The ID of the parent user group under which the subgroup will be created.',
+  })
+  @ApiResponse(
+    apiSuccessDTO(
+      USERGROUP_SUCCESS.GET_SUBGROUP_INITIAL_FORM_VALUES,
+      SubgroupInitialFormValuesObjectDTO,
+      200,
+    ),
+  )
   //--//
-  @ResPayloadValidator(UserGroupListDTO, { active: false})
+  @ResPayloadValidator(UserGroupListDTO, { active: false })
   @ContractScoped()
   @Get(':id/sub-group/initial-form-config')
   async getSubgroupInitialFormValues(
     @ContractScopedContext() context: TUseCaseContext<'scoped'>,
-    @Param('id') id: TUserGroupId
+    @Param('id') id: TUserGroupId,
   ): TAsyncApiResponseDTO<SubgroupInitialFormValuesObjectDTO> {
     return buildApiResponseDTO(
       USERGROUP_SUCCESS.GET_SUBGROUP_INITIAL_FORM_VALUES,
-      await this.queryBus.execute(
-        new GetSubGroupInitialFormValueObjectQuery(context, id)
-      )
+      await this.queryBus.execute(new GetSubGroupInitialFormValueObjectQuery(context, id)),
     );
-  };
-
-
-
-
-
+  }
 
   @ApiOperation({
     summary: 'Add member to user group (contract scoped operation)',
@@ -103,6 +103,6 @@ This endpoint allows authorized users to:
     @Param('id') id: TUserGroupId,
   ): any {
     // TODO implement
-    console.log({ context, id })
-  };
+    console.log({ context, id });
+  }
 }

@@ -35,7 +35,10 @@ export class CreateOrgNodeCommand {
  * Returns the created node as a domain model (no metadata).
  */
 @CommandHandler(CreateOrgNodeCommand)
-export class CreateOrgNodeHandler implements ICommandHandler<CreateOrgNodeCommand, TOrgNodeDomainModel> {
+export class CreateOrgNodeHandler implements ICommandHandler<
+  CreateOrgNodeCommand,
+  TOrgNodeDomainModel
+> {
   constructor(
     @Inject(COMPANY_AGGREGATE_REPO) private readonly aggregateRepo: ICompanyAggregateRepository,
   ) {}

@@ -5,20 +5,17 @@ import type { TPermissionKey } from '../../permissions/permissionsRegistry.js';
 import { BaseCRUDUseCaseBuilder } from './BaseCRUDUseCaseBuilder.js';
 import type { TGenericRepoUpdateOneFn } from '../repoAdaptersHelpers/repository.genericFunctions.types.js';
 
-
 export type TGenericUpdateOneUseCase<T> = (input: {
-  asker_id: TUserId,
-  permission: TPermissionKey,
-  filter: Partial<T> | Filter<T>,
-  update: Partial<T> | UpdateFilter<T>
+  asker_id: TUserId;
+  permission: TPermissionKey;
+  filter: Partial<T> | Filter<T>;
+  update: Partial<T> | UpdateFilter<T>;
 }) => Promise<T | null>;
 
-export class UpdateOneUseCaseBuilder<TRecord>
-  extends BaseCRUDUseCaseBuilder<
-    TGenericUpdateOneUseCase<TRecord>,
-    TGenericRepoUpdateOneFn<TRecord>
-  > {
-
+export class UpdateOneUseCaseBuilder<TRecord> extends BaseCRUDUseCaseBuilder<
+  TGenericUpdateOneUseCase<TRecord>,
+  TGenericRepoUpdateOneFn<TRecord>
+> {
   /**
    * Build the use case function, returning a function that performs the update operation
    * with permission checks and post-processing.
@@ -40,22 +37,24 @@ export class UpdateOneUseCaseBuilder<TRecord>
       //return this.postProcessors.reduce((acc, fn) => fn(acc), result);
 
       return coreResult;
-    }
-  };
+    };
+  }
 
-  protected override async processCoreFn(input: Parameters<TGenericRepoUpdateOneFn<TRecord>>[0]): Promise<ReturnType<TGenericRepoUpdateOneFn<TRecord>>> {
+  protected override async processCoreFn(
+    input: Parameters<TGenericRepoUpdateOneFn<TRecord>>[0],
+  ): Promise<ReturnType<TGenericRepoUpdateOneFn<TRecord>>> {
     const { filter, update } = input;
 
     if (!this.repo) {
-      throw new Error("REPO_NOT_CONFIGURED");
+      throw new Error('REPO_NOT_CONFIGURED');
     }
 
     const result = await this.repo.fn({
       filter,
       update: {
         ...update,
-        ...RecordMetadataUtils.patchUpdate()
-      }
+        ...RecordMetadataUtils.patchUpdate(),
+      },
     });
 
     if (!result) {
@@ -63,5 +62,5 @@ export class UpdateOneUseCaseBuilder<TRecord>
     }
 
     return result;
-  };
+  }
 }
