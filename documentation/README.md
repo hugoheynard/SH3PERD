@@ -19,6 +19,7 @@ Process docs, TODOs, feature roadmaps, and user flows.
 | [Programs](todos/TODO-programs.md) | Backlog | Drag engine refactoring, pointer events migration |
 | [Auth](todos/TODO-auth.md) | Active | Auth roadmap: mailer, Auth0, sessions, 2FA |
 | [Email Verification](todos/TODO-email-verification.md) | Blocked | Email verification flow — blocked by mailer setup |
+| [Analytics Microservice](todos/TODO-analytics-microservice.md) | Backlog | NestJS TCP micro-service for event tracking + dashboards |
 | [Error Management](todos/TODO-error-management.md) | Done | Error class taxonomy refactoring (completed) |
 
 ## User Flows
