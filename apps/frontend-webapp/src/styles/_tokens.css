@@ -2,30 +2,32 @@
 
   /* ═══════════════════════════════════════════════════
      BACKGROUNDS
+     Palette aligned with auth login — deep blue-black
+     base inspired by the shepherd dog illustration.
   ═══════════════════════════════════════════════════ */
 
   /* Couche 1 — fond principal (ancrage) */
-  --content-page-bg-color: #242a35;
+  --content-page-bg-color: #11161e;
 
   /* Couche 2 — header / zones structurelles */
-  --header-color:          #181d27;
+  --header-color:          #0a0e14;
 
-  /* Couche 3 — panneaux latéraux / sidebar (plus sombres que le fond) */
-  --panel-color:           #141920;
-  --sidebar-color:         #0f1318;
+  /* Couche 3 — panneaux latéraux / sidebar */
+  --panel-color:           #0c1018;
+  --sidebar-color:         #090d13;
 
-  /* Couche 4 — cartes / éléments élevés (clairement au-dessus du fond) */
-  --card-color:            #2f3749;
-  --hover-color:           #343e55;
+  /* Couche 4 — cartes / éléments élevés */
+  --card-color:            #1f2733;
+  --hover-color:           #28323f;
 
-  /* Couche 5 — flottants / menus (intermédiaire sombre) */
-  --floating-panel-color:  #232b3a;
-  --popover-bg-color:      #1c2330;
+  /* Couche 5 — flottants / menus */
+  --floating-panel-color:  #1a212a;
+  --popover-bg-color:      #151b23;
 
   --room-header-bg: color-mix(in srgb, var(--content-page-bg-color) 90%, white);
 
   /* Glass surface for overlay panels */
-  --glass-bg: rgba(20, 25, 32, 0.55);
+  --glass-bg: rgba(9, 13, 21, 0.55);
 
 
   /* ═══════════════════════════════════════════════════
@@ -49,17 +51,19 @@
 
   /* ═══════════════════════════════════════════════════
      SEMANTIC COLORS
+     Warning (amber) & alert (red-orange) extracted from
+     the shepherd dog illustration — eye iris & muzzle.
   ═══════════════════════════════════════════════════ */
 
-  --color-warning:       #c59926;
-  --color-warning-light: #f6ad55;
-  --color-warning-dim:   rgba(197, 153, 38, 0.14);
-  --color-warning-border:rgba(246, 173, 85, 0.30);
+  --color-warning:       #d4a017;
+  --color-warning-light: #e8b84a;
+  --color-warning-dim:   rgba(212, 160, 23, 0.14);
+  --color-warning-border:rgba(232, 184, 74, 0.30);
 
-  --color-alert:         #b43030;
-  --color-alert-light:   #fc8181;
-  --color-alert-dim:     rgba(182, 49, 49, 0.12);
-  --color-alert-border:  rgba(252, 129, 129, 0.35);
+  --color-alert:         #c44230;
+  --color-alert-light:   #e06450;
+  --color-alert-dim:     rgba(196, 66, 48, 0.12);
+  --color-alert-border:  rgba(224, 100, 80, 0.35);
 
   --color-success:       #1a9e6a;
 
@@ -69,10 +73,10 @@
   --color-info-border:   rgba(159, 122, 234, 0.30);
 
   /* Rating scale */
-  --color-rating-low:        #fc8181;
-  --color-rating-low-dim:    rgba(252, 129, 129, 0.15);
-  --color-rating-medium:     #f6ad55;
-  --color-rating-medium-dim: rgba(246, 173, 85, 0.15);
+  --color-rating-low:        #e06450;
+  --color-rating-low-dim:    rgba(224, 100, 80, 0.15);
+  --color-rating-medium:     #e8b84a;
+  --color-rating-medium-dim: rgba(232, 184, 74, 0.15);
   --color-rating-high:       #68d391;
   --color-rating-high-dim:   rgba(104, 211, 145, 0.15);
   --color-rating-max:        var(--accent-color);
@@ -88,13 +92,13 @@
 
 
   /* ═══════════════════════════════════════════════════
-     TEXT
+     TEXT — bluish tint for premium feel
   ═══════════════════════════════════════════════════ */
 
-  --text-primary:   #f5f7fa;
-  --text-secondary: #9aa3b2;
-  --text-muted:     #718096;
-  --text-faded:     #7d8080;
+  --text-primary:   #eef1ff;
+  --text-secondary: #8892b0;
+  --text-muted:     #5e6a86;
+  --text-faded:     #4a5470;
 
 
   /* ═══════════════════════════════════════════════════
@@ -128,22 +132,22 @@
 
 
   /* ═══════════════════════════════════════════════════
-     SHADOWS
+     SHADOWS — deeper for very dark surfaces
   ═══════════════════════════════════════════════════ */
 
-  --shadow-xs:   0 1px 3px  rgba(0, 0, 0, 0.22);
-  --shadow-sm:   0 2px 8px  rgba(0, 0, 0, 0.28);
-  --shadow-md:   0 4px 14px rgba(0, 0, 0, 0.32);
-  --shadow-lg:   0 10px 28px rgba(0, 0, 0, 0.40);
-  --shadow-xl:   0 20px 48px rgba(0, 0, 0, 0.52);
+  --shadow-xs:   0 1px 3px  rgba(0, 0, 0, 0.30);
+  --shadow-sm:   0 2px 8px  rgba(0, 0, 0, 0.35);
+  --shadow-md:   0 4px 14px rgba(0, 0, 0, 0.40);
+  --shadow-lg:   0 10px 28px rgba(0, 0, 0, 0.50);
+  --shadow-xl:   0 20px 48px rgba(0, 0, 0, 0.60);
 
-  --shadow-floating:       0 12px 32px rgba(0, 0, 0, 0.42), 0 4px 12px rgba(0, 0, 0, 0.28);
-  --shadow-floating-hover: 0 18px 44px rgba(0, 0, 0, 0.52), 0 6px 16px rgba(0, 0, 0, 0.35);
+  --shadow-floating:       0 12px 32px rgba(0, 0, 0, 0.50), 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-floating-hover: 0 18px 44px rgba(0, 0, 0, 0.60), 0 6px 16px rgba(0, 0, 0, 0.42);
 
-  --shadow-slot:       0 4px 12px rgba(0, 0, 0, 0.32), 0 1px 4px rgba(0, 0, 0, 0.22);
-  --shadow-slot-hover: 0 10px 26px rgba(0, 0, 0, 0.44), 0 3px 8px rgba(0, 0, 0, 0.30);
+  --shadow-slot:       0 4px 12px rgba(0, 0, 0, 0.40), 0 1px 4px rgba(0, 0, 0, 0.28);
+  --shadow-slot-hover: 0 10px 26px rgba(0, 0, 0, 0.52), 0 3px 8px rgba(0, 0, 0, 0.35);
 
-  --shadow-popover: 0 30px 80px rgba(0, 0, 0, 0.6), 0 10px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-popover: 0 30px 80px rgba(0, 0, 0, 0.70), 0 10px 24px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.04);
 
 
   /* ═══════════════════════════════════════════════════
@@ -231,10 +235,10 @@
   --color-warning-dim:    rgba(184, 134, 11, 0.08);
   --color-warning-border: rgba(184, 134, 11, 0.22);
 
-  --color-alert:          #c0392b;
-  --color-alert-light:    #e74c3c;
-  --color-alert-dim:      rgba(192, 57, 43, 0.08);
-  --color-alert-border:   rgba(192, 57, 43, 0.22);
+  --color-alert:          #b33a2a;
+  --color-alert-light:    #d4493a;
+  --color-alert-dim:      rgba(179, 58, 42, 0.08);
+  --color-alert-border:   rgba(179, 58, 42, 0.22);
 
   --color-success:        #1a9e6a;
 
@@ -244,8 +248,8 @@
   --color-info-border:    rgba(108, 74, 182, 0.22);
 
   /* Rating scale */
-  --color-rating-low:        #e53e3e;
-  --color-rating-low-dim:    rgba(229, 62, 62, 0.10);
+  --color-rating-low:        #d4493a;
+  --color-rating-low-dim:    rgba(212, 73, 58, 0.10);
   --color-rating-medium:     #d4940e;
   --color-rating-medium-dim: rgba(212, 148, 14, 0.10);
   --color-rating-high:       #38a169;
