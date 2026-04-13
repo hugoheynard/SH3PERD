@@ -114,7 +114,20 @@ Swagger must be updated in the same commit as the controller change. Stale docs 
 - **Tests before commit are BLOCKING** — if any test fails, do NOT commit. Fix first.
 - **TypeScript compilation must pass** — run `npx tsc --noEmit` on the affected app before committing. Type errors are as blocking as lint errors.
 
-## Key conventions
+## Frontend conventions (Angular 21)
+
+- **Signals first**: Use `signal()`, `computed()`, `effect()` for state. No `BehaviorSubject` for new code.
+- **Component inputs/outputs**: Use `input()` and `output()` signal-based API (not `@Input()` / `@Output()` decorators).
+- **Standalone components**: All components must be `standalone: true`. No `NgModule` declarations.
+- **Shared components**: Always check `app/shared/` before creating a new component. Reuse existing: `ButtonComponent`, `BadgeComponent`, `StatusBadgeComponent`, `AvatarComponent`, `InlineConfirmComponent`, `LoadingStateComponent`, `EmptyStateComponent`, `ViewToggleComponent`, `PillSelectorComponent`, `DialogContextComponent`, etc.
+- **Design tokens**: Use CSS variables from `src/styles/_tokens.css` and SCSS tokens from `src/styles/tokens/`. Never hardcode colors, spacing, or font sizes — always reference tokens (`var(--accent-color)`, `var(--text-primary)`, `var(--radius-md)`, etc.).
+- **SCSS mixins**: Use mixins from `src/styles/mixins/` for buttons, forms, tabs, scrollbars, layout patterns.
+- **Token import in SCSS**: `@use "tokens" as t;` and `@use "mixins" as m;` at the top of component SCSS files.
+- **No `subscribe()` in components**: Prefer `toSignal()` or `async` pipe. Use `effect()` for side effects triggered by signal changes.
+- **Typed services**: Services use `inject()` function (not constructor injection). Use `computed()` for derived state.
+- **Route guards**: Use functional guards (`CanActivateFn`), not class-based guards.
+
+## Key conventions (backend)
 
 - **DDD entities**: Always use `Entity<T>` base class with `toDomain` getter. Prefix IDs (`user_`, `contract_`, `platformContract_`, etc.)
 - **Test factories**: Always create test data via domain entity constructors + `entity.toDomain`, never raw MongoDB inserts
