@@ -107,7 +107,8 @@ describe('RegisterUserHandler', () => {
     });
 
     it('should NOT hash password or save anything when email exists', async () => {
-      const { handler, userCredsRepo, passwordService, userProfileRepo, eventBus } = createHandler();
+      const { handler, userCredsRepo, passwordService, userProfileRepo, eventBus } =
+        createHandler();
       userCredsRepo.findOne.mockResolvedValue({ id: 'user_existing', email: validPayload.email });
 
       try {
