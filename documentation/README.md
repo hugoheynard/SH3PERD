@@ -17,6 +17,7 @@ Process docs, TODOs, feature roadmaps, and user flows.
 | [Integrations](todos/TODO-integrations.md) | Active | Slack integration roadmap: channel sync, notifications, new providers |
 | [Configurable Tab Bar](todos/TODO-configurable-tab-bar.md) | Active | DnD bug fix, unit tests, component split |
 | [Programs](todos/TODO-programs.md) | Backlog | Drag engine refactoring, pointer events migration |
+| [Email Verification](todos/TODO-email-verification.md) | Blocked | Email verification flow — blocked by mailer setup |
 | [Error Management](todos/TODO-error-management.md) | Done | Error class taxonomy refactoring (completed) |
 
 ## User Flows
