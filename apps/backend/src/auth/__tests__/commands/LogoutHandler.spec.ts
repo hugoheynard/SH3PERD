@@ -5,6 +5,7 @@ import {
   mockRefreshTokenRepo,
   makeRefreshTokenRecord,
 } from '../test-helpers';
+import { hashToken } from '../../core/token-manager/hashToken.js';
 
 describe('LogoutHandler', () => {
   function createHandler() {
@@ -14,17 +15,22 @@ describe('LogoutHandler', () => {
   }
 
   describe('execute — with specific refresh token', () => {
-    it('should find the token and delete its entire family', async () => {
-      const token = makeRefreshTokenRecord({ family_id: 'family-X' });
+    it('should find the token and soft-delete its entire family', async () => {
+      const rawToken = refreshTokenId();
+      const token = makeRefreshTokenRecord({ family_id: 'family-X', refreshToken: rawToken });
+      const hashedValue = hashToken(rawToken);
       const { handler, refreshTokenRepo } = createHandler();
       refreshTokenRepo.findOne.mockResolvedValue(token);
 
-      await handler.execute(new LogoutCommand(userId(), token.refreshToken));
+      await handler.execute(new LogoutCommand(userId(), rawToken));
 
       expect(refreshTokenRepo.findOne).toHaveBeenCalledWith({
-        filter: { refreshToken: token.refreshToken },
+        filter: { refreshToken: hashedValue },
       });
-      expect(refreshTokenRepo.deleteMany).toHaveBeenCalledWith({ family_id: 'family-X' });
+      expect(refreshTokenRepo.updateOne).toHaveBeenCalledWith({
+        filter: { family_id: 'family-X' },
+        update: { $set: { isRevoked: true } },
+      });
     });
 
     it('should do nothing if the token is not found in DB', async () => {
@@ -33,7 +39,7 @@ describe('LogoutHandler', () => {
 
       await handler.execute(new LogoutCommand(userId(), refreshTokenId()));
 
-      expect(refreshTokenRepo.deleteMany).not.toHaveBeenCalled();
+      expect(refreshTokenRepo.updateOne).not.toHaveBeenCalled();
     });
   });
 

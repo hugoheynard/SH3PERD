@@ -1,8 +1,7 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import { AuthController } from '../auth.controller';
-import { USE_CASES_TOKENS } from '../../../appBootstrap/nestTokens.js';
-import type { TCoreUseCasesTypeMap } from '../../../appBootstrap/nestTokens.js';
+import { CommandBus } from '@nestjs/cqrs';
 import { jest } from '@jest/globals';
 
 import type express from 'express';
@@ -12,20 +11,17 @@ type Response = express.Response;
 
 describe('AuthController', () => {
   let controller: AuthController;
-  const mockAuthUseCases: TCoreUseCasesTypeMap['auth'] = {
-    register: jest.fn(),
-    login: jest.fn(),
-    refresh: jest.fn(),
-    logout: jest.fn(),
-  } as any;
+  let commandBus: { execute: jest.Mock };
 
   beforeEach(async () => {
+    commandBus = { execute: jest.fn() };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
         {
-          provide: USE_CASES_TOKENS.auth,
-          useValue: mockAuthUseCases,
+          provide: CommandBus,
+          useValue: commandBus,
         },
       ],
     }).compile();
@@ -34,13 +30,18 @@ describe('AuthController', () => {
   });
 
   it('should register a user', async () => {
-    const dto = { email: 'test@example.com', password: '1234' };
-    const expected = { user_id: 'user_1' };
-    mockAuthUseCases.registerUseCase.mockResolvedValue(expected);
+    const dto = {
+      email: 'test@example.com',
+      password: '1234',
+      first_name: 'John',
+      last_name: 'Doe',
+    };
+    const expected = { id: 'userCredential_1', email: 'test@example.com' };
+    commandBus.execute.mockResolvedValue(expected);
 
     const result = await controller.register(dto);
     expect(result).toEqual(expected);
-    expect(mockAuthUseCases.registerUseCase).toHaveBeenCalledWith(dto);
+    expect(commandBus.execute).toHaveBeenCalled();
   });
 
   it('should login and set cookie', async () => {
@@ -53,13 +54,13 @@ describe('AuthController', () => {
       authToken: 'token',
       user_id: 'user_1',
       refreshTokenSecureCookie: {
-        name: 'cookieName',
+        name: 'sh3pherd_refreshToken',
         value: 'cookieValue',
-        options: { httpOnly: true },
+        options: { httpOnly: true, path: '/api/auth' },
       },
     };
 
-    mockAuthUseCases.loginUseCase.mockResolvedValue(expected);
+    commandBus.execute.mockResolvedValue(expected);
 
     const result = await controller.login(dto, res);
     expect(res.cookie).toHaveBeenCalledWith(
@@ -88,13 +89,13 @@ describe('AuthController', () => {
       user_id: 'user_1',
       authToken: 'newToken',
       refreshTokenSecureCookie: {
-        name: 'cookieName',
+        name: 'sh3pherd_refreshToken',
         value: 'cookieValue',
-        options: { httpOnly: true },
+        options: { httpOnly: true, path: '/api/auth' },
       },
     };
 
-    mockAuthUseCases.refreshSessionUseCase.mockResolvedValue(expected);
+    commandBus.execute.mockResolvedValue(expected);
 
     const result = await controller.refreshSession(req, res);
     expect(res.cookie).toHaveBeenCalled();
@@ -116,12 +117,12 @@ describe('AuthController', () => {
       clearCookie: jest.fn(),
     } as any as Response;
 
-    const result = await controller.logout(req, res);
-    expect(mockAuthUseCases.logoutUseCase).toHaveBeenCalledWith({
-      user_id: 'user_1',
-      refreshToken: 'refresh_123',
-    });
+    commandBus.execute.mockResolvedValue(undefined);
 
+    const result = await controller.logout(req, res);
+
+    expect(commandBus.execute).toHaveBeenCalled();
+    expect(res.clearCookie).toHaveBeenCalledWith('sh3pherd_refreshToken', { path: '/api/auth' });
     expect(result).toEqual({ message: 'Logout successful' });
   });
 });

@@ -29,6 +29,8 @@ describe('E2E - Auth', () => {
       .withCredentials({
         email: 'user1Pass@example.com',
         password: 'securePassword123',
+        first_name: 'John',
+        last_name: 'Doe',
       })
       .register(201);
 
@@ -41,6 +43,8 @@ describe('E2E - Auth', () => {
       .withCredentials({
         email: 'user1Pass@example.com',
         password: 'securePassword123',
+        first_name: 'John',
+        last_name: 'Doe',
       })
       .register();
 
@@ -50,10 +54,12 @@ describe('E2E - Auth', () => {
       .send({
         email: 'user1Pass@example.com',
         password: 'securePassword123',
+        first_name: 'John',
+        last_name: 'Doe',
       })
       .expect(409); // HTTP Conflict
 
-    // 3. Vérifie le message d’erreur
+    // 3. Verify error message
     expect(response.body).toMatchObject({
       message: expect.stringContaining('email'),
     });
@@ -65,6 +71,8 @@ describe('E2E - Auth', () => {
       .withCredentials({
         email: 'user1Pass@example.com',
         password: 'securePassword123',
+        first_name: 'John',
+        last_name: 'Doe',
       })
       .register();
 
@@ -87,7 +95,12 @@ describe('E2E - Auth', () => {
   it('should logout an existing user and revoke his refreshToken', async () => {
     console.log('Step 1: register');
     const user = await UserBuilder.init(app)
-      .withCredentials({ email: 'logout@test.com', password: 'secure1234' })
+      .withCredentials({
+        email: 'logout@test.com',
+        password: 'secure1234',
+        first_name: 'Jane',
+        last_name: 'Doe',
+      })
       .registerAndLogin();
 
     expect(user.getRefreshCookie()).toMatch(/sh3pherd_refreshToken=/);

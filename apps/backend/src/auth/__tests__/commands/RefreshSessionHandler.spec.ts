@@ -14,6 +14,7 @@ import {
   makeSessionResult,
 } from '../test-helpers';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { hashToken } from '../../core/token-manager/hashToken.js';
 
 describe('RefreshSessionHandler', () => {
   function createHandler() {
@@ -32,16 +33,18 @@ describe('RefreshSessionHandler', () => {
 
   describe('execute — success (rotation)', () => {
     it('should rotate: revoke old token and create new session in same family', async () => {
-      const token = makeRefreshTokenRecord({ family_id: 'family-A' });
+      const rawToken = refreshTokenId();
+      const token = makeRefreshTokenRecord({ family_id: 'family-A', refreshToken: rawToken });
+      const hashedValue = hashToken(rawToken);
       const { handler, refreshTokenRepo, authService } = createHandler();
       refreshTokenRepo.findOne.mockResolvedValue(token);
 
-      const result = await handler.execute(new RefreshSessionCommand(token.refreshToken));
+      const result = await handler.execute(new RefreshSessionCommand(rawToken));
 
-      // Old token marked as revoked
+      // Old token marked as revoked (handler hashes the raw cookie token)
       expect(refreshTokenRepo.updateOne).toHaveBeenCalledWith(
         expect.objectContaining({
-          filter: { refreshToken: token.refreshToken },
+          filter: { refreshToken: hashedValue },
           update: { $set: { isRevoked: true } },
         }),
       );
@@ -68,8 +71,8 @@ describe('RefreshSessionHandler', () => {
         fail('Should have thrown');
       } catch (e) {
         expect(e).toBeInstanceOf(BusinessError);
-        expect((e as BusinessError).errorCode).toBe('TOKEN_NOT_FOUND');
-        expect((e as BusinessError).statusCode).toBe(401);
+        expect((e as BusinessError).code).toBe('TOKEN_NOT_FOUND');
+        expect((e as BusinessError).status).toBe(401);
       }
     });
   });
@@ -85,8 +88,8 @@ describe('RefreshSessionHandler', () => {
         fail('Should have thrown');
       } catch (e) {
         expect(e).toBeInstanceOf(BusinessError);
-        expect((e as BusinessError).errorCode).toBe('TOKEN_REUSE_DETECTED');
-        expect((e as BusinessError).statusCode).toBe(401);
+        expect((e as BusinessError).code).toBe('TOKEN_REUSE_DETECTED');
+        expect((e as BusinessError).status).toBe(401);
       }
 
       // Entire family should be deleted
@@ -96,21 +99,23 @@ describe('RefreshSessionHandler', () => {
 
   describe('execute — expired token', () => {
     it('should delete expired token and throw INVALID_TOKENS', async () => {
-      const expired = makeExpiredRefreshToken();
+      const rawToken = refreshTokenId();
+      const expired = makeExpiredRefreshToken({ refreshToken: rawToken });
+      const hashedValue = hashToken(rawToken);
       const { handler, refreshTokenRepo, refreshTokenService } = createHandler();
       refreshTokenRepo.findOne.mockResolvedValue(expired);
       refreshTokenService.verifyRefreshToken.mockReturnValue(false);
 
       try {
-        await handler.execute(new RefreshSessionCommand(expired.refreshToken));
+        await handler.execute(new RefreshSessionCommand(rawToken));
         fail('Should have thrown');
       } catch (e) {
         expect(e).toBeInstanceOf(BusinessError);
-        expect((e as BusinessError).errorCode).toBe('INVALID_TOKENS');
+        expect((e as BusinessError).code).toBe('INVALID_TOKENS');
       }
 
       expect(refreshTokenRepo.deleteOne).toHaveBeenCalledWith({
-        refreshToken: expired.refreshToken,
+        refreshToken: hashedValue,
       });
     });
   });

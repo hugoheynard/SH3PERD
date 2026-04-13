@@ -56,8 +56,8 @@ describe('LoginHandler', () => {
       try {
         await handler.execute(new LoginCommand({ email: 'unknown@test.com', password: 'any' }));
       } catch (e) {
-        expect((e as BusinessError).errorCode).toBe('INVALID_CREDENTIALS');
-        expect((e as BusinessError).statusCode).toBe(400);
+        expect((e as BusinessError).code).toBe('INVALID_CREDENTIALS');
+        expect((e as BusinessError).status).toBe(400);
       }
     });
 
@@ -69,8 +69,8 @@ describe('LoginHandler', () => {
         await handler.execute(new LoginCommand({ email: 'test@example.com', password: 'correct' }));
         fail('Should have thrown');
       } catch (e) {
-        expect((e as BusinessError).errorCode).toBe('USER_DEACTIVATED');
-        expect((e as BusinessError).statusCode).toBe(403);
+        expect((e as BusinessError).code).toBe('USER_DEACTIVATED');
+        expect((e as BusinessError).status).toBe(403);
       }
     });
 
@@ -83,7 +83,7 @@ describe('LoginHandler', () => {
         await handler.execute(new LoginCommand({ email: 'test@example.com', password: 'wrong' }));
         fail('Should have thrown');
       } catch (e) {
-        expect((e as BusinessError).errorCode).toBe('INVALID_CREDENTIALS');
+        expect((e as BusinessError).code).toBe('INVALID_CREDENTIALS');
       }
     });
 

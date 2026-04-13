@@ -2,7 +2,12 @@ import {
   RegisterUserCommand,
   RegisterUserHandler,
 } from '../../application/commands/RegisterUserCommand';
-import { mockPasswordService, mockUserCredentialsRepo, mockUserProfileRepo } from '../test-helpers';
+import {
+  mockPasswordService,
+  mockUserCredentialsRepo,
+  mockUserProfileRepo,
+  mockPlatformContractRepo,
+} from '../test-helpers';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 describe('RegisterUserHandler', () => {
@@ -10,6 +15,7 @@ describe('RegisterUserHandler', () => {
     const passwordService = mockPasswordService();
     const userCredsRepo = mockUserCredentialsRepo();
     const userProfileRepo = mockUserProfileRepo();
+    const platformContractRepo = mockPlatformContractRepo();
 
     // Simulate startSession + withTransaction
     const mockSession = {
@@ -22,9 +28,17 @@ describe('RegisterUserHandler', () => {
       passwordService,
       userCredsRepo,
       userProfileRepo,
+      platformContractRepo,
     ) as RegisterUserHandler;
 
-    return { handler, passwordService, userCredsRepo, userProfileRepo, mockSession };
+    return {
+      handler,
+      passwordService,
+      userCredsRepo,
+      userProfileRepo,
+      platformContractRepo,
+      mockSession,
+    };
   }
 
   const validPayload = {
@@ -73,8 +87,8 @@ describe('RegisterUserHandler', () => {
         fail('Should have thrown');
       } catch (e) {
         expect(e).toBeInstanceOf(BusinessError);
-        expect((e as BusinessError).errorCode).toBe('USER_ALREADY_EXISTS');
-        expect((e as BusinessError).statusCode).toBe(409);
+        expect((e as BusinessError).code).toBe('USER_ALREADY_EXISTS');
+        expect((e as BusinessError).status).toBe(409);
       }
     });
 

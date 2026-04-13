@@ -1,4 +1,7 @@
-import { ChangePasswordCommand, ChangePasswordHandler } from '../../application/commands/ChangePasswordCommand.js';
+import {
+  ChangePasswordCommand,
+  ChangePasswordHandler,
+} from '../../application/commands/ChangePasswordCommand.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 describe('ChangePasswordHandler', () => {

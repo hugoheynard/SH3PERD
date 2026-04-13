@@ -1,25 +1,27 @@
 import { jest } from '@jest/globals';
-import type { Collection, DeleteResult, Document, InsertOneResult } from 'mongodb';
+import type { Collection, Document, InsertOneResult, DeleteResult, WithId } from 'mongodb';
 import { RefreshTokenMongoRepository } from '../RefreshTokenMongoRepository.js';
 import { ObjectId } from 'mongodb';
+import type { TRefreshTokenRecord, TRefreshToken } from '@sh3pherd/shared-types';
 
 /**
- * No need to test throws in this test file. Decorator tested in utils package.
+ * Tests that RefreshTokenMongoRepository (extending BaseMongoRepository)
+ * correctly delegates CRUD operations to the MongoDB collection.
  */
-// Mock collection
+
 const mockCollection = {
   insertOne: jest.fn(),
   findOne: jest.fn(),
+  findOneAndUpdate: jest.fn(),
   deleteOne: jest.fn(),
   deleteMany: jest.fn(),
-} as unknown as jest.Mocked<Collection<TRefreshTokenDomainModel>>;
+} as unknown as jest.Mocked<Collection<TRefreshTokenRecord>>;
 
-// Mock client
 const mockClient = {
   db: jest.fn().mockReturnValue({
     collection: jest.fn().mockReturnValue(mockCollection),
   }),
-} as unknown as MongoClient;
+} as any;
 
 const mockDeps = {
   client: mockClient,
@@ -27,9 +29,12 @@ const mockDeps = {
   collectionName: 'refresh_tokens',
 };
 
-const mockToken: TRefreshTokenDomainModel = {
-  refreshToken: 'refresh_abc' as TRefreshToken,
-  user_id: 'user_1',
+const mockToken: TRefreshTokenRecord = {
+  id: 'refreshToken_abc' as TRefreshToken,
+  refreshToken: 'hashed-abc' as TRefreshToken,
+  user_id: 'user_1' as any,
+  family_id: 'family-1',
+  isRevoked: false,
   createdAt: new Date(),
   expiresAt: new Date(Date.now() + 10000),
 };
@@ -39,58 +44,79 @@ describe('RefreshTokenMongoRepository', () => {
 
   beforeEach(() => jest.clearAllMocks());
 
-  it('should return true when saving a refresh token succeeds', async () => {
+  it('should return true when save succeeds', async () => {
     mockCollection.insertOne.mockResolvedValueOnce({
       acknowledged: true,
       insertedId: new ObjectId(),
     } as InsertOneResult<Document>);
 
-    const result = await repository.saveRefreshToken({ refreshTokenDomainModel: mockToken });
+    const result = await repository.save(mockToken as any);
     expect(result).toBe(true);
   });
 
-  it('should return false when saving fails (not acknowledged)', async () => {
+  it('should return false when save fails (not acknowledged)', async () => {
     mockCollection.insertOne.mockResolvedValueOnce({
       acknowledged: false,
     } as InsertOneResult<Document>);
 
-    const result = await repository.saveRefreshToken({ refreshTokenDomainModel: mockToken });
+    const result = await repository.save(mockToken as any);
     expect(result).toBe(false);
   });
 
-  it('should return the domain model when finding an existing refresh token', async () => {
-    mockCollection.findOne.mockResolvedValueOnce(mockToken);
-    const result = await repository.findRefreshToken({ refreshToken: mockToken.refreshToken });
+  it('should return the domain model when findOne finds a token', async () => {
+    const mongoDoc = { ...mockToken, _id: new ObjectId() } as WithId<TRefreshTokenRecord>;
+    mockCollection.findOne.mockResolvedValueOnce(mongoDoc);
+
+    const result = await repository.findOne({
+      filter: { refreshToken: mockToken.refreshToken } as any,
+    });
     expect(result).toEqual(mockToken);
   });
 
-  it('should return null when no refresh token is found', async () => {
+  it('should return null when findOne finds nothing', async () => {
     mockCollection.findOne.mockResolvedValueOnce(null);
-    const result = await repository.findRefreshToken({ refreshToken: mockToken.refreshToken });
+
+    const result = await repository.findOne({ filter: { refreshToken: 'nonexistent' } as any });
     expect(result).toBeNull();
   });
 
-  it('should return {revokedToken} when deletion succeeds', async () => {
-    mockCollection.deleteOne.mockResolvedValueOnce({ deletedCount: 1 } as DeleteResult);
-    const result = await repository.deleteRefreshToken({ refreshToken: mockToken.refreshToken });
-    expect(result).toEqual({ revokedToken: mockToken.refreshToken });
-  });
+  it('should return true when deleteOne succeeds', async () => {
+    mockCollection.deleteOne.mockResolvedValueOnce({
+      acknowledged: true,
+      deletedCount: 1,
+    } as DeleteResult);
 
-  it('should return false when refresh token deletion fails (not found)', async () => {
-    mockCollection.deleteOne.mockResolvedValueOnce({ deletedCount: 0 } as DeleteResult);
-    const result = await repository.deleteRefreshToken({ refreshToken: mockToken.refreshToken });
-    expect(result).toBe(false);
-  });
-
-  it('should return true when user tokens are deleted', async () => {
-    mockCollection.deleteMany.mockResolvedValueOnce({ deletedCount: 2 } as DeleteResult);
-    const result = await repository.deleteAllRefreshTokensForUser({ user_id: mockToken.user_id });
+    const result = await repository.deleteOne({ refreshToken: mockToken.refreshToken } as any);
     expect(result).toBe(true);
   });
 
-  it('should return false when no tokens are deleted for user', async () => {
-    mockCollection.deleteMany.mockResolvedValueOnce({ deletedCount: 0 } as DeleteResult);
-    const result = await repository.deleteAllRefreshTokensForUser({ user_id: mockToken.user_id });
+  it('should return false when deleteOne finds nothing', async () => {
+    mockCollection.deleteOne.mockResolvedValueOnce({
+      acknowledged: true,
+      deletedCount: 0,
+    } as DeleteResult);
+
+    const result = await repository.deleteOne({ refreshToken: 'nonexistent' } as any);
+    expect(result).toBe(false);
+  });
+
+  it('should return true when deleteMany removes tokens', async () => {
+    mockCollection.deleteMany.mockResolvedValueOnce({
+      acknowledged: true,
+      deletedCount: 2,
+    } as DeleteResult);
+
+    const result = await repository.deleteMany({ user_id: mockToken.user_id } as any);
+    expect(result).toBe(true);
+  });
+
+  it('should return false when deleteMany removes nothing', async () => {
+    mockCollection.deleteMany.mockResolvedValueOnce({
+      acknowledged: true,
+      deletedCount: 0,
+    } as DeleteResult);
+
+    const result = await repository.deleteMany({ user_id: 'user_nonexistent' } as any);
     expect(result).toBe(false);
   });
 });

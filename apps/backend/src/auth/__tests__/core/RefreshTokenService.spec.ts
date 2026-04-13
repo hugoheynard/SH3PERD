@@ -7,6 +7,7 @@ import {
   makeExpiredRefreshToken,
   makeRevokedRefreshToken,
 } from '../test-helpers';
+import { hashToken } from '../../core/token-manager/hashToken';
 import type { TSecureCookieConfig } from '../../types/auth.domain.tokens';
 
 describe('RefreshTokenService', () => {
@@ -99,7 +100,7 @@ describe('RefreshTokenService', () => {
 
       const result = await service.revokeRefreshToken({ refreshToken: token });
 
-      expect(repo.deleteOne).toHaveBeenCalledWith({ refreshToken: token });
+      expect(repo.deleteOne).toHaveBeenCalledWith({ refreshToken: hashToken(token) });
       expect(result).toEqual({ revokedToken: token });
     });
 
@@ -125,7 +126,7 @@ describe('RefreshTokenService', () => {
       expect(cookie.value).toBe(token);
       expect(cookie.options.httpOnly).toBe(true);
       expect(cookie.options.sameSite).toBe('lax');
-      expect(cookie.options.path).toBe('/api/auth/refresh');
+      expect(cookie.options.path).toBe('/api/auth');
       expect(cookie.options.maxAge).toBe(604800000);
     });
   });

@@ -5,7 +5,7 @@ import request from 'supertest';
 export class UserBuilder {
   private readonly app: INestApplication;
   private userId: TUserId;
-  private credentials: { email: string; password: string } | null;
+  private credentials: { email: string; password: string; first_name?: string; last_name?: string } | null;
   private authToken: string | null = null;
   private refreshCookie: string | null = null;
   private loginResponse: request.Response | null = null;
@@ -18,7 +18,7 @@ export class UserBuilder {
     return new UserBuilder(app);
   };
 
-  withCredentials(credential: { email: string; password: string }): this {
+  withCredentials(credential: { email: string; password: string; first_name?: string; last_name?: string }): this {
     this.credentials = credential;
     return this;
   };
@@ -40,7 +40,7 @@ export class UserBuilder {
       throw new Error(`[UserBuilder.register] Expected status ${expectedStatus}, got ${res.status}`);
     }
 
-    this.userId = res.body.user_id;
+    this.userId = res.body.id ?? res.body.user_id;
     return this;
   }
 
@@ -139,7 +139,7 @@ export class UserBuilder {
     return this.refreshCookie;
   };
 
-  getPayload(): { email: string; password: string } {
+  getPayload(): { email: string; password: string; first_name?: string; last_name?: string } {
     if (!this.credentials) {
       throw new Error('[TEST UserBuilder]: No credentials set');
     }

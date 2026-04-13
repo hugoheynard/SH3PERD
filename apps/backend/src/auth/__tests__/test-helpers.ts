@@ -15,6 +15,7 @@ import type {
 } from '../types/auth.domain.tokens';
 import type { IUserCredentialsRepository } from '../../user/infra/UserCredentialsMongoRepo.repository';
 import type { IUserProfileRepository } from '../../user/infra/UserProfileMongoRepo.repository';
+import type { IPlatformContractRepository } from '../../platform-contract/infra/PlatformContractMongoRepo';
 
 // ─── ID Helpers ───────────────────────────────────────────────
 export const userId = (n = 1) => `user_test-${n}` as TUserId;
@@ -66,7 +67,7 @@ export function makeSecureCookie(
       secure: false,
       sameSite: 'lax',
       maxAge: 604800000,
-      path: '/api/auth/refresh',
+      path: '/api/auth',
     },
   };
 }
@@ -107,6 +108,12 @@ export function mockUserCredentialsRepo(): jest.Mocked<
 }
 
 export function mockUserProfileRepo(): jest.Mocked<Pick<IUserProfileRepository, 'save'>> {
+  return {
+    save: jest.fn().mockResolvedValue(true),
+  } as any;
+}
+
+export function mockPlatformContractRepo(): jest.Mocked<Pick<IPlatformContractRepository, 'save'>> {
   return {
     save: jest.fn().mockResolvedValue(true),
   } as any;
