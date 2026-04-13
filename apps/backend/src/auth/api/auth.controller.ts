@@ -1,7 +1,15 @@
 import { Body, Controller, Get, HttpCode, Post, Req, Res } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
-import { ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { apiRequestDTO } from '../../utils/swagger/api-response.swagger.util.js';
+import {
+  RegisterRequestPayload,
+  LoginRequestPayload,
+  ChangePasswordRequestPayload,
+  ForgotPasswordRequestPayload,
+  ResetPasswordRequestPayload,
+} from '../dto/auth.dto.js';
 import type {
   TLoginRequestDTO,
   TLoginResponseDTO,
@@ -48,6 +56,7 @@ export class AuthController {
   })
   @ApiResponse({ status: 201, description: 'User registered successfully.' })
   @ApiResponse({ status: 400, description: 'Validation failed.' })
+  @ApiBody(apiRequestDTO(RegisterRequestPayload))
   @ApiResponse({ status: 409, description: 'Email already exists.' })
   @Public()
   @Throttle({ default: { limit: 3, ttl: 60_000 } })
@@ -69,6 +78,7 @@ export class AuthController {
   })
   @ApiResponse({ status: 400, description: 'Invalid credentials.' })
   @ApiResponse({ status: 403, description: 'Account deactivated or not activated.' })
+  @ApiBody(apiRequestDTO(LoginRequestPayload))
   @ApiResponse({ status: 429, description: 'Account locked after too many failed attempts.' })
   @Public()
   @Throttle({ default: { limit: 5, ttl: 60_000 } })
@@ -161,6 +171,7 @@ export class AuthController {
   })
   @ApiBearerAuth('bearer')
   @ApiResponse({ status: 200, description: 'Password changed successfully.' })
+  @ApiBody(apiRequestDTO(ChangePasswordRequestPayload))
   @ApiResponse({ status: 400, description: 'Current password is incorrect or validation failed.' })
   @Throttle({ default: { limit: 3, ttl: 60_000 } })
   @Post('change-password')
@@ -185,6 +196,7 @@ export class AuthController {
     description:
       'Sends a password reset link to the email address. Always returns 200 even if email is not found (prevents email enumeration).',
   })
+  @ApiBody(apiRequestDTO(ForgotPasswordRequestPayload))
   @ApiResponse({ status: 200, description: 'If the email exists, a reset link has been sent.' })
   @Public()
   @Throttle({ default: { limit: 3, ttl: 60_000 } })
@@ -203,6 +215,7 @@ export class AuthController {
       'Validates the reset token, sets the new password, and invalidates all active sessions.',
   })
   @ApiResponse({ status: 200, description: 'Password reset successfully.' })
+  @ApiBody(apiRequestDTO(ResetPasswordRequestPayload))
   @ApiResponse({ status: 400, description: 'Invalid, expired, or already used reset token.' })
   @Public()
   @Throttle({ default: { limit: 3, ttl: 60_000 } })
