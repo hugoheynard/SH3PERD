@@ -46,6 +46,23 @@ SH3PHERD/
     storage/           — R2/S3 storage utilities
 ```
 
+## Commit rules
+
+- **Atomic commits**: Split work into small, logically grouped commits. Each commit covers ONE concern (backend API, frontend component, docs, fix). Never batch unrelated changes.
+- **Conventional commits**: `feat(scope)`, `fix(scope)`, `docs(scope)`, `refactor(scope)`. Message explains WHY, not just WHAT.
+- **Example split**: 1) `feat(backend): add cross-library endpoint` 2) `feat(frontend): wire cross-library UI` 3) `docs: update music library roadmap`
+
+## Swagger documentation
+
+Every controller endpoint MUST have complete Swagger decorators following `apps/backend/documentation/sh3-writing-a-controller.md`:
+- `@ApiOperation({ summary, description })`
+- `@ApiResponse(apiSuccessDTO(...))`
+- `@ApiParam` / `@ApiBody` where relevant
+- Zod-derived DTOs from shared-types for payloads
+- Responses wrapped in `TApiResponse<T>` via `buildApiResponseDTO()`
+
+Swagger must be updated in the same commit as the controller change. Stale docs are not acceptable.
+
 ## Key conventions
 
 - **DDD entities**: Always use `Entity<T>` base class with `toDomain` getter. Prefix IDs (`user_`, `contract_`, `platformContract_`, etc.)
