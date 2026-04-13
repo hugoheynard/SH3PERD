@@ -103,6 +103,9 @@ Swagger must be updated in the same commit as the controller change. Stale docs 
   - Backend: `pnpm --filter @sh3pherd/backend lint`
   - Audio processor: `pnpm --filter @sh3pherd/audio-processor lint`
   - Frontend: `cd apps/frontend-webapp && npx tsc --noEmit`
+- **Before every commit**: run tests on the affected app(s) and fix all failures. Never commit code with failing tests.
+  - Backend: `pnpm --filter @sh3pherd/backend test`
+  - Audio processor: `pnpm --filter @sh3pherd/audio-processor test`
 - **No `eslint-disable` comments**: fix the root cause instead of suppressing the error.
 
 ## Key conventions
