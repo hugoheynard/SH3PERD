@@ -3,6 +3,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TrackStorageModule } from './infra/storage/TrackStorageModule.js';
 import { QuotaModule } from '../quota/quota.module.js';
+import { AnalyticsModule } from '../analytics/analytics.module.js';
 import {
   REPERTOIRE_ENTRY_AGGREGATE_REPO,
   MUSIC_VERSION_REPO,
@@ -76,6 +77,7 @@ const EventHandlers = [
     CqrsModule,
     TrackStorageModule,
     QuotaModule,
+    AnalyticsModule,
     ClientsModule.register([{
       name: 'AUDIO_PROCESSOR',
       transport: Transport.TCP,

@@ -5,6 +5,7 @@ import type { IMusicRepertoireRepository } from '../../repositories/MusicReperto
 import type { TUserId, TCreateRepertoireEntryPayload, TMusicRepertoireEntryDomainModel } from '@sh3pherd/shared-types';
 import { RepertoireEntryEntity } from '../../domain/entities/RepertoireEntryEntity.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
+import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 
 export class CreateRepertoireEntryCommand {
   constructor(
@@ -18,6 +19,7 @@ export class CreateRepertoireEntryHandler implements ICommandHandler<CreateReper
   constructor(
     @Inject(MUSIC_REPERTOIRE_REPO) private readonly repRepo: IMusicRepertoireRepository,
     private readonly quotaService: QuotaService,
+    private readonly analytics: AnalyticsEventService,
   ) {}
 
   async execute(cmd: CreateRepertoireEntryCommand): Promise<TMusicRepertoireEntryDomainModel> {
@@ -38,6 +40,11 @@ export class CreateRepertoireEntryHandler implements ICommandHandler<CreateReper
 
     // Record usage — after successful save
     await this.quotaService.recordUsage(cmd.actorId, 'repertoire_entry');
+
+    await this.analytics.track('repertoire_entry_created', cmd.actorId, {
+      entry_id: entry.id,
+      reference_id: cmd.payload.musicReference_id,
+    });
 
     return entry.toDomain;
   }

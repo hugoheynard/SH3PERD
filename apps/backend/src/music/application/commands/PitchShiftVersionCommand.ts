@@ -6,6 +6,7 @@ import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestToken
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
 import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
+import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 import { MusicVersionEntity } from '../../domain/entities/MusicVersionEntity.js';
 import {
   MicroservicePatterns,
@@ -36,6 +37,7 @@ export class PitchShiftVersionHandler implements ICommandHandler<PitchShiftVersi
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
     private readonly quotaService: QuotaService,
+    private readonly analytics: AnalyticsEventService,
   ) {}
 
   async execute(cmd: PitchShiftVersionCommand): Promise<TMusicVersionDomainModel> {
@@ -109,6 +111,13 @@ export class PitchShiftVersionHandler implements ICommandHandler<PitchShiftVersi
     await this.aggregateRepo.save(aggregate);
 
     await this.quotaService.recordUsage(cmd.actorId, 'pitch_shift');
+
+    await this.analytics.track('track_pitch_shifted', cmd.actorId, {
+      version_id: cmd.versionId,
+      track_id: cmd.trackId,
+      semitones: cmd.semitones,
+      original_key: sourceDomain.pitch,
+    });
 
     return newVersion.toDomain;
   }

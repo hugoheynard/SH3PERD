@@ -5,6 +5,7 @@ import { firstValueFrom, timeout, catchError, of } from 'rxjs';
 import { TrackUploadedEvent } from './TrackUploadedEvent.js';
 import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
+import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 import { MicroservicePatterns, type TAudioAnalysisSnapshot, type TAnalyzeTrackPayload } from '@sh3pherd/shared-types';
 
 /**
@@ -20,6 +21,7 @@ export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
   constructor(
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    private readonly analytics: AnalyticsEventService,
   ) {}
 
   async handle(event: TrackUploadedEvent): Promise<void> {
@@ -52,6 +54,21 @@ export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
       await this.aggregateRepo.save(aggregate);
 
       this.logger.log(`Analysis saved for track ${trackId} — quality=${snapshot.quality}/4`);
+
+      await this.analytics.track('track_analysed', ownerId, {
+        version_id: versionId,
+        track_id: trackId,
+        bpm: snapshot.bpm,
+        key: snapshot.key,
+        key_scale: snapshot.keyScale,
+        duration_seconds: snapshot.durationSeconds,
+        sample_rate: snapshot.sampleRate,
+        integrated_lufs: snapshot.integratedLUFS,
+        loudness_range: snapshot.loudnessRange,
+        true_peak_dbtp: snapshot.truePeakdBTP,
+        snr_db: snapshot.SNRdB,
+        clipping_ratio: snapshot.clippingRatio,
+      });
     } catch (err: any) {
       this.logger.error(`Unexpected error during analysis of track ${trackId}: ${err.message}`);
     }

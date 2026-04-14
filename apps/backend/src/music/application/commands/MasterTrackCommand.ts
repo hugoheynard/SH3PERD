@@ -6,6 +6,7 @@ import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestToken
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
 import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
+import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 import {
   MicroservicePatterns,
   type TUserId,
@@ -35,6 +36,7 @@ export class MasterTrackHandler implements ICommandHandler<MasterTrackCommand, T
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
     private readonly quotaService: QuotaService,
+    private readonly analytics: AnalyticsEventService,
   ) {}
 
   async execute(cmd: MasterTrackCommand): Promise<TVersionTrackDomainModel> {
@@ -89,6 +91,13 @@ export class MasterTrackHandler implements ICommandHandler<MasterTrackCommand, T
     await this.aggregateRepo.save(aggregate);
 
     await this.quotaService.recordUsage(cmd.actorId, 'master_standard');
+
+    await this.analytics.track('track_mastered', cmd.actorId, {
+      version_id: cmd.versionId,
+      track_id: cmd.trackId,
+      target_lufs: cmd.target.targetLUFS,
+      target_tp: cmd.target.targetTP,
+    });
 
     return masteredTrack;
   }

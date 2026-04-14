@@ -13,6 +13,7 @@ import type {
 } from '@sh3pherd/shared-types';
 import { TrackUploadedEvent } from '../events/TrackUploadedEvent.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
+import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 
 export class UploadTrackCommand {
   constructor(
@@ -31,6 +32,7 @@ export class UploadTrackHandler implements ICommandHandler<UploadTrackCommand, T
     @Inject(TRACK_STORAGE_SERVICE) private readonly storage: ITrackStorageService,
     private readonly eventBus: EventBus,
     private readonly quotaService: QuotaService,
+    private readonly analytics: AnalyticsEventService,
   ) {}
 
   async execute(cmd: UploadTrackCommand): Promise<TVersionTrackDomainModel> {
@@ -76,6 +78,15 @@ export class UploadTrackHandler implements ICommandHandler<UploadTrackCommand, T
 
     // Async: trigger audio analysis
     this.eventBus.publish(new TrackUploadedEvent(cmd.actorId, cmd.versionId, trackId, s3Key));
+
+    await this.analytics.track('track_uploaded', cmd.actorId, {
+      version_id: cmd.versionId,
+      track_id: trackId,
+      file_name: cmd.payload.fileName,
+      file_size_bytes: cmd.file.length,
+      duration_seconds: cmd.payload.durationSeconds,
+      format: cmd.contentType,
+    });
 
     return track;
   }

@@ -4,6 +4,7 @@ import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestToken
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
 import type { TUserId, TCreateMusicVersionPayload, TMusicVersionDomainModel } from '@sh3pherd/shared-types';
 import { MusicVersionEntity } from '../../domain/entities/MusicVersionEntity.js';
+import { QuotaService } from '../../../quota/QuotaService.js';
 
 /**
  * Command to create a new version of a song in a user's repertoire.
@@ -38,9 +39,13 @@ export class CreateMusicVersionCommand {
 export class CreateMusicVersionHandler implements ICommandHandler<CreateMusicVersionCommand, TMusicVersionDomainModel> {
   constructor(
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    private readonly quotaService: QuotaService,
   ) {}
 
   async execute(cmd: CreateMusicVersionCommand): Promise<TMusicVersionDomainModel> {
+    // Quota check — before creating
+    await this.quotaService.ensureAllowed(cmd.actorId, 'track_version');
+
     const aggregate = await this.aggregateRepo.loadByOwnerAndReference(
       cmd.actorId, cmd.payload.musicReference_id,
     );
@@ -62,6 +67,9 @@ export class CreateMusicVersionHandler implements ICommandHandler<CreateMusicVer
 
     aggregate.addVersion(version);
     await this.aggregateRepo.save(aggregate);
+
+    // Record usage — after successful save
+    await this.quotaService.recordUsage(cmd.actorId, 'track_version');
 
     return version.toDomain;
   }
