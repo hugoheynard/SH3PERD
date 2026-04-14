@@ -8,6 +8,10 @@ export type TUsageItem = {
   resource: string;
   current: number;
   limit: number;
+  /** Bonus credits from purchased packs. */
+  bonus: number;
+  /** Effective limit = plan limit + bonus. -1 = unlimited. */
+  effective_limit: number;
   period: 'monthly' | 'lifetime';
 };
 
@@ -64,13 +68,15 @@ export class PlanUsageComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.http.get<{ data: TUsageItem[] }>(`${this.quotaURL}/me`).subscribe({
-      next: (res) => {
-        this.usage.set(res.data);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+    this.http
+      .get<{ data: { plan: string; usage: TUsageItem[] } }>(`${this.quotaURL}/me`)
+      .subscribe({
+        next: (res) => {
+          this.usage.set(res.data.usage);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false),
+      });
   }
 
   /** Get a human-readable label for a resource. */
@@ -78,12 +84,14 @@ export class PlanUsageComponent implements OnInit {
     return RESOURCE_LABELS[resource] ?? resource;
   }
 
-  /** Format limit: -1 → "Unlimited", 0 → "Not available". */
+  /** Format limit: -1 → "Unlimited", 0 → "Not available", includes bonus if any. */
   formatLimit(item: TUsageItem): string {
-    if (item.limit === -1) return 'Unlimited';
-    if (item.limit === 0) return 'Not available';
-    if (item.resource === 'storage_bytes') return this.formatBytes(item.limit);
-    return `${item.limit}`;
+    const eff = item.effective_limit;
+    if (eff === -1) return 'Unlimited';
+    if (eff === 0) return 'Not available';
+    if (item.resource === 'storage_bytes') return this.formatBytes(eff);
+    if (item.bonus > 0) return `${item.limit} + ${item.bonus}`;
+    return `${eff}`;
   }
 
   /** Format current value, with special handling for storage. */
@@ -92,22 +100,27 @@ export class PlanUsageComponent implements OnInit {
     return `${item.current}`;
   }
 
-  /** Usage ratio 0–100 for progress bar. */
+  /** Usage ratio 0–100 for progress bar (uses effective_limit). */
   usagePercent(item: TUsageItem): number {
-    if (item.limit <= 0) return 0;
-    return Math.min(100, Math.round((item.current / item.limit) * 100));
+    if (item.effective_limit <= 0) return 0;
+    return Math.min(100, Math.round((item.current / item.effective_limit) * 100));
   }
 
-  /** True when usage is ≥ 80% of limit. */
+  /** True when usage is ≥ 80% of effective limit. */
   isNearLimit(item: TUsageItem): boolean {
-    if (item.limit <= 0) return false;
-    return (item.current / item.limit) >= 0.8;
+    if (item.effective_limit <= 0) return false;
+    return (item.current / item.effective_limit) >= 0.8;
   }
 
-  /** True when usage has reached the limit. */
+  /** True when usage has reached the effective limit. */
   isAtLimit(item: TUsageItem): boolean {
-    if (item.limit <= 0) return false;
-    return item.current >= item.limit;
+    if (item.effective_limit <= 0) return false;
+    return item.current >= item.effective_limit;
+  }
+
+  /** True when this item has bonus credits from purchased packs. */
+  hasBonus(item: TUsageItem): boolean {
+    return item.bonus > 0;
   }
 
   /** Period label. */

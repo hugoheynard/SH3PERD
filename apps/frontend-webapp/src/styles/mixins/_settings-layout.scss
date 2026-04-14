@@ -1,0 +1,120 @@
+// ═══════════════════════════════════════════════════════════════
+//  Settings Layout — vertical tab sidebar + scrollable content
+// ═══════════════════════════════════════════════════════════════
+//
+//  Reusable layout for any "settings" or "admin" page that uses
+//  a vertical `<sh3-tab-nav>` sidebar on the left and a scrollable
+//  content panel on the right.
+//
+//  ┌──────────────────────────────────────────────────┐
+//  │  Page header (avatar, back bar, etc.)            │
+//  ├────────────┬─────────────────────────────────────┤
+//  │            │                                     │
+//  │  Tab nav   │   Content panel                     │
+//  │  (180 px)  │   (flex: 1, scrollable)             │
+//  │            │                                     │
+//  │  vertical  │   .settings-content                 │
+//  │  fill      │                                     │
+//  │            │                                     │
+//  ├────────────┴─────────────────────────────────────┤
+//  │  ≤ 768 px → stacks vertically:                   │
+//  │  tab nav becomes horizontal bar on top           │
+//  └──────────────────────────────────────────────────┘
+//
+//  ## Usage
+//
+//  HTML — use `<sh3-tab-nav>` with `direction="vertical"` and
+//  `activeStyle="fill"` inside a `.settings-inline` wrapper:
+//
+//    <div class="settings-inline">
+//      <sh3-tab-nav
+//        [tabs]="tabs"
+//        [activeKey]="activeTab()"
+//        activeStyle="fill"
+//        direction="vertical"
+//        (tabChange)="activeTab.set($event)"
+//      />
+//      <div class="settings-content">
+//        @if (activeTab() === 'info') { <app-info-tab /> }
+//        @if (activeTab() === 'danger') { <app-danger-zone-tab /> }
+//      </div>
+//    </div>
+//
+//  SCSS — include the three mixins and, optionally, override the
+//  sidebar width:
+//
+//    @use "mixins" as m;
+//
+//    .settings-inline { @include m.settings-inline; }
+//    .settings-content { @include m.settings-content; }
+//    @include m.settings-responsive;
+//
+//  ## Currently used by
+//
+//  - company-detail-page  (company settings tab)
+//  - user-profile-page    (full page)
+//
+// ═══════════════════════════════════════════════════════════════
+
+/// Container: flex row with a fixed-width sidebar and a fluid content area.
+/// The parent must provide `flex: 1` or a fixed height so the layout fills
+/// the available vertical space.
+///
+/// @param {Length} $sidebar-width [180px] — fixed width of the tab sidebar
+@mixin settings-inline($sidebar-width: 180px) {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+
+  sh3-tab-nav {
+    width: $sidebar-width;
+    min-width: $sidebar-width;
+    flex-shrink: 0;
+    padding: 16px 8px;
+    border-right: 1px solid var(--divider-color);
+  }
+}
+
+/// Scrollable content panel sitting next to the sidebar.
+/// Padding is generous on desktop (28 / 32) and tightened on mobile
+/// via `settings-responsive`.
+@mixin settings-content {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 28px 32px;
+}
+
+/// Responsive breakpoint (≤ 768 px): collapses the sidebar above the
+/// content. Must be included at component root scope so the `@media`
+/// rule can target `.settings-inline` and `.settings-content`.
+@mixin settings-responsive {
+  @media (max-width: 768px) {
+    .settings-inline {
+      flex-direction: column;
+      max-width: 100%;
+
+      sh3-tab-nav {
+        width: 100%;
+        min-width: 0;
+        padding: 8px;
+        border-right: none;
+        border-bottom: 1px solid var(--divider-color);
+        overflow: hidden;
+      }
+    }
+
+    .settings-content {
+      padding: 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .settings-content {
+      padding: 12px;
+    }
+  }
+}

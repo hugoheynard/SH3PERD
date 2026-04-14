@@ -1,11 +1,14 @@
 :host {
   display: block;
   width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .tab-nav {
   display: flex;
   width: 100%;
+  max-width: 100%;
   gap: 2px;
   user-select: none;
 }
@@ -101,19 +104,48 @@
     }
   }
 
-  // Auto-switch to horizontal on mobile
+  // Auto-switch to horizontal on mobile.
+  // Icon-accordion: inactive tabs show icon only, active tab expands
+  // to show icon + label. This keeps the bar compact on small screens
+  // while still indicating which tab is selected.
   @media (max-width: 768px) {
     flex-direction: row;
+    align-items: center;
 
     .tab-nav-item {
-      flex: 1;
+      flex: 0 0 auto;
       justify-content: center;
       text-align: center;
-      padding: 6px 4px;
-      gap: 4px;
-      font-size: 10px;
+      padding: 8px;
+      gap: 0;
+      font-size: var(--text-xs);
       font-weight: 600;
+      transition: flex var(--t-fast), padding var(--t-fast),
+                  gap var(--t-fast), color var(--t-fast),
+                  background var(--t-fast), border-color var(--t-fast);
+
+      // Hide label on inactive tabs
+      .tab-nav-label {
+        display: none;
+      }
+
+      // Active tab: expand to show label
+      &.is-active {
+        flex: 1 1 auto;
+        min-width: 0;
+        gap: 6px;
+        padding: 8px 12px;
+
+        .tab-nav-label {
+          display: inline;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
     }
+
+    // Hide badge on mobile — not enough room
+    .tab-nav-badge { display: none; }
 
     &.style-underline {
       border-right: none;

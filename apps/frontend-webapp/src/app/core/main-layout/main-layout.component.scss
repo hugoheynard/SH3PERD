@@ -23,7 +23,7 @@
     "header     header"
     "menuLeft   content";
 
-  background-color: var(--color-background);
+  background-color: var(--content-page-bg-color);
 }
 
 .content {
@@ -49,7 +49,7 @@
   width: 100%;
   flex: 0 0 auto;
   height: 300px;
-  background-color: var(--color-surface);
+  background-color: var(--card-color);
   z-index: 1;
 }
 
@@ -71,6 +71,7 @@
 
   @media (max-width: 768px) {
     width: 100vw;
+    min-width: 0;
     height: 100vh;
     border-radius: 0;
     box-shadow: none;
@@ -136,9 +137,17 @@
   to   { opacity: 1; transform: translateX(0); }
 }
 
+// ── Grid area assignments (replaces Tailwind arbitrary values) ──
+.area-header  { grid-area: header; }
+.area-menu    { grid-area: menuLeft; }
+.area-content { grid-area: content; overflow: hidden; }
+
 .context-menu {
   flex-shrink: 0;
   z-index: 20;
+  width: var(--w-appMenu);
+  background: var(--sidebar-color);
+  box-shadow: var(--shadow-md);
 }
 
 .hidden {
@@ -174,7 +183,7 @@
 
 @media (max-width: 768px) {
   :host {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       "header"
       "content"

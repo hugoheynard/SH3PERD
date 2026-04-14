@@ -1,5 +1,7 @@
 .tab-panel {
   max-width: 540px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 // ─── Card (generic section) ─────────────────────────
@@ -90,6 +92,19 @@
   font-size: var(--text-sm);
   color: var(--text-faded);
   font-style: italic;
+}
+
+// ─── Mobile tightening ─────────────────────────────
+
+@media (max-width: 480px) {
+  .card {
+    padding: 1rem;
+  }
+
+  .card__header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 }
 
 @keyframes fade-in {
