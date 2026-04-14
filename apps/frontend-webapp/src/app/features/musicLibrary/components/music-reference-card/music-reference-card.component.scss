@@ -86,7 +86,8 @@
 .version-data {
   display: flex;
   align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 6px 12px;
 }
 
 .version-actions {
@@ -121,10 +122,11 @@
   font-size: 11px;
   font-weight: 500;
   color: var(--text-secondary);
-  min-width: 110px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 /* Genre badge — uses <sh3-badge variant="info"> */
@@ -164,8 +166,9 @@
 .version-ratings {
   display: flex;
   gap: 10px;
-  margin-left: auto;
-  flex-shrink: 0;
+  flex-basis: 100%;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-subtle);
 }
 
 .rating-group { @include rating-group; }
@@ -458,3 +461,28 @@
   color: var(--text-faded);
   flex-shrink: 0;
 }
+
+/* ── Mobile: touch-first card ──────────────────── */
+
+@media (max-width: 460px) {
+  .card {
+    padding: 8px 12px;
+  }
+
+  /* Actions always visible on touch devices */
+  .version-actions {
+    opacity: 1;
+    max-height: 40px;
+  }
+
+  /* Delete entry always visible */
+  .btn-delete-entry {
+    opacity: 0.6;
+  }
+
+  /* Hide "+ Track" label, keep just "+" */
+  .track-label {
+    display: none;
+  }
+}
+
