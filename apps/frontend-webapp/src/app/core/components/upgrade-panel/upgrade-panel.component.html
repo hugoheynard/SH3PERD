@@ -4,6 +4,20 @@
     <button class="upgrade-close" type="button" aria-label="Close" (click)="close()">×</button>
   </div>
 
+  <!-- Billing toggle -->
+  <div class="billing-toggle">
+    <span class="billing-label" [class.billing-label--active]="billingCycle() === 'monthly'">Monthly</span>
+    <button class="billing-switch" type="button" (click)="toggleBilling()"
+            [class.billing-switch--annual]="billingCycle() === 'annual'"
+            aria-label="Toggle billing cycle">
+      <span class="billing-switch__thumb"></span>
+    </button>
+    <span class="billing-label" [class.billing-label--active]="billingCycle() === 'annual'">
+      Annual
+      <span class="billing-save">Save 25%</span>
+    </span>
+  </div>
+
   <!-- Plan cards row -->
   <div class="plans-row">
     @for (plan of plans(); track plan.key) {
@@ -12,9 +26,16 @@
            [style.--plan-accent]="plan.accent">
         <span class="plan-label">{{ plan.label }}</span>
         <div class="plan-price">
-          <span class="plan-price__amount">{{ plan.price }}</span>
-          <span class="plan-price__period">/mo</span>
+          @if (hasPricing(plan.key)) {
+            <span class="plan-price__amount">{{ getPrice(plan.key) | number:'1.2-2' }}€</span>
+            <span class="plan-price__period">/mo</span>
+          } @else {
+            <span class="plan-price__amount">Free</span>
+          }
         </div>
+        @if (hasPricing(plan.key) && billingCycle() === 'annual') {
+          <span class="plan-savings">Save {{ getSavings(plan.key) | number:'1.0-0' }}€/year</span>
+        }
         @if (isCurrentPlan(plan.key)) {
           <span class="plan-current-tag">Current</span>
         } @else if (!isBelowCurrent(plan.key)) {

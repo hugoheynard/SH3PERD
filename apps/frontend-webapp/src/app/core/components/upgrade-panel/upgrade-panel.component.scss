@@ -35,11 +35,84 @@
   }
 }
 
+/* ── Billing toggle ─────────────────────────── */
+
+.billing-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.billing-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color var(--t-base);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &--active {
+    color: var(--text-primary);
+  }
+}
+
+.billing-save {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-color);
+  padding: 1px 6px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--accent-color-border);
+  background: var(--accent-color-dim);
+}
+
+.billing-switch {
+  all: unset;
+  position: relative;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: background var(--t-base);
+
+  &--annual {
+    background: var(--accent-color);
+  }
+}
+
+.billing-switch__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  transition: transform var(--t-base);
+
+  .billing-switch--annual & {
+    transform: translateX(16px);
+  }
+}
+
+/* ── Plan savings ──────────────────────────── */
+
+.plan-savings {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent-color);
+  opacity: 0.8;
+}
+
 /* ── Plan cards ──────────────────────────────── */
 
 .plans-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-bottom: 24px;
 }
@@ -79,13 +152,6 @@
   font-size: 1.5rem;
   font-weight: 800;
   color: var(--text-primary);
-
-  &::before {
-    content: '\20AC';
-    font-size: 0.8rem;
-    font-weight: 600;
-    opacity: 0.6;
-  }
 }
 
 .plan-price__period {

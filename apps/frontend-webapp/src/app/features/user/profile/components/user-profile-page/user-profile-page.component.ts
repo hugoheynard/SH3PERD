@@ -5,11 +5,12 @@ import { InputComponent } from '../../../../../shared/forms/input/input.componen
 import { UserProfileFormService } from '../../services/user-profile.form.service';
 import { UserProfileApiService } from '../../services/user-profile.api.service';
 import { UserContextService } from '../../../../../core/services/user-context.service';
+import { PlanUsageComponent } from '../plan-usage/plan-usage.component';
 
 @Component({
   selector: 'app-user-profile-page',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonComponent, InputComponent],
+  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, PlanUsageComponent],
   templateUrl: './user-profile-page.component.html',
   styleUrl: './user-profile-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

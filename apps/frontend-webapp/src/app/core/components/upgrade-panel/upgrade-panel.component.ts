@@ -1,7 +1,13 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { LayoutService } from '../../services/layout.service';
 import { UserContextService } from '../../services/user-context.service';
-import type { TPlatformRole } from '@sh3pherd/shared-types';
+import {
+  type TPlatformRole,
+  type TBillingCycle,
+  PLAN_PRICING,
+  getPlanPrice,
+  getAnnualSavings,
+} from '@sh3pherd/shared-types';
 
 type PlanFeature = {
   label: string;
@@ -28,16 +34,18 @@ const ARTIST_FEATURES: PlanFeature[] = [
   { label: 'Rekordbox export',     free: false,        pro: true,        max: true },
 ];
 
-const ARTIST_PLAN_META: { key: TPlatformRole; label: string; price: string; accent: string }[] = [
-  { key: 'artist_free', label: 'Free', price: '0',     accent: 'var(--text-secondary)' },
-  { key: 'artist_pro',  label: 'Pro',  price: '9.99',  accent: '#a78bfa' },
-  { key: 'artist_max',  label: 'Max',  price: '19.99', accent: 'var(--accent-color)' },
+type PlanMeta = { key: TPlatformRole; label: string; accent: string };
+
+const ARTIST_PLAN_META: PlanMeta[] = [
+  { key: 'artist_free', label: 'Free', accent: 'var(--text-secondary)' },
+  { key: 'artist_pro',  label: 'Pro',  accent: '#a78bfa' },
+  { key: 'artist_max',  label: 'Max',  accent: 'var(--accent-color)' },
 ];
 
-const COMPANY_PLAN_META: { key: TPlatformRole; label: string; price: string; accent: string }[] = [
-  { key: 'company_free',     label: 'Free',     price: '0',     accent: 'var(--text-secondary)' },
-  { key: 'company_pro',      label: 'Pro',      price: '29.99', accent: '#a78bfa' },
-  { key: 'company_business', label: 'Business', price: '79.99', accent: 'var(--accent-color)' },
+const COMPANY_PLAN_META: PlanMeta[] = [
+  { key: 'company_free',     label: 'Free',     accent: 'var(--text-secondary)' },
+  { key: 'company_pro',      label: 'Pro',      accent: '#a78bfa' },
+  { key: 'company_business', label: 'Business', accent: 'var(--accent-color)' },
 ];
 
 @Component({
@@ -51,8 +59,8 @@ export class UpgradePanelComponent {
   private readonly userCtx = inject(UserContextService);
 
   readonly currentPlan = this.userCtx.plan;
+  readonly billingCycle = signal<TBillingCycle>('annual');
 
-  /** Resolve plan family from current plan prefix. */
   readonly isArtist = computed(() => {
     const plan = this.currentPlan();
     return !plan || plan.startsWith('artist_');
@@ -65,6 +73,22 @@ export class UpgradePanelComponent {
     const plan = this.currentPlan();
     return this.plans().findIndex(p => p.key === plan);
   });
+
+  toggleBilling(): void {
+    this.billingCycle.update(c => c === 'annual' ? 'monthly' : 'annual');
+  }
+
+  getPrice(planKey: TPlatformRole): number {
+    return getPlanPrice(planKey, this.billingCycle());
+  }
+
+  getSavings(planKey: TPlatformRole): number {
+    return getAnnualSavings(planKey);
+  }
+
+  hasPricing(planKey: TPlatformRole): boolean {
+    return !!PLAN_PRICING[planKey];
+  }
 
   close(): void {
     this.layout.clearRightPanel();
