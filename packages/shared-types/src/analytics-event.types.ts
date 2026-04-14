@@ -25,11 +25,11 @@ export const ANALYTICS_EVENT_TYPES = [
   'credit_used',
   // Music
   'track_uploaded',
+  'track_analysed',
   'track_mastered',
   'track_ai_mastered',
   'track_pitch_shifted',
   'repertoire_entry_created',
-  'playlist_created',
   // Quota
   'quota_exceeded',
   'quota_warning_80pct',
