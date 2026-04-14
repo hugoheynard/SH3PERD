@@ -20,6 +20,9 @@ Process docs, TODOs, feature roadmaps, and user flows.
 | [Auth](todos/TODO-auth.md) | Active | Auth roadmap: mailer, Auth0, sessions, 2FA |
 | [Email Verification](todos/TODO-email-verification.md) | Blocked | Email verification flow — blocked by mailer setup |
 | [Analytics Microservice](todos/TODO-analytics-microservice.md) | Backlog | NestJS TCP micro-service for event tracking + dashboards |
+| [Plans Artist/Company](todos/TODO-plans-artist-company.md) | Active | Plan model: artist/company split, pricing, feature matrix |
+| [Usage, Credits & Events](todos/TODO-usage-credits-events.md) | Active | Usage tracking, credit packs (boosters), event store |
+| [Activity Feed](todos/TODO-activity-feed.md) | Backlog | User activity feed — contribution graph + timeline |
 | [Error Management](todos/TODO-error-management.md) | Done | Error class taxonomy refactoring (completed) |
 
 ## User Flows

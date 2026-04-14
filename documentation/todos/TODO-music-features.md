@@ -54,15 +54,23 @@
 ## Features (post-lock)
 
 ### Mastering UI
-- [ ] "Master" button on track card/detail
-- [ ] Target specs form (presets: Streaming -14 LUFS, Club -8 LUFS, custom)
+- [x] "Master" button on table view (row actions)
+- [x] "Master" button on card view (version actions)
+- [x] Mastering modal with target specs (presets: Streaming -14 LUFS, Club -8 LUFS, custom)
 - [ ] Progress indicator while microservice processes
 - [ ] Mastered track appears as child track with `processingType: 'master'`
+- [ ] Refresh local state after mastering completes (new track in version)
 
 ### Pitch Shift
+- [ ] Pitch-shift modal component (UI — semitone selector +/- 12)
 - [ ] Implement `pitchShift()` in audio-processor (ffmpeg asetrate or rubberband)
-- [ ] UI: semitone selector (+/- 12)
+- [ ] Button in card + table view
 - [ ] Creates new version with `derivationType: 'pitch_shift'`
+
+### Contract Audio Specs Warning
+- [ ] If user is in a contract context with audio reference specs (e.g. min LUFS, format, sample rate), show a warning on upload/analysis when the track doesn't meet the contract's audio requirements
+- [ ] Warning: "Your track is below your current contract audio requirements"
+- [ ] Requires: contract audio specs model in shared-types + backend check after analysis
 
 ### Tempo Change
 - [ ] Implement tempo change in audio-processor

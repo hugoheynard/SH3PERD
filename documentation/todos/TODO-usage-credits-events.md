@@ -117,15 +117,17 @@ async recordUsage(userId, resource, amount = 1) {
 
 ### Implémentation
 
-- [ ] `TCreditPurchase` type dans shared-types
-- [ ] `TCreditPack` catalogue dans shared-types (hardcoded comme PLAN_QUOTAS — DB plus tard)
-- [ ] `CreditPurchaseMongoRepo` — CRUD + `getRemainingCredits()` + `decrementCredits()`
-- [ ] Modifier `QuotaService.getEffectiveLimit()` pour intégrer les bonus
-- [ ] Modifier `QuotaService.recordUsage()` pour décrementer les crédits quand au-dessus du plan
-- [ ] `PurchaseCreditPackCommand` + handler (vérifie paiement Stripe, crée l'achat)
-- [ ] `GET /quota/packs` — liste les packs disponibles pour le plan de l'user
-- [ ] `POST /quota/purchase` — acheter un pack (intégration Stripe)
-- [ ] `GET /quota/me` — étendre la réponse avec `{ limit, bonus, effective_limit, current }`
+- [x] `TCreditPurchase` type dans shared-types
+- [x] `TCreditPack` catalogue dans shared-types (hardcoded comme PLAN_QUOTAS — DB plus tard)
+- [x] `TQuotaResource` migré vers shared-types (source unique backend + frontend)
+- [x] `CreditPurchaseMongoRepo` — CRUD + `getRemainingCredits()` + `decrementCredits()`
+- [x] Modifier `QuotaService.ensureAllowed()` pour intégrer les bonus (effective limit = plan + credits)
+- [x] Modifier `QuotaService.recordUsage()` pour décrementer les crédits quand au-dessus du plan
+- [x] `PurchaseCreditPackCommand` + handler (mock Stripe pour l'instant)
+- [x] `GET /quota/packs` — liste les packs disponibles
+- [x] `POST /quota/purchase` — acheter un pack (mock Stripe)
+- [x] `GET /quota/me` — réponse étendue avec `{ limit, bonus, effective_limit, current }`
+- [x] Frontend `PlanUsageComponent` — mis à jour pour afficher bonus + effective_limit
 - [ ] Frontend : bouton "Buy more" à côté de chaque barre de progression à 80%+
 - [ ] Frontend : modal de sélection de pack avec prix
 
@@ -248,22 +250,34 @@ type TEventType =
 
 ### Implémentation
 
-- [ ] `TAnalyticsEvent` type dans shared-types
-- [ ] `TEventType` enum dans shared-types
-- [ ] `AnalyticsEventMongoRepo` — insert only (pas d'update/delete)
-- [ ] `AnalyticsEventService` — `track(type, userId, metadata)` helper
+- [x] `TAnalyticsEvent` type dans shared-types
+- [x] `TEventType` enum dans shared-types
+- [x] `AnalyticsEventMongoRepo` — insert only (pas d'update/delete)
+- [x] `AnalyticsEventService` — `track(type, userId, metadata)` helper
 - [ ] Domain events :
-  - [ ] `PlanChangedEvent` (from, to, billing_cycle, price)
+  - [x] `PlanChangedEvent` (from, to, billing_cycle, price)
   - [ ] `BillingCycleChangedEvent` (plan, from, to)
   - [ ] `CreditPurchasedEvent` (pack_id, resource, amount, price)
   - [ ] `QuotaExceededEvent` (resource, current, limit, plan)
 - [ ] Event handlers :
-  - [ ] `PlanChangedEventHandler` → persist to analytics_events
+  - [x] `PlanChangedEventHandler` → persist to analytics_events
   - [ ] `CreditPurchasedEventHandler` → persist to analytics_events
   - [ ] `QuotaExceededEventHandler` → persist to analytics_events
-  - [ ] Enrichir `UserRegisteredHandler` existant (déjà émet UserRegisteredEvent)
+  - [x] Enrichir `UserRegisteredHandler` existant (déjà émet UserRegisteredEvent)
+- [ ] Brancher un analytics event par ressource quota :
+  - [ ] `track_uploaded` dans UploadTrackHandler
+  - [ ] `track_mastered` dans MasterTrackHandler
+  - [ ] `track_ai_mastered` dans AiMasterTrackHandler
+  - [ ] `track_pitch_shifted` dans PitchShiftHandler
+  - [ ] `repertoire_entry_created` dans AddRepertoireEntryHandler
+  - [ ] `playlist_created` dans CreatePlaylistHandler
+  - [ ] `quota_exceeded` dans QuotaService.ensureAllowed() (quand refusé)
+  - [ ] `quota_warning_80pct` dans QuotaService.ensureAllowed() (quand usage ≥ 80%)
+  - [ ] `user_login` dans LoginHandler
+  - [ ] `user_login_failed` dans LoginHandler (mauvais password / locked)
+  - [ ] `user_deactivated` dans DeactivateAccountHandler
 - [ ] Index compound sur `analytics_events` : `{ type: 1, timestamp: -1 }` + `{ user_id: 1, timestamp: -1 }`
-- [ ] `GET /admin/analytics/events` — query avec filtres (type, user, date range)
+- [x] `GET /analytics/events` — query avec filtres (type, user, date range)
 - [ ] Dashboard admin (futur) — agrégations MongoDB sur analytics_events
 
 ### Pourquoi MongoDB et pas un service dédié (pour l'instant)
@@ -278,16 +292,16 @@ type TEventType =
 
 ## Ordre d'implémentation
 
-### Phase 1 — Event store (fondation)
-1. Types + repo + service dans le backend
-2. Enrichir les events existants (UserRegisteredEvent)
-3. Ajouter PlanChangedEvent
+### Phase 1 — Event store (fondation) ✅
+1. ✅ Types + repo + service dans le backend
+2. ✅ Enrichir les events existants (UserRegisteredEvent)
+3. ✅ Ajouter PlanChangedEvent
 
-### Phase 2 — Credit packs
-1. Types + repo + catalogue
-2. Modifier QuotaService (effective limit + decrement)
-3. Endpoint achat (mock Stripe d'abord)
-4. Frontend "Buy more" button
+### Phase 2 — Credit packs (backend ✅, frontend partiel)
+1. ✅ Types + repo + catalogue dans shared-types
+2. ✅ Modifier QuotaService (effective limit + decrement)
+3. ✅ Endpoint achat (mock Stripe)
+4. Frontend "Buy more" button + modal de sélection
 
 ### Phase 3 — Stripe integration
 1. Checkout sessions pour upgrades

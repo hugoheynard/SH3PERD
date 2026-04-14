@@ -63,12 +63,18 @@ limit and it lives in a different layer.
 ```
 apps/backend/src/quota/
 ├── domain/
-│   ├── QuotaLimits.ts             — plan limits config (pure data, no I/O)
-│   └── QuotaExceededError.ts      — HTTP 402 error class
+│   ├── QuotaLimits.ts              — plan limits config (pure data, re-exports from shared-types)
+│   └── QuotaExceededError.ts       — HTTP 402 error class
 ├── infra/
-│   └── UsageCounterMongoRepo.ts   — platform_usage collection
-├── QuotaService.ts                — ensureAllowed() + recordUsage() + getUsageSummary()
-└── quota.module.ts                — NestJS module
+│   ├── UsageCounterMongoRepo.ts    — platform_usage collection
+│   └── CreditPurchaseMongoRepo.ts  — credit_purchases collection
+├── application/
+│   └── commands/
+│       └── PurchaseCreditPackCommand.ts — purchase a credit pack
+├── api/
+│   └── quota.controller.ts         — GET /me, GET /packs, POST /purchase
+├── QuotaService.ts                 — ensureAllowed() + recordUsage() + getUsageSummary()
+└── quota.module.ts                 — NestJS module
 ```
 
 ### `QuotaLimits.ts` — the plan limits config
@@ -358,6 +364,108 @@ save storage, but it's not required for correctness.
 
 ---
 
+## Credit Packs (Boosters)
+
+A user can purchase credit packs to extend their quota beyond the plan
+limit **without changing plan**. Credits add on top of the base limit.
+
+```
+Effective limit = plan_limit + purchased_bonus
+
+Example: artist_pro has 10 AI masters/month
+  → User buys "10 AI Masters Pack" (4.99€)
+  → Effective limit = 10 + 10 = 20 for this month
+```
+
+### How it works
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Controller as QuotaController
+    participant Handler as PurchaseCreditPackHandler
+    participant Repo as CreditPurchaseMongoRepo
+    participant QS as QuotaService
+
+    User->>Controller: POST /quota/purchase { pack_id: 'pack_ai_10' }
+    Controller->>Handler: PurchaseCreditPackCommand
+    Handler->>Handler: Validate pack exists
+    Handler->>Repo: save(creditPurchase)
+    Handler-->>Controller: purchase record
+
+    Note over QS: Later, when using AI mastering...
+    QS->>QS: ensureAllowed(userId, 'master_ai')
+    QS->>QS: effectiveLimit = planLimit(10) + bonus(10) = 20
+    QS->>QS: current(12) + 1 ≤ 20 → allowed
+
+    QS->>QS: recordUsage(userId, 'master_ai')
+    QS->>QS: current(13) > planLimit(10) → decrement 1 bonus credit
+    QS->>Repo: decrementCredits(userId, 'master_ai', 1)
+```
+
+### Credit purchase record
+
+**Collection**: `credit_purchases`
+
+```typescript
+type TCreditPurchaseDomainModel = {
+  id: string;                    // creditPurchase_xxx
+  user_id: TUserId;
+  resource: TQuotaResource;
+  amount: number;                // total credits purchased
+  remaining: number;             // credits left (decremented on usage)
+  period: 'one_time' | 'monthly';
+  period_key: string;            // 'permanent' or 'YYYY-MM'
+  purchased_at: Date;
+  stripe_payment_id?: string;
+};
+```
+
+### Credit pack catalogue
+
+Defined in `@sh3pherd/shared-types` as `CREDIT_PACKS`:
+
+| Pack ID | Resource | Amount | Price | Period |
+|---------|----------|--------|-------|--------|
+| `pack_ai_10` | master_ai | 10 | 4.99€ | monthly |
+| `pack_ai_50` | master_ai | 50 | 19.99€ | monthly |
+| `pack_storage_5` | storage_bytes | 5 GB | 2.99€ | permanent |
+| `pack_storage_20` | storage_bytes | 20 GB | 9.99€ | permanent |
+| `pack_songs_50` | repertoire_entry | 50 | 3.99€ | permanent |
+
+### API endpoints
+
+- `GET /quota/packs` — list all available credit packs
+- `POST /quota/purchase` — purchase a pack (mock Stripe for now)
+- `GET /quota/me` — now includes `bonus` and `effective_limit` per resource
+
+### Frontend integration
+
+The `GET /quota/me` response now includes bonus info:
+
+```json
+{
+  "data": {
+    "plan": "artist_pro",
+    "usage": [
+      {
+        "resource": "master_ai",
+        "current": 8,
+        "limit": 10,
+        "bonus": 5,
+        "effective_limit": 15,
+        "period": "monthly"
+      }
+    ]
+  }
+}
+```
+
+The `PlanUsageComponent` displays bonus credits next to the plan limit
+(e.g. "8 / 10 + 5") and uses `effective_limit` for the progress bar.
+
+---
+
 ## Why not a microservice
 
 The QuotaService is a simple `@Injectable()` in the backend process:
@@ -473,13 +581,18 @@ it('should return 402 when quota is exceeded', async () => {
 
 | File | Role |
 |------|------|
-| `src/quota/domain/QuotaLimits.ts` | Plan limits config (PLAN_QUOTAS) |
+| `packages/shared-types/src/quota.types.ts` | TQuotaResource + TQuotaPeriod (shared source of truth) |
+| `packages/shared-types/src/credit-pack.types.ts` | TCreditPurchase + TCreditPack catalogue |
+| `src/quota/domain/QuotaLimits.ts` | Plan limits config (PLAN_QUOTAS), re-exports from shared-types |
 | `src/quota/domain/QuotaExceededError.ts` | HTTP 402 error class |
 | `src/quota/infra/UsageCounterMongoRepo.ts` | platform_usage collection |
-| `src/quota/QuotaService.ts` | ensureAllowed + recordUsage + getUsageSummary |
+| `src/quota/infra/CreditPurchaseMongoRepo.ts` | credit_purchases collection |
+| `src/quota/application/commands/PurchaseCreditPackCommand.ts` | Purchase handler |
+| `src/quota/api/quota.controller.ts` | GET /me, GET /packs, POST /purchase |
+| `src/quota/QuotaService.ts` | ensureAllowed + recordUsage + getUsageSummary (with credit bonus) |
 | `src/quota/quota.module.ts` | Module wiring |
-| `src/appBootstrap/nestTokens.ts` | USAGE_COUNTER_REPO token |
-| `src/appBootstrap/database/CoreRepositoriesModule.ts` | Register UsageCounterMongoRepo |
+| `src/appBootstrap/nestTokens.ts` | USAGE_COUNTER_REPO + CREDIT_PURCHASE_REPO tokens |
+| `src/appBootstrap/database/CoreRepositoriesModule.ts` | Register repos globally |
 
 ---
 
@@ -615,4 +728,6 @@ after the migration.
 - `sh3-music-library.md` — music feature roadmap
 - `sh3-writing-a-controller.md` — controller patterns
 - `sh3-e2e-tests.md` — E2E test infrastructure
+- `sh3-analytics-events.md` — analytics event store (tracks credit purchases, quota exceeded)
 - `documentation/todos/TODO-plans-artist-company.md` — full plan feature matrix & pricing
+- `documentation/todos/TODO-usage-credits-events.md` — usage tracking & credit pack roadmap
