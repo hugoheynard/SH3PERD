@@ -43,6 +43,12 @@ export type TRefreshSessionRequestDTO = { refreshToken: TRefreshToken };
 
 export type TChangePasswordRequestDTO = { currentPassword: string; newPassword: string };
 
+export type TDeactivateAccountRequestDTO = { password: string };
+
+export const SDeactivateAccountRequestDTO = z.object({
+  password: z.string().min(1, 'Password is required'),
+});
+
 export const SChangePasswordRequestDTO = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
   newPassword: z

@@ -4,6 +4,7 @@ import {
   SRegisterUserRequestDTO,
   SuserCredentialsDTO,
   SChangePasswordRequestDTO,
+  SDeactivateAccountRequestDTO,
   SForgotPasswordRequestDTO,
   SResetPasswordRequestDTO,
 } from '@sh3pherd/shared-types';
@@ -18,6 +19,9 @@ export class LoginRequestPayload extends createZodDto(SuserCredentialsDTO) {}
 
 @ApiModel()
 export class ChangePasswordRequestPayload extends createZodDto(SChangePasswordRequestDTO) {}
+
+@ApiModel()
+export class DeactivateAccountRequestPayload extends createZodDto(SDeactivateAccountRequestDTO) {}
 
 @ApiModel()
 export class ForgotPasswordRequestPayload extends createZodDto(SForgotPasswordRequestDTO) {}

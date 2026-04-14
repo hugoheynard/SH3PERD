@@ -7,6 +7,7 @@ import { LoginHandler } from './application/commands/LoginCommand.js';
 import { RefreshSessionHandler } from './application/commands/RefreshSessionCommand.js';
 import { LogoutHandler } from './application/commands/LogoutCommand.js';
 import { ChangePasswordHandler } from './application/commands/ChangePasswordCommand.js';
+import { DeactivateAccountHandler } from './application/commands/DeactivateAccountCommand.js';
 import { ForgotPasswordHandler } from './application/commands/ForgotPasswordCommand.js';
 import { ResetPasswordHandler } from './application/commands/ResetPasswordCommand.js';
 import { UserRegisteredHandler } from './application/events/UserRegisteredHandler.js';
@@ -17,6 +18,7 @@ const CommandHandlers = [
   RefreshSessionHandler,
   LogoutHandler,
   ChangePasswordHandler,
+  DeactivateAccountHandler,
   ForgotPasswordHandler,
   ResetPasswordHandler,
 ];

@@ -7,6 +7,7 @@ import {
   RegisterRequestPayload,
   LoginRequestPayload,
   ChangePasswordRequestPayload,
+  DeactivateAccountRequestPayload,
   ForgotPasswordRequestPayload,
   ResetPasswordRequestPayload,
 } from '../dto/auth.dto.js';
@@ -16,6 +17,7 @@ import type {
   TRegisterUserRequestDTO,
   TRegisterUserResponseDTO,
   TChangePasswordRequestDTO,
+  TDeactivateAccountRequestDTO,
   TForgotPasswordRequestDTO,
   TResetPasswordRequestDTO,
   TUserId,
@@ -25,6 +27,7 @@ import {
   SuserCredentialsDTO,
   SRegisterUserRequestDTO,
   SChangePasswordRequestDTO,
+  SDeactivateAccountRequestDTO,
   SForgotPasswordRequestDTO,
   SResetPasswordRequestDTO,
 } from '@sh3pherd/shared-types';
@@ -39,6 +42,7 @@ import {
 } from '../application/commands/RefreshSessionCommand.js';
 import { LogoutCommand } from '../application/commands/LogoutCommand.js';
 import { ChangePasswordCommand } from '../application/commands/ChangePasswordCommand.js';
+import { DeactivateAccountCommand } from '../application/commands/DeactivateAccountCommand.js';
 import { ForgotPasswordCommand } from '../application/commands/ForgotPasswordCommand.js';
 import { ResetPasswordCommand } from '../application/commands/ResetPasswordCommand.js';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
@@ -189,6 +193,30 @@ export class AuthController {
     res.clearCookie(REFRESH_COOKIE_NAME, { path: REFRESH_COOKIE_PATH });
 
     return { message: 'Password changed successfully. Please log in again.' };
+  }
+
+  @ApiOperation({
+    summary: 'Deactivate account',
+    description:
+      'Soft-deletes the authenticated user account (sets active=false) after password verification. Invalidates all sessions and clears the refresh cookie. The account can be reactivated by an admin.',
+  })
+  @ApiBearerAuth('bearer')
+  @ApiResponse({ status: 200, description: 'Account deactivated successfully.' })
+  @ApiBody(apiRequestDTO(DeactivateAccountRequestPayload))
+  @ApiResponse({ status: 400, description: 'Password is incorrect.' })
+  @Throttle({ default: { limit: 3, ttl: 60_000 } })
+  @Post('deactivate-account')
+  @HttpCode(200)
+  async deactivateAccount(
+    @Body(new ZodValidationPipe(SDeactivateAccountRequestDTO)) body: TDeactivateAccountRequestDTO,
+    @ActorId() actorId: TUserId,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ message: string }> {
+    await this.cmdBus.execute(new DeactivateAccountCommand(actorId, body.password));
+
+    res.clearCookie(REFRESH_COOKIE_NAME, { path: REFRESH_COOKIE_PATH });
+
+    return { message: 'Account deactivated successfully.' };
   }
 
   @ApiOperation({
