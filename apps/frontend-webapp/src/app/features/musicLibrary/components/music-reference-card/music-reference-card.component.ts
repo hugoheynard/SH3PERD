@@ -10,6 +10,7 @@ import type { LibraryEntry, MusicVersion } from '../../music-library-types';
 import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
 import { AudioPlayerService } from '../../audio-player/audio-player.service';
 import { toPlayableTrack } from '../../audio-player/audio-player.types';
+import type { TMasteringModalContext } from '../../mastering/mastering.types';
 import type { TMusicVersionId } from '@sh3pherd/shared-types';
 
 @Component({
@@ -33,6 +34,7 @@ export class MusicReferenceCardComponent {
   readonly trackUploadRequested   = output<{ entryId: string; versionId: string }>();
   readonly trackDownloadRequested = output<{ versionId: string; trackId: string }>();
   readonly favoriteChanged        = output<{ entryId: string; versionId: string; trackId: string }>();
+  readonly masteringRequested     = output<TMasteringModalContext>();
 
   readonly showForm = signal(false);
   readonly expandedVersionId = signal<string | null>(null);
@@ -106,5 +108,23 @@ export class MusicReferenceCardComponent {
     const current = this.audioPlayer.currentTrack();
     if (!current) return false;
     return current.versionId === version.id && this.audioPlayer.isPlaying();
+  }
+
+  /* ── Mastering ── */
+
+  openMastering(version: MusicVersion): void {
+    const track = version.tracks.find(t => t.favorite) ?? version.tracks[0];
+    if (!track) return;
+    const entry = this.entry();
+    this.masteringRequested.emit({
+      versionId: version.id as TMusicVersionId,
+      trackId: track.id,
+      trackFileName: track.fileName,
+      title: entry.reference.title,
+      subtitle: `${entry.reference.originalArtist} · ${version.label}`,
+      currentLUFS: track.analysisResult?.integratedLUFS,
+      currentTP: track.analysisResult?.truePeakdBTP,
+      currentLRA: track.analysisResult?.loudnessRange,
+    });
   }
 }

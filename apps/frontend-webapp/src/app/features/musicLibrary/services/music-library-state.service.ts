@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Subject, debounceTime, switchMap } from 'rxjs';
+import { type Observable, Subject, debounceTime, map, switchMap, tap } from 'rxjs';
 import type { MusicLibraryState, LibraryEntry, MusicTab, MusicTabConfig, MusicSearchConfig, MusicDataFilter, MusicGenre, Rating, SavedTabConfig, CrossSearchContext } from '../music-library-types';
 import type { TabStateSignal, TabSystemState } from '../../../shared/configurable-tab-bar';
 import { MusicLibraryApiService } from './music-library-api.service';
@@ -210,6 +210,21 @@ export class MusicLibraryStateService {
         this.toast.show('Failed to load cross library', 'error');
       },
     });
+  }
+
+  /**
+   * Re-fetches the library entries from the server and updates local state.
+   * Unlike `loadLibrary()`, this bypasses the `loaded` guard and always
+   * performs a network request. Used by the analysis polling mechanism
+   * to pick up async results without requiring a full page reload.
+   */
+  refreshEntries(): Observable<LibraryEntry[]> {
+    return this.libraryApi.getMyLibrary().pipe(
+      tap(result => {
+        this.state.update(s => ({ ...s, entries: result.entries as LibraryEntry[] }));
+      }),
+      map(result => result.entries as LibraryEntry[]),
+    );
   }
 
   snapshot(): MusicLibraryState {

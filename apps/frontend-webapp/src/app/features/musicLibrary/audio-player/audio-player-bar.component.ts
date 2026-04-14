@@ -75,6 +75,9 @@ export class AudioPlayerBarComponent implements AfterViewInit, OnDestroy {
   /** Cached last URL we loaded — used to avoid reloading on no-op updates. */
   private lastLoadedUrl: string | null = null;
 
+  /** Timeout handle to detect stalled loads (no ready event within 30 s). */
+  private loadTimeout: ReturnType<typeof setTimeout> | null = null;
+
   /**
    * Computed loudness markers for the current track's waveform.
    * Each marker is a `{ leftPct, widthPct, kind }` tuple rendered as
@@ -114,34 +117,44 @@ export class AudioPlayerBarComponent implements AfterViewInit, OnDestroy {
     effect(() => {
       const url = this.player.currentUrl();
       if (!this.isBrowser || !url) return;
-      this.ensureWavesurfer();
-      if (url !== this.lastLoadedUrl) {
-        this.lastLoadedUrl = url;
-        this.loadUrl(url);
-      }
+      // ensureWavesurfer is async (dynamic import) — we must wait for it
+      // before calling loadUrl, otherwise wavesurfer is still null.
+      void this.ensureWavesurfer().then(() => {
+        if (url !== this.lastLoadedUrl) {
+          this.lastLoadedUrl = url;
+          this.loadUrl(url);
+        }
+      });
     });
 
     // Play / pause driven by the service status.
+    // IMPORTANT: read the signal BEFORE the wavesurfer guard — Angular
+    // effects only track signals read during execution. If we return
+    // early before reading `status()`, the effect is never re-triggered
+    // when the status changes.
     effect(() => {
-      if (!this.isBrowser || !this.wavesurfer) return;
       const status = this.player.status();
-      try {
-        if (status === 'playing') {
-          void this.wavesurfer.play();
-        } else if (status === 'paused') {
-          this.suppressPauseEvent = true;
-          this.wavesurfer.pause();
-          this.suppressPauseEvent = false;
-        }
-      } catch {
-        /* wavesurfer not ready yet — the ready effect will retry */
+      if (!this.isBrowser || !this.wavesurfer) return;
+      if (status === 'playing') {
+        this.wavesurfer.play().catch((err: unknown) => {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.error('[audio-player] play() rejected:', msg);
+          const track = this.player.currentTrack();
+          this.player.notifyError(track?.id ?? 'unknown', msg);
+        });
+      } else if (status === 'paused') {
+        this.suppressPauseEvent = true;
+        this.wavesurfer.pause();
+        this.suppressPauseEvent = false;
       }
     });
 
     // Volume + mute driven by the service state.
+    // Read signals before the guard so Angular tracks them as deps.
     effect(() => {
+      const vol = this.player.muted() ? 0 : this.player.volume();
       if (!this.wavesurfer) return;
-      this.wavesurfer.setVolume(this.player.muted() ? 0 : this.player.volume());
+      this.wavesurfer.setVolume(vol);
     });
 
     // Seek — only drive wavesurfer when the signal changes externally
@@ -166,6 +179,7 @@ export class AudioPlayerBarComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.loadTimeout) clearTimeout(this.loadTimeout);
     try {
       this.wavesurfer?.destroy();
     } catch {
@@ -289,6 +303,10 @@ export class AudioPlayerBarComponent implements AfterViewInit, OnDestroy {
     });
 
     this.wavesurfer.on('ready', (durationSeconds: number) => {
+      if (this.loadTimeout) {
+        clearTimeout(this.loadTimeout);
+        this.loadTimeout = null;
+      }
       this.player.notifyReady(durationSeconds);
     });
     this.wavesurfer.on('audioprocess', (currentTime: number) => {
@@ -325,17 +343,37 @@ export class AudioPlayerBarComponent implements AfterViewInit, OnDestroy {
    */
   private loadUrl(url: string): void {
     if (!this.wavesurfer) return;
+
+    // Clear any previous load timeout
+    if (this.loadTimeout) {
+      clearTimeout(this.loadTimeout);
+      this.loadTimeout = null;
+    }
+
     try {
       const track = this.player.currentTrack();
       if (track?.peaks && track.peaks.length > 0) {
-        // wavesurfer.load(url, channelPeaks[], duration?)
-        // channelPeaks is an array of Float32Array — one per channel.
-        // We have mono peaks, so wrap in a single-element array.
-        const duration = track.durationSeconds ?? undefined;
-        this.wavesurfer.load(url, [Array.from(track.peaks)], duration);
+        // Pass peaks so wavesurfer draws the waveform instantly, but
+        // do NOT pass duration — omitting it forces wavesurfer to wait
+        // for the <audio> element's 'loadedmetadata' event before
+        // firing 'ready'. If we pass duration, wavesurfer fires 'ready'
+        // immediately and play() is called before the media has loaded.
+        this.wavesurfer.load(url, [Array.from(track.peaks)]);
       } else {
         this.wavesurfer.load(url);
       }
+
+      // Safety net: if 'ready' never fires (e.g. CORS, network error),
+      // surface the error after 30 s so the UI doesn't spin forever.
+      this.loadTimeout = setTimeout(() => {
+        if (this.player.status() === 'loading') {
+          const currentTrack = this.player.currentTrack();
+          this.player.notifyError(
+            currentTrack?.id ?? 'unknown',
+            'Audio load timed out — the file may be inaccessible (CORS or network issue)',
+          );
+        }
+      }, 30_000);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       const currentTrack = this.player.currentTrack();

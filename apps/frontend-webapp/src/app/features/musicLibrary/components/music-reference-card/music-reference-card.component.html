@@ -94,6 +94,11 @@
           }
 
           <div class="version-actions-right">
+            @if (hasTrack(version)) {
+              <button class="btn-track-action" type="button" aria-label="Master track" title="Master" (click)="openMastering(version)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h.01M7 20v-4M12 20v-8M17 20V8M22 4v16"/></svg>
+              </button>
+            }
             <sh3-button [variant]="hasTrack(version) ? 'ghost' : 'critical'" size="sm" (clicked)="trackUploadRequested.emit({ entryId: entry().id, versionId: version.id })">+ Track</sh3-button>
             <button class="btn-edit-version" type="button" aria-label="Edit version" title="Edit version" (click)="editRequested.emit(version.id)">✎</button>
             <sh3-inline-confirm mode="toggle" (confirmed)="confirmDeleteVersion(version.id)">

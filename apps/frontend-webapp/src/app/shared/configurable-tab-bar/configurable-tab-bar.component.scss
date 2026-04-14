@@ -193,6 +193,13 @@
 
 /* ── Add button ─────────────────────────────────── */
 
+.tab-add-wrapper {
+  position: relative;
+  flex-shrink: 0;
+  margin-left: 4px;
+  margin-bottom: 2px;
+}
+
 .tab-add {
   display: flex;
   align-items: center;
@@ -220,6 +227,70 @@
     background: var(--accent-color-dim);
     border-color: var(--accent-color-border);
     color: var(--accent-color-light);
+  }
+
+  &--locked {
+    margin-left: 0;
+    margin-bottom: 0;
+    color: var(--text-faded);
+    border-color: var(--border-subtle);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--panel-border-color);
+      color: var(--text-secondary);
+    }
+  }
+}
+
+/* ── Upgrade popover ─────────────────────────────── */
+
+.upgrade-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: var(--panel-color, #171c23);
+  border: 1px solid var(--panel-border-color);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  padding: 12px 16px;
+  min-width: 200px;
+  text-align: center;
+  white-space: normal;
+
+  &__text {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  &__btn {
+    all: unset;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent-color);
+    transition: background 0.15s;
+
+    &:hover {
+      background: var(--accent-color-light);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 2px;
+    }
   }
 }
 
@@ -526,5 +597,14 @@
   &:hover {
     background: var(--accent-color-dim);
     color: var(--text-primary);
+  }
+}
+
+/* ── Mobile: search bar wraps below tabs ─────────── */
+
+@media (max-width: 460px) {
+  .tab-bar {
+    flex-wrap: wrap;
+    padding: 6px 10px 0;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, computed, effect, ElementRef, inject, type OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, ElementRef, inject, type OnInit, signal, ViewChild } from '@angular/core';
 import { MusicLibrarySelectorService } from '../services/selector-layer/music-library-selector.service';
 import { MusicLibraryStateService } from '../services/music-library-state.service';
 import { MusicTabMutationService } from '../services/mutations-layer/music-tab-mutation.service';
@@ -13,6 +13,7 @@ import { AddEntryPanelComponent } from '../components/add-entry-panel/add-entry-
 import { MusicCrossTableComponent } from '../components/music-cross-table/music-cross-table.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { ViewToggleComponent } from '../../../shared/view-toggle/view-toggle.component';
+import { MasteringModalComponent } from '../mastering/mastering-modal.component';
 import type { AddVersionPayload } from '../services/mutations-layer/music-library-mutation.service';
 import type { VersionEditPayload } from '../components/music-repertoire-table/music-repertoire-table.component';
 import { MusicVersionApiService } from '../services/music-version-api.service';
@@ -20,8 +21,11 @@ import { MusicTrackApiService } from '../services/music-track-api.service';
 import { MusicRepertoireApiService } from '../services/music-repertoire-api.service';
 import { VersionType } from '../music-library-types';
 import type { TCreateMusicVersionPayload, TMusicReferenceId } from '@sh3pherd/shared-types';
+import type { TMasteringModalContext, TMasteringResult } from '../mastering/mastering.types';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { InfoDirective } from '../../../shared/help/info.directive';
+import { UserContextService } from '../../../core/services/user-context.service';
+import { UpgradePanelComponent } from '../../../core/components/upgrade-panel/upgrade-panel.component';
 
 @Component({
   selector: 'app-music-library-page',
@@ -35,6 +39,7 @@ import { InfoDirective } from '../../../shared/help/info.directive';
     MusicCrossTableComponent,
     ButtonComponent,
     ViewToggleComponent,
+    MasteringModalComponent,
     InfoDirective,
   ],
   templateUrl: './music-library-page.component.html',
@@ -54,6 +59,27 @@ export class MusicLibraryPageComponent implements OnInit {
   private repertoireApi   = inject(MusicRepertoireApiService);
   private layout          = inject(LayoutService);
   private toast           = inject(ToastService);
+  private destroyRef      = inject(DestroyRef);
+  private userCtx         = inject(UserContextService);
+
+  /** Mastering modal context — shared between card and table views. */
+  readonly masteringContext = signal<TMasteringModalContext | null>(null);
+
+  /* ── Quota-derived tab limits ── */
+
+  /** Max tabs allowed by plan. Free = 3, Pro = 5, Max+ = unlimited. */
+  readonly maxTabs = computed(() => {
+    const plan = this.userCtx.plan();
+    if (plan === 'artist_free') return 3;
+    if (plan === 'artist_pro') return 5;
+    return -1; // unlimited
+  });
+
+  /** Save/recall is hidden on free plan. */
+  readonly canSaveRecall = computed(() => {
+    const plan = this.userCtx.plan();
+    return plan !== 'artist_free';
+  });
 
   readonly activeSearchQuery = computed(() => {
     const tab = this.selector.activeTab();
@@ -95,6 +121,12 @@ export class MusicLibraryPageComponent implements OnInit {
 
   toggleMobilePanel(): void {
     this.mobilePanelOpen.update(v => !v);
+  }
+
+  /* ── Upgrade ── */
+
+  openUpgradePanel(): void {
+    this.layout.setRightPanel(UpgradePanelComponent);
   }
 
   /* ── Add entry ── */
@@ -261,10 +293,75 @@ export class MusicLibraryPageComponent implements OnInit {
         this.mutation.addTrackFromApi(entryId, versionId, track);
         this.trackFiles.set(track.id, file);
         this.toast.show(`Track "${file.name}" uploaded — analysis in progress`, 'success');
+        this.pollForAnalysis(versionId, track.id);
       },
       error: () => {
         // Toast already shown by trackApi
       },
+    });
+  }
+
+  /* ── Mastering (shared between card & table) ── */
+
+  onMasteringRequested(ctx: TMasteringModalContext): void {
+    this.masteringContext.set(ctx);
+  }
+
+  onMasteringClosed(result: TMasteringResult | null): void {
+    this.masteringContext.set(null);
+    if (result?.track) {
+      // Refresh entries so the new mastered track appears
+      this.stateService.refreshEntries().subscribe();
+    }
+  }
+
+  /* ── Analysis polling ── */
+
+  /**
+   * Polls the server every 5 s (up to 2 min) until the analysis result
+   * for a freshly uploaded track appears in the library entries.
+   * Updates local state on each poll so the UI reflects the latest data.
+   */
+  private pollForAnalysis(versionId: string, trackId: string): void {
+    this.analysingVersionIds.update(ids => new Set([...ids, versionId]));
+
+    let attempts = 0;
+    const maxAttempts = 24; // 24 × 5 s = 2 min
+
+    const poll = (): void => {
+      if (++attempts > maxAttempts) {
+        this.clearAnalysing(versionId);
+        return;
+      }
+
+      const timer = setTimeout(() => {
+        this.stateService.refreshEntries().subscribe({
+          next: (entries) => {
+            const version = entries.flatMap(e => e.versions).find(v => v.id === versionId);
+            const track = version?.tracks.find(t => t.id === trackId);
+            if (track?.analysisResult) {
+              this.clearAnalysing(versionId);
+              this.toast.show('Track analysis complete', 'success');
+            } else {
+              poll();
+            }
+          },
+          error: () => poll(),
+        });
+      }, 5000);
+
+      // Clean up timer if the component is destroyed mid-poll
+      this.destroyRef.onDestroy(() => clearTimeout(timer));
+    };
+
+    poll();
+  }
+
+  private clearAnalysing(versionId: string): void {
+    this.analysingVersionIds.update(ids => {
+      const next = new Set(ids);
+      next.delete(versionId);
+      return next;
     });
   }
 

@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, input, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, output, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../button/button.component';
 import { InputComponent } from '../forms/input/input.component';
@@ -43,6 +43,16 @@ export class ConfigurableTabBarComponent {
   readonly savedConfigs = input<SavedTabConfig<any>[]>([]);
   /** Show built-in toast notifications for config operations. Default: true. */
   readonly showToasts = input<boolean>(true);
+  /** Maximum number of tabs allowed. -1 = unlimited (no limit). */
+  readonly maxTabs = input<number>(-1);
+  /** Whether save/recall config buttons are visible. */
+  readonly canSaveRecall = input<boolean>(true);
+
+  /* ── Quota-derived state ──────────────────────── */
+  readonly tabLimitReached = computed(() => {
+    const max = this.maxTabs();
+    return max !== -1 && this.tabs().length >= max;
+  });
 
   /* ── Outputs (still available for custom overrides) ── */
   readonly tabSelect = output<string>();
@@ -60,6 +70,7 @@ export class ConfigurableTabBarComponent {
   readonly configTabRename = output<{ configId: string; tabId: string; title: string }>();
   readonly configTabMove = output<{ sourceConfigId: string; targetConfigId: string; tabId: string }>();
   readonly tabMoveToConfig = output<{ tab: TabItem<any>; targetConfigId: string }>();
+  readonly upgradeRequested = output<void>();
 
   /* ── Tab editing state ─────────────────────────── */
   editingTabId = signal<string | null>(null);
@@ -78,6 +89,18 @@ export class ConfigurableTabBarComponent {
   openTabMenuId = signal<string | null>(null);
   tabMoveMenuId = signal<string | null>(null);
   moveDropdownPos = signal<{ top: number; left: number }>({ top: 0, left: 0 });
+
+  /* ── Upgrade popover ────────────────────────────── */
+  showUpgradePopover = signal(false);
+
+  toggleUpgradePopover(): void {
+    this.showUpgradePopover.update(v => !v);
+  }
+
+  onUpgrade(): void {
+    this.showUpgradePopover.set(false);
+    this.upgradeRequested.emit();
+  }
 
   /* ── Config editing state ──────────────────────── */
   expandedConfigId = signal<string | null>(null);
