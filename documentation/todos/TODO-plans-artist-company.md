@@ -265,6 +265,21 @@ db.platform_contracts.updateMany(
 
 ---
 
+## Responsive / Mobile
+
+| Page | Status | Notes |
+|---|:---:|---|
+| Music Library | ✅ | Side panel, cards, tab bar, search, filters — all mobile-ready |
+| Auth (login, register, forgot/reset) | ✅ | Shared auth layout, brand panel |
+| Header | ✅ | Compact 48px, theme in dropdown, plan badge hidden |
+| Company Settings | ⚠️ en cours | Tabbed layout ok, responsive à faire |
+| User Profile / Settings | ⚠️ en cours | Tabbed layout ok, responsive à faire |
+| Organigramme | ❌ | Desktop only |
+| Calendar / Programs | ❌ | Desktop only |
+| Upgrade Panel | ❌ | À adapter |
+
+---
+
 ## Ordre d'implémentation
 
 1. **shared-types** — Nouveau `TPlatformRole`, permissions, Zod schemas
