@@ -12,7 +12,7 @@ from permission checks (which control _whether_ they can do it at all).
 "Can this user upload a track?"
 
   1. Permission check (PlatformScoped + RequirePermission)
-     → Does plan_free include P.Music.Track.Write?
+     → Does artist_free include P.Music.Track.Write?
      → YES → continue
      → NO  → 403 Forbidden
 
@@ -47,9 +47,9 @@ can't have 3 tracks per version — the data model doesn't support it.
 Quotas are different — they're **plan-dependent and time-bound**:
 
 ```
-plan_free: 50 repertoire entries (lifetime)
-plan_free: 3 masters per month
-plan_pro:  unlimited masters
+artist_free: 50 repertoire entries (lifetime)
+artist_free: 3 masters per month
+artist_pro:  unlimited masters
 ```
 
 A free user CAN master a track (permission-wise). They just can't
@@ -94,7 +94,7 @@ export interface TQuotaLimit {
 }
 
 export const PLAN_QUOTAS: Record<TPlatformRole, TQuotaLimit[]> = {
-  plan_free: [
+  artist_free: [
     { resource: 'repertoire_entry',  period: 'lifetime', limit: 50 },
     { resource: 'track_upload',      period: 'lifetime', limit: 50 },
     { resource: 'master_standard',   period: 'monthly',  limit: 3 },
@@ -102,7 +102,7 @@ export const PLAN_QUOTAS: Record<TPlatformRole, TQuotaLimit[]> = {
     { resource: 'pitch_shift',       period: 'monthly',  limit: 3 },
     { resource: 'storage_bytes',     period: 'lifetime', limit: 500 * 1024 * 1024 },
   ],
-  plan_pro: [
+  artist_pro: [
     { resource: 'repertoire_entry',  period: 'lifetime', limit: -1 },
     { resource: 'track_upload',      period: 'lifetime', limit: -1 },
     { resource: 'master_standard',   period: 'monthly',  limit: -1 },
@@ -110,11 +110,11 @@ export const PLAN_QUOTAS: Record<TPlatformRole, TQuotaLimit[]> = {
     { resource: 'pitch_shift',       period: 'monthly',  limit: -1 },
     { resource: 'storage_bytes',     period: 'lifetime', limit: 5 * 1024 * 1024 * 1024 },
   ],
-  plan_band: [
+  artist_max: [
     { resource: 'storage_bytes',     period: 'lifetime', limit: 20 * 1024 * 1024 * 1024 },
     // All other resources: unlimited (not listed = no limit)
   ],
-  plan_business: [
+  company_business: [
     { resource: 'storage_bytes',     period: 'lifetime', limit: 100 * 1024 * 1024 * 1024 },
   ],
 };
@@ -321,7 +321,7 @@ if (err.status === 402) {
   // body.resource = 'master_standard'
   // body.current = 3
   // body.limit = 3
-  // body.plan = 'plan_free'
+  // body.plan = 'artist_free'
   this.upgradeModal.open(body);
   // → shows "You've used all 3 masters this month. Upgrade to Pro for unlimited."
 }
@@ -403,14 +403,14 @@ alongside the other repos.
 ```ts
 describe('QuotaService', () => {
   it('allows when under limit', async () => {
-    mockPlatformRepo.findByUserId.mockResolvedValue({ plan: 'plan_free' });
+    mockPlatformRepo.findByUserId.mockResolvedValue({ plan: 'artist_free' });
     mockUsageRepo.getCount.mockResolvedValue(2);
 
     await expect(service.ensureAllowed(userId, 'master_standard')).resolves.not.toThrow();
   });
 
   it('throws 402 when at limit', async () => {
-    mockPlatformRepo.findByUserId.mockResolvedValue({ plan: 'plan_free' });
+    mockPlatformRepo.findByUserId.mockResolvedValue({ plan: 'artist_free' });
     mockUsageRepo.getCount.mockResolvedValue(3); // limit is 3
 
     await expect(service.ensureAllowed(userId, 'master_standard'))
@@ -418,16 +418,16 @@ describe('QuotaService', () => {
   });
 
   it('allows unlimited resources', async () => {
-    mockPlatformRepo.findByUserId.mockResolvedValue({ plan: 'plan_pro' });
-    // plan_pro has limit: -1 for master_standard
+    mockPlatformRepo.findByUserId.mockResolvedValue({ plan: 'artist_pro' });
+    // artist_pro has limit: -1 for master_standard
 
     await expect(service.ensureAllowed(userId, 'master_standard')).resolves.not.toThrow();
     expect(mockUsageRepo.getCount).not.toHaveBeenCalled(); // skip DB when unlimited
   });
 
   it('blocks features not available on plan', async () => {
-    mockPlatformRepo.findByUserId.mockResolvedValue({ plan: 'plan_free' });
-    // plan_free has limit: 0 for master_ai
+    mockPlatformRepo.findByUserId.mockResolvedValue({ plan: 'artist_free' });
+    // artist_free has limit: 0 for master_ai
 
     await expect(service.ensureAllowed(userId, 'master_ai'))
       .rejects.toThrow(QuotaExceededError);
@@ -462,7 +462,7 @@ it('should return 402 when quota is exceeded', async () => {
     resource: 'master_standard',
     current: 3,
     limit: 3,
-    plan: 'plan_free',
+    plan: 'artist_free',
   });
 });
 ```
@@ -516,9 +516,103 @@ it('should return 402 when quota is exceeded', async () => {
 
 ---
 
+## Evolution strategy — hardcoded → database
+
+### Current state: hardcoded (correct for now)
+
+Plan limits live in `QuotaLimits.ts` as a static `Record`. This is
+the right approach while:
+- Plans change rarely (1-2x per year)
+- No custom plans per client
+- No admin panel exists yet
+- A change = modify the file + redeploy
+
+Advantages: zero DB overhead, zero latency, fully testable in
+isolation, no cache invalidation, works offline in tests.
+
+### When to migrate to DB
+
+Move to database-backed limits when ANY of these become true:
+- A commercial needs to adjust quotas without a deploy (promo, trial)
+- A client negotiates a custom plan (e.g. a label wanting 200 Go)
+- A/B testing on limits (50 free songs vs 100)
+- An admin panel exists and plan management is a feature
+
+### Migration path (zero breaking changes)
+
+The `QuotaService` calls `getQuotaLimit(plan, resource)` — a pure
+function that reads from the static `PLAN_QUOTAS` record.
+
+```mermaid
+graph LR
+    subgraph "Phase 1 — current"
+        QS[QuotaService] --> GQL[getQuotaLimit]
+        GQL --> STATIC[PLAN_QUOTAS<br/>static Record]
+    end
+
+    subgraph "Phase 2 — DB-backed"
+        QS2[QuotaService] --> GQL2[getQuotaLimit]
+        GQL2 --> CACHE[In-memory cache<br/>TTL 5 min]
+        CACHE -->|miss| REPO[PlanLimitsMongoRepo]
+        REPO --> MONGO[(plan_limits<br/>collection)]
+    end
+
+    subgraph "Phase 3 — admin panel"
+        ADMIN[Admin UI] -->|PATCH /admin/plans| API[PlanLimitsController]
+        API --> REPO2[PlanLimitsMongoRepo]
+        API -->|invalidate| CACHE2[Cache]
+    end
+```
+
+**Phase 2 implementation** — swap `getQuotaLimit()`:
+
+```ts
+// Before (hardcoded)
+export function getQuotaLimit(plan: TPlatformRole, resource: TQuotaResource): TQuotaLimit | null {
+  return PLAN_QUOTAS[plan]?.find(q => q.resource === resource) ?? null;
+}
+
+// After (DB-backed with cache)
+@Injectable()
+export class QuotaLimitsService {
+  private cache = new Map<string, { limits: TQuotaLimit[]; expiresAt: number }>();
+  private readonly TTL = 5 * 60 * 1000; // 5 min
+
+  constructor(@Inject(PLAN_LIMITS_REPO) private readonly repo: IPlanLimitsRepository) {}
+
+  async getQuotaLimit(plan: TPlatformRole, resource: TQuotaResource): Promise<TQuotaLimit | null> {
+    const cached = this.cache.get(plan);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.limits.find(q => q.resource === resource) ?? null;
+    }
+
+    const limits = await this.repo.findByPlan(plan);
+    this.cache.set(plan, { limits, expiresAt: Date.now() + this.TTL });
+    return limits.find(q => q.resource === resource) ?? null;
+  }
+
+  invalidateCache(): void {
+    this.cache.clear();
+  }
+}
+```
+
+**No caller changes.** The `QuotaService` calls `getQuotaLimit` the
+same way. Only the implementation behind it changes.
+
+**Seed script**: on first deploy, seed the `plan_limits` collection
+from the current `PLAN_QUOTAS` static config so there's no data gap.
+
+**Fallback**: if the DB is unreachable, fall back to the static config.
+This means the hardcoded `PLAN_QUOTAS` stays as a safety net even
+after the migration.
+
+---
+
 ## Related docs
 
 - `sh3-platform-contract.md` — platform contract architecture (plans, permissions, guard)
 - `sh3-music-library.md` — music feature roadmap
 - `sh3-writing-a-controller.md` — controller patterns
 - `sh3-e2e-tests.md` — E2E test infrastructure
+- `documentation/todos/TODO-plans-artist-company.md` — full plan feature matrix & pricing
