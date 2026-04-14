@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { LayoutService } from '../../services/layout.service';
 import { UserContextService } from '../../services/user-context.service';
 import {
@@ -51,6 +52,7 @@ const COMPANY_PLAN_META: PlanMeta[] = [
 @Component({
   selector: 'app-upgrade-panel',
   standalone: true,
+  imports: [DecimalPipe],
   templateUrl: './upgrade-panel.component.html',
   styleUrl: './upgrade-panel.component.scss',
 })

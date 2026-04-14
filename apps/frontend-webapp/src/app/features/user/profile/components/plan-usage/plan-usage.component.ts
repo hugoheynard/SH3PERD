@@ -1,11 +1,8 @@
 import { Component, computed, inject, type OnInit, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { DecimalPipe } from '@angular/common';
 import { UserContextService } from '../../../../../core/services/user-context.service';
-import { LayoutService } from '../../../../../core/services/layout.service';
-import { UrlBuilderService } from '../../../../../core/services/url-builder.service';
-import { ButtonComponent } from '../../../../../shared/button/button.component';
-import { type TPlatformRole, getPlanPrice } from '@sh3pherd/shared-types';
+import { ApiURLService } from '../../../../../core/services/api-url.service';
+import { getPlanPrice } from '@sh3pherd/shared-types';
 
 export type TUsageItem = {
   resource: string;
@@ -41,17 +38,16 @@ const PLAN_LABELS: Record<string, string> = {
 @Component({
   selector: 'sh3-plan-usage',
   standalone: true,
-  imports: [DecimalPipe, ButtonComponent],
+  imports: [],
   templateUrl: './plan-usage.component.html',
   styleUrl: './plan-usage.component.scss',
 })
 export class PlanUsageComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly userCtx = inject(UserContextService);
-  private readonly layout = inject(LayoutService);
-  private readonly urlBuilder = inject(UrlBuilderService);
+  private readonly url = inject(ApiURLService);
 
-  private readonly quotaURL = this.urlBuilder.api().route('protected/quota').build();
+  private readonly quotaURL = this.url.apiProtectedRoute('quota').build();
 
   readonly plan = this.userCtx.plan;
   readonly usage = signal<TUsageItem[]>([]);
@@ -117,10 +113,6 @@ export class PlanUsageComponent implements OnInit {
   /** Period label. */
   periodLabel(item: TUsageItem): string {
     return item.period === 'monthly' ? 'this month' : '';
-  }
-
-  openUpgrade(): void {
-    this.layout.openRightPanel('upgrade');
   }
 
   private formatBytes(bytes: number): string {
