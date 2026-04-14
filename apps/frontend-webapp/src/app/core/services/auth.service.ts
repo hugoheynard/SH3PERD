@@ -6,6 +6,7 @@ import {
   map,
   Observable,
   of, shareReplay, tap,
+  throwError,
 } from 'rxjs';
 import {AuthTokenService} from './auth-token.service';
 import {Router} from '@angular/router';
@@ -181,6 +182,20 @@ export class AuthService extends BaseHttpService {
       .pipe(
         map(() => true),
         catchError(() => of(false)),
+      );
+  }
+
+  /**
+   * DEACTIVATE ACCOUNT
+   * Soft-deletes the account after password verification. Propagates errors
+   * so the caller can display specific messages (wrong password, etc.).
+   */
+  deactivateAccount$(password: string): Observable<boolean> {
+    return this.http
+      .post(`${this.URL}/deactivate-account`, { password }, { withCredentials: true })
+      .pipe(
+        map(() => true),
+        catchError((err) => throwError(() => err)),
       );
   }
 
