@@ -82,6 +82,8 @@ export type TQuotaResource =
   | 'master_standard'      // ffmpeg loudnorm mastering
   | 'master_ai'            // DeepAFx-ST AI mastering
   | 'pitch_shift'          // pitch-shifting a version
+  | 'track_version'        // creating a version for a song
+  | 'search_tab'           // saved search tab configs
   | 'storage_bytes';       // total R2 storage consumed
 
 export type TQuotaPeriod = 'monthly' | 'lifetime';
@@ -282,6 +284,8 @@ export class UploadTrackHandler {
 | `MasterTrackHandler` | `master_standard` | Before dispatching to audio-processor |
 | `AiMasterTrackHandler` | `master_ai` | Before dispatching to audio-processor |
 | `PitchShiftVersionHandler` | `pitch_shift` | Before dispatching to audio-processor |
+| `CreateMusicVersionHandler` | `track_version` | Before creating the version |
+| `SaveMusicTabConfigsHandler` | `search_tab` | Before saving (delta check: new > existing) |
 
 Storage bytes are special: the `amount` is the file size in bytes,
 not 1. The `ensureAllowed` call passes `file.buffer.length` as the

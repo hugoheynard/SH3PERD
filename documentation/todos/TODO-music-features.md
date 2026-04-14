@@ -8,11 +8,11 @@
 - [ ] Unit tests for `MusicLibrarySelectorService` (filter logic, fuzzy search)
 - [ ] Integration test: upload → analysis → result in DB
 
-### Audio Player
-- [ ] Inline player component with presigned URL streaming
-- [ ] Play/pause/seek controls
-- [ ] Waveform visualization (optional, use peaks from analysis)
-- [ ] Player state shared across components (current track, playing/paused)
+### Audio Player ✅
+- [x] Inline player component with presigned URL streaming (wavesurfer.js)
+- [x] Play/pause/seek controls
+- [x] Waveform visualization using peaks from analysis
+- [x] Player state shared across components (current track, playing/paused)
 
 ### Seed Script
 - [ ] Script to load reference JSONs (`seed/musicRef_init_seed/*.json`) via API
@@ -48,6 +48,24 @@
 - [ ] Add `limit/offset` query params to `GET /library/me`
 - [ ] Frontend: lazy load on scroll or explicit "load more"
 - [ ] Only needed when a user exceeds ~200 entries
+
+---
+
+## Backend Infrastructure ✅
+
+### Quota Enforcement (2026-04-14)
+- [x] `CreateMusicVersionHandler` → `track_version` quota (ensureAllowed + recordUsage)
+- [x] `SaveMusicTabConfigsHandler` → `search_tab` quota (delta check: new count > existing count)
+- [x] All other music handlers already had quota checks (repertoire_entry, track_upload, master_standard, master_ai, pitch_shift, storage_bytes)
+
+### Analytics Event Tracking (2026-04-14)
+- [x] `CreateRepertoireEntryHandler` → `repertoire_entry_created` (entry_id, reference_id)
+- [x] `UploadTrackHandler` → `track_uploaded` (version_id, track_id, file_name, file_size_bytes, duration_seconds, format)
+- [x] `TrackUploadedHandler` (event) → `track_analysed` (raw audio values: bpm, key, key_scale, lufs, snr, clipping, etc.)
+- [x] `MasterTrackHandler` → `track_mastered` (version_id, track_id, target_lufs, target_tp)
+- [x] `AiMasterTrackHandler` → `track_ai_mastered` (version_id, track_id, reference_track_id, target_lufs)
+- [x] `PitchShiftVersionHandler` → `track_pitch_shifted` (version_id, track_id, semitones, original_key)
+- [x] `MusicHandlersModule` imports `AnalyticsModule` for DI
 
 ---
 

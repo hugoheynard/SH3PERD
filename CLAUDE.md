@@ -31,6 +31,7 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | **Dev Setup** | `apps/backend/documentation/sh3-dev-setup.md` | RSA keys, JWT config, env variables |
 | **Platform Contract** | `apps/backend/documentation/sh3-platform-contract.md` | SaaS subscription model, dual contract model (platform vs company) |
 | **Quota Service** | `apps/backend/documentation/sh3-quota-service.md` | Quota enforcement: `ensureAllowed()` / `recordUsage()`, plan limits |
+| **Analytics Events** | `apps/backend/documentation/sh3-analytics-events.md` | Append-only event store, event types, metadata, handler status |
 | **Music Library** | `apps/backend/documentation/sh3-music-library.md` | Full music feature architecture, 14 features across 4 tiers |
 | **Music Audio Player** | `apps/backend/documentation/sh3-music-audio-player.md` | wavesurfer.js inline player, peaks pipeline |
 | **Music Mastering** | `apps/backend/documentation/sh3-music-mastering.md` | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift |
@@ -56,6 +57,8 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | **Tab Bar** | `documentation/todos/TODO-configurable-tab-bar.md` | DnD bug fix, unit tests, component split |
 | **Programs** | `documentation/todos/TODO-programs.md` | Drag engine refactoring |
 | **Error Mgmt** | `documentation/todos/TODO-error-management.md` | Error class refactoring (completed) |
+| **Usage & Credits** | `documentation/todos/TODO-usage-credits-events.md` | Usage tracking, credit packs, event store roadmap |
+| **Plans Artist/Company** | `documentation/todos/TODO-plans-artist-company.md` | Plan matrix, pricing, feature matrix, migration |
 
 ## Monorepo structure
 
