@@ -71,6 +71,14 @@ import {
   type IUsageCounterRepository,
   UsageCounterMongoRepository,
 } from '../../quota/infra/UsageCounterMongoRepo.js';
+import {
+  type ICreditPurchaseRepository,
+  CreditPurchaseMongoRepository,
+} from '../../quota/infra/CreditPurchaseMongoRepo.js';
+import {
+  type IAnalyticsEventRepository,
+  AnalyticsEventMongoRepository,
+} from '../../analytics/infra/AnalyticsEventMongoRepo.js';
 import { MONGO_CLIENT } from './db.tokens.js';
 import { ContractReadRepository } from '../../contracts/repositories/ContractReadRepository.js';
 import {
@@ -99,6 +107,8 @@ import {
   ORG_MEMBERSHIP_EVENT_REPO,
   PLAYLIST_REPO,
   PLAYLIST_TRACK_REPO,
+  ANALYTICS_EVENT_REPO,
+  CREDIT_PURCHASE_REPO,
 } from '../nestTokens.js';
 import { INTEGRATION_CREDENTIALS_REPO } from '../../integrations/integrations.tokens.js';
 import {
@@ -257,6 +267,16 @@ export type TCoreRepositories = {
       PasswordResetTokenMongoRepository,
       'password_reset_tokens',
     ),
+    mongoRepoProvider<ICreditPurchaseRepository>(
+      CREDIT_PURCHASE_REPO,
+      CreditPurchaseMongoRepository,
+      'credit_purchases',
+    ),
+    mongoRepoProvider<IAnalyticsEventRepository>(
+      ANALYTICS_EVENT_REPO,
+      AnalyticsEventMongoRepository,
+      'analytics_events',
+    ),
   ],
   exports: [
     USER_PREFERENCES_REPO,
@@ -281,6 +301,8 @@ export type TCoreRepositories = {
     ORG_MEMBERSHIP_EVENT_REPO,
     INTEGRATION_CREDENTIALS_REPO,
     PASSWORD_RESET_TOKEN_REPO,
+    CREDIT_PURCHASE_REPO,
+    ANALYTICS_EVENT_REPO,
   ],
 })
 export class CoreRepositoriesModule {}

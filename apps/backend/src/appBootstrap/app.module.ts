@@ -24,6 +24,7 @@ import { PrintModule } from '../print/print.module.js';
 import { MusicCrossModule } from '../music/music-cross.module.js';
 import { PlatformContractModule } from '../platform-contract/platform-contract.module.js';
 import { QuotaModule } from '../quota/quota.module.js';
+import { AnalyticsModule } from '../analytics/analytics.module.js';
 import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionFilter.js';
 
 @Module({
@@ -60,6 +61,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
     ProtectedModule,
     PlaylistModule,
     PrintModule,
+    AnalyticsModule,
     // ⚠️ Prefix split
     RouterModule.register([
       { path: 'auth', module: AuthModule },
@@ -82,6 +84,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
           { path: 'integrations', module: IntegrationsModule },
           { path: 'playlists', module: PlaylistModule },
           { path: '', module: QuotaModule },
+          { path: '', module: AnalyticsModule },
         ],
       },
     ]),

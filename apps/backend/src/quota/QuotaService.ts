@@ -1,15 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { PLATFORM_CONTRACT_REPO, USAGE_COUNTER_REPO } from '../appBootstrap/nestTokens.js';
+import {
+  PLATFORM_CONTRACT_REPO,
+  USAGE_COUNTER_REPO,
+  CREDIT_PURCHASE_REPO,
+} from '../appBootstrap/nestTokens.js';
 import type { IPlatformContractRepository } from '../platform-contract/infra/PlatformContractMongoRepo.js';
 import type { IUsageCounterRepository } from './infra/UsageCounterMongoRepo.js';
-import type { TUserId, TPlatformRole } from '@sh3pherd/shared-types';
-import {
-  type TQuotaResource,
-  type TQuotaPeriod,
-  getQuotaLimit,
-  computePeriodKey,
-  PLAN_QUOTAS,
-} from './domain/QuotaLimits.js';
+import type { ICreditPurchaseRepository } from './infra/CreditPurchaseMongoRepo.js';
+import type { TUserId, TPlatformRole, TQuotaResource, TQuotaPeriod } from '@sh3pherd/shared-types';
+import { getQuotaLimit, computePeriodKey, PLAN_QUOTAS } from './domain/QuotaLimits.js';
 import { QuotaExceededError } from './domain/QuotaExceededError.js';
 
 /** A single resource's usage summary for the frontend. */
@@ -18,6 +17,10 @@ export type TUsageItem = {
   current: number;
   /** -1 = unlimited, 0 = not available. */
   limit: number;
+  /** Bonus credits purchased on top of the plan limit. */
+  bonus: number;
+  /** Effective limit = plan limit + bonus. -1 = unlimited. */
+  effective_limit: number;
   period: TQuotaPeriod;
 };
 
@@ -48,6 +51,8 @@ export class QuotaService {
     private readonly platformRepo: IPlatformContractRepository,
     @Inject(USAGE_COUNTER_REPO)
     private readonly usageRepo: IUsageCounterRepository,
+    @Inject(CREDIT_PURCHASE_REPO)
+    private readonly creditRepo: ICreditPurchaseRepository,
   ) {}
 
   /**
@@ -73,17 +78,21 @@ export class QuotaService {
     // Explicitly unlimited
     if (limit === -1) return;
 
-    // Feature not available on this plan
+    // Feature not available on this plan (and no bonus can override a 0 limit)
     if (limit === 0) {
       throw new QuotaExceededError(resource, 0, 0, plan);
     }
 
-    // Check current usage
+    // Compute effective limit = plan limit + purchased bonus credits
     const periodKey = computePeriodKey(period);
+    const bonus = await this.creditRepo.getRemainingCredits(userId, resource, periodKey);
+    const effectiveLimit = limit + bonus;
+
+    // Check current usage against effective limit
     const current = await this.usageRepo.getCount(userId, resource, periodKey);
 
-    if (current + amount > limit) {
-      throw new QuotaExceededError(resource, current, limit, plan);
+    if (current + amount > effectiveLimit) {
+      throw new QuotaExceededError(resource, current, effectiveLimit, plan);
     }
   }
 
@@ -103,6 +112,17 @@ export class QuotaService {
 
     const periodKey = computePeriodKey(quotaLimit.period);
     await this.usageRepo.increment(userId, resource, periodKey, amount);
+
+    // If the user is now above the plan limit, decrement bonus credits.
+    // This ensures purchased credits are consumed only when the base plan is exhausted.
+    const { limit } = quotaLimit;
+    if (limit >= 0) {
+      const currentUsage = await this.usageRepo.getCount(userId, resource, periodKey);
+      if (currentUsage > limit) {
+        const overPlan = Math.min(amount, currentUsage - limit);
+        await this.creditRepo.decrementCredits(userId, resource, periodKey, overPlan);
+      }
+    }
   }
 
   /**
@@ -122,10 +142,19 @@ export class QuotaService {
         (c) => c.resource === quotaLimit.resource && c.period_key === periodKey,
       );
 
+      const bonus =
+        quotaLimit.limit >= 0
+          ? await this.creditRepo.getRemainingCredits(userId, quotaLimit.resource, periodKey)
+          : 0;
+
+      const effectiveLimit = quotaLimit.limit === -1 ? -1 : quotaLimit.limit + bonus;
+
       items.push({
         resource: quotaLimit.resource,
         current: Math.max(0, counter?.count ?? 0),
         limit: quotaLimit.limit,
+        bonus,
+        effective_limit: effectiveLimit,
         period: quotaLimit.period,
       });
     }
