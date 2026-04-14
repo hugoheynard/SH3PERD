@@ -81,7 +81,7 @@ export class UserContextService {
   private loadPlan(): void {
     this.http.get<{ data: { plan: TPlatformRole } }>(`${this.quotaURL}/me`).subscribe({
       next: (res) => this._plan.set(res.data.plan),
-      error: () => this._plan.set('plan_free'),
+      error: () => this._plan.set('artist_free'),
     });
   }
 

@@ -42,17 +42,19 @@ export class HeaderComponent {
     const plan = this.userPlan();
     if (!plan) return '';
     const labels: Record<string, string> = {
-      plan_free: 'Free',
-      plan_pro: 'Pro',
-      plan_band: 'Band',
-      plan_business: 'Business',
+      artist_free: 'Free',
+      artist_pro: 'Pro',
+      artist_max: 'Max',
+      company_free: 'Free',
+      company_pro: 'Pro',
+      company_business: 'Business',
     };
     return labels[plan] ?? plan;
   });
 
   readonly showUpgrade = computed(() => {
     const plan = this.userPlan();
-    return plan === 'plan_free' || plan === 'plan_pro';
+    return plan !== 'artist_max' && plan !== 'company_business';
   });
 
   onMenuClick(): void {

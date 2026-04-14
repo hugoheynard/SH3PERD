@@ -14,10 +14,9 @@
   @if (planLabel()) {
     <div class="plan-badge-area">
       <button class="plan-badge" type="button" (click)="goToUpgrade()"
-            [class.plan-badge--free]="userPlan() === 'plan_free'"
-            [class.plan-badge--pro]="userPlan() === 'plan_pro'"
-            [class.plan-badge--band]="userPlan() === 'plan_band'"
-            [class.plan-badge--business]="userPlan() === 'plan_business'">
+            [class.plan-badge--free]="userPlan() === 'artist_free' || userPlan() === 'company_free'"
+            [class.plan-badge--pro]="userPlan() === 'artist_pro' || userPlan() === 'company_pro'"
+            [class.plan-badge--max]="userPlan() === 'artist_max' || userPlan() === 'company_business'">
         {{ planLabel() }}
       </button>
       @if (showUpgrade()) {

@@ -6,7 +6,7 @@
 
   <!-- Plan cards row -->
   <div class="plans-row">
-    @for (plan of plans; track plan.key) {
+    @for (plan of plans(); track plan.key) {
       <div class="plan-card"
            [class.plan-card--current]="isCurrentPlan(plan.key)"
            [style.--plan-accent]="plan.accent">
@@ -30,7 +30,7 @@
       <thead>
         <tr>
           <th class="features-table__feature-col">Feature</th>
-          @for (plan of plans; track plan.key) {
+          @for (plan of plans(); track plan.key) {
             <th class="features-table__plan-col"
                 [class.features-table__plan-col--current]="isCurrentPlan(plan.key)">
               {{ plan.label }}
@@ -42,7 +42,7 @@
         @for (feature of features; track feature.label) {
           <tr>
             <td class="features-table__label">{{ feature.label }}</td>
-            @for (plan of plans; track plan.key) {
+            @for (plan of plans(); track plan.key) {
               <td class="features-table__cell"
                   [class.features-table__cell--current]="isCurrentPlan(plan.key)">
                 @if (cellValue(feature, plan.key) === true) {

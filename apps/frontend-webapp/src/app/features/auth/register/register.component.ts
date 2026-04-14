@@ -81,6 +81,10 @@ export class RegisterComponent {
           last_name: this.lastName().trim(),
           email: this.email().trim(),
           password: this.password(),
+          account_type: this.accountType()!,
+          ...(this.accountType() === 'company' && this.companyName().trim()
+            ? { company_name: this.companyName().trim() }
+            : {}),
         }),
       );
 

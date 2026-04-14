@@ -7,29 +7,37 @@ type PlanFeature = {
   label: string;
   free: string | boolean;
   pro: string | boolean;
-  band: string | boolean;
-  business: string | boolean;
+  max: string | boolean;
 };
 
-const PLAN_FEATURES: PlanFeature[] = [
-  { label: 'Repertoire entries',   free: '50',        pro: 'Unlimited', band: 'Unlimited', business: 'Unlimited' },
-  { label: 'Track uploads',        free: '50',        pro: 'Unlimited', band: 'Unlimited', business: 'Unlimited' },
-  { label: 'Standard mastering',   free: '3/mo',      pro: 'Unlimited', band: 'Unlimited', business: 'Unlimited' },
-  { label: 'AI mastering',         free: false,        pro: '10/mo',     band: 'Unlimited', business: 'Unlimited' },
-  { label: 'Pitch shift',          free: '3/mo',      pro: 'Unlimited', band: 'Unlimited', business: 'Unlimited' },
-  { label: 'Storage',              free: '500 MB',    pro: '5 GB',      band: '20 GB',     business: '100 GB' },
-  { label: 'Playlists',            free: 'Read only', pro: 'Full',      band: 'Full',      business: 'Full' },
-  { label: 'Setlists',             free: false,        pro: true,        band: true,        business: true },
-  { label: 'Cross library',        free: false,        pro: false,       band: true,        business: true },
-  { label: 'Persona match (AI)',   free: false,        pro: false,       band: true,        business: true },
-  { label: 'Event programming',    free: false,        pro: false,       band: false,       business: true },
+const ARTIST_FEATURES: PlanFeature[] = [
+  { label: 'Repertoire entries',   free: '50',        pro: 'Unlimited', max: 'Unlimited' },
+  { label: 'Track uploads',        free: '50',        pro: 'Unlimited', max: 'Unlimited' },
+  { label: 'Versions per track',   free: '2',         pro: '5',         max: 'Unlimited' },
+  { label: 'Playlists',            free: '3',         pro: 'Unlimited', max: 'Unlimited' },
+  { label: 'Search tabs',          free: '1',         pro: '10',        max: 'Unlimited' },
+  { label: 'Tabs per search tab',  free: '3',         pro: '5',         max: 'Unlimited' },
+  { label: 'Standard mastering',   free: '3/mo',      pro: 'Unlimited', max: 'Unlimited' },
+  { label: 'AI mastering',         free: false,        pro: '10/mo',     max: '50/mo' },
+  { label: 'Pitch shift',          free: '3/mo',      pro: 'Unlimited', max: 'Unlimited' },
+  { label: 'Storage',              free: '500 MB',    pro: '5 GB',      max: '20 GB' },
+  { label: 'Playlist → program',   free: false,        pro: true,        max: true },
+  { label: 'Playlist sharing',     free: false,        pro: true,        max: true },
+  { label: 'Cross-library (friends)', free: false,     pro: false,       max: true },
+  { label: 'Persona match (AI)',   free: false,        pro: false,       max: true },
+  { label: 'Rekordbox export',     free: false,        pro: true,        max: true },
 ];
 
-const PLAN_META: { key: TPlatformRole; label: string; price: string; accent: string }[] = [
-  { key: 'plan_free',     label: 'Free',     price: '0',   accent: 'var(--text-secondary)' },
-  { key: 'plan_pro',      label: 'Pro',      price: '9',   accent: '#a78bfa' },
-  { key: 'plan_band',     label: 'Band',     price: '29',  accent: '#22d3ee' },
-  { key: 'plan_business', label: 'Business', price: '79',  accent: '#fbbf24' },
+const ARTIST_PLAN_META: { key: TPlatformRole; label: string; price: string; accent: string }[] = [
+  { key: 'artist_free', label: 'Free', price: '0',     accent: 'var(--text-secondary)' },
+  { key: 'artist_pro',  label: 'Pro',  price: '9.99',  accent: '#a78bfa' },
+  { key: 'artist_max',  label: 'Max',  price: '19.99', accent: 'var(--accent-color)' },
+];
+
+const COMPANY_PLAN_META: { key: TPlatformRole; label: string; price: string; accent: string }[] = [
+  { key: 'company_free',     label: 'Free',     price: '0',     accent: 'var(--text-secondary)' },
+  { key: 'company_pro',      label: 'Pro',      price: '29.99', accent: '#a78bfa' },
+  { key: 'company_business', label: 'Business', price: '79.99', accent: 'var(--accent-color)' },
 ];
 
 @Component({
@@ -43,12 +51,19 @@ export class UpgradePanelComponent {
   private readonly userCtx = inject(UserContextService);
 
   readonly currentPlan = this.userCtx.plan;
-  readonly plans = PLAN_META;
-  readonly features = PLAN_FEATURES;
+
+  /** Resolve plan family from current plan prefix. */
+  readonly isArtist = computed(() => {
+    const plan = this.currentPlan();
+    return !plan || plan.startsWith('artist_');
+  });
+
+  readonly plans = computed(() => this.isArtist() ? ARTIST_PLAN_META : COMPANY_PLAN_META);
+  readonly features = ARTIST_FEATURES; // TODO: add COMPANY_FEATURES when needed
 
   readonly currentIndex = computed(() => {
     const plan = this.currentPlan();
-    return PLAN_META.findIndex(p => p.key === plan);
+    return this.plans().findIndex(p => p.key === plan);
   });
 
   close(): void {
@@ -61,11 +76,12 @@ export class UpgradePanelComponent {
 
   isBelowCurrent(planKey: string): boolean {
     const currentIdx = this.currentIndex();
-    const idx = PLAN_META.findIndex(p => p.key === planKey);
+    const idx = this.plans().findIndex(p => p.key === planKey);
     return idx < currentIdx;
   }
 
   cellValue(feature: PlanFeature, planKey: string): string | boolean {
-    return feature[planKey as keyof Pick<PlanFeature, 'free' | 'pro' | 'band' | 'business'>];
+    const col = planKey.replace(/^(artist|company)_/, '');
+    return feature[col as keyof Pick<PlanFeature, 'free' | 'pro' | 'max'>];
   }
 }
