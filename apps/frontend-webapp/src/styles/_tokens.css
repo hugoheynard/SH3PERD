@@ -169,10 +169,24 @@
 
 
   /* ═══════════════════════════════════════════════════
+     SPACING
+  ═══════════════════════════════════════════════════ */
+
+  --gap-xs:  4px;
+  --gap-sm:  8px;
+  --gap-md:  12px;
+  --gap-lg:  16px;
+  --gap-xl:  20px;
+  --gap-2xl: 24px;
+  --gap-3xl: 32px;
+
+
+  /* ═══════════════════════════════════════════════════
      LAYOUT
   ═══════════════════════════════════════════════════ */
 
   --h-header:    60px;
+  --h-header-mobile: 48px;
   --header-height: var(--h-header);   /* alias backward compat */
   --w-appMenu:   56px;
   --sidePanel-w: 300px;

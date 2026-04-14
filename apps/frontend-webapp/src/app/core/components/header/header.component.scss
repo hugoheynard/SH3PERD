@@ -23,11 +23,12 @@
   .left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--gap-md);
     font-weight: 600;
     font-size: 1.1rem;
     text-transform: uppercase;
     letter-spacing: 0.25rem;
+    min-width: 0;
 
     .app-name {
       color: var(--text-primary);
@@ -38,13 +39,16 @@
       letter-spacing: 0.3rem;
       font-weight: 200;
       color: var(--accent-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
   .right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: var(--gap-xl);
   }
 
   .mobile-menu-btn {
@@ -320,6 +324,26 @@
   flex-shrink: 0;
 }
 
+/* ── Theme row in dropdown (mobile only) ───────── */
+
+.profile-dropdown__mobile-only {
+  display: none;
+}
+
+.profile-dropdown__theme-row {
+  justify-content: flex-start;
+  cursor: default;
+
+  &:hover {
+    background: transparent;
+    color: var(--text-secondary);
+  }
+}
+
+.profile-dropdown__theme-toggle {
+  margin-left: auto;
+}
+
 @keyframes dropdown-in {
   from {
     opacity: 0;
@@ -328,6 +352,59 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════
+   MOBILE  (≤ 768px)
+   Hide plan badge, help, page name, theme toggle.
+   Compact profile circle and gaps.
+═══════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  :host {
+    height: var(--h-header-mobile);
+  }
+
+  .page-name      { display: none; }
+  .plan-badge-area { display: none; }
+  .help-btn       { display: none; }
+
+  /* Theme toggle moves into profile dropdown on mobile */
+  :host sh3-theme-toggle:not(.profile-dropdown__theme-toggle) {
+    display: none;
+  }
+
+  .profile-dropdown__mobile-only {
+    display: flex;
+  }
+
+  .left {
+    gap: var(--gap-sm);
+    font-size: 0.9rem;
+    letter-spacing: 0.15rem;
+  }
+
+  .right {
+    gap: var(--gap-md);
+  }
+
+  .profile-circle {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
+  .notification-bell,
+  .help-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .profile-dropdown {
+    right: -8px;
+    max-width: calc(100vw - 16px);
   }
 }
 

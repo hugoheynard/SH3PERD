@@ -184,6 +184,7 @@
 @media (max-width: 768px) {
   :host {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: var(--h-header-mobile) 1fr;
     grid-template-areas:
       "header"
       "content"
