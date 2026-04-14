@@ -26,6 +26,14 @@
 
   --room-header-bg: color-mix(in srgb, var(--content-page-bg-color) 90%, white);
 
+  /* Couche 6 — auth pages (deeper than app for premium contrast) */
+  --auth-bg:             #090d15;
+  --auth-brand-bg:       #0b0f1c;
+  --auth-panel-bg:       #0d1120;
+  --auth-field-bg:       #141b2e;
+  --auth-field-border:   rgba(255, 255, 255, 0.09);
+  --auth-faded-text:     #6b7896;
+
   /* Glass surface for overlay panels */
   --glass-bg: rgba(9, 13, 21, 0.55);
 

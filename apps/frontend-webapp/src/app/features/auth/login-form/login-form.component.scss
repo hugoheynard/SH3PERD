@@ -1,6 +1,3 @@
-$accent: #06a4a4;
-$text-2: #8892b0;
-
 // ── Form container ────────────────────────────────────────────────
 form {
   display: flex;
@@ -30,12 +27,12 @@ form {
 }
 
 .forgot-link {
-  font-size: 11px;
-  color: $text-2;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
   text-decoration: none;
   letter-spacing: .01em;
-  transition: color .15s;
-  &:hover { color: $accent; }
+  transition: color var(--t-base);
+  &:hover { color: var(--accent-color); }
 }
 
 // ── sh3-input host ────────────────────────────────────────────────
@@ -54,7 +51,7 @@ sh3-button-primary {
 :host ::ng-deep sh3-button-primary button {
   width: 100%;
   padding: 0.75rem 1rem;
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   font-weight: 600;
   letter-spacing: .04em;
 }

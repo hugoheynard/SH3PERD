@@ -2,11 +2,9 @@
 // Brand panel — left side of auth pages (logo, illustration, tagline)
 // Self-contained: does NOT @use _auth-layout (which would leak
 // parent-page styles into this component's encapsulated scope).
+//
+// All colors reference CSS custom properties from _tokens.css.
 // ══════════════════════════════════════════════════════════════════════
-
-$bg-left:  #0b0f1c;
-$text-1:   #eef1ff;
-$text-2:   #8892b0;
 
 // ── Host — takes full height in the flex parent (.login-page) ───────
 :host {
@@ -17,7 +15,7 @@ $text-2:   #8892b0;
 .brand-panel {
   flex: 0 0 56%;
   position: relative;
-  background: $bg-left;
+  background: var(--auth-brand-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29,7 +27,7 @@ $text-2:   #8892b0;
     inset: 0;
     background: radial-gradient(
       ellipse 60% 55% at 50% 48%,
-      rgba(6, 164, 164, .08) 0%,
+      var(--accent-color-dim) 0%,
       transparent 68%
     );
     pointer-events: none;
@@ -39,7 +37,7 @@ $text-2:   #8892b0;
     content: '';
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px);
+    background-image: radial-gradient(var(--surface-subtle) 1px, transparent 1px);
     background-size: 30px 30px;
     pointer-events: none;
   }
@@ -60,14 +58,14 @@ $text-2:   #8892b0;
   width: 420px;
   height: auto;
   border-radius: 20px;
-  filter: drop-shadow(0 0 50px rgba(6, 164, 164, .25));
+  filter: drop-shadow(0 0 50px var(--accent-color-faded));
   object-fit: cover;
 }
 
 .auth-logo-icon {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   object-fit: cover;
 }
 
@@ -83,16 +81,14 @@ $text-2:   #8892b0;
   font-size: 52px;
   font-weight: 800;
   letter-spacing: .24em;
-  color: $text-1;
+  color: var(--text-primary);
   line-height: 1;
 }
 
 .brand-tagline {
   margin: 0;
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: .16em;
-  color: $text-2;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
   text-transform: lowercase;
   font-style: italic;
   opacity: .75;
