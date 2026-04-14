@@ -17,7 +17,7 @@ import type { TPlatformRole } from '@sh3pherd/shared-types';
  *   "resource": "master_standard",
  *   "current": 3,
  *   "limit": 3,
- *   "plan": "plan_free"
+ *   "plan": "artist_free"
  * }
  * ```
  */

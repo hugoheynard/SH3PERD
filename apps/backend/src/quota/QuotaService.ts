@@ -145,8 +145,8 @@ export class QuotaService {
     if (!contract) {
       // No platform contract = no subscription. This shouldn't happen
       // (registration creates one), but if it does, fall back to
-      // plan_free so the user isn't completely locked out.
-      return 'plan_free';
+      // artist_free so the user isn't completely locked out.
+      return 'artist_free';
     }
     return contract.plan;
   }

@@ -122,7 +122,7 @@ export async function seedUser(
   });
 
   // Every user gets a platform contract at registration (SaaS subscription)
-  const platformContract = PlatformContractEntity.create(credential.id);
+  const platformContract = PlatformContractEntity.create(credential.id, 'artist');
 
   // Insert the entity snapshots into MongoDB
   await db.collection('user_credentials').insertOne(credential.toDomain);

@@ -1,37 +1,63 @@
 import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
 import type { TPlatformContractDomainModel } from '@sh3pherd/shared-types';
-import type { TPlatformRole, TUserId } from '@sh3pherd/shared-types';
+import type { TAccountType, TPlatformRole, TUserId } from '@sh3pherd/shared-types';
+
+/** Artist plan names. */
+const ARTIST_PLANS = new Set<TPlatformRole>(['artist_free', 'artist_pro', 'artist_max']);
+
+/** Company plan names. */
+const COMPANY_PLANS = new Set<TPlatformRole>(['company_free', 'company_pro', 'company_business']);
+
+/** All valid plan names. */
+const ALL_PLANS = new Set<TPlatformRole>([...ARTIST_PLANS, ...COMPANY_PLANS]);
+
+/** Map account type → default plan. */
+const DEFAULT_PLAN: Record<TAccountType, TPlatformRole> = {
+  artist: 'artist_free',
+  company: 'company_free',
+};
+
+/** Map account type → allowed plan set. */
+const PLANS_FOR_ACCOUNT: Record<TAccountType, Set<TPlatformRole>> = {
+  artist: ARTIST_PLANS,
+  company: COMPANY_PLANS,
+};
 
 /**
  * Platform contract entity — represents a user's SaaS subscription.
  *
  * One per user, created at registration. The `plan` field determines
- * which permissions the user has for personal features (music library,
- * playlists, etc.) via `PLATFORM_ROLE_TEMPLATES`.
+ * which permissions the user has for personal features via
+ * `PLATFORM_ROLE_TEMPLATES`.
+ *
+ * The `account_type` field locks the plan family — an artist account
+ * can only upgrade within artist plans, a company account within
+ * company plans. Set at registration, never changes.
  *
  * Completely separate from `ContractEntity` (which represents an
  * employment relationship with a company).
  *
  * Invariants:
  * - `user_id` must be set
- * - `plan` must be a valid TPlatformRole
+ * - `account_type` must be 'artist' or 'company'
+ * - `plan` must belong to the same family as `account_type`
  * - `status` must be 'active' or 'suspended'
  */
 export class PlatformContractEntity extends Entity<TPlatformContractDomainModel> {
   private static readonly VALID_STATUSES = new Set(['active', 'suspended']);
-  private static readonly VALID_PLANS = new Set([
-    'plan_free',
-    'plan_pro',
-    'plan_band',
-    'plan_business',
-  ]);
 
   constructor(props: TEntityInput<TPlatformContractDomainModel>) {
     if (!props.user_id) {
       throw new Error('PLATFORM_CONTRACT_USER_REQUIRED');
     }
-    if (!PlatformContractEntity.VALID_PLANS.has(props.plan)) {
+    if (!props.account_type || !PLANS_FOR_ACCOUNT[props.account_type]) {
+      throw new Error('PLATFORM_CONTRACT_INVALID_ACCOUNT_TYPE');
+    }
+    if (!ALL_PLANS.has(props.plan)) {
       throw new Error('PLATFORM_CONTRACT_INVALID_PLAN');
+    }
+    if (!PLANS_FOR_ACCOUNT[props.account_type].has(props.plan)) {
+      throw new Error('PLATFORM_CONTRACT_PLAN_MISMATCH');
     }
     if (!PlatformContractEntity.VALID_STATUSES.has(props.status)) {
       throw new Error('PLATFORM_CONTRACT_INVALID_STATUS');
@@ -42,14 +68,18 @@ export class PlatformContractEntity extends Entity<TPlatformContractDomainModel>
   // ── Factory ──────────────────────────────────────────
 
   /**
-   * Single entry point for creating a new platform contract.
-   * Defaults to plan_free + active. Use this instead of calling
-   * the constructor directly — ensures consistent defaults.
+   * Create a new platform contract for a given account type.
+   * Defaults to the free plan of the matching family.
    */
-  static create(userId: TUserId, plan: TPlatformRole = 'plan_free'): PlatformContractEntity {
+  static create(
+    userId: TUserId,
+    accountType: TAccountType,
+    plan?: TPlatformRole,
+  ): PlatformContractEntity {
     return new PlatformContractEntity({
       user_id: userId,
-      plan,
+      account_type: accountType,
+      plan: plan ?? DEFAULT_PLAN[accountType],
       status: 'active',
       startDate: new Date(),
     });
@@ -59,6 +89,9 @@ export class PlatformContractEntity extends Entity<TPlatformContractDomainModel>
 
   get user_id(): TUserId {
     return this.props.user_id;
+  }
+  get account_type(): TAccountType {
+    return this.props.account_type;
   }
   get plan(): TPlatformRole {
     return this.props.plan;
@@ -76,10 +109,13 @@ export class PlatformContractEntity extends Entity<TPlatformContractDomainModel>
 
   // ── Mutations ────────────────────────────────────────
 
-  /** Upgrade or downgrade the subscription plan. */
+  /**
+   * Upgrade or downgrade the subscription plan.
+   * Must stay within the same family (artist → artist, company → company).
+   */
   changePlan(newPlan: TPlatformRole): void {
-    if (!PlatformContractEntity.VALID_PLANS.has(newPlan)) {
-      throw new Error('PLATFORM_CONTRACT_INVALID_PLAN');
+    if (!PLANS_FOR_ACCOUNT[this.props.account_type].has(newPlan)) {
+      throw new Error('PLATFORM_CONTRACT_PLAN_MISMATCH');
     }
     this.props.plan = newPlan;
   }

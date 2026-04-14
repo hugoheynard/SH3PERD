@@ -1,8 +1,8 @@
 # SH3PHERD — Platform Contract
 
 Architecture documentation for the platform contract system — the SaaS
-subscription model that controls access to personal features (music
-library, playlists, etc.) independently from company employment contracts.
+subscription model that controls access to features independently from
+company employment contracts.
 
 ---
 
@@ -12,7 +12,7 @@ SH3PHERD has **two types of contracts**:
 
 | | Platform Contract | Company Contract |
 |---|---|---|
-| **Represents** | SaaS subscription (Free/Pro/Band/Business) | Employment relationship with a company |
+| **Represents** | SaaS subscription | Employment relationship with a company |
 | **Scope** | Personal features (music library, playlists) | Company features (orgchart, contracts, settings) |
 | **Created when** | User registers (one per user, automatic) | Company is created or user is hired |
 | **How many per user** | Exactly 1 | 0 to N (one per company) |
@@ -21,19 +21,97 @@ SH3PHERD has **two types of contracts**:
 | **Guard** | `PlatformContractContextGuard` | `ContractContextGuard` |
 | **Entity** | `PlatformContractEntity` | `ContractEntity` |
 | **Collection** | `platform_contracts` | `contracts` |
-| **Roles** | `TPlatformRole` (plan_free, plan_pro, ...) | `TContractRole` (owner, admin, artist, viewer) |
+| **Roles** | `TPlatformRole` (artist_free, company_pro, ...) | `TContractRole` (owner, admin, artist, viewer) |
 | **Role templates** | `PLATFORM_ROLE_TEMPLATES` | `ROLE_TEMPLATES` |
 
-A user can have **both**: a platform contract (personal music access)
+A user can have **both**: a platform contract (personal access)
 AND one or more company contracts (company management access). The two
 are completely independent.
 
 Example — a manager at a label:
 ```
 Hugo (user)
-  ├── Platform Contract: plan_business    → full personal music access
-  ├── Company Contract (Label X): owner   → manage Label X (orgchart, contracts)
-  └── Company Contract (Studio Y): admin  → manage Studio Y
+  ├── Platform Contract: company_business  → full company access
+  ├── Company Contract (Label X): owner    → manage Label X
+  └── Company Contract (Studio Y): admin   → manage Studio Y
+```
+
+---
+
+## Account types and plan families
+
+The `account_type` is chosen at registration and **never changes**.
+It locks the plan family — an artist upgrades within artist plans,
+a company within company plans.
+
+```mermaid
+graph TD
+    REG[Register] -->|account_type = artist| AF[artist_free]
+    REG -->|account_type = company| CF[company_free]
+
+    AF -->|upgrade| AP[artist_pro]
+    AP -->|upgrade| AM[artist_max]
+    AM -->|downgrade| AP
+    AP -->|downgrade| AF
+
+    CF -->|upgrade| CP[company_pro]
+    CP -->|upgrade| CB[company_business]
+    CB -->|downgrade| CP
+    CP -->|downgrade| CF
+
+    AF -.->|❌ impossible| CP
+    CF -.->|❌ impossible| AP
+
+    style AF fill:#0d1120,color:#eef1ff,stroke:#06a4a4
+    style AP fill:#0d1120,color:#eef1ff,stroke:#06a4a4
+    style AM fill:#0d1120,color:#eef1ff,stroke:#06a4a4
+    style CF fill:#0d1120,color:#eef1ff,stroke:#d4a017
+    style CP fill:#0d1120,color:#eef1ff,stroke:#d4a017
+    style CB fill:#0d1120,color:#eef1ff,stroke:#d4a017
+```
+
+### Plan types
+
+```ts
+type TArtistPlan  = 'artist_free'  | 'artist_pro'  | 'artist_max';
+type TCompanyPlan = 'company_free' | 'company_pro'  | 'company_business';
+type TPlatformRole = TArtistPlan | TCompanyPlan;
+```
+
+### Registration flow
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant API as Auth Controller
+    participant H as RegisterUserHandler
+    participant DB as MongoDB
+
+    C->>API: POST /auth/register
+    Note right of C: { email, password, first_name, last_name,<br/>account_type: "artist" | "company",<br/>company_name?: "Label X" }
+
+    API->>H: RegisterUserCommand(payload)
+
+    H->>H: Validate email uniqueness
+    H->>H: Hash password (Argon2id)
+    H->>H: Create UserCredentialEntity
+    H->>H: Create UserProfileEntity
+
+    alt account_type === "artist"
+        H->>H: PlatformContractEntity.create(userId, "artist")
+        Note right of H: plan = artist_free
+    else account_type === "company"
+        H->>H: PlatformContractEntity.create(userId, "company")
+        Note right of H: plan = company_free
+        H->>H: CompanyEntity.create(company_name, userId)
+        H->>H: ContractEntity.create(userId, companyId, "owner")
+    end
+
+    H->>DB: Transaction: save credentials + profile + platform contract
+    Note right of DB: + company + owner contract if company
+
+    H-->>C: 201 { id, email, ... }
+    H->>H: Emit UserRegisteredEvent
 ```
 
 ---
@@ -45,7 +123,7 @@ Hugo (user)
 ```
 apps/backend/src/platform-contract/
 ├── domain/
-│   └── PlatformContractEntity.ts    — entity with plan + status + mutations
+│   └── PlatformContractEntity.ts    — entity with account_type + plan + status
 ├── infra/
 │   └── PlatformContractMongoRepo.ts — findByUserId() + base CRUD
 ├── api/
@@ -54,11 +132,13 @@ apps/backend/src/platform-contract/
 ```
 
 **`PlatformContractEntity`** extends `Entity<TPlatformContractDomainModel>`:
-- `plan: TPlatformRole` — the subscription tier
+- `account_type: TAccountType` — `'artist'` or `'company'`, set at registration, immutable
+- `plan: TPlatformRole` — the subscription tier (must match account_type family)
 - `status: 'active' | 'suspended'`
 - `startDate: Date`
 - `user_id: TUserId`
-- Methods: `changePlan()`, `suspend()`, `reactivate()`
+- Methods: `changePlan()` (validates family match), `suspend()`, `reactivate()`
+- Factory: `PlatformContractEntity.create(userId, accountType, plan?)`
 - ID prefix: `platformContract_`
 
 **`TPlatformContractDomainModel`** (in `packages/shared-types`):
@@ -66,78 +146,96 @@ apps/backend/src/platform-contract/
 interface TPlatformContractDomainModel {
   id: string;
   user_id: TUserId;
+  account_type: TAccountType;
   plan: TPlatformRole;
   status: 'active' | 'suspended';
   startDate: Date;
 }
 ```
 
-### Plans and permissions
+### Plan invariants
+
+The entity enforces:
+- `account_type` must be `'artist'` or `'company'`
+- `plan` must belong to the same family as `account_type`
+- `changePlan()` rejects cross-family upgrades (e.g. artist → company_pro)
 
 ```ts
-type TPlatformRole = 'plan_free' | 'plan_pro' | 'plan_band' | 'plan_business';
+// ✅ Valid
+entity.changePlan('artist_pro');    // artist → artist_pro
+
+// ❌ Throws PLATFORM_CONTRACT_PLAN_MISMATCH
+entity.changePlan('company_pro');   // artist → company_pro
 ```
 
-| Plan | Music Library | Tracks | Playlists | Setlists | Events |
-|------|:---:|:---:|:---:|:---:|:---:|
-| `plan_free` | Read + Write | Read + Write | Read | — | — |
-| `plan_pro` | Read + Write | Read + Write + Delete | Read + Write + Delete + Own | Read + Write | — |
-| `plan_band` | `music:*` | `music:*` | `music:*` | `music:*` | — |
-| `plan_business` | `music:*` | `music:*` | `music:*` | `music:*` | `event:*` |
+### Artist plan permissions
 
-**Important**: permissions control _whether_ a user can perform an
-action at all. _Quantity_ limits (50 songs for free, 3 masters/month)
-are a separate concern handled by `MusicPolicy` quotas — not by the
-permission system. A free user CAN create songs, they just can't
-create MORE than 50.
+| Feature | artist_free | artist_pro | artist_max |
+|---------|:---:|:---:|:---:|
+| Music Library (Read+Write) | ✅ | ✅ | ✅ |
+| Tracks (Read+Write+Delete) | ✅ | ✅ | ✅ |
+| Playlists (Read+Write+Delete+Own) | ✅ | ✅ | ✅ |
+| Setlists | — | `music:*` | `music:*` |
+| Events | — | — | `event:*` |
+
+Note: artist_free has full CRUD on playlists — quantity limits (3 max)
+are enforced by quotas, not permissions.
+
+### Company plan permissions
+
+| Feature | company_free | company_pro | company_business |
+|---------|:---:|:---:|:---:|
+| Company Settings (R+W) | ✅ | `company:*` | `*` |
+| Members (R+W+Invite) | ✅ | `company:*` | `*` |
+| OrgChart (R+W) | ✅ | `company:*` | `*` |
+| Events | — | `event:*` | `*` |
+| Music (Read) | — | ✅ | `*` |
+| Music Playlists (W+D+Own) | — | ✅ | `*` |
 
 ### Guard resolution flow
 
-```
-HTTP Request
-    │
-    ▼
-AuthGuard (global)
-    │ → extracts user_id from JWT → attaches req.user_id
-    ▼
-PlatformContractContextGuard (on @PlatformScoped routes)
-    │ 1. Read user_id from request
-    │ 2. Query: db.platform_contracts.findOne({ user_id })
-    │ 3. Check status === 'active'
-    │ 4. Attach req.contract_roles = [platformContract.plan]
-    │    e.g. ['plan_free']
-    ▼
-PermissionGuard (on @RequirePermission routes)
-    │ 1. Read req.contract_roles → ['plan_free']
-    │ 2. Expand via PLATFORM_ROLE_TEMPLATES
-    │    → ['music:library:read', 'music:library:write', ...]
-    │ 3. Check required permission is in the expanded set
-    │ 4. Pass (200) or reject (403)
-    ▼
-Handler
+```mermaid
+flowchart TD
+    REQ[HTTP Request] --> AG[AuthGuard]
+    AG -->|extracts user_id from JWT| PCG[PlatformContractContextGuard]
+    PCG -->|findOne user_id| DB[(platform_contracts)]
+    DB --> CHECK{status === active?}
+    CHECK -->|No| R401[401 Subscription suspended]
+    CHECK -->|Yes| ATTACH[Attach contract_roles = plan]
+    ATTACH -->|e.g. artist_free| PG[PermissionGuard]
+    PG -->|expand via PLATFORM_ROLE_TEMPLATES| PERMS[Expanded permissions set]
+    PERMS --> MATCH{Required permission in set?}
+    MATCH -->|No| R403[403 Forbidden]
+    MATCH -->|Yes| HANDLER[Handler executes]
 ```
 
 Key difference from company contracts: **no header needed**. The guard
-queries the platform contract by `user_id` directly. Each user has
-exactly one, so there's no ambiguity to resolve.
+queries the platform contract by `user_id` directly.
 
-### `expandRolesToPermissions()` — unified
+---
 
-The `RequirePermission` guard's `expandRolesToPermissions()` function
-checks BOTH `ROLE_TEMPLATES` (company) and `PLATFORM_ROLE_TEMPLATES`
-(platform). Since the role strings are disjoint (`'owner'` vs
-`'plan_free'`), only one template matches per role:
+## Downgrade policy — Freeze, never delete
 
-```ts
-function expandRolesToPermissions(roles: (TContractRole | TPlatformRole)[]): TPermission[] {
-  for (const role of roles) {
-    // Check company templates first
-    if (ROLE_TEMPLATES[role]) { ... }
-    // Then platform templates
-    if (PLATFORM_ROLE_TEMPLATES[role]) { ... }
-  }
-}
+When a user downgrades (or loses a company-sponsored tier), their data
+is **frozen, never deleted**. Read-only access is preserved; writes are
+blocked until usage falls below the new plan's limits.
+
+```mermaid
+stateDiagram-v2
+    [*] --> UnderLimit: Usage < Quota
+    UnderLimit --> AtLimit: Usage reaches quota
+    AtLimit --> Frozen: New write attempt
+    Frozen --> UnderLimit: User deletes data OR upgrades
+    AtLimit --> UnderLimit: User upgrades
+
+    note right of Frozen
+        HTTP 402 Payment Required
+        "Upgrade or manage your library"
+    end note
 ```
+
+The `QuotaService.ensureAllowed()` handles this automatically —
+no deletion logic, no cron, no migration needed.
 
 ---
 
@@ -146,15 +244,11 @@ function expandRolesToPermissions(roles: (TContractRole | TPlatformRole)[]): TPe
 ### Music controllers (platform-scoped)
 
 ```ts
-import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
-import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
-import { P } from '@sh3pherd/shared-types';
-
 @PlatformScoped()       // ← resolves platform contract from user_id
 @Controller('library')
 export class MusicLibraryController {
 
-  @RequirePermission(P.Music.Library.Read)   // ← checks against plan permissions
+  @RequirePermission(P.Music.Library.Read)
   @Get('me')
   async getMyLibrary(@ActorId() actorId: TUserId) { ... }
 }
@@ -167,7 +261,7 @@ export class MusicLibraryController {
 @Controller()
 export class OrgChartViewsController {
 
-  @RequirePermission(P.Company.OrgChart.Read)  // ← checks against company role
+  @RequirePermission(P.Company.OrgChart.Read)
   @Get(':id/orgchart')
   async getOrgChart(@Param('id') id: TCompanyId) { ... }
 }
@@ -191,16 +285,15 @@ export class OrgChartViewsController {
 
 ### Creation
 
-Platform contracts are created in the `RegisterUserHandler` inside
+Platform contracts are created in `RegisterUserHandler` inside
 the same MongoDB transaction as credentials + profile:
 
 ```ts
-const platformContract = new PlatformContractEntity({
-  user_id: credentials.id,
-  plan: 'plan_free',
-  status: 'active',
-  startDate: new Date(),
-});
+const platformContract = PlatformContractEntity.create(
+  credentials.id,
+  cmd.payload.account_type,  // 'artist' or 'company'
+);
+// → defaults to artist_free or company_free
 ```
 
 ### Upgrade / downgrade
@@ -208,70 +301,59 @@ const platformContract = new PlatformContractEntity({
 ```ts
 const contract = await platformContractRepo.findByUserId(userId);
 const entity = PlatformContractEntity.fromRecord(contract);
-entity.changePlan('plan_pro');
+entity.changePlan('artist_pro');  // validates family match
 await platformContractRepo.save(entity.toDomain);
 ```
 
-Currently no endpoint for this — upgrade flow will be built with the
-payment integration (Stripe). For now, plans can be changed manually
-in MongoDB or via a future admin endpoint.
-
 ### Suspension
-
-When a payment fails or an admin intervenes:
 
 ```ts
 entity.suspend();
 // → any @PlatformScoped() route returns 401 "Platform subscription is suspended"
-```
 
-Reactivation:
-```ts
 entity.reactivate();
 // → routes work again
 ```
 
 ---
 
-## Frontend impact
-
-**None for music API calls.** Music services (`MusicLibraryApiService`,
-`MusicTrackApiService`, etc.) already use `this.http` directly — they
-don't send `X-Contract-Id`. The backend resolves the platform contract
-server-side from `user_id`.
-
-Company services continue using `this.scopedHttp.withContract()` which
-sends `X-Contract-Id` — unchanged.
-
----
-
 ## E2E testing
 
 The `seedUser()` factory automatically creates a platform contract
-with `plan: 'plan_free'`:
+with `plan: 'artist_free'`:
 
 ```ts
 const seed = await seedWorkspace(db, { companyName: 'Studio X' });
 // seed has:
 // - A user with credentials + profile + preferences
-// - A platform contract (plan_free)
+// - A platform contract (artist_free, account_type: 'artist')
 // - A company + owner contract
 ```
-
-The `resetAuthCollections()` cleanup includes `platform_contracts`.
 
 ---
 
 ## Migration
 
-For existing users registered before the platform contract feature:
+For existing users registered before the account_type split:
 
 ```bash
 node apps/backend/src/migrations/add-platform-contracts.mjs
 ```
 
 Idempotent: skips users who already have a platform contract. Creates
-one with `plan: 'plan_free'` for every user missing one.
+one with `account_type: 'artist'` and `plan: 'artist_free'`.
+
+For migrating old plan names:
+```javascript
+db.platform_contracts.updateMany(
+  { plan: 'plan_free' },
+  { $set: { plan: 'artist_free', account_type: 'artist' } }
+);
+db.platform_contracts.updateMany(
+  { plan: 'plan_pro' },
+  { $set: { plan: 'artist_pro', account_type: 'artist' } }
+);
+```
 
 ---
 
@@ -279,55 +361,23 @@ one with `plan: 'plan_free'` for every user missing one.
 
 | File | Role |
 |------|------|
-| `packages/shared-types/src/permissions.types.ts` | TPlatformRole, PLATFORM_ROLE_TEMPLATES |
+| `packages/shared-types/src/permissions.types.ts` | TPlatformRole, TArtistPlan, TCompanyPlan, TAccountType, PLATFORM_ROLE_TEMPLATES |
 | `packages/shared-types/src/platform-contract.types.ts` | TPlatformContractDomainModel |
-| `apps/backend/src/platform-contract/domain/PlatformContractEntity.ts` | Entity |
+| `packages/shared-types/src/auth.dto.types.ts` | TRegisterUserRequestDTO (with account_type) |
+| `apps/backend/src/platform-contract/domain/PlatformContractEntity.ts` | Entity (validates family match) |
 | `apps/backend/src/platform-contract/infra/PlatformContractMongoRepo.ts` | Repository |
 | `apps/backend/src/platform-contract/api/platform-contract-context.guard.ts` | Guard |
-| `apps/backend/src/platform-contract/platform-contract.module.ts` | Module |
-| `apps/backend/src/utils/nest/decorators/PlatformScoped.ts` | Decorator |
-| `apps/backend/src/utils/nest/guards/RequirePermission.ts` | expandRolesToPermissions (both templates) |
+| `apps/backend/src/quota/domain/QuotaLimits.ts` | PLAN_QUOTAS per plan |
+| `apps/backend/src/quota/QuotaService.ts` | ensureAllowed() / recordUsage() |
 | `apps/backend/src/auth/application/commands/RegisterUserCommand.ts` | Creates platform contract at registration |
-| `apps/backend/src/appBootstrap/nestTokens.ts` | PLATFORM_CONTRACT_REPO token |
 | `apps/backend/src/migrations/add-platform-contracts.mjs` | Backfill migration |
-
----
-
-## TODO
-
-### Payment integration (Stripe)
-- [ ] `POST /platform-contract/upgrade` — changes plan, creates Stripe checkout session
-- [ ] Stripe webhook handler — on `checkout.session.completed`, call `changePlan()`
-- [ ] Stripe webhook — on `invoice.payment_failed`, call `suspend()`
-- [ ] Stripe webhook — on `invoice.paid` (after retry), call `reactivate()`
-- [ ] Frontend: plan picker component in user settings
-
-### Quota enforcement
-- [ ] `MusicPolicy` reads the platform contract plan to determine limits:
-  - Free: 50 repertoire entries, 3 masters/month, 500 Mo storage
-  - Pro: unlimited entries, unlimited masters, 5 Go storage
-  - Band: unlimited, 20 Go shared
-  - Business: unlimited, 100 Go
-- [ ] Quota check runs BEFORE the domain command — 402 Payment Required
-  if exceeded
-- [ ] Usage tracking collection: `platform_usage` with monthly counters
-
-### Admin endpoints
-- [ ] `GET /admin/platform-contracts` — list all, filter by plan/status
-- [ ] `PATCH /admin/platform-contracts/:id` — change plan, suspend, reactivate
-- [ ] Dashboard: revenue by plan, active/suspended/churned counts
-
-### Team plans (Band/Business)
-- [ ] Band plan: invite up to 8 members who share the platform contract
-- [ ] Business plan: invite up to 25 members
-- [ ] `POST /platform-contract/invite` — adds a member to the team plan
-- [ ] Invited members get their own platform contract with the team plan's role
-- [ ] Owner sees all team members + usage in settings
 
 ---
 
 ## Related docs
 
-- `sh3-writing-a-controller.md` — controller patterns (how @PlatformScoped fits alongside @ContractScoped)
-- `sh3-e2e-tests.md` — how factories create platform contracts for tests
-- `sh3-music-library.md` — music feature roadmap (features gated by platform plans)
+- `sh3-writing-a-controller.md` — controller patterns
+- `sh3-quota-service.md` — quota enforcement per plan
+- `sh3-e2e-tests.md` — how factories create platform contracts
+- `sh3-music-library.md` — music features gated by artist plans
+- `documentation/todos/TODO-plans-artist-company.md` — full feature matrix & pricing

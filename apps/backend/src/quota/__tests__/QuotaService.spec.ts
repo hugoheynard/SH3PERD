@@ -50,7 +50,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
-        plan: 'plan_free',
+        plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
       });
@@ -63,7 +63,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
-        plan: 'plan_free',
+        plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
       });
@@ -78,7 +78,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
-        plan: 'plan_free',
+        plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
       });
@@ -93,12 +93,12 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
-        plan: 'plan_pro',
+        plan: 'artist_pro',
         status: 'active',
         startDate: new Date(),
       });
 
-      // plan_pro has master_standard: -1 (unlimited)
+      // artist_pro has master_standard: -1 (unlimited)
       await expect(service.ensureAllowed('u1' as any, 'master_standard')).resolves.not.toThrow();
 
       // Should NOT hit the usage repo — skip DB when unlimited
@@ -109,12 +109,12 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
-        plan: 'plan_free',
+        plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
       });
 
-      // plan_free has master_ai: 0
+      // artist_free has master_ai: 0
       await expect(service.ensureAllowed('u1' as any, 'master_ai')).rejects.toThrow(
         QuotaExceededError,
       );
@@ -126,12 +126,12 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
-        plan: 'plan_band',
+        plan: 'artist_max',
         status: 'active',
         startDate: new Date(),
       });
 
-      // plan_band only lists storage_bytes — everything else is unlimited
+      // artist_max only lists storage_bytes + master_ai — everything else is unlimited
       await expect(service.ensureAllowed('u1' as any, 'master_standard')).resolves.not.toThrow();
 
       expect(mockUsageRepo.getCount).not.toHaveBeenCalled();
@@ -141,7 +141,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
-        plan: 'plan_free',
+        plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
       });
@@ -169,7 +169,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
-        plan: 'plan_free',
+        plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
       });
@@ -189,12 +189,12 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
-        plan: 'plan_band',
+        plan: 'artist_max',
         status: 'active',
         startDate: new Date(),
       });
 
-      // plan_band doesn't list master_standard → nothing to record
+      // artist_max doesn't list master_standard → nothing to record
       await service.recordUsage('u1' as any, 'master_standard');
 
       expect(mockUsageRepo.increment).not.toHaveBeenCalled();
@@ -208,7 +208,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
-        plan: 'plan_free',
+        plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
       });
@@ -255,7 +255,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
-        plan: 'plan_free',
+        plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
       });

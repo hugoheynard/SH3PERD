@@ -64,6 +64,7 @@ export class UserBuilder {
       .send({
         ...this.credentials,
         ...this.profile,
+        account_type: 'artist',
       })
       .expect(201);
 

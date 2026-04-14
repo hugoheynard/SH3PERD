@@ -60,7 +60,8 @@ try {
     await platformContracts.insertOne({
       id: `platformContract_${randomUUID()}`,
       user_id: user.id,
-      plan: 'plan_free',
+      account_type: 'artist',
+      plan: 'artist_free',
       status: 'active',
       startDate: now,
       created_at: now,

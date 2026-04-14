@@ -148,8 +148,8 @@ export function RequirePermission(...permissions: TPermission[]) {
  * Expand roles into a flat list of granted permissions.
  *
  * Checks BOTH `ROLE_TEMPLATES` (company roles: owner, admin, artist,
- * viewer) and `PLATFORM_ROLE_TEMPLATES` (SaaS plans: plan_free,
- * plan_pro, plan_band, plan_business). Since the two role sets are
+ * viewer) and `PLATFORM_ROLE_TEMPLATES` (SaaS plans: artist_free,
+ * artist_pro, artist_max, company_free, etc.). Since the two role sets are
  * disjoint strings, only one lookup matches per role.
  */
 export function expandRolesToPermissions(roles: (TContractRole | TPlatformRole)[]): TPermission[] {

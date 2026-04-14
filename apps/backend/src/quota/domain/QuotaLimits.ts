@@ -17,10 +17,19 @@ import type { TPlatformRole } from '@sh3pherd/shared-types';
 export type TQuotaResource =
   | 'repertoire_entry'
   | 'track_upload'
+  | 'track_version'
+  | 'playlist'
+  | 'search_tab'
+  | 'search_tab_items'
   | 'master_standard'
   | 'master_ai'
   | 'pitch_shift'
-  | 'storage_bytes';
+  | 'storage_bytes'
+  | 'org_node'
+  | 'active_contract'
+  | 'company_member'
+  | 'guest_user'
+  | 'active_event';
 
 /** How the counter resets. */
 export type TQuotaPeriod = 'monthly' | 'lifetime';
@@ -35,28 +44,66 @@ export type TQuotaLimit = {
 // ── Plan quotas ─────────────────────────────────────────────
 
 export const PLAN_QUOTAS: Record<TPlatformRole, TQuotaLimit[]> = {
-  plan_free: [
-    { resource: 'repertoire_entry', period: 'lifetime', limit: 50 },
-    { resource: 'track_upload', period: 'lifetime', limit: 50 },
-    { resource: 'master_standard', period: 'monthly', limit: 3 },
-    { resource: 'master_ai', period: 'monthly', limit: 0 },
-    { resource: 'pitch_shift', period: 'monthly', limit: 3 },
-    { resource: 'storage_bytes', period: 'lifetime', limit: 500 * 1024 * 1024 }, // 500 Mo
+
+  // ═══════════════════════════════════════════════════════════
+  // ARTIST PLANS
+  // ═══════════════════════════════════════════════════════════
+
+  artist_free: [
+    { resource: 'repertoire_entry',  period: 'lifetime', limit: 50 },
+    { resource: 'track_upload',      period: 'lifetime', limit: 50 },
+    { resource: 'track_version',     period: 'lifetime', limit: 2 },    // per track
+    { resource: 'playlist',          period: 'lifetime', limit: 3 },
+    { resource: 'search_tab',        period: 'lifetime', limit: 1 },
+    { resource: 'search_tab_items',  period: 'lifetime', limit: 3 },    // tabs per search tab
+    { resource: 'master_standard',   period: 'monthly',  limit: 3 },
+    { resource: 'master_ai',         period: 'monthly',  limit: 0 },
+    { resource: 'pitch_shift',       period: 'monthly',  limit: 3 },
+    { resource: 'storage_bytes',     period: 'lifetime', limit: 500 * 1024 * 1024 }, // 500 Mo
   ],
-  plan_pro: [
-    { resource: 'repertoire_entry', period: 'lifetime', limit: -1 },
-    { resource: 'track_upload', period: 'lifetime', limit: -1 },
-    { resource: 'master_standard', period: 'monthly', limit: -1 },
-    { resource: 'master_ai', period: 'monthly', limit: 10 },
-    { resource: 'pitch_shift', period: 'monthly', limit: -1 },
-    { resource: 'storage_bytes', period: 'lifetime', limit: 5 * 1024 * 1024 * 1024 }, // 5 Go
+
+  artist_pro: [
+    { resource: 'repertoire_entry',  period: 'lifetime', limit: -1 },
+    { resource: 'track_upload',      period: 'lifetime', limit: -1 },
+    { resource: 'track_version',     period: 'lifetime', limit: 5 },    // per track
+    { resource: 'playlist',          period: 'lifetime', limit: -1 },
+    { resource: 'search_tab',        period: 'lifetime', limit: 10 },
+    { resource: 'search_tab_items',  period: 'lifetime', limit: 5 },    // tabs per search tab
+    { resource: 'master_standard',   period: 'monthly',  limit: -1 },
+    { resource: 'master_ai',         period: 'monthly',  limit: 10 },
+    { resource: 'pitch_shift',       period: 'monthly',  limit: -1 },
+    { resource: 'storage_bytes',     period: 'lifetime', limit: 5 * 1024 * 1024 * 1024 }, // 5 Go
   ],
-  plan_band: [
-    { resource: 'storage_bytes', period: 'lifetime', limit: 20 * 1024 * 1024 * 1024 }, // 20 Go
-    // All other resources: unlimited (not listed)
+
+  artist_max: [
+    { resource: 'master_ai',         period: 'monthly',  limit: 50 },
+    { resource: 'storage_bytes',     period: 'lifetime', limit: 20 * 1024 * 1024 * 1024 }, // 20 Go
+    // Everything else: unlimited (not listed)
   ],
-  plan_business: [
-    { resource: 'storage_bytes', period: 'lifetime', limit: 100 * 1024 * 1024 * 1024 }, // 100 Go
+
+  // ═══════════════════════════════════════════════════════════
+  // COMPANY PLANS
+  // ═══════════════════════════════════════════════════════════
+
+  company_free: [
+    { resource: 'org_node',          period: 'lifetime', limit: 20 },
+    { resource: 'active_contract',   period: 'lifetime', limit: 10 },
+    { resource: 'company_member',    period: 'lifetime', limit: 5 },
+    { resource: 'guest_user',        period: 'lifetime', limit: 3 },
+    { resource: 'active_event',      period: 'lifetime', limit: 0 },
+  ],
+
+  company_pro: [
+    { resource: 'active_contract',   period: 'lifetime', limit: 50 },
+    { resource: 'company_member',    period: 'lifetime', limit: 25 },
+    { resource: 'guest_user',        period: 'lifetime', limit: 15 },
+    { resource: 'active_event',      period: 'lifetime', limit: 10 },
+    // org_node: unlimited (not listed)
+  ],
+
+  company_business: [
+    { resource: 'storage_bytes',     period: 'lifetime', limit: 100 * 1024 * 1024 * 1024 }, // 100 Go
+    // Everything else: unlimited (not listed)
   ],
 };
 

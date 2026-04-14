@@ -46,6 +46,7 @@ describe('RegisterUserHandler', () => {
     password: 'StrongPass123!',
     first_name: 'John',
     last_name: 'Doe',
+    account_type: 'artist' as const,
   };
 
   describe('execute — success', () => {

@@ -190,34 +190,61 @@ export const ROLE_TEMPLATES: Record<TContractRole, TPermission[]> = {
   ],
 } as const;
 
+// ─── Account Type ──────────────────────────────────────
+/**
+ * Determined at registration, never changes.
+ * An artist who needs company features creates a separate company account.
+ */
+export type TAccountType = 'artist' | 'company';
+export const SAccountType: ZodOutput<TAccountType> =
+  z.enum(['artist', 'company']);
+
 // ─── Platform Roles (SaaS subscription plans) ────────────
+
+/**
+ * Artist plans — personal music library, playlists, audio processing.
+ */
+export type TArtistPlan = 'artist_free' | 'artist_pro' | 'artist_max';
+export const SArtistPlan: ZodOutput<TArtistPlan> =
+  z.enum(['artist_free', 'artist_pro', 'artist_max']);
+
+/**
+ * Company plans — organisation, events, integrations, team management.
+ */
+export type TCompanyPlan = 'company_free' | 'company_pro' | 'company_business';
+export const SCompanyPlan: ZodOutput<TCompanyPlan> =
+  z.enum(['company_free', 'company_pro', 'company_business']);
 
 /**
  * Platform-level roles representing SaaS subscription plans.
  * Each user gets a platform contract at registration with one of these roles.
  * Disjoint from TContractRole — the two never mix in the same contract.
+ *
+ * Two families:
+ * - Artist:  artist_free → artist_pro → artist_max
+ * - Company: company_free → company_pro → company_business
  */
-export type TPlatformRole = 'plan_free' | 'plan_pro' | 'plan_band' | 'plan_business';
+export type TPlatformRole = TArtistPlan | TCompanyPlan;
 export const SPlatformRole: ZodOutput<TPlatformRole> =
-  z.enum(['plan_free', 'plan_pro', 'plan_band', 'plan_business']);
+  z.enum([
+    'artist_free', 'artist_pro', 'artist_max',
+    'company_free', 'company_pro', 'company_business',
+  ]);
 
 /**
  * Permission templates for platform roles.
  *
- * plan_free gives full music CRUD access — quantity limits (50 songs,
- * 3 masters/month) are enforced by MusicPolicy / quotas, NOT by the
- * permission system. The permission layer answers "can you do this
- * action at all?", quotas answer "have you exceeded your allowance?".
+ * Artist plans: music-focused permissions + quotas.
+ * Company plans: organisation + events + music access via company scope.
+ *
+ * Quantity limits (50 songs, 3 masters/month) are enforced by
+ * QuotaService, NOT by the permission system. The permission layer
+ * answers "can you do this action at all?", quotas answer
+ * "have you exceeded your allowance?".
  */
 export const PLATFORM_ROLE_TEMPLATES: Record<TPlatformRole, TPermission[]> = {
-  plan_free: [
-    P.Music.Library.Read,
-    P.Music.Library.Write,
-    P.Music.Track.Read,
-    P.Music.Track.Write,
-    P.Music.Playlist.Read,
-  ],
-  plan_pro: [
+  // ── Artist plans ──────────────────────────────────────
+  artist_free: [
     P.Music.Library.Read,
     P.Music.Library.Write,
     P.Music.Track.Read,
@@ -227,11 +254,36 @@ export const PLATFORM_ROLE_TEMPLATES: Record<TPlatformRole, TPermission[]> = {
     P.Music.Playlist.Write,
     P.Music.Playlist.Delete,
     P.Music.Playlist.Own,
-    P.Music.Setlist.Read,
-    P.Music.Setlist.Write,
   ],
-  plan_band: ['music:*'],
-  plan_business: ['music:*', 'event:*'],
+  artist_pro: [
+    'music:*',
+  ],
+  artist_max: [
+    'music:*',
+    'event:*',
+  ],
+
+  // ── Company plans ─────────────────────────────────────
+  company_free: [
+    P.Company.Settings.Read,
+    P.Company.Settings.Write,
+    P.Company.Members.Read,
+    P.Company.Members.Write,
+    P.Company.Members.Invite,
+    P.Company.OrgChart.Read,
+    P.Company.OrgChart.Write,
+  ],
+  company_pro: [
+    'company:*',
+    'event:*',
+    'music:*:read',
+    P.Music.Playlist.Write,
+    P.Music.Playlist.Delete,
+    P.Music.Playlist.Own,
+  ],
+  company_business: [
+    '*',
+  ],
 } as const;
 
 /**

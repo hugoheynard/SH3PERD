@@ -1,6 +1,8 @@
 import { SuserCredentialsDTO, type TUserCredentialsDomainModel } from './user/user-credentials.js';
 import type { TUserId } from './user/user.domain.js';
 import type { TRefreshToken } from './auth.domain.js';
+import type { TAccountType } from './permissions.types.js';
+import { SAccountType } from './permissions.types.js';
 import { z } from 'zod';
 import { zConstrainedString } from './utils/zConstrainedString.js';
 
@@ -10,14 +12,27 @@ import { zConstrainedString } from './utils/zConstrainedString.js';
  */
 export type TUserCredentials = { email: string; password: string };
 
-export type TRegisterUserRequestDTO = TUserCredentials & { first_name: string; last_name: string };
+export type TRegisterUserRequestDTO = TUserCredentials & {
+  first_name: string;
+  last_name: string;
+  /** Determines the plan family (artist_free or company_free). Set once, never changes. */
+  account_type: TAccountType;
+  /** Required when account_type === 'company'. */
+  company_name?: string;
+};
 
 export const SRegisterUserRequestDTO = z
   .object({
     first_name: zConstrainedString('First name', { minLength: 3 }),
     last_name: zConstrainedString('Last name', { minLength: 3 }),
+    account_type: SAccountType,
+    company_name: zConstrainedString('Company name', { minLength: 2 }).optional(),
   })
-  .merge(SuserCredentialsDTO);
+  .merge(SuserCredentialsDTO)
+  .refine(
+    (data) => data.account_type !== 'company' || (data.company_name && data.company_name.trim().length >= 2),
+    { message: 'Company name is required for company accounts', path: ['company_name'] },
+  );
 
 export type TRegisterUserResponseDTO = TUserCredentialsDomainModel;
 

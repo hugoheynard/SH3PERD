@@ -21,7 +21,7 @@ import type { IPlatformContractRepository } from '../infra/PlatformContractMongo
  *
  * On success, attaches:
  * - `request.contract_roles = [platformContract.plan]`
- *   e.g. `['plan_free']` — picked up by `PermissionGuard` downstream
+ *   e.g. `['artist_free']` — picked up by `PermissionGuard` downstream
  * - `request.platform_contract_id` — the platform contract's ID
  *
  * Only activates on routes decorated with `@PlatformScoped()`.
