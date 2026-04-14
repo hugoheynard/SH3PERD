@@ -1,60 +1,33 @@
 // ═══════════════════════════════════════════════════════
-//  User Profile Page
+//  User Profile Page — tabbed settings layout
 // ═══════════════════════════════════════════════════════
 
 :host {
   display: block;
   height: 100%;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
-.profile-layout {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
+.profile-page {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  height: 100%;
 }
 
+// ─── Avatar header ─────────────────────────────────
 
-// ─── Card (generic section) ─────────────────────────
-
-.card {
-  background: var(--card-color);
-  border: 1px solid var(--panel-border-color);
-  border-radius: var(--radius-md);
-  padding: 1.25rem 1.5rem;
-}
-
-.card__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.25rem;
-}
-
-.card__title {
-  font-size: var(--text-sm);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-
-// ─── Avatar card ────────────────────────────────────
-
-.card--avatar {
+.profile-header {
   display: flex;
   align-items: center;
   gap: 1.25rem;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--divider-color);
+  flex-shrink: 0;
 }
 
 .avatar-circle {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   border-radius: var(--radius-round);
   background: var(--accent-color);
   display: flex;
@@ -90,90 +63,59 @@
 }
 
 .avatar-upload-btn {
-  margin-top: 6px;
+  margin-top: 4px;
   align-self: flex-start;
 }
 
+// ─── Settings inline (tab sidebar + content) ────────
 
-// ─── Form grid ──────────────────────────────────────
+.settings-inline {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
 
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-
-  @media (max-width: 520px) {
-    grid-template-columns: 1fr;
+  sh3-tab-nav {
+    width: 180px;
+    min-width: 180px;
+    flex-shrink: 0;
+    padding: 16px 8px;
+    border-right: 1px solid var(--divider-color);
   }
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+.settings-content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 28px 32px;
+}
 
-  // sh3-input should fill the field width
-  sh3-input {
-    width: 100%;
+.tab-panel {
+  max-width: 540px;
+}
+
+// ─── Responsive ─────────────────────────────────────
+
+@media (max-width: 768px) {
+  .profile-header {
+    padding: 1rem;
   }
-}
 
-.field__label {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-faded);
-}
+  .settings-inline {
+    flex-direction: column;
 
-.form-actions {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding-top: 0.5rem;
-}
+    sh3-tab-nav {
+      width: 100%;
+      min-width: 0;
+      padding: 8px;
+      border-right: none;
+      border-bottom: 1px solid var(--divider-color);
+      overflow-x: auto;
+    }
+  }
 
-.save-feedback {
-  grid-column: 1 / -1;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-success);
-  animation: fade-in 0.2s ease;
-}
-
-
-// ─── Email section ──────────────────────────────────
-
-.email-current {
-  font-size: var(--text-md);
-  color: var(--text-primary);
-}
-
-.field-error {
-  grid-column: 1 / -1;
-  font-size: var(--text-xs);
-  font-weight: 500;
-  color: var(--color-alert-light);
-}
-
-
-// ─── Password placeholder ───────────────────────────
-
-.password-placeholder {
-  padding: 1rem 0 0.5rem;
-}
-
-.password-placeholder__text {
-  font-size: var(--text-sm);
-  color: var(--text-faded);
-  font-style: italic;
-}
-
-
-// ─── Animations ─────────────────────────────────────
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  .settings-content {
+    padding: 16px;
+  }
 }

@@ -1,0 +1,98 @@
+.tab-panel {
+  max-width: 540px;
+}
+
+// ─── Card (generic section) ─────────────────────────
+
+.card {
+  background: var(--card-color);
+  border: 1px solid var(--panel-border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.card__title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+// ─── Form grid ──────────────────────────────────────
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  sh3-input {
+    width: 100%;
+  }
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 0.5rem;
+}
+
+.save-feedback {
+  grid-column: 1 / -1;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-success);
+  animation: fade-in 0.2s ease;
+}
+
+// ─── Email section ──────────────────────────────────
+
+.email-current {
+  font-size: var(--text-md);
+  color: var(--text-primary);
+}
+
+.field-error {
+  grid-column: 1 / -1;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-alert-light);
+}
+
+// ─── Password placeholder ───────────────────────────
+
+.password-placeholder {
+  padding: 1rem 0 0.5rem;
+}
+
+.password-placeholder__text {
+  font-size: var(--text-sm);
+  color: var(--text-faded);
+  font-style: italic;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

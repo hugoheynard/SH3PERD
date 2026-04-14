@@ -1,0 +1,89 @@
+.tab-panel {
+  max-width: 540px;
+}
+
+.panel-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 20px;
+}
+
+/* ── Danger zone ── */
+.danger-zone {
+  border: 1px solid var(--color-alert-dim);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.danger-zone-header {
+  padding: 10px 16px;
+  background: var(--color-alert-dim);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-alert-light);
+  border-bottom: 1px solid var(--color-alert-dim);
+}
+
+.danger-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+}
+
+.danger-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.danger-row-label {
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.danger-row-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.delete-confirm {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.delete-confirm-label {
+  font-size: var(--text-sm);
+  color: var(--color-alert-light);
+  line-height: 1.5;
+}
+
+.password-confirm {
+  margin-top: 4px;
+
+  sh3-input {
+    display: block;
+    width: 100%;
+  }
+}
+
+.error-msg {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-alert-light);
+}
+
+.delete-confirm-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

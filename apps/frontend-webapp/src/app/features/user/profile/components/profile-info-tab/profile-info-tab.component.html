@@ -1,0 +1,139 @@
+<div class="tab-panel">
+
+  <!-- ── Personal information ─────────────────────── -->
+  <section class="card">
+    <div class="card__header">
+      <h2 class="card__title">Personal information</h2>
+      @if (!editingProfile()) {
+        <sh3-button variant="ghost" size="sm" (clicked)="startEditProfile()">Edit</sh3-button>
+      }
+    </div>
+
+    <form [formGroup]="form" class="form-grid" (ngSubmit)="submitProfile()">
+      <div class="field">
+        <sh3-input
+          label="First name"
+          formControlName="first_name"
+          placeholder="First name"
+          [readonly]="!editingProfile()"
+        />
+      </div>
+
+      <div class="field">
+        <sh3-input
+          label="Last name"
+          formControlName="last_name"
+          placeholder="Last name"
+          [readonly]="!editingProfile()"
+        />
+      </div>
+
+      <div class="field">
+        <sh3-input
+          label="Display name"
+          formControlName="display_name"
+          placeholder="Display name (optional)"
+          [readonly]="!editingProfile()"
+        />
+      </div>
+
+      <div class="field">
+        <sh3-input
+          label="Phone"
+          type="tel"
+          formControlName="phone"
+          placeholder="Phone (optional)"
+          [readonly]="!editingProfile()"
+        />
+      </div>
+
+      @if (editingProfile()) {
+        <div class="form-actions">
+          <sh3-button variant="ghost" size="sm" (clicked)="cancelEditProfile()">Cancel</sh3-button>
+          <sh3-button variant="solid" size="sm" type="submit" [disabled]="form.invalid || saving()">
+            @if (saving()) { Saving… } @else { Save changes }
+          </sh3-button>
+        </div>
+      }
+
+      @if (saveSuccess()) {
+        <span class="save-feedback">✓ Profile updated</span>
+      }
+    </form>
+  </section>
+
+  <!-- ── Email ────────────────────────────────────── -->
+  <section class="card">
+    <div class="card__header">
+      <h2 class="card__title">Email address</h2>
+      @if (!editingEmail()) {
+        <sh3-button variant="ghost" size="sm" (clicked)="startEditEmail()">Change email</sh3-button>
+      }
+    </div>
+
+    @if (!editingEmail()) {
+      <span class="email-current">{{ userEmail() || 'No email set' }}</span>
+    } @else {
+      <form [formGroup]="emailForm" class="form-grid" (ngSubmit)="submitEmail()">
+        <div class="field">
+          <sh3-input
+            label="New email"
+            type="email"
+            formControlName="newEmail"
+            placeholder="new@email.com"
+          />
+        </div>
+
+        <div class="field">
+          <sh3-input
+            label="Confirm email"
+            type="email"
+            formControlName="confirmEmail"
+            placeholder="Repeat new email"
+          />
+        </div>
+
+        @if (emailForm.get('confirmEmail')?.dirty && !emailsMatch()) {
+          <span class="field-error">Emails do not match</span>
+        }
+
+        @if (emailError()) {
+          <span class="field-error">{{ emailError() }}</span>
+        }
+
+        <div class="form-actions">
+          <sh3-button variant="ghost" size="sm" (clicked)="cancelEditEmail()">Cancel</sh3-button>
+          <sh3-button
+            variant="solid"
+            size="sm"
+            type="submit"
+            [disabled]="emailForm.invalid || !emailsMatch() || savingEmail()"
+          >
+            @if (savingEmail()) { Sending… } @else { Update email }
+          </sh3-button>
+        </div>
+      </form>
+
+      @if (emailSuccess()) {
+        <span class="save-feedback">✓ Confirmation email sent</span>
+      }
+    }
+  </section>
+
+  <!-- ── Password ─────────────────────────────────── -->
+  <section class="card">
+    <div class="card__header">
+      <h2 class="card__title">Password</h2>
+      <sh3-button variant="ghost" size="sm" (clicked)="togglePasswordEdit()">
+        @if (editingPassword()) { Cancel } @else { Change password }
+      </sh3-button>
+    </div>
+
+    @if (editingPassword()) {
+      <div class="password-placeholder">
+        <span class="password-placeholder__text">Password change coming soon.</span>
+      </div>
+    }
+  </section>
+
+</div>

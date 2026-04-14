@@ -1,0 +1,53 @@
+<div class="tab-panel">
+  <h2 class="panel-title">Account</h2>
+
+  <div class="danger-zone">
+    <div class="danger-zone-header">Danger zone</div>
+
+    @if (step() === 'idle') {
+      <div class="danger-row">
+        <div class="danger-row-info">
+          <span class="danger-row-label">Delete my account</span>
+          <span class="danger-row-desc">
+            Your account will be deactivated. You won't be able to log in.
+            Your data will be preserved but frozen — contact support to reactivate.
+          </span>
+        </div>
+        <sh3-button variant="critical" (clicked)="requestDelete()">Delete</sh3-button>
+      </div>
+    } @else {
+      <div class="delete-confirm">
+        <span class="delete-confirm-label">
+          This will deactivate your account immediately. All your sessions will be terminated.
+          Your music library, playlists, and profile data will be frozen (not deleted).
+        </span>
+
+        <div class="password-confirm">
+          <sh3-input
+            label="Enter your password to confirm"
+            type="password"
+            name="confirmPassword"
+            size="lg"
+            placeholder="Current password"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+          />
+        </div>
+
+        @if (errorMessage()) {
+          <span class="error-msg">{{ errorMessage() }}</span>
+        }
+
+        <div class="delete-confirm-actions">
+          <sh3-button
+            variant="critical"
+            [disabled]="!password().trim() || step() === 'submitting'"
+            (clicked)="confirmDelete()">
+            @if (step() === 'submitting') { Deactivating… } @else { Yes, delete my account }
+          </sh3-button>
+          <sh3-button variant="ghost" (clicked)="cancel()" [disabled]="step() === 'submitting'">Cancel</sh3-button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
