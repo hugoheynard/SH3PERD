@@ -165,6 +165,27 @@
   &:hover { color: var(--text-primary); background: var(--hover-color); }
 }
 
+/* ── Mobile: compact toolbar + search wrap ──────── */
+
+@media (max-width: 768px) {
+  .tab-search {
+    order: 10;
+    flex: 1 0 100%;
+    margin-left: 0;
+    padding: 6px 0 4px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .tab-search-input {
+    flex: 1;
+    width: auto;
+  }
+}
+
+@media (max-width: 460px) {
+  .add-label { display: none; }
+}
+
 /* ── Hidden file input ──────────────────────────── */
 
 .file-input-hidden { display: none; }

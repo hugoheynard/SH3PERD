@@ -19,73 +19,6 @@
   scrollbar-color: var(--accent-color-faded) transparent;
 }
 
-/* ══════════════════════════════════════════════════
-   MOBILE  (≤ 768px)  — top-bar mode
-   Side panel sits above the content instead of
-   beside it. Layout adapts to horizontal space.
-   ══════════════════════════════════════════════════ */
-
-@media (max-width: 768px) {
-
-  /* Host: let the page's max-height control collapse */
-  :host {
-    height: auto;
-    overflow: visible;
-  }
-
-  .side-panel {
-    height: auto;
-    overflow: visible;
-    border-right: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  }
-
-  /* Stats section: horizontal strip instead of vertical column */
-  .panel-section:first-child {
-    padding: 10px 14px;
-  }
-
-  /* Quality badge becomes a compact inline pill */
-  .quality-badge {
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    margin-bottom: 8px;
-  }
-
-  .quality-value {
-    font-size: 22px;
-  }
-
-  /* Stat cards: horizontal row (3 items side-by-side) */
-  .stat-cards {
-    flex-direction: row;
-    gap: 6px;
-  }
-
-  .stat-card {
-    flex: 1;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    padding: 8px 6px;
-    text-align: center;
-  }
-
-  .stat-value { font-size: 16px; }
-
-  .stat-label {
-    font-size: 9px;
-    text-align: center;
-  }
-
-  /* Filter section: tighter */
-  .panel-section:not(:first-child) {
-    padding: 10px 14px 12px;
-  }
-}
-
 /* ── Sections ───────────────────────────────────── */
 
 .panel-section {
@@ -102,62 +35,6 @@
   color: var(--text-muted);
 
   &--no-margin { margin: 0; }
-}
-
-/* ── Quality badge ──────────────────────────────── */
-
-.quality-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-
-  padding: 16px 12px;
-  margin-bottom: 12px;
-
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  background: var(--surface-subtle);
-
-  transition: background 0.2s ease, border-color 0.2s ease;
-
-  &[data-level='low'] {
-    background: var(--color-rating-low-dim);
-    border-color: var(--color-alert-border);
-    .quality-value { color: var(--color-rating-low); }
-  }
-  &[data-level='medium'] {
-    background: var(--color-rating-medium-dim);
-    border-color: var(--color-warning-border);
-    .quality-value { color: var(--color-rating-medium); }
-  }
-  &[data-level='high'] {
-    background: var(--color-rating-high-dim);
-    border-color: var(--color-rating-high-dim);
-    .quality-value { color: var(--color-rating-high); }
-  }
-  &[data-level='max'] {
-    background: var(--accent-color-dim);
-    border-color: var(--accent-color-border);
-    .quality-value { color: var(--accent-color-light); }
-  }
-}
-
-.quality-value {
-  font-size: 36px;
-  font-weight: 800;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-primary);
-}
-
-.quality-label {
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.7px;
-  color: var(--text-muted);
 }
 
 /* ── Stat cards ─────────────────────────────────── */
@@ -201,6 +78,44 @@
   font-weight: 500;
   color: var(--text-muted);
   text-align: right;
+}
+
+/* ── Quality badge (stat-card variant) ─────────── */
+
+.quality-badge {
+  transition: background 0.2s ease, border-color 0.2s ease;
+
+  &[data-level='low'] {
+    background: var(--color-rating-low-dim);
+    border-color: var(--color-alert-border);
+    .quality-value { color: var(--color-rating-low); }
+  }
+  &[data-level='medium'] {
+    background: var(--color-rating-medium-dim);
+    border-color: var(--color-warning-border);
+    .quality-value { color: var(--color-rating-medium); }
+  }
+  &[data-level='high'] {
+    background: var(--color-rating-high-dim);
+    border-color: var(--color-rating-high-dim);
+    .quality-value { color: var(--color-rating-high); }
+  }
+  &[data-level='max'] {
+    background: var(--accent-color-dim);
+    border-color: var(--accent-color-border);
+    .quality-value { color: var(--accent-color-light); }
+  }
+}
+
+.quality-value {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.quality-label {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
 }
 
 /* ── Config block ───────────────────────────────── */
@@ -397,24 +312,132 @@
   gap: 4px;
 }
 
-.genre-chip {
-  padding: 3px 8px;
+.genre-cloud .genre-chip {
   background: var(--surface-raised);
   border: 1px solid var(--border-light);
-  border-radius: 4px;
-  font-size: 10px;
-  color: var(--text-secondary, #a0aec0);
   cursor: default;
-  transition: background 0.12s ease, color 0.12s ease;
-
-  &:focus-visible {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
-  }
 
   &:hover {
     background: var(--accent-color-dim);
     color: var(--accent-color-light);
     border-color: var(--accent-color-border);
   }
+}
+
+/* ══════════════════════════════════════════════════
+   MOBILE  (≤ 768px)  — top-bar mode
+   Side panel sits above the content instead of
+   beside it. Layout adapts to horizontal space.
+   ══════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  :host {
+    height: auto;
+    overflow: visible;
+  }
+
+  .side-panel {
+    height: auto;
+    overflow: visible;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .panel-section:first-child {
+    padding: 10px 14px;
+  }
+
+  .stat-cards {
+    flex-direction: row;
+    gap: 6px;
+  }
+
+  .stat-card {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 6px;
+    text-align: center;
+  }
+
+  .stat-value { font-size: 16px; }
+
+  .stat-label {
+    font-size: 9px;
+    text-align: center;
+  }
+
+  .panel-section:not(:first-child) {
+    padding: 10px 14px 12px;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   COMPACT MOBILE  (≤ 500px) — minimize height
+   Stats in a single row, rating filters 2×2 grid.
+   ══════════════════════════════════════════════════ */
+
+@media (max-width: 500px) {
+
+  /* ── Stats: 4 stat cards in one row (incl. quality) ── */
+
+  .stat-cards {
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .stat-card {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2px;
+    padding: 6px 4px;
+  }
+
+  .stat-value { font-size: 14px; }
+  .stat-label { font-size: 8px; text-align: center; }
+
+  .panel-section:first-child {
+    padding: 8px 12px;
+  }
+
+  /* ── Filters: 2 ratings per row via CSS grid ── */
+
+  .filter-rows {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    column-gap: 16px;
+  }
+
+  /* Full-width elements span both columns */
+  .filter-genres,
+  .filter-divider {
+    grid-column: 1 / -1;
+  }
+
+  .filter-divider { margin: 2px 0; }
+
+  /* Smaller genre chips */
+  .genre-chip {
+    padding: 2px 6px;
+    font-size: 9px;
+  }
+
+  /* Smaller filter dots */
+  .filter-dot {
+    width: 22px;
+    height: 22px;
+    font-size: 9px;
+  }
+
+  /* Tighter section padding */
+  .panel-section:not(:first-child) {
+    padding: 8px 12px 10px;
+  }
+
+  .filter-header { margin-bottom: 6px; }
 }
