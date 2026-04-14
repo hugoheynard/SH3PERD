@@ -17,12 +17,11 @@ import { RangeSliderComponent, type RangeValue } from '../../../../shared/range-
       <section class="panel-section">
         <h2 class="section-title">Library Stats</h2>
 
-        <div class="quality-badge" [attr.data-level]="qualityLevel()">
-          <span class="quality-value">{{ averageQuality().toFixed(1) }}</span>
-          <span class="quality-label">Avg Quality</span>
-        </div>
-
         <div class="stat-cards">
+          <div class="stat-card quality-badge" [attr.data-level]="qualityLevel()">
+            <span class="stat-value quality-value">{{ averageQuality().toFixed(1) }}</span>
+            <span class="stat-label quality-label">Avg QLT</span>
+          </div>
           <div class="stat-card">
             <span class="stat-value">{{ totalReferences() }}</span>
             <span class="stat-label">References</span>

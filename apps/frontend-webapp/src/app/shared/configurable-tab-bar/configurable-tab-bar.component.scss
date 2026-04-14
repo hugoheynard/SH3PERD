@@ -602,7 +602,7 @@
 
 /* ── Mobile: search bar wraps below tabs ─────────── */
 
-@media (max-width: 460px) {
+@media (max-width: 768px) {
   .tab-bar {
     flex-wrap: wrap;
     padding: 6px 10px 0;

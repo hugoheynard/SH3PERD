@@ -167,8 +167,7 @@
 
 /* ── Mobile: compact toolbar + search wrap ──────── */
 
-@media (max-width: 460px) {
-  .add-label { display: none; }
+@media (max-width: 768px) {
   .tab-search {
     order: 10;
     flex: 1 0 100%;
@@ -181,6 +180,10 @@
     flex: 1;
     width: auto;
   }
+}
+
+@media (max-width: 460px) {
+  .add-label { display: none; }
 }
 
 /* ── Hidden file input ──────────────────────────── */
