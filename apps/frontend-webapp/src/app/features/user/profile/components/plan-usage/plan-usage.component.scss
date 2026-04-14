@@ -1,0 +1,107 @@
+.plan-usage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Plan header ───────────────────────────── */
+
+.plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.plan-info {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.plan-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.plan-price {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-color);
+
+  &--free {
+    color: var(--text-muted);
+  }
+}
+
+/* ── Usage list ────────────────────────────── */
+
+.usage-loading {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 8px 0;
+}
+
+.usage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.usage-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.usage-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.usage-resource {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.usage-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.usage-period {
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+
+/* ── Progress bar ──────────────────────────── */
+
+.usage-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.usage-bar__fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent-color);
+  transition: width 0.3s ease;
+}
+
+/* ── Warning states ────────────────────────── */
+
+.usage-item--warn {
+  .usage-count { color: var(--color-warning); }
+  .usage-bar__fill { background: var(--color-warning); }
+}
+
+.usage-item--full {
+  .usage-count { color: var(--color-alert); }
+  .usage-bar__fill { background: var(--color-alert); }
+}

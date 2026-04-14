@@ -48,6 +48,9 @@ export * from './permissions.types.js';
 //PLATFORM CONTRACT
 export * from './platform-contract.types.js';
 
+//PRICING
+export * from './pricing.types.js';
+
 //COMPANY
 export * from './company/communication.types.js';
 export * from './company/company.types.js';

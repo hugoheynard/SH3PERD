@@ -1,0 +1,46 @@
+<div class="plan-usage">
+
+  <!-- Plan header -->
+  <div class="plan-header">
+    <div class="plan-info">
+      <span class="plan-name">{{ planLabel() }}</span>
+      @if (planPrice() > 0) {
+        <span class="plan-price">{{ planPrice() }}€/mo</span>
+      } @else {
+        <span class="plan-price plan-price--free">Free</span>
+      }
+    </div>
+    <sh3-button variant="ghost" size="sm" (clicked)="openUpgrade()">
+      @if (planPrice() === 0) { Upgrade } @else { Change plan }
+    </sh3-button>
+  </div>
+
+  <!-- Usage bars -->
+  @if (loading()) {
+    <div class="usage-loading">Loading usage…</div>
+  } @else {
+    <div class="usage-list">
+      @for (item of usage(); track item.resource) {
+        @if (item.limit !== 0) {
+          <div class="usage-item" [class.usage-item--warn]="isNearLimit(item)" [class.usage-item--full]="isAtLimit(item)">
+            <div class="usage-label">
+              <span class="usage-resource">{{ resourceLabel(item.resource) }}</span>
+              <span class="usage-count">
+                {{ formatCurrent(item) }} / {{ formatLimit(item) }}
+                @if (periodLabel(item)) {
+                  <span class="usage-period">{{ periodLabel(item) }}</span>
+                }
+              </span>
+            </div>
+            @if (item.limit > 0) {
+              <div class="usage-bar">
+                <div class="usage-bar__fill" [style.width.%]="usagePercent(item)"></div>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+
+</div>

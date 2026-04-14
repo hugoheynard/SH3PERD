@@ -42,7 +42,8 @@ Le type est déterminé au register (`account_type`) et ne change jamais (un art
 
 | Fonctionnalité | artist_free | artist_pro | artist_max | Shipped |
 |---|:---:|:---:|:---:|:---:|
-| **Prix** | Gratuit | 9,99€/mois | 19,99€/mois | |
+| **Prix (annuel)** | Gratuit | 9,99€/mois | 19,99€/mois | |
+| **Prix (mensuel, +25%)** | Gratuit | 12,99€/mois | 24,99€/mois | |
 | **MUSIC LIBRARY** | | | | |
 | Bibliothèque musicale (lecture) | ✅ | ✅ | ✅ | ✅ |
 | Bibliothèque musicale (ajout/édition) | ✅ | ✅ | ✅ | ✅ |
@@ -74,7 +75,8 @@ Le type est déterminé au register (`account_type`) et ne change jamais (un art
 
 | Fonctionnalité | company_free | company_pro | company_business | Shipped |
 |---|:---:|:---:|:---:|:---:|
-| **Prix** | Gratuit | 29,99€/mois | 79,99€/mois | |
+| **Prix (annuel)** | Gratuit | 29,99€/mois | 79,99€/mois | |
+| **Prix (mensuel, +25%)** | Gratuit | 37,99€/mois | 99,99€/mois | |
 | **ORGANISATION** | | | | |
 | Organigramme (lecture) | ✅ | ✅ | ✅ | ✅ |
 | Organigramme (édition) | ✅ | ✅ | ✅ | ⚠️ partiel |
