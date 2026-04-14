@@ -43,6 +43,7 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | **Quality Gates**        | `apps/backend/documentation/sh3-quality-gates.md`        | 3-tier enforcement (pre-commit/pre-push/CI), detection logic, branch protection          |
 | **Platform Contract**    | `apps/backend/documentation/sh3-platform-contract.md`    | SaaS subscription model, dual contract model (platform vs company)                       |
 | **Quota Service**        | `apps/backend/documentation/sh3-quota-service.md`        | Quota enforcement: `ensureAllowed()` / `recordUsage()`, plan limits                      |
+| **Analytics Events**     | `apps/backend/documentation/sh3-analytics-events.md`     | Append-only event store, event types, metadata, handler status                           |
 | **Music Library**        | `apps/backend/documentation/sh3-music-library.md`        | Full music feature architecture, 14 features across 4 tiers                              |
 | **Music Audio Player**   | `apps/backend/documentation/sh3-music-audio-player.md`   | wavesurfer.js inline player, peaks pipeline                                              |
 | **Music Mastering**      | `apps/backend/documentation/sh3-music-mastering.md`      | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift                                    |
@@ -56,17 +57,19 @@ When creating new docs, respect this separation. A technical doc about how a sys
 
 ## Process docs (documentation/)
 
-| Doc                  | Path                                               | Description                                         |
-| -------------------- | -------------------------------------------------- | --------------------------------------------------- |
-| **README**           | `documentation/README.md`                          | Process documentation index                         |
-| **Tech Debt**        | `documentation/todos/TODO-tech-debt.md`            | Urgent bugs, architectural debt, functional backlog |
-| **Music Features**   | `documentation/todos/TODO-music-features.md`       | Music feature roadmap by phase                      |
-| **Company Features** | `documentation/todos/TODO-company-features.md`     | Company module: settings, org chart, contracts      |
-| **Guest to User**    | `documentation/todos/TODO-guest-to-user.md`        | Guest user activation flow (6 phases)               |
-| **Integrations**     | `documentation/todos/TODO-integrations.md`         | Slack integration roadmap                           |
-| **Tab Bar**          | `documentation/todos/TODO-configurable-tab-bar.md` | DnD bug fix, unit tests, component split            |
-| **Programs**         | `documentation/todos/TODO-programs.md`             | Drag engine refactoring                             |
-| **Error Mgmt**       | `documentation/todos/TODO-error-management.md`     | Error class refactoring (completed)                 |
+| Doc                      | Path                                               | Description                                         |
+| ------------------------ | -------------------------------------------------- | --------------------------------------------------- |
+| **README**               | `documentation/README.md`                          | Process documentation index                         |
+| **Tech Debt**            | `documentation/todos/TODO-tech-debt.md`            | Urgent bugs, architectural debt, functional backlog |
+| **Music Features**       | `documentation/todos/TODO-music-features.md`       | Music feature roadmap by phase                      |
+| **Company Features**     | `documentation/todos/TODO-company-features.md`     | Company module: settings, org chart, contracts      |
+| **Guest to User**        | `documentation/todos/TODO-guest-to-user.md`        | Guest user activation flow (6 phases)               |
+| **Integrations**         | `documentation/todos/TODO-integrations.md`         | Slack integration roadmap                           |
+| **Tab Bar**              | `documentation/todos/TODO-configurable-tab-bar.md` | DnD bug fix, unit tests, component split            |
+| **Programs**             | `documentation/todos/TODO-programs.md`             | Drag engine refactoring                             |
+| **Error Mgmt**           | `documentation/todos/TODO-error-management.md`     | Error class refactoring (completed)                 |
+| **Usage & Credits**      | `documentation/todos/TODO-usage-credits-events.md` | Usage tracking, credit packs, event store roadmap   |
+| **Plans Artist/Company** | `documentation/todos/TODO-plans-artist-company.md` | Plan matrix, pricing, feature matrix, migration     |
 
 ## Monorepo structure
 

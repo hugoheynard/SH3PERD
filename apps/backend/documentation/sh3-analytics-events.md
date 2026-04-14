@@ -2,7 +2,7 @@
 
 > **Module** : `analytics/`  
 > **Collection** : `analytics_events`  
-> **Pattern** : Append-only event log  
+> **Pattern** : Append-only event log
 
 ---
 
@@ -60,24 +60,24 @@ analytics/
 
 All tracked event types are defined in `@sh3pherd/shared-types` as `TAnalyticsEventType`:
 
-| Category | Event Type | Metadata example |
-|----------|-----------|------------------|
-| **Auth** | `user_registered` | `{ email, first_name, last_name }` |
-| **Auth** | `user_login` | `{ ip?, user_agent? }` |
-| **Auth** | `user_login_failed` | `{ email, reason }` |
-| **Auth** | `user_deactivated` | `{}` |
-| **Plan** | `plan_changed` | `{ from, to, billing_cycle }` |
-| **Plan** | `billing_cycle_changed` | `{ plan, from, to }` |
-| **Credits** | `credit_pack_purchased` | `{ pack_id, resource, amount, price }` |
-| **Credits** | `credit_used` | `{ resource, amount }` |
-| **Music** | `track_uploaded` | `{ track_id, version_id }` |
-| **Music** | `track_mastered` | `{ track_id, version_id, duration_ms }` |
-| **Music** | `track_ai_mastered` | `{ track_id, version_id, duration_ms }` |
-| **Music** | `track_pitch_shifted` | `{ track_id, semitones }` |
-| **Music** | `repertoire_entry_created` | `{ entry_id }` |
-| **Music** | `playlist_created` | `{ playlist_id }` |
-| **Quota** | `quota_exceeded` | `{ resource, current, limit, plan }` |
-| **Quota** | `quota_warning_80pct` | `{ resource, current, limit }` |
+| Category    | Event Type                 | Metadata example                                                                                                                                        |
+| ----------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Auth**    | `user_registered`          | `{ email, first_name, last_name }`                                                                                                                      |
+| **Auth**    | `user_login`               | `{ ip?, user_agent? }`                                                                                                                                  |
+| **Auth**    | `user_login_failed`        | `{ email, reason }`                                                                                                                                     |
+| **Auth**    | `user_deactivated`         | `{}`                                                                                                                                                    |
+| **Plan**    | `plan_changed`             | `{ from, to, billing_cycle }`                                                                                                                           |
+| **Plan**    | `billing_cycle_changed`    | `{ plan, from, to }`                                                                                                                                    |
+| **Credits** | `credit_pack_purchased`    | `{ pack_id, resource, amount, price }`                                                                                                                  |
+| **Credits** | `credit_used`              | `{ resource, amount }`                                                                                                                                  |
+| **Music**   | `track_uploaded`           | `{ track_id, version_id, file_name, file_size_bytes, duration_seconds, format }`                                                                        |
+| **Music**   | `track_analysed`           | `{ track_id, version_id, bpm, key, key_scale, duration_seconds, sample_rate, integrated_lufs, loudness_range, true_peak_dbtp, snr_db, clipping_ratio }` |
+| **Music**   | `track_mastered`           | `{ track_id, version_id, target_lufs, target_tp }`                                                                                                      |
+| **Music**   | `track_ai_mastered`        | `{ track_id, version_id, reference_track_id, target_lufs }`                                                                                             |
+| **Music**   | `track_pitch_shifted`      | `{ track_id, version_id, semitones, original_key }`                                                                                                     |
+| **Music**   | `repertoire_entry_created` | `{ entry_id, reference_id }`                                                                                                                            |
+| **Quota**   | `quota_exceeded`           | `{ resource, current, limit, plan }`                                                                                                                    |
+| **Quota**   | `quota_warning_80pct`      | `{ resource, current, limit }`                                                                                                                          |
 
 ---
 
@@ -87,7 +87,7 @@ All tracked event types are defined in `@sh3pherd/shared-types` as `TAnalyticsEv
 // packages/shared-types/src/analytics-event.types.ts
 
 type TAnalyticsEventDomainModel = {
-  id: string;                   // event_xxx (UUID)
+  id: string; // event_xxx (UUID)
   type: TAnalyticsEventType;
   user_id: TUserId;
   timestamp: Date;
@@ -135,6 +135,7 @@ Response:
 ```
 
 Query parameters:
+
 - `type` — filter by event type
 - `user_id` — filter by user
 - `from` / `to` — date range (ISO 8601)
@@ -170,11 +171,16 @@ sequenceDiagram
 
 ## Currently active event handlers
 
-| Domain Event | Handler | Persists to analytics? |
-|---|---|---|
-| `UserRegisteredEvent` | `UserRegisteredHandler` (auth module) | Yes — `user_registered` |
-| `PlanChangedEvent` | `PlanChangedHandler` (analytics module) | Yes — `plan_changed` |
-| `TrackUploadedEvent` | `TrackUploadedHandler` (music module) | Not yet — TODO |
+| Domain Event          | Handler                                       | Persists to analytics?           |
+| --------------------- | --------------------------------------------- | -------------------------------- |
+| `UserRegisteredEvent` | `UserRegisteredHandler` (auth module)         | Yes — `user_registered`          |
+| `PlanChangedEvent`    | `PlanChangedHandler` (analytics module)       | Yes — `plan_changed`             |
+| `TrackUploadedEvent`  | `TrackUploadedHandler` (music module)         | Yes — `track_analysed`           |
+| —                     | `UploadTrackHandler` (music module)           | Yes — `track_uploaded`           |
+| —                     | `MasterTrackHandler` (music module)           | Yes — `track_mastered`           |
+| —                     | `AiMasterTrackHandler` (music module)         | Yes — `track_ai_mastered`        |
+| —                     | `PitchShiftVersionHandler` (music module)     | Yes — `track_pitch_shifted`      |
+| —                     | `CreateRepertoireEntryHandler` (music module) | Yes — `repertoire_entry_created` |
 
 ---
 
@@ -193,6 +199,7 @@ db.analytics_events.createIndex({ user_id: 1, timestamp: -1 });
 ```mermaid
 graph TD
     AuthModule --> AnalyticsModule
+    MusicHandlersModule --> AnalyticsModule
     AnalyticsModule --> CoreRepositoriesModule["CoreRepositoriesModule (ANALYTICS_EVENT_REPO)"]
     AppModule --> AnalyticsModule
     AnalyticsModule -.->|exports| AnalyticsEventService

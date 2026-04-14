@@ -83,12 +83,14 @@ Pure data — no I/O, no DI, no side effects. Can be imported anywhere.
 
 ```ts
 export type TQuotaResource =
-  | 'repertoire_entry'     // adding a song to the library
-  | 'track_upload'         // uploading an audio file
-  | 'master_standard'      // ffmpeg loudnorm mastering
-  | 'master_ai'            // DeepAFx-ST AI mastering
-  | 'pitch_shift'          // pitch-shifting a version
-  | 'storage_bytes';       // total R2 storage consumed
+  | 'repertoire_entry' // adding a song to the library
+  | 'track_upload' // uploading an audio file
+  | 'master_standard' // ffmpeg loudnorm mastering
+  | 'master_ai' // DeepAFx-ST AI mastering
+  | 'pitch_shift' // pitch-shifting a version
+  | 'track_version' // creating a version for a song
+  | 'search_tab' // saved search tab configs
+  | 'storage_bytes'; // total R2 storage consumed
 
 export type TQuotaPeriod = 'monthly' | 'lifetime';
 
@@ -101,27 +103,27 @@ export interface TQuotaLimit {
 
 export const PLAN_QUOTAS: Record<TPlatformRole, TQuotaLimit[]> = {
   artist_free: [
-    { resource: 'repertoire_entry',  period: 'lifetime', limit: 50 },
-    { resource: 'track_upload',      period: 'lifetime', limit: 50 },
-    { resource: 'master_standard',   period: 'monthly',  limit: 3 },
-    { resource: 'master_ai',         period: 'monthly',  limit: 0 },
-    { resource: 'pitch_shift',       period: 'monthly',  limit: 3 },
-    { resource: 'storage_bytes',     period: 'lifetime', limit: 500 * 1024 * 1024 },
+    { resource: 'repertoire_entry', period: 'lifetime', limit: 50 },
+    { resource: 'track_upload', period: 'lifetime', limit: 50 },
+    { resource: 'master_standard', period: 'monthly', limit: 3 },
+    { resource: 'master_ai', period: 'monthly', limit: 0 },
+    { resource: 'pitch_shift', period: 'monthly', limit: 3 },
+    { resource: 'storage_bytes', period: 'lifetime', limit: 500 * 1024 * 1024 },
   ],
   artist_pro: [
-    { resource: 'repertoire_entry',  period: 'lifetime', limit: -1 },
-    { resource: 'track_upload',      period: 'lifetime', limit: -1 },
-    { resource: 'master_standard',   period: 'monthly',  limit: -1 },
-    { resource: 'master_ai',         period: 'monthly',  limit: 10 },
-    { resource: 'pitch_shift',       period: 'monthly',  limit: -1 },
-    { resource: 'storage_bytes',     period: 'lifetime', limit: 5 * 1024 * 1024 * 1024 },
+    { resource: 'repertoire_entry', period: 'lifetime', limit: -1 },
+    { resource: 'track_upload', period: 'lifetime', limit: -1 },
+    { resource: 'master_standard', period: 'monthly', limit: -1 },
+    { resource: 'master_ai', period: 'monthly', limit: 10 },
+    { resource: 'pitch_shift', period: 'monthly', limit: -1 },
+    { resource: 'storage_bytes', period: 'lifetime', limit: 5 * 1024 * 1024 * 1024 },
   ],
   artist_max: [
-    { resource: 'storage_bytes',     period: 'lifetime', limit: 20 * 1024 * 1024 * 1024 },
+    { resource: 'storage_bytes', period: 'lifetime', limit: 20 * 1024 * 1024 * 1024 },
     // All other resources: unlimited (not listed = no limit)
   ],
   company_business: [
-    { resource: 'storage_bytes',     period: 'lifetime', limit: 100 * 1024 * 1024 * 1024 },
+    { resource: 'storage_bytes', period: 'lifetime', limit: 100 * 1024 * 1024 * 1024 },
   ],
 };
 ```
@@ -134,21 +136,19 @@ the config readable and makes it obvious what each plan restricts.
 
 ```ts
 export class QuotaExceededError extends HttpException {
-  constructor(
-    resource: TQuotaResource,
-    current: number,
-    limit: number,
-    plan: TPlatformRole,
-  ) {
-    super({
-      statusCode: 402,
-      errorCode: 'QUOTA_EXCEEDED',
-      message: `Quota exceeded for ${resource}: ${current}/${limit}`,
-      resource,
-      current,
-      limit,
-      plan,
-    }, HttpStatus.PAYMENT_REQUIRED);
+  constructor(resource: TQuotaResource, current: number, limit: number, plan: TPlatformRole) {
+    super(
+      {
+        statusCode: 402,
+        errorCode: 'QUOTA_EXCEEDED',
+        message: `Quota exceeded for ${resource}: ${current}/${limit}`,
+        resource,
+        current,
+        limit,
+        plan,
+      },
+      HttpStatus.PAYMENT_REQUIRED,
+    );
   }
 }
 ```
@@ -184,13 +184,19 @@ cleanup job.
 unique, covers both the read (getCount) and write (increment) paths.
 
 **Methods**:
+
 ```ts
 export interface IUsageCounterRepository {
   /** Get the current count for a user + resource + period. Returns 0 if no record. */
   getCount(userId: TUserId, resource: TQuotaResource, periodKey: string): Promise<number>;
 
   /** Atomically increment the counter. Creates the record if it doesn't exist. */
-  increment(userId: TUserId, resource: TQuotaResource, periodKey: string, amount: number): Promise<void>;
+  increment(
+    userId: TUserId,
+    resource: TQuotaResource,
+    periodKey: string,
+    amount: number,
+  ): Promise<void>;
 
   /** Get all counters for a user (for the usage summary endpoint). */
   getAllForUser(userId: TUserId): Promise<TUsageCounterRecord[]>;
@@ -217,6 +223,7 @@ export class QuotaService {
 ```
 
 **`ensureAllowed()`** — called BEFORE the domain operation:
+
 1. Load the user's platform contract (get the plan)
 2. Look up the limit for this resource + plan in `PLAN_QUOTAS`
 3. If limit is -1 → return (unlimited)
@@ -226,10 +233,12 @@ export class QuotaService {
 7. Otherwise → return (allowed)
 
 **`recordUsage()`** — called AFTER the operation succeeds:
+
 1. Compute the period key (`'lifetime'` or `'YYYY-MM'`)
 2. `usageRepo.increment(userId, resource, periodKey, amount)`
 
 **`getUsageSummary()`** — called by the frontend to display usage:
+
 1. Load the platform contract (get the plan)
 2. For each resource in `PLAN_QUOTAS[plan]`:
    - Get the current counter
@@ -281,13 +290,15 @@ export class UploadTrackHandler {
 
 ### Which handlers need quota checks
 
-| Handler | Resource | When to check |
-|---------|----------|---------------|
-| `CreateRepertoireEntryHandler` | `repertoire_entry` | Before creating the entry |
-| `UploadTrackHandler` | `track_upload` + `storage_bytes` | Before uploading to S3 |
-| `MasterTrackHandler` | `master_standard` | Before dispatching to audio-processor |
-| `AiMasterTrackHandler` | `master_ai` | Before dispatching to audio-processor |
-| `PitchShiftVersionHandler` | `pitch_shift` | Before dispatching to audio-processor |
+| Handler                        | Resource                         | When to check                               |
+| ------------------------------ | -------------------------------- | ------------------------------------------- |
+| `CreateRepertoireEntryHandler` | `repertoire_entry`               | Before creating the entry                   |
+| `UploadTrackHandler`           | `track_upload` + `storage_bytes` | Before uploading to S3                      |
+| `MasterTrackHandler`           | `master_standard`                | Before dispatching to audio-processor       |
+| `AiMasterTrackHandler`         | `master_ai`                      | Before dispatching to audio-processor       |
+| `PitchShiftVersionHandler`     | `pitch_shift`                    | Before dispatching to audio-processor       |
+| `CreateMusicVersionHandler`    | `track_version`                  | Before creating the version                 |
+| `SaveMusicTabConfigsHandler`   | `search_tab`                     | Before saving (delta check: new > existing) |
 
 Storage bytes are special: the `amount` is the file size in bytes,
 not 1. The `ensureAllowed` call passes `file.buffer.length` as the
@@ -313,6 +324,7 @@ GET /api/protected/quota/me
 ```
 
 The frontend renders progress bars in the side panel:
+
 - "23/50 songs"
 - "1/3 masters this month"
 - "149 Mo / 500 Mo storage"
@@ -356,7 +368,7 @@ quota tracking existed. Treat negative as 0 in `ensureAllowed`.
 Monthly quotas don't need a reset job. The period key is `YYYY-MM`:
 
 - In April: `getCount(user, 'master_standard', '2026-04')` → 2
-- In May:   `getCount(user, 'master_standard', '2026-05')` → 0 (no record yet)
+- In May: `getCount(user, 'master_standard', '2026-05')` → 0 (no record yet)
 
 The old April record stays in the DB but is never queried again.
 Optional: a cleanup cron can remove records older than 3 months to
@@ -409,13 +421,13 @@ sequenceDiagram
 
 ```typescript
 type TCreditPurchaseDomainModel = {
-  id: string;                    // creditPurchase_xxx
+  id: string; // creditPurchase_xxx
   user_id: TUserId;
   resource: TQuotaResource;
-  amount: number;                // total credits purchased
-  remaining: number;             // credits left (decremented on usage)
+  amount: number; // total credits purchased
+  remaining: number; // credits left (decremented on usage)
   period: 'one_time' | 'monthly';
-  period_key: string;            // 'permanent' or 'YYYY-MM'
+  period_key: string; // 'permanent' or 'YYYY-MM'
   purchased_at: Date;
   stripe_payment_id?: string;
 };
@@ -425,13 +437,13 @@ type TCreditPurchaseDomainModel = {
 
 Defined in `@sh3pherd/shared-types` as `CREDIT_PACKS`:
 
-| Pack ID | Resource | Amount | Price | Period |
-|---------|----------|--------|-------|--------|
-| `pack_ai_10` | master_ai | 10 | 4.99€ | monthly |
-| `pack_ai_50` | master_ai | 50 | 19.99€ | monthly |
-| `pack_storage_5` | storage_bytes | 5 GB | 2.99€ | permanent |
-| `pack_storage_20` | storage_bytes | 20 GB | 9.99€ | permanent |
-| `pack_songs_50` | repertoire_entry | 50 | 3.99€ | permanent |
+| Pack ID           | Resource         | Amount | Price  | Period    |
+| ----------------- | ---------------- | ------ | ------ | --------- |
+| `pack_ai_10`      | master_ai        | 10     | 4.99€  | monthly   |
+| `pack_ai_50`      | master_ai        | 50     | 19.99€ | monthly   |
+| `pack_storage_5`  | storage_bytes    | 5 GB   | 2.99€  | permanent |
+| `pack_storage_20` | storage_bytes    | 20 GB  | 9.99€  | permanent |
+| `pack_songs_50`   | repertoire_entry | 50     | 3.99€  | permanent |
 
 ### API endpoints
 
@@ -521,8 +533,9 @@ describe('QuotaService', () => {
     mockPlatformRepo.findByUserId.mockResolvedValue({ plan: 'artist_free' });
     mockUsageRepo.getCount.mockResolvedValue(3); // limit is 3
 
-    await expect(service.ensureAllowed(userId, 'master_standard'))
-      .rejects.toThrow(QuotaExceededError);
+    await expect(service.ensureAllowed(userId, 'master_standard')).rejects.toThrow(
+      QuotaExceededError,
+    );
   });
 
   it('allows unlimited resources', async () => {
@@ -537,8 +550,7 @@ describe('QuotaService', () => {
     mockPlatformRepo.findByUserId.mockResolvedValue({ plan: 'artist_free' });
     // artist_free has limit: 0 for master_ai
 
-    await expect(service.ensureAllowed(userId, 'master_ai'))
-      .rejects.toThrow(QuotaExceededError);
+    await expect(service.ensureAllowed(userId, 'master_ai')).rejects.toThrow(QuotaExceededError);
   });
 });
 ```
@@ -551,11 +563,13 @@ it('should return 402 when quota is exceeded', async () => {
 
   // Exhaust the 3 master quota
   for (let i = 0; i < 3; i++) {
-    await db.collection('platform_usage').updateOne(
-      { user_id: seed.userId, resource: 'master_standard', period_key: '2026-04' },
-      { $inc: { count: 1 } },
-      { upsert: true },
-    );
+    await db
+      .collection('platform_usage')
+      .updateOne(
+        { user_id: seed.userId, resource: 'master_standard', period_key: '2026-04' },
+        { $inc: { count: 1 } },
+        { upsert: true },
+      );
   }
 
   // The 4th master should be rejected
@@ -579,26 +593,27 @@ it('should return 402 when quota is exceeded', async () => {
 
 ## File map
 
-| File | Role |
-|------|------|
-| `packages/shared-types/src/quota.types.ts` | TQuotaResource + TQuotaPeriod (shared source of truth) |
-| `packages/shared-types/src/credit-pack.types.ts` | TCreditPurchase + TCreditPack catalogue |
-| `src/quota/domain/QuotaLimits.ts` | Plan limits config (PLAN_QUOTAS), re-exports from shared-types |
-| `src/quota/domain/QuotaExceededError.ts` | HTTP 402 error class |
-| `src/quota/infra/UsageCounterMongoRepo.ts` | platform_usage collection |
-| `src/quota/infra/CreditPurchaseMongoRepo.ts` | credit_purchases collection |
-| `src/quota/application/commands/PurchaseCreditPackCommand.ts` | Purchase handler |
-| `src/quota/api/quota.controller.ts` | GET /me, GET /packs, POST /purchase |
-| `src/quota/QuotaService.ts` | ensureAllowed + recordUsage + getUsageSummary (with credit bonus) |
-| `src/quota/quota.module.ts` | Module wiring |
-| `src/appBootstrap/nestTokens.ts` | USAGE_COUNTER_REPO + CREDIT_PURCHASE_REPO tokens |
-| `src/appBootstrap/database/CoreRepositoriesModule.ts` | Register repos globally |
+| File                                                          | Role                                                              |
+| ------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `packages/shared-types/src/quota.types.ts`                    | TQuotaResource + TQuotaPeriod (shared source of truth)            |
+| `packages/shared-types/src/credit-pack.types.ts`              | TCreditPurchase + TCreditPack catalogue                           |
+| `src/quota/domain/QuotaLimits.ts`                             | Plan limits config (PLAN_QUOTAS), re-exports from shared-types    |
+| `src/quota/domain/QuotaExceededError.ts`                      | HTTP 402 error class                                              |
+| `src/quota/infra/UsageCounterMongoRepo.ts`                    | platform_usage collection                                         |
+| `src/quota/infra/CreditPurchaseMongoRepo.ts`                  | credit_purchases collection                                       |
+| `src/quota/application/commands/PurchaseCreditPackCommand.ts` | Purchase handler                                                  |
+| `src/quota/api/quota.controller.ts`                           | GET /me, GET /packs, POST /purchase                               |
+| `src/quota/QuotaService.ts`                                   | ensureAllowed + recordUsage + getUsageSummary (with credit bonus) |
+| `src/quota/quota.module.ts`                                   | Module wiring                                                     |
+| `src/appBootstrap/nestTokens.ts`                              | USAGE_COUNTER_REPO + CREDIT_PURCHASE_REPO tokens                  |
+| `src/appBootstrap/database/CoreRepositoriesModule.ts`         | Register repos globally                                           |
 
 ---
 
 ## TODO
 
 ### Phase 1: Core implementation (~1.5 days)
+
 - [ ] Create `src/quota/` directory with all files above
 - [ ] `QuotaLimits.ts` — pure config
 - [ ] `QuotaExceededError.ts` — 402 error
@@ -609,17 +624,20 @@ it('should return 402 when quota is exceeded', async () => {
 - [ ] Unit tests for QuotaService (under/over/unlimited/unavailable)
 
 ### Phase 2: Wire into command handlers (~1 day)
+
 - [ ] Inject `QuotaService` into the 5 handlers listed above
 - [ ] Add `ensureAllowed` + `recordUsage` calls in the right order
 - [ ] Handle storage_bytes special case (amount = file size)
 - [ ] Handle track deletion (decrement storage counter)
 
 ### Phase 3: API endpoint + frontend (~0.5 day)
+
 - [ ] `GET /api/protected/quota/me` endpoint (returns usage summary)
 - [ ] Frontend: usage display in the music library side panel
 - [ ] Frontend: 402 interceptor → upgrade modal
 
 ### Phase 4: E2E tests (~0.5 day)
+
 - [ ] Test 402 on quota exceeded
 - [ ] Test that usage increments after successful operations
 - [ ] Test that failed operations don't increment
@@ -635,6 +653,7 @@ it('should return 402 when quota is exceeded', async () => {
 
 Plan limits live in `QuotaLimits.ts` as a static `Record`. This is
 the right approach while:
+
 - Plans change rarely (1-2x per year)
 - No custom plans per client
 - No admin panel exists yet
@@ -646,6 +665,7 @@ isolation, no cache invalidation, works offline in tests.
 ### When to migrate to DB
 
 Move to database-backed limits when ANY of these become true:
+
 - A commercial needs to adjust quotas without a deploy (promo, trial)
 - A client negotiates a custom plan (e.g. a label wanting 200 Go)
 - A/B testing on limits (50 free songs vs 100)
@@ -682,7 +702,7 @@ graph LR
 ```ts
 // Before (hardcoded)
 export function getQuotaLimit(plan: TPlatformRole, resource: TQuotaResource): TQuotaLimit | null {
-  return PLAN_QUOTAS[plan]?.find(q => q.resource === resource) ?? null;
+  return PLAN_QUOTAS[plan]?.find((q) => q.resource === resource) ?? null;
 }
 
 // After (DB-backed with cache)
@@ -696,12 +716,12 @@ export class QuotaLimitsService {
   async getQuotaLimit(plan: TPlatformRole, resource: TQuotaResource): Promise<TQuotaLimit | null> {
     const cached = this.cache.get(plan);
     if (cached && cached.expiresAt > Date.now()) {
-      return cached.limits.find(q => q.resource === resource) ?? null;
+      return cached.limits.find((q) => q.resource === resource) ?? null;
     }
 
     const limits = await this.repo.findByPlan(plan);
     this.cache.set(plan, { limits, expiresAt: Date.now() + this.TTL });
-    return limits.find(q => q.resource === resource) ?? null;
+    return limits.find((q) => q.resource === resource) ?? null;
   }
 
   invalidateCache(): void {
