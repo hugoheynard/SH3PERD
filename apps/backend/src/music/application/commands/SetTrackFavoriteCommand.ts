@@ -15,7 +15,8 @@ export class SetTrackFavoriteCommand {
 @CommandHandler(SetTrackFavoriteCommand)
 export class SetTrackFavoriteHandler implements ICommandHandler<SetTrackFavoriteCommand, boolean> {
   constructor(
-    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
+    private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
   ) {}
 
   async execute(cmd: SetTrackFavoriteCommand): Promise<boolean> {

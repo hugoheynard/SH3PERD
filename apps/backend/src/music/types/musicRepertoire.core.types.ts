@@ -14,6 +14,6 @@ export type TFindMusicRepertoireByUserIdFn = (input: {
   owner_id: TUserId | TUserId[];
 }) => Promise<TMusicRepertoireByUserIdPipelineResult[]>;
 
-export interface IMusicRepertoireRepository extends IBaseCRUD<TMusicRepertoireEntryDomainModel> {
+export type IMusicRepertoireRepository = {
   findRepertoireByUserId: TFindMusicRepertoireByUserIdFn;
-}
+} & IBaseCRUD<TMusicRepertoireEntryDomainModel>;

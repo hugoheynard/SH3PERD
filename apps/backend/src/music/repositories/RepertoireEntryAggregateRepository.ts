@@ -1,8 +1,4 @@
-import type {
-  TMusicVersionId,
-  TMusicReferenceId,
-  TUserId,
-} from '@sh3pherd/shared-types';
+import type { TMusicVersionId, TMusicReferenceId, TUserId } from '@sh3pherd/shared-types';
 import type { IMusicVersionRepository } from './MusicVersionRepository.js';
 import type { IMusicRepertoireRepository } from './MusicRepertoireRepository.js';
 import type { IMusicReferenceRepository } from '../types/musicReferences.types.js';
@@ -13,21 +9,23 @@ import { MusicVersionEntity } from '../domain/entities/MusicVersionEntity.js';
 
 // ─── Interface ──────────────────────────────────────────────
 
-export interface IRepertoireEntryAggregateRepository {
+export type IRepertoireEntryAggregateRepository = {
   /** Load aggregate starting from a version ID (most common). */
   loadByVersionId(versionId: TMusicVersionId): Promise<RepertoireEntryAggregate>;
 
   /** Load aggregate by owner + reference (for version creation). */
-  loadByOwnerAndReference(ownerId: TUserId, referenceId: TMusicReferenceId): Promise<RepertoireEntryAggregate>;
+  loadByOwnerAndReference(
+    ownerId: TUserId,
+    referenceId: TMusicReferenceId,
+  ): Promise<RepertoireEntryAggregate>;
 
   /** Persist all changes detected in the aggregate. */
   save(aggregate: RepertoireEntryAggregate): Promise<void>;
-}
+};
 
 // ─── Implementation ─────────────────────────────────────────
 
 export class RepertoireEntryAggregateRepository implements IRepertoireEntryAggregateRepository {
-
   constructor(
     private readonly versionRepo: IMusicVersionRepository,
     private readonly repertoireRepo: IMusicRepertoireRepository,
@@ -41,7 +39,10 @@ export class RepertoireEntryAggregateRepository implements IRepertoireEntryAggre
     return this.loadByOwnerAndReference(version.owner_id, version.musicReference_id);
   }
 
-  async loadByOwnerAndReference(ownerId: TUserId, referenceId: TMusicReferenceId): Promise<RepertoireEntryAggregate> {
+  async loadByOwnerAndReference(
+    ownerId: TUserId,
+    referenceId: TMusicReferenceId,
+  ): Promise<RepertoireEntryAggregate> {
     const [entryDoc, references, versions] = await Promise.all([
       this.repertoireRepo.findByOwnerAndReference(ownerId, referenceId),
       this.referenceRepo.findByIds([referenceId]),
@@ -54,7 +55,9 @@ export class RepertoireEntryAggregateRepository implements IRepertoireEntryAggre
 
     const entry = new RepertoireEntryEntity(entryDoc);
     const reference = new MusicReferenceEntity(refDoc);
-    const versionEntities = versions.map((v: typeof versions[number]) => new MusicVersionEntity(v));
+    const versionEntities = versions.map(
+      (v: (typeof versions)[number]) => new MusicVersionEntity(v),
+    );
 
     return new RepertoireEntryAggregate(entry, reference, versionEntities);
   }

@@ -10,7 +10,7 @@ import {
 } from '@nestjs/swagger';
 import { ActorId } from '../../../utils/nest/decorators/ActorId.js';
 import { ZodValidationPipe } from '../../../utils/nest/pipes/ZodValidation.pipe.js';
-import { buildApiResponseDTO } from '../../../music/codes.js';
+import { buildApiResponseDTO } from '../../../utils/response/buildApiResponseDTO.js';
 import { apiRequestDTO, apiSuccessDTO } from '../../../utils/swagger/api-response.swagger.util.js';
 import {
   type TCompanyId,

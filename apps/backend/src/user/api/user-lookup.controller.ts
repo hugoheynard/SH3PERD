@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
-import { buildApiResponseDTO } from '../../music/codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { USER_CODES_SUCCESS } from './codes/user.codes.js';
 import { SearchUserByEmailQuery } from '../application/query/SearchUserByEmailQuery.js';
 import {

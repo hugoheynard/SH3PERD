@@ -1,9 +1,17 @@
 import { Controller, Post, Patch, Delete, Body, Param } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
-import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
+import { MusicApiCodes } from '../codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { CreateMusicVersionCommand } from '../application/commands/CreateMusicVersionCommand.js';
 import { UpdateMusicVersionCommand } from '../application/commands/UpdateMusicVersionCommand.js';
@@ -32,13 +40,17 @@ import type {
 export class MusicVersionsController {
   constructor(private readonly cmdBus: CommandBus) {}
 
-  @ApiOperation({ summary: 'Create a version', description: 'Creates a new version linked to a music reference (cover, acoustic, remix…).' })
+  @ApiOperation({
+    summary: 'Create a version',
+    description: 'Creates a new version linked to a music reference (cover, acoustic, remix…).',
+  })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.MUSIC_VERSION_CREATED, MusicVersionPayload, 200))
   @RequirePermission(P.Music.Library.Write)
   @Post()
   async createVersion(
     @ActorId() actorId: TUserId,
-    @Body('payload', new ZodValidationPipe(SCreateMusicVersionPayload)) payload: TCreateMusicVersionPayload,
+    @Body('payload', new ZodValidationPipe(SCreateMusicVersionPayload))
+    payload: TCreateMusicVersionPayload,
   ): Promise<TApiResponse<TMusicVersionDomainModel>> {
     return buildApiResponseDTO(
       MusicApiCodes.MUSIC_VERSION_CREATED,
@@ -48,7 +60,11 @@ export class MusicVersionsController {
     );
   }
 
-  @ApiOperation({ summary: 'Update a version', description: 'Partial update of a version\'s metadata (label, genre, ratings…). Ownership is verified.' })
+  @ApiOperation({
+    summary: 'Update a version',
+    description:
+      "Partial update of a version's metadata (label, genre, ratings…). Ownership is verified.",
+  })
   @ApiParam({ name: 'id', description: 'Version ID to update' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.MUSIC_VERSION_UPDATED, MusicVersionPayload, 200))
   @RequirePermission(P.Music.Library.Write)
@@ -56,7 +72,8 @@ export class MusicVersionsController {
   async updateVersion(
     @ActorId() actorId: TUserId,
     @Param('id') versionId: TMusicVersionId,
-    @Body('payload', new ZodValidationPipe(SUpdateMusicVersionPayload)) payload: TUpdateMusicVersionPayload,
+    @Body('payload', new ZodValidationPipe(SUpdateMusicVersionPayload))
+    payload: TUpdateMusicVersionPayload,
   ): Promise<TApiResponse<TMusicVersionDomainModel>> {
     return buildApiResponseDTO(
       MusicApiCodes.MUSIC_VERSION_UPDATED,
@@ -66,7 +83,10 @@ export class MusicVersionsController {
     );
   }
 
-  @ApiOperation({ summary: 'Delete a version', description: 'Deletes a version and all its tracks (storage + DB). Ownership is verified.' })
+  @ApiOperation({
+    summary: 'Delete a version',
+    description: 'Deletes a version and all its tracks (storage + DB). Ownership is verified.',
+  })
   @ApiParam({ name: 'id', description: 'Version ID to delete' })
   @RequirePermission(P.Music.Library.Write)
   @Delete(':id')

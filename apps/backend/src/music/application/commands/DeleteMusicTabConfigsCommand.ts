@@ -9,10 +9,11 @@ export class DeleteMusicTabConfigsCommand {
 }
 
 @CommandHandler(DeleteMusicTabConfigsCommand)
-export class DeleteMusicTabConfigsHandler implements ICommandHandler<DeleteMusicTabConfigsCommand, boolean> {
-  constructor(
-    @Inject(MUSIC_TAB_CONFIGS_REPO) private readonly repo: IMusicTabConfigsRepository,
-  ) {}
+export class DeleteMusicTabConfigsHandler implements ICommandHandler<
+  DeleteMusicTabConfigsCommand,
+  boolean
+> {
+  constructor(@Inject(MUSIC_TAB_CONFIGS_REPO) private readonly repo: IMusicTabConfigsRepository) {}
 
   async execute(cmd: DeleteMusicTabConfigsCommand): Promise<boolean> {
     return this.repo.deleteByUserId(cmd.actorId);

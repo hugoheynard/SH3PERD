@@ -1,7 +1,6 @@
 import { makeReference, userId } from './test-helpers.js';
 
 describe('MusicReferenceEntity', () => {
-
   // ─── Construction invariants ────────────────────────────
 
   describe('constructor', () => {

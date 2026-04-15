@@ -29,12 +29,15 @@ export class PitchShiftVersionCommand {
 }
 
 @CommandHandler(PitchShiftVersionCommand)
-export class PitchShiftVersionHandler implements ICommandHandler<PitchShiftVersionCommand, TMusicVersionDomainModel> {
-
+export class PitchShiftVersionHandler implements ICommandHandler<
+  PitchShiftVersionCommand,
+  TMusicVersionDomainModel
+> {
   private readonly logger = new Logger(PitchShiftVersionHandler.name);
 
   constructor(
-    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
+    private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
     private readonly quotaService: QuotaService,
     private readonly analytics: AnalyticsEventService,
@@ -73,7 +76,10 @@ export class PitchShiftVersionHandler implements ICommandHandler<PitchShiftVersi
 
     const newTrackId = `track_${crypto.randomUUID()}` as TVersionTrackId;
     const outputS3Key = buildTrackS3Key(
-      cmd.actorId, newVersion.id, newTrackId, `pitched_${sourceTrack.fileName}`,
+      cmd.actorId,
+      newVersion.id,
+      newTrackId,
+      `pitched_${sourceTrack.fileName}`,
     );
 
     // 3. Send to audio-processor

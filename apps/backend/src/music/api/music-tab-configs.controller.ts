@@ -2,9 +2,13 @@ import { Controller, Get, Put, Delete, Body } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { QueryBus, CommandBus } from '@nestjs/cqrs';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
-import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
+import { MusicApiCodes } from '../codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { GetMusicTabConfigsQuery } from '../application/queries/GetMusicTabConfigsQuery.js';
-import { SaveMusicTabConfigsCommand, type TSaveMusicTabConfigsPayload } from '../application/commands/SaveMusicTabConfigsCommand.js';
+import {
+  SaveMusicTabConfigsCommand,
+  type TSaveMusicTabConfigsPayload,
+} from '../application/commands/SaveMusicTabConfigsCommand.js';
 import { DeleteMusicTabConfigsCommand } from '../application/commands/DeleteMusicTabConfigsCommand.js';
 import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
 import type { TUserId, TApiResponse, TMusicTabConfigsDomainModel } from '@sh3pherd/shared-types';
@@ -20,7 +24,11 @@ export class MusicTabConfigsController {
     private readonly cmdBus: CommandBus,
   ) {}
 
-  @ApiOperation({ summary: 'Get tab configs', description: 'Returns the user\'s saved music library tab configurations (active tabs + saved presets).' })
+  @ApiOperation({
+    summary: 'Get tab configs',
+    description:
+      "Returns the user's saved music library tab configurations (active tabs + saved presets).",
+  })
   @Get()
   async getTabConfigs(
     @ActorId() actorId: TUserId,
@@ -33,7 +41,11 @@ export class MusicTabConfigsController {
     );
   }
 
-  @ApiOperation({ summary: 'Save tab configs', description: 'Upserts the user\'s tab configurations (active tabs, saved presets, active config ID).' })
+  @ApiOperation({
+    summary: 'Save tab configs',
+    description:
+      "Upserts the user's tab configurations (active tabs, saved presets, active config ID).",
+  })
   @Put()
   async saveTabConfigs(
     @ActorId() actorId: TUserId,
@@ -47,11 +59,13 @@ export class MusicTabConfigsController {
     );
   }
 
-  @ApiOperation({ summary: 'Delete tab configs', description: 'Removes all saved tab configurations for the user. Resets to defaults on next load.' })
+  @ApiOperation({
+    summary: 'Delete tab configs',
+    description:
+      'Removes all saved tab configurations for the user. Resets to defaults on next load.',
+  })
   @Delete()
-  async deleteTabConfigs(
-    @ActorId() actorId: TUserId,
-  ): Promise<TApiResponse<boolean>> {
+  async deleteTabConfigs(@ActorId() actorId: TUserId): Promise<TApiResponse<boolean>> {
     return buildApiResponseDTO(
       MusicApiCodes.TAB_CONFIGS_DELETED,
       await this.cmdBus.execute<DeleteMusicTabConfigsCommand, boolean>(

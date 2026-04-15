@@ -28,12 +28,15 @@ export class MasterTrackCommand {
 }
 
 @CommandHandler(MasterTrackCommand)
-export class MasterTrackHandler implements ICommandHandler<MasterTrackCommand, TVersionTrackDomainModel> {
-
+export class MasterTrackHandler implements ICommandHandler<
+  MasterTrackCommand,
+  TVersionTrackDomainModel
+> {
   private readonly logger = new Logger(MasterTrackHandler.name);
 
   constructor(
-    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
+    private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
     private readonly quotaService: QuotaService,
     private readonly analytics: AnalyticsEventService,
@@ -51,7 +54,10 @@ export class MasterTrackHandler implements ICommandHandler<MasterTrackCommand, T
     // 2. Generate output S3 key
     const newTrackId = `track_${crypto.randomUUID()}` as TVersionTrackId;
     const outputS3Key = buildTrackS3Key(
-      cmd.actorId, cmd.versionId, newTrackId, `master_${sourceTrack.fileName}`,
+      cmd.actorId,
+      cmd.versionId,
+      newTrackId,
+      `master_${sourceTrack.fileName}`,
     );
 
     // 3. Send to audio-processor

@@ -9,10 +9,11 @@ export class GetMusicTabConfigsQuery {
 }
 
 @QueryHandler(GetMusicTabConfigsQuery)
-export class GetMusicTabConfigsHandler implements IQueryHandler<GetMusicTabConfigsQuery, TMusicTabConfigsDomainModel | null> {
-  constructor(
-    @Inject(MUSIC_TAB_CONFIGS_REPO) private readonly repo: IMusicTabConfigsRepository,
-  ) {}
+export class GetMusicTabConfigsHandler implements IQueryHandler<
+  GetMusicTabConfigsQuery,
+  TMusicTabConfigsDomainModel | null
+> {
+  constructor(@Inject(MUSIC_TAB_CONFIGS_REPO) private readonly repo: IMusicTabConfigsRepository) {}
 
   async execute(query: GetMusicTabConfigsQuery): Promise<TMusicTabConfigsDomainModel | null> {
     return this.repo.findByUserId(query.userId);

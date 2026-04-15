@@ -14,9 +14,13 @@ export class DeleteMusicVersionCommand {
 }
 
 @CommandHandler(DeleteMusicVersionCommand)
-export class DeleteMusicVersionHandler implements ICommandHandler<DeleteMusicVersionCommand, boolean> {
+export class DeleteMusicVersionHandler implements ICommandHandler<
+  DeleteMusicVersionCommand,
+  boolean
+> {
   constructor(
-    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
+    private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject(TRACK_STORAGE_SERVICE) private readonly storage: ITrackStorageService,
   ) {}
 

@@ -2,7 +2,7 @@ import { Body, Controller, Delete, HttpCode, Param, Patch, Post } from '@nestjs/
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
-import { buildApiResponseDTO } from '../../music/codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { P } from '@sh3pherd/shared-types';
 import type {

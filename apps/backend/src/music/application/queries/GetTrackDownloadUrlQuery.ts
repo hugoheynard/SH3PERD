@@ -16,7 +16,10 @@ export class GetTrackDownloadUrlQuery {
 }
 
 @QueryHandler(GetTrackDownloadUrlQuery)
-export class GetTrackDownloadUrlHandler implements IQueryHandler<GetTrackDownloadUrlQuery, { url: string }> {
+export class GetTrackDownloadUrlHandler implements IQueryHandler<
+  GetTrackDownloadUrlQuery,
+  { url: string }
+> {
   constructor(
     @Inject(MUSIC_VERSION_REPO) private readonly versionRepo: IMusicVersionRepository,
     @Inject(TRACK_STORAGE_SERVICE) private readonly storage: ITrackStorageService,
@@ -27,7 +30,7 @@ export class GetTrackDownloadUrlHandler implements IQueryHandler<GetTrackDownloa
     if (!version) throw new Error('MUSIC_VERSION_NOT_FOUND');
     if (version.owner_id !== query.actorId) throw new Error('MUSIC_VERSION_NOT_OWNED');
 
-    const track = version.tracks.find(t => t.id === query.trackId);
+    const track = version.tracks.find((t) => t.id === query.trackId);
     if (!track) throw new Error('TRACK_NOT_FOUND');
 
     const s3Key = buildTrackS3Key(query.actorId, query.versionId, query.trackId, track.fileName);

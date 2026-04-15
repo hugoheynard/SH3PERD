@@ -10,7 +10,6 @@ import {
 } from './test-helpers.js';
 
 describe('RepertoireEntryAggregate', () => {
-
   // ─── Version lifecycle ────────────────────────────────
 
   describe('addVersion', () => {
@@ -38,7 +37,9 @@ describe('RepertoireEntryAggregate', () => {
       );
       const agg = makeAggregate({ owner, versions });
 
-      expect(() => agg.addVersion(makeVersion({ owner_id: owner }))).toThrow('MAX_VERSIONS_PER_REFERENCE_REACHED');
+      expect(() => agg.addVersion(makeVersion({ owner_id: owner }))).toThrow(
+        'MAX_VERSIONS_PER_REFERENCE_REACHED',
+      );
     });
   });
 
@@ -85,7 +86,9 @@ describe('RepertoireEntryAggregate', () => {
       const v = makeVersion({ id: versionId(1), owner_id: owner });
       const agg = makeAggregate({ owner, versions: [v] });
 
-      expect(() => agg.updateVersionMetadata(owner, versionId(1), { label: '  ' })).toThrow('MUSIC_VERSION_LABEL_REQUIRED');
+      expect(() => agg.updateVersionMetadata(owner, versionId(1), { label: '  ' })).toThrow(
+        'MUSIC_VERSION_LABEL_REQUIRED',
+      );
     });
   });
 
@@ -166,8 +169,8 @@ describe('RepertoireEntryAggregate', () => {
       agg.setFavoriteTrack(owner, versionId(1), trackId(2));
 
       const tracks = agg.findVersion(versionId(1))!.tracks;
-      expect(tracks.find(t => t.id === trackId(1))!.favorite).toBe(false);
-      expect(tracks.find(t => t.id === trackId(2))!.favorite).toBe(true);
+      expect(tracks.find((t) => t.id === trackId(1))!.favorite).toBe(false);
+      expect(tracks.find((t) => t.id === trackId(2))!.favorite).toBe(true);
     });
   });
 
@@ -207,7 +210,9 @@ describe('RepertoireEntryAggregate', () => {
       v.addTrack(makeTrack({ id: trackId(1), s3Key: 'some/key' }));
       const agg = makeAggregate({ owner, versions: [v] });
 
-      expect(() => agg.ensureCanMasterTrack(owner, versionId(1), trackId(1))).toThrow('TRACK_NOT_ANALYZED');
+      expect(() => agg.ensureCanMasterTrack(owner, versionId(1), trackId(1))).toThrow(
+        'TRACK_NOT_ANALYZED',
+      );
     });
 
     it('should reject if track has no s3Key', () => {
@@ -216,7 +221,9 @@ describe('RepertoireEntryAggregate', () => {
       v.addTrack(makeTrack({ id: trackId(1), analysisResult: makeAnalysis() }));
       const agg = makeAggregate({ owner, versions: [v] });
 
-      expect(() => agg.ensureCanMasterTrack(owner, versionId(1), trackId(1))).toThrow('TRACK_NOT_IN_STORAGE');
+      expect(() => agg.ensureCanMasterTrack(owner, versionId(1), trackId(1))).toThrow(
+        'TRACK_NOT_IN_STORAGE',
+      );
     });
 
     it('should reject if max masters reached', () => {
@@ -226,7 +233,9 @@ describe('RepertoireEntryAggregate', () => {
       v.addTrack(makeTrack({ id: trackId(2), processingType: 'master' }));
       const agg = makeAggregate({ owner, versions: [v] });
 
-      expect(() => agg.ensureCanMasterTrack(owner, versionId(1), trackId(1))).toThrow('MAX_MASTERS_REACHED');
+      expect(() => agg.ensureCanMasterTrack(owner, versionId(1), trackId(1))).toThrow(
+        'MAX_MASTERS_REACHED',
+      );
     });
   });
 
@@ -259,7 +268,9 @@ describe('RepertoireEntryAggregate', () => {
 
       const agg = makeAggregate({ owner, versions: [source, ...derived] });
 
-      expect(() => agg.ensureCanDeriveVersion(owner, versionId(1), trackId(1))).toThrow('MAX_DERIVATIONS_PER_SOURCE_REACHED');
+      expect(() => agg.ensureCanDeriveVersion(owner, versionId(1), trackId(1))).toThrow(
+        'MAX_DERIVATIONS_PER_SOURCE_REACHED',
+      );
     });
   });
 

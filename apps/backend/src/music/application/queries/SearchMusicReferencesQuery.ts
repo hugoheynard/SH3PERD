@@ -9,10 +9,11 @@ export class SearchMusicReferencesQuery {
 }
 
 @QueryHandler(SearchMusicReferencesQuery)
-export class SearchMusicReferencesHandler implements IQueryHandler<SearchMusicReferencesQuery, TMusicReferenceDomainModel[]> {
-  constructor(
-    @Inject(MUSIC_REFERENCE_REPO) private readonly refRepo: IMusicReferenceRepository,
-  ) {}
+export class SearchMusicReferencesHandler implements IQueryHandler<
+  SearchMusicReferencesQuery,
+  TMusicReferenceDomainModel[]
+> {
+  constructor(@Inject(MUSIC_REFERENCE_REPO) private readonly refRepo: IMusicReferenceRepository) {}
 
   async execute(query: SearchMusicReferencesQuery): Promise<TMusicReferenceDomainModel[]> {
     const q = query.searchValue?.trim().toLowerCase();

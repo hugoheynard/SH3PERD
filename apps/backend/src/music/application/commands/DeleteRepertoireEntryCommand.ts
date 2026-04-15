@@ -12,7 +12,10 @@ export class DeleteRepertoireEntryCommand {
 }
 
 @CommandHandler(DeleteRepertoireEntryCommand)
-export class DeleteRepertoireEntryHandler implements ICommandHandler<DeleteRepertoireEntryCommand, boolean> {
+export class DeleteRepertoireEntryHandler implements ICommandHandler<
+  DeleteRepertoireEntryCommand,
+  boolean
+> {
   constructor(
     @Inject(MUSIC_REPERTOIRE_REPO) private readonly repRepo: IMusicRepertoireRepository,
   ) {}

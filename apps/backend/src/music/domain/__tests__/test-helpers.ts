@@ -31,7 +31,9 @@ export const entryId = (n = 1) => `repEntry_test-${n}` as TRepertoireEntryId;
 
 // ─── Factory helpers ─────────────────────────────────────
 
-export function makeTrack(overrides: Partial<TVersionTrackDomainModel> = {}): TVersionTrackDomainModel {
+export function makeTrack(
+  overrides: Partial<TVersionTrackDomainModel> = {},
+): TVersionTrackDomainModel {
   return {
     id: trackId(Math.random()),
     fileName: 'test.mp3',
@@ -50,7 +52,9 @@ export function makeAnalyzedTrack(id: TVersionTrackId): TVersionTrackDomainModel
   });
 }
 
-export function makeAnalysis(overrides: Partial<TAudioAnalysisSnapshot> = {}): TAudioAnalysisSnapshot {
+export function makeAnalysis(
+  overrides: Partial<TAudioAnalysisSnapshot> = {},
+): TAudioAnalysisSnapshot {
   return {
     integratedLUFS: -14,
     loudnessRange: 7,
@@ -68,7 +72,9 @@ export function makeAnalysis(overrides: Partial<TAudioAnalysisSnapshot> = {}): T
   };
 }
 
-export function makeVersion(overrides: Partial<TEntityInput<TMusicVersionDomainModel>> = {}): MusicVersionEntity {
+export function makeVersion(
+  overrides: Partial<TEntityInput<TMusicVersionDomainModel>> = {},
+): MusicVersionEntity {
   return new MusicVersionEntity({
     owner_id: userId(),
     musicReference_id: refId(),
@@ -85,7 +91,9 @@ export function makeVersion(overrides: Partial<TEntityInput<TMusicVersionDomainM
   });
 }
 
-export function makeReference(overrides: Partial<TEntityInput<TMusicReferenceDomainModel>> = {}): MusicReferenceEntity {
+export function makeReference(
+  overrides: Partial<TEntityInput<TMusicReferenceDomainModel>> = {},
+): MusicReferenceEntity {
   return new MusicReferenceEntity({
     title: 'Test Song',
     artist: 'Test Artist',
@@ -94,7 +102,9 @@ export function makeReference(overrides: Partial<TEntityInput<TMusicReferenceDom
   });
 }
 
-export function makeEntry(overrides: Partial<TEntityInput<TMusicRepertoireEntryDomainModel>> = {}): RepertoireEntryEntity {
+export function makeEntry(
+  overrides: Partial<TEntityInput<TMusicRepertoireEntryDomainModel>> = {},
+): RepertoireEntryEntity {
   return new RepertoireEntryEntity({
     musicReference_id: refId(),
     owner_id: userId(),
@@ -102,10 +112,12 @@ export function makeEntry(overrides: Partial<TEntityInput<TMusicRepertoireEntryD
   });
 }
 
-export function makeAggregate(options: {
-  owner?: TUserId;
-  versions?: MusicVersionEntity[];
-} = {}): RepertoireEntryAggregate {
+export function makeAggregate(
+  options: {
+    owner?: TUserId;
+    versions?: MusicVersionEntity[];
+  } = {},
+): RepertoireEntryAggregate {
   const owner = options.owner ?? userId();
   const entry = makeEntry({ owner_id: owner });
   const reference = makeReference({ owner_id: owner });

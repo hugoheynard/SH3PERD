@@ -4,7 +4,7 @@ import {
   UpdateUserProfileCommand,
   UserProfileResponseDTO,
 } from '../application/commands/UpdateUserProfileCommand.js';
-import { buildApiResponseDTO } from '../../music/codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import type { TUserId, TUserProfileDomainModel, TApiResponse } from '@sh3pherd/shared-types';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';

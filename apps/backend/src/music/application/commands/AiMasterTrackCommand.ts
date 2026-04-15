@@ -43,12 +43,15 @@ export class AiMasterTrackCommand {
 }
 
 @CommandHandler(AiMasterTrackCommand)
-export class AiMasterTrackHandler implements ICommandHandler<AiMasterTrackCommand, TVersionTrackDomainModel> {
-
+export class AiMasterTrackHandler implements ICommandHandler<
+  AiMasterTrackCommand,
+  TVersionTrackDomainModel
+> {
   private readonly logger = new Logger(AiMasterTrackHandler.name);
 
   constructor(
-    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
+    private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
     private readonly quotaService: QuotaService,
     private readonly analytics: AnalyticsEventService,
@@ -67,9 +70,10 @@ export class AiMasterTrackHandler implements ICommandHandler<AiMasterTrackComman
     //    The reference can be on the same aggregate (same reference) or
     //    a different one. We load by versionId which resolves the correct
     //    aggregate.
-    const refAggregate = cmd.referenceVersionId === cmd.versionId
-      ? aggregate
-      : await this.aggregateRepo.loadByVersionId(cmd.referenceVersionId);
+    const refAggregate =
+      cmd.referenceVersionId === cmd.versionId
+        ? aggregate
+        : await this.aggregateRepo.loadByVersionId(cmd.referenceVersionId);
 
     const refVersion = refAggregate.findVersion(cmd.referenceVersionId);
     if (!refVersion) throw new Error('REFERENCE_VERSION_NOT_FOUND');
@@ -81,7 +85,10 @@ export class AiMasterTrackHandler implements ICommandHandler<AiMasterTrackComman
     // 3. Generate output S3 key
     const newTrackId = `track_${crypto.randomUUID()}` as TVersionTrackId;
     const outputS3Key = buildTrackS3Key(
-      cmd.actorId, cmd.versionId, newTrackId, `ai_master_${sourceTrack.fileName}`,
+      cmd.actorId,
+      cmd.versionId,
+      newTrackId,
+      `ai_master_${sourceTrack.fileName}`,
     );
 
     // 4. Build payload and dispatch to audio-processor
@@ -107,7 +114,7 @@ export class AiMasterTrackHandler implements ICommandHandler<AiMasterTrackComman
 
     this.logger.log(
       `AI mastering complete — ${result.sizeBytes} bytes, ` +
-      `EQ bands: ${result.predictedParams.eq.length}, ratio: ${result.predictedParams.compressor.ratio}:1`,
+        `EQ bands: ${result.predictedParams.eq.length}, ratio: ${result.predictedParams.compressor.ratio}:1`,
     );
 
     // 5. Add mastered track via aggregate

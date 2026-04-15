@@ -89,14 +89,14 @@ export class MusicVersionEntity extends Entity<TMusicVersionDomainModel> {
       }
       this.props.label = patch.label.trim();
     }
-    if (patch.genre !== undefined)   this.props.genre = patch.genre;
-    if (patch.type !== undefined)    this.props.type = patch.type;
-    if (patch.bpm !== undefined)     this.props.bpm = patch.bpm;
-    if (patch.pitch !== undefined)   this.props.pitch = patch.pitch;
-    if (patch.notes !== undefined)   this.props.notes = patch.notes;
+    if (patch.genre !== undefined) this.props.genre = patch.genre;
+    if (patch.type !== undefined) this.props.type = patch.type;
+    if (patch.bpm !== undefined) this.props.bpm = patch.bpm;
+    if (patch.pitch !== undefined) this.props.pitch = patch.pitch;
+    if (patch.notes !== undefined) this.props.notes = patch.notes;
     if (patch.mastery !== undefined) this.props.mastery = patch.mastery;
-    if (patch.energy !== undefined)  this.props.energy = patch.energy;
-    if (patch.effort !== undefined)  this.props.effort = patch.effort;
+    if (patch.energy !== undefined) this.props.energy = patch.energy;
+    if (patch.effort !== undefined) this.props.effort = patch.effort;
   }
 
   /* ── Track management ── */
@@ -116,16 +116,14 @@ export class MusicVersionEntity extends Entity<TMusicVersionDomainModel> {
    * @throws TRACK_NOT_FOUND
    */
   removeTrack(trackId: TVersionTrackId): TVersionTrackDomainModel {
-    const track = this.props.tracks.find(t => t.id === trackId);
+    const track = this.props.tracks.find((t) => t.id === trackId);
     if (!track) throw new Error('TRACK_NOT_FOUND');
 
     const wasFavorite = track.favorite;
-    this.props.tracks = this.props.tracks.filter(t => t.id !== trackId);
+    this.props.tracks = this.props.tracks.filter((t) => t.id !== trackId);
 
     if (wasFavorite && this.props.tracks.length > 0) {
-      this.props.tracks = this.props.tracks.map((t, i) =>
-        i === 0 ? { ...t, favorite: true } : t,
-      );
+      this.props.tracks = this.props.tracks.map((t, i) => (i === 0 ? { ...t, favorite: true } : t));
     }
 
     return track;
@@ -136,8 +134,8 @@ export class MusicVersionEntity extends Entity<TMusicVersionDomainModel> {
    * @throws TRACK_NOT_FOUND
    */
   setFavoriteTrack(trackId: TVersionTrackId): void {
-    if (!this.props.tracks.some(t => t.id === trackId)) throw new Error('TRACK_NOT_FOUND');
-    this.props.tracks = this.props.tracks.map(t => ({
+    if (!this.props.tracks.some((t) => t.id === trackId)) throw new Error('TRACK_NOT_FOUND');
+    this.props.tracks = this.props.tracks.map((t) => ({
       ...t,
       favorite: t.id === trackId,
     }));
@@ -148,20 +146,20 @@ export class MusicVersionEntity extends Entity<TMusicVersionDomainModel> {
    * @throws TRACK_NOT_FOUND
    */
   setTrackAnalysis(trackId: TVersionTrackId, snapshot: TAudioAnalysisSnapshot): void {
-    if (!this.props.tracks.some(t => t.id === trackId)) throw new Error('TRACK_NOT_FOUND');
-    this.props.tracks = this.props.tracks.map(t =>
+    if (!this.props.tracks.some((t) => t.id === trackId)) throw new Error('TRACK_NOT_FOUND');
+    this.props.tracks = this.props.tracks.map((t) =>
       t.id === trackId ? { ...t, analysisResult: snapshot } : t,
     );
   }
 
   /** Get the favorite track, or undefined if no tracks. */
   get favoriteTrack(): TVersionTrackDomainModel | undefined {
-    return this.props.tracks.find(t => t.favorite);
+    return this.props.tracks.find((t) => t.favorite);
   }
 
   /** Get a track by id, or undefined. */
   findTrack(trackId: TVersionTrackId): TVersionTrackDomainModel | undefined {
-    return this.props.tracks.find(t => t.id === trackId);
+    return this.props.tracks.find((t) => t.id === trackId);
   }
 
   /**

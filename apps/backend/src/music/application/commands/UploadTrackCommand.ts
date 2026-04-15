@@ -26,9 +26,13 @@ export class UploadTrackCommand {
 }
 
 @CommandHandler(UploadTrackCommand)
-export class UploadTrackHandler implements ICommandHandler<UploadTrackCommand, TVersionTrackDomainModel> {
+export class UploadTrackHandler implements ICommandHandler<
+  UploadTrackCommand,
+  TVersionTrackDomainModel
+> {
   constructor(
-    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
+    private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject(TRACK_STORAGE_SERVICE) private readonly storage: ITrackStorageService,
     private readonly eventBus: EventBus,
     private readonly quotaService: QuotaService,

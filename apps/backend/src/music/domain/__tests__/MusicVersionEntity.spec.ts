@@ -1,9 +1,18 @@
 import { MusicVersionEntity } from '../entities/MusicVersionEntity.js';
-import { makeVersion, makeTrack, makeAnalysis, userId, refId, trackId, versionId, GENRE, VERSION_TYPE } from './test-helpers.js';
+import {
+  makeVersion,
+  makeTrack,
+  makeAnalysis,
+  userId,
+  refId,
+  trackId,
+  versionId,
+  GENRE,
+  VERSION_TYPE,
+} from './test-helpers.js';
 import type { TMusicRating } from '@sh3pherd/shared-types';
 
 describe('MusicVersionEntity', () => {
-
   // ─── Construction invariants ────────────────────────────
 
   describe('constructor', () => {
@@ -32,35 +41,41 @@ describe('MusicVersionEntity', () => {
     });
 
     it('should reject missing owner_id', () => {
-      expect(() => new MusicVersionEntity({
-        owner_id: '' as any,
-        musicReference_id: refId(),
-        label: 'Test',
-        genre: GENRE.Pop,
-        type: VERSION_TYPE.Original,
-        bpm: null,
-        pitch: null,
-        mastery: 3 as TMusicRating,
-        energy: 3 as TMusicRating,
-        effort: 2 as TMusicRating,
-        tracks: [],
-      })).toThrow('MUSIC_VERSION_OWNER_REQUIRED');
+      expect(
+        () =>
+          new MusicVersionEntity({
+            owner_id: '' as any,
+            musicReference_id: refId(),
+            label: 'Test',
+            genre: GENRE.Pop,
+            type: VERSION_TYPE.Original,
+            bpm: null,
+            pitch: null,
+            mastery: 3 as TMusicRating,
+            energy: 3 as TMusicRating,
+            effort: 2 as TMusicRating,
+            tracks: [],
+          }),
+      ).toThrow('MUSIC_VERSION_OWNER_REQUIRED');
     });
 
     it('should reject missing musicReference_id', () => {
-      expect(() => new MusicVersionEntity({
-        owner_id: userId(),
-        musicReference_id: '' as any,
-        label: 'Test',
-        genre: GENRE.Pop,
-        type: VERSION_TYPE.Original,
-        bpm: null,
-        pitch: null,
-        mastery: 3 as TMusicRating,
-        energy: 3 as TMusicRating,
-        effort: 2 as TMusicRating,
-        tracks: [],
-      })).toThrow('MUSIC_VERSION_REFERENCE_REQUIRED');
+      expect(
+        () =>
+          new MusicVersionEntity({
+            owner_id: userId(),
+            musicReference_id: '' as any,
+            label: 'Test',
+            genre: GENRE.Pop,
+            type: VERSION_TYPE.Original,
+            bpm: null,
+            pitch: null,
+            mastery: 3 as TMusicRating,
+            energy: 3 as TMusicRating,
+            effort: 2 as TMusicRating,
+            tracks: [],
+          }),
+      ).toThrow('MUSIC_VERSION_REFERENCE_REQUIRED');
     });
   });
 
@@ -195,8 +210,8 @@ describe('MusicVersionEntity', () => {
 
       v.setFavoriteTrack(trackId(2));
 
-      expect(v.tracks.find(t => t.id === trackId(1))!.favorite).toBe(false);
-      expect(v.tracks.find(t => t.id === trackId(2))!.favorite).toBe(true);
+      expect(v.tracks.find((t) => t.id === trackId(1))!.favorite).toBe(false);
+      expect(v.tracks.find((t) => t.id === trackId(2))!.favorite).toBe(true);
     });
 
     it('should throw if track not found', () => {

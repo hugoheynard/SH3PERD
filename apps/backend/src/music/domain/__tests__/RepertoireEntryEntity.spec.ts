@@ -2,7 +2,6 @@ import { RepertoireEntryEntity } from '../entities/RepertoireEntryEntity.js';
 import { makeEntry, userId, refId } from './test-helpers.js';
 
 describe('RepertoireEntryEntity', () => {
-
   // ─── Construction invariants ────────────────────────────
 
   describe('constructor', () => {
@@ -14,17 +13,23 @@ describe('RepertoireEntryEntity', () => {
     });
 
     it('should reject missing musicReference_id', () => {
-      expect(() => new RepertoireEntryEntity({
-        musicReference_id: '' as any,
-        owner_id: userId(),
-      })).toThrow('REPERTOIRE_ENTRY_REFERENCE_REQUIRED');
+      expect(
+        () =>
+          new RepertoireEntryEntity({
+            musicReference_id: '' as any,
+            owner_id: userId(),
+          }),
+      ).toThrow('REPERTOIRE_ENTRY_REFERENCE_REQUIRED');
     });
 
     it('should reject missing owner_id', () => {
-      expect(() => new RepertoireEntryEntity({
-        musicReference_id: refId(),
-        owner_id: '' as any,
-      })).toThrow('REPERTOIRE_ENTRY_OWNER_REQUIRED');
+      expect(
+        () =>
+          new RepertoireEntryEntity({
+            musicReference_id: refId(),
+            owner_id: '' as any,
+          }),
+      ).toThrow('REPERTOIRE_ENTRY_OWNER_REQUIRED');
     });
   });
 

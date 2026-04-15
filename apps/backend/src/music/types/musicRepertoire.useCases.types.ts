@@ -1,9 +1,19 @@
-import type { TGetMusicRepertoireByFilterRequestDTO, TGetMusicRepertoireByFilterResponseDTO } from '@sh3pherd/shared-types';
-
+import type {
+  TGetMusicRepertoireByFilterRequestDTO,
+  TGetMusicRepertoireByFilterResponseDTO,
+  TCreateRepertoireEntryPayload,
+  TMusicRepertoireEntryDomainModel,
+} from '@sh3pherd/shared-types';
 
 export type TMusicRepertoireUseCases = {
-  createEntry: any;
+  createEntry: TCreateMusicRepertoireUseCase;
   getEntriesBy: TGetMusicRepertoireByUseCase;
 };
 
-export type TGetMusicRepertoireByUseCase = (requestDTO:TGetMusicRepertoireByFilterRequestDTO) => Promise<TGetMusicRepertoireByFilterResponseDTO>;
+export type TCreateMusicRepertoireUseCase = (
+  requestDTO: TCreateRepertoireEntryPayload,
+) => Promise<TMusicRepertoireEntryDomainModel>;
+
+export type TGetMusicRepertoireByUseCase = (
+  requestDTO: TGetMusicRepertoireByFilterRequestDTO,
+) => Promise<TGetMusicRepertoireByFilterResponseDTO>;

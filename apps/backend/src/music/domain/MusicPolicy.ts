@@ -1,4 +1,9 @@
-import type { TUserId, TMusicVersionId, TVersionTrackId, TMusicVersionDomainModel } from '@sh3pherd/shared-types';
+import type {
+  TUserId,
+  TMusicVersionId,
+  TVersionTrackId,
+  TMusicVersionDomainModel,
+} from '@sh3pherd/shared-types';
 import type { MusicVersionEntity } from './entities/MusicVersionEntity.js';
 import type { RepertoireEntryEntity } from './entities/RepertoireEntryEntity.js';
 
@@ -25,7 +30,6 @@ const MAX_VERSIONS_PER_REFERENCE = 10;
  * Each method either passes silently or throws with an explicit error code.
  */
 export class MusicPolicy {
-
   // ── Ownership ───────────────────────────────────────────
 
   /** Ensures the actor owns the version before mutating it. */
@@ -53,7 +57,7 @@ export class MusicPolicy {
 
   /** Ensures a version can accept a master track. */
   ensureCanMasterTrack(version: MusicVersionEntity): void {
-    const masterCount = version.tracks.filter(t => t.processingType === 'master').length;
+    const masterCount = version.tracks.filter((t) => t.processingType === 'master').length;
     if (masterCount >= MAX_MASTERS_PER_VERSION) {
       throw new Error('MAX_MASTERS_REACHED');
     }
@@ -72,7 +76,7 @@ export class MusicPolicy {
     if (!track.s3Key) {
       throw new Error('TRACK_NOT_IN_STORAGE');
     }
-  };
+  }
 
   // ── Version derivation limits ───────────────────────────
 
@@ -100,7 +104,7 @@ export class MusicPolicy {
 
     // Derivation limit per source
     const derivationCount = existingVersions.filter(
-      v => v.parentVersionId === sourceVersionId,
+      (v) => v.parentVersionId === sourceVersionId,
     ).length;
     if (derivationCount >= MAX_DERIVATIONS_PER_SOURCE) {
       throw new Error('MAX_DERIVATIONS_PER_SOURCE_REACHED');

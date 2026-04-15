@@ -26,7 +26,10 @@ export class SaveMusicTabConfigsCommand {
 }
 
 @CommandHandler(SaveMusicTabConfigsCommand)
-export class SaveMusicTabConfigsHandler implements ICommandHandler<SaveMusicTabConfigsCommand, boolean> {
+export class SaveMusicTabConfigsHandler implements ICommandHandler<
+  SaveMusicTabConfigsCommand,
+  boolean
+> {
   constructor(
     @Inject(MUSIC_TAB_CONFIGS_REPO) private readonly repo: IMusicTabConfigsRepository,
     private readonly quotaService: QuotaService,
@@ -43,7 +46,7 @@ export class SaveMusicTabConfigsHandler implements ICommandHandler<SaveMusicTabC
     }
 
     const doc: TMusicTabConfigsDomainModel = {
-      id: existing?.id ?? `musicTabCfg_${crypto.randomUUID()}` as TMusicTabConfigId,
+      id: existing?.id ?? (`musicTabCfg_${crypto.randomUUID()}` as TMusicTabConfigId),
       user_id: cmd.actorId,
       tabs: cmd.payload.tabs,
       activeTabId: cmd.payload.activeTabId,

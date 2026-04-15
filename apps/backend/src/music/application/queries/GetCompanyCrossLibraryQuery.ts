@@ -19,9 +19,13 @@ import type {
   TCrossMember,
   TCrossReferenceResult,
   TCrossMemberVersion,
+  TMusicReferenceId,
   TMusicReferenceDomainModel,
   TMusicVersionDomainModel,
+  TContractRecord,
+  TUserProfileRecord,
 } from '@sh3pherd/shared-types';
+import type { Filter } from 'mongodb';
 
 export class GetCompanyCrossLibraryQuery {
   constructor(public readonly companyId: TCompanyId) {}
@@ -41,9 +45,10 @@ export class GetCompanyCrossLibraryQuery {
  * 7. Sort by compatibleCount descending (most-shared songs first)
  */
 @QueryHandler(GetCompanyCrossLibraryQuery)
-export class GetCompanyCrossLibraryHandler
-  implements IQueryHandler<GetCompanyCrossLibraryQuery, TCrossSearchResult>
-{
+export class GetCompanyCrossLibraryHandler implements IQueryHandler<
+  GetCompanyCrossLibraryQuery,
+  TCrossSearchResult
+> {
   constructor(
     @Inject(CONTRACT_REPO) private readonly contractRepo: IContractRepository,
     @Inject(MUSIC_REPERTOIRE_REPO) private readonly repRepo: IMusicRepertoireRepository,
@@ -56,57 +61,54 @@ export class GetCompanyCrossLibraryHandler
     const companyId = query.companyId;
 
     // 1. Get all active contracts for this company
-    const contracts = await this.contractRepo.findMany({
-      filter: { company_id: companyId, status: 'active' } as any,
-    }) ?? [];
+    const contractFilter: Filter<TContractRecord> = { company_id: companyId, status: 'active' };
+    const contracts =
+      (await this.contractRepo.findMany({
+        filter: contractFilter,
+      })) ?? [];
 
-    const memberUserIds = contracts.map(c => c.user_id) as TUserId[];
+    const memberUserIds = contracts.map((c) => c.user_id);
 
     if (memberUserIds.length === 0) {
       return { companyId, members: [], results: [], totalReferences: 0 };
     }
 
     // 2. Fetch profiles for display names
-    const profiles = await this.profileRepo.findMany({
-      filter: { user_id: { $in: memberUserIds } } as any,
-    }) ?? [];
+    const profileFilter: Filter<TUserProfileRecord> = { user_id: { $in: memberUserIds } };
+    const profiles =
+      (await this.profileRepo.findMany({
+        filter: profileFilter,
+      })) ?? [];
 
-    const profileMap = new Map(profiles.map(p => [p.user_id, p]));
+    const profileMap = new Map(profiles.map((p) => [p.user_id, p]));
 
-    const members: TCrossMember[] = memberUserIds.map(uid => {
+    const members: TCrossMember[] = memberUserIds.map((uid) => {
       const profile = profileMap.get(uid);
       const firstName = profile?.first_name ?? '';
       const lastName = profile?.last_name ?? '';
       const displayName = `${firstName} ${lastName}`.trim() || uid;
-      const initials = (
-        (firstName?.charAt(0) ?? '') + (lastName?.charAt(0) ?? '')
-      ).toUpperCase() || '?';
+      const initials =
+        ((firstName?.charAt(0) ?? '') + (lastName?.charAt(0) ?? '')).toUpperCase() || '?';
       return { userId: uid, displayName, avatarInitials: initials };
     });
 
     // 3. Fetch repertoire entries for ALL members in parallel
     const allRepertoireEntries = await Promise.all(
-      memberUserIds.map(uid => this.repRepo.findByUserId(uid)),
+      memberUserIds.map((uid) => this.repRepo.findByUserId(uid)),
     );
 
     // Build a map: referenceId → Set<userId>
-    const refToUsers = new Map<string, Set<string>>();
-    const userToEntries = new Map<string, Set<string>>();
-
+    const refToUsers = new Map<TMusicReferenceId, Set<TUserId>>();
     for (let i = 0; i < memberUserIds.length; i++) {
       const uid = memberUserIds[i];
       const entries = allRepertoireEntries[i] ?? [];
-      const refIds = new Set<string>();
 
       for (const entry of entries) {
         const refId = entry.musicReference_id;
-        refIds.add(refId);
 
         if (!refToUsers.has(refId)) refToUsers.set(refId, new Set());
         refToUsers.get(refId)!.add(uid);
       }
-
-      userToEntries.set(uid, refIds);
     }
 
     // 4. Fetch all referenced songs
@@ -115,14 +117,12 @@ export class GetCompanyCrossLibraryHandler
       return { companyId, members, results: [], totalReferences: 0 };
     }
 
-    const references = await this.refRepo.findByIds(allRefIds as any);
-    const refMap = new Map<string, TMusicReferenceDomainModel>(
-      references.map(r => [r.id, r]),
-    );
+    const references = await this.refRepo.findByIds(allRefIds);
+    const refMap = new Map<string, TMusicReferenceDomainModel>(references.map((r) => [r.id, r]));
 
     // 5. Fetch all versions for all members in parallel
     const allVersionsByUser = await Promise.all(
-      memberUserIds.map(uid => this.versionRepo.findByOwnerId(uid)),
+      memberUserIds.map((uid) => this.versionRepo.findByOwnerId(uid)),
     );
 
     // Build a map: userId → referenceId → versions[]
@@ -156,7 +156,7 @@ export class GetCompanyCrossLibraryHandler
 
         memberVersions[uid] = {
           hasVersion: hasIt,
-          versions: versions.map(v => ({
+          versions: versions.map((v) => ({
             id: v.id,
             label: v.label,
             bpm: v.bpm,
@@ -170,7 +170,7 @@ export class GetCompanyCrossLibraryHandler
       }
 
       results.push({
-        referenceId: ref.id as any,
+        referenceId: ref.id,
         title: ref.title,
         originalArtist: ref.artist,
         members: memberVersions,

@@ -2,7 +2,6 @@ import { VersionTrackVO } from '../entities/VersionTrackVO.js';
 import { makeTrack, makeAnalysis, trackId } from './test-helpers.js';
 
 describe('VersionTrackVO', () => {
-
   // ─── Construction ───────────────────────────────────────
 
   describe('constructor', () => {
@@ -16,7 +15,9 @@ describe('VersionTrackVO', () => {
 
     it('should freeze props (immutable)', () => {
       const vo = new VersionTrackVO(makeTrack());
-      expect(() => { (vo.value as any).fileName = 'hacked'; }).toThrow();
+      expect(() => {
+        (vo.value as any).fileName = 'hacked';
+      }).toThrow();
     });
   });
 

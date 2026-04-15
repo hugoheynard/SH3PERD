@@ -1,7 +1,7 @@
 import { AggregateRoot } from '@nestjs/cqrs';
-import { RepertoireEntryEntity } from './entities/RepertoireEntryEntity.js';
-import { MusicReferenceEntity } from './entities/MusicReferenceEntity.js';
-import { MusicVersionEntity } from './entities/MusicVersionEntity.js';
+import type { RepertoireEntryEntity } from './entities/RepertoireEntryEntity.js';
+import type { MusicReferenceEntity } from './entities/MusicReferenceEntity.js';
+import type { MusicVersionEntity } from './entities/MusicVersionEntity.js';
 import { MusicPolicy } from './MusicPolicy.js';
 import type {
   TRepertoireEntryId,
@@ -25,7 +25,6 @@ import type {
  * All mutations go through this aggregate to enforce business rules via MusicPolicy.
  */
 export class RepertoireEntryAggregate extends AggregateRoot {
-
   private readonly _originalVersionIds: Set<string>;
   private readonly _removedVersions: MusicVersionEntity[] = [];
 
@@ -36,7 +35,7 @@ export class RepertoireEntryAggregate extends AggregateRoot {
     private readonly policy: MusicPolicy = new MusicPolicy(),
   ) {
     super();
-    this._originalVersionIds = new Set(versions.map(v => v.id));
+    this._originalVersionIds = new Set(versions.map((v) => v.id));
   }
 
   /* ── Identity ── */
@@ -55,17 +54,17 @@ export class RepertoireEntryAggregate extends AggregateRoot {
 
   getVersions(): readonly MusicVersionEntity[] {
     return this.versions;
-  };
+  }
 
   findVersion(versionId: TMusicVersionId): MusicVersionEntity | undefined {
-    return this.versions.find(v => v.id === versionId);
-  };
+    return this.versions.find((v) => v.id === versionId);
+  }
 
   /* ── Dirty tracking (for save) ── */
 
   /** Versions added after load (not in original set). */
   get newVersions(): MusicVersionEntity[] {
-    return this.versions.filter(v => !this._originalVersionIds.has(v.id));
+    return this.versions.filter((v) => !this._originalVersionIds.has(v.id));
   }
 
   /** Versions removed since load. */
@@ -75,7 +74,7 @@ export class RepertoireEntryAggregate extends AggregateRoot {
 
   /** Versions that existed at load and still exist (may have changes). */
   get existingVersions(): MusicVersionEntity[] {
-    return this.versions.filter(v => this._originalVersionIds.has(v.id));
+    return this.versions.filter((v) => this._originalVersionIds.has(v.id));
   }
 
   /* ── Commands: Version lifecycle ── */
@@ -83,13 +82,13 @@ export class RepertoireEntryAggregate extends AggregateRoot {
   /** Add a new version. Enforces max versions per reference. */
   addVersion(version: MusicVersionEntity): void {
     this.policy.ensureCanMutateEntry(version.owner_id, this.entry);
-    this.policy.ensureCanCreateVersion(this.versions.map(v => v.toDomain));
+    this.policy.ensureCanCreateVersion(this.versions.map((v) => v.toDomain));
     this.versions.push(version);
   }
 
   /** Remove a version. Returns the removed entity for S3 cleanup. */
   removeVersion(actorId: TUserId, versionId: TMusicVersionId): MusicVersionEntity {
-    const idx = this.versions.findIndex(v => v.id === versionId);
+    const idx = this.versions.findIndex((v) => v.id === versionId);
     if (idx === -1) throw new Error('MUSIC_VERSION_NOT_FOUND');
 
     const version = this.versions[idx];
@@ -101,7 +100,11 @@ export class RepertoireEntryAggregate extends AggregateRoot {
   }
 
   /** Update version metadata (label, genre, ratings, etc.). */
-  updateVersionMetadata(actorId: TUserId, versionId: TMusicVersionId, patch: Parameters<MusicVersionEntity['updateMetadata']>[0]): void {
+  updateVersionMetadata(
+    actorId: TUserId,
+    versionId: TMusicVersionId,
+    patch: Parameters<MusicVersionEntity['updateMetadata']>[0],
+  ): void {
     const version = this.getVersionOrThrow(versionId);
     this.policy.ensureCanMutateVersion(actorId, version);
     version.updateMetadata(patch);
@@ -125,7 +128,11 @@ export class RepertoireEntryAggregate extends AggregateRoot {
   }
 
   /** Remove a track. Returns it for S3 cleanup. */
-  removeTrack(actorId: TUserId, versionId: TMusicVersionId, trackId: TVersionTrackId): TVersionTrackDomainModel {
+  removeTrack(
+    actorId: TUserId,
+    versionId: TMusicVersionId,
+    trackId: TVersionTrackId,
+  ): TVersionTrackDomainModel {
     const version = this.getVersionOrThrow(versionId);
     this.policy.ensureCanMutateVersion(actorId, version);
     return version.removeTrack(trackId);
@@ -139,7 +146,11 @@ export class RepertoireEntryAggregate extends AggregateRoot {
   }
 
   /** Attach analysis result to a track (system action, no ownership check). */
-  setTrackAnalysis(versionId: TMusicVersionId, trackId: TVersionTrackId, snapshot: TAudioAnalysisSnapshot): void {
+  setTrackAnalysis(
+    versionId: TMusicVersionId,
+    trackId: TVersionTrackId,
+    snapshot: TAudioAnalysisSnapshot,
+  ): void {
     const version = this.getVersionOrThrow(versionId);
     version.setTrackAnalysis(trackId, snapshot);
   }
@@ -147,7 +158,11 @@ export class RepertoireEntryAggregate extends AggregateRoot {
   /* ── Commands: Mastering ── */
 
   /** Validate mastering preconditions. Returns the version for handler to extract sourceTrack. */
-  ensureCanMasterTrack(actorId: TUserId, versionId: TMusicVersionId, trackId: TVersionTrackId): MusicVersionEntity {
+  ensureCanMasterTrack(
+    actorId: TUserId,
+    versionId: TMusicVersionId,
+    trackId: TVersionTrackId,
+  ): MusicVersionEntity {
     const version = this.getVersionOrThrow(versionId);
     this.policy.ensureCanMutateVersion(actorId, version);
     this.policy.ensureCanMasterTrack(version);
@@ -158,17 +173,24 @@ export class RepertoireEntryAggregate extends AggregateRoot {
   /* ── Commands: Derivation (pitch shift, tempo change) ── */
 
   /** Validate derivation preconditions. Returns source version. */
-  ensureCanDeriveVersion(actorId: TUserId, versionId: TMusicVersionId, trackId: TVersionTrackId): MusicVersionEntity {
+  ensureCanDeriveVersion(
+    actorId: TUserId,
+    versionId: TMusicVersionId,
+    trackId: TVersionTrackId,
+  ): MusicVersionEntity {
     const version = this.getVersionOrThrow(versionId);
     this.policy.ensureCanMutateVersion(actorId, version);
     this.policy.ensureTrackReadyForProcessing(version, trackId);
-    this.policy.ensureCanDeriveVersion(this.versions.map(v => v.toDomain), version.id);
+    this.policy.ensureCanDeriveVersion(
+      this.versions.map((v) => v.toDomain),
+      version.id,
+    );
     return version;
   }
 
   /** Add a derived version (pitch_shift or tempo_change). */
   createDerivedVersion(version: MusicVersionEntity): void {
-    this.policy.ensureCanCreateVersion(this.versions.map(v => v.toDomain));
+    this.policy.ensureCanCreateVersion(this.versions.map((v) => v.toDomain));
     this.versions.push(version);
   }
 
@@ -184,7 +206,7 @@ export class RepertoireEntryAggregate extends AggregateRoot {
         title: ref.title,
         originalArtist: ref.artist,
       },
-      versions: this.versions.map(v => v.toDomain),
+      versions: this.versions.map((v) => v.toDomain),
     };
   }
 

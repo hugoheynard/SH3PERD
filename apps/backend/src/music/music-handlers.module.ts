@@ -68,9 +68,7 @@ const QueryHandlers = [
   GetCompanyCrossLibraryHandler,
 ];
 
-const EventHandlers = [
-  TrackUploadedHandler,
-];
+const EventHandlers = [TrackUploadedHandler];
 
 @Module({
   imports: [
@@ -78,11 +76,13 @@ const EventHandlers = [
     TrackStorageModule,
     QuotaModule,
     AnalyticsModule,
-    ClientsModule.register([{
-      name: 'AUDIO_PROCESSOR',
-      transport: Transport.TCP,
-      options: { host: 'localhost', port: 3001 },
-    }]),
+    ClientsModule.register([
+      {
+        name: 'AUDIO_PROCESSOR',
+        transport: Transport.TCP,
+        options: { host: 'localhost', port: 3001 },
+      },
+    ]),
   ],
   providers: [
     ...CommandHandlers,

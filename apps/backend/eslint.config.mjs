@@ -15,7 +15,6 @@ export default tslint.config(
       // Remove a module from this list BEFORE working on it.
       'src/playlists',
       'src/playlists-v2',
-      'src/music',
       'src/contracts',
       'src/calendar',
       'src/company',
@@ -61,7 +60,10 @@ export default tslint.config(
       '@typescript-eslint/await-thenable': 'error',
 
       // ── Code style ───────────────────────────────────
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],

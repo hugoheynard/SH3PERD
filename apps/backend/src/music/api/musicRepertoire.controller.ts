@@ -1,9 +1,17 @@
 import { Controller, Get, Post, Delete, Body, Param } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
-import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
+import { MusicApiCodes } from '../codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { CreateRepertoireEntryCommand } from '../application/commands/CreateRepertoireEntryCommand.js';
 import { DeleteRepertoireEntryCommand } from '../application/commands/DeleteRepertoireEntryCommand.js';
@@ -34,7 +42,10 @@ export class MusicRepertoireController {
     private readonly qryBus: QueryBus,
   ) {}
 
-  @ApiOperation({ summary: 'Get my repertoire entries', description: 'Returns all repertoire entries owned by the authenticated user.' })
+  @ApiOperation({
+    summary: 'Get my repertoire entries',
+    description: 'Returns all repertoire entries owned by the authenticated user.',
+  })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.REPERTOIRE_ENTRIES_FETCHED, RepertoireEntryPayload, 200))
   @RequirePermission(P.Music.Library.Read)
   @Get('me')
@@ -49,13 +60,17 @@ export class MusicRepertoireController {
     );
   }
 
-  @ApiOperation({ summary: 'Add song to repertoire', description: 'Creates a repertoire entry linking the user to a music reference.' })
+  @ApiOperation({
+    summary: 'Add song to repertoire',
+    description: 'Creates a repertoire entry linking the user to a music reference.',
+  })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.REPERTOIRE_ENTRY_CREATED, RepertoireEntryPayload, 200))
   @RequirePermission(P.Music.Library.Write)
   @Post()
   async createEntry(
     @ActorId() actorId: TUserId,
-    @Body('payload', new ZodValidationPipe(SCreateRepertoireEntryPayload)) payload: TCreateRepertoireEntryPayload,
+    @Body('payload', new ZodValidationPipe(SCreateRepertoireEntryPayload))
+    payload: TCreateRepertoireEntryPayload,
   ): Promise<TApiResponse<TMusicRepertoireEntryDomainModel>> {
     return buildApiResponseDTO(
       MusicApiCodes.REPERTOIRE_ENTRY_CREATED,
@@ -65,7 +80,10 @@ export class MusicRepertoireController {
     );
   }
 
-  @ApiOperation({ summary: 'Remove song from repertoire', description: 'Deletes a repertoire entry. Ownership is verified.' })
+  @ApiOperation({
+    summary: 'Remove song from repertoire',
+    description: 'Deletes a repertoire entry. Ownership is verified.',
+  })
   @ApiParam({ name: 'id', description: 'Repertoire entry ID to delete' })
   @RequirePermission(P.Music.Library.Write)
   @Delete(':id')

@@ -1,9 +1,27 @@
-import { Controller, Post, Delete, Patch, Get, Param, UseInterceptors, UploadedFile } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Delete,
+  Patch,
+  Get,
+  Param,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
-import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
+import { MusicApiCodes } from '../codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { UploadTrackCommand } from '../application/commands/UploadTrackCommand.js';
 import { DeleteTrackCommand } from '../application/commands/DeleteTrackCommand.js';
@@ -14,7 +32,10 @@ import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
 import { P } from '@sh3pherd/shared-types';
 import type {
-  TUserId, TApiResponse, TMusicVersionId, TVersionTrackId,
+  TUserId,
+  TApiResponse,
+  TMusicVersionId,
+  TVersionTrackId,
   TVersionTrackDomainModel,
 } from '@sh3pherd/shared-types';
 
@@ -35,7 +56,11 @@ export class MusicTrackController {
     private readonly qryBus: QueryBus,
   ) {}
 
-  @ApiOperation({ summary: 'Upload a track', description: 'Uploads an audio file to a version. Triggers async analysis (BPM, key, loudness).' })
+  @ApiOperation({
+    summary: 'Upload a track',
+    description:
+      'Uploads an audio file to a version. Triggers async analysis (BPM, key, loudness).',
+  })
   @ApiConsumes('multipart/form-data')
   @ApiParam({ name: 'versionId', description: 'Version to attach the track to' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.TRACK_UPLOADED, VersionTrackPayload, 201))
@@ -50,12 +75,17 @@ export class MusicTrackController {
     return buildApiResponseDTO(
       MusicApiCodes.TRACK_UPLOADED,
       await this.cmdBus.execute<UploadTrackCommand, TVersionTrackDomainModel>(
-        new UploadTrackCommand(actorId, versionId, file.buffer, file.mimetype, { fileName: file.originalname }),
+        new UploadTrackCommand(actorId, versionId, file.buffer, file.mimetype, {
+          fileName: file.originalname,
+        }),
       ),
     );
   }
 
-  @ApiOperation({ summary: 'Delete a track', description: 'Deletes a track from a version and removes the file from storage.' })
+  @ApiOperation({
+    summary: 'Delete a track',
+    description: 'Deletes a track from a version and removes the file from storage.',
+  })
   @ApiParam({ name: 'versionId', description: 'Version owning the track' })
   @ApiParam({ name: 'trackId', description: 'Track to delete' })
   @RequirePermission(P.Music.Track.Write)
@@ -73,7 +103,10 @@ export class MusicTrackController {
     );
   }
 
-  @ApiOperation({ summary: 'Set track as favorite', description: 'Marks a track as the favorite for its version. Only one favorite per version.' })
+  @ApiOperation({
+    summary: 'Set track as favorite',
+    description: 'Marks a track as the favorite for its version. Only one favorite per version.',
+  })
   @ApiParam({ name: 'versionId', description: 'Version owning the track' })
   @ApiParam({ name: 'trackId', description: 'Track to set as favorite' })
   @RequirePermission(P.Music.Track.Write)
@@ -91,7 +124,10 @@ export class MusicTrackController {
     );
   }
 
-  @ApiOperation({ summary: 'Get track download URL', description: 'Returns a presigned URL to download the track audio file. Expires after 1 hour.' })
+  @ApiOperation({
+    summary: 'Get track download URL',
+    description: 'Returns a presigned URL to download the track audio file. Expires after 1 hour.',
+  })
   @ApiParam({ name: 'versionId', description: 'Version owning the track' })
   @ApiParam({ name: 'trackId', description: 'Track to download' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.TRACK_DOWNLOAD_URL, TrackDownloadUrlPayload, 200))

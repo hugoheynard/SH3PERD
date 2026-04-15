@@ -1,7 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { buildApiResponseDTO } from '../../music/codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { P } from '@sh3pherd/shared-types';
 import type {

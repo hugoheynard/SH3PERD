@@ -1,8 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { QueryBus } from '@nestjs/cqrs';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
-import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
+import { MusicApiCodes } from '../codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { GetUserMusicLibraryQuery } from '../application/queries/GetUserMusicLibraryQuery.js';
 import { UserMusicLibraryViewModelPayload } from '../dto/music.dto.js';
@@ -13,14 +20,26 @@ import type { TUserId, TApiResponse, TUserMusicLibraryViewModel } from '@sh3pher
 
 @ApiTags('music / library')
 @ApiBearerAuth('bearer')
-@ApiUnauthorizedResponse({ description: 'Authentication required. Missing or invalid Bearer token.' })
+@ApiUnauthorizedResponse({
+  description: 'Authentication required. Missing or invalid Bearer token.',
+})
 @PlatformScoped()
 @Controller('library')
 export class MusicLibraryController {
   constructor(private readonly qryBus: QueryBus) {}
 
-  @ApiOperation({ summary: 'Get my music library', description: 'Returns the full music library for the authenticated user — all repertoire entries with their references and versions.' })
-  @ApiResponse(apiSuccessDTO(MusicApiCodes.MUSIC_LIBRARY_SINGLE_USER_SUCCESS, UserMusicLibraryViewModelPayload, 200))
+  @ApiOperation({
+    summary: 'Get my music library',
+    description:
+      'Returns the full music library for the authenticated user — all repertoire entries with their references and versions.',
+  })
+  @ApiResponse(
+    apiSuccessDTO(
+      MusicApiCodes.MUSIC_LIBRARY_SINGLE_USER_SUCCESS,
+      UserMusicLibraryViewModelPayload,
+      200,
+    ),
+  )
   @RequirePermission(P.Music.Library.Read)
   @Get('me')
   async getMyLibrary(

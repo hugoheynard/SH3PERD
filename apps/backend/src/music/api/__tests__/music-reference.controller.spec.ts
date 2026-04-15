@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { MusicReferenceController } from '../music-reference.controller.js';
 import { ContractContextGuard } from '../../../contracts/api/contract-context.guard.js';
@@ -15,8 +16,10 @@ describe('MusicReferenceController', () => {
         { provide: QueryBus, useValue: { execute: jest.fn() } },
       ],
     })
-      .overrideGuard(ContractContextGuard).useValue({ canActivate: () => true })
-      .overrideGuard(PermissionGuard).useValue({ canActivate: () => true })
+      .overrideGuard(ContractContextGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(PermissionGuard)
+      .useValue({ canActivate: () => true })
       .compile();
 
     controller = module.get<MusicReferenceController>(MusicReferenceController);

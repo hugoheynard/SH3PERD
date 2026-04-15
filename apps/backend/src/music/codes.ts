@@ -1,5 +1,4 @@
-import type { TApiResponse, TApiMessage } from '@sh3pherd/shared-types';
-
+import type { TApiMessage } from '@sh3pherd/shared-types';
 
 export const MusicApiCodes = {
   MUSIC_REFERENCE_CREATED: {
@@ -96,16 +95,6 @@ export const MusicApiCodes = {
   },
 } as const satisfies Record<string, TApiMessage>;
 
-
 export const apiCodes = {
-  music: MusicApiCodes
-}
-
-
-export function buildApiResponseDTO<TResponsePayload>(entry: TApiMessage, data: TResponsePayload): TApiResponse<TResponsePayload> {
-  return {
-    code: entry.code,
-    message: entry.message,
-    data,
-  };
-}
+  music: MusicApiCodes,
+};

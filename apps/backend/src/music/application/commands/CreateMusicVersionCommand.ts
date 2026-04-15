@@ -2,7 +2,11 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
-import type { TUserId, TCreateMusicVersionPayload, TMusicVersionDomainModel } from '@sh3pherd/shared-types';
+import type {
+  TUserId,
+  TCreateMusicVersionPayload,
+  TMusicVersionDomainModel,
+} from '@sh3pherd/shared-types';
 import { MusicVersionEntity } from '../../domain/entities/MusicVersionEntity.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
 
@@ -36,9 +40,13 @@ export class CreateMusicVersionCommand {
  * @throws MAX_VERSIONS_PER_REFERENCE_REACHED — version limit exceeded (policy)
  */
 @CommandHandler(CreateMusicVersionCommand)
-export class CreateMusicVersionHandler implements ICommandHandler<CreateMusicVersionCommand, TMusicVersionDomainModel> {
+export class CreateMusicVersionHandler implements ICommandHandler<
+  CreateMusicVersionCommand,
+  TMusicVersionDomainModel
+> {
   constructor(
-    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
+    private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     private readonly quotaService: QuotaService,
   ) {}
 
@@ -47,7 +55,8 @@ export class CreateMusicVersionHandler implements ICommandHandler<CreateMusicVer
     await this.quotaService.ensureAllowed(cmd.actorId, 'track_version');
 
     const aggregate = await this.aggregateRepo.loadByOwnerAndReference(
-      cmd.actorId, cmd.payload.musicReference_id,
+      cmd.actorId,
+      cmd.payload.musicReference_id,
     );
 
     const version = new MusicVersionEntity({

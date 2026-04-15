@@ -9,7 +9,10 @@ export class GetUserRepertoireQuery {
 }
 
 @QueryHandler(GetUserRepertoireQuery)
-export class GetUserRepertoireHandler implements IQueryHandler<GetUserRepertoireQuery, TMusicRepertoireEntryDomainModel[]> {
+export class GetUserRepertoireHandler implements IQueryHandler<
+  GetUserRepertoireQuery,
+  TMusicRepertoireEntryDomainModel[]
+> {
   constructor(
     @Inject(MUSIC_REPERTOIRE_REPO) private readonly repRepo: IMusicRepertoireRepository,
   ) {}

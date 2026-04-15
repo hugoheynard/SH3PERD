@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { CommandBus } from '@nestjs/cqrs';
 import { MusicVersionsController } from '../music-versions.controller.js';
 import { ContractContextGuard } from '../../../contracts/api/contract-context.guard.js';
@@ -10,12 +11,12 @@ describe('MusicVersionsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MusicVersionsController],
-      providers: [
-        { provide: CommandBus, useValue: { execute: jest.fn() } },
-      ],
+      providers: [{ provide: CommandBus, useValue: { execute: jest.fn() } }],
     })
-      .overrideGuard(ContractContextGuard).useValue({ canActivate: () => true })
-      .overrideGuard(PermissionGuard).useValue({ canActivate: () => true })
+      .overrideGuard(ContractContextGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(PermissionGuard)
+      .useValue({ canActivate: () => true })
       .compile();
 
     controller = module.get<MusicVersionsController>(MusicVersionsController);

@@ -1,8 +1,16 @@
 import { Controller, Post, Param, Body } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
-import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
+import { MusicApiCodes } from '../codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
 import { MasterTrackCommand } from '../application/commands/MasterTrackCommand.js';
 import { AiMasterTrackCommand } from '../application/commands/AiMasterTrackCommand.js';
@@ -12,8 +20,13 @@ import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
 import { P } from '@sh3pherd/shared-types';
 import type {
-  TUserId, TApiResponse, TMusicVersionId, TVersionTrackId,
-  TVersionTrackDomainModel, TMusicVersionDomainModel, TMasteringTargetSpecs,
+  TUserId,
+  TApiResponse,
+  TMusicVersionId,
+  TVersionTrackId,
+  TVersionTrackDomainModel,
+  TMusicVersionDomainModel,
+  TMasteringTargetSpecs,
 } from '@sh3pherd/shared-types';
 
 /**
@@ -27,7 +40,10 @@ import type {
 export class MusicTrackProcessingController {
   constructor(private readonly cmdBus: CommandBus) {}
 
-  @ApiOperation({ summary: 'Master a track', description: 'Creates a mastered copy with target loudness specs.' })
+  @ApiOperation({
+    summary: 'Master a track',
+    description: 'Creates a mastered copy with target loudness specs.',
+  })
   @ApiParam({ name: 'versionId', description: 'Version owning the source track' })
   @ApiParam({ name: 'trackId', description: 'Source track to master' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.TRACK_MASTERED, VersionTrackPayload, 200))
@@ -47,7 +63,11 @@ export class MusicTrackProcessingController {
     );
   }
 
-  @ApiOperation({ summary: 'AI-master a track', description: 'Creates an AI-mastered copy via DeepAFx-ST style transfer. Optionally applies loudnorm as stage 2.' })
+  @ApiOperation({
+    summary: 'AI-master a track',
+    description:
+      'Creates an AI-mastered copy via DeepAFx-ST style transfer. Optionally applies loudnorm as stage 2.',
+  })
   @ApiParam({ name: 'versionId', description: 'Version owning the source track' })
   @ApiParam({ name: 'trackId', description: 'Source track to AI-master' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.TRACK_AI_MASTERED, VersionTrackPayload, 200))
@@ -57,7 +77,8 @@ export class MusicTrackProcessingController {
     @ActorId() actorId: TUserId,
     @Param('versionId') versionId: TMusicVersionId,
     @Param('trackId') trackId: TVersionTrackId,
-    @Body() body: {
+    @Body()
+    body: {
       referenceVersionId: TMusicVersionId;
       referenceTrackId: TVersionTrackId;
       loudnormTarget?: TMasteringTargetSpecs;
@@ -67,15 +88,21 @@ export class MusicTrackProcessingController {
       MusicApiCodes.TRACK_AI_MASTERED,
       await this.cmdBus.execute<AiMasterTrackCommand, TVersionTrackDomainModel>(
         new AiMasterTrackCommand(
-          actorId, versionId, trackId,
-          body.referenceVersionId, body.referenceTrackId,
+          actorId,
+          versionId,
+          trackId,
+          body.referenceVersionId,
+          body.referenceTrackId,
           body.loudnormTarget,
         ),
       ),
     );
   }
 
-  @ApiOperation({ summary: 'Pitch-shift a version', description: 'Creates a new version pitch-shifted by the specified semitones.' })
+  @ApiOperation({
+    summary: 'Pitch-shift a version',
+    description: 'Creates a new version pitch-shifted by the specified semitones.',
+  })
   @ApiParam({ name: 'versionId', description: 'Source version to pitch-shift' })
   @ApiParam({ name: 'trackId', description: 'Reference track for the operation' })
   @ApiResponse(apiSuccessDTO(MusicApiCodes.VERSION_PITCH_SHIFTED, MusicVersionPayload, 200))

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch } from '@nestjs/common';
 import type { TUserId, TUserPreferencesDomainModel } from '@sh3pherd/shared-types';
 import { type TAsyncApiResponseDTO, type TUserMeViewModel } from '@sh3pherd/shared-types';
-import { buildApiResponseDTO } from '../../music/codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { USER_CODES_SUCCESS } from './codes/user.codes.js';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import {

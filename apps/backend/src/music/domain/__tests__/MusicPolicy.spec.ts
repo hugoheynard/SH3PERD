@@ -24,7 +24,9 @@ describe('MusicPolicy', () => {
 
     it('should throw when actor does not own the version', () => {
       const version = makeVersion({ owner_id: userId(1) });
-      expect(() => policy.ensureCanMutateVersion(userId(2), version)).toThrow('MUSIC_VERSION_NOT_OWNED');
+      expect(() => policy.ensureCanMutateVersion(userId(2), version)).toThrow(
+        'MUSIC_VERSION_NOT_OWNED',
+      );
     });
   });
 
@@ -37,7 +39,9 @@ describe('MusicPolicy', () => {
 
     it('should throw when actor does not own the entry', () => {
       const entry = makeEntry({ owner_id: userId(1) });
-      expect(() => policy.ensureCanMutateEntry(userId(2), entry)).toThrow('REPERTOIRE_ENTRY_NOT_OWNED');
+      expect(() => policy.ensureCanMutateEntry(userId(2), entry)).toThrow(
+        'REPERTOIRE_ENTRY_NOT_OWNED',
+      );
     });
   });
 
@@ -90,19 +94,25 @@ describe('MusicPolicy', () => {
 
     it('should throw when track not found', () => {
       const version = makeVersion();
-      expect(() => policy.ensureTrackReadyForProcessing(version, trackId(999))).toThrow('TRACK_NOT_FOUND');
+      expect(() => policy.ensureTrackReadyForProcessing(version, trackId(999))).toThrow(
+        'TRACK_NOT_FOUND',
+      );
     });
 
     it('should throw when track has no analysis', () => {
       const version = makeVersion();
       version.addTrack(makeTrack({ id: trackId(1), s3Key: 'some/key' }));
-      expect(() => policy.ensureTrackReadyForProcessing(version, trackId(1))).toThrow('TRACK_NOT_ANALYZED');
+      expect(() => policy.ensureTrackReadyForProcessing(version, trackId(1))).toThrow(
+        'TRACK_NOT_ANALYZED',
+      );
     });
 
     it('should throw when track has no s3Key', () => {
       const version = makeVersion();
       version.addTrack(makeTrack({ id: trackId(1), analysisResult: { bpm: 120 } as any }));
-      expect(() => policy.ensureTrackReadyForProcessing(version, trackId(1))).toThrow('TRACK_NOT_IN_STORAGE');
+      expect(() => policy.ensureTrackReadyForProcessing(version, trackId(1))).toThrow(
+        'TRACK_NOT_IN_STORAGE',
+      );
     });
   });
 
@@ -110,13 +120,19 @@ describe('MusicPolicy', () => {
 
   describe('ensureCanCreateVersion', () => {
     it('should pass when under the limit', () => {
-      const versions = Array.from({ length: 9 }, (_, i) => ({ id: versionId(i) })) as TMusicVersionDomainModel[];
+      const versions = Array.from({ length: 9 }, (_, i) => ({
+        id: versionId(i),
+      })) as TMusicVersionDomainModel[];
       expect(() => policy.ensureCanCreateVersion(versions)).not.toThrow();
     });
 
     it('should throw when 10 versions exist', () => {
-      const versions = Array.from({ length: 10 }, (_, i) => ({ id: versionId(i) })) as TMusicVersionDomainModel[];
-      expect(() => policy.ensureCanCreateVersion(versions)).toThrow('MAX_VERSIONS_PER_REFERENCE_REACHED');
+      const versions = Array.from({ length: 10 }, (_, i) => ({
+        id: versionId(i),
+      })) as TMusicVersionDomainModel[];
+      expect(() => policy.ensureCanCreateVersion(versions)).toThrow(
+        'MAX_VERSIONS_PER_REFERENCE_REACHED',
+      );
     });
   });
 
@@ -132,8 +148,12 @@ describe('MusicPolicy', () => {
     });
 
     it('should throw when global version limit reached', () => {
-      const versions = Array.from({ length: 10 }, (_, i) => ({ id: versionId(i) })) as TMusicVersionDomainModel[];
-      expect(() => policy.ensureCanDeriveVersion(versions, versionId(1))).toThrow('MAX_VERSIONS_PER_REFERENCE_REACHED');
+      const versions = Array.from({ length: 10 }, (_, i) => ({
+        id: versionId(i),
+      })) as TMusicVersionDomainModel[];
+      expect(() => policy.ensureCanDeriveVersion(versions, versionId(1))).toThrow(
+        'MAX_VERSIONS_PER_REFERENCE_REACHED',
+      );
     });
 
     it('should throw when 3 derivations from same source exist', () => {
@@ -142,7 +162,9 @@ describe('MusicPolicy', () => {
         id: versionId(10 + i),
         parentVersionId: sourceId,
       })) as TMusicVersionDomainModel[];
-      expect(() => policy.ensureCanDeriveVersion(versions, sourceId)).toThrow('MAX_DERIVATIONS_PER_SOURCE_REACHED');
+      expect(() => policy.ensureCanDeriveVersion(versions, sourceId)).toThrow(
+        'MAX_DERIVATIONS_PER_SOURCE_REACHED',
+      );
     });
 
     it('should not count derivations from other sources', () => {

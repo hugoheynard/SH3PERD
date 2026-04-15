@@ -1,12 +1,22 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { QueryBus } from '@nestjs/cqrs';
 import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
 import { P } from '@sh3pherd/shared-types';
 import type { TCompanyId, TCrossSearchResult, TApiResponse } from '@sh3pherd/shared-types';
 import { GetCompanyCrossLibraryQuery } from '../application/queries/GetCompanyCrossLibraryQuery.js';
-import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
+import { MusicApiCodes } from '../codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
+import { apiSuccessDTO } from '../../utils/swagger/api-response.swagger.util.js';
+import { CrossSearchResultPayload } from '../dto/music.dto.js';
 
 /**
  * Cross library controller — **company-scoped** (not platform-scoped).
@@ -33,9 +43,11 @@ export class MusicCrossLibraryController {
 
   @ApiOperation({
     summary: 'Get cross library for a company',
-    description: 'Returns the cross-reference matrix of songs × artists for all artists under active contract at the given company. Sorted by compatibleCount (most-shared songs first).',
+    description:
+      'Returns the cross-reference matrix of songs × artists for all artists under active contract at the given company. Sorted by compatibleCount (most-shared songs first).',
   })
   @ApiParam({ name: 'id', description: 'Company ID' })
+  @ApiResponse(apiSuccessDTO(MusicApiCodes.CROSS_LIBRARY_FETCHED, CrossSearchResultPayload, 200))
   @RequirePermission(P.Company.Members.Read)
   @Get(':id/cross-library')
   async getCrossLibrary(

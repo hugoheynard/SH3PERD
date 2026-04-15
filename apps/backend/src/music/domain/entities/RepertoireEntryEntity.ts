@@ -1,5 +1,9 @@
 import { Entity, type TEntityInput } from '../../../utils/entities/Entity.js';
-import type { TMusicRepertoireEntryDomainModel, TMusicReferenceId, TUserId } from '@sh3pherd/shared-types';
+import type {
+  TMusicRepertoireEntryDomainModel,
+  TMusicReferenceId,
+  TUserId,
+} from '@sh3pherd/shared-types';
 
 /**
  * The link between a user and a music reference — "this song is in my repertoire".

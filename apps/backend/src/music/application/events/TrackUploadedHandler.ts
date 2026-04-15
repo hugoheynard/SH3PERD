@@ -6,7 +6,14 @@ import { TrackUploadedEvent } from './TrackUploadedEvent.js';
 import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
-import { MicroservicePatterns, type TAudioAnalysisSnapshot, type TAnalyzeTrackPayload } from '@sh3pherd/shared-types';
+import {
+  MicroservicePatterns,
+  type TAudioAnalysisSnapshot,
+  type TAnalyzeTrackPayload,
+} from '@sh3pherd/shared-types';
+
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 /**
  * Handles TrackUploadedEvent by dispatching an analysis request
@@ -15,30 +22,35 @@ import { MicroservicePatterns, type TAudioAnalysisSnapshot, type TAnalyzeTrackPa
  */
 @EventsHandler(TrackUploadedEvent)
 export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
-
   private readonly logger = new Logger(TrackUploadedHandler.name);
 
   constructor(
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
-    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
+    private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     private readonly analytics: AnalyticsEventService,
   ) {}
 
   async handle(event: TrackUploadedEvent): Promise<void> {
     const { ownerId, versionId, trackId, s3Key } = event;
 
-    this.logger.log(`Track uploaded → requesting analysis [version=${versionId}, track=${trackId}]`);
+    this.logger.log(
+      `Track uploaded → requesting analysis [version=${versionId}, track=${trackId}]`,
+    );
 
     const payload: TAnalyzeTrackPayload = { s3Key, trackId, versionId, ownerId };
 
     try {
       const snapshot = await firstValueFrom(
         this.audioClient
-          .send<TAudioAnalysisSnapshot | null>(MicroservicePatterns.AudioProcessor.ANALYZE_TRACK, payload)
+          .send<TAudioAnalysisSnapshot | null>(
+            MicroservicePatterns.AudioProcessor.ANALYZE_TRACK,
+            payload,
+          )
           .pipe(
             timeout(120_000),
-            catchError(err => {
-              this.logger.error(`Analysis failed for track ${trackId}: ${err.message}`);
+            catchError((err) => {
+              this.logger.error(`Analysis failed for track ${trackId}: ${getErrorMessage(err)}`);
               return of(null as TAudioAnalysisSnapshot | null);
             }),
           ),
@@ -69,8 +81,10 @@ export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
         snr_db: snapshot.SNRdB,
         clipping_ratio: snapshot.clippingRatio,
       });
-    } catch (err: any) {
-      this.logger.error(`Unexpected error during analysis of track ${trackId}: ${err.message}`);
+    } catch (err: unknown) {
+      this.logger.error(
+        `Unexpected error during analysis of track ${trackId}: ${getErrorMessage(err)}`,
+      );
     }
   }
 }

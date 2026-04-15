@@ -3,7 +3,8 @@ import { ApiBearerAuth, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
-import { buildApiResponseDTO, MusicApiCodes } from '../codes.js';
+import { MusicApiCodes } from '../codes.js';
+import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { CreateMusicReferenceCommand } from '../application/commands/CreateMusicReferenceCommand.js';
 import { SearchMusicReferencesQuery } from '../application/queries/SearchMusicReferencesQuery.js';
 import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
@@ -34,7 +35,10 @@ export class MusicReferenceController {
     private readonly qryBus: QueryBus,
   ) {}
 
-  @ApiOperation({ summary: 'Fuzzy search references', description: 'Search existing references by title/artist via Atlas Search.' })
+  @ApiOperation({
+    summary: 'Fuzzy search references',
+    description: 'Search existing references by title/artist via Atlas Search.',
+  })
   @RequirePermission(P.Music.Library.Read)
   @Get('dynamic-search')
   async searchReferences(
@@ -48,12 +52,17 @@ export class MusicReferenceController {
     );
   }
 
-  @ApiOperation({ summary: 'Create a music reference', description: 'Creates a new reference or returns existing if duplicate (dedup by title+artist).' })
+  @ApiOperation({
+    summary: 'Create a music reference',
+    description:
+      'Creates a new reference or returns existing if duplicate (dedup by title+artist).',
+  })
   @RequirePermission(P.Music.Library.Write)
   @Post()
   async createReference(
     @ActorId() actorId: TUserId,
-    @Body('payload', new ZodValidationPipe(SCreateMusicReferencePayload)) payload: TCreateMusicReferenceRequestDTO,
+    @Body('payload', new ZodValidationPipe(SCreateMusicReferencePayload))
+    payload: TCreateMusicReferenceRequestDTO,
   ): Promise<TApiResponse<TMusicReferenceDomainModel>> {
     return buildApiResponseDTO(
       MusicApiCodes.MUSIC_REFERENCE_CREATED,

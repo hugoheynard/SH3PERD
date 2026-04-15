@@ -17,7 +17,8 @@ export class DeleteTrackCommand {
 @CommandHandler(DeleteTrackCommand)
 export class DeleteTrackHandler implements ICommandHandler<DeleteTrackCommand, boolean> {
   constructor(
-    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
+    private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject(TRACK_STORAGE_SERVICE) private readonly storage: ITrackStorageService,
   ) {}
 

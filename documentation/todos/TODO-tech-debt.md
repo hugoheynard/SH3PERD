@@ -56,9 +56,9 @@ _(rien actuellement)_
 
 ### Cross-domain
 
-- [ ] **`buildApiResponseDTO` importé depuis `music/codes.js` dans `user.controller.ts`**
-  - Déplacer vers `utils/api/` ou `shared/`
-  - Fichier : `apps/backend/src/music/codes.js` → destination : `utils/response/buildApiResponse.ts`
+- [x] **`buildApiResponseDTO` importé depuis `music/codes.js` dans `user.controller.ts`**
+  - Déplacé vers `apps/backend/src/utils/response/buildApiResponseDTO.ts`
+  - Les controllers company, music et user importent maintenant l'util partagé.
 
 ### Swagger
 
@@ -75,14 +75,14 @@ _(rien actuellement)_
 
 ### Music Library — Cross répertoire
 
-- [ ] **Le mode `cross` du front est sur des données mockées**
-  - Créer l'endpoint backend : `GET /protected/companies/casts/:castId/repertoire/cross`
-  - Le backend croise les répertoires des membres du Cast et retourne `CrossReferenceResult[]`
-  - Wirer le front pour remplacer `mockCrossContext` par un vrai appel API
+- [x] **Le mode `cross` du front appelle l'API backend**
+  - Endpoint actuel : `GET /protected/companies/:id/cross-library`
+  - Le front résout le `companyId` depuis le `contractId` actif puis appelle l'API via `MusicLibraryApiService.getCrossLibrary()`
 
-- [ ] **La sélection du Cast actif n'est pas modélisée côté front**
-  - Un onglet en mode `cross` doit référencer un `contractId` → résoudre le Cast correspondant
-  - Mettre à jour `MusicSearchTarget` pour passer le `castId` (pas le `contractId`)
+- [ ] **Clarifier le modèle métier de sélection cross**
+  - Aujourd'hui, un onglet en mode `cross` référence un `contractId`, qui sert à retrouver la company.
+  - Décider si la cible finale doit rester company-wide ou devenir plus fine (`castId` / node / service).
+  - Si on passe au `castId`, mettre à jour `MusicSearchTarget` et créer l'endpoint dédié.
 
 ### Music Library — Upload & Analyse
 
@@ -95,6 +95,7 @@ _(rien actuellement)_
 ## 🟢 Améliorations UI (Frontend)
 
 ### Composants réutilisables (discussion en attente)
+
 La conversation sur les composants réutilisables a été mise en pause :
 
 - [ ] **`ui-popover`** — frame avec `ng-content`, reprendre le design des panneaux flottants du tab-bar
@@ -116,6 +117,11 @@ La conversation sur les composants réutilisables a été mise en pause :
 ---
 
 ## ⚪ Refactoring / Cleanup
+
+- [x] **Module Music sorti des ignores ESLint**
+  - `src/music` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
+  - Les repositories music utilisent maintenant des types Mongo explicites au lieu de `as any`.
+  - `pnpm --filter @sh3pherd/backend lint` passe avec le module music inclus.
 
 - [ ] **Tests spec stubs auto-générés** avec imports sans `.js` — cassés depuis longtemps
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer

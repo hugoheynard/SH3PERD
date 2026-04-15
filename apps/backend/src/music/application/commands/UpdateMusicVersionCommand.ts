@@ -2,7 +2,12 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
-import type { TUserId, TMusicVersionId, TUpdateMusicVersionPayload, TMusicVersionDomainModel } from '@sh3pherd/shared-types';
+import type {
+  TUserId,
+  TMusicVersionId,
+  TUpdateMusicVersionPayload,
+  TMusicVersionDomainModel,
+} from '@sh3pherd/shared-types';
 
 export class UpdateMusicVersionCommand {
   constructor(
@@ -13,9 +18,13 @@ export class UpdateMusicVersionCommand {
 }
 
 @CommandHandler(UpdateMusicVersionCommand)
-export class UpdateMusicVersionHandler implements ICommandHandler<UpdateMusicVersionCommand, TMusicVersionDomainModel> {
+export class UpdateMusicVersionHandler implements ICommandHandler<
+  UpdateMusicVersionCommand,
+  TMusicVersionDomainModel
+> {
   constructor(
-    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO) private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
+    private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
   ) {}
 
   async execute(cmd: UpdateMusicVersionCommand): Promise<TMusicVersionDomainModel> {
