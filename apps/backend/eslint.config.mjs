@@ -20,7 +20,6 @@ export default tslint.config(
       'src/integrations',
       'src/busReactions',
       'src/print',
-      'src/types',
       'src/user',
       'src/E2E',
     ],

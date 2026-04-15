@@ -146,6 +146,11 @@ La conversation sur les composants réutilisables a été mise en pause :
   - Les tests utils ont été réalignés sur le modèle metadata actuel.
   - `pnpm --filter @sh3pherd/backend lint` passe avec les utils inclus.
 
+- [x] **Types backend sortis des ignores ESLint**
+  - `src/types` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
+  - L'augmentation Express documente l'exception `interface`, nécessaire au declaration merging.
+  - `pnpm --filter @sh3pherd/backend lint` passe avec les types inclus.
+
 - [ ] **Tests spec stubs auto-générés** avec imports sans `.js` — cassés depuis longtemps
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer
   - `apps/backend/src/appBootstrap/__tests__/` — idem
