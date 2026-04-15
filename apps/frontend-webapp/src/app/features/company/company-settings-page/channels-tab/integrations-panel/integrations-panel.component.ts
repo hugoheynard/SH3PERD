@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ButtonComponent } from '../../../../../shared/button/button.component';
+import { IconComponent } from '../../../../../shared/icon/icon.component';
 import { PlatformIconComponent } from '../platform-icon/platform-icon.component';
 import type { TIntegrationViewModel, TCommunicationPlatform } from '@sh3pherd/shared-types';
 
@@ -62,7 +63,7 @@ export const PLATFORMS: PlatformMeta[] = [
 @Component({
   selector: 'app-integrations-panel',
   standalone: true,
-  imports: [ButtonComponent, PlatformIconComponent],
+  imports: [ButtonComponent, IconComponent, PlatformIconComponent],
   templateUrl: './integrations-panel.component.html',
   styleUrl: './integrations-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -12,11 +12,12 @@ import { AudioPlayerService } from '../../audio-player/audio-player.service';
 import { toPlayableTrack } from '../../audio-player/audio-player.types';
 import type { TMasteringModalContext } from '../../mastering/mastering.types';
 import type { TMusicVersionId } from '@sh3pherd/shared-types';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-music-reference-card',
   standalone: true,
-  imports: [AddVersionFormComponent, ButtonComponent, BadgeComponent, InlineConfirmComponent],
+  imports: [AddVersionFormComponent, ButtonComponent, BadgeComponent, InlineConfirmComponent, IconComponent],
   templateUrl: './music-reference-card.component.html',
   styleUrl: './music-reference-card.component.scss',
 })

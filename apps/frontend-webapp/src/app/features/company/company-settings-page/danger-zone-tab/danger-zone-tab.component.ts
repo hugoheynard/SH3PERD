@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 import { ButtonComponent } from '../../../../shared/button/button.component';
 import { CompanyStore } from '../../company.store';
 import type { TCompanyId } from '@sh3pherd/shared-types';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-danger-zone-tab',
   standalone: true,
-  imports: [ButtonComponent],
+  imports: [ButtonComponent, IconComponent],
   templateUrl: './danger-zone-tab.component.html',
   styleUrl: './danger-zone-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { IconComponent } from '../icon/icon.component';
 
 export type ViewMode = 'cards' | 'table';
 
@@ -18,6 +19,7 @@ export type ViewMode = 'cards' | 'table';
 @Component({
   selector: 'sh3-view-toggle',
   standalone: true,
+  imports: [IconComponent],
   templateUrl: './view-toggle.component.html',
   styleUrl: './view-toggle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

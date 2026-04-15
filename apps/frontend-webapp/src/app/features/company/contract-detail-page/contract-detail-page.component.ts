@@ -9,6 +9,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ContractService } from '../contract.service';
 import { ContractStore } from '../contract.store';
+import { IconComponent } from '../../../shared/icon/icon.component';
 import type {
   TContractDetailViewModel,
   TContractId,
@@ -36,7 +37,7 @@ type EditForm = {
 @Component({
   selector: 'app-contract-detail-page',
   standalone: true,
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule, DatePipe, IconComponent],
   templateUrl: './contract-detail-page.component.html',
   styleUrl: './contract-detail-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -178,6 +178,131 @@ We explicitly rejected building an Angular `<sh3-scrollbar>` component: scrollba
 
 ---
 
+## Icons (`sh3-icon`)
+
+All icons in the app go through the `sh3-icon` component backed by a typed registry. Inline `<svg>` blocks in templates and `<mat-icon>` are forbidden — adding either re-introduces drift between consumers and the design system.
+
+### Architecture
+
+```
+src/assets/icons/
+├── ui/         # Generic controls + verbs on items
+│   chevrons, close, plus, check, search, eye, edit, bin, upload,
+│   download, menu, reset, view, folder, folder-open, file-add,
+│   playlist-add, save, list, grid, lock, globe, sliders, ungroup,
+│   reload, expand-all, collapse-all, arrow-back, arrow-right,
+│   check-circle
+├── nav/        # App-level chrome (sidebar + header destinations)
+│   home, program, music, contracts, company, settings, stats,
+│   logout, bell, help, theme-dark, theme-light
+├── music/      # Music domain — playback transport + ratings + instruments
+│   play, play-circle, pause, prev-track, next-track, rewind,
+│   fast-forward, volume, mute, repeat, metronome, microphone,
+│   music-file, music-note, waveform, heart, heart-border, fire
+├── status/     # Status badges
+│   completed, clock, diamond, award, lightning, offline-bolt
+├── people/     # User and role indicators
+│   king, leader, group-lead, referral, give-rights, team, work,
+│   briefcase
+└── brands/     # Third-party platform logos
+    slack, whatsapp, teams, discord, telegram
+
+src/app/shared/icon/
+├── icon.component.ts      # the sh3-icon component
+├── icon.registry.ts       # imports every SVG, exports SH3_ICONS + Sh3IconName
+└── svg.d.ts               # `declare module '*.svg'` for esbuild text loader
+```
+
+The registry uses Angular's `@angular/build` esbuild loader configured in `angular.json`:
+
+```json
+"loader": { ".svg": "text" }
+```
+
+Each `.svg` file is imported directly as a string at build time. Adding a new icon = drop the file in the right folder, import it in `icon.registry.ts`, add it to `SH3_ICONS`. The `Sh3IconName` union type updates automatically.
+
+### Component API
+
+```ts
+@Component({ selector: 'sh3-icon' })
+export class IconComponent {
+  readonly name  = input.required<Sh3IconName>(); // typed → autocomplete + compile error on typo
+  readonly size  = input<Sh3IconSize>('md');      // 'xs'|'sm'|'md'|'lg'|'xl' or pixel number
+  readonly title = input<string>();               // a11y label (sets aria-label, otherwise aria-hidden)
+}
+```
+
+### Sizing
+
+Presets map to CSS pixel values via `--icon-size`:
+
+| Preset | Pixels |
+|--------|--------|
+| `xs` | 12 |
+| `sm` | 16 |
+| `md` (default) | 20 |
+| `lg` | 24 |
+| `xl` | 32 |
+
+Pass a number for anything off-grid:
+
+```html
+<sh3-icon name="search" />
+<sh3-icon name="bin" size="lg" />
+<sh3-icon name="heart" [size]="18" />
+<sh3-icon name="check-circle" [size]="48" />
+```
+
+### Theming
+
+SVG files are authored single-colour with `fill: currentColor` (`stroke="currentColor"` for outlined ones). The icon inherits the host's `color`, so styling is just:
+
+```scss
+.danger-btn sh3-icon {
+  color: var(--color-alert);
+}
+```
+
+No `[color]` input — go through the cascade. Same for hover states, active states, etc.
+
+### Adding an icon
+
+1. Drop `<name>.svg` in the matching category folder under `src/assets/icons/`.
+   - Single-colour, `currentColor` on `fill`/`stroke`, no hardcoded width/height.
+   - viewBox `0 0 24 24` is the convention (anything else works but stays consistent).
+2. Import + register in `src/app/shared/icon/icon.registry.ts`:
+   ```ts
+   import myIcon from '../../../assets/icons/ui/my-icon.svg';
+
+   export const SH3_ICONS = {
+     // …existing entries…
+     'my-icon': myIcon,
+   } as const;
+   ```
+3. Use it: `<sh3-icon name="my-icon" />` — TypeScript autocompletes the name and rejects typos.
+
+### Anti-patterns
+
+- **Inline `<svg>` in templates** — even tiny ones. If it's worth rendering, it's worth being in the registry. The only legitimate exception today is `tab-nav.component.html` which renders a path string injected via `[attr.d]="tab.icon"` (the caller — not the icon system — owns the path).
+- **`<mat-icon>` from `@angular/material/icon`** — removed from the app. `MatIconButton` (the wrapper button) is fine; it's a different concept.
+- **Hardcoded `width`/`height` attributes inside the SVG file** — sizing is the host's job via `--icon-size`. Strip them from any new icon.
+- **Using a raw `string` for `name`** — defeats compile-time safety. Always type your menu items / props with `Sh3IconName`.
+
+### Taxonomy guidance (when in doubt where to put an icon)
+
+| Folder | Owner intent | Examples |
+|--------|--------------|----------|
+| `ui/` | A control or verb that exists on most surfaces. No domain knowledge needed to understand it. | `close`, `chevron-down`, `edit`, `eye`, `lock` |
+| `nav/` | Top-level app chrome — the sidebar / header / theme system / notifications. | `home`, `bell`, `theme-dark` |
+| `music/` | Specific to music — transport controls, instruments, ratings. | `play`, `metronome`, `heart`, `fire` |
+| `status/` | A badge or pill that conveys state on its own. | `completed`, `clock`, `lightning` |
+| `people/` | Roles, hierarchy, work context. | `king`, `leader`, `team`, `briefcase` |
+| `brands/` | Third-party logos. Single-colour where possible. | `slack`, `discord` |
+
+If a new icon doesn't obviously fit, add a folder. The taxonomy is meant to evolve.
+
+---
+
 ## Component styles
 
 Every component has a colocated `.component.scss` with Angular's default `ViewEncapsulation.Emulated`.

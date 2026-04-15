@@ -6,10 +6,11 @@ import { InputComponent } from '../../../shared/forms/input/input.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { BrandPanelComponent } from '../brand-panel/brand-panel.component';
+import { IconComponent } from '../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-forgot-password',
-  imports: [FormsModule, InputComponent, ButtonComponent, RouterLink, BrandPanelComponent],
+  imports: [FormsModule, InputComponent, ButtonComponent, RouterLink, BrandPanelComponent, IconComponent],
   templateUrl: './forgot-password.component.html',
   standalone: true,
   styleUrl: './forgot-password.component.scss',

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { UserContextService } from '../../core/services/user-context.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { IconComponent } from '../icon/icon.component';
 
 /**
  * Premium toggle switch for light/dark theme.
@@ -13,6 +14,7 @@ import { ThemeService } from '../../core/services/theme.service';
 @Component({
   selector: 'sh3-theme-toggle',
   standalone: true,
+  imports: [IconComponent],
   templateUrl: './theme-toggle.component.html',
   styleUrl: './theme-toggle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -17,6 +17,7 @@ import {
   type TOrgchartPdfPaperFormat,
 } from '../orgchart-export.service';
 import { OrgchartSvgExporter } from '../orgchart-svg-exporter';
+import { IconComponent } from '../../../shared/icon/icon.component';
 
 /**
  * Orgchart export modal.
@@ -34,7 +35,7 @@ import { OrgchartSvgExporter } from '../orgchart-svg-exporter';
 @Component({
   selector: 'app-orgchart-export-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IconComponent],
   templateUrl: './orgchart-export-modal.component.html',
   styleUrl: './orgchart-export-modal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

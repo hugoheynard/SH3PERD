@@ -23,6 +23,7 @@ import type {
   TMasteringResult,
 } from './mastering.types';
 import type { TMasteringTargetSpecs } from '@sh3pherd/shared-types';
+import { IconComponent } from '../../../shared/icon/icon.component';
 
 /**
  * Mastering modal — 3 modes, LUFS/TP/LRA targets, EQ visualisation.
@@ -38,7 +39,7 @@ import type { TMasteringTargetSpecs } from '@sh3pherd/shared-types';
 @Component({
   selector: 'sh3-mastering-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, EqCurveComponent],
+  imports: [CommonModule, FormsModule, EqCurveComponent, IconComponent],
   templateUrl: './mastering-modal.component.html',
   styleUrl: './mastering-modal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

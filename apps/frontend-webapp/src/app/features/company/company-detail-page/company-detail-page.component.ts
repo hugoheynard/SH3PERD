@@ -16,6 +16,7 @@ import { SettingsTab } from '../company-settings-page/tab-names.enum';
 import type { TCompanyId } from '@sh3pherd/shared-types';
 import { ContractsService } from '../../contracts/services/contracts.service';
 import { UserContextService } from '../../../core/services/user-context.service';
+import { IconComponent } from '../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-company-detail-page',
@@ -23,8 +24,7 @@ import { UserContextService } from '../../../core/services/user-context.service'
   imports: [
     CompanyHeaderComponent, ContractsTabComponent, OrgchartTabComponent,
     CompanyInfoTabComponent, OrgLayersTabComponent, ChannelsTabComponent, GuestsTabComponent, DangerZoneTabComponent,
-    TabNavComponent,
-  ],
+    TabNavComponent, IconComponent],
   templateUrl: './company-detail-page.component.html',
   styleUrl: './company-detail-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

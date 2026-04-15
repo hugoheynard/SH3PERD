@@ -3,11 +3,12 @@ import { AvatarComponent } from '../../../../shared/avatar/avatar.component';
 import { StatusBadgeComponent } from '../../../../shared/status-badge/status-badge.component';
 import { BadgeComponent } from '../../../../shared/badge/badge.component';
 import type { TContractDomainModel, TContractId } from '@sh3pherd/shared-types';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-contract-card',
   standalone: true,
-  imports: [AvatarComponent, StatusBadgeComponent, BadgeComponent],
+  imports: [AvatarComponent, StatusBadgeComponent, BadgeComponent, IconComponent],
   templateUrl: './contract-card.component.html',
   styleUrl: './contract-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

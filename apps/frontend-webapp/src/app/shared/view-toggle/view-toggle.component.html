@@ -1,16 +1,11 @@
 <button class="toggle-btn" type="button" aria-label="Toggle view mode" (click)="toggle()">
   @if (mode() === 'cards') {
     <!-- Show table icon — clicking will switch to table -->
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M3 6h18M3 10h18M3 14h18M3 18h18"/>
-    </svg>
+    <sh3-icon name="list" [size]="14" />
     <span>Table</span>
   } @else {
     <!-- Show cards icon — clicking will switch to cards -->
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-      <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-    </svg>
+    <sh3-icon name="grid" [size]="14" />
     <span>Cards</span>
   }
 </button>

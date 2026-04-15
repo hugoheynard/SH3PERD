@@ -12,11 +12,12 @@ import type {
   TUserId,
 } from '@sh3pherd/shared-types';
 import { NODE_PALETTE } from '../../orgchart-palette';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-orgchart-tab',
   standalone: true,
-  imports: [CommonModule, FormsModule, OrgchartExportModalComponent],
+  imports: [CommonModule, FormsModule, OrgchartExportModalComponent, IconComponent],
   templateUrl: './orgchart-tab.component.html',
   styleUrl: './orgchart-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

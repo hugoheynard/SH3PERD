@@ -6,11 +6,12 @@ import { ButtonComponent } from '../../../shared/button/button.component';
 import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 import { CompanyCardComponent } from './company-card/company-card.component';
+import { IconComponent } from '../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-company-page',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, LoadingStateComponent, EmptyStateComponent, CompanyCardComponent],
+  imports: [CommonModule, ButtonComponent, LoadingStateComponent, EmptyStateComponent, CompanyCardComponent, IconComponent],
   templateUrl: './company-page.component.html',
   styleUrl: './company-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

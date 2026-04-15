@@ -5,6 +5,7 @@ import { ToastService } from '../../../../shared/toast/toast.service';
 import { ButtonComponent } from '../../../../shared/button/button.component';
 import { AvatarComponent } from '../../../../shared/avatar/avatar.component';
 import type { TCompanyId } from '@sh3pherd/shared-types';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 type GuestVM = {
   user_id: string;
@@ -18,7 +19,7 @@ type GuestVM = {
 @Component({
   selector: 'app-guests-tab',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, AvatarComponent],
+  imports: [CommonModule, ButtonComponent, AvatarComponent, IconComponent],
   templateUrl: './guests-tab.component.html',
   styleUrl: './guests-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

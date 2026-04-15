@@ -26,6 +26,7 @@ import { ToastService } from '../../../shared/toast/toast.service';
 import { InfoDirective } from '../../../shared/help/info.directive';
 import { UserContextService } from '../../../core/services/user-context.service';
 import { UpgradePanelComponent } from '../../../core/components/upgrade-panel/upgrade-panel.component';
+import { IconComponent } from '../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-music-library-page',
@@ -40,8 +41,7 @@ import { UpgradePanelComponent } from '../../../core/components/upgrade-panel/up
     ButtonComponent,
     ViewToggleComponent,
     MasteringModalComponent,
-    InfoDirective,
-  ],
+    InfoDirective, IconComponent],
   templateUrl: './music-library-page.component.html',
   styleUrl: './music-library-page.component.scss',
   providers: [provideTabHandlers(MusicTabMutationService)],

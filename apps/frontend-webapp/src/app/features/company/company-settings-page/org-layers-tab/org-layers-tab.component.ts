@@ -5,11 +5,12 @@ import { InputComponent } from '../../../../shared/forms/input/input.component';
 import { ButtonComponent } from '../../../../shared/button/button.component';
 import { FormSectionComponent } from '../../../../shared/forms/form-section/form-section.component';
 import type { TCompanyId } from '@sh3pherd/shared-types';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-org-layers-tab',
   standalone: true,
-  imports: [FormsModule, InputComponent, ButtonComponent, FormSectionComponent],
+  imports: [FormsModule, InputComponent, ButtonComponent, FormSectionComponent, IconComponent],
   providers: [OrgLayersTabStore],
   templateUrl: './org-layers-tab.component.html',
   styleUrl: './org-layers-tab.component.scss',

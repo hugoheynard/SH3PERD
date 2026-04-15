@@ -4,13 +4,14 @@ import { CompanyStore } from '../company.store';
 import { ContractStore } from '../contract.store';
 import { UserLookupService } from '../user-lookup.service';
 import type { TContractStatus, TUserSearchResult } from '@sh3pherd/shared-types';
+import { IconComponent } from '../../../shared/icon/icon.component';
 
 type PanelStep = 'search' | 'new-user' | 'contract';
 
 @Component({
   selector: 'app-contract-creation-panel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconComponent],
   templateUrl: './contract-creation-panel.component.html',
   styleUrl: './contract-creation-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

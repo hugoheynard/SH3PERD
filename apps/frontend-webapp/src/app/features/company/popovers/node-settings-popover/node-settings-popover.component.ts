@@ -30,6 +30,7 @@ export type TNodeSettingsPopoverData = {
 };
 
 import { NODE_PALETTE } from '../../orgchart-palette';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 const PLATFORM_LABELS: Record<TCommunicationPlatform, string> = {
   slack: 'Slack',
@@ -43,7 +44,7 @@ const PLATFORM_LABELS: Record<TCommunicationPlatform, string> = {
 @Component({
   selector: 'app-node-settings-popover',
   standalone: true,
-  imports: [CommonModule, PopoverFrameComponent, TabNavComponent, AvatarComponent, PillSelectorComponent],
+  imports: [CommonModule, PopoverFrameComponent, TabNavComponent, AvatarComponent, PillSelectorComponent, IconComponent],
   templateUrl: './node-settings-popover.component.html',
   styleUrl: './node-settings-popover.component.scss',
 })

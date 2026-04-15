@@ -4,11 +4,12 @@ import { SlicePipe } from '@angular/common';
 import { InputComponent } from '../../../../../shared/forms/input/input.component';
 import { ButtonComponent } from '../../../../../shared/button/button.component';
 import type { TIntegrationChannel, TCommunicationPlatform } from '@sh3pherd/shared-types';
+import { IconComponent } from '../../../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-platform-channels',
   standalone: true,
-  imports: [FormsModule, SlicePipe, InputComponent, ButtonComponent],
+  imports: [FormsModule, SlicePipe, InputComponent, ButtonComponent, IconComponent],
   templateUrl: './platform-channels.component.html',
   styleUrl: './platform-channels.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

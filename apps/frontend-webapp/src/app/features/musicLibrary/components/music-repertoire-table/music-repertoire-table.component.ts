@@ -18,6 +18,7 @@ import { MasteringModalComponent } from '../../mastering/mastering-modal.compone
 import { decodePeaks } from '@sh3pherd/shared-types';
 import type { TMusicVersionId } from '@sh3pherd/shared-types';
 import type { TMasteringModalContext, TMasteringResult } from '../../mastering/mastering.types';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 export type VersionEditPayload = {
   entryId: string;
@@ -33,7 +34,7 @@ export type VersionEditPayload = {
 @Component({
   selector: 'app-music-repertoire-table',
   standalone: true,
-  imports: [AddVersionFormComponent, FormsModule, ButtonComponent, InputComponent, BadgeComponent, WaveformThumbnailComponent, InlineConfirmComponent, MasteringModalComponent],
+  imports: [AddVersionFormComponent, FormsModule, ButtonComponent, InputComponent, BadgeComponent, WaveformThumbnailComponent, InlineConfirmComponent, MasteringModalComponent, IconComponent],
   templateUrl: './music-repertoire-table.component.html',
   styleUrl: './music-repertoire-table.component.scss',
 })

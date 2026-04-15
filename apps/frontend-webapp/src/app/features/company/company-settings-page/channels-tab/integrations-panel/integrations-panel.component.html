@@ -19,7 +19,7 @@
           } @else if (isConnected(p.key)) {
             <span class="status-badge connected">Connected</span>
             <button class="btn-icon btn-disconnect" (click)="disconnect(p.key)" title="Disconnect">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              <sh3-icon name="close" size='xs' />
             </button>
           } @else {
             <sh3-button variant="primary" size="sm" (clicked)="oauthRequested.emit(p.key)">Connect</sh3-button>

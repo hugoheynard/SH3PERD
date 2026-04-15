@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { AvatarComponent } from '../../../../shared/avatar/avatar.component';
 import { StatusBadgeComponent } from '../../../../shared/status-badge/status-badge.component';
 import type { TCompanyCardViewModel } from '@sh3pherd/shared-types';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-company-card',
   standalone: true,
-  imports: [AvatarComponent, StatusBadgeComponent],
+  imports: [AvatarComponent, StatusBadgeComponent, IconComponent],
   templateUrl: './company-card.component.html',
   styleUrl: './company-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

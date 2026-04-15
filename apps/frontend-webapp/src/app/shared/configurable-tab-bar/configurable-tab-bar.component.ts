@@ -8,6 +8,7 @@ import type { DragState } from '../../core/drag-and-drop/drag.types';
 import type { TabItem, SavedTabConfig } from './configurable-tab-bar.types';
 import { TAB_HANDLERS, type TabHandlers } from './tab-event.helpers';
 import { ToastService } from '../toast/toast.service';
+import { IconComponent } from '../icon/icon.component';
 
 /**
  * Generic, reusable tab bar with save/recall configs, DnD reorder, color coding, and inline editing.
@@ -27,7 +28,7 @@ import { ToastService } from '../toast/toast.service';
 @Component({
   selector: 'sh3-configurable-tab-bar',
   standalone: true,
-  imports: [FormsModule, ButtonComponent, InputComponent, DndDragDirective, DndDropZoneDirective],
+  imports: [FormsModule, ButtonComponent, InputComponent, DndDragDirective, DndDropZoneDirective, IconComponent],
   templateUrl: './configurable-tab-bar.component.html',
   styleUrl: './configurable-tab-bar.component.scss',
 })
