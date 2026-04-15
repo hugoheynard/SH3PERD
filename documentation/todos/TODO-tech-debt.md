@@ -173,6 +173,12 @@ La conversation sur les composants réutilisables a été mise en pause :
   - Les tests user sont alignés sur les imports ESM `.js` et le contrat synchrone `startSession()`.
   - `pnpm --filter @sh3pherd/backend lint` passe avec user inclus.
 
+- [x] **Playlists v2 sorti des ignores ESLint**
+  - `src/playlists-v2` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
+  - Les controllers playlists v2 utilisent les DTO partagés validés par Zod au lieu de `any`.
+  - Les repositories playlists v2 s'appuient sur les helpers Mongo typés du `BaseMongoRepository`.
+  - `pnpm --filter @sh3pherd/backend lint` passe avec playlists v2 inclus.
+
 - [ ] **Tests spec stubs auto-générés** avec imports sans `.js` — cassés depuis longtemps
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer
   - `apps/backend/src/appBootstrap/__tests__/` — idem

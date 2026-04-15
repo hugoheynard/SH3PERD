@@ -32,6 +32,8 @@ import type {
   TPlaylistDomainModel,
   TPlaylistSummaryViewModel,
   TPlaylistDetailViewModel,
+  TCreatePlaylistPayload,
+  TUpdatePlaylistPayload,
 } from '@sh3pherd/shared-types';
 import { SCreatePlaylistPayload, SUpdatePlaylistPayload } from '@sh3pherd/shared-types';
 
@@ -57,12 +59,14 @@ export class PlaylistController {
   @Post()
   async createPlaylist(
     @ActorId() actorId: TUserId,
-    @Body('payload', new ZodValidationPipe(SCreatePlaylistPayload)) payload: any,
+    @Body('payload', new ZodValidationPipe(SCreatePlaylistPayload))
+    payload: TCreatePlaylistPayload,
   ): Promise<TApiResponse<TPlaylistDomainModel>> {
-    return buildPlaylistApiResponse(
-      PlaylistApiCodes.PLAYLIST_CREATED,
-      await this.cmdBus.execute(new CreatePlaylistCommand(actorId, payload)),
+    const result = await this.cmdBus.execute<CreatePlaylistCommand, TPlaylistDomainModel>(
+      new CreatePlaylistCommand(actorId, payload),
     );
+
+    return buildPlaylistApiResponse(PlaylistApiCodes.PLAYLIST_CREATED, result);
   }
 
   @ApiOperation({
@@ -75,10 +79,11 @@ export class PlaylistController {
   async getMyPlaylists(
     @ActorId() actorId: TUserId,
   ): Promise<TApiResponse<TPlaylistSummaryViewModel[]>> {
-    return buildPlaylistApiResponse(
-      PlaylistApiCodes.PLAYLISTS_FETCHED,
-      await this.qryBus.execute(new GetUserPlaylistsQuery(actorId)),
+    const result = await this.qryBus.execute<GetUserPlaylistsQuery, TPlaylistSummaryViewModel[]>(
+      new GetUserPlaylistsQuery(actorId),
     );
+
+    return buildPlaylistApiResponse(PlaylistApiCodes.PLAYLISTS_FETCHED, result);
   }
 
   @ApiOperation({
@@ -94,10 +99,11 @@ export class PlaylistController {
     @ActorId() actorId: TUserId,
     @Param('id') playlistId: TPlaylistId,
   ): Promise<TApiResponse<TPlaylistDetailViewModel>> {
-    return buildPlaylistApiResponse(
-      PlaylistApiCodes.PLAYLIST_DETAIL_FETCHED,
-      await this.qryBus.execute(new GetPlaylistDetailQuery(actorId, playlistId)),
+    const result = await this.qryBus.execute<GetPlaylistDetailQuery, TPlaylistDetailViewModel>(
+      new GetPlaylistDetailQuery(actorId, playlistId),
     );
+
+    return buildPlaylistApiResponse(PlaylistApiCodes.PLAYLIST_DETAIL_FETCHED, result);
   }
 
   @ApiOperation({
@@ -112,12 +118,14 @@ export class PlaylistController {
   async updatePlaylist(
     @ActorId() actorId: TUserId,
     @Param('id') playlistId: TPlaylistId,
-    @Body('payload', new ZodValidationPipe(SUpdatePlaylistPayload)) payload: any,
+    @Body('payload', new ZodValidationPipe(SUpdatePlaylistPayload))
+    payload: TUpdatePlaylistPayload,
   ): Promise<TApiResponse<TPlaylistDomainModel>> {
-    return buildPlaylistApiResponse(
-      PlaylistApiCodes.PLAYLIST_UPDATED,
-      await this.cmdBus.execute(new UpdatePlaylistCommand(actorId, playlistId, payload)),
+    const result = await this.cmdBus.execute<UpdatePlaylistCommand, TPlaylistDomainModel>(
+      new UpdatePlaylistCommand(actorId, playlistId, payload),
     );
+
+    return buildPlaylistApiResponse(PlaylistApiCodes.PLAYLIST_UPDATED, result);
   }
 
   @ApiOperation({
@@ -125,16 +133,17 @@ export class PlaylistController {
     description: 'Deletes a playlist and all its tracks. Ownership is verified.',
   })
   @ApiParam({ name: 'id', description: 'Playlist ID to delete' })
-  @ApiResponse(apiSuccessDTO(PlaylistApiCodes.PLAYLIST_DELETED, undefined as any, 200))
+  @ApiResponse(apiSuccessDTO(PlaylistApiCodes.PLAYLIST_DELETED, Boolean, 200))
   @RequirePermission(P.Music.Playlist.Own)
   @Delete(':id')
   async deletePlaylist(
     @ActorId() actorId: TUserId,
     @Param('id') playlistId: TPlaylistId,
   ): Promise<TApiResponse<boolean>> {
-    return buildPlaylistApiResponse(
-      PlaylistApiCodes.PLAYLIST_DELETED,
-      await this.cmdBus.execute(new DeletePlaylistCommand(actorId, playlistId)),
+    const result = await this.cmdBus.execute<DeletePlaylistCommand, boolean>(
+      new DeletePlaylistCommand(actorId, playlistId),
     );
+
+    return buildPlaylistApiResponse(PlaylistApiCodes.PLAYLIST_DELETED, result);
   }
 }

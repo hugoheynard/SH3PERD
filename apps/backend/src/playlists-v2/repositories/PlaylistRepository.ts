@@ -2,7 +2,13 @@ import {
   BaseMongoRepository,
   type TBaseMongoRepoDeps,
 } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
-import type { TPlaylistDomainModel, TPlaylistId, TUserId } from '@sh3pherd/shared-types';
+import type { Filter, UpdateFilter } from 'mongodb';
+import type {
+  TPlaylistDomainModel,
+  TPlaylistId,
+  TUpdatePlaylistPayload,
+  TUserId,
+} from '@sh3pherd/shared-types';
 
 export type IPlaylistRepository = {
   saveOne(document: TPlaylistDomainModel): Promise<boolean>;
@@ -10,7 +16,7 @@ export type IPlaylistRepository = {
   findByOwnerId(ownerId: TUserId): Promise<TPlaylistDomainModel[]>;
   updatePlaylist(
     playlistId: TPlaylistId,
-    patch: Record<string, unknown>,
+    patch: TUpdatePlaylistPayload,
   ): Promise<TPlaylistDomainModel | null>;
   deleteOneById(playlistId: TPlaylistId): Promise<boolean>;
 };
@@ -24,36 +30,30 @@ export class PlaylistMongoRepository
   }
 
   async saveOne(document: TPlaylistDomainModel): Promise<boolean> {
-    const result = await this.collection.insertOne(document as any);
-    return result.acknowledged;
+    return this.save(document);
   }
 
   async findOneById(playlistId: TPlaylistId): Promise<TPlaylistDomainModel | null> {
-    return this.collection.findOne({
-      id: playlistId,
-    } as any) as Promise<TPlaylistDomainModel | null>;
+    const filter: Filter<TPlaylistDomainModel> = { id: playlistId };
+    return this.findOne({ filter });
   }
 
   async findByOwnerId(ownerId: TUserId): Promise<TPlaylistDomainModel[]> {
-    return this.collection.find({ owner_id: ownerId } as any).toArray() as Promise<
-      TPlaylistDomainModel[]
-    >;
+    const filter: Filter<TPlaylistDomainModel> = { owner_id: ownerId };
+    return this.findMany({ filter });
   }
 
   async updatePlaylist(
     playlistId: TPlaylistId,
-    patch: Record<string, unknown>,
+    patch: TUpdatePlaylistPayload,
   ): Promise<TPlaylistDomainModel | null> {
-    const result = await this.collection.findOneAndUpdate(
-      { id: playlistId } as any,
-      { $set: patch },
-      { returnDocument: 'after' },
-    );
-    return result as TPlaylistDomainModel | null;
+    const filter: Filter<TPlaylistDomainModel> = { id: playlistId };
+    const update: UpdateFilter<TPlaylistDomainModel> = { $set: patch };
+    return this.updateOne({ filter, update });
   }
 
   async deleteOneById(playlistId: TPlaylistId): Promise<boolean> {
-    const result = await this.collection.deleteOne({ id: playlistId } as any);
-    return result.deletedCount === 1;
+    const filter: Filter<TPlaylistDomainModel> = { id: playlistId };
+    return this.deleteOne(filter);
   }
 }

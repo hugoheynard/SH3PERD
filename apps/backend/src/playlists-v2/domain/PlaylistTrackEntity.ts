@@ -1,21 +1,26 @@
 import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
-import type { TPlaylistTrackDomainModel } from '@sh3pherd/shared-types';
+import type {
+  TMusicReferenceId,
+  TMusicVersionId,
+  TPlaylistId,
+  TPlaylistTrackDomainModel,
+} from '@sh3pherd/shared-types';
 
 export class PlaylistTrackEntity extends Entity<TPlaylistTrackDomainModel> {
   constructor(props: TEntityInput<TPlaylistTrackDomainModel>) {
     super(props, 'plTrack');
   }
 
-  get playlistId() {
+  get playlistId(): TPlaylistId {
     return this.props.playlistId;
   }
-  get referenceId() {
+  get referenceId(): TMusicReferenceId {
     return this.props.referenceId;
   }
-  get versionId() {
+  get versionId(): TMusicVersionId {
     return this.props.versionId;
   }
-  get position() {
+  get position(): number {
     return this.props.position;
   }
 }

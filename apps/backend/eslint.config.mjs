@@ -14,7 +14,6 @@ export default tslint.config(
       // Legacy modules — not yet cleaned up for strict lint.
       // Remove a module from this list BEFORE working on it.
       'src/playlists',
-      'src/playlists-v2',
       'src/E2E',
     ],
   },

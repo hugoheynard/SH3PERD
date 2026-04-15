@@ -25,6 +25,8 @@ import type {
   TPlaylistTrackId,
   TApiResponse,
   TPlaylistTrackDomainModel,
+  TAddPlaylistTrackPayload,
+  TReorderPlaylistTrackPayload,
 } from '@sh3pherd/shared-types';
 import { SAddPlaylistTrackPayload, SReorderPlaylistTrackPayload } from '@sh3pherd/shared-types';
 
@@ -49,12 +51,14 @@ export class PlaylistTracksController {
   async addTrack(
     @ActorId() actorId: TUserId,
     @Param('playlistId') playlistId: TPlaylistId,
-    @Body('payload', new ZodValidationPipe(SAddPlaylistTrackPayload)) payload: any,
+    @Body('payload', new ZodValidationPipe(SAddPlaylistTrackPayload))
+    payload: TAddPlaylistTrackPayload,
   ): Promise<TApiResponse<TPlaylistTrackDomainModel>> {
-    return buildPlaylistApiResponse(
-      PlaylistApiCodes.PLAYLIST_TRACK_ADDED,
-      await this.cmdBus.execute(new AddPlaylistTrackCommand(actorId, playlistId, payload)),
+    const result = await this.cmdBus.execute<AddPlaylistTrackCommand, TPlaylistTrackDomainModel>(
+      new AddPlaylistTrackCommand(actorId, playlistId, payload),
     );
+
+    return buildPlaylistApiResponse(PlaylistApiCodes.PLAYLIST_TRACK_ADDED, result);
   }
 
   @ApiOperation({
@@ -63,7 +67,7 @@ export class PlaylistTracksController {
   })
   @ApiParam({ name: 'playlistId', description: 'Playlist ID' })
   @ApiParam({ name: 'trackId', description: 'Playlist track ID to remove' })
-  @ApiResponse(apiSuccessDTO(PlaylistApiCodes.PLAYLIST_TRACK_REMOVED, undefined as any, 200))
+  @ApiResponse(apiSuccessDTO(PlaylistApiCodes.PLAYLIST_TRACK_REMOVED, Boolean, 200))
   @RequirePermission(P.Music.Playlist.Own)
   @Delete(':playlistId/tracks/:trackId')
   async removeTrack(
@@ -71,10 +75,11 @@ export class PlaylistTracksController {
     @Param('playlistId') playlistId: TPlaylistId,
     @Param('trackId') trackId: TPlaylistTrackId,
   ): Promise<TApiResponse<boolean>> {
-    return buildPlaylistApiResponse(
-      PlaylistApiCodes.PLAYLIST_TRACK_REMOVED,
-      await this.cmdBus.execute(new RemovePlaylistTrackCommand(actorId, playlistId, trackId)),
+    const result = await this.cmdBus.execute<RemovePlaylistTrackCommand, boolean>(
+      new RemovePlaylistTrackCommand(actorId, playlistId, trackId),
     );
+
+    return buildPlaylistApiResponse(PlaylistApiCodes.PLAYLIST_TRACK_REMOVED, result);
   }
 
   @ApiOperation({
@@ -84,20 +89,20 @@ export class PlaylistTracksController {
   })
   @ApiParam({ name: 'playlistId', description: 'Playlist ID' })
   @ApiParam({ name: 'trackId', description: 'Playlist track ID to reorder' })
-  @ApiResponse(apiSuccessDTO(PlaylistApiCodes.PLAYLIST_TRACK_REORDERED, undefined as any, 200))
+  @ApiResponse(apiSuccessDTO(PlaylistApiCodes.PLAYLIST_TRACK_REORDERED, Boolean, 200))
   @RequirePermission(P.Music.Playlist.Own)
   @Patch(':playlistId/tracks/:trackId/reorder')
   async reorderTrack(
     @ActorId() actorId: TUserId,
     @Param('playlistId') playlistId: TPlaylistId,
     @Param('trackId') trackId: TPlaylistTrackId,
-    @Body('payload', new ZodValidationPipe(SReorderPlaylistTrackPayload)) payload: any,
+    @Body('payload', new ZodValidationPipe(SReorderPlaylistTrackPayload))
+    payload: TReorderPlaylistTrackPayload,
   ): Promise<TApiResponse<boolean>> {
-    return buildPlaylistApiResponse(
-      PlaylistApiCodes.PLAYLIST_TRACK_REORDERED,
-      await this.cmdBus.execute(
-        new ReorderPlaylistTrackCommand(actorId, playlistId, trackId, payload.newPosition),
-      ),
+    const result = await this.cmdBus.execute<ReorderPlaylistTrackCommand, boolean>(
+      new ReorderPlaylistTrackCommand(actorId, playlistId, trackId, payload.newPosition),
     );
+
+    return buildPlaylistApiResponse(PlaylistApiCodes.PLAYLIST_TRACK_REORDERED, result);
   }
 }
