@@ -38,7 +38,7 @@
 
                 uiDndDropZone
                 [dropZone_id]="block.slot.id"
-                [dropZoneAccept]="['artist','group']"
+                [dropZoneAccept]="['artist']"
                 (uiDndDrop)="handleSlotDrop(slot.id, $event)"
 
                 [isDragging]="draggingIds().includes(slot.id)"

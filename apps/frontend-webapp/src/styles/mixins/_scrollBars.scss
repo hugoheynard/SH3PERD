@@ -28,8 +28,3 @@
     }
   }
 }
-
-// Legacy alias
-@mixin baseScrollBar {
-  @include scrollbar;
-}
