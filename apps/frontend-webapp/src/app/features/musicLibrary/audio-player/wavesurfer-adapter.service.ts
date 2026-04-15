@@ -64,7 +64,9 @@ export class WavesurferAdapterService {
     // When the service reports a new URL, load it into wavesurfer.
     effect(() => {
       const url = this.player.currentUrl();
-      if (!this.isBrowser || !url) return;
+      if (!this.isBrowser || !url) {
+        return;
+      }
       void this.ensureWavesurfer().then(() => {
         if (url !== this.lastLoadedUrl) {
           this.lastLoadedUrl = url;
@@ -80,7 +82,9 @@ export class WavesurferAdapterService {
     // when the status changes.
     effect(() => {
       const status = this.player.status();
-      if (!this.isBrowser || !this.wavesurfer) return;
+      if (!this.isBrowser || !this.wavesurfer) {
+        return;
+      }
       if (status === 'playing') {
         this.wavesurfer.play().catch((err: unknown) => {
           const msg = err instanceof Error ? err.message : String(err);

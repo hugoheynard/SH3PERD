@@ -13,7 +13,7 @@ import type { LibraryEntry, MusicGenre, MusicVersion, Rating } from '../../music
 import { MusicLibrarySelectorService } from '../../services/selector-layer/music-library-selector.service';
 import { AudioPlayerService } from '../../audio-player/audio-player.service';
 import { toPlayableTrack } from '../../audio-player/audio-player.types';
-import { WaveformThumbnailComponent } from '../../audio-player/waveform-thumbnail.component';
+import { WaveformThumbnailComponent } from '../../audio-player/waveform-thumbnail/waveform-thumbnail.component';
 import { MasteringModalComponent } from '../../mastering/mastering-modal.component';
 import { decodePeaks } from '@sh3pherd/shared-types';
 import type { TMusicVersionId } from '@sh3pherd/shared-types';
