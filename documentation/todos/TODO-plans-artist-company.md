@@ -88,7 +88,7 @@ Le type est déterminé au register (`account_type`) et ne change jamais (un art
 | Utilisateurs invités (guest) | 3 | 15 | ∞ | ⚠️ CRUD ok, quota non |
 | Activation guest → user | ✅ | ✅ | ✅ | ❌ |
 | **EVENTS & PLANNING** | | | | |
-| Événements / planning | ❌ | ✅ | ✅ | ⚠️ calendar ok |
+| Événements / planning | ❌ | ✅ | ✅ | ❌ |
 | Nombre d'événements actifs | — | 10 | ∞ | ❌ quota non |
 | Persona match (IA) | ❌ | ❌ | ✅ | ⚠️ backend ok |
 | Calendrier multi-salles | ❌ | ❌ | ✅ | ❌ |

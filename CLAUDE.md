@@ -39,7 +39,6 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | **Orgchart Export** | `apps/backend/documentation/sh3-orgchart-export.md` | PDF/SVG export via headless Chromium |
 | **Orgchart Print** | `apps/backend/documentation/sh3-orgchart-print.md` | Print layer reusing live component |
 | **Contracts** | `apps/backend/documentation/sh3-contracts.md` | Contract aggregate diagram |
-| **Calendar** | `apps/backend/documentation/sh3-calendar.md` | Event matrix, constraint programming |
 | **Integrations** | `apps/backend/documentation/sh3-integrations.md` | Slack OAuth, channel management |
 | **E2E Tests** | `apps/backend/documentation/sh3-e2e-tests.md` | MongoMemoryServer, test builders, factories |
 
@@ -172,6 +171,6 @@ cd apps/frontend-webapp && npx tsc --noEmit
 ## Session start confirmation
 
 After reading all documentation files listed above, explicitly confirm to the user:
-"I have read all 22 documentation files in apps/backend/documentation/. Ready to work."
+"I have read all documentation files in apps/backend/documentation/. Ready to work."
 
 Do NOT start any work before this confirmation.

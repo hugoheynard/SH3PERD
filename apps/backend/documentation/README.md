@@ -46,7 +46,6 @@ Architecture, patterns, and how-to guides for the NestJS backend.
 | [Orgchart Export](sh3-orgchart-export.md) | PDF/SVG export via headless Chromium (Puppeteer) |
 | [Orgchart Print](sh3-orgchart-print.md) | Print layer reusing live OrgchartTabComponent for pixel-identical rendering |
 | [Contracts](sh3-contracts.md) | Contract aggregate diagram (contract + addendums) |
-| [Calendar](sh3-calendar.md) | Event matrix — manual and CP-generated with OR-Tools |
 | [Integrations](sh3-integrations.md) | Slack OAuth, channel management, architecture, routes |
 
 ## See also
