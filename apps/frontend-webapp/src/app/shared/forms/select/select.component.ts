@@ -9,14 +9,14 @@ import {
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { BaseControlValueAccessor } from '../utils/BaseControlValueAccessor';
 import { ButtonIconComponent } from '../../button-icon/button-icon.component';
-import { SvgIconComponent } from '../../svg-icon/svg-icon.component';
+import { IconComponent } from '../../icon/icon.component';
 
 @Component({
   selector: 'sh3-select',
   standalone: true,
   templateUrl: './select.component.html',
   styleUrl: './select.component.scss',
-  imports: [ButtonIconComponent, SvgIconComponent],
+  imports: [ButtonIconComponent, IconComponent],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

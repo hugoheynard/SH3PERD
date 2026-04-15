@@ -4,7 +4,7 @@
      <span class="select-label-text">
     {{ selectedLabels.length ? selectedLabels : placeholder() }}
   </span>
-    <sh3-svg-icon [name]=" dropdownOpen? 'caret-up': 'caret-down'" />
+    <sh3-icon [name]="dropdownOpen ? 'caret-up' : 'caret-down'" />
   </div>
 
   @if(dropdownOpen) {

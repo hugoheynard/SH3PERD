@@ -13,7 +13,7 @@
         class="nav-item"
         [routerLink]="item.route"
         routerLinkActive="active">
-        <sh3-svg-icon [name]="item.icon" class="nav-icon" />
+        <sh3-icon [name]="item.icon" class="nav-icon" />
         <span class="nav-label">{{ item.label }}</span>
       </a>
     }
@@ -30,14 +30,14 @@
           class="nav-item"
           [routerLink]="item.route"
           routerLinkActive="active">
-          <sh3-svg-icon [name]="item.icon" class="nav-icon" />
+          <sh3-icon [name]="item.icon" class="nav-icon" />
           <span class="nav-label">{{ item.label }}</span>
         </a>
       } @else {
         <button
           class="nav-item nav-item--btn"
           (click)="onLogout()">
-          <sh3-svg-icon [name]="item.icon" class="nav-icon" />
+          <sh3-icon [name]="item.icon" class="nav-icon" />
           <span class="nav-label">{{ item.label }}</span>
         </button>
       }

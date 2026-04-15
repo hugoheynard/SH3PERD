@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { SvgIconComponent } from '../../../shared/svg-icon/svg-icon.component';
+import { IconComponent } from '../../../shared/icon/icon.component';
+import type { Sh3IconName } from '../../../shared/icon/icon.registry';
 import { LayoutService } from '../../services/layout.service';
 
 interface MobileMenuItem {
   id: string;
-  icon: string;
+  icon: Sh3IconName;
   label: string;
   route: string;
 }
@@ -18,7 +19,7 @@ interface MobileMenuItem {
 @Component({
   selector: 'app-circular-menu',
   standalone: true,
-  imports: [SvgIconComponent],
+  imports: [IconComponent],
   templateUrl: './circular-menu.component.html',
   styleUrl: './circular-menu.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,12 +31,12 @@ export class CircularMenuComponent {
   readonly isOpen = this.layout.mobileMenuOpen;
 
   readonly menuItems: MobileMenuItem[] = [
-    { id: 'home',       icon: 'home',                label: 'Home',       route: '/app/home'            },
-    { id: 'program',    icon: 'program',             label: 'Program',    route: '/app/program'         },
-    { id: 'music',      icon: 'notes_2',             label: 'Music',      route: '/app/musicLibrary'    },
-    { id: 'playlists',  icon: 'play',                label: 'Playlists',  route: '/app/playlistManager' },
-    { id: 'contracts',  icon: 'contracts',           label: 'Contracts',  route: '/app/contracts'       },
-    { id: 'company',    icon: 'company',             label: 'Company',    route: '/app/company'         },
+    { id: 'home',       icon: 'home',      label: 'Home',       route: '/app/home'            },
+    { id: 'program',    icon: 'program',   label: 'Program',    route: '/app/program'         },
+    { id: 'music',      icon: 'music',     label: 'Music',      route: '/app/musicLibrary'    },
+    { id: 'playlists',  icon: 'play',      label: 'Playlists',  route: '/app/playlistManager' },
+    { id: 'contracts',  icon: 'contracts', label: 'Contracts',  route: '/app/contracts'       },
+    { id: 'company',    icon: 'company',   label: 'Company',    route: '/app/company'         },
   ];
 
   close(): void {

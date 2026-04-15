@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { SvgIconComponent } from '../../../../shared/svg-icon/svg-icon.component';
+import { IconComponent } from '../../../../shared/icon/icon.component';
+import type { Sh3IconName } from '../../../../shared/icon/icon.registry';
 
 export interface UiMenuItem {
   id: string
   label?: string
-  icon: string
+  icon: Sh3IconName
   route?: string
   disabled?: boolean
 }
@@ -16,7 +17,7 @@ export interface UiMenuItem {
   imports: [
     RouterLinkActive,
     RouterLink,
-    SvgIconComponent
+    IconComponent
 ],
   templateUrl: './ui-menu.component.html',
   styleUrl: './ui-menu.component.scss',

@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { SvgIconComponent } from '../../../../shared/svg-icon/svg-icon.component';
+import { IconComponent } from '../../../../shared/icon/icon.component';
+import type { Sh3IconName } from '../../../../shared/icon/icon.registry';
 import { AuthService } from '../../../services/auth.service';
 
 interface AppMenuItem {
   id: string;
-  icon: string;
+  icon: Sh3IconName;
   label: string;
   route?: string;
 }
@@ -16,19 +17,19 @@ interface AppMenuItem {
   styleUrl: './app-menu.component.scss',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RouterLinkActive, SvgIconComponent],
+  imports: [RouterLink, RouterLinkActive, IconComponent],
 })
 export class AppMenuComponent {
 
   private authService = inject(AuthService);
 
   readonly navItems: AppMenuItem[] = [
-    { id: 'home',       icon: 'home',                label: 'Home',       route: 'home'         },
-    { id: 'program',    icon: 'program',              label: 'Program',    route: 'program'      },
-    { id: 'music',      icon: 'notes_2',              label: 'Music',      route: 'musicLibrary' },
-    { id: 'playlists',  icon: 'play',                 label: 'Playlists',  route: 'playlistManager' },
-    { id: 'contracts',  icon: 'contracts',            label: 'Contracts',  route: 'contracts'    },
-    { id: 'company',    icon: 'company',              label: 'Company',    route: 'company'      },
+    { id: 'home',       icon: 'home',       label: 'Home',       route: 'home'            },
+    { id: 'program',    icon: 'program',    label: 'Program',    route: 'program'         },
+    { id: 'music',      icon: 'music',      label: 'Music',      route: 'musicLibrary'    },
+    { id: 'playlists',  icon: 'play',       label: 'Playlists',  route: 'playlistManager' },
+    { id: 'contracts',  icon: 'contracts',  label: 'Contracts',  route: 'contracts'       },
+    { id: 'company',    icon: 'company',    label: 'Company',    route: 'company'         },
   ];
 
   readonly bottomItems: AppMenuItem[] = [

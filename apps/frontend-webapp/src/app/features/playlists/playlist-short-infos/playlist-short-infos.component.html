@@ -1,25 +1,25 @@
 <div class="flexRowSpaceBetween">
   <!--DURATION-->
   <div class="flexRowSpaceBetween">
-    <mat-icon>access_time</mat-icon>
+    <sh3-icon name="clock" title="Duration" />
     <p>13:42</p>
   </div>
 
   <!--ENERGY-->
   <div class="flexRowSpaceBetween">
-    <mat-icon>offline_bolt</mat-icon>
+    <sh3-icon name="offline-bolt" title="Energy" />
     <input matInput type="number" [formControl]="energyControl" min="1" max="4" step="1">
   </div>
 
   <!--PLAYED x times-->
   <div class="flexRowSpaceBetween">
-    <mat-icon>play_circle_filled</mat-icon>
+    <sh3-icon name="play-circle" title="Play count" />
     <input matInput type="number" [formControl]="energyControl" min="1" max="4" step="1">
   </div>
 
   <!--WORKLOAD-->
   <div class="flexRowSpaceBetween">
-    <mat-icon>work</mat-icon>
+    <sh3-icon name="work" title="Workload" />
     <input matInput type="number" [formControl]="energyControl" min="1" max="4" step="1">
   </div>
 </div>

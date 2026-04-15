@@ -1,12 +1,12 @@
 import {Component, Input} from '@angular/core';
-import {MatIcon} from '@angular/material/icon';
+import { IconComponent } from '../../../shared/icon/icon.component';
 import {MatInput} from '@angular/material/input';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 
 @Component({
     selector: 'playlist-short-infos',
     imports: [
-        MatIcon,
+        IconComponent,
         MatInput,
         ReactiveFormsModule
     ],

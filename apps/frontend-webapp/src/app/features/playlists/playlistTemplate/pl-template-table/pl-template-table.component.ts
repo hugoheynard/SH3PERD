@@ -1,15 +1,15 @@
 import {Component, inject, type OnInit} from '@angular/core';
 import {PlTemplateService} from '../../playlistService/pl-template.service';
 
-import {MatIcon} from '@angular/material/icon';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 import {MatIconButton} from '@angular/material/button';
 import {PlaylistService} from '../../playlistService/playlist.service';
 
 @Component({
   selector: 'pl-template-table',
   imports: [
-    MatIcon,
-    MatIconButton
+    IconComponent,
+    MatIconButton,
 ],
   templateUrl: './pl-template-table.component.html',
   standalone: true,

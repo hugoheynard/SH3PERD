@@ -43,6 +43,9 @@
                 "src/styles",
                 "src/app/shared/styles"              ]
             },
+            "loader": {
+              ".svg": "text"
+            },
             "scripts": [],
             "server": "src/main.server.ts",
             "prerender": {

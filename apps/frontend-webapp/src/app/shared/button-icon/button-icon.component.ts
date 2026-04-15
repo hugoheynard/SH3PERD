@@ -1,17 +1,18 @@
 import { Component, input, model, output } from '@angular/core';
-import { SvgIconComponent } from '../svg-icon/svg-icon.component';
+import { IconComponent } from '../icon/icon.component';
+import type { Sh3IconName } from '../icon/icon.registry';
 
 
 @Component({
   selector: 'sh3-button-icon',
   imports: [
-    SvgIconComponent,
+    IconComponent,
   ],
   templateUrl: './button-icon.component.html',
   styleUrl: './button-icon.component.scss'
 })
 export class ButtonIconComponent {
-  icon = input.required<string>();
+  icon = input.required<Sh3IconName>();
   active = model<boolean>(false);
   disabled = input<boolean>(false);
   type = input<'neutral'| 'primary' | 'critical'>('neutral');

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, HostListener, inject, signal } from '@angular/core';
-import { MatIcon } from '@angular/material/icon';
+import { IconComponent } from '../../../shared/icon/icon.component';
 import { Router } from '@angular/router';
 import { NavigationService } from '../../services/navigation.service';
 import { NotificationService } from '../../notifications/notification.service';
@@ -15,7 +15,7 @@ import { ThemeToggleComponent } from '../../../shared/theme-toggle/theme-toggle.
 @Component({
   selector: 'app-header',
   imports: [
-    MatIcon,
+    IconComponent,
     ThemeToggleComponent,
   ],
   templateUrl: './header.component.html',

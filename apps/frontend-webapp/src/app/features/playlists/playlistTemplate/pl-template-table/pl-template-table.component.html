@@ -33,9 +33,9 @@
         <td>{{plTemp.numberOfSongs}}</td>
         <td>{{plTemp.performers.singers}}</td>
         <td>
-          <button mat-icon-button (click)="createPlaylistFromTemplate({ playlistTemplate_id: plTemp._id })"><mat-icon>playlist_add</mat-icon></button>
-          <button mat-icon-button (click)="editPlaylistTemplate(plTemp)"><mat-icon>edit</mat-icon></button>
-          <button mat-icon-button (click)="deletePlaylistTemplate(plTemp)"><mat-icon>delete_forever</mat-icon></button>
+          <button mat-icon-button (click)="createPlaylistFromTemplate({ playlistTemplate_id: plTemp._id })"><sh3-icon name="playlist-add" title="Create playlist from template" /></button>
+          <button mat-icon-button (click)="editPlaylistTemplate(plTemp)"><sh3-icon name="edit" title="Edit template" /></button>
+          <button mat-icon-button (click)="deletePlaylistTemplate(plTemp)"><sh3-icon name="bin" title="Delete template" /></button>
         </td>
       </tr>
     }

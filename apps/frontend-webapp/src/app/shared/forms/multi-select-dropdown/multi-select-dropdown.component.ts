@@ -1,13 +1,13 @@
 import { Component, ElementRef, forwardRef, HostListener, inject, input} from '@angular/core';
 import { type ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { SvgIconComponent } from '../../svg-icon/svg-icon.component';
+import { IconComponent } from '../../icon/icon.component';
 
 type Opt = Record<string, any>;
 
 @Component({
   selector: 'sh3-multi-select-dropdown',
   imports: [
-    SvgIconComponent,
+    IconComponent,
   ],
   standalone: true,
   templateUrl: './multi-select-dropdown.component.html',

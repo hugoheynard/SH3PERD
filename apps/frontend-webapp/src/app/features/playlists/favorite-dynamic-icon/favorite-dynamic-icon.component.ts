@@ -1,12 +1,12 @@
-import {Component, Input} from '@angular/core';
-import {MatIcon} from "@angular/material/icon";
+import { Component, Input } from '@angular/core';
+import { IconComponent } from '../../../shared/icon/icon.component';
 
 
 @Component({
     selector: 'app-favorite-dynamic-icon',
     imports: [
-    MatIcon
-],
+      IconComponent,
+    ],
     templateUrl: './favorite-dynamic-icon.component.html',
     standalone: true,
     styleUrl: './favorite-dynamic-icon.component.scss'
