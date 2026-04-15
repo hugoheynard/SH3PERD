@@ -29,7 +29,7 @@ _(rien actuellement)_
   - Plusieurs commands importent directement `Filter` / `UpdateFilter` depuis `mongodb`
   - Ça rend les use cases dépendants du driver Mongo au lieu de dépendre de contrats applicatifs neutres
   - Cible : déplacer les détails Mongo dans les repositories / mappers d'infrastructure, et exposer des méthodes métier typées (`assignRole`, `updateContract`, `reorderNodes`, etc.)
-  - Modules concernés observés : `apps/backend/src/company/application/commands/`, `apps/backend/src/contracts/application/commands/`
+  - Modules concernés observés : `apps/backend/src/company/application/commands/`, `apps/backend/src/contracts/application/commands/`, `apps/backend/src/user/application/commands/`
 
 ### Module Contracts
 
@@ -165,6 +165,13 @@ La conversation sur les composants réutilisables a été mise en pause :
   - `src/print` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
   - Les anciens ignores `src/calendar` et `src/userGroups` ont été supprimés car les dossiers n'existent plus.
   - `pnpm --filter @sh3pherd/backend lint` passe avec print inclus.
+
+- [x] **User sorti des ignores ESLint**
+  - `src/user` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
+  - Les controllers user typent explicitement leurs réponses CQRS/API.
+  - Les commands et repositories guest/profile utilisent des filtres/updates Mongo typés au lieu de `as any`.
+  - Les tests user sont alignés sur les imports ESM `.js` et le contrat synchrone `startSession()`.
+  - `pnpm --filter @sh3pherd/backend lint` passe avec user inclus.
 
 - [ ] **Tests spec stubs auto-générés** avec imports sans `.js` — cassés depuis longtemps
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer

@@ -3,6 +3,7 @@ import {
   BaseMongoRepository,
   type TBaseMongoRepoDeps,
 } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import type { Filter } from 'mongodb';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 import type { TUserId, TCompanyId } from '@sh3pherd/shared-types';
 
@@ -41,19 +42,22 @@ export class GuestCompanyMongoRepository
   }
 
   async findGuestIdsByCompany(companyId: TCompanyId): Promise<TUserId[]> {
-    const links = await this.findMany({ filter: { company_id: companyId } as any });
-    return links.map((l) => l.user_id);
+    const filter: Filter<TGuestCompanyRecord> = { company_id: companyId };
+    const links = await this.findMany({ filter });
+    return (links ?? []).map((l) => l.user_id);
   }
 
   async link(userId: TUserId, companyId: TCompanyId): Promise<void> {
+    const filter: Filter<TGuestCompanyRecord> = { user_id: userId, company_id: companyId };
     const existing = await this.findOne({
-      filter: { user_id: userId, company_id: companyId } as any,
+      filter,
     });
     if (existing) return;
     await this.save({ user_id: userId, company_id: companyId, created_at: new Date() });
   }
 
   async unlink(userId: TUserId, companyId: TCompanyId): Promise<boolean> {
-    return this.deleteOne({ user_id: userId, company_id: companyId } as any);
+    const filter: Filter<TGuestCompanyRecord> = { user_id: userId, company_id: companyId };
+    return this.deleteOne(filter);
   }
 }

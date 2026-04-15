@@ -25,7 +25,7 @@ describe('InviteUserHandler', () => {
 
   it('should create credentials and profile in a transaction', async () => {
     const mockSession = { withTransaction: jest.fn((cb: any) => cb()), endSession: jest.fn() };
-    credsRepo.startSession.mockResolvedValue(mockSession as any);
+    credsRepo.startSession.mockReturnValue(mockSession as any);
     credsRepo.findOne.mockResolvedValue(null);
 
     const result = await handler.execute(new InviteUserCommand(dto, actorId));
@@ -55,7 +55,9 @@ describe('InviteUserHandler', () => {
 
     try {
       await handler.execute(new InviteUserCommand(dto, actorId));
-    } catch {}
+    } catch {
+      // Expected: this assertion only verifies that no writes happen after the failure.
+    }
 
     expect(credsRepo.save).not.toHaveBeenCalled();
     expect(profileRepo.save).not.toHaveBeenCalled();
@@ -66,7 +68,7 @@ describe('InviteUserHandler', () => {
       withTransaction: jest.fn().mockRejectedValue(new Error('tx fail')),
       endSession: jest.fn(),
     };
-    credsRepo.startSession.mockResolvedValue(mockSession as any);
+    credsRepo.startSession.mockReturnValue(mockSession as any);
     credsRepo.findOne.mockResolvedValue(null);
 
     await expect(handler.execute(new InviteUserCommand(dto, actorId))).rejects.toThrow('tx fail');

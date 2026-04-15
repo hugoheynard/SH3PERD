@@ -9,7 +9,7 @@ import {
   InviteUserCommand,
   type TInviteUserDTO,
 } from '../application/commands/InviteUserCommand.js';
-import type { TUserId } from '@sh3pherd/shared-types';
+import type { TApiResponse, TUserId, TUserSearchResult } from '@sh3pherd/shared-types';
 
 @ApiTags('users')
 @ApiBearerAuth('bearer')
@@ -26,8 +26,12 @@ export class UserLookupController {
     description: 'Returns basic profile info if a user with this email exists.',
   })
   @Get('search')
-  async searchByEmail(@Query('email') email: string) {
-    const result = await this.qryBus.execute(new SearchUserByEmailQuery(email));
+  async searchByEmail(
+    @Query('email') email: string,
+  ): Promise<TApiResponse<TUserSearchResult | null>> {
+    const result = await this.qryBus.execute<SearchUserByEmailQuery, TUserSearchResult | null>(
+      new SearchUserByEmailQuery(email),
+    );
     return buildApiResponseDTO(USER_CODES_SUCCESS.SEARCH_USER, result);
   }
 
@@ -37,8 +41,13 @@ export class UserLookupController {
       'Creates a user account (inactive) from email + name. User must set their password before logging in.',
   })
   @Post('invite')
-  async inviteUser(@Body() dto: TInviteUserDTO, @ActorId() actorId: TUserId) {
-    const result = await this.cmdBus.execute(new InviteUserCommand(dto, actorId));
+  async inviteUser(
+    @Body() dto: TInviteUserDTO,
+    @ActorId() actorId: TUserId,
+  ): Promise<TApiResponse<TUserSearchResult>> {
+    const result = await this.cmdBus.execute<InviteUserCommand, TUserSearchResult>(
+      new InviteUserCommand(dto, actorId),
+    );
     return buildApiResponseDTO(USER_CODES_SUCCESS.INVITE_USER, result);
   }
 }

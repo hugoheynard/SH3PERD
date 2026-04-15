@@ -15,7 +15,6 @@ export default tslint.config(
       // Remove a module from this list BEFORE working on it.
       'src/playlists',
       'src/playlists-v2',
-      'src/user',
       'src/E2E',
     ],
   },

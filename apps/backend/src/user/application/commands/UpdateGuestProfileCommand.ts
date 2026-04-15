@@ -1,6 +1,7 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import type { TUserId } from '@sh3pherd/shared-types';
+import type { Filter, UpdateFilter } from 'mongodb';
+import type { TUserCredentialsRecord, TUserId, TUserProfileRecord } from '@sh3pherd/shared-types';
 import { USER_CREDENTIALS_REPO, USER_PROFILE_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IUserCredentialsRepository } from '../../infra/UserCredentialsMongoRepo.repository.js';
 import type { IUserProfileRepository } from '../../infra/UserProfileMongoRepo.repository.js';
@@ -45,22 +46,33 @@ export class UpdateGuestProfileHandler implements ICommandHandler<UpdateGuestPro
 
     // Update email on credentials if changed
     if (patch.email && patch.email !== creds.email) {
+      const credentialsFilter: Filter<TUserCredentialsRecord> = { id: userId };
+      const credentialsUpdate: UpdateFilter<TUserCredentialsRecord> = {
+        $set: { email: patch.email, ...RecordMetadataUtils.update() },
+      };
+
       await this.credsRepo.updateOne({
-        filter: { id: userId } as any,
-        update: { $set: { email: patch.email, ...RecordMetadataUtils.update() } } as any,
+        filter: credentialsFilter,
+        update: credentialsUpdate,
       });
     }
 
     // Update profile fields
-    const profilePatch: Record<string, any> = {};
+    const profilePatch: Partial<Pick<TUserProfileRecord, 'first_name' | 'last_name' | 'phone'>> =
+      {};
     if (patch.first_name !== undefined) profilePatch['first_name'] = patch.first_name;
     if (patch.last_name !== undefined) profilePatch['last_name'] = patch.last_name;
     if (patch.phone !== undefined) profilePatch['phone'] = patch.phone;
 
     if (Object.keys(profilePatch).length > 0) {
+      const profileFilter: Filter<TUserProfileRecord> = { user_id: userId };
+      const profileUpdate: UpdateFilter<TUserProfileRecord> = {
+        $set: { ...profilePatch, ...RecordMetadataUtils.update() },
+      };
+
       await this.profileRepo.updateOne({
-        filter: { user_id: userId } as any,
-        update: { $set: { ...profilePatch, ...RecordMetadataUtils.update() } } as any,
+        filter: profileFilter,
+        update: profileUpdate,
       });
     }
   }

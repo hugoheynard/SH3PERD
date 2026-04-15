@@ -1,6 +1,12 @@
 import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import type { TCompanyId, TUserId } from '@sh3pherd/shared-types';
+import type { Filter } from 'mongodb';
+import type {
+  TCompanyId,
+  TUserCredentialsRecord,
+  TUserId,
+  TUserProfileRecord,
+} from '@sh3pherd/shared-types';
 import {
   USER_CREDENTIALS_REPO,
   USER_PROFILE_REPO,
@@ -45,9 +51,15 @@ export class GetCompanyGuestsHandler implements IQueryHandler<
     const guestIds = await this.guestCompanyRepo.findGuestIdsByCompany(query.companyId);
     if (guestIds.length === 0) return [];
 
+    const credentialsFilter: Filter<TUserCredentialsRecord> = {
+      id: { $in: guestIds },
+      is_guest: true,
+    };
+    const profilesFilter: Filter<TUserProfileRecord> = { user_id: { $in: guestIds } };
+
     const [creds, profiles] = await Promise.all([
-      this.credsRepo.findMany({ filter: { id: { $in: guestIds }, is_guest: true } as any }),
-      this.profileRepo.findMany({ filter: { user_id: { $in: guestIds } } as any }),
+      this.credsRepo.findMany({ filter: credentialsFilter }),
+      this.profileRepo.findMany({ filter: profilesFilter }),
     ]);
 
     const credsList = creds ?? [];

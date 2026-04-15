@@ -1,7 +1,8 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { USER_PROFILE_REPO } from '../../../appBootstrap/nestTokens.js';
 import { Inject } from '@nestjs/common';
-import type { TUserId, TUserProfileDomainModel } from '@sh3pherd/shared-types';
+import type { Filter, UpdateFilter } from 'mongodb';
+import type { TUserId, TUserProfileDomainModel, TUserProfileRecord } from '@sh3pherd/shared-types';
 import { SUserProfileDomainModel } from '@sh3pherd/shared-types';
 import type { IUserProfileRepository } from '../../infra/UserProfileMongoRepo.repository.js';
 import { UserProfileEntity } from '../../domain/UserProfileEntity.js';
@@ -62,10 +63,12 @@ export class UpdateUserProfileHandler implements ICommandHandler<
       return record as unknown as UserProfileResponseDTO;
     }
 
-    const updated = await this.userProfileRepo.updateOne({
-      filter: { id: record.id } as any,
-      update: { $set: { ...diff, ...RecordMetadataUtils.update() } } as any,
-    });
+    const filter: Filter<TUserProfileRecord> = { id: record.id };
+    const update: UpdateFilter<TUserProfileRecord> = {
+      $set: { ...diff, ...RecordMetadataUtils.update() },
+    };
+
+    const updated = await this.userProfileRepo.updateOne({ filter, update });
 
     return (updated ?? record) as unknown as UserProfileResponseDTO;
   }

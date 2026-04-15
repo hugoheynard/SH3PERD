@@ -63,7 +63,7 @@ export class InviteUserHandler implements ICommandHandler<InviteUserCommand, TUs
       active: true,
     });
 
-    const session = await this.credsRepo.startSession();
+    const session = this.credsRepo.startSession();
     try {
       await session.withTransaction(async () => {
         await this.credsRepo.save(

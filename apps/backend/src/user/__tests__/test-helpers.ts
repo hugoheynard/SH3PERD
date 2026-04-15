@@ -5,10 +5,10 @@ import type {
   TUserPreferencesRecord,
   TContractId,
 } from '@sh3pherd/shared-types';
-import type { IUserCredentialsRepository } from '../infra/UserCredentialsMongoRepo.repository';
-import type { IUserProfileRepository } from '../infra/UserProfileMongoRepo.repository';
-import type { IUserPreferencesRepository } from '../infra/UserPreferencesMongoRepo.repository';
-import type { IPasswordService } from '../../auth/core/password-manager/types/Interfaces';
+import type { IUserCredentialsRepository } from '../infra/UserCredentialsMongoRepo.repository.js';
+import type { IUserProfileRepository } from '../infra/UserProfileMongoRepo.repository.js';
+import type { IUserPreferencesRepository } from '../infra/UserPreferencesMongoRepo.repository.js';
+import type { IPasswordService } from '../../auth/core/password-manager/types/Interfaces.js';
 
 // ─── ID Helpers ───────────────────────────────────────────────
 export const userId = (n = 1) => `user_test-${n}` as TUserId;

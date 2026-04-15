@@ -23,10 +23,14 @@ export class UserProfileController {
   @ApiOperation({ summary: 'Get current user profile' })
   @ApiResponse(apiSuccessDTO(USER_PROFILE_SUCCESS.GET_USER_PROFILE, UserProfileResponseDTO))
   @Get('me')
-  async getCurrentUserProfile(@ActorId() actor_id: TUserId): Promise<TApiResponse<any>> {
+  async getCurrentUserProfile(
+    @ActorId() actor_id: TUserId,
+  ): Promise<TApiResponse<TUserProfileDomainModel | null>> {
     return buildApiResponseDTO(
       USER_PROFILE_SUCCESS.GET_USER_PROFILE,
-      await this.qryBus.execute(new GetUserProfileQuery({ actor_id }, actor_id)),
+      await this.qryBus.execute<GetUserProfileQuery, TUserProfileDomainModel | null>(
+        new GetUserProfileQuery({ actor_id }, actor_id),
+      ),
     );
   }
 
@@ -37,11 +41,10 @@ export class UserProfileController {
     @ActorId() actor_id: TUserId,
     @Body() requestDTO: { updateData: Partial<TUserProfileDomainModel> },
   ): Promise<TApiResponse<UserProfileResponseDTO>> {
-    return buildApiResponseDTO(
-      USER_PROFILE_SUCCESS.UPDATE_USER_PROFILE,
-      await this.cmdBus.execute(
-        new UpdateUserProfileCommand({ actor_id }, actor_id, requestDTO.updateData),
-      ),
+    const result = await this.cmdBus.execute<UpdateUserProfileCommand, UserProfileResponseDTO>(
+      new UpdateUserProfileCommand({ actor_id }, actor_id, requestDTO.updateData),
     );
+
+    return buildApiResponseDTO(USER_PROFILE_SUCCESS.UPDATE_USER_PROFILE, result);
   }
 }
