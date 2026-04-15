@@ -161,6 +161,11 @@ La conversation sur les composants réutilisables a été mise en pause :
   - Les credentials integration utilisent des filtres/updates Mongo typés et des getters explicites.
   - `pnpm --filter @sh3pherd/backend lint` passe avec integrations inclus.
 
+- [x] **Print sorti des ignores ESLint**
+  - `src/print` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
+  - Les anciens ignores `src/calendar` et `src/userGroups` ont été supprimés car les dossiers n'existent plus.
+  - `pnpm --filter @sh3pherd/backend lint` passe avec print inclus.
+
 - [ ] **Tests spec stubs auto-générés** avec imports sans `.js` — cassés depuis longtemps
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer
   - `apps/backend/src/appBootstrap/__tests__/` — idem
