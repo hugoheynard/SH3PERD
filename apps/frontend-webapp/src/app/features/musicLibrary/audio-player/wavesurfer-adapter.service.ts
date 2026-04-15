@@ -1,4 +1,4 @@
-import { effect, inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { effect, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AudioPlayerService } from './audio-player.service';
 
@@ -43,7 +43,15 @@ export class WavesurferAdapterService {
    * methods: `load`, `play`, `pause`, `seekTo`, `setVolume`, `destroy`.
    */
   private wavesurfer: any | null = null;
-  private host: HTMLElement | null = null;
+
+  /**
+   * Host DOM element stored as a signal so the URL effect can track it.
+   * Critical: the host lives inside a `@if (currentTrack())` block in the
+   * component template, so it may not be in the DOM at the moment the
+   * URL signal first changes. Keeping `host` as a signal makes the URL
+   * effect re-fire the instant the host flips from null → ElementRef.
+   */
+  private readonly host = signal<HTMLElement | null>(null);
 
   /**
    * Wavesurfer's `pause` event fires both on user action and during
@@ -61,10 +69,15 @@ export class WavesurferAdapterService {
 
   constructor() {
     // ── Effect 1: URL load ─────────────────────────────────
-    // When the service reports a new URL, load it into wavesurfer.
+    // When the service reports a new URL, load it into wavesurfer. Read
+    // both `currentUrl` AND `host` before any guards so the effect
+    // re-fires when either one changes — covering the common race where
+    // the URL arrives BEFORE the host element is mounted (the host is
+    // inside a `@if (currentTrack())` block in the component template).
     effect(() => {
       const url = this.player.currentUrl();
-      if (!this.isBrowser || !url) {
+      const host = this.host();
+      if (!this.isBrowser || !url || !host) {
         return;
       }
       void this.ensureWavesurfer().then(() => {
@@ -122,7 +135,7 @@ export class WavesurferAdapterService {
 
   /** Binds wavesurfer's render target. Call once, after the view is ready. */
   attach(host: HTMLElement): void {
-    this.host = host;
+    this.host.set(host);
   }
 
   /** Tears down wavesurfer + clears pending timeouts. Call on component destroy. */
@@ -137,7 +150,7 @@ export class WavesurferAdapterService {
       /* no-op */
     }
     this.wavesurfer = null;
-    this.host = null;
+    this.host.set(null);
     this.lastLoadedUrl = null;
   }
 
@@ -153,14 +166,15 @@ export class WavesurferAdapterService {
   // ─── internals ─────────────────────────────────────────
 
   private async ensureWavesurfer(): Promise<void> {
-    if (this.wavesurfer || !this.isBrowser || !this.host) return;
+    const host = this.host();
+    if (this.wavesurfer || !this.isBrowser || !host) return;
 
     // Dynamic import so SSR bundles don't pull Web Audio APIs.
     const mod = await import('wavesurfer.js');
     const WaveSurfer = (mod as any).default ?? mod;
 
     this.wavesurfer = WaveSurfer.create({
-      container: this.host,
+      container: host,
       height: 40,
       waveColor: 'rgba(231, 234, 240, 0.35)',
       progressColor: '#06a4a4',
