@@ -9,10 +9,11 @@ export class GetCompanyContractsQuery {
 }
 
 @QueryHandler(GetCompanyContractsQuery)
-export class GetCompanyContractsHandler implements IQueryHandler<GetCompanyContractsQuery, TCompanyContractViewModel[]> {
-  constructor(
-    @Inject(CONTRACT_READ_REPO) private readonly readRepo: IContractReadRepository,
-  ) {}
+export class GetCompanyContractsHandler implements IQueryHandler<
+  GetCompanyContractsQuery,
+  TCompanyContractViewModel[]
+> {
+  constructor(@Inject(CONTRACT_READ_REPO) private readonly readRepo: IContractReadRepository) {}
 
   async execute(query: GetCompanyContractsQuery): Promise<TCompanyContractViewModel[]> {
     return this.readRepo.getCompanyContractList(query.companyId);

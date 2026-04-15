@@ -25,6 +25,12 @@ _(rien actuellement)_
   - Créer un `MongoUpdateMapper` séparé qui consomme le diff
   - Fichier : `apps/backend/src/utils/entities/EntityUtils.ts`
 
+- [ ] **Couplage MongoDB explicite jusque dans l'application layer**
+  - Plusieurs commands importent directement `Filter` / `UpdateFilter` depuis `mongodb`
+  - Ça rend les use cases dépendants du driver Mongo au lieu de dépendre de contrats applicatifs neutres
+  - Cible : déplacer les détails Mongo dans les repositories / mappers d'infrastructure, et exposer des méthodes métier typées (`assignRole`, `updateContract`, `reorderNodes`, etc.)
+  - Modules concernés observés : `apps/backend/src/company/application/commands/`, `apps/backend/src/contracts/application/commands/`
+
 ### Module Contracts
 
 - [ ] **`ContractMongoRepository.contractViewModelPipelineByFilter()` duplique `ContractReadRepository.getContractListViewModel()`**
@@ -127,6 +133,12 @@ La conversation sur les composants réutilisables a été mise en pause :
   - `src/company` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
   - Les controllers, commands et repositories company ont des retours explicites et des filtres/updates Mongo typés.
   - `pnpm --filter @sh3pherd/backend lint` passe avec le module company inclus.
+
+- [x] **Module Contracts sorti des ignores ESLint**
+  - `src/contracts` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
+  - Les endpoints, commands et repositories contracts ont des retours explicites et des updates Mongo typés.
+  - Le champ favori contract utilise `is_favorite` / `id`, aligné avec les types partagés actuels.
+  - `pnpm --filter @sh3pherd/backend lint` passe avec le module contracts inclus.
 
 - [ ] **Tests spec stubs auto-générés** avec imports sans `.js` — cassés depuis longtemps
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer

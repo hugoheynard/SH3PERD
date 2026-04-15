@@ -3,9 +3,12 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { P } from '@sh3pherd/shared-types';
 import type {
+  TCompanyContractViewModel,
   TCompanyId,
+  TContractDetailViewModel,
   TContractId,
   TContractDomainModel,
+  TContractRecord,
   TCreateContractRequestDTO,
   TUpdateContractDTO,
 } from '@sh3pherd/shared-types';
@@ -41,7 +44,8 @@ export class ContractController {
    */
   @ApiOperation({
     summary: 'Get current user contracts',
-    description: 'Returns all contracts where the authenticated user is the employee/contractor. Each record is hydrated through the domain entity.',
+    description:
+      'Returns all contracts where the authenticated user is the employee/contractor. Each record is hydrated through the domain entity.',
   })
   @ApiResponse({
     status: 200,
@@ -51,15 +55,19 @@ export class ContractController {
       items: {
         type: 'object',
         properties: {
-          id:            { type: 'string', example: 'contract_abc-123' },
-          user_id:       { type: 'string', example: 'user_xyz-456' },
-          company_id:    { type: 'string', example: 'company_def-789' },
-          roles:         { type: 'array', items: { type: 'string' }, example: ['artist'] },
-          status:        { type: 'string', enum: ['draft', 'active', 'terminated'], example: 'active' },
-          contract_type: { type: 'string', enum: ['CDI', 'CDD', 'freelance', 'stage', 'alternance'], example: 'CDI' },
-          job_title:     { type: 'string', example: 'Sound Engineer' },
-          startDate:     { type: 'string', format: 'date-time' },
-          endDate:       { type: 'string', format: 'date-time' },
+          id: { type: 'string', example: 'contract_abc-123' },
+          user_id: { type: 'string', example: 'user_xyz-456' },
+          company_id: { type: 'string', example: 'company_def-789' },
+          roles: { type: 'array', items: { type: 'string' }, example: ['artist'] },
+          status: { type: 'string', enum: ['draft', 'active', 'terminated'], example: 'active' },
+          contract_type: {
+            type: 'string',
+            enum: ['CDI', 'CDD', 'freelance', 'stage', 'alternance'],
+            example: 'CDI',
+          },
+          job_title: { type: 'string', example: 'Sound Engineer' },
+          startDate: { type: 'string', format: 'date-time' },
+          endDate: { type: 'string', format: 'date-time' },
         },
       },
     },
@@ -72,15 +80,21 @@ export class ContractController {
   @ContractScoped()
   @RequirePermission(P.Company.Members.Read)
   @Get('company/:companyId')
-  getCompanyContracts(@Param('companyId') companyId: TCompanyId) {
-    return this.queryBus.execute(new GetCompanyContractsQuery(companyId));
+  getCompanyContracts(
+    @Param('companyId') companyId: TCompanyId,
+  ): Promise<TCompanyContractViewModel[]> {
+    return this.queryBus.execute<GetCompanyContractsQuery, TCompanyContractViewModel[]>(
+      new GetCompanyContractsQuery(companyId),
+    );
   }
 
   @ContractScoped()
   @RequirePermission(P.Company.Members.Read)
   @Get(':contractId')
-  getContractById(@Param('contractId') contractId: TContractId) {
-    return this.queryBus.execute(new GetContractByIdQuery(contractId));
+  getContractById(@Param('contractId') contractId: TContractId): Promise<TContractDetailViewModel> {
+    return this.queryBus.execute<GetContractByIdQuery, TContractDetailViewModel>(
+      new GetContractByIdQuery(contractId),
+    );
   }
 
   @ContractScoped()
@@ -89,8 +103,10 @@ export class ContractController {
   updateContract(
     @Param('contractId') contractId: TContractId,
     @Body() dto: Omit<TUpdateContractDTO, 'contract_id'>,
-  ) {
-    return this.commandBus.execute(new UpdateContractCommand({ ...dto, contract_id: contractId }));
+  ): Promise<TContractRecord> {
+    return this.commandBus.execute<UpdateContractCommand, TContractRecord>(
+      new UpdateContractCommand({ ...dto, contract_id: contractId }),
+    );
   }
 
   @ContractScoped()
@@ -99,13 +115,11 @@ export class ContractController {
   createContract(
     @Body() dto: TCreateContractRequestDTO,
     @ActorId() actorId: TUserId,
-  ) {
-    return this.commandBus.execute(new CreateContractCommand(dto, actorId));
+  ): Promise<TContractRecord> {
+    return this.commandBus.execute<CreateContractCommand, TContractRecord>(
+      new CreateContractCommand(dto, actorId),
+    );
   }
-
-
-
-
 
   // ── Role management ──────────────────────────────────────
 
@@ -116,8 +130,10 @@ export class ContractController {
     @Param('contractId') contractId: TContractId,
     @Body() body: { role: TContractRole },
     @ActorId() actorId: TUserId,
-  ) {
-    return this.commandBus.execute(new AssignContractRoleCommand(contractId, body.role, actorId));
+  ): Promise<TContractRecord> {
+    return this.commandBus.execute<AssignContractRoleCommand, TContractRecord>(
+      new AssignContractRoleCommand(contractId, body.role, actorId),
+    );
   }
 
   @ContractScoped()
@@ -127,7 +143,9 @@ export class ContractController {
     @Param('contractId') contractId: TContractId,
     @Param('role') role: TContractRole,
     @ActorId() actorId: TUserId,
-  ) {
-    return this.commandBus.execute(new RemoveContractRoleCommand(contractId, role, actorId));
+  ): Promise<TContractRecord> {
+    return this.commandBus.execute<RemoveContractRoleCommand, TContractRecord>(
+      new RemoveContractRoleCommand(contractId, role, actorId),
+    );
   }
 }

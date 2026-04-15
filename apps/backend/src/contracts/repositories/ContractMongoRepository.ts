@@ -1,17 +1,19 @@
-import { BaseMongoRepository, type TBaseMongoRepoDeps } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
+import {
+  BaseMongoRepository,
+  type TBaseMongoRepoDeps,
+} from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
 import type { TContractRecord, TUserId, TContractId } from '@sh3pherd/shared-types';
 import type { Filter } from 'mongodb';
 import type { TContractListItemViewModel } from '@sh3pherd/shared-types';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
 
-
-export interface IContractRepository extends IBaseCRUD<TContractRecord> {
+export type IContractRepository = {
   markContractAsFavorite: (input: {
     contract_id: TContractId;
     user_id: TUserId;
   }) => Promise<TContractRecord | null>;
-}
+} & IBaseCRUD<TContractRecord>;
 
 export type TCreateContractFn = IContractRepository['save'];
 export type TMarkContractAsFavoriteFn = IContractRepository['markContractAsFavorite'];
@@ -25,9 +27,8 @@ export class ContractMongoRepository
   }
 
   async contractViewModelPipelineByFilter(
-    filter: Filter<TContractRecord>
+    filter: Filter<TContractRecord>,
   ): Promise<TContractListItemViewModel[]> {
-
     return this.collection
       .aggregate<TContractListItemViewModel>([
         { $match: filter },
@@ -64,21 +65,10 @@ export class ContractMongoRepository
         },
       ])
       .toArray();
-  };
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-  @technicalFailThrows500('', '')
-  async findById(filter: any) {
+  @technicalFailThrows500('FIND_CONTRACT_BY_ID_FAILED', 'Error while finding contract by id')
+  async findById(filter: Filter<TContractRecord>): Promise<TContractRecord | null> {
     const contract = await this.collection.findOne(filter);
     if (!contract) {
       return null;
@@ -86,9 +76,12 @@ export class ContractMongoRepository
     return contract;
   }
 
-  @technicalFailThrows500('FIND_FAVORITE_USER_CONTRACT_FAILED', 'Error while finding favorite user contract')
+  @technicalFailThrows500(
+    'FIND_FAVORITE_USER_CONTRACT_FAILED',
+    'Error while finding favorite user contract',
+  )
   async findUsersFavorite(user_id: TUserId): Promise<TContractRecord | null> {
-    const result = await this.findOne({ filter: { user_id, favorite: true }});
+    const result = await this.findOne({ filter: { user_id, is_favorite: true } });
 
     if (!result) {
       return null;
@@ -120,15 +113,15 @@ export class ContractMongoRepository
       await session.withTransaction(async () => {
         // Unmark any existing favorite contract for the user
         await this.updateOne({
-          filter: { user_id, favorite: true },
-          update: { $set: { favorite: false } },
+          filter: { user_id, is_favorite: true },
+          update: { $set: { is_favorite: false } },
           options: { session },
         });
 
         // Mark the new favorite
         const newFavorite = await this.updateOne({
-          filter: { contract_id },
-          update: { $set: { favorite: true } },
+          filter: { id: contract_id },
+          update: { $set: { is_favorite: true } },
           options: {
             returnDocument: 'after',
             session,

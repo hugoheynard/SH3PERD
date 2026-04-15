@@ -10,14 +10,16 @@ export class GetContractByIdQuery {
 }
 
 @QueryHandler(GetContractByIdQuery)
-export class GetContractByIdHandler implements IQueryHandler<GetContractByIdQuery, TContractDetailViewModel> {
-  constructor(
-    @Inject(CONTRACT_READ_REPO) private readonly readRepo: IContractReadRepository,
-  ) {}
+export class GetContractByIdHandler implements IQueryHandler<
+  GetContractByIdQuery,
+  TContractDetailViewModel
+> {
+  constructor(@Inject(CONTRACT_READ_REPO) private readonly readRepo: IContractReadRepository) {}
 
   async execute(query: GetContractByIdQuery): Promise<TContractDetailViewModel> {
     const results = await this.readRepo.getContractWithUserProfile(query.contractId);
-    if (!results.length) throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
+    if (!results.length)
+      throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
 
     const { contract, userProfile } = results[0];
 

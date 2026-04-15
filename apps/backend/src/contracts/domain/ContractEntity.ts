@@ -1,4 +1,4 @@
-import type { TContractDomainModel } from '@sh3pherd/shared-types';
+import type { TContractDomainModel, TContractId, TUserId } from '@sh3pherd/shared-types';
 import type { TContractRole } from '@sh3pherd/shared-types';
 import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
 import { DomainError } from '../../utils/errorManagement/DomainError.js';
@@ -30,7 +30,7 @@ export class ContractEntity extends Entity<TContractDomainModel> {
         context: { role, contractId: this.id },
       });
     }
-    this.props = { ...this.props, roles: this.props.roles.filter(r => r !== role) };
+    this.props = { ...this.props, roles: this.props.roles.filter((r) => r !== role) };
   }
 
   /** Replace all roles on this contract. */
@@ -61,11 +61,11 @@ export class ContractEntity extends Entity<TContractDomainModel> {
     return !!this.props.signatures?.company;
   }
 
-  getSnapshot() {
+  getSnapshot(): { contract_id: TContractId; user_id: TUserId; roles: TContractRole[] } {
     return {
       contract_id: this.props.id,
-      user_id:     this.props.user_id,
-      roles:       this.roles,
+      user_id: this.props.user_id,
+      roles: this.roles,
     };
   }
 }

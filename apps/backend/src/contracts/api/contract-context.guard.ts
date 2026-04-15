@@ -1,4 +1,10 @@
-import { type CanActivate, type ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  type CanActivate,
+  type ExecutionContext,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import type { IUserPreferencesRepository } from '../../user/infra/UserPreferencesMongoRepo.repository.js';
 import { USER_PREFERENCES_REPO, CONTRACT_REPO } from '../../appBootstrap/nestTokens.js';
@@ -42,10 +48,12 @@ export class ContractContextGuard implements CanActivate {
     const { user_id } = req;
 
     // 1. Resolve contract ID — header first, DB fallback
-    const contractId = this.resolveContractId(req) ?? await this.fallbackFromPreferences(user_id);
+    const contractId = this.resolveContractId(req) ?? (await this.fallbackFromPreferences(user_id));
 
     if (!contractId) {
-      throw new UnauthorizedException('No contract context — provide X-Contract-Id header or set a workspace in preferences');
+      throw new UnauthorizedException(
+        'No contract context — provide X-Contract-Id header or set a workspace in preferences',
+      );
     }
 
     // 2. Load & verify contract belongs to this user

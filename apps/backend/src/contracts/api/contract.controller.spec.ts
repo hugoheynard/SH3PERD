@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ContractController } from './contract.controller.js';
 import { ContractContextGuard } from './contract-context.guard.js';
@@ -16,8 +17,10 @@ describe('ContractController', () => {
       ],
     })
       // The controller is now @ContractScoped + @RequirePermission — stub both guards
-      .overrideGuard(ContractContextGuard).useValue({ canActivate: () => true })
-      .overrideGuard(PermissionGuard).useValue({ canActivate: () => true })
+      .overrideGuard(ContractContextGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(PermissionGuard)
+      .useValue({ canActivate: () => true })
       .compile();
 
     controller = module.get<ContractController>(ContractController);

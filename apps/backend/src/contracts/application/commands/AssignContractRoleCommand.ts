@@ -7,6 +7,7 @@ import type { IContractRepository } from '../../repositories/ContractMongoReposi
 import { ContractEntity } from '../../domain/ContractEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import type { Filter, UpdateFilter } from 'mongodb';
 
 export class AssignContractRoleCommand {
   constructor(
@@ -17,14 +18,16 @@ export class AssignContractRoleCommand {
 }
 
 @CommandHandler(AssignContractRoleCommand)
-export class AssignContractRoleHandler implements ICommandHandler<AssignContractRoleCommand, TContractRecord> {
-  constructor(
-    @Inject(CONTRACT_REPO) private readonly contractRepo: IContractRepository,
-  ) {}
+export class AssignContractRoleHandler implements ICommandHandler<
+  AssignContractRoleCommand,
+  TContractRecord
+> {
+  constructor(@Inject(CONTRACT_REPO) private readonly contractRepo: IContractRepository) {}
 
   async execute(cmd: AssignContractRoleCommand): Promise<TContractRecord> {
     const record = await this.contractRepo.findOne({ filter: { id: cmd.contractId } });
-    if (!record) throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
+    if (!record)
+      throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
 
     const entity = new ContractEntity(record);
     entity.assignRole(cmd.role);
@@ -32,12 +35,17 @@ export class AssignContractRoleHandler implements ICommandHandler<AssignContract
     const diff = entity.getDiffProps();
     if (Object.keys(diff).length === 0) return record;
 
-    const updated = await this.contractRepo.updateOne({
-      filter: { id: cmd.contractId } as any,
-      update: { $set: { ...diff, ...RecordMetadataUtils.update() } } as any,
-    });
+    const filter: Filter<TContractRecord> = { id: cmd.contractId };
+    const update: UpdateFilter<TContractRecord> = {
+      $set: { ...diff, ...RecordMetadataUtils.update() },
+    };
+    const updated = await this.contractRepo.updateOne({ filter, update });
 
-    if (!updated) throw new BusinessError('Failed to assign role', { code: 'CONTRACT_ROLE_ASSIGN_FAILED', status: 500 });
+    if (!updated)
+      throw new BusinessError('Failed to assign role', {
+        code: 'CONTRACT_ROLE_ASSIGN_FAILED',
+        status: 500,
+      });
     return updated;
   }
 }

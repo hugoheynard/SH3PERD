@@ -15,10 +15,11 @@ export class CreateContractCommand {
 }
 
 @CommandHandler(CreateContractCommand)
-export class CreateContractHandler implements ICommandHandler<CreateContractCommand, TContractRecord> {
-  constructor(
-    @Inject(CONTRACT_REPO) private readonly contractRepo: IContractRepository,
-  ) {}
+export class CreateContractHandler implements ICommandHandler<
+  CreateContractCommand,
+  TContractRecord
+> {
+  constructor(@Inject(CONTRACT_REPO) private readonly contractRepo: IContractRepository) {}
 
   async execute(cmd: CreateContractCommand): Promise<TContractRecord> {
     const { dto, actorId } = cmd;
@@ -32,7 +33,8 @@ export class CreateContractHandler implements ICommandHandler<CreateContractComm
     const record: TContractRecord = { ...entity.toDomain, ...metadata };
 
     const saved = await this.contractRepo.save(record);
-    if (!saved) throw new TechnicalError('Failed to create contract', { code: 'CONTRACT_CREATE_FAILED' });
+    if (!saved)
+      throw new TechnicalError('Failed to create contract', { code: 'CONTRACT_CREATE_FAILED' });
 
     return record;
   }

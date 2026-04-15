@@ -17,10 +17,11 @@ export class GetCurrentUserContractsQuery {
  * and returns typed TContractDomainModel[].
  */
 @QueryHandler(GetCurrentUserContractsQuery)
-export class GetCurrentUserContractsHandler implements IQueryHandler<GetCurrentUserContractsQuery, TContractDomainModel[]> {
-  constructor(
-    @Inject(CONTRACT_REPO) private readonly contractRepo: IBaseCRUD<TContractRecord>,
-  ) {}
+export class GetCurrentUserContractsHandler implements IQueryHandler<
+  GetCurrentUserContractsQuery,
+  TContractDomainModel[]
+> {
+  constructor(@Inject(CONTRACT_REPO) private readonly contractRepo: IBaseCRUD<TContractRecord>) {}
 
   async execute(query: GetCurrentUserContractsQuery): Promise<TContractDomainModel[]> {
     const records = await this.contractRepo.findMany({ filter: { user_id: query.userId } });
@@ -29,7 +30,7 @@ export class GetCurrentUserContractsHandler implements IQueryHandler<GetCurrentU
       return [];
     }
 
-    return records.map(record => {
+    return records.map((record) => {
       const entity = new ContractEntity(RecordMetadataUtils.stripDocMetadata(record));
       return entity.toDomain;
     });
