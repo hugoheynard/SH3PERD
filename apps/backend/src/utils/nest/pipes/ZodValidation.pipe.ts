@@ -30,7 +30,9 @@ import { ZodType } from 'zod';
  * @returns A pipe that transforms and validates incoming data
  */
 @Injectable()
-export class ZodValidationPipe<T extends ZodType<any, ZodTypeDef, any>> implements PipeTransform {
+export class ZodValidationPipe<
+  T extends ZodType<unknown, ZodTypeDef, unknown>,
+> implements PipeTransform {
   constructor(private readonly schema: T) {}
 
   transform(value: unknown): zInfer<T> {
@@ -48,6 +50,6 @@ export class ZodValidationPipe<T extends ZodType<any, ZodTypeDef, any>> implemen
       });
     }
 
-    return result.data;
+    return result.data as zInfer<T>;
   }
 }

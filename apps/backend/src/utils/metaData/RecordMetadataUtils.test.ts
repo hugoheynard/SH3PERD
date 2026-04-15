@@ -1,4 +1,4 @@
-import type { TRecordMetadata, TUserId } from '@sh3pherd/shared-types';
+import type { TUserId } from '@sh3pherd/shared-types';
 import { RecordMetadataUtils } from './RecordMetadataUtils.js';
 
 describe('RecordMetadataUtils', () => {
@@ -11,38 +11,37 @@ describe('RecordMetadataUtils', () => {
       expect(metadata.created_by).toBe(creatorId);
       expect(metadata.created_at).toBeInstanceOf(Date);
       expect(metadata.updated_at).toBeInstanceOf(Date);
-      expect(metadata.active).toBe(true);
     });
   });
 
   describe('update', () => {
     it('should update only the updated_at field', () => {
       const original = RecordMetadataUtils.create(creatorId);
-      const updated = RecordMetadataUtils.update(original);
+      const updated = RecordMetadataUtils.update();
 
       expect(updated.updated_at.getTime()).toBeGreaterThanOrEqual(original.updated_at.getTime());
-      expect(updated.created_at).toEqual(original.created_at);
-      expect(updated.created_by).toEqual(original.created_by);
-      expect(updated.active).toBe(original.active);
+      expect(Object.keys(updated)).toEqual(['updated_at']);
     });
   });
 
   describe('softDelete', () => {
-    it('should set active to false and update updated_at', () => {
+    it('should preserve metadata and update updated_at', () => {
       const original = RecordMetadataUtils.create(creatorId);
       const deleted = RecordMetadataUtils.softDelete(original);
 
-      expect(deleted.active).toBe(false);
+      expect(deleted.created_at).toEqual(original.created_at);
+      expect(deleted.created_by).toEqual(original.created_by);
       expect(deleted.updated_at.getTime()).toBeGreaterThanOrEqual(original.updated_at.getTime());
     });
   });
 
   describe('reactivate', () => {
-    it('should set active to true and update updated_at', () => {
+    it('should preserve metadata and update updated_at', () => {
       const original = RecordMetadataUtils.softDelete(RecordMetadataUtils.create(creatorId));
       const reactivated = RecordMetadataUtils.reactivate(original);
 
-      expect(reactivated.active).toBe(true);
+      expect(reactivated.created_at).toEqual(original.created_at);
+      expect(reactivated.created_by).toEqual(original.created_by);
       expect(reactivated.updated_at.getTime()).toBeGreaterThanOrEqual(
         original.updated_at.getTime(),
       );

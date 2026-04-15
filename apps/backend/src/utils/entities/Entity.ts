@@ -63,7 +63,7 @@ export abstract class Entity<
   }
 
   //--- Compare methods ---//
-  getDiffProps(): Record<string, any> {
+  getDiffProps(): Record<string, unknown> {
     return this.utils.deepDiffToDotSet(this._originalProps, this.props);
   }
 
@@ -83,7 +83,7 @@ export abstract class Entity<
    */
   static fromRecord<
     TRecord extends TRecordMetadata & Record<string, unknown>,
-    TEntity extends Entity<any>,
+    TEntity extends Entity<{ id: unknown }>,
   >(this: new (props: Omit<TRecord, keyof TRecordMetadata>) => TEntity, record: TRecord): TEntity {
     const cleanProps = RecordMetadataUtils.stripDocMetadata(record);
     return new this(cleanProps);

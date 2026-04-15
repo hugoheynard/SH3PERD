@@ -140,6 +140,12 @@ La conversation sur les composants réutilisables a été mise en pause :
   - Le champ favori contract utilise `is_favorite` / `id`, aligné avec les types partagés actuels.
   - `pnpm --filter @sh3pherd/backend lint` passe avec le module contracts inclus.
 
+- [x] **Utils backend sortis des ignores ESLint**
+  - `src/utils` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
+  - Les decorators Nest, helpers d'erreurs, helpers metadata, Swagger/Zod et use-case builders sont typés sans `any` explicite.
+  - Les tests utils ont été réalignés sur le modèle metadata actuel.
+  - `pnpm --filter @sh3pherd/backend lint` passe avec les utils inclus.
+
 - [ ] **Tests spec stubs auto-générés** avec imports sans `.js` — cassés depuis longtemps
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer
   - `apps/backend/src/appBootstrap/__tests__/` — idem

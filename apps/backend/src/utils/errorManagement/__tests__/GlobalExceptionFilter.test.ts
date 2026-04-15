@@ -2,7 +2,7 @@ import { GlobalExceptionFilter } from '../GlobalExceptionFilter.js';
 import { DomainError } from '../DomainError.js';
 import { BusinessError } from '../BusinessError.js';
 import { TechnicalError } from '../TechnicalError.js';
-import { BadRequestException, ForbiddenException, HttpException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 
 describe('GlobalExceptionFilter', () => {
   let filter: GlobalExceptionFilter;

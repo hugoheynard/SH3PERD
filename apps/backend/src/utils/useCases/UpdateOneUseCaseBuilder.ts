@@ -42,7 +42,7 @@ export class UpdateOneUseCaseBuilder<TRecord> extends BaseCRUDUseCaseBuilder<
 
   protected override async processCoreFn(
     input: Parameters<TGenericRepoUpdateOneFn<TRecord>>[0],
-  ): Promise<ReturnType<TGenericRepoUpdateOneFn<TRecord>>> {
+  ): Promise<Awaited<ReturnType<TGenericRepoUpdateOneFn<TRecord>>>> {
     const { filter, update } = input;
 
     if (!this.repo) {

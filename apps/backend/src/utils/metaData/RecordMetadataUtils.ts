@@ -68,13 +68,27 @@ export class RecordMetadataUtils {
   static stripDocMetadata<TRecord extends object>(
     doc: TRecord & TRecordMetadata,
   ): Omit<TRecord, keyof TRecordMetadata> {
-    const { created_at, created_by, creation_context, updated_at, ...domain } = doc;
+    const {
+      created_at: _created_at,
+      created_by: _created_by,
+      creation_context: _creation_context,
+      updated_at: _updated_at,
+      ...domain
+    } = doc;
     return domain;
   }
 
   static stripDocArrayMetadata<TDomain extends object>(
     docs: Array<TDomain & TRecordMetadata>,
   ): Omit<TDomain, keyof TRecordMetadata>[] {
-    return docs.map(({ created_at, created_by, creation_context, updated_at, ...rest }) => rest);
+    return docs.map(
+      ({
+        created_at: _created_at,
+        created_by: _created_by,
+        creation_context: _creation_context,
+        updated_at: _updated_at,
+        ...rest
+      }) => rest,
+    );
   }
 }

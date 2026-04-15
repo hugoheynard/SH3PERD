@@ -1,7 +1,7 @@
 export class EntityUtils {
   /* ---------- Utils ---------- */
 
-  private static canonicalize(value: any): any {
+  private static canonicalize(value: unknown): unknown {
     if (value === null || value === undefined) {
       return value;
     }
@@ -11,15 +11,16 @@ export class EntityUtils {
     }
 
     if (Array.isArray(value)) {
-      return value.map(EntityUtils.canonicalize);
+      return value.map((item) => EntityUtils.canonicalize(item));
     }
 
     if (typeof value === 'object') {
-      const keys = Object.keys(value).sort();
-      const out: Record<string, any> = {};
+      const record = value as Record<string, unknown>;
+      const keys = Object.keys(record).sort();
+      const out: Record<string, unknown> = {};
 
       for (const k of keys) {
-        out[k] = EntityUtils.canonicalize(value[k]);
+        out[k] = EntityUtils.canonicalize(record[k]);
       }
       return out;
     }
@@ -27,7 +28,7 @@ export class EntityUtils {
     return value;
   }
 
-  private static isEqual(a: any, b: any): boolean {
+  private static isEqual(a: unknown, b: unknown): boolean {
     return (
       JSON.stringify(EntityUtils.canonicalize(a)) === JSON.stringify(EntityUtils.canonicalize(b))
     );
@@ -35,20 +36,20 @@ export class EntityUtils {
 
   //TODO : separate deepDiff et mongo dot path, with a dot path mapper to remove coupling with mongo
   static deepDiffToDotSet(
-    original: Record<string, any> = {},
-    updated: Record<string, any> = {},
-  ): Record<string, any> {
-    const changes: Record<string, any> = {};
+    original: Record<string, unknown> = {},
+    updated: Record<string, unknown> = {},
+  ): Record<string, unknown> {
+    const changes: Record<string, unknown> = {};
 
-    const isObject = (v: any) =>
-      v && typeof v === 'object' && !Array.isArray(v) && !(v instanceof Date);
+    const isObject = (v: unknown): v is Record<string, unknown> =>
+      Boolean(v && typeof v === 'object' && !Array.isArray(v) && !(v instanceof Date));
 
-    function walk(path: string, a: any, b: any) {
+    const walk = (path: string, a: unknown, b: unknown): void => {
       // both objects -> recurse
       if (isObject(a) && isObject(b)) {
-        const subKeys = new Set([...Object.keys(a || {}), ...Object.keys(b || {})]);
+        const subKeys = new Set([...Object.keys(a), ...Object.keys(b)]);
         for (const k of subKeys) {
-          walk(path ? `${path}.${k}` : k, a?.[k], b?.[k]);
+          walk(path ? `${path}.${k}` : k, a[k], b[k]);
         }
         return;
       }
@@ -65,9 +66,9 @@ export class EntityUtils {
       if (!EntityUtils.isEqual(a, b)) {
         changes[path] = b;
       }
-    }
+    };
 
-    const rootKeys = new Set([...Object.keys(original || {}), ...Object.keys(updated || {})]);
+    const rootKeys = new Set([...Object.keys(original), ...Object.keys(updated)]);
     for (const k of rootKeys) {
       walk(k, original[k], updated[k]);
     }

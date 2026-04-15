@@ -4,7 +4,11 @@ import type { ZodError } from 'zod';
  * Formats a ZodError into a more readable structure.
  * @param error
  */
-export function formatZodError(error: ZodError) {
+export function formatZodError(error: ZodError): {
+  summary: string[];
+  fieldErrors: Record<string, string[] | undefined>;
+  message: string;
+} {
   const { fieldErrors, formErrors } = error.flatten();
 
   const details = Object.entries(fieldErrors)

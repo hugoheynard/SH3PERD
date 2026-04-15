@@ -1,5 +1,9 @@
 import type { UpdateFilter } from 'mongodb';
 
+type MongoSet<T> = NonNullable<UpdateFilter<T>['$set']>;
+type MongoInc<T> = NonNullable<UpdateFilter<T>['$inc']>;
+type MongoUnset<T> = NonNullable<UpdateFilter<T>['$unset']>;
+
 /**
  * Construit les paths possibles dans un objet T
  * Exemple : "preferences.theme" | "preferences.contract_workspace" | "days"
@@ -40,7 +44,7 @@ export function toMongoUpdateAdapter<T extends object>(ops: UpdateOps<T>): Updat
     }
 
     if (Object.keys(setOps).length > 0) {
-      mongoUpdate.$set = setOps as any; // ✅ cast propre
+      mongoUpdate.$set = setOps as MongoSet<T>;
     }
   }
 
@@ -53,7 +57,7 @@ export function toMongoUpdateAdapter<T extends object>(ops: UpdateOps<T>): Updat
       }
     }
     if (Object.keys(incOps).length > 0) {
-      mongoUpdate.$inc = incOps as any; // ✅ cast propre
+      mongoUpdate.$inc = incOps as MongoInc<T>;
     }
   }
 
@@ -63,7 +67,7 @@ export function toMongoUpdateAdapter<T extends object>(ops: UpdateOps<T>): Updat
       unsetOps[key] = '';
     }
     if (Object.keys(unsetOps).length > 0) {
-      mongoUpdate.$unset = unsetOps as any; // ✅ cast propre
+      mongoUpdate.$unset = unsetOps as MongoUnset<T>;
     }
   }
 
@@ -74,6 +78,11 @@ export function toMongoUpdateAdapter<T extends object>(ops: UpdateOps<T>): Updat
  * Récupère une valeur dans un objet à partir d'une clé ou d'un path
  * (supporte 'preferences.theme')
  */
-function getNestedValue(obj: any, path: string): unknown {
-  return path.split('.').reduce((acc, part) => acc?.[part], obj);
+function getNestedValue(obj: object, path: string): unknown {
+  return path.split('.').reduce<unknown>((acc, part) => {
+    if (typeof acc !== 'object' || acc === null) {
+      return undefined;
+    }
+    return (acc as Record<string, unknown>)[part];
+  }, obj);
 }

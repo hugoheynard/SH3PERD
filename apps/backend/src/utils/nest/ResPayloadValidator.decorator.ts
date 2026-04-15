@@ -2,6 +2,23 @@ import { applyDecorators, UseInterceptors } from '@nestjs/common';
 import { ResponsePayloadValidationInterceptor } from './ResponsePayloadValidation.interceptor.js';
 import { ApiInternalServerErrorResponse } from '@nestjs/swagger';
 import { PayloadValidationErrorResponseDto } from './PayloadValidationErrorResponse.dto.js';
+import type { ZodTypeAny } from 'zod';
+
+type DtoWithSchema = {
+  schema: ZodTypeAny;
+};
+
+type StrictSchema = ZodTypeAny & {
+  strict: () => ZodTypeAny;
+};
+
+function hasSchema(value: unknown): value is DtoWithSchema {
+  return typeof value === 'object' && value !== null && 'schema' in value;
+}
+
+function hasStrict(schema: ZodTypeAny): schema is StrictSchema {
+  return 'strict' in schema && typeof schema.strict === 'function';
+}
 
 /**
  * Decorator to validate response at runtime against the provided DTO or Zod schema.
@@ -10,10 +27,11 @@ import { PayloadValidationErrorResponseDto } from './PayloadValidationErrorRespo
  * @constructor
  */
 export function ResPayloadValidator(
-  dtoOrSchema: any,
+  dtoOrSchema: ZodTypeAny | DtoWithSchema,
   options: { active?: boolean } = { active: true },
-) {
-  const schema = 'schema' in dtoOrSchema ? dtoOrSchema.schema.strict() : dtoOrSchema;
+): ClassDecorator & MethodDecorator {
+  const rawSchema = hasSchema(dtoOrSchema) ? dtoOrSchema.schema : dtoOrSchema;
+  const schema = hasStrict(rawSchema) ? rawSchema.strict() : rawSchema;
 
   if (!options.active) {
     return applyDecorators();

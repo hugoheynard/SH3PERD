@@ -23,7 +23,6 @@ export default tslint.config(
       'src/types',
       'src/user',
       'src/E2E',
-      'src/utils',
     ],
   },
   eslint.configs.recommended,

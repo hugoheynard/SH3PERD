@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { Reflector } from '@nestjs/core';
+import type { Request } from 'express';
 import {
   ROLE_TEMPLATES,
   PLATFORM_ROLE_TEMPLATES,
@@ -87,7 +88,7 @@ export class PermissionGuard implements CanActivate {
 
     if (!requiredPermissions || requiredPermissions.length === 0) return true;
 
-    const req = ctx.switchToHttp().getRequest();
+    const req = ctx.switchToHttp().getRequest<Request>();
     const roles: TContractRole[] = req.contract_roles ?? [];
 
     // Expand roles → permissions
@@ -128,7 +129,7 @@ export class PermissionGuard implements CanActivate {
  * @RequirePermission('music:playlist:write', 'music:setlist:read')
  * ```
  */
-export function RequirePermission(...permissions: TPermission[]) {
+export function RequirePermission(...permissions: TPermission[]): ClassDecorator & MethodDecorator {
   // Auto-register in the global registry
   PermissionRegistry.register(...permissions);
 

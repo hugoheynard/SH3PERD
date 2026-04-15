@@ -1,5 +1,7 @@
 import { TechnicalError } from '../TechnicalError.js';
 
+type AsyncMethod = (this: unknown, ...args: unknown[]) => Promise<unknown>;
+
 /**
  * Method decorator that wraps an asynchronous method in a `try/catch`
  * and throws a `TechnicalError` with a standardized HTTP 500 response
@@ -39,7 +41,7 @@ export function technicalFailThrows500(code: string, message?: string): MethodDe
       );
     }
 
-    const originalMethod = descriptor.value;
+    const originalMethod = descriptor.value as AsyncMethod;
 
     descriptor.value = async function (...args: unknown[]): Promise<unknown> {
       try {

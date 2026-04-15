@@ -1,5 +1,6 @@
 import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
 import type { TContractId } from '@sh3pherd/shared-types';
+import type { Request } from 'express';
 
 /**
  * Parameter decorator — extracts the resolved contract ID from the request.
@@ -16,7 +17,7 @@ import type { TContractId } from '@sh3pherd/shared-types';
  */
 export const ContractId = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext): TContractId => {
-    const request = ctx.switchToHttp().getRequest();
+    const request = ctx.switchToHttp().getRequest<Request>();
     const contractId = request.contract_id;
     if (!contractId) {
       throw new Error(

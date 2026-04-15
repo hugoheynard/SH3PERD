@@ -2,6 +2,7 @@ import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
 import { PlatformContractContextGuard } from '../../../platform-contract/api/platform-contract-context.guard.js';
 
 export const PLATFORM_SCOPED_KEY: string = 'platformScoped';
+type ClassTarget = abstract new (...args: never[]) => unknown;
 
 /**
  * Marks a controller or method as requiring a platform contract context.
@@ -29,14 +30,20 @@ export function PlatformScoped(): ClassDecorator & MethodDecorator {
     UseGuards(PlatformContractContextGuard),
   );
 
-  return ((target: any, propertyKey?: string | symbol, descriptor?: PropertyDescriptor) => {
+  const decorator: ClassDecorator & MethodDecorator = (
+    target: object,
+    propertyKey?: string | symbol,
+    descriptor?: PropertyDescriptor,
+  ): void => {
     if (propertyKey && descriptor) {
       // Method-level
       SetMetadata(PLATFORM_SCOPED_KEY, true)(target, propertyKey, descriptor);
       UseGuards(PlatformContractContextGuard)(target, propertyKey, descriptor);
     } else {
       // Class-level
-      composed(target);
+      composed(target as ClassTarget);
     }
-  }) as any;
+  };
+
+  return decorator;
 }

@@ -6,11 +6,11 @@ export type RepoConfig<TFn> = {
 };
 
 export class BaseCRUDUseCaseBuilder<
-  TFn extends (input: any) => Promise<any>,
-  TRepoFn extends (input: any) => Promise<any>,
+  TFn extends (...args: never[]) => Promise<unknown>,
+  TRepoFn extends (...args: never[]) => Promise<unknown>,
 > extends BaseUseCaseBuilder<TFn> {
   repo?: RepoConfig<TRepoFn>;
-  private postProcessors: ((doc: any) => Promise<ReturnType<TFn>>)[] = [];
+  private postProcessors: ((doc: Awaited<ReturnType<TRepoFn>>) => ReturnType<TFn>)[] = [];
 
   /**
    * Configure the repository function to be used in the use case
@@ -31,19 +31,21 @@ export class BaseCRUDUseCaseBuilder<
    * can be overridden in subclasses for custom behavior
    * @param input
    */
-  protected async processCoreFn(input: Parameters<TRepoFn>[0]): Promise<ReturnType<TRepoFn>> {
+  protected async processCoreFn(
+    input: Parameters<TRepoFn>[0],
+  ): Promise<Awaited<ReturnType<TRepoFn>>> {
     if (!this.repo) {
       throw new Error('REPO_NOT_CONFIGURED');
     }
 
-    return this.repo.fn(input);
+    return (await this.repo.fn(input)) as Awaited<ReturnType<TRepoFn>>;
   }
 
   /**
    * Post treatment of the document before returning it
    * @param fn
    */
-  withPostProcessing(fn: (doc: any) => Promise<ReturnType<TFn>>) {
+  withPostProcessing(fn: (doc: Awaited<ReturnType<TRepoFn>>) => ReturnType<TFn>): this {
     this.postProcessors.push(fn);
     return this;
   }

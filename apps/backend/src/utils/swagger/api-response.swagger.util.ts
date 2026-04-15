@@ -37,12 +37,12 @@ type ApiResponseCode = { code: string; message: string };
  * @param status - HTTP status (default: 200)
  * @param description - Optional description for Swagger
  */
-export function apiSuccessDTO<T extends Type<any>>(
+export function apiSuccessDTO<T extends Type<unknown>>(
   code: ApiResponseCode,
   model: T,
   status: number = 200,
   description = 'Successful response',
-) {
+): Record<string, unknown> {
   return {
     status: status,
     description,
@@ -81,7 +81,10 @@ export function apiSuccessDTO<T extends Type<any>>(
  * create(@Body() dto: TCompanyInfo) { ... }
  * ```
  */
-export function apiRequestDTO<T extends Type<any>>(model: T, description?: string) {
+export function apiRequestDTO<T extends Type<unknown>>(
+  model: T,
+  description?: string,
+): Record<string, unknown> {
   return {
     ...(description ? { description } : {}),
     schema: { $ref: getSchemaPath(model) },
@@ -99,7 +102,7 @@ export function apiError(
   code: ApiResponseCode,
   status: number = 400,
   description = 'Error response',
-) {
+): Record<string, unknown> {
   return {
     status,
     description,

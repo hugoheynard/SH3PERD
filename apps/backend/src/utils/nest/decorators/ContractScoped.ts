@@ -2,6 +2,7 @@ import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
 import { ContractContextGuard } from '../../../contracts/api/contract-context.guard.js';
 
 export const CONTRACT_SCOPED_KEY = 'scoped';
+type ClassTarget = abstract new (...args: never[]) => unknown;
 
 /**
  * Marks a controller or method as requiring an active contract context.
@@ -38,14 +39,20 @@ export function ContractScoped(): ClassDecorator & MethodDecorator {
     UseGuards(ContractContextGuard),
   );
 
-  return ((target: any, propertyKey?: string | symbol, descriptor?: PropertyDescriptor) => {
+  const decorator: ClassDecorator & MethodDecorator = (
+    target: object,
+    propertyKey?: string | symbol,
+    descriptor?: PropertyDescriptor,
+  ): void => {
     if (propertyKey && descriptor) {
       // Method-level: apply each decorator individually to the descriptor
       SetMetadata(CONTRACT_SCOPED_KEY, true)(target, propertyKey, descriptor);
       UseGuards(ContractContextGuard)(target, propertyKey, descriptor);
     } else {
       // Class-level: use composed decorator
-      composed(target);
+      composed(target as ClassTarget);
     }
-  }) as any;
+  };
+
+  return decorator;
 }

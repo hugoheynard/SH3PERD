@@ -20,6 +20,11 @@ type ErrorResponse = {
   message: string;
 };
 
+type HttpExceptionBody = {
+  error?: unknown;
+  message?: unknown;
+};
+
 /**
  * Global exception filter — catches all errors and returns a consistent JSON response.
  *
@@ -98,11 +103,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         statusCode: status,
         errorCode:
           typeof body === 'object' && body !== null && 'error' in body
-            ? String((body as any).error)
+            ? String((body as HttpExceptionBody).error)
             : 'HTTP_ERROR',
         message:
           typeof body === 'object' && body !== null && 'message' in body
-            ? this.extractMessage((body as any).message)
+            ? this.extractMessage((body as HttpExceptionBody).message)
             : exception.message,
       };
     }

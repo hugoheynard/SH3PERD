@@ -1,5 +1,6 @@
 import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
 import type { TContractRole } from '@sh3pherd/shared-types';
+import type { Request } from 'express';
 
 /**
  * Parameter decorator — extracts the contract roles from the request.
@@ -18,7 +19,7 @@ import type { TContractRole } from '@sh3pherd/shared-types';
  */
 export const ContractRoles = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext): TContractRole[] => {
-    const request = ctx.switchToHttp().getRequest();
+    const request = ctx.switchToHttp().getRequest<Request>();
     return request.contract_roles ?? [];
   },
 );

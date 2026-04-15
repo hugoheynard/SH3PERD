@@ -7,8 +7,9 @@ export const assertRequiredKeys = <T>(
     throw new Error(`Expected ${label} to be a non-null object, got ${typeof object}`);
   }
 
+  const record = object as Record<PropertyKey, unknown>;
   for (const key of keys) {
-    const value = (object as any)[key];
+    const value = record[key as PropertyKey];
     if (typeof value !== 'function') {
       throw new Error(`Missing or invalid dependency "${String(key)}" in ${label}`);
     }

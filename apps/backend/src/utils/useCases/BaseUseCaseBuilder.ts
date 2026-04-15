@@ -25,12 +25,10 @@ export class BaseUseCaseBuilder<TUseCaseFn> {
     fn: (asker_id: TUserId, action: TPermissionKey) => Promise<boolean>;
     error?: string;
   }): this {
-    if (!this.permissionCheck) {
-      this.permissionCheck = {
-        fn: async () => false,
-        error: 'PERMISSION_CHECK_NOT_CONFIGURED',
-      };
-    }
+    this.permissionCheck ??= {
+      fn: () => Promise.resolve(false),
+      error: 'PERMISSION_CHECK_NOT_CONFIGURED',
+    };
 
     this.permissionCheck = input;
     return this;
