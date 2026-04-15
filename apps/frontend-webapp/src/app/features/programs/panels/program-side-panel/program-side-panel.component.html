@@ -44,28 +44,3 @@
     }
   </div>
 </app-side-panel-section>
-
-<!--USERGROUPS-->
-<app-side-panel-section [title]="'usergroups'" [count]="config.groups() ? config.groups().length : 0">
-  <div section-actions>
-    <ui-button
-      [variant]="'tertiary'"
-      [type]="'button'"
-      stopPropagation
-      (pointerDown)="createUserGroup()">
-      Create
-    </ui-button>
-  </div>
-
-  <div section-content class="artist-grid" >
-    @for (group of config.groups(); track group.id) {
-
-      <ui-group-card
-        [group]="group"
-        uiDndDrag
-        [dndType]="'group'"
-        [dndData]="group" />
-
-    }
-  </div>
-</app-side-panel-section>

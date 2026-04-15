@@ -4,7 +4,6 @@ import type {
   ArtistPerformanceSlotTemplate,
   PlannerArtist,
   TimelineCue,
-  UserGroup,
 } from '../../features/programs/program-types';
 import type {
   MultiSlotDragPayload,
@@ -28,7 +27,7 @@ export type DragState = {
 
 /**
  * Defines the structure of the drag state for different types of draggable items in the application.
- * Each type of draggable item (template, artist, group, slot, resize) has its own specific data structure, which is captured in the DragPayloadMap.
+ * Each type of draggable item (template, artist, slot, resize) has its own specific data structure, which is captured in the DragPayloadMap.
  * The DragState type is a discriminated union that allows for type-safe handling of different drag operations based on the 'type' property.
  */
 export type TabDragPayload = { tabId: string; title: string };
@@ -36,7 +35,6 @@ export type TabDragPayload = { tabId: string; title: string };
 export type DragPayloadMap = {
   template: ArtistPerformanceSlotTemplate
   artist: PlannerArtist
-  group: UserGroup
   slot: ArtistPerformanceSlot
   'slot-multi': MultiSlotDragPayload
   resize: ArtistPerformanceSlot,

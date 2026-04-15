@@ -101,7 +101,6 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
     this.layout.setLeftPanel(ProgramSidePanelComponent, {
       templates: mockPerformanceSlotsTemplates,
       staff: this.selector.staff,
-      groups: this.selector.userGroups,
     });
   };
 
@@ -223,7 +222,6 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
   /**
    * Handles dropping an artist onto a performance slot.
    * If the current drag session is of type 'artist' and there is a hovered slot, adds the artist to that slot.
-   * If the drag session is of type 'group', adds the entire group to the hovered slot.
    */
   handleSlotDrop(slotId: string, drag: DragState) {
 
@@ -231,10 +229,6 @@ export class ProgramsPageComponent implements OnInit, AfterViewInit {
 
       case 'artist':
         this.slotServ.addArtistToSlot(slotId, drag.data);
-        break;
-
-      case 'group':
-        this.slotServ.addGroupToSlot(slotId, drag.data);
         break;
 
     }

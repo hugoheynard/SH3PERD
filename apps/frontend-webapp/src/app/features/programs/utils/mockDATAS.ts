@@ -29,15 +29,6 @@ export const AllMockArtists = [
   ...mockArtists_dancers
 ]
 
-export const mockArtistGroups = [
-  {
-    id: 'g1',
-    name: 'All Dancers',
-    staff: [
-      ...mockArtists_dancers
-    ] },
-]
-
 export const mockBuffers = [
   {
     id: 'buffer-1',

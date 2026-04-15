@@ -61,7 +61,6 @@ export interface ProgramState {
   rooms: Room[];
   slots: ArtistPerformanceSlot[];
   artists: PlannerArtist[];
-  userGroups: UserGroup[];
   timelineOffsets: TimelineBuffer[];
   cues: TimelineCue[];
 }
@@ -71,15 +70,6 @@ export interface PlannerArtist {
   name: string;
   role: string;
   roleColor: string;
-  sourceUserGroup_id?: string;
-}
-
-
-export interface UserGroup {
-  id: string;
-  name: string;
-  color?: string;
-  staff: PlannerArtist[];
 }
 
 export type ProgramMode = 'manual' | 'assisted';

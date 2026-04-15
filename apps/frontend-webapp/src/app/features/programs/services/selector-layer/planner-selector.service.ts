@@ -25,7 +25,6 @@ export class PlannerSelectorService {
   mode = computed(() => this.state.program().mode);
   staff = computed(() => this.state.program().artists);
   rooms = computed(() => this.state.program().rooms);
-  userGroups = computed(() => this.state.program().userGroups);
   timelineOffsets = computed(() => this.state.program().timelineOffsets);
 
 

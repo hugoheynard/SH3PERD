@@ -7,8 +7,7 @@ import { SidePanelSectionComponent } from '../../../../shared/ui-frames/side-pan
 import { LayoutService } from '../../../../core/services/layout.service';
 import { EditTemplatePopoverComponent } from '../../popovers/edit-template-popover/edit-template-popover.component';
 import { ButtonComponent } from '../../button/button.component';
-import type { PlannerArtist, UserGroup, ArtistPerformanceSlotTemplate } from '../../program-types';
-import { GroupCardComponent } from '../../group-card/group-card.component';
+import type { PlannerArtist, ArtistPerformanceSlotTemplate } from '../../program-types';
 import { ArtistWorkloadStripComponent } from '../../artist-workload-strip/artist-workload-strip.component';
 import { DndDragDirective } from '../../../../core/drag-and-drop/dndDrag.directive';
 
@@ -16,7 +15,6 @@ import { DndDragDirective } from '../../../../core/drag-and-drop/dndDrag.directi
 export interface ProgramSidePanelConfig {
   templates: ArtistPerformanceSlotTemplate[];
   staff: WritableSignal<PlannerArtist[]>;
-  groups: WritableSignal<UserGroup[]>;
 }
 
 export function emptyWorkload(): ArtistWorkload {
@@ -36,7 +34,6 @@ export function emptyWorkload(): ArtistWorkload {
     ArtistCardComponent,
     SidePanelSectionComponent,
     ButtonComponent,
-    GroupCardComponent,
     ArtistWorkloadStripComponent,
     DndDragDirective,
   ],
@@ -80,10 +77,6 @@ export class ProgramSidePanelComponent {
    */
   createTemplatePopover( ): void {
     this.layout.setPopover(EditTemplatePopoverComponent, { mode: 'create' });
-  };
-
-  createUserGroup(): void {
-    `TODO: Implement create user group functionality`
   };
 }
 
