@@ -18,7 +18,6 @@ export default tslint.config(
       'src/calendar',
       'src/userGroups',
       'src/integrations',
-      'src/busReactions',
       'src/print',
       'src/user',
       'src/E2E',

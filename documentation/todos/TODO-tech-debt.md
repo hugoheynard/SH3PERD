@@ -151,6 +151,11 @@ La conversation sur les composants réutilisables a été mise en pause :
   - L'augmentation Express documente l'exception `interface`, nécessaire au declaration merging.
   - `pnpm --filter @sh3pherd/backend lint` passe avec les types inclus.
 
+- [x] **Bus reactions sorti des ignores ESLint**
+  - `src/busReactions` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
+  - Aucun correctif de code n'a été nécessaire après auto-format.
+  - `pnpm --filter @sh3pherd/backend lint` passe avec bus reactions inclus.
+
 - [ ] **Tests spec stubs auto-générés** avec imports sans `.js` — cassés depuis longtemps
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer
   - `apps/backend/src/appBootstrap/__tests__/` — idem
