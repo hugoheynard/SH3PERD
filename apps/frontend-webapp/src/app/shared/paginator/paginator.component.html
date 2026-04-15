@@ -1,3 +1,62 @@
-<button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 0">◀</button>
-<span>{{ currentPage + 1 }} / {{ totalPages }}</span>
-<button (click)="setPage(currentPage + 1)" [disabled]="currentPage + 1 >= totalPages">▶</button>
+@let options = pageSizeOptions();
+
+<div class="paginator-left">
+  @if (options.length > 0) {
+    <label class="page-size">
+      <select
+        class="page-size__select"
+        [value]="pageSize()"
+        [disabled]="disabled()"
+        (change)="onPageSizeChange($any($event.target).value)"
+        aria-label="Items per page">
+        @for (opt of options; track opt) {
+          <option [value]="opt">{{ opt }}</option>
+        }
+      </select>
+      <span class="page-size__label">per page</span>
+    </label>
+  }
+
+  @if (totalItems() > 0) {
+    <span class="range">{{ rangeStart() }}–{{ rangeEnd() }} of {{ totalItems() }}</span>
+  } @else {
+    <span class="range range--empty">No items</span>
+  }
+</div>
+
+<nav class="pages" aria-label="Pagination">
+  <button
+    type="button"
+    class="nav-btn"
+    [disabled]="!canGoPrev()"
+    (click)="prev()"
+    aria-label="Previous page">
+    ‹
+  </button>
+
+  @for (item of pageItems(); track $index) {
+    @if (item.kind === 'page') {
+      <button
+        type="button"
+        class="page-btn"
+        [class.is-active]="item.page === currentPage()"
+        [attr.aria-current]="item.page === currentPage() ? 'page' : null"
+        [attr.aria-label]="'Page ' + item.page"
+        [disabled]="disabled()"
+        (click)="goToPage(item.page)">
+        {{ item.page }}
+      </button>
+    } @else {
+      <span class="gap" aria-hidden="true">…</span>
+    }
+  }
+
+  <button
+    type="button"
+    class="nav-btn"
+    [disabled]="!canGoNext()"
+    (click)="next()"
+    aria-label="Next page">
+    ›
+  </button>
+</nav>
