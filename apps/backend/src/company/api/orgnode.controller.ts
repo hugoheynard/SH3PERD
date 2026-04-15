@@ -11,6 +11,7 @@ import type {
   TUserId,
   TOrgNodeDomainModel,
   TApiResponse,
+  TOrgNodeRecord,
 } from '@sh3pherd/shared-types';
 import type { TTeamType, TOrgNodeCommunication } from '@sh3pherd/shared-types';
 import { COMPANY_CODES_SUCCESS } from './company.codes.js';
@@ -59,8 +60,8 @@ export class OrgNodeCrudController {
   @Patch('reorder')
   async reorderOrgNodes(
     @Body() body: { companyId: TCompanyId; parentId?: TOrgNodeId; orderedIds: TOrgNodeId[] },
-  ) {
-    await this.commandBus.execute(
+  ): Promise<{ ok: true }> {
+    await this.commandBus.execute<ReorderOrgNodesCommand, void>(
       new ReorderOrgNodesCommand(body.companyId, body.parentId, body.orderedIds),
     );
     return { ok: true };
@@ -72,9 +73,10 @@ export class OrgNodeCrudController {
   @Post('group')
   async groupOrgNodes(
     @Body() body: { companyId: TCompanyId; parentName: string; nodeIds: TOrgNodeId[] },
-  ): Promise<TApiResponse<any>> {
-    const result = await this.commandBus.execute(
-      new GroupOrgNodesCommand(body.companyId, body.parentName, body.nodeIds),
+    @ActorId() actorId: TUserId,
+  ): Promise<TApiResponse<TOrgNodeDomainModel>> {
+    const result = await this.commandBus.execute<GroupOrgNodesCommand, TOrgNodeDomainModel>(
+      new GroupOrgNodesCommand(body.companyId, body.parentName, body.nodeIds, actorId),
     );
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.CREATE_ORGNODE, result);
   }
@@ -83,8 +85,13 @@ export class OrgNodeCrudController {
   @ApiResponse({ status: 200, description: 'Node ungrouped.' })
   @RequirePermission(P.Company.OrgChart.Write)
   @Post('ungroup')
-  async ungroupOrgNode(@Body() body: { companyId: TCompanyId; nodeId: TOrgNodeId }) {
-    await this.commandBus.execute(new UngroupOrgNodeCommand(body.companyId, body.nodeId));
+  async ungroupOrgNode(
+    @Body() body: { companyId: TCompanyId; nodeId: TOrgNodeId },
+    @ActorId() actorId: TUserId,
+  ): Promise<{ ok: true }> {
+    await this.commandBus.execute<UngroupOrgNodeCommand, void>(
+      new UngroupOrgNodeCommand(body.companyId, body.nodeId, actorId),
+    );
     return { ok: true };
   }
 
@@ -103,8 +110,8 @@ export class OrgNodeCrudController {
       communications?: TOrgNodeCommunication[];
     },
     @ActorId() actorId: TUserId,
-  ) {
-    const result = await this.commandBus.execute(
+  ): Promise<TApiResponse<TOrgNodeRecord>> {
+    const result = await this.commandBus.execute<UpdateOrgNodeInfoCommand, TOrgNodeRecord>(
       new UpdateOrgNodeInfoCommand({ org_node_id: nodeId, ...body }, actorId),
     );
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.UPDATE_ORGNODE, result);
@@ -116,7 +123,12 @@ export class OrgNodeCrudController {
   @RequirePermission(P.Company.OrgChart.Write)
   @HttpCode(204)
   @Delete(':nodeId')
-  async archiveOrgNode(@Param('nodeId') nodeId: TOrgNodeId, @ActorId() actorId: TUserId) {
-    await this.commandBus.execute(new ArchiveOrgNodeCommand(nodeId, actorId));
+  async archiveOrgNode(
+    @Param('nodeId') nodeId: TOrgNodeId,
+    @ActorId() actorId: TUserId,
+  ): Promise<void> {
+    await this.commandBus.execute<ArchiveOrgNodeCommand, void>(
+      new ArchiveOrgNodeCommand(nodeId, actorId),
+    );
   }
 }

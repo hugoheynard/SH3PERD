@@ -1,4 +1,4 @@
-import type { TCompanyId, TUserId } from '@sh3pherd/shared-types';
+import type { TCompanyId, TOrgNodeRecord, TUserId } from '@sh3pherd/shared-types';
 import { CompanyAggregate } from '../domain/CompanyAggregate.js';
 import { CompanyEntity } from '../domain/CompanyEntity.js';
 import { OrgNodeEntity } from '../domain/OrgNodeEntity.js';
@@ -6,6 +6,7 @@ import { RecordMetadataUtils } from '../../utils/metaData/RecordMetadataUtils.js
 import { BusinessError } from '../../utils/errorManagement/BusinessError.js';
 import type { ICompanyRepository } from './CompanyMongoRepository.js';
 import type { IOrgNodeRepository } from './OrgNodeMongoRepository.js';
+import type { Filter, UpdateFilter } from 'mongodb';
 
 export type ICompanyAggregateRepository = {
   loadByCompanyId(companyId: TCompanyId): Promise<CompanyAggregate>;
@@ -46,16 +47,21 @@ export class CompanyAggregateRepository implements ICompanyAggregateRepository {
 
     // Delete removed nodes
     for (const node of aggregate.removedNodes) {
-      await this.orgNodeRepo.deleteOne({ id: node.id } as any);
+      const filter: Filter<TOrgNodeRecord> = { id: node.id };
+      await this.orgNodeRepo.deleteOne(filter);
     }
 
     // Update existing nodes with diffs
     for (const node of aggregate.existingNodes) {
       const diff = node.getDiffProps();
       if (Object.keys(diff).length > 0) {
+        const filter: Filter<TOrgNodeRecord> = { id: node.id };
+        const update: UpdateFilter<TOrgNodeRecord> = {
+          $set: { ...diff, ...RecordMetadataUtils.update() },
+        };
         await this.orgNodeRepo.updateOne({
-          filter: { id: node.id } as any,
-          update: { $set: { ...diff, ...RecordMetadataUtils.update() } } as any,
+          filter,
+          update,
         });
       }
     }

@@ -1,6 +1,6 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import type { TCompanyId, TOrgNodeId } from '@sh3pherd/shared-types';
+import type { TCompanyId, TOrgNodeId, TUserId } from '@sh3pherd/shared-types';
 import { COMPANY_AGGREGATE_REPO } from '../../company.tokens.js';
 import type { ICompanyAggregateRepository } from '../../repositories/CompanyAggregateRepository.js';
 
@@ -8,6 +8,7 @@ export class UngroupOrgNodeCommand {
   constructor(
     public readonly companyId: TCompanyId,
     public readonly nodeId: TOrgNodeId,
+    public readonly actorId: TUserId,
   ) {}
 }
 
@@ -26,6 +27,6 @@ export class UngroupOrgNodeHandler implements ICommandHandler<UngroupOrgNodeComm
   async execute(cmd: UngroupOrgNodeCommand): Promise<void> {
     const aggregate = await this.aggregateRepo.loadByCompanyId(cmd.companyId);
     aggregate.ungroupNode(cmd.nodeId);
-    await this.aggregateRepo.save(aggregate, undefined as any);
+    await this.aggregateRepo.save(aggregate, cmd.actorId);
   }
 }

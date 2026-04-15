@@ -1,12 +1,14 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import type { TCompanyId, TOrgLayers, TUserId } from '@sh3pherd/shared-types';
+import type { TCompanyRecord } from '@sh3pherd/shared-types';
 import { COMPANY_REPO } from '../../company.tokens.js';
 import type { ICompanyRepository } from '../../repositories/CompanyMongoRepository.js';
 import { CompanyEntity } from '../../domain/CompanyEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
+import type { UpdateFilter } from 'mongodb';
 
 export class UpdateOrgLayersCommand {
   constructor(
@@ -44,9 +46,13 @@ export class UpdateOrgLayersHandler implements ICommandHandler<UpdateOrgLayersCo
     const entity = new CompanyEntity(RecordMetadataUtils.stripDocMetadata(record));
     entity.updateOrgLayers(cmd.orgLayers);
 
+    const update: UpdateFilter<TCompanyRecord> = {
+      $set: { ...entity.toDomain, ...RecordMetadataUtils.update() },
+    };
+
     const updated = await this.companyRepo.updateOne({
       filter: { id: cmd.companyId },
-      update: { $set: { ...entity.toDomain, ...RecordMetadataUtils.update() } } as any,
+      update,
     });
 
     if (!updated) {

@@ -1,10 +1,12 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import type { TCompanyId, TOrgNodeId } from '@sh3pherd/shared-types';
+import type { TOrgNodeRecord } from '@sh3pherd/shared-types';
 import { ORG_NODE_REPO } from '../../company.tokens.js';
 import type { IOrgNodeRepository } from '../../repositories/OrgNodeMongoRepository.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
+import type { Filter, UpdateFilter } from 'mongodb';
 
 export class ReorderOrgNodesCommand {
   constructor(
@@ -32,10 +34,17 @@ export class ReorderOrgNodesHandler implements ICommandHandler<ReorderOrgNodesCo
 
     // Load all active siblings for this parent
     const parentFilter = parentId
-      ? { parent_id: parentId }
-      : { $or: [{ parent_id: { $exists: false } }, { parent_id: null }] };
+      ? ({ parent_id: parentId } satisfies Filter<TOrgNodeRecord>)
+      : ({
+          parent_id: { $exists: false },
+        } satisfies Filter<TOrgNodeRecord>);
+    const filter: Filter<TOrgNodeRecord> = {
+      company_id: companyId,
+      ...parentFilter,
+      status: 'active',
+    };
     const allNodes = await this.orgNodeRepo.findMany({
-      filter: { company_id: companyId, ...parentFilter, status: 'active' } as any,
+      filter,
     });
 
     const siblings = allNodes ?? [];
@@ -52,12 +61,15 @@ export class ReorderOrgNodesHandler implements ICommandHandler<ReorderOrgNodesCo
     }
 
     // Batch update positions
-    const updates = orderedIds.map((id, index) =>
-      this.orgNodeRepo.updateOne({
-        filter: { id } as any,
-        update: { $set: { position: index, ...RecordMetadataUtils.update() } } as any,
-      }),
-    );
+    const updates = orderedIds.map((id, index) => {
+      const update: UpdateFilter<TOrgNodeRecord> = {
+        $set: { position: index, ...RecordMetadataUtils.update() },
+      };
+      return this.orgNodeRepo.updateOne({
+        filter: { id },
+        update,
+      });
+    });
 
     await Promise.all(updates);
   }

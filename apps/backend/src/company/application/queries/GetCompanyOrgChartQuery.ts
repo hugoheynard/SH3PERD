@@ -6,11 +6,13 @@ import type {
   TOrgNodeHierarchyViewModel,
   TOrgNodeMemberViewModel,
   TOrgNodeRecord,
+  TUserProfileRecord,
 } from '@sh3pherd/shared-types';
 import { ORG_NODE_REPO, COMPANY_REPO, USER_PROFILE_REPO } from '../../company.tokens.js';
 import type { IOrgNodeRepository } from '../../repositories/OrgNodeMongoRepository.js';
 import type { ICompanyRepository } from '../../repositories/CompanyMongoRepository.js';
 import type { IUserProfileRepository } from '../../../user/infra/UserProfileMongoRepo.repository.js';
+import type { Filter } from 'mongodb';
 
 export class GetCompanyOrgChartQuery {
   constructor(public readonly companyId: TCompanyId) {}
@@ -45,8 +47,9 @@ export class GetCompanyOrgChartHandler implements IQueryHandler<
 
     const profiles =
       allUserIds.length > 0
-        ? ((await this.profileRepo.findMany({ filter: { user_id: { $in: allUserIds } } as any })) ??
-          [])
+        ? ((await this.profileRepo.findMany({
+            filter: { user_id: { $in: allUserIds } } satisfies Filter<TUserProfileRecord>,
+          })) ?? [])
         : [];
     const profileMap = new Map(profiles.map((p) => [p.user_id, p]));
 

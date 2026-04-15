@@ -1,7 +1,13 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { TCompanyStatus } from '@sh3pherd/shared-types';
-import type { TCompanyDomainModel, TContractDomainModel, TUserId } from '@sh3pherd/shared-types';
+import type {
+  TCompanyDomainModel,
+  TCompanyRecord,
+  TContractDomainModel,
+  TContractRecord,
+  TUserId,
+} from '@sh3pherd/shared-types';
 import { COMPANY_REPO } from '../../company.tokens.js';
 import { CONTRACT_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { ICompanyRepository } from '../../repositories/CompanyMongoRepository.js';
@@ -85,8 +91,10 @@ export class CreateCompanyHandler implements ICommandHandler<
 
     try {
       await this.transaction.run(async (session) => {
-        await this.companyRepo.save({ ...company.toDomain, ...metadata } as any, session);
-        await this.contractRepo.save({ ...ownerContract.toDomain, ...metadata } as any, session);
+        const companyRecord: TCompanyRecord = { ...company.toDomain, ...metadata };
+        const ownerContractRecord: TContractRecord = { ...ownerContract.toDomain, ...metadata };
+        await this.companyRepo.save(companyRecord, session);
+        await this.contractRepo.save(ownerContractRecord, session);
       });
     } catch {
       throw new TechnicalError('Failed to create company', { code: 'COMPANY_CREATE_FAILED' });

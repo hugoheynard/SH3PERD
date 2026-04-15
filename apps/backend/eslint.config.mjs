@@ -17,7 +17,6 @@ export default tslint.config(
       'src/playlists-v2',
       'src/contracts',
       'src/calendar',
-      'src/company',
       'src/userGroups',
       'src/integrations',
       'src/busReactions',

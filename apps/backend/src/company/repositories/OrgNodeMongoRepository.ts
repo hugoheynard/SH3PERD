@@ -4,6 +4,7 @@ import {
 } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { TOrgNodeRecord, TOrgNodeId, TCompanyId } from '@sh3pherd/shared-types';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
+import type { Filter } from 'mongodb';
 
 export type IOrgNodeRepository = {
   findById(id: TOrgNodeId): Promise<TOrgNodeRecord | null>;
@@ -29,15 +30,17 @@ export class OrgNodeMongoRepository
   }
 
   async findByParentId(parentId: TOrgNodeId, companyId: TCompanyId): Promise<TOrgNodeRecord[]> {
-    return this.findMany({ filter: { parent_id: parentId, company_id: companyId } as any });
+    const filter: Filter<TOrgNodeRecord> = { parent_id: parentId, company_id: companyId };
+    return this.findMany({ filter });
   }
 
   async findRootNodes(companyId: TCompanyId): Promise<TOrgNodeRecord[]> {
+    const filter: Filter<TOrgNodeRecord> = {
+      company_id: companyId,
+      parent_id: { $exists: false },
+    };
     return this.findMany({
-      filter: {
-        company_id: companyId,
-        $or: [{ parent_id: { $exists: false } }, { parent_id: null }],
-      } as any,
+      filter,
     });
   }
 }

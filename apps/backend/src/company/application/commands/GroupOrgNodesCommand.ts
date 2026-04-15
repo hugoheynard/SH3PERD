@@ -1,6 +1,6 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import type { TCompanyId, TOrgNodeId, TOrgNodeDomainModel } from '@sh3pherd/shared-types';
+import type { TCompanyId, TOrgNodeId, TOrgNodeDomainModel, TUserId } from '@sh3pherd/shared-types';
 import { COMPANY_AGGREGATE_REPO } from '../../company.tokens.js';
 import type { ICompanyAggregateRepository } from '../../repositories/CompanyAggregateRepository.js';
 
@@ -9,6 +9,7 @@ export class GroupOrgNodesCommand {
     public readonly companyId: TCompanyId,
     public readonly parentName: string,
     public readonly nodeIds: TOrgNodeId[],
+    public readonly actorId: TUserId,
   ) {}
 }
 
@@ -33,7 +34,7 @@ export class GroupOrgNodesHandler implements ICommandHandler<
     const aggregate = await this.aggregateRepo.loadByCompanyId(cmd.companyId);
     const newParent = aggregate.groupNodes(cmd.parentName, cmd.nodeIds);
 
-    await this.aggregateRepo.save(aggregate, undefined as any);
+    await this.aggregateRepo.save(aggregate, cmd.actorId);
 
     return newParent.toDomain;
   }

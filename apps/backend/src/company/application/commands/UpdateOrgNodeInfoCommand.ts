@@ -7,6 +7,7 @@ import type { IOrgNodeRepository } from '../../repositories/OrgNodeMongoReposito
 import { OrgNodeEntity } from '../../domain/OrgNodeEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import type { UpdateFilter } from 'mongodb';
 
 export type TUpdateOrgNodeInfoDTO = {
   org_node_id: TOrgNodeId;
@@ -49,9 +50,13 @@ export class UpdateOrgNodeInfoHandler implements ICommandHandler<
     if (dto.communications !== undefined) entity.setCommunications(dto.communications);
 
     // Save full entity state
+    const update: UpdateFilter<TOrgNodeRecord> = {
+      $set: { ...entity.toDomain, ...RecordMetadataUtils.update() },
+    };
+
     const updated = await this.orgNodeRepo.updateOne({
       filter: { id: dto.org_node_id },
-      update: { $set: { ...entity.toDomain, ...RecordMetadataUtils.update() } } as any,
+      update,
     });
 
     return updated!;

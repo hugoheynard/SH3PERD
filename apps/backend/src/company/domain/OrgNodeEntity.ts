@@ -45,31 +45,31 @@ export class OrgNodeEntity extends Entity<TOrgNodeDomainModel> {
   get name(): string {
     return this.props.name;
   }
-  get company_id() {
+  get company_id(): TOrgNodeDomainModel['company_id'] {
     return this.props.company_id;
   }
-  get parent_id() {
+  get parent_id(): TOrgNodeDomainModel['parent_id'] {
     return this.props.parent_id;
   }
-  get type() {
+  get type(): TOrgNodeDomainModel['type'] {
     return this.props.type;
   }
-  get color() {
+  get color(): TOrgNodeDomainModel['color'] {
     return this.props.color;
   }
-  get position() {
+  get position(): TOrgNodeDomainModel['position'] {
     return this.props.position;
   }
-  get status() {
+  get status(): TOrgNodeDomainModel['status'] {
     return this.props.status;
   }
-  get communications() {
+  get communications(): TOrgNodeCommunication[] {
     return this.props.communications;
   }
-  get members() {
+  get members(): TOrgNodeMember[] {
     return this.props.members;
   }
-  get guest_members() {
+  get guest_members(): TOrgNodeGuestMember[] {
     return this.props.guest_members;
   }
 

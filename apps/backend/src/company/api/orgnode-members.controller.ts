@@ -4,7 +4,15 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@ne
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
 import { P } from '@sh3pherd/shared-types';
-import type { TOrgNodeId, TUserId } from '@sh3pherd/shared-types';
+import type {
+  TApiResponse,
+  TContractId,
+  TOrgNodeGuestMember,
+  TOrgNodeId,
+  TOrgNodeMember,
+  TOrgMembershipEventRecord,
+  TUserId,
+} from '@sh3pherd/shared-types';
 import type { TTeamRole } from '@sh3pherd/shared-types';
 import { COMPANY_CODES_SUCCESS } from './company.codes.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
@@ -34,8 +42,12 @@ export class OrgNodeMembersController {
   @ApiResponse({ status: 200, description: 'List of node members.' })
   @RequirePermission(P.Company.OrgChart.Read)
   @Get(':nodeId/members')
-  async getOrgNodeMembers(@Param('nodeId') nodeId: TOrgNodeId) {
-    const result = await this.queryBus.execute(new GetOrgNodeMembersQuery(nodeId));
+  async getOrgNodeMembers(
+    @Param('nodeId') nodeId: TOrgNodeId,
+  ): Promise<TApiResponse<TOrgNodeMember[]>> {
+    const result = await this.queryBus.execute<GetOrgNodeMembersQuery, TOrgNodeMember[]>(
+      new GetOrgNodeMembersQuery(nodeId),
+    );
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_ORGNODE_MEMBERS, result);
   }
 
@@ -45,8 +57,13 @@ export class OrgNodeMembersController {
   @ApiResponse({ status: 200, description: 'List of node members at given date.' })
   @RequirePermission(P.Company.OrgChart.Read)
   @Get(':nodeId/members/at/:date')
-  async getOrgNodeMembersAt(@Param('nodeId') nodeId: TOrgNodeId, @Param('date') date: string) {
-    const result = await this.queryBus.execute(new GetOrgNodeMembersQuery(nodeId, new Date(date)));
+  async getOrgNodeMembersAt(
+    @Param('nodeId') nodeId: TOrgNodeId,
+    @Param('date') date: string,
+  ): Promise<TApiResponse<TOrgNodeMember[]>> {
+    const result = await this.queryBus.execute<GetOrgNodeMembersQuery, TOrgNodeMember[]>(
+      new GetOrgNodeMembersQuery(nodeId, new Date(date)),
+    );
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_ORGNODE_MEMBERS, result);
   }
 
@@ -58,15 +75,18 @@ export class OrgNodeMembersController {
   async addOrgNodeMember(
     @Param('nodeId') nodeId: TOrgNodeId,
     @Body()
-    body: { user_id: TUserId; contract_id: string; team_role?: TTeamRole; job_title?: string },
+    body: { user_id: TUserId; contract_id: TContractId; team_role?: TTeamRole; job_title?: string },
     @ActorId() actorId: TUserId,
-  ) {
-    const result = await this.commandBus.execute(
+  ): Promise<TApiResponse<TOrgMembershipEventRecord>> {
+    const result = await this.commandBus.execute<
+      AddOrgNodeMemberCommand,
+      TOrgMembershipEventRecord
+    >(
       new AddOrgNodeMemberCommand(
         {
           org_node_id: nodeId,
           user_id: body.user_id,
-          contract_id: body.contract_id as any,
+          contract_id: body.contract_id,
           team_role: body.team_role,
           job_title: body.job_title,
         },
@@ -84,13 +104,16 @@ export class OrgNodeMembersController {
   @Delete(':nodeId/members/:userId')
   async removeOrgNodeMember(
     @Param('nodeId') nodeId: TOrgNodeId,
-    @Param('userId') userId: string,
+    @Param('userId') userId: TUserId,
     @Body() body: { reason?: string },
     @ActorId() actorId: TUserId,
-  ) {
-    const result = await this.commandBus.execute(
+  ): Promise<TApiResponse<TOrgMembershipEventRecord>> {
+    const result = await this.commandBus.execute<
+      RemoveOrgNodeMemberCommand,
+      TOrgMembershipEventRecord
+    >(
       new RemoveOrgNodeMemberCommand(
-        { org_node_id: nodeId, user_id: userId as TUserId, reason: body?.reason },
+        { org_node_id: nodeId, user_id: userId, reason: body?.reason },
         actorId,
       ),
     );
@@ -108,8 +131,8 @@ export class OrgNodeMembersController {
     @Param('nodeId') nodeId: TOrgNodeId,
     @Body() body: { display_name: string; title?: string; team_role: TTeamRole },
     @ActorId() actorId: TUserId,
-  ) {
-    const result = await this.commandBus.execute(
+  ): Promise<TApiResponse<TOrgNodeGuestMember>> {
+    const result = await this.commandBus.execute<AddGuestMemberCommand, TOrgNodeGuestMember>(
       new AddGuestMemberCommand({ org_node_id: nodeId, ...body }, actorId),
     );
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.ADD_GUEST_MEMBER, result);
@@ -125,8 +148,8 @@ export class OrgNodeMembersController {
     @Param('nodeId') nodeId: TOrgNodeId,
     @Param('guestId') guestId: string,
     @ActorId() actorId: TUserId,
-  ) {
-    const result = await this.commandBus.execute(
+  ): Promise<TApiResponse<boolean>> {
+    const result = await this.commandBus.execute<RemoveGuestMemberCommand, boolean>(
       new RemoveGuestMemberCommand({ org_node_id: nodeId, guest_id: guestId }, actorId),
     );
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.REMOVE_GUEST_MEMBER, result);

@@ -3,7 +3,13 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
-import type { TCompanyId, TUserId } from '@sh3pherd/shared-types';
+import type {
+  TApiResponse,
+  TCompanyCardViewModel,
+  TCompanyDetailViewModel,
+  TCompanyId,
+  TUserId,
+} from '@sh3pherd/shared-types';
 import { COMPANY_CODES_SUCCESS } from './company.codes.js';
 
 import {
@@ -76,7 +82,10 @@ export class CompanyController {
   @ApiResponse({ status: 400, description: 'Validation failed (name empty).' })
   @ApiResponse({ status: 500, description: 'Transaction failed — both inserts rolled back.' })
   @Post()
-  async createCompany(@Body() dto: { name: string }, @ActorId() actorId: TUserId) {
+  async createCompany(
+    @Body() dto: { name: string },
+    @ActorId() actorId: TUserId,
+  ): Promise<TApiResponse<TCreateCompanyResult>> {
     const result = await this.commandBus.execute<CreateCompanyCommand, TCreateCompanyResult>(
       new CreateCompanyCommand(dto, actorId),
     );
@@ -105,15 +114,23 @@ export class CompanyController {
     },
   })
   @Get('my-companies')
-  async getMyCompanies(@ActorId() actorId: TUserId) {
-    const result = await this.queryBus.execute(new GetMyCompaniesQuery(actorId));
+  async getMyCompanies(
+    @ActorId() actorId: TUserId,
+  ): Promise<TApiResponse<TCompanyCardViewModel[]>> {
+    const result = await this.queryBus.execute<GetMyCompaniesQuery, TCompanyCardViewModel[]>(
+      new GetMyCompaniesQuery(actorId),
+    );
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_MY_COMPANIES, result);
   }
 
   @ApiOperation({ summary: 'Get company by ID' })
   @Get(':id')
-  async getCompanyById(@Param('id') id: TCompanyId) {
-    const result = await this.queryBus.execute(new GetCompanyByIdQuery(id));
+  async getCompanyById(
+    @Param('id') id: TCompanyId,
+  ): Promise<TApiResponse<TCompanyDetailViewModel>> {
+    const result = await this.queryBus.execute<GetCompanyByIdQuery, TCompanyDetailViewModel>(
+      new GetCompanyByIdQuery(id),
+    );
     return buildApiResponseDTO(COMPANY_CODES_SUCCESS.GET_COMPANY_BY_ID, result);
   }
 }

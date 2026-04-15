@@ -19,6 +19,8 @@ import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 import { USER_CREDENTIALS_REPO, GUEST_COMPANY_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IUserCredentialsRepository } from '../../../user/infra/UserCredentialsMongoRepo.repository.js';
 import type { IGuestCompanyRepository } from '../../../user/infra/GuestCompanyMongoRepo.repository.js';
+import type { TOrgNodeRecord } from '@sh3pherd/shared-types';
+import type { UpdateFilter } from 'mongodb';
 
 export type TAddOrgNodeMemberDTO = {
   org_node_id: TOrgNodeId;
@@ -81,13 +83,15 @@ export class AddOrgNodeMemberHandler implements ICommandHandler<
       ...RecordMetadataUtils.create(actorId),
     };
 
+    const update: UpdateFilter<TOrgNodeRecord> = {
+      $push: { members: member },
+      $set: { ...RecordMetadataUtils.update() },
+    };
+
     const [nodeSaved, eventSaved] = await Promise.all([
       this.orgNodeRepo.updateOne({
         filter: { id: dto.org_node_id },
-        update: {
-          $push: { members: member } as any,
-          $set: { ...RecordMetadataUtils.update() },
-        },
+        update,
       }),
       this.eventRepo.save(membershipEvent),
     ]);

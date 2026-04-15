@@ -1,4 +1,5 @@
 import type { TOrgNodeId, TUserId } from '@sh3pherd/shared-types';
+import { TCompanyStatus } from '@sh3pherd/shared-types';
 import type { CompanyEntity } from './CompanyEntity.js';
 import type { OrgNodeEntity } from './OrgNodeEntity.js';
 
@@ -22,7 +23,7 @@ export class CompanyPolicy {
 
   /** Ensures the company is active. */
   ensureIsActive(entity: CompanyEntity): void {
-    if (entity.status !== 'active') {
+    if (entity.status !== TCompanyStatus.ACTIVE) {
       throw new Error('COMPANY_NOT_ACTIVE');
     }
   }

@@ -123,6 +123,11 @@ La conversation sur les composants réutilisables a été mise en pause :
   - Les repositories music utilisent maintenant des types Mongo explicites au lieu de `as any`.
   - `pnpm --filter @sh3pherd/backend lint` passe avec le module music inclus.
 
+- [x] **Module Company sorti des ignores ESLint**
+  - `src/company` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
+  - Les controllers, commands et repositories company ont des retours explicites et des filtres/updates Mongo typés.
+  - `pnpm --filter @sh3pherd/backend lint` passe avec le module company inclus.
+
 - [ ] **Tests spec stubs auto-générés** avec imports sans `.js` — cassés depuis longtemps
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer
   - `apps/backend/src/appBootstrap/__tests__/` — idem

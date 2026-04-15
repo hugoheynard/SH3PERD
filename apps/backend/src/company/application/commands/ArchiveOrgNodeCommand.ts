@@ -1,11 +1,13 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import type { TOrgNodeId, TUserId } from '@sh3pherd/shared-types';
+import type { TOrgNodeRecord } from '@sh3pherd/shared-types';
 import { ORG_NODE_REPO } from '../../company.tokens.js';
 import type { IOrgNodeRepository } from '../../repositories/OrgNodeMongoRepository.js';
 import { OrgNodeEntity } from '../../domain/OrgNodeEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import type { UpdateFilter } from 'mongodb';
 
 export class ArchiveOrgNodeCommand {
   constructor(
@@ -46,9 +48,13 @@ export class ArchiveOrgNodeHandler implements ICommandHandler<ArchiveOrgNodeComm
     const entity = new OrgNodeEntity(RecordMetadataUtils.stripDocMetadata(existing));
     entity.archive();
 
+    const update: UpdateFilter<TOrgNodeRecord> = {
+      $set: { ...entity.toDomain, ...RecordMetadataUtils.update() },
+    };
+
     await this.orgNodeRepo.updateOne({
       filter: { id: nodeId },
-      update: { $set: { ...entity.toDomain, ...RecordMetadataUtils.update() } } as any,
+      update,
     });
   }
 }

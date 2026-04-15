@@ -8,6 +8,8 @@ import type { IOrgNodeRepository } from '../../repositories/OrgNodeMongoReposito
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
+import type { TOrgNodeRecord } from '@sh3pherd/shared-types';
+import type { UpdateFilter } from 'mongodb';
 
 // ── Add Guest Member ─────────────────────────────────────
 
@@ -46,12 +48,14 @@ export class AddGuestMemberHandler implements ICommandHandler<
       team_role: dto.team_role,
     };
 
+    const update: UpdateFilter<TOrgNodeRecord> = {
+      $push: { guest_members: guest },
+      $set: { ...RecordMetadataUtils.update() },
+    };
+
     const saved = await this.orgNodeRepo.updateOne({
       filter: { id: dto.org_node_id },
-      update: {
-        $push: { guest_members: guest } as any,
-        $set: { ...RecordMetadataUtils.update() },
-      },
+      update,
     });
 
     if (!saved)
@@ -84,12 +88,14 @@ export class RemoveGuestMemberHandler implements ICommandHandler<
   async execute(cmd: RemoveGuestMemberCommand): Promise<boolean> {
     const { dto } = cmd;
 
+    const update: UpdateFilter<TOrgNodeRecord> = {
+      $pull: { guest_members: { id: dto.guest_id } },
+      $set: { ...RecordMetadataUtils.update() },
+    };
+
     const saved = await this.orgNodeRepo.updateOne({
       filter: { id: dto.org_node_id },
-      update: {
-        $pull: { guest_members: { id: dto.guest_id } } as any,
-        $set: { ...RecordMetadataUtils.update() },
-      },
+      update,
     });
 
     if (!saved)
