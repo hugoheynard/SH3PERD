@@ -9,6 +9,7 @@ import type {
   TCommunicationPlatform,
 } from '@sh3pherd/shared-types';
 import type { IBaseCRUD } from '../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
+import type { Filter } from 'mongodb';
 
 export type IIntegrationCredentialsRepository = {
   findById(id: TIntegrationCredentialsId): Promise<TIntegrationCredentialsRecord | null>;
@@ -35,10 +36,12 @@ export class IntegrationCredentialsMongoRepository
     companyId: TCompanyId,
     platform: TCommunicationPlatform,
   ): Promise<TIntegrationCredentialsRecord | null> {
-    return this.findOne({ filter: { company_id: companyId, platform } as any });
+    const filter: Filter<TIntegrationCredentialsRecord> = { company_id: companyId, platform };
+    return this.findOne({ filter });
   }
 
   async findByCompany(companyId: TCompanyId): Promise<TIntegrationCredentialsRecord[]> {
-    return this.findMany({ filter: { company_id: companyId } as any });
+    const filter: Filter<TIntegrationCredentialsRecord> = { company_id: companyId };
+    return this.findMany({ filter });
   }
 }

@@ -2,7 +2,8 @@ import { BadRequestException, Controller, Get, Inject, Query, Res } from '@nestj
 import { ConfigService } from '@nestjs/config';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import type { Response } from 'express';
-import type { TCompanyId, TUserId } from '@sh3pherd/shared-types';
+import type { TCompanyId, TIntegrationCredentialsRecord, TUserId } from '@sh3pherd/shared-types';
+import type { Filter, UpdateFilter } from 'mongodb';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { Public } from '../../utils/nest/decorators/IsPublic.js';
 import { SlackOAuthService } from './slack-oauth.service.js';
@@ -65,9 +66,13 @@ export class SlackOAuthController {
         entity.connect({ bot_token: botToken, team_id: teamId });
         const diff = entity.getDiffProps();
         if (Object.keys(diff).length > 0) {
+          const filter: Filter<TIntegrationCredentialsRecord> = { id: record.id };
+          const update: UpdateFilter<TIntegrationCredentialsRecord> = {
+            $set: { ...diff, ...RecordMetadataUtils.update() },
+          };
           await this.credentialsRepo.updateOne({
-            filter: { id: record.id } as any,
-            update: { $set: { ...diff, ...RecordMetadataUtils.update() } } as any,
+            filter,
+            update,
           });
         }
       } else {

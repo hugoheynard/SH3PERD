@@ -156,6 +156,11 @@ La conversation sur les composants réutilisables a été mise en pause :
   - Aucun correctif de code n'a été nécessaire après auto-format.
   - `pnpm --filter @sh3pherd/backend lint` passe avec bus reactions inclus.
 
+- [x] **Integrations sorti des ignores ESLint**
+  - `src/integrations` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
+  - Les credentials integration utilisent des filtres/updates Mongo typés et des getters explicites.
+  - `pnpm --filter @sh3pherd/backend lint` passe avec integrations inclus.
+
 - [ ] **Tests spec stubs auto-générés** avec imports sans `.js` — cassés depuis longtemps
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer
   - `apps/backend/src/appBootstrap/__tests__/` — idem

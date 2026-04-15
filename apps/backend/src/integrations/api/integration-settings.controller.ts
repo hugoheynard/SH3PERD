@@ -3,8 +3,10 @@ import { ApiBearerAuth, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@
 import type {
   TCompanyId,
   TCommunicationPlatform,
+  TIntegrationCredentialsRecord,
   TIntegrationViewModel,
 } from '@sh3pherd/shared-types';
+import type { Filter, UpdateFilter } from 'mongodb';
 import { INTEGRATION_CREDENTIALS_REPO } from '../integrations.tokens.js';
 import type { IIntegrationCredentialsRepository } from '../repositories/IntegrationCredentialsRepository.js';
 import { IntegrationCredentialsEntity } from '../domain/IntegrationCredentialsEntity.js';
@@ -60,9 +62,13 @@ export class IntegrationSettingsController {
 
     const diff = entity.getDiffProps();
     if (Object.keys(diff).length > 0) {
+      const filter: Filter<TIntegrationCredentialsRecord> = { id: record.id };
+      const update: UpdateFilter<TIntegrationCredentialsRecord> = {
+        $set: { ...diff, ...RecordMetadataUtils.update() },
+      };
       await this.credentialsRepo.updateOne({
-        filter: { id: record.id } as any,
-        update: { $set: { ...diff, ...RecordMetadataUtils.update() } } as any,
+        filter,
+        update,
       });
     }
   }
@@ -87,9 +93,13 @@ export class IntegrationSettingsController {
 
     const diff = entity.getDiffProps();
     if (Object.keys(diff).length > 0) {
+      const filter: Filter<TIntegrationCredentialsRecord> = { id: record.id };
+      const update: UpdateFilter<TIntegrationCredentialsRecord> = {
+        $set: { ...diff, ...RecordMetadataUtils.update() },
+      };
       await this.credentialsRepo.updateOne({
-        filter: { id: record.id } as any,
-        update: { $set: { ...diff, ...RecordMetadataUtils.update() } } as any,
+        filter,
+        update,
       });
     }
 
@@ -122,9 +132,13 @@ export class IntegrationSettingsController {
 
     const diff = entity.getDiffProps();
     if (Object.keys(diff).length > 0) {
+      const filter: Filter<TIntegrationCredentialsRecord> = { id: record.id };
+      const update: UpdateFilter<TIntegrationCredentialsRecord> = {
+        $set: { ...diff, ...RecordMetadataUtils.update() },
+      };
       await this.credentialsRepo.updateOne({
-        filter: { id: record.id } as any,
-        update: { $set: { ...diff, ...RecordMetadataUtils.update() } } as any,
+        filter,
+        update,
       });
     }
 

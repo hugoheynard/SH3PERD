@@ -4,6 +4,8 @@ import type {
   TIntegrationCredentialsDomainModel,
   TIntegrationChannel,
   TCommunicationPlatform,
+  TIntegrationStatus,
+  TCompanyId,
 } from '@sh3pherd/shared-types';
 
 /**
@@ -30,22 +32,22 @@ export class IntegrationCredentialsEntity extends Entity<TIntegrationCredentials
 
   /* ── Getters ── */
 
-  get company_id() {
+  get company_id(): TCompanyId {
     return this.props.company_id;
   }
   get platform(): TCommunicationPlatform {
     return this.props.platform;
   }
-  get status() {
+  get status(): TIntegrationStatus {
     return this.props.status;
   }
-  get config() {
+  get config(): Record<string, string> {
     return this.props.config;
   }
   get channels(): readonly TIntegrationChannel[] {
     return this.props.channels;
   }
-  get connectedAt() {
+  get connectedAt(): Date | undefined {
     return this.props.connectedAt;
   }
 
