@@ -28,11 +28,6 @@ export class RouteService {
   };
 
   @RouteService.tryCatchDecorator
-  async navigateToCalendar(){
-      await this.router.navigate(['app/calendar']);
-  };
-
-  @RouteService.tryCatchDecorator
   async navigateToMusicLibrary(){
     await this.router.navigate(['app/musicLibrary']);
   };

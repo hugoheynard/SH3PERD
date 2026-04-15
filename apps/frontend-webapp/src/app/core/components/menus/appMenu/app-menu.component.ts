@@ -25,11 +25,9 @@ export class AppMenuComponent {
   readonly navItems: AppMenuItem[] = [
     { id: 'home',       icon: 'home',                label: 'Home',       route: 'home'         },
     { id: 'program',    icon: 'program',              label: 'Program',    route: 'program'      },
-    { id: 'calendar',   icon: 'calendar',             label: 'Calendar',   route: 'calendar'     },
     { id: 'music',      icon: 'notes_2',              label: 'Music',      route: 'musicLibrary' },
     { id: 'playlists',  icon: 'play',                 label: 'Playlists',  route: 'playlistManager' },
     { id: 'contracts',  icon: 'contracts',            label: 'Contracts',  route: 'contracts'    },
-    { id: 'userGroups', icon: 'user-group-menu-icon', label: 'Groups',     route: 'userGroup'    },
     { id: 'company',    icon: 'company',              label: 'Company',    route: 'company'      },
   ];
 

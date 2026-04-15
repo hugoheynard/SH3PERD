@@ -5,14 +5,12 @@ import {LoginComponent} from '../features/auth/login/login.component';
 import {RegisterComponent} from '../features/auth/register/register.component';
 import {ForgotPasswordComponent} from '../features/auth/forgot-password/forgot-password.component';
 import {ResetPasswordComponent} from '../features/auth/reset-password/reset-password.component';
-import {CalendarComponent} from '../features/calendar/components/calendarPage/calendar.component';
 import {authGuard} from '../../guards/auth.guard';
 import { PlaylistsPageComponent } from '../features/playlists/playlists-page/playlists-page.component';
 import {MainLayoutComponent} from '../core/main-layout/main-layout.component';
 import {HomeComponent} from '../features/home-dashboard/home/home.component';
 import { MusicLibraryPageComponent } from '../features/musicLibrary/music-library-page/music-library-page.component';
 import { ContractPageComponent } from '../features/contracts/components/contract-page/contract-page.component';
-import { UserGroupsComponent } from '../features/userGroups/components/user-groups/user-groups.component';
 import {
   UserProfilePageComponent
 } from '../features/user/profile/components/user-profile-page/user-profile-page.component';
@@ -65,11 +63,9 @@ export const routes: Routes = [
     children: [
       { path: 'home', component: HomeComponent, data: { pageName: 'dashboard' }},
       { path: 'program', component: ProgramsPageComponent, data: { pageName: 'program' }},
-      { path: 'calendar', component: CalendarComponent,  data: { pageName: 'calendar' }},
       { path: 'musicLibrary', component: MusicLibraryPageComponent,  data: { pageName: 'music' } },
       { path: 'playlistManager', component: PlaylistsPageComponent, data: { pageName: 'playlists' }},
       { path: 'contracts', component: ContractPageComponent, data: { pageName: 'contracts' } },
-      { path: 'userGroup', component: UserGroupsComponent, data: { pageName: 'userGroups' }},
       { path: 'user-profile', component: UserProfilePageComponent, data: { pageName: 'profile' }},
       {
         path: 'company',

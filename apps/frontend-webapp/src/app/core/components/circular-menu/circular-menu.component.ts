@@ -32,11 +32,9 @@ export class CircularMenuComponent {
   readonly menuItems: MobileMenuItem[] = [
     { id: 'home',       icon: 'home',                label: 'Home',       route: '/app/home'            },
     { id: 'program',    icon: 'program',             label: 'Program',    route: '/app/program'         },
-    { id: 'calendar',   icon: 'calendar',            label: 'Calendar',   route: '/app/calendar'        },
     { id: 'music',      icon: 'notes_2',             label: 'Music',      route: '/app/musicLibrary'    },
     { id: 'playlists',  icon: 'play',                label: 'Playlists',  route: '/app/playlistManager' },
     { id: 'contracts',  icon: 'contracts',           label: 'Contracts',  route: '/app/contracts'       },
-    { id: 'groups',     icon: 'user-group-menu-icon',label: 'Groups',     route: '/app/userGroup'       },
     { id: 'company',    icon: 'company',             label: 'Company',    route: '/app/company'         },
   ];
 
