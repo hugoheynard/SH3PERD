@@ -47,34 +47,7 @@
   &::placeholder { color: var(--text-muted); }
 }
 
-.search-mask-toggle {
-  all: unset;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: var(--radius-xs);
-  color: var(--text-muted);
-  cursor: pointer;
-  &:hover { background: rgba(255, 255, 255, 0.06); color: var(--text-primary); }
-  &.is-active { color: var(--accent-color); background: var(--accent-color-dim); }
-}
-
-// ── Toolbar icon buttons ────────────────────────────────
-.toolbar-icon-btn {
-  all: unset;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: var(--radius-xs);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: background var(--t-fast), color var(--t-fast);
-  &:hover { background: rgba(255, 255, 255, 0.06); color: var(--text-primary); }
-}
+// (.search-mask-toggle / .toolbar-icon-btn migrated to <sh3-button-icon size="xs">)
 
 .zoom-label {
   font-size: 9px;
@@ -181,18 +154,7 @@
   font-style: italic;
 }
 
-.btn-edit-toggle {
-  display: flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; border-radius: var(--radius-sm);
-  background: var(--surface-subtle); border: 1px solid var(--border-light);
-  color: var(--text-muted); cursor: pointer;
-  transition: all var(--t-fast);
-  &:hover { color: var(--text-secondary); background: var(--surface-raised); }
-  &.is-active {
-    color: var(--accent-color); background: var(--accent-color-dim);
-    border-color: var(--accent-color-border);
-  }
-}
+// (.btn-edit-toggle migrated to <sh3-button-icon size="sm">)
 
 .btn-add-entry {
   display: flex; align-items: center; gap: 5px; padding: 4px 12px;
@@ -681,23 +643,7 @@
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
-.oc-toolbar-btn {
-  all: unset;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: var(--radius-xs);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: background 0.1s, color 0.1s;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-primary);
-  }
-}
+// (.oc-toolbar-btn migrated to <sh3-button-icon size="xs">)
 
 .oc-quick-actions {
   margin-top: 4px;

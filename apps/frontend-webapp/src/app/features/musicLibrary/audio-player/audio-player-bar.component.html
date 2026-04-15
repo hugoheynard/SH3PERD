@@ -9,41 +9,36 @@
 
     <!-- Transport controls -->
     <div class="audio-bar-transport">
-      <button
-        class="audio-btn"
-        type="button"
+      <sh3-button-icon
+        icon="prev-track"
+        shape="round"
         [disabled]="!player.canGoPrevious()"
-        (click)="onPreviousClick()"
-        title="Previous (P)"
-      >
-        <sh3-icon name="prev-track" [size]="14" />
-      </button>
+        tooltip="Previous (P)"
+        (clicked)="onPreviousClick()"
+      />
 
-      <button
-        class="audio-btn audio-btn--primary"
-        type="button"
-        (click)="onPlayPauseClick()"
-        [disabled]="player.isLoading()"
-        [title]="player.isPlaying() ? 'Pause (Space)' : 'Play (Space)'"
-      >
-        @if (player.isLoading()) {
+      @if (player.isLoading()) {
+        <button class="audio-btn-primary-loading" type="button" disabled aria-label="Loading">
           <span class="audio-spinner" aria-hidden="true"></span>
-        } @else if (player.isPlaying()) {
-          <sh3-icon name="pause" size='sm' />
-        } @else {
-          <sh3-icon name="play" size='sm' />
-        }
-      </button>
+        </button>
+      } @else {
+        <sh3-button-icon
+          [icon]="player.isPlaying() ? 'pause' : 'play'"
+          shape="round"
+          tone="accent"
+          size="lg"
+          [tooltip]="player.isPlaying() ? 'Pause (Space)' : 'Play (Space)'"
+          (clicked)="onPlayPauseClick()"
+        />
+      }
 
-      <button
-        class="audio-btn"
-        type="button"
+      <sh3-button-icon
+        icon="next-track"
+        shape="round"
         [disabled]="!player.canGoNext()"
-        (click)="onNextClick()"
-        title="Next (N)"
-      >
-        <sh3-icon name="next-track" [size]="14" />
-      </button>
+        tooltip="Next (N)"
+        (clicked)="onNextClick()"
+      />
     </div>
 
     <!-- Track metadata -->
@@ -86,32 +81,20 @@
 
     <!-- Volume + loop + close -->
     <div class="audio-bar-aux">
-      <button
-        class="audio-btn"
-        type="button"
-        (click)="onLoopClick()"
-        [class.is-active]="player.loopMode() !== 'off'"
-        [title]="getLoopLabel()"
-      >
-        @if (player.loopMode() === 'one') {
-          <sh3-icon name="repeat" [size]="14" />
-        } @else {
-          <sh3-icon name="repeat" [size]="14" />
-        }
-      </button>
+      <sh3-button-icon
+        icon="repeat"
+        shape="round"
+        [active]="player.loopMode() !== 'off'"
+        [tooltip]="getLoopLabel()"
+        (clicked)="onLoopClick()"
+      />
 
-      <button
-        class="audio-btn"
-        type="button"
-        (click)="onMuteClick()"
-        [title]="player.muted() ? 'Unmute (M)' : 'Mute (M)'"
-      >
-        @if (player.muted() || player.volume() === 0) {
-          <sh3-icon name="mute" [size]="14" />
-        } @else {
-          <sh3-icon name="volume" [size]="14" />
-        }
-      </button>
+      <sh3-button-icon
+        [icon]="(player.muted() || player.volume() === 0) ? 'mute' : 'volume'"
+        shape="round"
+        [tooltip]="player.muted() ? 'Unmute (M)' : 'Mute (M)'"
+        (clicked)="onMuteClick()"
+      />
 
       <input
         class="audio-volume"
@@ -124,14 +107,13 @@
         title="Volume"
       />
 
-      <button
-        class="audio-btn"
-        type="button"
-        (click)="onStopClick()"
-        title="Close player"
-      >
-        <sh3-icon name="close" size='xs' />
-      </button>
+      <sh3-button-icon
+        icon="close"
+        shape="round"
+        size="sm"
+        tooltip="Close player"
+        (clicked)="onStopClick()"
+      />
     </div>
   }
 </div>

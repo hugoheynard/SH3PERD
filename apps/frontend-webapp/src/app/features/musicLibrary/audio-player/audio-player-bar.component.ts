@@ -16,7 +16,7 @@ import { formatTime } from '../../../shared/utils/duration.utils';
 import { AudioPlayerService } from './audio-player.service';
 import type { TPlayableTrack } from './audio-player.types';
 import type { TAudioAnalysisSnapshot } from '@sh3pherd/shared-types';
-import { IconComponent } from '../../../shared/icon/icon.component';
+import { ButtonIconComponent } from '../../../shared/button-icon/button-icon.component';
 
 /**
  * Global docked audio player bar.
@@ -44,7 +44,7 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 @Component({
   selector: 'app-audio-player-bar',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, ButtonIconComponent],
   templateUrl: './audio-player-bar.component.html',
   styleUrl: './audio-player-bar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

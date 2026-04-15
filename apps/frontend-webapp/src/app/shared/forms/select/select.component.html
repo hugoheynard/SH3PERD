@@ -24,8 +24,9 @@
       <span class="display-label" [class.placeholder]="hasValue()">{{ selectedLabel }}</span>
 
       @if (allowClear() && hasValue()) {
-        <sh3-button-icon [icon]="'reset'"
-                         type="neutral"
+        <sh3-button-icon icon="reset"
+                         size="xs"
+                         tooltip="Clear selection"
                          (clicked)="clear($event)"/>
       }
       <sh3-icon [name]="isOpen ? 'chevron-up' : 'chevron-down'" />

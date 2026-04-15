@@ -1,8 +1,9 @@
 <button
-  [class.active]="active()"
-  [class.disabled]="disabled()"
-  [attr.type]="type()"
+  [type]="buttonType()"
   [disabled]="disabled()"
+  [attr.title]="tooltip() || null"
+  [attr.aria-label]="tooltip() || null"
+  [attr.aria-pressed]="active() ? 'true' : null"
   (click)="onClick($event)">
-  <sh3-icon [name]="icon()"/>
+  <sh3-icon [name]="icon()" [size]="iconSize()" />
 </button>

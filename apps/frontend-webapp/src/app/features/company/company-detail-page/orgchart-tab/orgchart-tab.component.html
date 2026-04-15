@@ -14,63 +14,59 @@
         (input)="onSearchInput($event)"
       />
       @if (searchQuery()) {
-        <button class="search-mask-toggle" [class.is-active]="searchMask()" (click)="toggleSearchMask()" type="button" title="Toggle mask mode">
-          <sh3-icon name="eye" size='xs' />
-        </button>
+        <sh3-button-icon
+          icon="eye"
+          size="xs"
+          [active]="searchMask()"
+          tooltip="Toggle mask mode"
+          (clicked)="toggleSearchMask()"
+        />
       }
     </div>
 
     <div class="toolbar-actions">
       <!-- Zoom -->
       @if (zoomLevel() !== 1) {
-        <button class="toolbar-icon-btn" (click)="resetZoom()" title="Reset zoom" type="button">
-          <sh3-icon name="reload" size='xs' />
-        </button>
+        <sh3-button-icon icon="reload" size="xs" tooltip="Reset zoom" (clicked)="resetZoom()" />
       }
-      <button class="toolbar-icon-btn" (click)="zoomOut()" title="Zoom out (−)" type="button">
-        <sh3-icon name="search" size='xs' />
-      </button>
+      <sh3-button-icon icon="search" size="xs" tooltip="Zoom out (−)" (clicked)="zoomOut()" />
       <span class="zoom-label">{{ (zoomLevel() * 100) | number:'1.0-0' }}%</span>
-      <button class="toolbar-icon-btn" (click)="zoomIn()" title="Zoom in (+)" type="button">
-        <sh3-icon name="search" size='xs' />
-      </button>
+      <sh3-button-icon icon="search" size="xs" tooltip="Zoom in (+)" (clicked)="zoomIn()" />
 
       <span class="toolbar-separator"></span>
 
       <!-- Expand / Collapse -->
-      <button class="toolbar-icon-btn" (click)="expandAll()" title="Expand all" type="button">
-        <sh3-icon name="expand-all" size='xs' />
-      </button>
-      <button class="toolbar-icon-btn" (click)="collapseAll()" title="Collapse all" type="button">
-        <sh3-icon name="collapse-all" size='xs' />
-      </button>
+      <sh3-button-icon icon="expand-all" size="xs" tooltip="Expand all" (clicked)="expandAll()" />
+      <sh3-button-icon icon="collapse-all" size="xs" tooltip="Collapse all" (clicked)="collapseAll()" />
 
       <span class="toolbar-separator"></span>
 
       <!-- Show/Hide archived -->
-      <button class="toolbar-icon-btn" [class.is-active]="showArchived()" (click)="toggleShowArchived()" [title]="showArchived() ? 'Hide archived nodes' : 'Show archived nodes'" type="button">
-        @if (showArchived()) {
-          <sh3-icon name="eye" size='xs' />
-        } @else {
-          <sh3-icon name="eye-off" size='xs' />
-        }
-      </button>
+      <sh3-button-icon
+        [icon]="showArchived() ? 'eye' : 'eye-off'"
+        size="xs"
+        [active]="showArchived()"
+        [tooltip]="showArchived() ? 'Hide archived nodes' : 'Show archived nodes'"
+        (clicked)="toggleShowArchived()"
+      />
 
       <span class="toolbar-separator"></span>
 
       <!-- Export orgchart -->
-      <button class="toolbar-icon-btn" (click)="openExportModal()" title="Export orgchart (PDF / SVG)" type="button">
-        <sh3-icon name="download" size='xs' />
-      </button>
+      <sh3-button-icon icon="download" size="xs" tooltip="Export orgchart (PDF / SVG)" (clicked)="openExportModal()" />
 
       <span class="toolbar-separator"></span>
 
       @if (editMode() && !addingNode()) {
         <button class="btn-add-entry" (click)="startAddNode()">+ New {{ getLayerLabel(0) }}</button>
       }
-      <button class="btn-edit-toggle" [class.is-active]="editMode()" (click)="toggleEditMode()" type="button" title="Toggle edit mode">
-        <sh3-icon name="edit" [size]="14" />
-      </button>
+      <sh3-button-icon
+        icon="edit"
+        size="sm"
+        [active]="editMode()"
+        tooltip="Toggle edit mode"
+        (clicked)="toggleEditMode()"
+      />
     </div>
   </div>
   }
@@ -208,23 +204,13 @@
       <!-- Floating toolbar — appears on hover in edit mode -->
       @if (editMode()) {
         <div class="oc-node-toolbar" (click)="$event.stopPropagation()">
-          <button class="oc-toolbar-btn" title="Move left" (click)="moveNode(node, depth, -1)" type="button">
-            <sh3-icon name="chevron-left" [size]="10" />
-          </button>
-          <button class="oc-toolbar-btn" title="Move right" (click)="moveNode(node, depth, 1)" type="button">
-            <sh3-icon name="chevron-right" [size]="10" />
-          </button>
+          <sh3-button-icon icon="chevron-left" size="xs" tooltip="Move left" (clicked)="moveNode(node, depth, -1)" />
+          <sh3-button-icon icon="chevron-right" size="xs" tooltip="Move right" (clicked)="moveNode(node, depth, 1)" />
           @if (node.children.length > 0) {
-            <button class="oc-toolbar-btn" title="Ungroup — move children up and remove this node" (click)="ungroupNode(node)" type="button">
-              <sh3-icon name="ungroup" [size]="10" />
-            </button>
+            <sh3-button-icon icon="ungroup" size="xs" tooltip="Ungroup — move children up and remove this node" (clicked)="ungroupNode(node)" />
           }
-          <button class="oc-toolbar-btn" title="Move to another parent" (click)="openMoveModal(node)" type="button">
-            <sh3-icon name="arrow-right" [size]="10" />
-          </button>
-          <button class="oc-toolbar-btn" title="Settings" (click)="openNodeSettings(node, depth)" type="button">
-            <sh3-icon name="settings" [size]="10" />
-          </button>
+          <sh3-button-icon icon="arrow-right" size="xs" tooltip="Move to another parent" (clicked)="openMoveModal(node)" />
+          <sh3-button-icon icon="settings" size="xs" tooltip="Settings" (clicked)="openNodeSettings(node, depth)" />
         </div>
       }
 

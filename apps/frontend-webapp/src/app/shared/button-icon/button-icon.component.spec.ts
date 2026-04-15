@@ -1,23 +1,80 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ButtonIconComponent } from './button-icon.component';
 
-describe('ButtonIconComponent', () => {
-  let component: ButtonIconComponent;
-  let fixture: ComponentFixture<ButtonIconComponent>;
+function create(props: Record<string, unknown>): { fixture: ComponentFixture<ButtonIconComponent>; component: ButtonIconComponent } {
+  const fixture = TestBed.createComponent(ButtonIconComponent);
+  const ref = fixture.componentRef;
+  for (const [k, v] of Object.entries(props)) ref.setInput(k, v);
+  fixture.detectChanges();
+  return { fixture, component: fixture.componentInstance };
+}
 
+describe('ButtonIconComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ButtonIconComponent]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(ButtonIconComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+      imports: [ButtonIconComponent],
+    }).compileComponents();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('renders a button with the requested icon', () => {
+    const { fixture } = create({ icon: 'edit' });
+    expect(fixture.nativeElement.querySelector('button')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('sh3-icon')).toBeTruthy();
+  });
+
+  it('exposes shape/size/tone via data attributes for SCSS targeting', () => {
+    const { fixture } = create({ icon: 'edit', shape: 'round', size: 'lg', tone: 'accent' });
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.getAttribute('data-shape')).toBe('round');
+    expect(host.getAttribute('data-size')).toBe('lg');
+    expect(host.getAttribute('data-tone')).toBe('accent');
+  });
+
+  it('forwards tooltip to title + aria-label', () => {
+    const { fixture } = create({ icon: 'bin', tooltip: 'Delete row' });
+    const btn = fixture.nativeElement.querySelector('button')!;
+    expect(btn.getAttribute('title')).toBe('Delete row');
+    expect(btn.getAttribute('aria-label')).toBe('Delete row');
+  });
+
+  it('toggles the active model and emits clicked', () => {
+    const { fixture, component } = create({ icon: 'eye' });
+    const spy = jasmine.createSpy('clicked');
+    component.clicked.subscribe(spy);
+    expect(component.active()).toBeFalse();
+
+    fixture.nativeElement.querySelector('button')!.click();
+    expect(component.active()).toBeTrue();
+    expect(spy).toHaveBeenCalled();
+
+    fixture.nativeElement.querySelector('button')!.click();
+    expect(component.active()).toBeFalse();
+  });
+
+  it('exposes active state via data-active + aria-pressed', () => {
+    const { fixture, component } = create({ icon: 'eye', active: true });
+    const host = fixture.nativeElement as HTMLElement;
+    const btn = host.querySelector('button')!;
+    expect(host.hasAttribute('data-active')).toBeTrue();
+    expect(btn.getAttribute('aria-pressed')).toBe('true');
+    component.active.set(false);
+    fixture.detectChanges();
+    expect(host.hasAttribute('data-active')).toBeFalse();
+  });
+
+  it('does not emit clicked when disabled', () => {
+    const { fixture, component } = create({ icon: 'edit', disabled: true });
+    const spy = jasmine.createSpy('clicked');
+    component.clicked.subscribe(spy);
+    fixture.nativeElement.querySelector('button')!.click();
+    expect(spy).not.toHaveBeenCalled();
+    expect(component.active()).toBeFalse();
+  });
+
+  it('maps button size to the icon size preset', () => {
+    expect(create({ icon: 'edit', size: 'xs' }).component.iconSize()).toBe('xs');
+    expect(create({ icon: 'edit', size: 'sm' }).component.iconSize()).toBe('sm');
+    expect(create({ icon: 'edit', size: 'md' }).component.iconSize()).toBe('sm');
+    expect(create({ icon: 'edit', size: 'lg' }).component.iconSize()).toBe('md');
   });
 });

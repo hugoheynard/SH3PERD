@@ -1,51 +1,80 @@
-@use '../styles/index' as sh3;
-
 :host {
-  width: 100%;
-  height: 100%;
-}
+  display: inline-flex;
 
-sh3-svg-icon {
-  font-size: 1rem;
-  transition: fill 0.2s ease;
+  // ── size presets — drive the hit-area square ────────
+  &[data-size="xs"] { --bi-size: 22px; --bi-radius: var(--radius-xs); }
+  &[data-size="sm"] { --bi-size: 28px; --bi-radius: var(--radius-sm); }
+  &[data-size="md"] { --bi-size: 32px; --bi-radius: var(--radius-md); }
+  &[data-size="lg"] { --bi-size: 38px; --bi-radius: var(--radius-md); }
+
+  // ── shape — round overrides any radius ──────────────
+  &[data-shape="round"] { --bi-radius: 50%; }
+
+  // ── tone — colour + background ──────────────────────
+  &[data-tone="ghost"] {
+    --bi-color: var(--text-muted);
+    --bi-color-hover: var(--text-primary);
+    --bi-bg: transparent;
+    --bi-bg-hover: var(--accent-color-faded);
+    --bi-bg-active: var(--accent-color-faded);
+    --bi-color-active: var(--accent-color);
+  }
+  &[data-tone="accent"] {
+    --bi-color: #fff;
+    --bi-color-hover: #fff;
+    --bi-bg: var(--accent-color);
+    --bi-bg-hover: var(--accent-color-border);
+    --bi-bg-active: var(--accent-color-border);
+    --bi-color-active: #fff;
+  }
+  &[data-tone="critical"] {
+    --bi-color: var(--color-alert);
+    --bi-color-hover: var(--color-alert);
+    --bi-bg: transparent;
+    --bi-bg-hover: rgba(220, 38, 38, 0.12);
+    --bi-bg-active: rgba(220, 38, 38, 0.18);
+    --bi-color-active: var(--color-alert);
+  }
 }
 
 button {
-  @include sh3.eraseDefault();
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--bi-size);
+  height: var(--bi-size);
+  border-radius: var(--bi-radius);
+  background: var(--bi-bg);
+  color: var(--bi-color);
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-
-  --btn-color: var(--colorPrimary);
-  --btn-color-bg: color-mix(in oklab, var(--btn-color) 12%, transparent);
-
-  &[type='critical'] {
-    --btn-color: var(--colorAlert);
-  }
-
-  &[type='neutral'] {
-    --btn-color: var(--fadedTextColor);
-  }
+  flex-shrink: 0;
+  transition: background var(--t-fast, 120ms) ease,
+              color var(--t-fast, 120ms) ease,
+              transform var(--t-fast, 120ms) ease;
 
   &:hover:not(:disabled) {
-    sh3-svg-icon {
-      fill: color-mix(in oklab, var(--btn-color) 12%, transparent);
-    }
+    background: var(--bi-bg-hover);
+    color: var(--bi-color-hover);
   }
 
-  &.active {
-    sh3-svg-icon {
-      fill: var(--btn-color);
-      background: color-mix(in oklab, var(--btn-color) 12%, transparent);
-      border-radius: 2px;
-    }
+  &:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 1px;
   }
 
   &:disabled {
     cursor: not-allowed;
-    opacity: 0.5;
-
-    sh3-svg-icon {
-      fill: var(--fadedTextColor);
-    }
+    opacity: 0.4;
   }
+}
+
+// ── pressed/toggle state (set on the host via data-active) ──
+:host([data-active]) button {
+  background: var(--bi-bg-active);
+  color: var(--bi-color-active);
 }
