@@ -1,13 +1,13 @@
 import {
-  type AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   type ElementRef,
   HostListener,
   type OnDestroy,
-  ViewChild,
   computed,
+  effect,
   inject,
+  viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { formatTime } from '../../../shared/utils/duration.utils';
@@ -49,13 +49,18 @@ import { ButtonIconComponent } from '../../../shared/button-icon/button-icon.com
   styleUrl: './audio-player-bar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AudioPlayerBarComponent implements AfterViewInit, OnDestroy {
+export class AudioPlayerBarComponent implements OnDestroy {
   protected readonly player = inject(AudioPlayerService);
   private readonly wavesurfer = inject(WavesurferAdapterService);
   private readonly markerService = inject(AudioMarkerService);
 
-  @ViewChild('waveformHost', { static: false })
-  private waveformHost?: ElementRef<HTMLDivElement>;
+  /**
+   * Signal ViewChild on the waveform host element. The `#waveformHost`
+   * div lives inside an `@if (player.currentTrack())` block, so it only
+   * appears in the DOM after the first `playTrack()`. Using `viewChild()`
+   * (not `@ViewChild`) lets us react when the host *becomes* available.
+   */
+  private readonly waveformHost = viewChild<ElementRef<HTMLDivElement>>('waveformHost');
 
   /** Exposed for the template — computed from peaks + snapshot by the service. */
   readonly markers = this.markerService.markers;
@@ -73,10 +78,17 @@ export class AudioPlayerBarComponent implements AfterViewInit, OnDestroy {
     return Math.min(1, this.player.position() / duration);
   });
 
-  ngAfterViewInit(): void {
-    if (this.waveformHost) {
-      this.wavesurfer.attach(this.waveformHost.nativeElement);
-    }
+  constructor() {
+    // The waveform host div is conditionally rendered (it lives inside
+    // `@if (player.currentTrack())`), so it's absent from the DOM on
+    // initial mount. `viewChild()` returns a signal that flips to the
+    // ElementRef the moment Angular renders the host. An effect picks
+    // that up and attaches the wavesurfer adapter exactly once, as soon
+    // as the first track is loaded.
+    effect(() => {
+      const host = this.waveformHost();
+      if (host) this.wavesurfer.attach(host.nativeElement);
+    });
   }
 
   ngOnDestroy(): void {
@@ -143,7 +155,7 @@ export class AudioPlayerBarComponent implements AfterViewInit, OnDestroy {
    * next tick.
    */
   onWaveformClick(event: MouseEvent): void {
-    const host = this.waveformHost?.nativeElement;
+    const host = this.waveformHost()?.nativeElement;
     if (!host) return;
     const rect = host.getBoundingClientRect();
     const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
