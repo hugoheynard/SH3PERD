@@ -6,6 +6,7 @@
 |-----|-------------|
 | [Styling Architecture](sh3-frontend-styling.md) | Tokens, SCSS mixins, scrollbar mixin, component styles conventions |
 | [Error Handling](sh3-error-handling.md) | HTTP error interceptor, toast strategy, store/component patterns |
+| [Help System](sh3-help-system.md) | `[sh3Info]` directive, registry, per-page help component pattern |
 | [Shared Components](sh3-shared-components.md) | Inventory of reusable UI components (`sh3-*`) |
 | [AI Instructions](sh3-ai-instructions.md) | Guidelines for AI-assisted development |
 
