@@ -17,12 +17,22 @@
   ::ng-deep svg {
     width: 100%;
     height: 100%;
-    fill: currentColor;
     display: block;
   }
 
-  // Outline-style SVGs use `stroke` instead of `fill`. The ::ng-deep rules
-  // below make either convention inherit the host color.
+  // Filled SVGs: paint with the host colour unless the SVG explicitly opts
+  // out via `fill="none"` (outlined icons like lock, eye, chevron, …).
+  // Important: setting `fill` on the root here would override the attribute
+  // and silently turn outlined icons into solid blobs — the `:not()` guard
+  // is what preserves outlined rendering.
+  ::ng-deep svg:not([fill="none"]) {
+    fill: currentColor;
+  }
+
+  // Outlined SVGs declare `stroke="currentColor"` on the root, which
+  // inherits to children. For the rare cases where a child element sets
+  // its own `stroke` attribute, normalise it to currentColor too so icons
+  // stay monochrome under the host's `color`.
   ::ng-deep svg [stroke]:not([stroke="none"]) {
     stroke: currentColor;
   }
