@@ -118,7 +118,7 @@ Swagger must be updated in the same commit as the controller change. Stale docs 
 - **Signals first**: Use `signal()`, `computed()`, `effect()` for state. No `BehaviorSubject` for new code.
 - **Component inputs/outputs**: Use `input()` and `output()` signal-based API (not `@Input()` / `@Output()` decorators).
 - **Standalone components**: All components must be `standalone: true`. No `NgModule` declarations.
-- **Shared components**: Always check `app/shared/` before creating a new component. Reuse existing: `ButtonComponent`, `BadgeComponent`, `StatusBadgeComponent`, `AvatarComponent`, `InlineConfirmComponent`, `LoadingStateComponent`, `EmptyStateComponent`, `ViewToggleComponent`, `PillSelectorComponent`, `DialogContextComponent`, etc.
+- **Shared components**: Always check `app/shared/` before creating a new component. Reuse existing: `ButtonComponent`, `BadgeComponent`, `StatusBadgeComponent`, `AvatarComponent`, `InlineConfirmComponent`, `LoadingStateComponent`, `EmptyStateComponent`, `ViewToggleComponent`, `PillSelectorComponent`, `IconComponent`, etc.
 - **Design tokens**: Use CSS variables from `src/styles/_tokens.css` — the single source of truth. Never hardcode colors, spacing, or font sizes — always reference tokens (`var(--accent-color)`, `var(--text-primary)`, `var(--radius-md)`, etc.). No SCSS-side token duplication.
 - **SCSS mixins**: Use mixins from `src/styles/mixins/` for cross-cutting patterns (`scrollbar`, `baseTab`, `form-section-title`, `settings-inline/content/responsive`). Import with `@use "mixins" as m;` only when you actually invoke one.
 - **Rating dots / button icons**: domain-specific mixins live in `src/app/shared/styles/` (`rating-dots`, `buttons`). Import via relative paths as needed.

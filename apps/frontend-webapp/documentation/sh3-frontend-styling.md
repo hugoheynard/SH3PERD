@@ -370,7 +370,8 @@ Actively used shared components (see [sh3-shared-components.md](sh3-shared-compo
 - `sh3-loading-state` / `sh3-empty-state` — Placeholder states
 - `sh3-view-toggle` — List/grid view switcher
 - `sh3-pill-selector` — Pill-style multi/single selector
-- `sh3-dialog-context` — Modal host
+- `sh3-icon` — Universal icon (typed registry, see Icons section above)
+- `sh3-paginator` — Server-side paginator with page size selector
 - `sh3-configurable-tab-bar` — Tab bar with reorder / config save / color picker
 
 Always check `app/shared/` before building a new visual primitive.

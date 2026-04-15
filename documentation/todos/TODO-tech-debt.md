@@ -6,18 +6,7 @@
 
 ## 🔴 Bugs / Correctifs urgents
 
-### Backend — Contract
-- [ ] **`ContractEntity.isActive()` — bug de précédence opérateur**
-  ```typescript
-  // Actuel (FAUX) : si endDate est null → retourne true sans vérifier startDate
-  return this.props.startDate <= dateToCompare && this.props.endDate
-    ? dateToCompare <= this.props.endDate : true;
-
-  // Correct :
-  return this.props.startDate <= dateToCompare &&
-    (this.props.endDate ? dateToCompare <= this.props.endDate : true);
-  ```
-  Fichier : `apps/backend/src/contracts/domain/ContractEntity.ts`
+_(rien actuellement)_
 
 ---
 
