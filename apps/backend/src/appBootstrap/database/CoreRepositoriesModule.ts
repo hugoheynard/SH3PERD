@@ -2,7 +2,6 @@ import { Global, Module, type Provider, type Type } from '@nestjs/common';
 import {
   CONTRACT_READ_REPO,
   CONTRACT_REPO,
-  EVENT_UNIT_REPO,
   MUSIC_REFERENCE_REPO,
   MUSIC_REPERTOIRE_REPO,
   MUSIC_VERSION_REPO,
@@ -11,7 +10,6 @@ import {
   USAGE_COUNTER_REPO,
   REFRESH_TOKEN_REPO,
   USER_CREDENTIALS_REPO,
-  USER_GROUPS_REPO,
   USER_PREFERENCES_REPO,
   USER_PROFILE_REPO,
   GUEST_COMPANY_REPO,
@@ -39,10 +37,6 @@ import {
   ContractMongoRepository,
   type IContractRepository,
 } from '../../contracts/repositories/ContractMongoRepository.js';
-import {
-  EventUnitMongoRepository,
-  type IEventUnitRepository,
-} from '../../calendar/repositories/EventUnitMongoRepository.js';
 import type { IMusicReferenceRepository } from '../../music/types/musicReferences.types.js';
 import {
   type IMusicVersionRepository,
@@ -55,10 +49,6 @@ import {
 import type { IMusicRepertoireRepository } from '../../music/repositories/MusicRepertoireRepository.js';
 import { MusicReferenceMongoRepository } from '../../music/repositories/MusicReferenceRepository.js';
 import { MusicRepertoireMongoRepository } from '../../music/repositories/MusicRepertoireRepository.js';
-import {
-  type IUserGroupsMongoRepository,
-  UserGroupsMongoRepository,
-} from '../../userGroups/infra/UserGroupsMongoRepository.js';
 import {
   type IGuestCompanyRepository,
   GuestCompanyMongoRepository,
@@ -148,10 +138,8 @@ export type TCoreRepositories = {
   userCredentials: IUserCredentialsRepository;
   userProfile: IUserProfileRepository;
   userPreferences: IUserPreferencesRepository;
-  userGroups: IUserGroupsMongoRepository;
   //CONTRACTS
   contract: IContractRepository;
-  eventUnit: IEventUnitRepository;
   //MUSIC
   musicReference: IMusicReferenceRepository;
   musicVersion: IMusicVersionRepository;
@@ -197,11 +185,6 @@ export type TCoreRepositories = {
       UserPreferencesMongoRepository,
       'user_preferences',
     ),
-    mongoRepoProvider<IUserGroupsMongoRepository>(
-      USER_GROUPS_REPO,
-      UserGroupsMongoRepository,
-      'user_groups',
-    ),
     mongoRepoProvider<IGuestCompanyRepository>(
       GUEST_COMPANY_REPO,
       GuestCompanyMongoRepository,
@@ -219,11 +202,6 @@ export type TCoreRepositories = {
     ),
     mongoRepoProvider<IContractRepository>(CONTRACT_REPO, ContractMongoRepository, 'contracts'),
     { provide: CONTRACT_READ_REPO, useClass: ContractReadRepository },
-    mongoRepoProvider<IEventUnitRepository>(
-      EVENT_UNIT_REPO,
-      EventUnitMongoRepository,
-      'eventUnits',
-    ),
     mongoRepoProvider<IMusicReferenceRepository>(
       MUSIC_REFERENCE_REPO,
       MusicReferenceMongoRepository,
@@ -285,11 +263,9 @@ export type TCoreRepositories = {
     USER_PROFILE_REPO,
     CONTRACT_REPO,
     CONTRACT_READ_REPO,
-    USER_GROUPS_REPO,
     GUEST_COMPANY_REPO,
     PLATFORM_CONTRACT_REPO,
     USAGE_COUNTER_REPO,
-    EVENT_UNIT_REPO,
     MUSIC_REFERENCE_REPO,
     MUSIC_VERSION_REPO,
     MUSIC_REPERTOIRE_REPO,

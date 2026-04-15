@@ -14,7 +14,6 @@ import { CoreRepositoriesModule } from './database/CoreRepositoriesModule.js';
 import { UserModule } from '../user/user.module.js';
 import { ContractModule } from '../contracts/contract.module.js';
 import { MusicModule } from '../music/music.module.js';
-import { UserGroupsModule } from '../userGroups/user-groups.module.js';
 import { UserProfileModule } from '../user/profile/user-profile.module.js';
 import { GlobalCqrsModule } from './global-cqrs.module.js';
 import { CompanyModule } from '../company/company.module.js';
@@ -77,7 +76,6 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
           },
           { path: 'music', module: MusicModule },
           { path: 'contracts', module: ContractModule },
-          { path: 'user-groups', module: UserGroupsModule },
           { path: 'companies', module: CompanyModule },
           { path: 'companies', module: MusicCrossModule },
           { path: '', module: PrintModule },
