@@ -23,7 +23,7 @@ import { VersionType } from '../music-library-types';
 import type { TCreateMusicVersionPayload, TMusicReferenceId } from '@sh3pherd/shared-types';
 import type { TMasteringModalContext, TMasteringResult } from '../mastering/mastering.types';
 import { ToastService } from '../../../shared/toast/toast.service';
-import { InfoDirective } from '../../../shared/help/info.directive';
+import { MusicLibraryHelpComponent } from './music-library-help.component';
 import { UserContextService } from '../../../core/services/user-context.service';
 import { UpgradePanelComponent } from '../../../core/components/upgrade-panel/upgrade-panel.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
@@ -41,7 +41,9 @@ import { IconComponent } from '../../../shared/icon/icon.component';
     ButtonComponent,
     ViewToggleComponent,
     MasteringModalComponent,
-    InfoDirective, IconComponent],
+    MusicLibraryHelpComponent,
+    IconComponent,
+  ],
   templateUrl: './music-library-page.component.html',
   styleUrl: './music-library-page.component.scss',
   providers: [provideTabHandlers(MusicTabMutationService)],

@@ -1,31 +1,8 @@
 <!-- Hidden file input for track upload / analyse -->
 <input type="file" #fileInput accept="audio/*" class="file-input-hidden" (change)="onFileSelected($event)" />
 
-<!-- Help entries for this page -->
-<ng-container
-  sh3Info="mastery-rating" sh3InfoLabel="Mastery (MST)" sh3InfoGroup="music-library"
-  sh3InfoDesc="How well you know the piece — 1 (learning) to 4 (performance-ready)."
-/>
-<ng-container
-  sh3Info="energy-rating" sh3InfoLabel="Energy (NRG)" sh3InfoGroup="music-library"
-  sh3InfoDesc="The energy level of your version — 1 (calm) to 4 (explosive)."
-/>
-<ng-container
-  sh3Info="effort-rating" sh3InfoLabel="Effort (EFF)" sh3InfoGroup="music-library"
-  sh3InfoDesc="How much effort this piece requires — 1 (easy) to 4 (extremely demanding)."
-/>
-<ng-container
-  sh3Info="quality-rating" sh3InfoLabel="Quality (QLT)" sh3InfoGroup="music-library"
-  sh3InfoDesc="Audio quality auto-scored from analysis: LUFS, true peak, SNR, and clipping ratio. Shown from the favorite track."
-/>
-<ng-container
-  sh3Info="favorite-track" sh3InfoLabel="Favorite track ★" sh3InfoGroup="music-library"
-  sh3InfoDesc="The track used as reference for quality, duration, and downloads. Click the star to change it."
-/>
-<ng-container
-  sh3Info="tracks-upload" sh3InfoLabel="Tracks &amp; upload" sh3InfoGroup="music-library"
-  sh3InfoDesc="Each version can have multiple audio tracks. Upload a track with '+ Track' — analysis runs automatically."
-/>
+<!-- Registers help entries surfaced by the header's help right panel -->
+<app-music-library-help />
 
 <div class="library">
 
