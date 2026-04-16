@@ -48,6 +48,7 @@ export class AuthTokenService {
    */
   clear(): void {
     this.accessToken.set(null);
+    this.expiresAt.set(null);
   };
 
   /**

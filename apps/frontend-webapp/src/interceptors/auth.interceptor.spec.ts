@@ -1,42 +1,26 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
-import {
-  provideHttpClient,
-  withInterceptorsFromDi,
-} from '@angular/common/http';
+import { PLATFORM_ID } from '@angular/core';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-import { authInterceptor } from './auth.interceptor';
-import { AuthTokenService } from '../app/core/services/auth-token.service';
-import { AuthService } from '../app/core/services/auth.service';
-import { Router } from '@angular/router';
 import { of } from 'rxjs';
+import { authInterceptor } from './auth.interceptor';
+import { AuthService } from '../app/core/services/auth.service';
 
 describe('authInterceptor (Angular 18+)', () => {
   let http: HttpClient;
   let httpMock: HttpTestingController;
-  let tokenService: jasmine.SpyObj<AuthTokenService>;
   let authService: jasmine.SpyObj<AuthService>;
-  let router: jasmine.SpyObj<Router>;
 
   beforeEach(() => {
-    tokenService = jasmine.createSpyObj('TokenService', ['getToken']);
-    authService = jasmine.createSpyObj('AuthService', ['refreshSession', 'logout']);
-    router = jasmine.createSpyObj('Router', ['navigate']);
+    authService = jasmine.createSpyObj('AuthService', ['getValidAccessToken$', 'refreshSession$']);
 
     TestBed.configureTestingModule({
       providers: [
-        provideHttpClient(
-          withInterceptorsFromDi() // Important pour activer l'intercepteur via DI
-        ),
+        provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpClientTesting(),
-        { provide: AuthTokenService, useValue: tokenService },
         { provide: AuthService, useValue: authService },
-        { provide: Router, useValue: router },
-        {
-          provide: HTTP_INTERCEPTORS,
-          useValue: authInterceptor,
-          multi: true,
-        },
+        { provide: PLATFORM_ID, useValue: 'browser' },
       ],
     });
 
@@ -48,14 +32,113 @@ describe('authInterceptor (Angular 18+)', () => {
     httpMock.verify();
   });
 
-  it('should add Authorization header if token exists', () => {
-    tokenService.getToken.and.returnValue('token');
+  it('bypasses auth endpoints while still enabling credentials for API calls', () => {
+    http.post('/api/auth/login', { email: 'john@doe.com' }).subscribe();
 
-    http.get('/api/protected').subscribe();
-    const req = httpMock.expectOne('/api/protected');
-    expect(req.request.headers.get('Authorization')).toBe('Bearer token');
+    const req = httpMock.expectOne('/api/auth/login');
+    expect(authService.getValidAccessToken$).not.toHaveBeenCalled();
+    expect(req.request.withCredentials).toBeTrue();
+    expect(req.request.headers.has('Authorization')).toBeFalse();
     req.flush({});
   });
 
-  // Autres tests comme précédemment (non intercepté /auth, refresh, logout...)
+  it('bypasses auth when X-Skip-Auth is explicitly set', () => {
+    http.get('/api/public/ping', { headers: { 'X-Skip-Auth': '1' } }).subscribe();
+
+    const req = httpMock.expectOne('/api/public/ping');
+    expect(authService.getValidAccessToken$).not.toHaveBeenCalled();
+    expect(req.request.withCredentials).toBeTrue();
+    expect(req.request.headers.get('X-Skip-Auth')).toBe('1');
+    req.flush({});
+  });
+
+  it('adds the bearer token when one is available', () => {
+    authService.getValidAccessToken$.and.returnValue(of('token-123'));
+
+    http.get('/api/protected/projects').subscribe();
+    const req = httpMock.expectOne('/api/protected/projects');
+
+    expect(authService.getValidAccessToken$).toHaveBeenCalled();
+    expect(req.request.withCredentials).toBeTrue();
+    expect(req.request.headers.get('Authorization')).toBe('Bearer token-123');
+    req.flush({});
+  });
+
+  it('forwards the request without Authorization when no token is available', () => {
+    authService.getValidAccessToken$.and.returnValue(of(null));
+
+    http.get('/api/protected/projects').subscribe();
+    const req = httpMock.expectOne('/api/protected/projects');
+
+    expect(req.request.withCredentials).toBeTrue();
+    expect(req.request.headers.has('Authorization')).toBeFalse();
+    req.flush({});
+  });
+
+  it('refreshes the session and retries once after a 401', () => {
+    authService.getValidAccessToken$.and.returnValue(of('stale-token'));
+    authService.refreshSession$.and.returnValue(of('fresh-token'));
+
+    let responseBody: unknown;
+    http.get('/api/protected/projects').subscribe((response) => {
+      responseBody = response;
+    });
+
+    const firstReq = httpMock.expectOne('/api/protected/projects');
+    expect(firstReq.request.headers.get('Authorization')).toBe('Bearer stale-token');
+    firstReq.flush('unauthorized', { status: 401, statusText: 'Unauthorized' });
+
+    const retryReq = httpMock.expectOne('/api/protected/projects');
+    expect(authService.refreshSession$).toHaveBeenCalled();
+    expect(retryReq.request.headers.get('Authorization')).toBe('Bearer fresh-token');
+    expect(retryReq.request.headers.get('X-Retry')).toBe('1');
+    retryReq.flush({ ok: true });
+
+    expect(responseBody).toEqual({ ok: true });
+  });
+
+  it('propagates the original 401 when refresh does not return a new token', () => {
+    authService.getValidAccessToken$.and.returnValue(of('stale-token'));
+    authService.refreshSession$.and.returnValue(of(null));
+
+    let error: HttpErrorResponse | undefined;
+    http.get('/api/protected/projects').subscribe({
+      error: (err) => {
+        error = err;
+      },
+    });
+
+    const firstReq = httpMock.expectOne('/api/protected/projects');
+    firstReq.flush('unauthorized', { status: 401, statusText: 'Unauthorized' });
+
+    expect(error?.status).toBe(401);
+    httpMock.expectNone('/api/protected/projects');
+  });
+
+  it('skips protected API requests on the server', () => {
+    TestBed.resetTestingModule();
+    authService = jasmine.createSpyObj('AuthService', ['getValidAccessToken$', 'refreshSession$']);
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(withInterceptors([authInterceptor])),
+        provideHttpClientTesting(),
+        { provide: AuthService, useValue: authService },
+        { provide: PLATFORM_ID, useValue: 'server' },
+      ],
+    });
+
+    http = TestBed.inject(HttpClient);
+    httpMock = TestBed.inject(HttpTestingController);
+
+    let completed = false;
+    http.get('/api/protected/projects').subscribe({
+      complete: () => {
+        completed = true;
+      },
+    });
+
+    expect(completed).toBeTrue();
+    expect(authService.getValidAccessToken$).not.toHaveBeenCalled();
+    httpMock.expectNone('/api/protected/projects');
+  });
 });
