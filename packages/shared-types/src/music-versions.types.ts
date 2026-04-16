@@ -9,7 +9,7 @@ import type { TVersionTrackDomainModel } from './music-tracks.js';
 // ─── Version derivation ─────────────────────────────────────
 
 /** How a version was derived from another version (automated process). */
-export const SVersionDerivationType = z.enum(['pitch_shift', 'tempo_change']);
+export const SVersionDerivationType = z.enum(['pitch_shift']);
 export type TVersionDerivationType = z.infer<typeof SVersionDerivationType>;
 
 // ─── Domain model ──────────────────────────────────────────
