@@ -9,8 +9,11 @@ import type { Db } from 'mongodb';
  *
  * @throws Will throw an error if called outside of a test environment.
  */
-export const resetDbMongo = async (db: Db, options?: { ignoreCollections?: string[] }): Promise<void> => {
-  if (process.env.NODE_ENV !== 'test') {
+export const resetDbMongo = async (
+  db: Db,
+  options?: { ignoreCollections?: string[] },
+): Promise<void> => {
+  if (process.env['NODE_ENV'] !== 'test') {
     throw new Error('[resetTestDb] Unsafe operation outside of test environment');
   }
 
@@ -20,7 +23,7 @@ export const resetDbMongo = async (db: Db, options?: { ignoreCollections?: strin
 
   await Promise.all(
     collections
-      .filter(col => !ignore.includes(col.name))
-      .map(col => db.collection(col.name).deleteMany({}))
+      .filter((col) => !ignore.includes(col.name))
+      .map((col) => db.collection(col.name).deleteMany({})),
   );
 };

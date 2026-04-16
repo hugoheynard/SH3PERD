@@ -2,20 +2,21 @@ import type { INestApplication } from '@nestjs/common';
 import type { TUserId } from '@sh3pherd/shared-types';
 import request from 'supertest';
 
+type TUserCredentials = {
+  email: string;
+  password: string;
+  first_name?: string;
+  last_name?: string;
+};
+
 export class UserBuilder {
   private readonly app: INestApplication;
-  private userId: TUserId;
-  private credentials: {
-    email: string;
-    password: string;
-    first_name?: string;
-    last_name?: string;
-  } | null;
+  private userId: TUserId | null = null;
+  private credentials: TUserCredentials | null = null;
   private authToken: string | null = null;
   private refreshCookie: string | null = null;
-  private loginResponse: request.Response | null = null;
 
-  constructor(app) {
+  constructor(app: INestApplication) {
     this.app = app;
   }
 
@@ -23,12 +24,7 @@ export class UserBuilder {
     return new UserBuilder(app);
   }
 
-  withCredentials(credential: {
-    email: string;
-    password: string;
-    first_name?: string;
-    last_name?: string;
-  }): this {
+  withCredentials(credential: TUserCredentials): this {
     this.credentials = credential;
     return this;
   }
@@ -68,8 +64,6 @@ export class UserBuilder {
     if (res.status !== expectedStatus) {
       throw new Error(`[UserBuilder.login] Expected status ${expectedStatus}, got ${res.status}`);
     }
-
-    this.loginResponse = res;
 
     const token = res.body.authToken;
     if (!token || typeof token !== 'string') {
@@ -114,7 +108,7 @@ export class UserBuilder {
     if (!cookie.includes('HttpOnly')) {
       throw new Error('[UserBuilder] refreshToken cookie is not HttpOnly');
     }
-    if (process.env.NODE_ENV === 'production' && !cookie.includes('Secure')) {
+    if (process.env['NODE_ENV'] === 'production' && !cookie.includes('Secure')) {
       throw new Error('[UserBuilder] refreshToken cookie is not Secure in production');
     }
     if (!cookie.match(/SameSite=(Lax|Strict)/)) {

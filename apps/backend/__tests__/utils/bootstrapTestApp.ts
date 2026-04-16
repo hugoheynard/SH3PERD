@@ -8,17 +8,15 @@ import cookieParser from 'cookie-parser';
  * Bootstraps a test NestJS application instance for end-to-end testing.
  */
 export async function bootstrapTestApp(): Promise<INestApplication> {
-  loadEnv(process.env.NODE_ENV || 'test');
+  loadEnv(process.env['NODE_ENV'] || 'test');
 
   const moduleRef = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
 
-
   const app = moduleRef.createNestApplication();
   app.setGlobalPrefix('api');
   app.use(cookieParser());
-
 
   await app.init();
   return app;
