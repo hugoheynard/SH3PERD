@@ -13,6 +13,7 @@
     "dev:backend": "turbo run start --filter=@sh3pherd/backend",
     "dev:webapp": "turbo run start --filter=@sh3pherd/frontend-webapp",
     "dev:all": "pnpm run dev:watch & pnpm run dev:backend",
+    "setup:hooks": "git config core.hooksPath .githooks",
     "create:package": "tsx dev-toolbox/scripts/create-package.ts",
     "updatePackagesRefs": "tsx dev-toolbox/scripts/update-packageRefs.ts",
     "lint:imports": "tsx dev-toolbox/scripts/scan-cross-package-imports.ts",
