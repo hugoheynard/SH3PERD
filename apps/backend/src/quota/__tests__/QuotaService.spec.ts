@@ -2,6 +2,7 @@ import { QuotaService } from '../QuotaService.js';
 import { QuotaExceededError } from '../domain/QuotaExceededError.js';
 import type { IPlatformContractRepository } from '../../platform-contract/infra/PlatformContractMongoRepo.js';
 import type { IUsageCounterRepository } from '../infra/UsageCounterMongoRepo.js';
+import type { ICreditPurchaseRepository } from '../infra/CreditPurchaseMongoRepo.js';
 
 /**
  * Unit tests for QuotaService.
@@ -35,12 +36,27 @@ const mockUsageRepo: jest.Mocked<IUsageCounterRepository> = {
   startSession: jest.fn(),
 } as any;
 
+// Credit repo is consulted on every ensureAllowed / recordUsage. Default to
+// zero bonus credits so the plan-limit behaviour is what the tests observe.
+const mockCreditRepo: jest.Mocked<ICreditPurchaseRepository> = {
+  getRemainingCredits: jest.fn().mockResolvedValue(0),
+  decrementCredits: jest.fn().mockResolvedValue(undefined),
+  getPurchasesForUser: jest.fn().mockResolvedValue([]),
+  findOne: jest.fn(),
+  findMany: jest.fn(),
+  save: jest.fn(),
+  saveOne: jest.fn(),
+  deleteOne: jest.fn(),
+  startSession: jest.fn(),
+} as any;
+
 describe('QuotaService', () => {
   let service: QuotaService;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new QuotaService(mockPlatformRepo, mockUsageRepo);
+    mockCreditRepo.getRemainingCredits.mockResolvedValue(0);
+    service = new QuotaService(mockPlatformRepo, mockUsageRepo, mockCreditRepo);
   });
 
   // ── ensureAllowed ─────────────────────────────────────
@@ -50,6 +66,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
+        account_type: 'artist',
         plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
@@ -63,6 +80,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
+        account_type: 'artist',
         plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
@@ -78,6 +96,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
+        account_type: 'artist',
         plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
@@ -93,6 +112,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
+        account_type: 'artist',
         plan: 'artist_pro',
         status: 'active',
         startDate: new Date(),
@@ -109,6 +129,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
+        account_type: 'artist',
         plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
@@ -126,6 +147,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
+        account_type: 'artist',
         plan: 'artist_max',
         status: 'active',
         startDate: new Date(),
@@ -141,6 +163,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
+        account_type: 'artist',
         plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
@@ -169,6 +192,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
+        account_type: 'artist',
         plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
@@ -189,6 +213,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
+        account_type: 'artist',
         plan: 'artist_max',
         status: 'active',
         startDate: new Date(),
@@ -208,6 +233,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
+        account_type: 'artist',
         plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
@@ -255,6 +281,7 @@ describe('QuotaService', () => {
       mockPlatformRepo.findByUserId.mockResolvedValue({
         id: 'pc_1',
         user_id: 'u1' as any,
+        account_type: 'artist',
         plan: 'artist_free',
         status: 'active',
         startDate: new Date(),
