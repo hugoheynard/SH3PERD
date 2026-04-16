@@ -6,50 +6,32 @@ tracking, see [`documentation/todos/TODO-configurable-tab-bar.md`](../../../../.
 
 ---
 
-## Next up
+## Done — button migration
 
-### Replace raw `<button>` with `sh3-button` / `sh3-button-icon`
-Before any other work on this component, sweep the four templates and
-swap every raw `<button>` for the design-system primitive:
+All 18 raw `<button>` elements across the four templates have been swapped
+for `sh3-button-icon` (icon-only affordances) or `sh3-button` (text buttons,
+e.g. move-to targets and the upgrade CTA).
 
-- **`sh3-button-icon`** (`shared/button-icon/button-icon.component.ts`) — for
-  icon-only buttons. Supports `icon`, `shape: 'square' | 'round'`,
-  `size: 'xs' | 'sm' | 'md' | 'lg'`, `tone: 'ghost' | 'accent' | 'critical'`,
-  two-way `[(active)]`, and a built-in `tooltip`.
-- **`sh3-button`** (`shared/button/button.component.ts`) — for buttons with
-  a text label. Variants `primary | recommended | critical | ghost | solid`,
-  sizes `sm | md | lg`.
+- [x] [`configurable-tab-bar.component.html`](./configurable-tab-bar.component.html) — 3 buttons migrated
+  (add-tab, add-tab-locked → `sh3-button-icon`; upgrade CTA → `sh3-button`)
+- [x] [`tab-strip/tab-strip.component.html`](./tab-strip/tab-strip.component.html) — 1 button migrated
+  (⋮ menu toggle → `sh3-button-icon` using the new `more-vertical` icon)
+- [x] [`tab-inline-menu/tab-inline-menu.component.html`](./tab-inline-menu/tab-inline-menu.component.html) — 4 buttons migrated
+  (color → `palette` icon, move-to toggle → `arrow-right`, move targets → `sh3-button`, close → `sh3-button-icon tone="critical"`)
+- [x] [`tab-config-panel/tab-config-panel.component.html`](./tab-config-panel/tab-config-panel.component.html) — 10 buttons migrated
+  (save/new, load, expand chevron, rename → `edit`, delete → `bin tone="critical"`, remove → `close tone="critical"`, move → `arrow-right`, move targets → `sh3-button`)
 
-18 raw `<button>` still to migrate across the four templates:
+Two new icons shipped alongside: `more-vertical` (⋮) and `palette` (●).
+Most of the hand-rolled button SCSS (`.tab-add`, `.tab-action-btn`,
+`.config-action-btn`, `.tab-inline-btn`, `.tab-move-option`,
+`.config-move-target`, `.tab-menu-toggle`, `.config-item-expand`,
+`.upgrade-popover__btn`) was deleted — only the structural wrappers,
+panels, and list styles remain.
 
-- [ ] [`configurable-tab-bar.component.html`](./configurable-tab-bar.component.html) — 3 buttons
-  (add-tab, add-tab-locked, upgrade CTA)
-- [ ] [`tab-strip/tab-strip.component.html`](./tab-strip/tab-strip.component.html) — 1 button
-  (⋮ menu toggle)
-- [ ] [`tab-inline-menu/tab-inline-menu.component.html`](./tab-inline-menu/tab-inline-menu.component.html) — 4 buttons
-  (color, move-to toggle, move-to target × N, close)
-- [ ] [`tab-config-panel/tab-config-panel.component.html`](./tab-config-panel/tab-config-panel.component.html) — 10 buttons
-  (save / new, load, config expand, config rename, config delete, tab rename,
-  tab move, tab remove, move-target)
-
-When migrating, preserve the existing behavior exactly:
-- Keep the `(click)` / `(pointerup)` handlers — `sh3-button-icon` and
-  `sh3-button` expose `(clicked)`; re-wire accordingly, and drop
-  `$event.stopPropagation()` calls only where we confirm the primitive
-  already stops bubbling.
-- Keep the tooltip strings (today in raw `title="…"` attributes) — feed
-  them via `[tooltip]` on `sh3-button-icon`.
-- Keep the critical/danger affordance (today `.config-action-btn--danger`,
-  `.tab-inline-btn--danger`) — use `tone="critical"` on the icon button
-  or `variant="critical"` on the text button.
-- The ⋮ toggle, expand chevron and emoji-based affordances (●, ⇥, ×, ✎,
-  ▾/▸) should move to real icon names from the registry
-  (`shared/icon/icon.registry.ts`). When the icon does not exist yet,
-  stage the migration by adding it to the registry in the same commit.
-
-**Unblocks:** consistent theming / dark-mode / focus-ring across the tab
-bar, and removes most of the hand-rolled button SCSS from the four
-component stylesheets.
+**Known visual drift:** the `.tab-add` bordered look is replaced by the
+design system's `ghost` tone (no border, transparent background). The
+focus ring, dark-mode tokens and hover accent now come uniformly from
+`sh3-button-icon` instead of being declared per component.
 
 ---
 

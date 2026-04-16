@@ -9,7 +9,7 @@
 ## Status
 
 - [x] Component split into sub-components (strip + inline-menu + config-panel)
-- [ ] **Next up:** replace raw `<button>` with `sh3-button` / `sh3-button-icon` across all four templates (see local TODO § Next up)
+- [x] Raw `<button>` migrated to `sh3-button` / `sh3-button-icon` across all four templates (see local TODO § Done)
 - [ ] DnD reorder moves to correct position — **deferred** (see local TODO § Deferred)
 - [ ] Unit tests on `TabMutationService` — backlog (see local TODO)
 - [ ] Replace `_handlers` mutable workaround — backlog (see local TODO)
