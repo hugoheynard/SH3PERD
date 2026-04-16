@@ -1,6 +1,7 @@
 import { Component, input, output, signal } from '@angular/core';
 import { ButtonComponent } from '../../button/button.component';
 import { ButtonIconComponent } from '../../button-icon/button-icon.component';
+import { IconComponent } from '../../icon/icon.component';
 import type { TabItem, SavedTabConfig } from '../configurable-tab-bar.types';
 
 /**
@@ -19,7 +20,7 @@ import type { TabItem, SavedTabConfig } from '../configurable-tab-bar.types';
 @Component({
   selector: 'sh3-tab-inline-menu',
   standalone: true,
-  imports: [ButtonComponent, ButtonIconComponent],
+  imports: [ButtonComponent, ButtonIconComponent, IconComponent],
   templateUrl: './tab-inline-menu.component.html',
   styleUrl: './tab-inline-menu.component.scss',
 })
@@ -27,18 +28,24 @@ export class TabInlineMenuComponent {
 
   /* ── Inputs ────────────────────────────────────── */
   readonly tab = input.required<TabItem<unknown>>();
+  /**
+   * Candidate target configs for the "move to" dropdown. Each config's
+   * optional `locked` flag drives the per-row lock visual and output
+   * routing — no separate lookup table needed.
+   */
   readonly savedConfigs = input<SavedTabConfig<unknown>[]>([]);
   readonly canClose = input<boolean>(true);
   /**
-   * Whether the "move to config" action is available. Even with saved configs
-   * present, the host can gate this (e.g. plan downgrade leaves configs
-   * frozen but prevents mutation of them).
+   * Whether the "move to config" action is available at all. Even with saved
+   * configs present, the host can gate the entire button (e.g. plan
+   * downgrade leaves configs frozen but prevents mutation of them).
    */
   readonly canMoveToConfig = input<boolean>(true);
 
   /* ── Outputs ───────────────────────────────────── */
   readonly colorRequested = output<string>();
   readonly moveToConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
+  readonly moveToLockedConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
   readonly closeRequested = output<string>();
 
   /* ── Local UI state ────────────────────────────── */
@@ -62,9 +69,14 @@ export class TabInlineMenuComponent {
     }
   }
 
-  onMoveTo(targetConfigId: string, event: MouseEvent): void {
+  onMoveTo(cfg: SavedTabConfig<unknown>, event: MouseEvent): void {
     event.stopPropagation();
-    this.moveToConfig.emit({ tab: this.tab(), targetConfigId });
+    const payload = { tab: this.tab(), targetConfigId: cfg.id };
+    if (cfg.locked) {
+      this.moveToLockedConfig.emit(payload);
+    } else {
+      this.moveToConfig.emit(payload);
+    }
     this.moveMenuOpen.set(false);
   }
 

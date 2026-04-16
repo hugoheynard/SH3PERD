@@ -2,6 +2,7 @@ import { Component, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../button/button.component';
 import { ButtonIconComponent } from '../../button-icon/button-icon.component';
+import { IconComponent } from '../../icon/icon.component';
 import { InputComponent } from '../../forms/input/input.component';
 import { ToastService } from '../../toast/toast.service';
 import type { SavedTabConfig } from '../configurable-tab-bar.types';
@@ -27,7 +28,7 @@ import type { SavedTabConfig } from '../configurable-tab-bar.types';
 @Component({
   selector: 'sh3-tab-config-panel',
   standalone: true,
-  imports: [FormsModule, ButtonComponent, ButtonIconComponent, InputComponent],
+  imports: [FormsModule, ButtonComponent, ButtonIconComponent, IconComponent, InputComponent],
   templateUrl: './tab-config-panel.component.html',
   styleUrl: './tab-config-panel.component.scss',
 })
@@ -55,6 +56,7 @@ export class TabConfigPanelComponent {
   readonly configTabRemove = output<{ configId: string; tabId: string }>();
   readonly configTabRename = output<{ configId: string; tabId: string; title: string }>();
   readonly configTabMove = output<{ sourceConfigId: string; targetConfigId: string; tabId: string }>();
+  readonly moveToLockedConfig = output<{ sourceConfigId: string; targetConfigId: string; tabId: string }>();
   /** Emitted when the user clicks the lock button (only rendered when `locked` is true). */
   readonly lockClicked = output<void>();
 
@@ -161,11 +163,16 @@ export class TabConfigPanelComponent {
     }
   }
 
-  onMoveTabToConfig(targetConfigId: string, event: MouseEvent): void {
+  onMoveTabToConfig(target: SavedTabConfig<unknown>, event: MouseEvent): void {
     event.stopPropagation();
     const ctx = this.moveMenuTabCtx();
     if (!ctx) return;
-    this.configTabMove.emit({ sourceConfigId: ctx.configId, targetConfigId, tabId: ctx.tabId });
+    const payload = { sourceConfigId: ctx.configId, targetConfigId: target.id, tabId: ctx.tabId };
+    if (target.locked) {
+      this.moveToLockedConfig.emit(payload);
+    } else {
+      this.configTabMove.emit(payload);
+    }
     this.moveMenuTabCtx.set(null);
   }
 

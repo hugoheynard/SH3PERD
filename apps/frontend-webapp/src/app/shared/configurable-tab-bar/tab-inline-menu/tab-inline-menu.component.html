@@ -13,7 +13,13 @@
           <span class="tab-move-label">Move to</span>
           @for (cfg of savedConfigs(); track cfg.id) {
             <sh3-button variant="ghost" size="sm"
-              (clicked)="onMoveTo(cfg.id, $event)">{{ cfg.name }}</sh3-button>
+              [class.tab-move-option--locked]="cfg.locked"
+              (clicked)="onMoveTo(cfg, $event)">
+              @if (cfg.locked) {
+                <sh3-icon name="lock" size="xs" />
+              }
+              <span>{{ cfg.name }}</span>
+            </sh3-button>
           }
         </div>
       }

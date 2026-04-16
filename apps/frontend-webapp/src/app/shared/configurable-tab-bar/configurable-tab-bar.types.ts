@@ -24,6 +24,16 @@ export type SavedTabConfig<TConfig = unknown> = {
   tabs: TabItem<TConfig>[];
   activeTabId: string;
   createdAt: number;
+  /**
+   * UI-only flag indicating the config has reached its per-config tab quota.
+   * When present and `true`, the tab bar's move-to surfaces render the row
+   * as locked and emit `moveToLockedConfigClicked` on click. Optional and
+   * additive — hosts that don't need quota gating simply omit it.
+   *
+   * The underlying storage layer should strip this field before persisting
+   * (it's recomputed from plan state on every render).
+   */
+  locked?: boolean;
 };
 
 /**

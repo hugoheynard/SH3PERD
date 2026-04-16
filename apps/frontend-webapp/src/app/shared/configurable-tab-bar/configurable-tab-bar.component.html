@@ -20,6 +20,7 @@
     (tabReorder)="dispatch('tabReorder', $event)"
     (tabColorRequested)="onTabColorRequested($event)"
     (tabMoveToConfig)="dispatch('tabMoveToConfig', $event)"
+    (tabMoveToLockedConfig)="moveToLockedConfigClicked.emit({ targetConfigId: $event.targetConfigId })"
   />
 
   <!-- Add-tab affordance: plus by default, lock when the host flags `locked` -->
@@ -49,5 +50,6 @@
     (configTabRemove)="dispatch('configTabRemove', $event)"
     (configTabRename)="dispatch('configTabRename', $event)"
     (configTabMove)="dispatch('configTabMove', $event)"
+    (moveToLockedConfig)="moveToLockedConfigClicked.emit({ targetConfigId: $event.targetConfigId })"
   />
 </div>

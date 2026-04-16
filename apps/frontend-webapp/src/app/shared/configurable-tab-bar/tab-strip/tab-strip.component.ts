@@ -41,6 +41,7 @@ export class TabStripComponent {
   readonly tabReorder = output<{ tabId: string; newIndex: number }>();
   readonly tabColorRequested = output<string>();
   readonly tabMoveToConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
+  readonly tabMoveToLockedConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
 
   /* ── Local UI state ────────────────────────────── */
   readonly editingTabId = signal<string | null>(null);
@@ -88,6 +89,11 @@ export class TabStripComponent {
 
   onMoveToConfig(event: { tab: TabItem<unknown>; targetConfigId: string }): void {
     this.tabMoveToConfig.emit(event);
+    this.openTabMenuId.set(null);
+  }
+
+  onMoveToLockedConfig(event: { tab: TabItem<unknown>; targetConfigId: string }): void {
+    this.tabMoveToLockedConfig.emit(event);
     this.openTabMenuId.set(null);
   }
 

@@ -104,7 +104,13 @@
                       <span class="config-move-label">Move to:</span>
                       @for (target of moveTargetConfigs(cfg.id); track target.id) {
                         <sh3-button variant="ghost" size="sm"
-                          (clicked)="onMoveTabToConfig(target.id, $event)">{{ target.name }}</sh3-button>
+                          [class.config-move-target--locked]="target.locked"
+                          (clicked)="onMoveTabToConfig(target, $event)">
+                          @if (target.locked) {
+                            <sh3-icon name="lock" size="xs" />
+                          }
+                          <span>{{ target.name }}</span>
+                        </sh3-button>
                       }
                     </div>
                   }

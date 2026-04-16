@@ -20,8 +20,12 @@ import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.com
  * swaps the plus button for a lock button and emits `lockClicked` instead of
  * `tabAdd` — the host decides what to do (show an upgrade popover, a tooltip,
  * a right panel, …). The save/recall panel follows the same pattern via
- * `saveRecallLocked` + `saveRecallLockClicked`. The bar intentionally knows
- * nothing about quotas, plans, or popovers.
+ * `saveRecallLocked` + `saveRecallLockClicked`. Per-config quota is carried
+ * on each `SavedTabConfig` via the optional `locked` flag — the matching
+ * rows in every move-to dropdown render as locked and route clicks to
+ * `moveToLockedConfigClicked` (the host computes the flag, typically via a
+ * dedicated quota checker). The bar intentionally knows nothing about
+ * quotas, plans, or popovers.
  *
  * Wire tab mutations via `provideTabHandlers(MyTabMutationService)` for zero
  * boilerplate, or bind individual `(output)` events for custom overrides.
@@ -91,6 +95,8 @@ export class ConfigurableTabBarComponent {
   readonly lockClicked = output<void>();
   /** Emitted when the user clicks the save/recall lock button (only rendered when `saveRecallLocked` is true). */
   readonly saveRecallLockClicked = output<void>();
+  /** Emitted when the user tries to move a tab into a config listed in `lockedConfigIds`. */
+  readonly moveToLockedConfigClicked = output<{ targetConfigId: string }>();
 
   /* ── Color picker (single shared DOM input) ─────── */
   @ViewChild('colorInput') colorInputRef!: ElementRef<HTMLInputElement>;
