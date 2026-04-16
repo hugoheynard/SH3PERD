@@ -1,0 +1,112 @@
+#!/bin/sh
+# Quality gate that runs before every `git push`.
+#
+# Blocks pushes that would introduce TypeScript or lint errors in any
+# affected app. Tests are intentionally NOT run here — they live in CI.
+# Keep this hook fast enough that nobody is tempted to `--no-verify`.
+#
+# Bypass (emergency only):
+#   git push --no-verify
+# GitHub branch protection on `dev` and `main` is the real, unbypassable
+# gate. This hook is a fast local preview of what CI will enforce.
+
+set -eu
+
+# Always run from repo root.
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+ZERO="0000000000000000000000000000000000000000"
+
+# Aggregate every file that will be sent in this push, across all refs.
+CHANGED=""
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  # Skip branch deletions.
+  if [ "$local_sha" = "$ZERO" ]; then
+    continue
+  fi
+
+  # New branch (no remote yet): compare against the default integration
+  # branch so we only check commits that aren't already on dev.
+  if [ "$remote_sha" = "$ZERO" ]; then
+    if git rev-parse --verify --quiet origin/dev >/dev/null; then
+      base="origin/dev"
+    else
+      base="$(git rev-list --max-parents=0 "$local_sha" | tail -1)"
+    fi
+  else
+    base="$remote_sha"
+  fi
+
+  range_files="$(git diff --name-only "$base" "$local_sha" || true)"
+  CHANGED="$CHANGED
+$range_files"
+done
+
+# Nothing to check (push of an already-known-good ref, tags only, etc.).
+if [ -z "$(echo "$CHANGED" | tr -d '[:space:]')" ]; then
+  exit 0
+fi
+
+matches() {
+  # $1 = ripgrep-style extended regex on path prefixes
+  echo "$CHANGED" | grep -E "$1" >/dev/null 2>&1
+}
+
+check_backend=0
+check_frontend=0
+check_audio=0
+rebuild_shared=0
+
+# shared-types is consumed by every app — force-check all of them.
+if matches '^packages/shared-types/'; then
+  echo "→ packages/shared-types changed — checking every app"
+  rebuild_shared=1
+  check_backend=1
+  check_frontend=1
+  check_audio=1
+fi
+
+matches '^apps/backend/'         && check_backend=1
+matches '^apps/frontend-webapp/' && check_frontend=1
+matches '^apps/audio-processor/' && check_audio=1
+
+if [ "$check_backend$check_frontend$check_audio" = "000" ]; then
+  exit 0
+fi
+
+if [ "$rebuild_shared" = "1" ]; then
+  echo "→ Building shared-types"
+  pnpm --filter @sh3pherd/shared-types build
+fi
+
+fail() {
+  echo ""
+  echo "✗ Push blocked: $1"
+  echo "  Fix the errors above, then push again."
+  echo "  Emergency bypass: git push --no-verify (CI will still block the merge)"
+  exit 1
+}
+
+if [ "$check_backend" = "1" ]; then
+  echo "→ apps/backend: tsc --noEmit"
+  pnpm --filter @sh3pherd/backend exec tsc --noEmit || fail "backend type errors"
+  echo "→ apps/backend: lint"
+  pnpm --filter @sh3pherd/backend lint           || fail "backend lint errors"
+fi
+
+if [ "$check_audio" = "1" ]; then
+  echo "→ apps/audio-processor: tsc --noEmit"
+  pnpm --filter @sh3pherd/audio-processor exec tsc --noEmit || fail "audio-processor type errors"
+  echo "→ apps/audio-processor: lint"
+  pnpm --filter @sh3pherd/audio-processor lint              || fail "audio-processor lint errors"
+fi
+
+if [ "$check_frontend" = "1" ]; then
+  echo "→ apps/frontend-webapp: tsc --noEmit"
+  ( cd apps/frontend-webapp && npx --no-install tsc --noEmit ) || fail "frontend type errors"
+fi
+
+echo ""
+echo "✓ Local quality gate passed — pushing"
