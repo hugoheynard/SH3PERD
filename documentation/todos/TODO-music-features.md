@@ -39,6 +39,15 @@ Parent `configurable-tab-bar.component.ts` is now a thin orchestrator (~130 TS +
 - [x] Extract `TabConfigPanelComponent` (load dropdown with expand/rename/move/delete)
 - [x] Extract `TabInlineMenuComponent` (the three-dot menu with color, move-to, close)
 
+### Tab bar quota gating — ✅ done
+Plan-aware quotas on tabs + saved configs, enforced at the UI *and* the mutation service via a single source of truth.
+- [x] `MusicTabQuotaChecker` service — `canAddTab` / `canAddConfig` / `canMoveToConfig` + `savedConfigsWithLock`
+- [x] `MusicTabMutationService` overrides gate `addDefaultTab`, `saveTabConfig`, `moveActiveTabToConfig`, `moveTabToConfig` via the checker (defense-in-depth alongside the UI lock)
+- [x] Tab bar API: agnostic `tabLocked` / `configLocked` / `SavedTabConfig.locked` — parent computes, bar renders
+- [x] Plan-aware upgrade popovers: tab-limit / config-creation-limit (Pro) / feature-not-included (Free)
+- [x] Null-plan fallback (`/quota/me` race window) → treated as most-restrictive, service gates close the gap before the UI lock catches up
+- [x] Full architecture walkthrough with diagrams in [`configurable-tab-bar/README.md`](../../apps/frontend-webapp/src/app/shared/configurable-tab-bar/README.md)
+
 ### Tighten typing
 - [ ] Replace `_handlers` mutable workaround with proper DI pattern
 - [ ] Remove `as any` casts in tab `dispatch()`
