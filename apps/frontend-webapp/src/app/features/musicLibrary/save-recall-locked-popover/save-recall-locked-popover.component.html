@@ -1,10 +1,19 @@
 <ui-popover-frame width="320px">
-  <span popover-title>Save &amp; recall locked</span>
+  @if (isFeatureGated()) {
+    <span popover-title>Save &amp; recall locked</span>
 
-  <p popover-body class="save-recall-popover__text">
-    Saving and recalling tab configurations isn't included in your plan.
-    <br/>Upgrade to Pro or Max to unlock it.
-  </p>
+    <p popover-body class="save-recall-popover__text">
+      Saving and recalling tab configurations isn't included in your plan.
+      <br/>Upgrade to Pro or Max to unlock it.
+    </p>
+  } @else {
+    <span popover-title>Config limit reached</span>
+
+    <p popover-body class="save-recall-popover__text">
+      You've reached your config creation limit.
+      <br/>Upgrade to Max for unlimited saved configurations.
+    </p>
+  }
 
   <div popover-footer class="save-recall-popover__footer">
     <sh3-button variant="primary" size="sm" (clicked)="onUpgrade()">Upgrade</sh3-button>

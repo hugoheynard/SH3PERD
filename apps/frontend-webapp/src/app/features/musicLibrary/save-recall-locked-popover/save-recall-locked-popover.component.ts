@@ -1,14 +1,19 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { PopoverFrameComponent } from '../../../shared/ui-frames/popover-frame/popover-frame.component';
 import { LayoutService } from '../../../core/services/layout.service';
 import { UpgradePanelComponent } from '../../../core/components/upgrade-panel/upgrade-panel.component';
+import { UserContextService } from '../../../core/services/user-context.service';
 
 /**
- * Popover shown when the user clicks the locked save/recall affordance.
+ * Popover shown when the user clicks the locked save / new-config
+ * affordance. The copy adapts to why the lock fired:
  *
- * Explains that saving and recalling tab configurations isn't available on
- * the current plan, and hands off to the shared upgrade right panel via
+ * - **Free plan** — save/recall isn't included in the plan at all.
+ * - **Pro at config cap** — the plan includes save/recall but the user
+ *   has hit the max number of saved configurations.
+ *
+ * Both cases hand off to the shared upgrade right panel via
  * `LayoutService.setRightPanel(UpgradePanelComponent)` on confirmation.
  */
 @Component({
@@ -20,6 +25,10 @@ import { UpgradePanelComponent } from '../../../core/components/upgrade-panel/up
 })
 export class SaveRecallLockedPopoverComponent {
   private readonly layout = inject(LayoutService);
+  private readonly userCtx = inject(UserContextService);
+
+  /** Feature-gate case vs quota-cap case. */
+  readonly isFeatureGated = computed(() => this.userCtx.plan() === 'artist_free');
 
   onUpgrade(): void {
     this.layout.clearPopover();
