@@ -112,7 +112,7 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "configPath": "./jest.config.cjs",
+            "configPath": "./jest.config.mjs",
             "passWithNoTests": true
           }
         }
