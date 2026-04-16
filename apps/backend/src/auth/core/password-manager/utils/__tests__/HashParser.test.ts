@@ -1,4 +1,4 @@
-import { HashParser } from '../HashParser';
+import { HashParser } from '../HashParser.js';
 
 describe('HashParser', () => {
   it('should correctly extract parts from a valid hash string', () => {

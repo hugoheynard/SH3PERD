@@ -1,7 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import { bootstrapTestApp } from '../utils/bootstrapTestApp.js';
 import request from 'supertest';
-import { UserBuilder } from './RessourcesBuilders/UserBuilder';
+import { UserBuilder } from './RessourcesBuilders/UserBuilder.js';
 
 type RouteTest = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -28,19 +28,17 @@ export const routesToTest: RouteTest[] = [
   },
 ];
 
-
 describe('E2E - Dynamic routes', () => {
   const app: INestApplication = await bootstrapTestApp();
   let testUser;
 
   // Creates test@mail.com si le test login est présent
-  const needsLoginTest = routesToTest.some(r => r.path.includes('/auth/login'));
+  const needsLoginTest = routesToTest.some((r) => r.path.includes('/auth/login'));
 
   if (needsLoginTest) {
-    testUser = await UserBuilder
-      .init(app)
+    testUser = await UserBuilder.init(app)
       .withCredentials({ email: 'test@mail.com', password: 'test123' })
-      .registerAndLogin()
+      .registerAndLogin();
   }
 
   beforeEach(async () => {});

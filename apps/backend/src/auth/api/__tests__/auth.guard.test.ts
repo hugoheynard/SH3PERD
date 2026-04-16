@@ -1,7 +1,7 @@
-import { AuthGuard } from '../auth.guard';
-import type { TVerifyAuthTokenFn } from '../../types/auth.core.contracts';
+import { AuthGuard } from '../auth.guard.js';
+import type { TVerifyAuthTokenFn } from '../../types/auth.core.contracts.js';
 import { type ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import type { TAuthTokenPayload } from '../../types/auth.domain.tokens';
+import type { TAuthTokenPayload } from '../../types/auth.domain.tokens.js';
 import { jest } from '@jest/globals';
 import { type Reflector } from '@nestjs/core';
 

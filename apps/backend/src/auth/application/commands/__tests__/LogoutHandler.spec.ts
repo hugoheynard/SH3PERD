@@ -1,10 +1,10 @@
-import { LogoutCommand, LogoutHandler } from '../LogoutCommand';
+import { LogoutCommand, LogoutHandler } from '../LogoutCommand.js';
 import {
   userId,
   refreshTokenId,
   mockRefreshTokenRepo,
   makeRefreshTokenRecord,
-} from '../../../__tests__/test-helpers';
+} from '../../../__tests__/test-helpers.js';
 import { hashToken } from '../../../core/token-manager/hashToken.js';
 
 describe('LogoutHandler', () => {

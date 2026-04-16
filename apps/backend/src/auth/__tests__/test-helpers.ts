@@ -4,18 +4,18 @@ import type {
   TRefreshTokenDomainModel,
   TRefreshTokenRecord,
 } from '@sh3pherd/shared-types';
-import type { IRefreshTokenRepository } from '../repositories/RefreshTokenMongoRepository';
-import type { IPasswordService } from '../core/password-manager/types/Interfaces';
-import type { IAbstractJWTService } from '../core/token-manager/JwtService';
-import type { IAbstractRefreshTokenService } from '../core/token-manager/RefreshTokenService';
-import type { IAuthTokenService } from '../core/auth.service';
+import type { IRefreshTokenRepository } from '../repositories/RefreshTokenMongoRepository.js';
+import type { IPasswordService } from '../core/password-manager/types/Interfaces.js';
+import type { IAbstractJWTService } from '../core/token-manager/JwtService.js';
+import type { IAbstractRefreshTokenService } from '../core/token-manager/RefreshTokenService.js';
+import type { IAuthTokenService } from '../core/auth.service.js';
 import type {
   TCreateAuthSessionResult,
   TRefreshTokenSecureCookie,
-} from '../types/auth.domain.tokens';
-import type { IUserCredentialsRepository } from '../../user/infra/UserCredentialsMongoRepo.repository';
-import type { IUserProfileRepository } from '../../user/infra/UserProfileMongoRepo.repository';
-import type { IPlatformContractRepository } from '../../platform-contract/infra/PlatformContractMongoRepo';
+} from '../types/auth.domain.tokens.js';
+import type { IUserCredentialsRepository } from '../../user/infra/UserCredentialsMongoRepo.repository.js';
+import type { IUserProfileRepository } from '../../user/infra/UserProfileMongoRepo.repository.js';
+import type { IPlatformContractRepository } from '../../platform-contract/infra/PlatformContractMongoRepo.js';
 
 // ─── ID Helpers ───────────────────────────────────────────────
 export const userId = (n = 1) => `user_test-${n}` as TUserId;

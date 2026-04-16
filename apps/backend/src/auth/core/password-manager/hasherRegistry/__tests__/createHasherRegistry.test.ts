@@ -1,4 +1,4 @@
-import { createHasherRegistry } from '../createHasherRegistry';
+import { createHasherRegistry } from '../createHasherRegistry.js';
 
 describe('createHasherRegistry', () => {
   it('should return a registry with the expected keys and instances', () => {

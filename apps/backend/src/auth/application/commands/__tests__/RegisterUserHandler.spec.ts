@@ -1,10 +1,10 @@
-import { RegisterUserCommand, RegisterUserHandler } from '../RegisterUserCommand';
+import { RegisterUserCommand, RegisterUserHandler } from '../RegisterUserCommand.js';
 import {
   mockPasswordService,
   mockUserCredentialsRepo,
   mockUserProfileRepo,
   mockPlatformContractRepo,
-} from '../../../__tests__/test-helpers';
+} from '../../../__tests__/test-helpers.js';
 import { BusinessError } from '../../../../utils/errorManagement/BusinessError.js';
 
 describe('RegisterUserHandler', () => {

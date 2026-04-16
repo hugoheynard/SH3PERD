@@ -1,7 +1,7 @@
-import { QuotaService } from '../QuotaService';
-import { QuotaExceededError } from '../domain/QuotaExceededError';
-import type { IPlatformContractRepository } from '../../platform-contract/infra/PlatformContractMongoRepo';
-import type { IUsageCounterRepository } from '../infra/UsageCounterMongoRepo';
+import { QuotaService } from '../QuotaService.js';
+import { QuotaExceededError } from '../domain/QuotaExceededError.js';
+import type { IPlatformContractRepository } from '../../platform-contract/infra/PlatformContractMongoRepo.js';
+import type { IUsageCounterRepository } from '../infra/UsageCounterMongoRepo.js';
 
 /**
  * Unit tests for QuotaService.

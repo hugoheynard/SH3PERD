@@ -1,4 +1,4 @@
-import { RefreshSessionCommand, RefreshSessionHandler } from '../RefreshSessionCommand';
+import { RefreshSessionCommand, RefreshSessionHandler } from '../RefreshSessionCommand.js';
 import {
   userId,
   refreshTokenId,
@@ -9,7 +9,7 @@ import {
   makeExpiredRefreshToken,
   makeRevokedRefreshToken,
   makeSessionResult,
-} from '../../../__tests__/test-helpers';
+} from '../../../__tests__/test-helpers.js';
 import { BusinessError } from '../../../../utils/errorManagement/BusinessError.js';
 import { hashToken } from '../../../core/token-manager/hashToken.js';
 

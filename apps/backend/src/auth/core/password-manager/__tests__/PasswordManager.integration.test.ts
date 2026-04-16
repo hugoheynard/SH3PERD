@@ -1,6 +1,6 @@
-import { isRehashDueFromLastHashDate } from '../utils/isRehashDueFromLastHashDate';
-import { HashParser } from '../utils/HashParser';
-import { createHasherRegistry } from '../hasherRegistry/createHasherRegistry';
+import { isRehashDueFromLastHashDate } from '../utils/isRehashDueFromLastHashDate.js';
+import { HashParser } from '../utils/HashParser.js';
+import { createHasherRegistry } from '../hasherRegistry/createHasherRegistry.js';
 import { PasswordService } from '../PasswordService.js';
 import bcrypt from 'bcrypt';
 

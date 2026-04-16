@@ -1,11 +1,11 @@
-import { LoginCommand, LoginHandler } from '../LoginCommand';
+import { LoginCommand, LoginHandler } from '../LoginCommand.js';
 import {
   userId,
   mockUserCredentialsRepo,
   mockPasswordService,
   mockAuthService,
   makeSessionResult,
-} from '../../../__tests__/test-helpers';
+} from '../../../__tests__/test-helpers.js';
 import { BusinessError } from '../../../../utils/errorManagement/BusinessError.js';
 
 describe('LoginHandler', () => {
