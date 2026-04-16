@@ -4,9 +4,57 @@
 
 ---
 
+## 🚨 Priorité absolue — débloquer les quality gates
+
+> **Pourquoi c'est urgent** : le pre-push hook et la CI ont été étendus
+> aux 3 apps (commit `613f0812`), mais deux apps ont de la dette cachée
+> qui les rend actuellement rouges. Tant que ces deux items ne sont pas
+> traités, toute modification de `packages/shared-types/` (qui
+> fan-out vers les 3 apps) et toute modification d'`apps/audio-processor/`
+> ou `apps/frontend-webapp/` sera **bloquée par le hook** — y compris
+> les fixes légitimes. La CI restera rouge sur `dev` jusque-là.
+>
+> Référence architecture : [`sh3-quality-gates.md`](../../apps/backend/documentation/sh3-quality-gates.md).
+
+### 🔥 1. `apps/audio-processor` — 36 erreurs de lint
+
+- [ ] Résoudre les erreurs `@typescript-eslint/no-unsafe-*` autour de essentia.js
+  - `no-unsafe-member-access` ×15, `no-unsafe-assignment` ×11, `no-unsafe-call` ×6, `no-unsafe-argument` ×4
+  - Localisation : `src/core/analyze.ts`, `src/core/master.ts`, `src/core/pitch-shift.ts`, `src/core/ai-master.ts`
+  - **Approche recommandée** : ajouter un `.d.ts` ambient pour essentia.js ou un wrapper typé au boundary. NE PAS désactiver la règle file-by-file (cf. CLAUDE.md : "fix the root cause instead of suppressing the error").
+- [ ] `prefer-promise-reject-errors` ×2 dans `pitch-shift.ts` — remplacer `reject(string)` par `reject(new Error(string))`
+- [ ] `no-misused-promises` dans `master.ts:91` — corriger la signature du callback
+- [ ] `no-floating-promises` dans `main.ts:19` — wrapper avec `void` ou `.catch()`
+- Reproduction : `pnpm --filter audio-processor lint`
+- État : `tsc --noEmit` ✅, tests 38/38 ✅, seul lint échoue
+
+### 🔥 2. `apps/frontend-webapp` — ~124 erreurs de typecheck
+
+- [ ] Migrer les specs de syntaxe Jasmine vers Jest
+  - `toBeTrue()` → `toBe(true)`, `toBeFalse()` → `toBe(false)`
+  - `jasmine.SpyObj<T>` → `jest.Mocked<T>` (ou `Partial<jest.Mocked<T>>`)
+  - `toHaveBeenCalledOnceWith` → `toHaveBeenCalledWith` + `toHaveBeenCalledTimes(1)`
+- [ ] Fichiers les plus touchés (de mémoire, à re-vérifier avec `npx tsc --noEmit`) :
+  - `src/app/core/services/__tests__/auth.service.spec.ts`
+  - `src/app/core/services/__tests__/auth-token.service.spec.ts`
+  - `src/app/core/app/app.component.spec.ts` (propriété `label` disparue)
+  - `src/app/core/components/data-list/data-list.component.spec.ts` (generic manquant)
+- [ ] Une fois les specs migrés, vérifier que les tests tournent : `pnpm --filter frontend-webapp test`
+- Reproduction : `pnpm --filter frontend-webapp exec tsc --noEmit`
+- Cause racine : le repo utilise Jest + jest-preset-angular, mais les specs ont gardé la syntaxe Jasmine de l'époque `ng test` — jamais migrés parce que le filter `@sh3pherd/frontend-webapp` de la CI matchait zéro projet et n'a jamais tiré la sonnette.
+
+### Definition of done — les deux items ci-dessus
+
+- `pnpm --filter audio-processor lint` → exit 0
+- `pnpm --filter frontend-webapp exec tsc --noEmit` → exit 0
+- CI verte sur `dev` (jobs backend + audio-processor + frontend + ci-gate)
+- Le pre-push hook peut fanner-out sans bloquer sur de la dette pré-existante
+
+---
+
 ## 🔴 Bugs / Correctifs urgents
 
-_(rien actuellement)_
+_(rien actuellement — voir la section "Priorité absolue" ci-dessus)_
 
 ---
 
