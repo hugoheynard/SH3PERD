@@ -23,6 +23,7 @@ export function makeCredentialsRecord(
     password: 'hashed-password',
     active: true,
     email_verified: true,
+    is_guest: false,
     created_at: new Date(),
     updated_at: new Date(),
     created_by: userId(),

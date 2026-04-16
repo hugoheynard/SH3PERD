@@ -5,7 +5,9 @@ import {
   mockUserProfileRepo,
   mockPlatformContractRepo,
 } from '../../../__tests__/test-helpers.js';
+import { makeCredentialsRecord } from '../../../../user/__tests__/test-helpers.js';
 import { BusinessError } from '../../../../utils/errorManagement/BusinessError.js';
+import type { TUserId } from '@sh3pherd/shared-types';
 
 describe('RegisterUserHandler', () => {
   function createHandler() {
@@ -95,7 +97,9 @@ describe('RegisterUserHandler', () => {
   describe('execute — duplicate email', () => {
     it('should throw USER_ALREADY_EXISTS (409)', async () => {
       const { handler, userCredsRepo } = createHandler();
-      userCredsRepo.findOne.mockResolvedValue({ id: 'user_existing', email: validPayload.email });
+      userCredsRepo.findOne.mockResolvedValue(
+        makeCredentialsRecord({ id: 'user_existing' as TUserId, email: validPayload.email }),
+      );
 
       try {
         await handler.execute(new RegisterUserCommand(validPayload));
@@ -110,7 +114,9 @@ describe('RegisterUserHandler', () => {
     it('should NOT hash password or save anything when email exists', async () => {
       const { handler, userCredsRepo, passwordService, userProfileRepo, eventBus } =
         createHandler();
-      userCredsRepo.findOne.mockResolvedValue({ id: 'user_existing', email: validPayload.email });
+      userCredsRepo.findOne.mockResolvedValue(
+        makeCredentialsRecord({ id: 'user_existing' as TUserId, email: validPayload.email }),
+      );
 
       try {
         await handler.execute(new RegisterUserCommand(validPayload));

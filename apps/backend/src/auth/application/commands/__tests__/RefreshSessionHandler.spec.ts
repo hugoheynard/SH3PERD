@@ -1,6 +1,5 @@
 import { RefreshSessionCommand, RefreshSessionHandler } from '../RefreshSessionCommand.js';
 import {
-  userId,
   refreshTokenId,
   mockRefreshTokenRepo,
   mockRefreshTokenService,
@@ -8,7 +7,6 @@ import {
   makeRefreshTokenRecord,
   makeExpiredRefreshToken,
   makeRevokedRefreshToken,
-  makeSessionResult,
 } from '../../../__tests__/test-helpers.js';
 import { BusinessError } from '../../../../utils/errorManagement/BusinessError.js';
 import { hashToken } from '../../../core/token-manager/hashToken.js';

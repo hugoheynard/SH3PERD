@@ -1,11 +1,10 @@
 import { LoginCommand, LoginHandler } from '../LoginCommand.js';
 import {
-  userId,
   mockUserCredentialsRepo,
   mockPasswordService,
   mockAuthService,
-  makeSessionResult,
 } from '../../../__tests__/test-helpers.js';
+import { makeCredentialsRecord } from '../../../../user/__tests__/test-helpers.js';
 import { BusinessError } from '../../../../utils/errorManagement/BusinessError.js';
 
 describe('LoginHandler', () => {
@@ -22,13 +21,7 @@ describe('LoginHandler', () => {
     return { handler, userCredRepo, passwordService, authService };
   }
 
-  const validUser = {
-    id: userId(),
-    email: 'test@example.com',
-    password: 'hashed-password',
-    active: true,
-    email_verified: true,
-  };
+  const validUser = makeCredentialsRecord();
 
   describe('execute', () => {
     it('should return auth token and user_id on successful login', async () => {
