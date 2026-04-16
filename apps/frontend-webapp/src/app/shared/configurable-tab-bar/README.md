@@ -71,7 +71,7 @@ flowchart TB
 | `savedConfigs` | `SavedTabConfig<unknown>[]` | `[]` | Named snapshots the user has saved |
 | `showToasts` | `boolean` | `true` | Enable built-in toasts on save / new / load / delete |
 | `tabLocked` | `boolean` | `false` | **Tab resource.** Swap `+` button for a `lock` and route clicks to `tabLockClicked` instead of `tabAdd`. |
-| `configLocked` | `boolean` | `false` | **Config resource.** Collapse the config panel to a single lock button and route clicks to `configLockClicked`. Also hides the per-tab "move to config" action. |
+| `configLocked` | `boolean` | `false` | **Config resource.** Swap the save / new-config button for a `lock` and route clicks to `configLockClicked`. Load + per-config edit surface stay open so existing configs remain accessible. Also hides the per-tab "move to config" action. |
 
 Per-config lock is **not a separate input** — it travels on the `SavedTabConfig` data itself via the optional `locked?: boolean` field. See "State model" below and the `moveToLockedConfigClicked` output.
 
@@ -329,7 +329,8 @@ flowchart LR
 
   Host -- configLocked --> Bar
   Bar -- locked=true --> Panel
-  Panel -- renders ONE --> Lock1[🔒 button<br/>→ configLockClicked]
+  Panel -- swaps save/new for --> Lock1[🔒 button<br/>→ configLockClicked]
+  Panel -- keeps --> Load[📂 Load button<br/>opens as usual]
   Bar -- canMoveToConfig=false --> Strip
   Strip -- canMoveToConfig=false --> Menu
   Menu -- hides --> MoveBtn[⇥ move-to button]
@@ -411,7 +412,7 @@ The bar exposes three uniform lock surfaces — one per resource type:
 | Resource | Where the lock state comes from | Output | Visual swap |
 |----------|---------------------------------|--------|-------------|
 | **Tab** | `[tabLocked]` input | `tabLockClicked` | `+` → `lock` icon |
-| **Config** | `[configLocked]` input | `configLockClicked` | Save + Load buttons + panels → single `lock` icon |
+| **Config** | `[configLocked]` input | `configLockClicked` | Save / new-config button → `lock` icon (load stays open) |
 | **Per-config** (tabs-in-config) | `SavedTabConfig.locked` on each config item | `moveToLockedConfigClicked` | Matching row(s) in every move-to dropdown → dimmed + `lock` glyph |
 
 The first two are binary "the whole bar is in state X" switches, so they
@@ -473,12 +474,13 @@ covers:
 ## Downgrade / upgrade matrix
 
 | Plan state | `tabLocked` | `configLocked` | `cfg.locked` on each saved config | Effect |
-|------------|----------|--------------------|-----------------------------------|--------|
-| Free (first visit) | false until N tabs | **true** | n/a (panel hidden) | Add works up to plan limit, save/recall is locked from the start. Per-tab move-to hidden. |
+|------------|-------------|----------------|-----------------------------------|--------|
+| Free (first visit) | false until 3 tabs | **true** (0 configs quota) | n/a (no configs ever) | Add works up to 3 tabs. Save / new-config is locked. Load stays open but empty. Per-tab move-to hidden. |
 | Free (hit tab limit) | **true** | **true** | n/a | Both global locks active. Clicking either surfaces the host's popover. |
-| Pro (nominal) | false unless over plan cap | false | true for configs with `tabs.length ≥ max` | Full bar. A config that fills up auto-locks; moves into it surface the popover. |
-| Pro → Free downgrade with saved configs | false until N tabs | **true** | n/a (panel hidden) | Configs are persisted but invisible from the panel. Per-tab move-to hidden. Re-upgrade re-exposes them as-is. |
-| Plan signal not loaded yet | false | false | `false` on all configs | `MusicTabQuotaChecker.maxTabs` treats null plan as most-restrictive (free → 3 tabs), so the service gate blocks adds past 3 even before the UI lock kicks in. |
+| Pro (nominal, 0-4 configs) | false until 10 tabs | false (up to 5 configs) | true for configs with `tabs.length ≥ 10` | Full bar. A config that fills up (10 tabs) auto-locks as a move-to target. |
+| Pro at config cap (5/5) | false until 10 tabs | **true** (can't add more configs) | based on per-config tab count | Save / new-config swap to a lock; existing 5 configs still loadable / renamable / deletable from the load menu. |
+| Pro → Free downgrade with saved configs | false until 3 tabs | **true** (0 configs quota) | based on per-config tab count | Save locked, load still shows the old configs (read-only management). Per-tab move-to hidden. Re-upgrade re-opens save. |
+| Plan signal not loaded yet | false | **true** (0 configs quota) | `false` on all configs | `MusicTabQuotaChecker` treats null plan as most-restrictive (free → 3 tabs / 0 configs), so service gates block adds before the UI lock catches up. |
 
 The bar does not own the plan check. The host computes each boolean from
 whatever source of truth it wants — `UserContextService`, a route data
