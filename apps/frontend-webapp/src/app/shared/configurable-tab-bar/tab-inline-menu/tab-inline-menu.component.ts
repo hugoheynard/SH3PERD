@@ -25,7 +25,6 @@ import type { TabItem, SavedTabConfig } from '../configurable-tab-bar.types';
   styleUrl: './tab-inline-menu.component.scss',
 })
 export class TabInlineMenuComponent {
-
   /* ── Inputs ────────────────────────────────────── */
   readonly tab = input.required<TabItem<unknown>>();
   /**
@@ -44,13 +43,19 @@ export class TabInlineMenuComponent {
 
   /* ── Outputs ───────────────────────────────────── */
   readonly colorRequested = output<string>();
-  readonly moveToConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
-  readonly moveToLockedConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
+  readonly moveToConfig = output<{ tabId: string; targetConfigId: string }>();
+  readonly moveToLockedConfig = output<{
+    tabId: string;
+    targetConfigId: string;
+  }>();
   readonly closeRequested = output<string>();
 
   /* ── Local UI state ────────────────────────────── */
   readonly moveMenuOpen = signal(false);
-  readonly moveDropdownPos = signal<{ top: number; left: number }>({ top: 0, left: 0 });
+  readonly moveDropdownPos = signal<{ top: number; left: number }>({
+    top: 0,
+    left: 0,
+  });
 
   /* ── Handlers ──────────────────────────────────── */
 
@@ -71,7 +76,7 @@ export class TabInlineMenuComponent {
 
   onMoveTo(cfg: SavedTabConfig<unknown>, event: MouseEvent): void {
     event.stopPropagation();
-    const payload = { tab: this.tab(), targetConfigId: cfg.id };
+    const payload = { tabId: this.tab().id, targetConfigId: cfg.id };
     if (cfg.locked) {
       this.moveToLockedConfig.emit(payload);
     } else {

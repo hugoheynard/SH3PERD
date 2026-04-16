@@ -1,5 +1,9 @@
-import { InjectionToken, inject, type Type, type AbstractType } from '@angular/core';
-import type { TabItem, SavedTabConfig } from './configurable-tab-bar.types';
+import {
+  InjectionToken,
+  inject,
+  type Type,
+  type AbstractType,
+} from '@angular/core';
 import type { TabMutationService } from './tab-mutation.service';
 
 /**
@@ -11,22 +15,30 @@ import type { TabMutationService } from './tab-mutation.service';
  * mutation, so it's wired via a plain `(output)` binding instead of the
  * handler map.
  */
-export type TabHandlers<TConfig = any> = {
-  tabSelect:       (id: string) => void;
-  tabAdd:          () => void;
-  tabClose:        (id: string) => void;
-  tabRename:       (e: { id: string; title: string }) => void;
-  tabReorder:      (e: { tabId: string; newIndex: number }) => void;
-  tabColorChange:  (e: { id: string; color: string }) => void;
-  configSave:      (name: string) => void;
-  configNew:       () => void;
-  configLoad:      (config: SavedTabConfig<TConfig>) => void;
-  configDelete:    (id: string) => void;
-  configRename:    (e: { configId: string; name: string }) => void;
+export type TabHandlers = {
+  tabSelect: (id: string) => void;
+  tabAdd: () => void;
+  tabClose: (id: string) => void;
+  tabRename: (e: { id: string; title: string }) => void;
+  tabReorder: (e: { tabId: string; newIndex: number }) => void;
+  tabColorChange: (e: { id: string; color: string }) => void;
+  configSave: (name: string) => void;
+  configNew: () => void;
+  configLoad: (configId: string) => void;
+  configDelete: (id: string) => void;
+  configRename: (e: { configId: string; name: string }) => void;
   configTabRemove: (e: { configId: string; tabId: string }) => void;
-  configTabRename: (e: { configId: string; tabId: string; title: string }) => void;
-  configTabMove:   (e: { sourceConfigId: string; targetConfigId: string; tabId: string }) => void;
-  tabMoveToConfig: (e: { tab: TabItem<TConfig>; targetConfigId: string }) => void;
+  configTabRename: (e: {
+    configId: string;
+    tabId: string;
+    title: string;
+  }) => void;
+  configTabMove: (e: {
+    sourceConfigId: string;
+    targetConfigId: string;
+    tabId: string;
+  }) => void;
+  tabMoveToConfig: (e: { tabId: string; targetConfigId: string }) => void;
 };
 
 /**
@@ -53,27 +65,35 @@ export const TAB_HANDLERS = new InjectionToken<TabHandlers>('TAB_HANDLERS');
  * })
  * ```
  */
-export function provideTabHandlers<TConfig>(serviceToken: Type<TabMutationService<TConfig>> | AbstractType<TabMutationService<TConfig>>) {
+export function provideTabHandlers<TConfig>(
+  serviceToken:
+    | Type<TabMutationService<TConfig>>
+    | AbstractType<TabMutationService<TConfig>>,
+) {
   return {
     provide: TAB_HANDLERS,
-    useFactory: (): TabHandlers<TConfig> => {
+    useFactory: (): TabHandlers => {
       const service = inject(serviceToken as Type<TabMutationService<TConfig>>);
       return {
-        tabSelect:       (id) => service.setActiveTab(id),
-        tabAdd:          () => service.addDefaultTab(),
-        tabClose:        (id) => service.closeTab(id),
-        tabRename:       (e) => service.updateTabTitle(e.id, e.title),
-        tabReorder:      (e) => service.reorderTab(e.tabId, e.newIndex),
-        tabColorChange:  (e) => service.setTabColor(e.id, e.color),
-        configSave:      (name) => service.saveTabConfig(name),
-        configNew:       () => service.newConfig(),
-        configLoad:      (config) => service.applyTabConfig(config),
-        configDelete:    (id) => service.deleteTabConfig(id),
-        configRename:    (e) => service.renameTabConfig(e.configId, e.name),
-        configTabRemove: (e) => service.removeTabFromConfig(e.configId, e.tabId),
-        configTabRename: (e) => service.renameTabInConfig(e.configId, e.tabId, e.title),
-        configTabMove:   (e) => service.moveTabToConfig(e.sourceConfigId, e.targetConfigId, e.tabId),
-        tabMoveToConfig: (e) => service.moveActiveTabToConfig(e.tab.id, e.targetConfigId),
+        tabSelect: (id) => service.setActiveTab(id),
+        tabAdd: () => service.addDefaultTab(),
+        tabClose: (id) => service.closeTab(id),
+        tabRename: (e) => service.updateTabTitle(e.id, e.title),
+        tabReorder: (e) => service.reorderTab(e.tabId, e.newIndex),
+        tabColorChange: (e) => service.setTabColor(e.id, e.color),
+        configSave: (name) => service.saveTabConfig(name),
+        configNew: () => service.newConfig(),
+        configLoad: (configId) => service.loadTabConfig(configId),
+        configDelete: (id) => service.deleteTabConfig(id),
+        configRename: (e) => service.renameTabConfig(e.configId, e.name),
+        configTabRemove: (e) =>
+          service.removeTabFromConfig(e.configId, e.tabId),
+        configTabRename: (e) =>
+          service.renameTabInConfig(e.configId, e.tabId, e.title),
+        configTabMove: (e) =>
+          service.moveTabToConfig(e.sourceConfigId, e.targetConfigId, e.tabId),
+        tabMoveToConfig: (e) =>
+          service.moveActiveTabToConfig(e.tabId, e.targetConfigId),
       };
     },
   };

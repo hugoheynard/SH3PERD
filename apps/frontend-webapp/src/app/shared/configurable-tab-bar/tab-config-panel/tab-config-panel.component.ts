@@ -28,12 +28,17 @@ import type { SavedTabConfig } from '../configurable-tab-bar.types';
 @Component({
   selector: 'sh3-tab-config-panel',
   standalone: true,
-  imports: [FormsModule, ButtonComponent, ButtonIconComponent, IconComponent, InputComponent],
+  imports: [
+    FormsModule,
+    ButtonComponent,
+    ButtonIconComponent,
+    IconComponent,
+    InputComponent,
+  ],
   templateUrl: './tab-config-panel.component.html',
   styleUrl: './tab-config-panel.component.scss',
 })
 export class TabConfigPanelComponent {
-
   private toast = inject(ToastService);
 
   /* ── Inputs ────────────────────────────────────── */
@@ -50,13 +55,25 @@ export class TabConfigPanelComponent {
   /* ── Outputs ───────────────────────────────────── */
   readonly configSave = output<string>();
   readonly configNew = output<void>();
-  readonly configLoad = output<SavedTabConfig<unknown>>();
+  readonly configLoad = output<string>();
   readonly configDelete = output<string>();
   readonly configRename = output<{ configId: string; name: string }>();
   readonly configTabRemove = output<{ configId: string; tabId: string }>();
-  readonly configTabRename = output<{ configId: string; tabId: string; title: string }>();
-  readonly configTabMove = output<{ sourceConfigId: string; targetConfigId: string; tabId: string }>();
-  readonly moveToLockedConfig = output<{ sourceConfigId: string; targetConfigId: string; tabId: string }>();
+  readonly configTabRename = output<{
+    configId: string;
+    tabId: string;
+    title: string;
+  }>();
+  readonly configTabMove = output<{
+    sourceConfigId: string;
+    targetConfigId: string;
+    tabId: string;
+  }>();
+  readonly moveToLockedConfig = output<{
+    sourceConfigId: string;
+    targetConfigId: string;
+    tabId: string;
+  }>();
   /** Emitted when the user clicks the lock button (only rendered when `locked` is true). */
   readonly lockClicked = output<void>();
 
@@ -69,9 +86,14 @@ export class TabConfigPanelComponent {
   readonly expandedConfigId = signal<string | null>(null);
   readonly editingConfigNameId = signal<string | null>(null);
   editConfigName = '';
-  readonly editingConfigTabId = signal<{ configId: string; tabId: string } | null>(null);
+  readonly editingConfigTabId = signal<{
+    configId: string;
+    tabId: string;
+  } | null>(null);
   editConfigTabTitle = '';
-  readonly moveMenuTabCtx = signal<{ configId: string; tabId: string } | null>(null);
+  readonly moveMenuTabCtx = signal<{ configId: string; tabId: string } | null>(
+    null,
+  );
 
   /* ── Top-level actions ─────────────────────────── */
 
@@ -84,13 +106,13 @@ export class TabConfigPanelComponent {
   }
 
   toggleSaveForm(): void {
-    this.showSaveForm.update(v => !v);
+    this.showSaveForm.update((v) => !v);
     this.showLoadMenu.set(false);
     this.saveFormName.set('');
   }
 
   toggleLoadMenu(): void {
-    this.showLoadMenu.update(v => !v);
+    this.showLoadMenu.update((v) => !v);
     this.showSaveForm.set(false);
   }
 
@@ -103,10 +125,11 @@ export class TabConfigPanelComponent {
     if (this.showToasts()) this.toast.show(`Config "${name}" saved`, 'success');
   }
 
-  onLoadConfig(config: SavedTabConfig<unknown>): void {
-    this.configLoad.emit(config);
+  onLoadConfig(configId: string, configName: string): void {
+    this.configLoad.emit(configId);
     this.showLoadMenu.set(false);
-    if (this.showToasts()) this.toast.show(`Config "${config.name}" applied`, 'success');
+    if (this.showToasts())
+      this.toast.show(`Config "${configName}" applied`, 'success');
   }
 
   onDeleteConfig(id: string, event: MouseEvent): void {
@@ -119,7 +142,7 @@ export class TabConfigPanelComponent {
 
   toggleConfigExpand(configId: string, event: MouseEvent): void {
     event.stopPropagation();
-    this.expandedConfigId.update(id => id === configId ? null : configId);
+    this.expandedConfigId.update((id) => (id === configId ? null : configId));
   }
 
   startConfigRename(configId: string, name: string, event: MouseEvent): void {
@@ -134,7 +157,12 @@ export class TabConfigPanelComponent {
     this.editingConfigNameId.set(null);
   }
 
-  startConfigTabRename(configId: string, tabId: string, title: string, event: MouseEvent): void {
+  startConfigTabRename(
+    configId: string,
+    tabId: string,
+    title: string,
+    event: MouseEvent,
+  ): void {
     event.stopPropagation();
     this.editingConfigTabId.set({ configId, tabId });
     this.editConfigTabTitle = title;
@@ -144,11 +172,20 @@ export class TabConfigPanelComponent {
     const ctx = this.editingConfigTabId();
     if (!ctx) return;
     const title = this.editConfigTabTitle.trim();
-    if (title) this.configTabRename.emit({ configId: ctx.configId, tabId: ctx.tabId, title });
+    if (title)
+      this.configTabRename.emit({
+        configId: ctx.configId,
+        tabId: ctx.tabId,
+        title,
+      });
     this.editingConfigTabId.set(null);
   }
 
-  onRemoveTabFromConfig(configId: string, tabId: string, event: MouseEvent): void {
+  onRemoveTabFromConfig(
+    configId: string,
+    tabId: string,
+    event: MouseEvent,
+  ): void {
     event.stopPropagation();
     this.configTabRemove.emit({ configId, tabId });
   }
@@ -167,7 +204,11 @@ export class TabConfigPanelComponent {
     event.stopPropagation();
     const ctx = this.moveMenuTabCtx();
     if (!ctx) return;
-    const payload = { sourceConfigId: ctx.configId, targetConfigId: target.id, tabId: ctx.tabId };
+    const payload = {
+      sourceConfigId: ctx.configId,
+      targetConfigId: target.id,
+      tabId: ctx.tabId,
+    };
     if (target.locked) {
       this.moveToLockedConfig.emit(payload);
     } else {
@@ -177,6 +218,6 @@ export class TabConfigPanelComponent {
   }
 
   moveTargetConfigs(sourceConfigId: string): SavedTabConfig<unknown>[] {
-    return this.savedConfigs().filter(c => c.id !== sourceConfigId);
+    return this.savedConfigs().filter((c) => c.id !== sourceConfigId);
   }
 }

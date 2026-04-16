@@ -1,26 +1,43 @@
 <div class="tab-config-actions">
-
   <!-- Save / New / Lock — mutually exclusive.
        When `locked` is true, both the save and the "new blank configuration"
        affordances collapse into a single lock button; picking either would
        lead to creating (or wanting to create) a new saved config, which the
        quota forbids. -->
   @if (locked()) {
-    <sh3-button-icon icon="lock" size="sm" tooltip="Can't save more configurations"
-      (clicked)="lockClicked.emit()" />
+    <sh3-button-icon
+      icon="lock"
+      size="sm"
+      tooltip="Can't save more configurations"
+      (clicked)="lockClicked.emit()"
+    />
   } @else if (activeConfigId()) {
-    <sh3-button-icon icon="file-add" size="sm" tooltip="New blank configuration"
-      (clicked)="onNewConfig($event)" />
+    <sh3-button-icon
+      icon="file-add"
+      size="sm"
+      tooltip="New blank configuration"
+      (clicked)="onNewConfig($event)"
+    />
   } @else {
-    <sh3-button-icon icon="save" size="sm" tooltip="Save current tab configuration"
-      [active]="showSaveForm()" (clicked)="toggleSaveForm()" />
+    <sh3-button-icon
+      icon="save"
+      size="sm"
+      tooltip="Save current tab configuration"
+      [active]="showSaveForm()"
+      (clicked)="toggleSaveForm()"
+    />
   }
 
   <!-- Load button + count badge — always visible, works even when locked
        (existing configs can still be viewed / loaded / managed). -->
   <span class="tab-action-load-wrapper">
-    <sh3-button-icon icon="folder-open" size="sm" tooltip="Load saved configuration"
-      [active]="showLoadMenu()" (clicked)="toggleLoadMenu()" />
+    <sh3-button-icon
+      icon="folder-open"
+      size="sm"
+      tooltip="Load saved configuration"
+      [active]="showLoadMenu()"
+      (clicked)="toggleLoadMenu()"
+    />
     @if (savedConfigs().length) {
       <span class="config-count">{{ savedConfigs().length }}</span>
     }
@@ -29,10 +46,19 @@
   <!-- ── Save form (inline panel) ─────────────── -->
   @if (showSaveForm()) {
     <div class="tab-config-panel tab-config-panel--save">
-      <sh3-input class="config-name-input" size="sm"
-        [ngModel]="saveFormName()" (ngModelChange)="saveFormName.set($event)"
-        placeholder="Config name…" (keydown.enter)="submitSaveForm()" (keydown.escape)="toggleSaveForm()" [autofocus]="true" />
-      <sh3-button variant="primary" size="sm" (clicked)="submitSaveForm()">Save</sh3-button>
+      <sh3-input
+        class="config-name-input"
+        size="sm"
+        [ngModel]="saveFormName()"
+        (ngModelChange)="saveFormName.set($event)"
+        placeholder="Config name…"
+        (keydown.enter)="submitSaveForm()"
+        (keydown.escape)="toggleSaveForm()"
+        [autofocus]="true"
+      />
+      <sh3-button variant="primary" size="sm" (clicked)="submitSaveForm()"
+        >Save</sh3-button
+      >
     </div>
   }
 
@@ -45,29 +71,53 @@
 
       @for (cfg of savedConfigs(); track cfg.id) {
         <div class="config-item-wrapper">
-
           <!-- Config row -->
-          <div class="config-item" [class.config-item--active]="cfg.id === activeConfigId()">
+          <div
+            class="config-item"
+            [class.config-item--active]="cfg.id === activeConfigId()"
+          >
             <sh3-button-icon
-              [icon]="expandedConfigId() === cfg.id ? 'chevron-down' : 'chevron-right'"
-              size="xs" tooltip="Show tabs"
-              (clicked)="toggleConfigExpand(cfg.id, $event)" />
+              [icon]="
+                expandedConfigId() === cfg.id ? 'chevron-down' : 'chevron-right'
+              "
+              size="xs"
+              tooltip="Show tabs"
+              (clicked)="toggleConfigExpand(cfg.id, $event)"
+            />
 
             @if (editingConfigNameId() === cfg.id) {
-              <input class="config-rename-input" [(ngModel)]="editConfigName"
-                (keydown.enter)="commitConfigRename(cfg.id)" (keydown.escape)="editingConfigNameId.set(null)"
-                (blur)="commitConfigRename(cfg.id)" (click)="$event.stopPropagation()" autofocus />
+              <input
+                class="config-rename-input"
+                [(ngModel)]="editConfigName"
+                (keydown.enter)="commitConfigRename(cfg.id)"
+                (keydown.escape)="editingConfigNameId.set(null)"
+                (blur)="commitConfigRename(cfg.id)"
+                (click)="$event.stopPropagation()"
+                autofocus
+              />
             } @else {
-              <span class="config-item-name" (click)="onLoadConfig(cfg)">
+              <span
+                class="config-item-name"
+                (click)="onLoadConfig(cfg.id, cfg.name)"
+              >
                 {{ cfg.name }} <small>({{ cfg.tabs.length }})</small>
               </span>
             }
 
             <div class="config-item-actions">
-              <sh3-button-icon icon="edit" size="xs" tooltip="Rename"
-                (clicked)="startConfigRename(cfg.id, cfg.name, $event)" />
-              <sh3-button-icon icon="bin" tone="critical" size="xs" tooltip="Delete"
-                (clicked)="onDeleteConfig(cfg.id, $event)" />
+              <sh3-button-icon
+                icon="edit"
+                size="xs"
+                tooltip="Rename"
+                (clicked)="startConfigRename(cfg.id, cfg.name, $event)"
+              />
+              <sh3-button-icon
+                icon="bin"
+                tone="critical"
+                size="xs"
+                tooltip="Delete"
+                (clicked)="onDeleteConfig(cfg.id, $event)"
+              />
             </div>
           </div>
 
@@ -76,38 +126,75 @@
             <div class="config-tabs-list">
               @for (tab of cfg.tabs; track tab.id) {
                 <div class="config-tab-item">
-
-                  @if (editingConfigTabId()?.configId === cfg.id && editingConfigTabId()?.tabId === tab.id) {
-                    <input class="config-tab-rename-input" [(ngModel)]="editConfigTabTitle"
-                      (keydown.enter)="commitConfigTabRename()" (keydown.escape)="editingConfigTabId.set(null)"
-                      (blur)="commitConfigTabRename()" (click)="$event.stopPropagation()" autofocus />
+                  @if (
+                    editingConfigTabId()?.configId === cfg.id &&
+                    editingConfigTabId()?.tabId === tab.id
+                  ) {
+                    <input
+                      class="config-tab-rename-input"
+                      [(ngModel)]="editConfigTabTitle"
+                      (keydown.enter)="commitConfigTabRename()"
+                      (keydown.escape)="editingConfigTabId.set(null)"
+                      (blur)="commitConfigTabRename()"
+                      (click)="$event.stopPropagation()"
+                      autofocus
+                    />
                   } @else {
-                    <span class="config-tab-name"
+                    <span
+                      class="config-tab-name"
                       [style.border-left-color]="tab.color || 'transparent'"
-                      [style.border-left-width]="tab.color ? '3px' : '0'">{{ tab.title }}</span>
+                      [style.border-left-width]="tab.color ? '3px' : '0'"
+                      >{{ tab.title }}</span
+                    >
                   }
 
                   <div class="config-tab-actions">
-                    <sh3-button-icon icon="edit" size="xs" tooltip="Rename"
-                      (clicked)="startConfigTabRename(cfg.id, tab.id, tab.title, $event)" />
+                    <sh3-button-icon
+                      icon="edit"
+                      size="xs"
+                      tooltip="Rename"
+                      (clicked)="
+                        startConfigTabRename(cfg.id, tab.id, tab.title, $event)
+                      "
+                    />
                     @if (savedConfigs().length > 1 && cfg.tabs.length > 1) {
-                      <sh3-button-icon icon="arrow-right" size="xs" tooltip="Move"
-                        (clicked)="toggleMoveMenu(cfg.id, tab.id, $event)" />
+                      <sh3-button-icon
+                        icon="arrow-right"
+                        size="xs"
+                        tooltip="Move"
+                        (clicked)="toggleMoveMenu(cfg.id, tab.id, $event)"
+                      />
                     }
                     @if (cfg.tabs.length > 1) {
-                      <sh3-button-icon icon="close" tone="critical" size="xs" tooltip="Remove"
-                        (clicked)="onRemoveTabFromConfig(cfg.id, tab.id, $event)" />
+                      <sh3-button-icon
+                        icon="close"
+                        tone="critical"
+                        size="xs"
+                        tooltip="Remove"
+                        (clicked)="
+                          onRemoveTabFromConfig(cfg.id, tab.id, $event)
+                        "
+                      />
                     }
                   </div>
 
                   <!-- Move-to submenu -->
-                  @if (moveMenuTabCtx()?.configId === cfg.id && moveMenuTabCtx()?.tabId === tab.id) {
+                  @if (
+                    moveMenuTabCtx()?.configId === cfg.id &&
+                    moveMenuTabCtx()?.tabId === tab.id
+                  ) {
                     <div class="config-move-menu">
                       <span class="config-move-label">Move to:</span>
-                      @for (target of moveTargetConfigs(cfg.id); track target.id) {
-                        <sh3-button variant="ghost" size="sm"
+                      @for (
+                        target of moveTargetConfigs(cfg.id);
+                        track target.id
+                      ) {
+                        <sh3-button
+                          variant="ghost"
+                          size="sm"
                           [class.config-move-target--locked]="target.locked"
-                          (clicked)="onMoveTabToConfig(target, $event)">
+                          (clicked)="onMoveTabToConfig(target, $event)"
+                        >
                           @if (target.locked) {
                             <sh3-icon name="lock" size="xs" />
                           }
@@ -124,5 +211,4 @@
       }
     </div>
   }
-
 </div>

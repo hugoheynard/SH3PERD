@@ -2,12 +2,14 @@
 
 > **Component-level details, architecture walkthrough and lock contract
 > live next to the code:**
+>
 > - [`apps/frontend-webapp/src/app/shared/configurable-tab-bar/README.md`](../../apps/frontend-webapp/src/app/shared/configurable-tab-bar/README.md) — full component documentation with flow diagrams
 > - [`apps/frontend-webapp/src/app/shared/configurable-tab-bar/TODO.md`](../../apps/frontend-webapp/src/app/shared/configurable-tab-bar/TODO.md) — deferred items and backlog
 
 ## Status
 
 ### Shipped
+
 - [x] Component split into sub-components (strip + inline-menu + config-panel)
 - [x] Raw `<button>` migrated to `sh3-button` / `sh3-button-icon` across all four templates
 - [x] **Agnostic API** — the bar is stateless wrt plans / quotas; the host passes `tabs`, `savedConfigs`, and three lock flags (`tabLocked`, `configLocked`, `cfg.locked`)
@@ -15,18 +17,21 @@
 - [x] **Plan-aware popovers** — `TabLimitPopoverComponent` for tab quota, `SaveRecallLockedPopoverComponent` with plan-branching copy (Free vs Pro-at-cap) for config quota, same for move-to-full-config
 - [x] **`MusicTabQuotaChecker`** — single source of truth for all `canAddTab` / `canAddConfig` / `canMoveToConfig` answers, read by both the UI and the service gates
 - [x] **Defense-in-depth service gates** — `MusicTabMutationService` overrides `addDefaultTab` / `saveTabConfig` / `moveActiveTabToConfig` / `moveTabToConfig` with quota no-ops (null-plan fallback prevents race bypass during `/quota/me` loading)
+- [x] **Public event API no longer leaks `SavedTabConfig<unknown>`** — `configLoad` now emits `configId`, move events emit `{ tabId, targetConfigId }`, and the mutation layer resolves the generic object from state internally
 
 ### Backlog
+
 - [x] **Unit tests on `TabMutationService`** — 48 specs in [`tab-mutation.service.spec.ts`](../../apps/frontend-webapp/src/app/shared/configurable-tab-bar/tab-mutation.service.spec.ts) cover every public mutation, the auto-sync post-processor, `onChanged` contract, and every `moveActiveTabToConfig` edge case (strip-empties, target !== active, target === active subtle interaction). Jest runner repaired along the way.
 - [ ] DnD reorder moves to correct position — **deferred** (see local TODO § Priority #2)
 - [ ] Migrate move-to dropdowns to `@angular/cdk/overlay` — **priority #3** for 8+ (see local TODO)
 - [ ] Replace `_handlers` mutable workaround — backlog (see local TODO)
-- [ ] Type-safe `dispatch` (remove `as any`) — backlog (see local TODO)
+- [ ] Further narrow `dispatch()` runtime casts — backlog (see local TODO)
 - [ ] Validate reusability with a second consumer — backlog (see local TODO)
 
 ## Testing Checklist
 
 ### Tab operations
+
 - [x] Tab CRUD: add, close, rename (double-click), color picker
 - [x] Active tab operations: menu (⋮), color, move-to-config, close
 - [x] No duplicate tab IDs
@@ -34,6 +39,7 @@
 - [ ] DnD reorder moves to correct position — deferred
 
 ### Config operations
+
 - [x] Config operations: save, recall, new, delete, rename
 - [x] Config tab operations: rename, remove, move between configs
 - [x] Auto-sync: modify tabs while on a config → config updates in saved config
@@ -41,6 +47,7 @@
 - [x] Move tab removes from source config (no duplication)
 
 ### Quota / lock
+
 - [x] Tab quota: `+` button → 🔒 at plan limit, click surfaces tab-limit popover
 - [x] Config quota: save/new button → 🔒 at plan limit, load stays open
 - [x] Per-config quota: target row in move-to dropdowns → dimmed + 🔒 when target config is full, click surfaces tab-limit popover
@@ -49,6 +56,7 @@
 - [x] Downgrade: Pro→Free with existing configs — save locked, load still shows the frozen configs (read-only management possible)
 
 ### Architecture
+
 - [x] Type-safe mapping (zero `as any` in state service)
 - [x] Built-in toasts for config operations
 - [x] `provideTabHandlers()` DI wiring (replaces output boilerplate)
@@ -56,4 +64,4 @@
 - [x] Component split into sub-components
 - [x] Unit tests on `TabMutationService` — 48 specs
 - [ ] Replace `_handlers` mutable workaround
-- [ ] Type-safe `dispatch` (remove `as any`)
+- [ ] Further narrow `dispatch()` runtime casts

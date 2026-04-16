@@ -13,15 +13,15 @@ domain logic and UI affordances fit.
 
 ## At a glance
 
-| What | Where |
-|------|-------|
-| Entry point | [`ConfigurableTabBarComponent`](./configurable-tab-bar.component.ts) |
-| Public API | [`index.ts`](./index.ts) (re-exports) |
-| Types | [`configurable-tab-bar.types.ts`](./configurable-tab-bar.types.ts) |
-| Mutation service base class | [`tab-mutation.service.ts`](./tab-mutation.service.ts) |
-| Handler wiring | [`tab-event.helpers.ts`](./tab-event.helpers.ts) |
-| Sub-components | [`tab-strip/`](./tab-strip/), [`tab-inline-menu/`](./tab-inline-menu/), [`tab-config-panel/`](./tab-config-panel/) |
-| Outstanding work | [`TODO.md`](./TODO.md) |
+| What                        | Where                                                                                                              |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Entry point                 | [`ConfigurableTabBarComponent`](./configurable-tab-bar.component.ts)                                               |
+| Public API                  | [`index.ts`](./index.ts) (re-exports)                                                                              |
+| Types                       | [`configurable-tab-bar.types.ts`](./configurable-tab-bar.types.ts)                                                 |
+| Mutation service base class | [`tab-mutation.service.ts`](./tab-mutation.service.ts)                                                             |
+| Handler wiring              | [`tab-event.helpers.ts`](./tab-event.helpers.ts)                                                                   |
+| Sub-components              | [`tab-strip/`](./tab-strip/), [`tab-inline-menu/`](./tab-inline-menu/), [`tab-config-panel/`](./tab-config-panel/) |
+| Outstanding work            | [`TODO.md`](./TODO.md)                                                                                             |
 
 Only consumer today: [`music-library-page`](../../features/musicLibrary/music-library-page/).
 
@@ -50,12 +50,12 @@ flowchart TB
 
 ### Responsibility split
 
-| Component | Owns | Never owns |
-|-----------|------|-----------|
+| Component                     | Owns                                                                                                          | Never owns                                 |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | `ConfigurableTabBarComponent` | Public API surface, `TAB_HANDLERS` dispatch, shared color picker `<input>`, add/lock button, projection slots | Any domain logic (plans, quotas, popovers) |
-| `TabStripComponent` | The `@for` loop, DnD wiring, inline rename state, ⋮ toggle | Mutations (bubbled up) |
-| `TabInlineMenuComponent` | Color / move-to-config / close affordances per tab, move-dropdown position | Saved config data (received as input) |
-| `TabConfigPanelComponent` | Save/new/load buttons + floating panels, locked variant, config edit state, built-in toasts | Tabs (only configs) |
+| `TabStripComponent`           | The `@for` loop, DnD wiring, inline rename state, ⋮ toggle                                                    | Mutations (bubbled up)                     |
+| `TabInlineMenuComponent`      | Color / move-to-config / close affordances per tab, move-dropdown position                                    | Saved config data (received as input)      |
+| `TabConfigPanelComponent`     | Save/new/load buttons + floating panels, locked variant, config edit state, built-in toasts                   | Tabs (only configs)                        |
 
 ---
 
@@ -63,45 +63,45 @@ flowchart TB
 
 ### Inputs
 
-| Name | Type | Default | Purpose |
-|------|------|---------|---------|
-| `tabs` | `TabItem<unknown>[]` | *required* | Open tabs rendered in the strip |
-| `activeTabId` | `string` | *required* | Currently selected tab |
-| `activeConfigId` | `string \| null` | `null` | Non-null when the active tab set mirrors a saved config — toggles Save↔New button |
-| `savedConfigs` | `SavedTabConfig<unknown>[]` | `[]` | Named snapshots the user has saved |
-| `showToasts` | `boolean` | `true` | Enable built-in toasts on save / new / load / delete |
-| `tabLocked` | `boolean` | `false` | **Tab resource.** Swap `+` button for a `lock` and route clicks to `tabLockClicked` instead of `tabAdd`. |
-| `configLocked` | `boolean` | `false` | **Config resource.** Swap the save / new-config button for a `lock` and route clicks to `configLockClicked`. Load + per-config edit surface stay open so existing configs remain accessible. Also hides the per-tab "move to config" action. |
+| Name             | Type                        | Default    | Purpose                                                                                                                                                                                                                                      |
+| ---------------- | --------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tabs`           | `TabItem<unknown>[]`        | _required_ | Open tabs rendered in the strip                                                                                                                                                                                                              |
+| `activeTabId`    | `string`                    | _required_ | Currently selected tab                                                                                                                                                                                                                       |
+| `activeConfigId` | `string \| null`            | `null`     | Non-null when the active tab set mirrors a saved config — toggles Save↔New button                                                                                                                                                            |
+| `savedConfigs`   | `SavedTabConfig<unknown>[]` | `[]`       | Named snapshots the user has saved                                                                                                                                                                                                           |
+| `showToasts`     | `boolean`                   | `true`     | Enable built-in toasts on save / new / load / delete                                                                                                                                                                                         |
+| `tabLocked`      | `boolean`                   | `false`    | **Tab resource.** Swap `+` button for a `lock` and route clicks to `tabLockClicked` instead of `tabAdd`.                                                                                                                                     |
+| `configLocked`   | `boolean`                   | `false`    | **Config resource.** Swap the save / new-config button for a `lock` and route clicks to `configLockClicked`. Load + per-config edit surface stay open so existing configs remain accessible. Also hides the per-tab "move to config" action. |
 
 Per-config lock is **not a separate input** — it travels on the `SavedTabConfig` data itself via the optional `locked?: boolean` field. See "State model" below and the `moveToLockedConfigClicked` output.
 
 ### Outputs
 
-| Name | Payload | Fires when |
-|------|---------|------------|
-| `tabSelect` | `string` | User clicks a tab (id) |
-| `tabAdd` | `void` | User clicks `+` (only unlocked) |
-| `tabClose` | `string` | User clicks × inside the ⋮ menu |
-| `tabRename` | `{ id; title }` | User commits an inline rename |
-| `tabReorder` | `{ tabId; newIndex }` | DnD drop (⚠ currently always drops at end — see [TODO.md](./TODO.md)) |
-| `tabColorChange` | `{ id; color }` | User picks a colour in the hidden picker |
-| `tabMoveToConfig` | `{ tab; targetConfigId }` | User picks a target in the ⋮ move-to dropdown |
-| `configSave` | `string` | User submits the save form (name) |
-| `configNew` | `void` | User clicks "new blank configuration" |
-| `configLoad` | `SavedTabConfig<unknown>` | User picks a config in the load menu |
-| `configDelete` | `string` | User deletes a saved config (id) |
-| `configRename` | `{ configId; name }` | User commits a config rename |
-| `configTabRemove` | `{ configId; tabId }` | User removes a tab from a config in the load dropdown |
-| `configTabRename` | `{ configId; tabId; title }` | User commits a tab rename inside the load dropdown |
-| `configTabMove` | `{ sourceConfigId; targetConfigId; tabId }` | User moves a tab between configs in the load dropdown |
-| `tabLockClicked` | `void` | User clicks the lock affordance (replaces the `+` button when `tabLocked`) |
-| `configLockClicked` | `void` | User clicks the lock affordance (replaces the config panel when `configLocked`) |
-| `moveToLockedConfigClicked` | `{ targetConfigId }` | User picks a `SavedTabConfig` whose `locked` flag is `true` in either move-to dropdown |
+| Name                        | Payload                                     | Fires when                                                                             |
+| --------------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `tabSelect`                 | `string`                                    | User clicks a tab (id)                                                                 |
+| `tabAdd`                    | `void`                                      | User clicks `+` (only unlocked)                                                        |
+| `tabClose`                  | `string`                                    | User clicks × inside the ⋮ menu                                                        |
+| `tabRename`                 | `{ id; title }`                             | User commits an inline rename                                                          |
+| `tabReorder`                | `{ tabId; newIndex }`                       | DnD drop (⚠ currently always drops at end — see [TODO.md](./TODO.md))                  |
+| `tabColorChange`            | `{ id; color }`                             | User picks a colour in the hidden picker                                               |
+| `tabMoveToConfig`           | `{ tabId; targetConfigId }`                 | User picks a target in the ⋮ move-to dropdown                                          |
+| `configSave`                | `string`                                    | User submits the save form (name)                                                      |
+| `configNew`                 | `void`                                      | User clicks "new blank configuration"                                                  |
+| `configLoad`                | `string`                                    | User picks a config in the load menu (config id)                                       |
+| `configDelete`              | `string`                                    | User deletes a saved config (id)                                                       |
+| `configRename`              | `{ configId; name }`                        | User commits a config rename                                                           |
+| `configTabRemove`           | `{ configId; tabId }`                       | User removes a tab from a config in the load dropdown                                  |
+| `configTabRename`           | `{ configId; tabId; title }`                | User commits a tab rename inside the load dropdown                                     |
+| `configTabMove`             | `{ sourceConfigId; targetConfigId; tabId }` | User moves a tab between configs in the load dropdown                                  |
+| `tabLockClicked`            | `void`                                      | User clicks the lock affordance (replaces the `+` button when `tabLocked`)             |
+| `configLockClicked`         | `void`                                      | User clicks the lock affordance (replaces the config panel when `configLocked`)        |
+| `moveToLockedConfigClicked` | `{ targetConfigId }`                        | User picks a `SavedTabConfig` whose `locked` flag is `true` in either move-to dropdown |
 
 ### Content projection slots
 
-| Slot | Where it renders | Example |
-|------|------------------|---------|
+| Slot               | Where it renders                            | Example                                        |
+| ------------------ | ------------------------------------------- | ---------------------------------------------- |
 | `[tabBarTrailing]` | Between the add button and the config panel | Search input, view toggle, custom inline stats |
 
 ---
@@ -125,7 +125,7 @@ export class MusicLibraryPageComponent { … }
 ### Subclass `TabMutationService`
 
 ```ts
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class MusicTabMutationService extends TabMutationService<MusicTabConfig> {
   // implement the abstract state signal…
 }
@@ -144,6 +144,19 @@ flowchart LR
 Individual `(output)` bindings still work side-by-side with the handler map —
 if a host binds `(tabRename)="onSomething()"` on top of `provideTabHandlers`,
 both fire for every event.
+
+### Public event boundary
+
+The bar's public outputs deliberately emit **UI identifiers / intent**, not
+generic domain objects:
+
+- `configLoad` emits `configId`
+- move-to events emit `{ tabId, targetConfigId }`
+
+The generic `TConfig` remains in the state model and mutation layer
+(`TabItem<TConfig>`, `SavedTabConfig<TConfig>`, `TabMutationService<TConfig>`),
+where it carries real value. This keeps the public design-system API cleaner
+and avoids leaking `SavedTabConfig<unknown>` into consumers.
 
 ### Why `tabLockClicked` / `configLockClicked` stay out of `TabHandlers`
 
@@ -409,10 +422,10 @@ the zone). Fixing it is deferred, see [TODO.md § Deferred](./TODO.md).
 
 The bar exposes three uniform lock surfaces — one per resource type:
 
-| Resource | Where the lock state comes from | Output | Visual swap |
-|----------|---------------------------------|--------|-------------|
-| **Tab** | `[tabLocked]` input | `tabLockClicked` | `+` → `lock` icon |
-| **Config** | `[configLocked]` input | `configLockClicked` | Save / new-config button → `lock` icon (load stays open) |
+| Resource                        | Where the lock state comes from             | Output                      | Visual swap                                                       |
+| ------------------------------- | ------------------------------------------- | --------------------------- | ----------------------------------------------------------------- |
+| **Tab**                         | `[tabLocked]` input                         | `tabLockClicked`            | `+` → `lock` icon                                                 |
+| **Config**                      | `[configLocked]` input                      | `configLockClicked`         | Save / new-config button → `lock` icon (load stays open)          |
 | **Per-config** (tabs-in-config) | `SavedTabConfig.locked` on each config item | `moveToLockedConfigClicked` | Matching row(s) in every move-to dropdown → dimmed + `lock` glyph |
 
 The first two are binary "the whole bar is in state X" switches, so they
@@ -464,7 +477,7 @@ covers:
 
 - The async race during initial plan load (before `UserContextService.plan()`
   resolves, the UI lock hasn't kicked in yet — the checker's `null →
-  most-restrictive` fallback protects the service).
+most-restrictive` fallback protects the service).
 - Any future code path that reaches the service without going through
   the bar (keyboard shortcuts, imports, tests).
 - Custom host bindings that forget to wire one of the lock inputs.
@@ -473,14 +486,14 @@ covers:
 
 ## Downgrade / upgrade matrix
 
-| Plan state | `tabLocked` | `configLocked` | `cfg.locked` on each saved config | Effect |
-|------------|-------------|----------------|-----------------------------------|--------|
-| Free (first visit) | false until 3 tabs | **true** (0 configs quota) | n/a (no configs ever) | Add works up to 3 tabs. Save / new-config is locked. Load stays open but empty. Per-tab move-to hidden. |
-| Free (hit tab limit) | **true** | **true** | n/a | Both global locks active. Clicking either surfaces the host's popover. |
-| Pro (nominal, 0-4 configs) | false until 10 tabs | false (up to 5 configs) | true for configs with `tabs.length ≥ 10` | Full bar. A config that fills up (10 tabs) auto-locks as a move-to target. |
-| Pro at config cap (5/5) | false until 10 tabs | **true** (can't add more configs) | based on per-config tab count | Save / new-config swap to a lock; existing 5 configs still loadable / renamable / deletable from the load menu. |
-| Pro → Free downgrade with saved configs | false until 3 tabs | **true** (0 configs quota) | based on per-config tab count | Save locked, load still shows the old configs (read-only management). Per-tab move-to hidden. Re-upgrade re-opens save. |
-| Plan signal not loaded yet | false | **true** (0 configs quota) | `false` on all configs | `MusicTabQuotaChecker` treats null plan as most-restrictive (free → 3 tabs / 0 configs), so service gates block adds before the UI lock catches up. |
+| Plan state                              | `tabLocked`         | `configLocked`                    | `cfg.locked` on each saved config        | Effect                                                                                                                                              |
+| --------------------------------------- | ------------------- | --------------------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Free (first visit)                      | false until 3 tabs  | **true** (0 configs quota)        | n/a (no configs ever)                    | Add works up to 3 tabs. Save / new-config is locked. Load stays open but empty. Per-tab move-to hidden.                                             |
+| Free (hit tab limit)                    | **true**            | **true**                          | n/a                                      | Both global locks active. Clicking either surfaces the host's popover.                                                                              |
+| Pro (nominal, 0-4 configs)              | false until 10 tabs | false (up to 5 configs)           | true for configs with `tabs.length ≥ 10` | Full bar. A config that fills up (10 tabs) auto-locks as a move-to target.                                                                          |
+| Pro at config cap (5/5)                 | false until 10 tabs | **true** (can't add more configs) | based on per-config tab count            | Save / new-config swap to a lock; existing 5 configs still loadable / renamable / deletable from the load menu.                                     |
+| Pro → Free downgrade with saved configs | false until 3 tabs  | **true** (0 configs quota)        | based on per-config tab count            | Save locked, load still shows the old configs (read-only management). Per-tab move-to hidden. Re-upgrade re-opens save.                             |
+| Plan signal not loaded yet              | false               | **true** (0 configs quota)        | `false` on all configs                   | `MusicTabQuotaChecker` treats null plan as most-restrictive (free → 3 tabs / 0 configs), so service gates block adds before the UI lock catches up. |
 
 The bar does not own the plan check. The host computes each boolean from
 whatever source of truth it wants — `UserContextService`, a route data
@@ -519,7 +532,7 @@ service base, and the types are public.
 
 ```ts
 // music-tab-quota-checker.service.ts
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class MusicTabQuotaChecker {
   readonly maxTabs = computed(() => maxTabsForPlan(this.userCtx.plan()));
 
@@ -528,15 +541,14 @@ export class MusicTabQuotaChecker {
   }
   isConfigFull(id: string): boolean {
     const max = this.maxTabs();
-    const cfg = this.state.tabState().savedTabConfigs?.find(c => c.id === id);
+    const cfg = this.state.tabState().savedTabConfigs?.find((c) => c.id === id);
     return max !== -1 && !!cfg && cfg.tabs.length >= max;
   }
-  canMoveToConfig(id: string): boolean { return !this.isConfigFull(id); }
+  canMoveToConfig(id: string): boolean {
+    return !this.isConfigFull(id);
+  }
 
-  readonly savedConfigsWithLock = computed(() =>
-    (this.state.tabState().savedTabConfigs ?? [])
-      .map(c => ({ ...c, locked: this.maxTabs() !== -1 && c.tabs.length >= this.maxTabs() }))
-  );
+  readonly savedConfigsWithLock = computed(() => (this.state.tabState().savedTabConfigs ?? []).map((c) => ({ ...c, locked: this.maxTabs() !== -1 && c.tabs.length >= this.maxTabs() })));
 }
 ```
 
@@ -578,17 +590,7 @@ openConfigFullPopover(_e: { targetConfigId: string }): void {
 ```
 
 ```html
-<sh3-configurable-tab-bar
-  [tabs]="selector.tabs()"
-  [activeTabId]="selector.activeTabId()"
-  [activeConfigId]="selector.activeConfigId()"
-  [savedConfigs]="quota.savedConfigsWithLock()"
-  [tabLocked]="tabLocked()"
-  [configLocked]="configLocked()"
-  (tabLockClicked)="openTabQuotaPopover()"
-  (configLockClicked)="openConfigQuotaPopover()"
-  (moveToLockedConfigClicked)="openConfigFullPopover($event)">
-
+<sh3-configurable-tab-bar [tabs]="selector.tabs()" [activeTabId]="selector.activeTabId()" [activeConfigId]="selector.activeConfigId()" [savedConfigs]="quota.savedConfigsWithLock()" [tabLocked]="tabLocked()" [configLocked]="configLocked()" (tabLockClicked)="openTabQuotaPopover()" (configLockClicked)="openConfigQuotaPopover()" (moveToLockedConfigClicked)="openConfigFullPopover($event)">
   <div tabBarTrailing>
     <!-- domain-specific search input, view toggle, whatever -->
   </div>

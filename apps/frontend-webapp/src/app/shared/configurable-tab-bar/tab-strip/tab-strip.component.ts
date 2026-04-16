@@ -21,12 +21,17 @@ import { TabInlineMenuComponent } from '../tab-inline-menu/tab-inline-menu.compo
 @Component({
   selector: 'sh3-tab-strip',
   standalone: true,
-  imports: [FormsModule, ButtonIconComponent, DndDragDirective, DndDropZoneDirective, TabInlineMenuComponent],
+  imports: [
+    FormsModule,
+    ButtonIconComponent,
+    DndDragDirective,
+    DndDropZoneDirective,
+    TabInlineMenuComponent,
+  ],
   templateUrl: './tab-strip.component.html',
   styleUrl: './tab-strip.component.scss',
 })
 export class TabStripComponent {
-
   /* ── Inputs ────────────────────────────────────── */
   readonly tabs = input.required<TabItem<unknown>[]>();
   readonly activeTabId = input.required<string>();
@@ -40,8 +45,14 @@ export class TabStripComponent {
   readonly tabRename = output<{ id: string; title: string }>();
   readonly tabReorder = output<{ tabId: string; newIndex: number }>();
   readonly tabColorRequested = output<string>();
-  readonly tabMoveToConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
-  readonly tabMoveToLockedConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
+  readonly tabMoveToConfig = output<{
+    tabId: string;
+    targetConfigId: string;
+  }>();
+  readonly tabMoveToLockedConfig = output<{
+    tabId: string;
+    targetConfigId: string;
+  }>();
 
   /* ── Local UI state ────────────────────────────── */
   readonly editingTabId = signal<string | null>(null);
@@ -67,7 +78,7 @@ export class TabStripComponent {
 
   toggleTabMenu(tabId: string, event: MouseEvent): void {
     event.stopPropagation();
-    this.openTabMenuId.update(id => id === tabId ? null : tabId);
+    this.openTabMenuId.update((id) => (id === tabId ? null : tabId));
   }
 
   commitRename(tabId: string): void {
@@ -87,12 +98,12 @@ export class TabStripComponent {
     this.openTabMenuId.set(null);
   }
 
-  onMoveToConfig(event: { tab: TabItem<unknown>; targetConfigId: string }): void {
+  onMoveToConfig(event: { tabId: string; targetConfigId: string }): void {
     this.tabMoveToConfig.emit(event);
     this.openTabMenuId.set(null);
   }
 
-  onMoveToLockedConfig(event: { tab: TabItem<unknown>; targetConfigId: string }): void {
+  onMoveToLockedConfig(event: { tabId: string; targetConfigId: string }): void {
     this.tabMoveToLockedConfig.emit(event);
     this.openTabMenuId.set(null);
   }
@@ -108,7 +119,7 @@ export class TabStripComponent {
     if (drag.type !== 'tab') return;
     const tabId = drag.data.tabId;
     const tabs = this.tabs();
-    const currentIndex = tabs.findIndex(t => t.id === tabId);
+    const currentIndex = tabs.findIndex((t) => t.id === tabId);
     if (currentIndex === -1) return;
     // NOTE: drop-at-end-only — deferred. See ../TODO.md § Deferred.
     this.tabReorder.emit({ tabId, newIndex: tabs.length - 1 });

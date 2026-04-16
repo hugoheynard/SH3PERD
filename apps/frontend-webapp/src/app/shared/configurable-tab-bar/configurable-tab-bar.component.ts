@@ -1,9 +1,39 @@
-import { Component, ElementRef, inject, input, output, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  input,
+  output,
+  ViewChild,
+} from '@angular/core';
 import { ButtonIconComponent } from '../button-icon/button-icon.component';
 import type { TabItem, SavedTabConfig } from './configurable-tab-bar.types';
 import { TAB_HANDLERS, type TabHandlers } from './tab-event.helpers';
 import { TabStripComponent } from './tab-strip/tab-strip.component';
 import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.component';
+
+type TabBarDispatchPayloads = {
+  tabSelect: string;
+  tabClose: string;
+  tabRename: { id: string; title: string };
+  tabReorder: { tabId: string; newIndex: number };
+  tabColorChange: { id: string; color: string };
+  configSave: string;
+  configNew: void;
+  configLoad: string;
+  configDelete: string;
+  configRename: { configId: string; name: string };
+  configTabRemove: { configId: string; tabId: string };
+  configTabRename: { configId: string; tabId: string; title: string };
+  configTabMove: {
+    sourceConfigId: string;
+    targetConfigId: string;
+    tabId: string;
+  };
+  tabMoveToConfig: { tabId: string; targetConfigId: string };
+};
+
+type TabBarDispatchKey = keyof TabBarDispatchPayloads;
 
 /**
  * Generic, reusable tab bar with save/recall configs, DnD reorder, color coding, and inline editing.
@@ -64,8 +94,9 @@ import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.com
   styleUrl: './configurable-tab-bar.component.scss',
 })
 export class ConfigurableTabBarComponent {
-
-  private _handlers: TabHandlers | null = inject(TAB_HANDLERS, { optional: true });
+  private _handlers: TabHandlers | null = inject(TAB_HANDLERS, {
+    optional: true,
+  });
 
   /* ── Inputs ────────────────────────────────────── */
   readonly tabs = input.required<TabItem<unknown>[]>();
@@ -97,13 +128,24 @@ export class ConfigurableTabBarComponent {
   readonly tabColorChange = output<{ id: string; color: string }>();
   readonly configSave = output<string>();
   readonly configNew = output<void>();
-  readonly configLoad = output<SavedTabConfig<unknown>>();
+  readonly configLoad = output<string>();
   readonly configDelete = output<string>();
   readonly configRename = output<{ configId: string; name: string }>();
   readonly configTabRemove = output<{ configId: string; tabId: string }>();
-  readonly configTabRename = output<{ configId: string; tabId: string; title: string }>();
-  readonly configTabMove = output<{ sourceConfigId: string; targetConfigId: string; tabId: string }>();
-  readonly tabMoveToConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
+  readonly configTabRename = output<{
+    configId: string;
+    tabId: string;
+    title: string;
+  }>();
+  readonly configTabMove = output<{
+    sourceConfigId: string;
+    targetConfigId: string;
+    tabId: string;
+  }>();
+  readonly tabMoveToConfig = output<{
+    tabId: string;
+    targetConfigId: string;
+  }>();
   /** Emitted when the user clicks the tab-resource lock button (only rendered when `tabLocked`). */
   readonly tabLockClicked = output<void>();
   /** Emitted when the user clicks the config-resource lock button (only rendered when `configLocked`). */
@@ -139,9 +181,21 @@ export class ConfigurableTabBarComponent {
    * Calls tabHandlers (if set) then emits the output. This keeps both the
    * TAB_HANDLERS wiring and the (output) bindings working side-by-side. */
 
-  dispatch<K extends keyof TabHandlers<unknown>>(key: K, payload: Parameters<TabHandlers<unknown>[K]>[0]): void {
+  dispatch<K extends TabBarDispatchKey>(
+    key: K,
+    payload: TabBarDispatchPayloads[K],
+  ): void {
     const handlers = this._handlers;
-    if (handlers) (handlers[key] as (p: unknown) => void)(payload);
-    (this[key] as { emit: (p: unknown) => void }).emit(payload);
+    const handler = handlers?.[key] as
+      | ((payload: TabBarDispatchPayloads[K]) => void)
+      | undefined;
+    const emitter = this[key] as {
+      emit: (payload: TabBarDispatchPayloads[K]) => void;
+    };
+
+    if (handler) {
+      handler(payload);
+    }
+    emitter.emit(payload);
   }
 }
