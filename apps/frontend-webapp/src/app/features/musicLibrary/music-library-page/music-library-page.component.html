@@ -24,11 +24,12 @@
       [tabs]="selector.tabs()"
       [activeTabId]="selector.activeTabId()"
       [activeConfigId]="selector.activeConfigId()"
-      [savedConfigs]="selector.savedTabConfigs()"
+      [savedConfigs]="quota.savedConfigsWithLock()"
       [locked]="tabLimitReached()"
       [saveRecallLocked]="saveRecallLocked()"
       (lockClicked)="openTabLimitPopover()"
       (saveRecallLockClicked)="openSaveRecallLockedPopover()"
+      (moveToLockedConfigClicked)="openConfigFullPopover($event)"
     >
       <!-- Music-specific: search input -->
       <div tabBarTrailing class="tab-search">

@@ -29,6 +29,7 @@ import { UpgradePanelComponent } from '../../../core/components/upgrade-panel/up
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { TabLimitPopoverComponent } from '../tab-limit-popover/tab-limit-popover.component';
 import { SaveRecallLockedPopoverComponent } from '../save-recall-locked-popover/save-recall-locked-popover.component';
+import { MusicTabQuotaChecker } from '../services/music-tab-quota-checker.service';
 
 @Component({
   selector: 'app-music-library-page',
@@ -57,6 +58,7 @@ export class MusicLibraryPageComponent implements OnInit {
   public selector         = inject(MusicLibrarySelectorService);
   private stateService    = inject(MusicLibraryStateService);
   private tabService      = inject(MusicTabMutationService);
+  protected quota         = inject(MusicTabQuotaChecker);
   private mutation        = inject(MusicLibraryMutationService);
   private versionApi      = inject(MusicVersionApiService);
   private trackApi        = inject(MusicTrackApiService);
@@ -69,27 +71,16 @@ export class MusicLibraryPageComponent implements OnInit {
   /** Mastering modal context — shared between card and table views. */
   readonly masteringContext = signal<TMasteringModalContext | null>(null);
 
-  /* ── Quota-derived tab limits ── */
-
-  /** Max tabs allowed by plan. Free = 3, Pro = 5, Max+ = unlimited. */
-  readonly maxTabs = computed(() => {
-    const plan = this.userCtx.plan();
-    if (plan === 'artist_free') return 3;
-    if (plan === 'artist_pro') return 5;
-    return -1; // unlimited
-  });
+  /* ── Quota-derived tab limits ──
+   * The quota math lives in `MusicTabMutationService` (for service-level
+   * gates) and `MusicTabQuotaChecker` (for UI-level queries). This component
+   * just derives the boolean flags the tab bar expects from those two. */
 
   /** True when the open tab count has caught up to the plan's max. */
-  readonly tabLimitReached = computed(() => {
-    const max = this.maxTabs();
-    return max !== -1 && this.selector.tabs().length >= max;
-  });
+  readonly tabLimitReached = computed(() => !this.quota.canAddTab());
 
   /** Save/recall is locked on the free plan. */
-  readonly saveRecallLocked = computed(() => {
-    const plan = this.userCtx.plan();
-    return plan === 'artist_free';
-  });
+  readonly saveRecallLocked = computed(() => this.userCtx.plan() === 'artist_free');
 
   readonly activeSearchQuery = computed(() => {
     const tab = this.selector.activeTab();
@@ -149,6 +140,13 @@ export class MusicLibraryPageComponent implements OnInit {
   /** Called when the save/recall lock button is clicked — shows the upgrade popover. */
   openSaveRecallLockedPopover(): void {
     this.layout.setPopover(SaveRecallLockedPopoverComponent);
+  }
+
+  /** Called when the user tries to move a tab into a config that's already at its quota. */
+  openConfigFullPopover(_event: { targetConfigId: string }): void {
+    // Reuse the tab-limit popover copy — "this config is full, upgrade to add more".
+    // _event.targetConfigId is available if we later want to customise the message.
+    this.layout.setPopover(TabLimitPopoverComponent);
   }
 
   /* ── Add entry ── */
