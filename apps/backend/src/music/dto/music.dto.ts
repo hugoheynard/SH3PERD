@@ -6,7 +6,7 @@ import { ApiModel } from '../../utils/swagger/api-model.swagger.util.js';
 const GENRES = ['pop', 'rock', 'jazz', 'edm', 'soul-disco', 'ethnic', 'various'] as const;
 const VERSION_TYPES = ['original', 'cover', 'remix', 'acoustic'] as const;
 const RATINGS = [1, 2, 3, 4] as const;
-const DERIVATION_TYPES = ['pitch_shift', 'tempo_change'] as const;
+const DERIVATION_TYPES = ['pitch_shift'] as const;
 const PROCESSING_TYPES = ['master'] as const;
 const KEY_SCALES = ['major', 'minor'] as const;
 

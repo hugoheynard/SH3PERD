@@ -170,7 +170,7 @@ export class RepertoireEntryAggregate extends AggregateRoot {
     return version;
   }
 
-  /* ── Commands: Derivation (pitch shift, tempo change) ── */
+  /* ── Commands: Derivation (pitch shift) ── */
 
   /** Validate derivation preconditions. Returns source version. */
   ensureCanDeriveVersion(
@@ -188,7 +188,7 @@ export class RepertoireEntryAggregate extends AggregateRoot {
     return version;
   }
 
-  /** Add a derived version (pitch_shift or tempo_change). */
+  /** Add a derived version (pitch_shift). */
   createDerivedVersion(version: MusicVersionEntity): void {
     this.policy.ensureCanCreateVersion(this.versions.map((v) => v.toDomain));
     this.versions.push(version);

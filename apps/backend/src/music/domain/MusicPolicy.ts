@@ -91,7 +91,7 @@ export class MusicPolicy {
   }
 
   /**
-   * Ensures a version can be derived (pitch_shift / tempo_change) from a source.
+   * Ensures a version can be derived (pitch_shift) from a source.
    * @param existingVersions — all versions by this user for the same reference.
    * @param sourceVersionId — the version being derived from.
    */
