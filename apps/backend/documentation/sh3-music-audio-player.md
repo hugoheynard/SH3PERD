@@ -7,7 +7,7 @@ never downloads a full audio file to draw a waveform.
 
 ---
 
-## Current state (2026-04-11)
+## Current state (2026-04-16)
 
 ### Shipped
 - Global `AudioPlayerService` — signal-based singleton, queue cursor,
@@ -17,47 +17,45 @@ never downloads a full audio file to draw a waveform.
   layout, wavesurfer instance via dynamic import (SSR-safe), four
   `effect()` that sync URL / status / volume / seek, loudness + clipping
   markers from the analysis snapshot.
+- `AudioMarkerService` — pixel-accurate clipping regions (merge-adjacent
+  buckets) + sliding-RMS loudest window derived from the decoded peaks,
+  with a snapshot fallback for legacy tracks (see
+  `audio-marker.service.spec.ts`).
+- Pre-computed peaks end-to-end: processor extracts ~2000 peak buckets
+  during analysis, `encodePeaks` / `decodePeaks` helpers in
+  `@sh3pherd/shared-types`, `WavesurferAdapterService` passes them via
+  `load(url, peaks)` for instant waveform without a CORS fetch.
+- `WaveformThumbnailComponent` sparkline wired in both
+  `music-repertoire-table` and `music-reference-card` — static canvas
+  preview from the favorite track's peaks, falls back to the track-count
+  badge when peaks are unavailable.
+- `backfill-track-peaks.mjs` migration script ready in
+  `apps/backend/src/migrations/` to populate peaks on existing tracks
+  (not yet run against prod — see "Known blocker" below).
 - Play buttons wired on `music-repertoire-table` and
   `music-reference-card`.
 - Transport keyboard shortcuts (Space / ← / → / N / P / M).
 - Responsive layout (hides metadata <900 px, times <540 px).
 
-### Known blocker: CORS on the R2 bucket
-wavesurfer fetches the audio file as a Blob to compute the waveform.
-Since the R2 bucket is a different origin from `localhost:4200`,
-Chrome blocks the fetch without an `Access-Control-Allow-Origin`
-header. The audio element itself can play the URL (it has a permissive
-CORS model) but wavesurfer never gets to draw.
+### Known blocker — peaks backfill
 
-**Baseline fix (prerequisite for anything else):**
+R2 CORS is configured and playback works end-to-end. The peaks pipeline
+is code-complete on every layer (processor extraction, shared-types
+helpers, `<audio>`-first wavesurfer load, sparklines, markers), so any
+**newly analysed** track already benefits.
 
-- [ ] Configure CORS policy on the R2 bucket via the Cloudflare R2
-      dashboard (Settings → CORS Policy). Minimum config:
+The open blocker is the **one-off backfill** for tracks uploaded before
+the peaks feature shipped:
 
-      ```json
-      [
-        {
-          "AllowedOrigins": ["http://localhost:4200", "https://<prod-domain>"],
-          "AllowedMethods": ["GET", "HEAD"],
-          "AllowedHeaders": ["*"],
-          "ExposeHeaders": [
-            "Content-Length",
-            "Content-Type",
-            "Content-Range",
-            "Accept-Ranges",
-            "ETag"
-          ],
-          "MaxAgeSeconds": 3600
-        }
-      ]
-      ```
+- [ ] Run `apps/backend/src/migrations/backfill-track-peaks.mjs` against
+      prod. The script iterates `music_versions`, re-dispatches
+      `ANALYZE_TRACK` for every track missing `analysisResult.peaks`,
+      rate-limits to 4 concurrent jobs, and is idempotent — safe to run
+      twice.
 
-  `ExposeHeaders` is mandatory — without `Accept-Ranges` and
-  `Content-Range`, seeking past the initial buffer breaks.
-
-Once this is done, the current player works end-to-end. But it still
-downloads every full audio file before showing a waveform. That's
-wasteful and the main reason to do the "quality ultimate" track below.
+Until the backfill completes, older tracks fall back to the snapshot
+marker path and don't get a sparkline. The player still plays them via
+the `<audio>` element — no user-visible regression.
 
 ---
 
@@ -107,117 +105,86 @@ is decoded client-side in `toPlayableTrack`.
 ### Work items
 
 #### Shared types
-- [ ] Add `peaks: string` (base64 Int16) and `peakCount: number` to
-      `TAudioAnalysisSnapshot` in
-      `packages/shared-types/src/music-tracks.ts`. Mark as optional
-      for backwards compatibility.
-- [ ] Update `SAudioAnalysisSnapshot` Zod schema with optional
+- [x] `peaks: string` (base64 Int16) + `peakCount: number` on
+      `TAudioAnalysisSnapshot` (optional for backwards compatibility).
+- [x] `SAudioAnalysisSnapshot` Zod schema with optional
       `peaks` + `peakCount`.
-- [ ] Expose two helpers in shared-types:
-      - `encodePeaks(floats: Float32Array): string` — normalises to
-        [-1, 1], scales to Int16 range, packs to `Uint8Array`, base64.
-      - `decodePeaks(encoded: string, count: number): Float32Array` —
-        reverse operation.
+- [x] `encodePeaks(floats: Float32Array): string` and
+      `decodePeaks(encoded: string, count: number): Float32Array`
+      helpers in shared-types.
 
 #### Audio processor microservice
-- [ ] In `apps/audio-processor/src/core/analyze.ts`, after Essentia
-      loads the audio buffer, compute a downsampled peak array:
-      1. Determine `bucketSize = floor(samples.length / TARGET_PEAKS)`
-         (TARGET_PEAKS = 2000).
-      2. For each bucket, walk samples and record the max absolute
-         value (peak amplitude).
-      3. Return as a `Float32Array` of length TARGET_PEAKS.
-- [ ] Encode with the shared `encodePeaks` helper and include in the
-      returned `TAudioAnalysisSnapshot`.
-- [ ] Add a unit test with a synthetic sine wave input that asserts
-      the decoded peaks match the expected envelope within tolerance.
+- [x] `analyze.ts` downsamples the decoded buffer to a 2000-bucket
+      peak array (max absolute value per bucket).
+- [x] Peaks are encoded via `encodePeaks` and returned inside the
+      `TAudioAnalysisSnapshot` alongside the existing LUFS / BPM / key
+      fields.
+- [x] Synthetic sine-wave unit test asserts the envelope round-trips
+      within tolerance.
 
 #### Backend persistence
-- [ ] `TrackUploadedHandler` already calls `aggregate.setTrackAnalysis`
-      with the full snapshot — no change needed, peaks ride along.
-- [ ] `GetUserMusicLibraryQuery.toVersionView` — make sure the peaks
-      fields are passed through (they live inside `analysisResult`
-      already, confirm the projection doesn't strip them).
-- [ ] Repository mapper: check `MusicVersionRepository.toDomain` /
-      `toRecord` — base64 string round-trips fine, nothing to adapt.
+- [x] `TrackUploadedHandler` passes the snapshot through unchanged —
+      peaks ride along.
+- [x] `GetUserMusicLibraryQuery.toVersionView` preserves the peaks
+      fields inside `analysisResult`.
+- [x] `MusicVersionRepository.toDomain` / `toRecord` handle the base64
+      string as-is.
 
 #### Migration for existing tracks
-- [ ] Write `apps/backend/src/migrations/backfill-track-peaks.mjs`:
-      1. Iterate every `music_versions` doc.
-      2. For each track whose `analysisResult.peaks` is absent,
-         dispatch a re-analysis TCP message to the audio processor
-         (reuse `AUDIO_PROCESSOR` client, pattern
-         `ANALYZE_TRACK`).
-      3. Save the returned snapshot back to the version.
-      4. Rate-limit to 4 concurrent jobs to avoid swamping the
-         processor.
-- [ ] Make the script idempotent: running twice is a no-op for tracks
-      that already have peaks.
-- [ ] Log progress (`N/total tracks enriched`) and dump a summary at
-      the end.
+- [x] `apps/backend/src/migrations/backfill-track-peaks.mjs` iterates
+      `music_versions`, re-dispatches `ANALYZE_TRACK` for every track
+      missing peaks, rate-limits to 4 concurrent jobs, and logs
+      progress. Idempotent.
+- [ ] Run the migration against prod (no code work left — operational).
 
 #### Frontend
-- [ ] `audio-player.types.ts`: add `peaks?: Float32Array` to
-      `TPlayableTrack` and decode it in `toPlayableTrack()` using
-      the shared `decodePeaks` helper.
-- [ ] `audio-player-bar.component.ts`:
-      - When loading a new track, pass peaks to `wavesurfer.load(url, peaks)`.
-        The `load` signature supports `(url, peaks, duration?, channelData?)`.
-      - If `peaks` are absent (legacy track), fall back to the current
-        fetch-based path.
-      - Set `duration` from the analysis snapshot when available so
-        the timeline is accurate before any audio byte is loaded.
-- [ ] Verify the `notifyReady` callback still fires in peak-fed mode
-      — wavesurfer still emits `ready` after the audio element loads
-      its metadata, which should be quick since it only reads the
-      file header.
+- [x] `TPlayableTrack.peaks?: Float32Array` decoded in
+      `toPlayableTrack()` via the shared `decodePeaks` helper.
+- [x] `WavesurferAdapterService.load(url, [Array.from(peaks)])` when
+      peaks are present, otherwise the legacy fetch-based path.
+- [x] `AudioMarkerService` re-derives markers from the decoded peaks.
 
-#### Bonus — sparkline thumbnails
-- [ ] New `WaveformThumbnailComponent`: 60×20 px canvas that draws a
-      tiny static waveform from a `Float32Array`. Purely visual, no
-      audio.
-- [ ] Use in:
-      - `music-repertoire-table` — replace or augment the `track-count`
-        badge with a thumbnail when the version has tracks.
-      - `music-reference-card` — small strip below the version label.
-- [ ] Caching: the thumbnail is cheap enough to render on every change
-      detection, but we can memoize per track id if the table grows.
+#### Sparkline thumbnails
+- [x] `WaveformThumbnailComponent` — retina-aware canvas rendering a
+      static waveform from a `Float32Array`, with a pure
+      `paintWaveform()` helper (unit-tested).
+- [x] Wired in `music-repertoire-table` (replaces the track-count badge
+      when peaks are available) and in `music-reference-card` (60×14
+      strip next to the version label).
 
 #### Marker improvements
-- [ ] Once peaks are available, extend `buildMarkers()` in the bar
-      component to walk the peaks array and tag individual buckets
-      where `abs(peak) > CLIP_THRESHOLD` (0.98 or 0.99 depending on
-      how aggressive we want to flag).
-- [ ] Render one marker per clipped region (merge adjacent clips
-      within a small window) instead of a single full-width stripe.
-- [ ] Same idea for the "loudest window" marker — use a rolling RMS
-      over the peaks to find the real loudest N seconds.
+- [x] `AudioMarkerService.buildMarkersFromPeaks()` tags individual
+      buckets above `CLIP_THRESHOLD = 0.98`, merges adjacent clipped
+      samples into one marker, and drops the whole set when the total
+      clip ratio stays under `CLIP_MIN_RATIO`.
+- [x] Loudest window detected via sliding RMS over ~5 % of the track.
 
 #### Observability
 - [ ] Telemetry: log the extract time and peak byte size for each
       upload so we can spot regressions.
 - [ ] Health check: a periodic cron that finds tracks still missing
       peaks and reports them to the owner.
-- [ ] Error handling: if peak extraction fails, the rest of the
-      analysis (LUFS, BPM, key) must still succeed — the feature
-      should degrade gracefully.
+- [x] Error handling: peak extraction failure does not break the rest
+      of the analysis — LUFS / BPM / key still succeed and the player
+      falls back to the `<audio>`-only path.
 
 ---
 
 ## Acceptance criteria
 
-- [ ] Upload a new track → peaks stored, bar paints the waveform with
+- [x] Upload a new track → peaks stored, bar paints the waveform with
       zero R2 round trip after the presigned URL is fetched.
-- [ ] Open an older track (pre-migration) → falls back to the existing
+- [x] Open an older track (pre-migration) → falls back to the existing
       fetch-based path without error.
 - [ ] Run the backfill migration → all existing tracks gain peaks.
-- [ ] Disable R2 CORS temporarily → playback still works for tracks
+      *(Migration script ready; awaiting an ops slot to run against prod.)*
+- [x] Disable R2 CORS temporarily → playback still works for tracks
       with peaks (the `<audio>` element doesn't need CORS).
-- [ ] Table / cards show sparkline thumbnails for every version that
+- [x] Table / cards show sparkline thumbnails for every version that
       has at least one analyzed track.
-- [ ] Clipping markers appear only over the actual clipped samples,
+- [x] Clipping markers appear only over the actual clipped samples,
       not as a full-width stripe.
-- [ ] No regression on LUFS / BPM / key values in existing tracks.
+- [x] No regression on LUFS / BPM / key values in existing tracks.
 
 ---
 

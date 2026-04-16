@@ -100,7 +100,7 @@ MusicLibraryStateService          ← signal-based state store
 | Add reference to repertoire | `01-add-reference-to-repertoire.md` | Wired (front + back) |
 | Add version to entry | `02-add-version.md` | Frontend mock only |
 | Upload & analyse track | `03-upload-analyse-track.md` | Frontend mock (fake analyser) |
-| Cross-search between users | `04-cross-search.md` | Frontend mock only |
+| Cross-search between users | `04-cross-search.md` | Wired (front + back) |
 | Get user library | `05-get-user-library.md` | Backend query ready, not wired |
 
 ## Shared Types (package: @sh3pherd/shared-types)

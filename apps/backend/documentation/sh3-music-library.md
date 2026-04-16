@@ -1,6 +1,6 @@
 # SH3PHERD — Music Library
 
-Feature roadmap for the Music Library module. Updated 2026-04-12.
+Feature roadmap for the Music Library module. Updated 2026-04-16.
 
 ---
 
@@ -21,6 +21,9 @@ Feature roadmap for the Music Library module. Updated 2026-04-12.
 | **Platform contract** | ✅ | `PlatformContractEntity`, `@PlatformScoped()` decorator, `PlatformContractContextGuard`, created at registration (plan_free) |
 | **Quota service** | ✅ | `QuotaService` with `ensureAllowed()` + `recordUsage()`, `PLAN_QUOTAS` config, 402 errors, wired in 5 handlers |
 | **Cross library backend** | ✅ | `GetCompanyCrossLibraryQuery`, `GET /companies/:id/cross-library`, `@ContractScoped` |
+| **Cross library frontend** | ✅ | `MusicLibraryStateService.loadCrossLibrary()` resolves `companyId` from the active contract and calls `GET /companies/:id/cross-library`. `MusicCrossTableComponent` renders the real matrix. Mock data removed. |
+| **Waveform sparkline** | ✅ | `WaveformThumbnailComponent` wired in `music-repertoire-table` and `music-reference-card` — paints a 60×14 static strip from the analysis peaks. |
+| **Audio marker pipeline** | ✅ | `AudioMarkerService` — pixel-accurate clipping regions + sliding-RMS loudest window from peaks, snapshot fallback for legacy tracks (38 unit tests). |
 | **Music controllers cleanup** | ✅ | All 7 controllers: `@PlatformScoped()` + `@RequirePermission()`, zero `any`, explicit `execute<C,R>` types |
 | **Controller split** | ✅ | `MusicTrackController` (CRUD) + `MusicTrackProcessingController` (mastering/pitch-shift) |
 | **Shared utils** | ✅ | `rating.utils.ts`, `duration.utils.ts`, `InlineConfirmComponent` extracted to shared |
@@ -32,9 +35,8 @@ Feature roadmap for the Music Library module. Updated 2026-04-12.
 
 | Feature | Status | What remains |
 |---------|--------|-------------|
-| **Cross search frontend** | 🔄 | UI exists (`MusicCrossTableComponent` + mock data). Backend endpoint done. Need to wire frontend to call `GET /companies/:id/cross-library` instead of mock. |
 | **AI mastering end-to-end** | 🔄 | Backend + frontend UI done. Need to install the DeepAFx-ST checkpoint + Python deps to test on real audio. |
-| **Peaks on real data** | 🔄 | Code complete. Need to upload a real track with the processor running to verify sparklines + instant waveform. |
+| **Peaks on real data** | 🔄 | Code complete on the whole pipeline (processor extraction, shared-types helpers, player waveform, sparklines in table + card, markers). Run the `backfill-track-peaks.mjs` migration on existing tracks to populate peaks retroactively. |
 
 ### What's not started ❌
 
@@ -85,16 +87,16 @@ See `sh3-music-audio-player.md`.
 
 ### Tier 2 — Product differentiators
 
-#### 4. Cross search ✅ BACKEND DONE, frontend wiring pending
+#### 4. Cross search ✅ DONE
 - [x] `GetCompanyCrossLibraryQuery` — cross-references all artists' libraries
 - [x] `GET /api/protected/companies/:id/cross-library` endpoint
 - [x] Shared types: `TCrossSearchResult`, `TCrossMember`, `TCrossReferenceResult`
 - [x] Sorted by `compatibleCount` (most-shared songs first)
-- [ ] Wire frontend `MusicCrossTableComponent` to real endpoint
-- [ ] Replace `mockCrossContext` with API call
+- [x] `MusicLibraryStateService.loadCrossLibrary(contractId)` resolves the company from the active contract and calls the real endpoint
+- [x] `MusicCrossTableComponent` renders the live matrix; `mockCrossContext` and the rest of `utils/mock-music-data.ts` have been removed
 - [ ] Compatibility score (BPM variance, key compat, LUFS delta)
 - [ ] Cache strategy (TTL 1 min per company)
-- **Effort**: ~1 day (frontend wiring only)
+- [ ] Display the three ratings (MST / NRG / EFF) per member cell — currently only MST shown by lack of room
 
 #### 5. Persona match (AI event programming) ❌ NEW
 - [ ] `PersonaExtractor` — Claude Haiku extracts criteria from free text
@@ -199,7 +201,7 @@ See `sh3-music-audio-player.md`.
 
 ## Recommended priority order
 
-1. **Wire cross search frontend** (~1 day) — backend done, UI exists in mock, just wire
+1. **Run the peaks backfill migration** (`backfill-track-peaks.mjs`) — existing tracks don't have peaks yet; once migrated the sparklines + instant waveform light up everywhere
 2. **Persona match** (~5.5 days) — the killer feature for event venues, uses Claude API
 3. **Metadata enrichment** (~3 days) — covers make the library look pro
 4. **Play stats** (~2 days) — daily engagement driver

@@ -120,6 +120,8 @@ La conversation sur les composants réutilisables a été mise en pause :
 - [ ] **Afficher les 3 ratings (MST / NRG / EFF)** dans les cellules membres, pas seulement MST
   - Actuellement limité à mastery par manque de place — revoir le layout en mode expanded
 
+- [ ] **Sparkline dans la cross-table** — réutiliser `WaveformThumbnailComponent` sur la piste favorite de chaque version pour donner un aperçu visuel, comme dans le repertoire-table et la reference-card.
+
 ---
 
 ## ⚪ Refactoring / Cleanup
@@ -183,8 +185,9 @@ La conversation sur les composants réutilisables a été mise en pause :
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer
   - `apps/backend/src/appBootstrap/__tests__/` — idem
 
-- [ ] **`MOCK_TABS` et `mockCrossContext`** dans `utils/mock-music-data.ts`
-  - Quand le back est branché, supprimer les mocks et charger depuis l'API
+- [x] **`MOCK_TABS` et `mockCrossContext`** dans `utils/mock-music-data.ts`
+  - Le back cross-library est branché et `MusicLibraryStateService.loadCrossLibrary()` appelle l'API.
+  - Le fichier `utils/mock-music-data.ts` (et son dossier parent) a été supprimé.
 
 - [ ] **`ContractReadRepository` vs `ContractMongoRepository`** — clarifier la frontière CQRS
   - Read repo : uniquement les projections/view models (agrégations MongoDB)
