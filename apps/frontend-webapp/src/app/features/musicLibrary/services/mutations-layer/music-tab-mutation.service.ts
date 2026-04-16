@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { MusicLibraryStateService } from '../music-library-state.service';
 import { TabMutationService } from '../../../../shared/configurable-tab-bar';
+import { MusicLibraryStateService } from '../music-library-state.service';
+import { MusicTabQuotaChecker } from '../music-tab-quota-checker.service';
 import type { MusicSearchConfig, MusicTabConfig } from '../../music-library-types';
 
 const DEFAULT_MUSIC_CONFIG: () => MusicTabConfig = () => ({
@@ -12,9 +13,28 @@ const DEFAULT_MUSIC_CONFIG: () => MusicTabConfig = () => ({
 export class MusicTabMutationService
   extends TabMutationService<MusicTabConfig> {
 
+  private readonly quota = inject(MusicTabQuotaChecker);
+
   constructor() {
     const state = inject(MusicLibraryStateService);
     super(state.tabState, DEFAULT_MUSIC_CONFIG, () => state.scheduleTabSave());
+  }
+
+  /* ── Service-level quota gates — defense-in-depth against UI drift ── */
+
+  override addDefaultTab(): void {
+    if (!this.quota.canAddTab()) return;
+    super.addDefaultTab();
+  }
+
+  override moveActiveTabToConfig(tabId: string, targetConfigId: string): void {
+    if (!this.quota.canMoveToConfig(targetConfigId)) return;
+    super.moveActiveTabToConfig(tabId, targetConfigId);
+  }
+
+  override moveTabToConfig(sourceConfigId: string, targetConfigId: string, tabId: string): void {
+    if (!this.quota.canMoveToConfig(targetConfigId)) return;
+    super.moveTabToConfig(sourceConfigId, targetConfigId, tabId);
   }
 
   /* ── Music-specific mutations ──────────────────── */
