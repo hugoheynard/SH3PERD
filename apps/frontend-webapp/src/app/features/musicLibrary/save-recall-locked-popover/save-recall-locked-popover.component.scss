@@ -1,0 +1,13 @@
+.save-recall-popover__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.save-recall-popover__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
