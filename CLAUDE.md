@@ -40,6 +40,7 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | **Swagger Usage**        | `apps/backend/documentation/sh3-swagger-usage.md`        | Zod-first DTOs, `apiSuccessDTO`, response envelope                                       |
 | **Error Handling**       | `apps/backend/documentation/sh3-error-handling.md`       | DomainError, BusinessError, TechnicalError, GlobalExceptionFilter                        |
 | **Dev Setup**            | `apps/backend/documentation/sh3-dev-setup.md`            | RSA keys, JWT config, env variables                                                      |
+| **Quality Gates**        | `apps/backend/documentation/sh3-quality-gates.md`        | 3-tier enforcement (pre-commit/pre-push/CI), detection logic, branch protection          |
 | **Platform Contract**    | `apps/backend/documentation/sh3-platform-contract.md`    | SaaS subscription model, dual contract model (platform vs company)                       |
 | **Quota Service**        | `apps/backend/documentation/sh3-quota-service.md`        | Quota enforcement: `ensureAllowed()` / `recordUsage()`, plan limits                      |
 | **Music Library**        | `apps/backend/documentation/sh3-music-library.md`        | Full music feature architecture, 14 features across 4 tiers                              |
@@ -116,6 +117,10 @@ Swagger must be updated in the same commit as the controller change. Stale docs 
 The repository enforces three layers of quality. Each is tighter than the last.
 Don't expect the later gates to catch what an earlier one missed — by the time
 CI rejects a PR, the feedback loop is already slow.
+
+> **Deep dive:** see [`sh3-quality-gates.md`](apps/backend/documentation/sh3-quality-gates.md)
+> for the detection logic, Mermaid diagrams, troubleshooting, and the
+> checklist for adding a new app to the gates.
 
 ### 1. Pre-commit (fast, local, formatting only)
 
