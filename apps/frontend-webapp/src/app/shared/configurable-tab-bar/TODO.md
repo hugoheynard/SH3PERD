@@ -35,25 +35,76 @@ focus ring, dark-mode tokens and hover accent now come uniformly from
 
 ---
 
-## Deferred
+## Audit (honest review — 7/10 overall)
 
-### DnD reorder always drops at end — set aside
-`TabStripComponent.onTabDrop()` emits `tabReorder` with `newIndex: tabs.length - 1`
-regardless of where the tab was actually dropped, so every drag lands the tab
-at the right edge of the strip.
+Full breakdown kept for reference:
 
-- **Where:** [`tab-strip/tab-strip.component.ts`](./tab-strip/tab-strip.component.ts) → `onTabDrop()`
-- **Why it stayed like that:** the underlying `dnd-drop-zone.directive.ts`
-  only emits zone-level drops (no index within the zone). Fixing this
-  requires computing the target index from the pointer coordinates relative
-  to the sibling tab elements, and routing it through a new zone event or
-  through `onTabDropAtIndex()` (already defined but unused).
-- **Unblocks:** the "DnD reorder moves to correct position" item in the
-  central checklist.
+| Dimension | Note |
+|---|---|
+| Architecture / SoC | 8 |
+| API design | 7.5 |
+| Code quality | 6.5 |
+| Documentation | 9 |
+| Robustness | 5 |
+| Reusability | 6 |
+| Evolution | 7.5 |
+
+What lifts the component from 7 → 8+ lives in § Priority below.
+What lifts 8+ → 9+ lives in § Backlog.
 
 ---
 
-## Backlog
+## Priority (get to 8+)
+
+### 1. Unit tests for `TabMutationService` — ✅ done
+48 specs in [`tab-mutation.service.spec.ts`](./tab-mutation.service.spec.ts)
+cover every public mutation + the auto-sync post-processor + the
+`onChanged` callback contract. Includes edge cases:
+
+- `closeTab` — active tab closed (picks neighbour), last tab closed (no-op)
+- `moveTabToConfig` — source-empties (no-op), activeTabId adjustment
+- `moveActiveTabToConfig` — strip-empties triggers default tab +
+  clears `activeConfigId`, mirror-removal into the active saved config
+  when `target !== activeConfigId`, and the subtle
+  `target === activeConfigId` case where `syncActiveConfig` ends up
+  overwriting the explicit add
+- Auto-sync — mirrors title rename / add into the active config but
+  not into siblings, and no-op when `activeConfigId` is null
+- `onChanged` — fires once per mutation, including no-op paths
+
+Along the way: fixed a pre-existing broken jest runner (config was an
+ESM file named `.cjs`, deprecated `jest-preset-angular/setup-jest`
+import, missing `node:crypto` polyfill for jsdom). See the
+"jest runner repair" commit for the diff.
+
+### 2. Fix the DnD drop-at-end bug
+`TabStripComponent.onTabDrop()` emits `tabReorder` with `newIndex: tabs.length - 1`
+regardless of drop position. The underlying `dnd-drop-zone.directive.ts`
+only emits zone-level drops — fixing this requires computing the target
+index from pointer coordinates relative to sibling tab elements, either
+via a new zone event or by using the already-defined
+`onTabDropAtIndex()` hook.
+
+- **Where:** [`tab-strip/tab-strip.component.ts`](./tab-strip/tab-strip.component.ts) → `onTabDrop()`
+
+### 3. Migrate dropdowns to `@angular/cdk/overlay`
+The inline-menu move-to dropdown and the config-panel move submenu
+currently use `position: fixed` with a manually computed top/left taken
+from `getBoundingClientRect()` at open time. They don't track scroll,
+resize or focus changes, and they rely on a fragile `#moveBtn` template
+ref on a wrapper span.
+
+CDK Overlay's `ConnectedPositionStrategy` + `FlexibleConnectedPositionStrategy`
+would solve three problems at once: proper anchored positioning, automatic
+scroll/resize tracking, and first-class click-outside / escape handling.
+
+Files:
+- [`tab-inline-menu/tab-inline-menu.component.{ts,html}`](./tab-inline-menu)
+- [`tab-config-panel/tab-config-panel.component.{ts,html}`](./tab-config-panel)
+
+---
+
+## Deferred / backlog (8+ → 9+)
 
 ### Tighten `dispatch` typing — remove `as any`
 The parent's `dispatch()` still has two unavoidable casts because the method
@@ -73,9 +124,22 @@ to sidestep Angular's signal-input timing quirks. Investigate whether a
 directive-based injection or an `afterRender` hook would give us a stable
 pattern without the mutable slot.
 
-### Unit tests for `TabMutationService`
-~20 public mutations with zero specs. Priority tests:
-- `addDefaultTab`, `closeTab`, `reorderTab`
-- `saveTabConfig`, `applyTabConfig`, `newConfig`
-- `moveActiveTabToConfig`, `moveTabToConfig` (duplication-sensitive)
-- Auto-sync: mutating tabs while `activeConfigId` is set updates the saved config
+### Validate reusability with a second consumer
+The bar's API claims to be generic but only one consumer
+(`music-library-page`) has ever exercised it. Wiring a second use case —
+e.g. a settings-tabs scenario, or a contracts view with saved filters —
+would surface hidden assumptions (TConfig generic leaking through,
+implicit music-library-specific behaviour in the mutation service) and
+stress-test the three-resource lock contract.
+
+### Fix the `tabAdd` asymmetry
+`tabAdd` still flows through `TAB_HANDLERS` (legacy from the initial
+split) while `saveTabConfig` is gated directly on the mutation service
+via an override. Three different paths for mutations of the same shape
+is confusing — either route everything through the handler map, or route
+nothing through it.
+
+### Custom color picker
+The hidden `<input type="color">` gives the user the browser-native
+picker, which is visually inconsistent with the rest of the design system.
+Swap for a small palette popover (reuses `ui-popover-frame`).

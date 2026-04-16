@@ -17,10 +17,12 @@
 - [x] **Defense-in-depth service gates** — `MusicTabMutationService` overrides `addDefaultTab` / `saveTabConfig` / `moveActiveTabToConfig` / `moveTabToConfig` with quota no-ops (null-plan fallback prevents race bypass during `/quota/me` loading)
 
 ### Backlog
-- [ ] DnD reorder moves to correct position — **deferred** (see local TODO § Deferred)
-- [ ] Unit tests on `TabMutationService` — backlog (see local TODO)
+- [x] **Unit tests on `TabMutationService`** — 48 specs in [`tab-mutation.service.spec.ts`](../../apps/frontend-webapp/src/app/shared/configurable-tab-bar/tab-mutation.service.spec.ts) cover every public mutation, the auto-sync post-processor, `onChanged` contract, and every `moveActiveTabToConfig` edge case (strip-empties, target !== active, target === active subtle interaction). Jest runner repaired along the way.
+- [ ] DnD reorder moves to correct position — **deferred** (see local TODO § Priority #2)
+- [ ] Migrate move-to dropdowns to `@angular/cdk/overlay` — **priority #3** for 8+ (see local TODO)
 - [ ] Replace `_handlers` mutable workaround — backlog (see local TODO)
 - [ ] Type-safe `dispatch` (remove `as any`) — backlog (see local TODO)
+- [ ] Validate reusability with a second consumer — backlog (see local TODO)
 
 ## Testing Checklist
 
@@ -52,6 +54,6 @@
 - [x] `provideTabHandlers()` DI wiring (replaces output boilerplate)
 - [x] Add tab button clickable (z-index fix over scroll container)
 - [x] Component split into sub-components
-- [ ] Unit tests on `TabMutationService`
+- [x] Unit tests on `TabMutationService` — 48 specs
 - [ ] Replace `_handlers` mutable workaround
 - [ ] Type-safe `dispatch` (remove `as any`)
