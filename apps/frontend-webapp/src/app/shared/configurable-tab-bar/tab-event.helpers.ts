@@ -5,6 +5,11 @@ import type { TabMutationService } from './tab-mutation.service';
 /**
  * Handler map matching every output of `ConfigurableTabBarComponent`.
  * Provided via `TAB_HANDLERS` injection token for automatic wiring.
+ *
+ * Note: the UI-only `lockClicked` output is intentionally absent — it signals
+ * a host concern (show an upgrade flow, a tooltip, …) rather than a tab
+ * mutation, so it's wired via a plain `(output)` binding instead of the
+ * handler map.
  */
 export type TabHandlers<TConfig = any> = {
   tabSelect:       (id: string) => void;

@@ -27,6 +27,7 @@ import { MusicLibraryHelpComponent } from './music-library-help.component';
 import { UserContextService } from '../../../core/services/user-context.service';
 import { UpgradePanelComponent } from '../../../core/components/upgrade-panel/upgrade-panel.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
+import { TabLimitPopoverComponent } from '../tab-limit-popover/tab-limit-popover.component';
 
 @Component({
   selector: 'app-music-library-page',
@@ -75,6 +76,12 @@ export class MusicLibraryPageComponent implements OnInit {
     if (plan === 'artist_free') return 3;
     if (plan === 'artist_pro') return 5;
     return -1; // unlimited
+  });
+
+  /** True when the open tab count has caught up to the plan's max. */
+  readonly tabLimitReached = computed(() => {
+    const max = this.maxTabs();
+    return max !== -1 && this.selector.tabs().length >= max;
   });
 
   /** Save/recall is hidden on free plan. */
@@ -129,6 +136,13 @@ export class MusicLibraryPageComponent implements OnInit {
 
   openUpgradePanel(): void {
     this.layout.setRightPanel(UpgradePanelComponent);
+  }
+
+  /* ── Tab lock ── */
+
+  /** Called when the tab bar's lock button is clicked — shows the limit popover. */
+  openTabLimitPopover(): void {
+    this.layout.setPopover(TabLimitPopoverComponent);
   }
 
   /* ── Add entry ── */

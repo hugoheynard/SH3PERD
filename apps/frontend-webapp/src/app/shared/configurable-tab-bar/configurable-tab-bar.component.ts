@@ -1,5 +1,4 @@
-import { Component, computed, ElementRef, inject, input, output, signal, ViewChild } from '@angular/core';
-import { ButtonComponent } from '../button/button.component';
+import { Component, ElementRef, inject, input, output, ViewChild } from '@angular/core';
 import { ButtonIconComponent } from '../button-icon/button-icon.component';
 import type { TabItem, SavedTabConfig } from './configurable-tab-bar.types';
 import { TAB_HANDLERS, type TabHandlers } from './tab-event.helpers';
@@ -10,13 +9,18 @@ import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.com
  * Generic, reusable tab bar with save/recall configs, DnD reorder, color coding, and inline editing.
  *
  * Orchestrator component — owns the public API (inputs/outputs, TAB_HANDLERS
- * dispatch, the add-tab button, the tab-limit upgrade popover, and the
- * single shared `<input type="color">` picker) while delegating the three
- * major visual concerns to dedicated sub-components:
+ * dispatch, and the single shared `<input type="color">` picker) while
+ * delegating the three major visual concerns to dedicated sub-components:
  *
  * - {@link TabStripComponent} — scrollable tab list, inline rename, DnD,
  *   per-tab ⋮ menu (which itself hosts {@link TabInlineMenuComponent}).
  * - {@link TabConfigPanelComponent} — save/new/load buttons + floating panels.
+ *
+ * The bar renders the add-tab affordance itself. When `locked` is true it
+ * swaps the plus button for a lock button and emits `lockClicked` instead of
+ * `tabAdd` — the host decides what to do (show an upgrade popover, a tooltip,
+ * a right panel, …). The bar intentionally knows nothing about quotas,
+ * plans, or popovers.
  *
  * Wire tab mutations via `provideTabHandlers(MyTabMutationService)` for zero
  * boilerplate, or bind individual `(output)` events for custom overrides.
@@ -26,7 +30,11 @@ import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.com
  *
  * @example
  * ```html
- * <sh3-configurable-tab-bar [tabs]="tabs()" [activeTabId]="activeTabId()" …>
+ * <sh3-configurable-tab-bar
+ *   [tabs]="tabs()"
+ *   [activeTabId]="activeTabId()"
+ *   [locked]="tabLimitReached()"
+ *   (lockClicked)="openUpgradePopover()">
  *   <div tabBarTrailing><input placeholder="Search…" /></div>
  * </sh3-configurable-tab-bar>
  * ```
@@ -34,7 +42,7 @@ import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.com
 @Component({
   selector: 'sh3-configurable-tab-bar',
   standalone: true,
-  imports: [ButtonComponent, ButtonIconComponent, TabStripComponent, TabConfigPanelComponent],
+  imports: [ButtonIconComponent, TabStripComponent, TabConfigPanelComponent],
   templateUrl: './configurable-tab-bar.component.html',
   styleUrl: './configurable-tab-bar.component.scss',
 })
@@ -49,16 +57,14 @@ export class ConfigurableTabBarComponent {
   readonly savedConfigs = input<SavedTabConfig<unknown>[]>([]);
   /** Show built-in toast notifications for config operations. Default: true. */
   readonly showToasts = input<boolean>(true);
-  /** Maximum number of tabs allowed. -1 = unlimited (no limit). */
-  readonly maxTabs = input<number>(-1);
   /** Whether save/recall config buttons are visible. */
   readonly canSaveRecall = input<boolean>(true);
-
-  /* ── Quota-derived state ──────────────────────── */
-  readonly tabLimitReached = computed(() => {
-    const max = this.maxTabs();
-    return max !== -1 && this.tabs().length >= max;
-  });
+  /**
+   * When true, the add-tab affordance becomes a lock button that emits
+   * `lockClicked` instead of `tabAdd`. The host is responsible for deciding
+   * when to lock and for responding to the click (e.g. opening a popover).
+   */
+  readonly locked = input<boolean>(false);
 
   /* ── Outputs (public API — also dispatched via TAB_HANDLERS) ── */
   readonly tabSelect = output<string>();
@@ -76,7 +82,8 @@ export class ConfigurableTabBarComponent {
   readonly configTabRename = output<{ configId: string; tabId: string; title: string }>();
   readonly configTabMove = output<{ sourceConfigId: string; targetConfigId: string; tabId: string }>();
   readonly tabMoveToConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
-  readonly upgradeRequested = output<void>();
+  /** Emitted when the user clicks the lock button (only rendered when `locked` is true). */
+  readonly lockClicked = output<void>();
 
   /* ── Color picker (single shared DOM input) ─────── */
   @ViewChild('colorInput') colorInputRef!: ElementRef<HTMLInputElement>;
@@ -93,18 +100,6 @@ export class ConfigurableTabBarComponent {
       this.dispatch('tabColorChange', { id: this.colorTargetTabId, color });
       this.colorTargetTabId = null;
     }
-  }
-
-  /* ── Upgrade popover ────────────────────────────── */
-  readonly showUpgradePopover = signal(false);
-
-  toggleUpgradePopover(): void {
-    this.showUpgradePopover.update(v => !v);
-  }
-
-  onUpgrade(): void {
-    this.showUpgradePopover.set(false);
-    this.upgradeRequested.emit();
   }
 
   /* ── Add tab ───────────────────────────────────── */

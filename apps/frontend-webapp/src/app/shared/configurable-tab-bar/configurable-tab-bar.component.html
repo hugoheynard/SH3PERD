@@ -1,6 +1,6 @@
 <!-- ═══════════════════════════════════════════════════
      CONFIGURABLE TAB BAR (orchestrator)
-     Structure: [tab-strip] [+/lock] [ng-content] [config-panel]
+     Structure: [tab-strip] [+/lock] [tabBarTrailing slot] [config-panel]
      ═══════════════════════════════════════════════════ -->
 
 <!-- Hidden color picker (positioned off-screen via CSS) -->
@@ -21,22 +21,13 @@
     (tabMoveToConfig)="dispatch('tabMoveToConfig', $event)"
   />
 
-  <!-- Add tab button / Lock when limit reached -->
-  @if (tabLimitReached()) {
-    <div class="tab-add-wrapper">
-      <sh3-button-icon icon="lock" size="sm" tooltip="Tab limit reached" (clicked)="toggleUpgradePopover()" />
-      @if (showUpgradePopover()) {
-        <div class="upgrade-popover">
-          <span class="upgrade-popover__text">
-            Max tabs reached for your plan.
-            <br/>Unlock more with Pro or Max.
-          </span>
-          <sh3-button variant="primary" size="sm" (clicked)="onUpgrade()">Upgrade</sh3-button>
-        </div>
-      }
-    </div>
+  <!-- Add-tab affordance: plus by default, lock when the host flags `locked` -->
+  @if (locked()) {
+    <sh3-button-icon icon="lock" size="sm" tooltip="Tab limit reached"
+      (clicked)="lockClicked.emit()" />
   } @else {
-    <sh3-button-icon class="tab-add-btn" icon="plus" size="sm" tooltip="Add tab" (clicked)="onTabAdd()" />
+    <sh3-button-icon icon="plus" size="sm" tooltip="Add tab"
+      (clicked)="onTabAdd()" />
   }
 
   <!-- Domain-specific slot (e.g. search input) -->
