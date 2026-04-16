@@ -19,6 +19,11 @@
         <!-- Line 1: data row -->
         <div class="version-data">
           <span class="version-label">{{ version.label }}</span>
+          @if (getVersionPeaks(version); as peaks) {
+            <span class="version-sparkline">
+              <app-waveform-thumbnail [peaks]="peaks" />
+            </span>
+          }
           @if (favoriteDuration(version); as dur) {
             <span class="version-dur">{{ formatDuration(dur) }}</span>
           }

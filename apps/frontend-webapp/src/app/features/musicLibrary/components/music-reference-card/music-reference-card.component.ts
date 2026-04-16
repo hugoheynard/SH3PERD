@@ -11,13 +11,14 @@ import { MusicLibrarySelectorService } from '../../services/selector-layer/music
 import { AudioPlayerService } from '../../audio-player/audio-player.service';
 import { toPlayableTrack } from '../../audio-player/audio-player.types';
 import type { TMasteringModalContext } from '../../mastering/mastering.types';
-import type { TMusicVersionId } from '@sh3pherd/shared-types';
+import { decodePeaks, type TMusicVersionId } from '@sh3pherd/shared-types';
 import { IconComponent } from '../../../../shared/icon/icon.component';
+import { WaveformThumbnailComponent } from '../../audio-player/waveform-thumbnail/waveform-thumbnail.component';
 
 @Component({
   selector: 'app-music-reference-card',
   standalone: true,
-  imports: [AddVersionFormComponent, ButtonComponent, BadgeComponent, InlineConfirmComponent, IconComponent],
+  imports: [AddVersionFormComponent, ButtonComponent, BadgeComponent, InlineConfirmComponent, IconComponent, WaveformThumbnailComponent],
   templateUrl: './music-reference-card.component.html',
   styleUrl: './music-reference-card.component.scss',
 })
@@ -62,6 +63,22 @@ export class MusicReferenceCardComponent {
 
   hasTrack(v: MusicVersion): boolean {
     return MusicLibrarySelectorService.hasTrack(v);
+  }
+
+  /**
+   * Decodes the pre-computed peaks of a version's favorite track for the
+   * sparkline thumbnail. Returns null when the track hasn't been analysed
+   * with the peaks feature yet (legacy upload).
+   */
+  getVersionPeaks(version: MusicVersion): Float32Array | null {
+    const track = version.tracks.find(t => t.favorite) ?? version.tracks[0];
+    const analysis = track?.analysisResult;
+    if (!analysis?.peaks || !analysis.peakCount) return null;
+    try {
+      return decodePeaks(analysis.peaks, analysis.peakCount);
+    } catch {
+      return null;
+    }
   }
 
   /* ── Version CRUD ── */
