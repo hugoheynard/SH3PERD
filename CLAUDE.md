@@ -138,7 +138,10 @@ If `packages/shared-types/**` changed, every downstream app is re-checked
 (and shared-types is rebuilt first). Tests are **not** run here — they live
 in CI to keep the push gate fast enough that nobody reaches for `--no-verify`.
 
-Activation on a fresh clone:
+Activation happens **automatically** on every `pnpm install` via the root
+`prepare` script — a fresh clone is compliant after one install. The same
+setup also runs as `predev:watch`, so anyone starting the dev loop without
+having installed yet still gets the hooks wired up. Manual fallback:
 
 ```bash
 pnpm run setup:hooks   # points core.hooksPath at .githooks

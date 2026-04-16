@@ -10,6 +10,7 @@
     "packages/*"
   ],
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
     "dev:backend": "turbo run start --filter=@sh3pherd/backend",
     "dev:webapp": "turbo run start --filter=@sh3pherd/frontend-webapp",
     "dev:all": "pnpm run dev:watch & pnpm run dev:backend",
@@ -18,6 +19,7 @@
     "updatePackagesRefs": "tsx dev-toolbox/scripts/update-packageRefs.ts",
     "lint:imports": "tsx dev-toolbox/scripts/scan-cross-package-imports.ts",
     "build": "turbo run build",
+    "predev:watch": "pnpm run setup:hooks",
     "dev:watch": "turbo run dev:watch --filter=@sh3pherd/backend --filter=@sh3pherd/shared-types --log-order=stream --log-prefix=none --output-logs=full",
     "test": "jest --workspaces",
     "clean": "turbo run clean"
