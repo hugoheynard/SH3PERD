@@ -7,6 +7,7 @@
 
 export { bootstrapE2E, teardownE2E } from './bootstrap.js';
 export type { E2EContext } from './bootstrap.js';
+export { getBody, getSetCookies, getTestServer } from './http.js';
 
 export {
   resetAllCollections,

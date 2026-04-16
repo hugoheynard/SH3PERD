@@ -13,7 +13,19 @@
 import type { INestApplication } from '@nestjs/common';
 import type { Db } from 'mongodb';
 import request from 'supertest';
-import { bootstrapE2E, teardownE2E, resetAllCollections, WorkspaceSetup } from './utils/index.js';
+import type { TApiResponse } from '@sh3pherd/shared-types';
+import {
+  bootstrapE2E,
+  teardownE2E,
+  resetAllCollections,
+  WorkspaceSetup,
+  getBody,
+  getTestServer,
+} from './utils/index.js';
+
+type CompanyResponse = TApiResponse<{ id: string; name: string }>;
+type ContractListItem = { id: string; roles: string[]; company_id: string };
+type ContractsResponse = TApiResponse<ContractListItem[]> | ContractListItem[];
 
 describe('Workspace Setup E2E', () => {
   let app: INestApplication;
@@ -69,14 +81,15 @@ describe('Workspace Setup E2E', () => {
         .build();
 
       // Access a contract-scoped endpoint (e.g. get my companies)
-      const res = await request(app.getHttpServer())
+      const res = await request(getTestServer(app))
         .get(`/api/protected/companies/${ws.companyId}`)
         .set('Authorization', ws.authHeader)
         .set('X-Contract-Id', ws.contractId)
         .expect(200);
+      const body = getBody<CompanyResponse>(res);
 
-      expect(res.body.data).toHaveProperty('id', ws.companyId);
-      expect(res.body.data).toHaveProperty('name', 'Scoped Studio');
+      expect(body.data).toHaveProperty('id', ws.companyId);
+      expect(body.data).toHaveProperty('name', 'Scoped Studio');
     });
 
     it('should provide contractHeader for explicit X-Contract-Id usage', async () => {
@@ -92,13 +105,14 @@ describe('Workspace Setup E2E', () => {
       expect(ws.contractHeader).toEqual({ 'X-Contract-Id': ws.contractId });
 
       // Verify the header works on a contract-scoped endpoint
-      const res = await request(app.getHttpServer())
+      const res = await request(getTestServer(app))
         .get(`/api/protected/companies/${ws.companyId}`)
         .set('Authorization', ws.authHeader)
         .set(ws.contractHeader)
         .expect(200);
+      const body = getBody<CompanyResponse>(res);
 
-      expect(res.body.data).toHaveProperty('id', ws.companyId);
+      expect(body.data).toHaveProperty('id', ws.companyId);
     });
 
     it('should create the owner contract with the owner role', async () => {
@@ -108,19 +122,17 @@ describe('Workspace Setup E2E', () => {
         .build();
 
       // Fetch the contract to verify roles
-      const res = await request(app.getHttpServer())
+      const res = await request(getTestServer(app))
         .get('/api/protected/contracts/me')
         .set('Authorization', ws.authHeader)
         .expect(200);
-
-      const contracts = res.body.data ?? res.body;
-      const ownerContract = Array.isArray(contracts)
-        ? contracts.find((c: any) => c.id === ws.contractId)
-        : null;
+      const body = getBody<ContractsResponse>(res);
+      const contracts = Array.isArray(body) ? body : body.data;
+      const ownerContract = contracts.find((contract) => contract.id === ws.contractId);
 
       expect(ownerContract).toBeDefined();
-      expect(ownerContract.roles).toContain('owner');
-      expect(ownerContract.company_id).toBe(ws.companyId);
+      expect(ownerContract?.roles).toContain('owner');
+      expect(ownerContract?.company_id).toBe(ws.companyId);
     });
   });
 
@@ -143,13 +155,13 @@ describe('Workspace Setup E2E', () => {
       expect(ws1.contractId).not.toBe(ws2.contractId);
 
       // Each can access their own company
-      await request(app.getHttpServer())
+      await request(getTestServer(app))
         .get(`/api/protected/companies/${ws1.companyId}`)
         .set('Authorization', ws1.authHeader)
         .set('X-Contract-Id', ws1.contractId)
         .expect(200);
 
-      await request(app.getHttpServer())
+      await request(getTestServer(app))
         .get(`/api/protected/companies/${ws2.companyId}`)
         .set('Authorization', ws2.authHeader)
         .set('X-Contract-Id', ws2.contractId)

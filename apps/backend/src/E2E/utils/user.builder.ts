@@ -18,6 +18,17 @@
 
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
+import type { TLoginResponseDTO, TUserId } from '@sh3pherd/shared-types';
+import { getBody, getSetCookies, getTestServer } from './http.js';
+
+type RegisterResponse = {
+  id?: TUserId;
+  user_id?: TUserId;
+};
+
+type RefreshResponse = {
+  authToken?: string | null;
+};
 
 export type UserCredentials = {
   email: string;
@@ -59,7 +70,7 @@ export class UserBuilder {
   async register(): Promise<this> {
     if (!this.credentials) throw new Error('[UserBuilder] Missing credentials');
 
-    const res = await request(this.app.getHttpServer())
+    const res = await request(getTestServer(this.app))
       .post('/api/auth/register')
       .send({
         ...this.credentials,
@@ -67,8 +78,9 @@ export class UserBuilder {
         account_type: 'artist',
       })
       .expect(201);
+    const body = getBody<RegisterResponse>(res);
 
-    this.userId = res.body.id ?? res.body.user_id;
+    this.userId = body.id ?? body.user_id ?? null;
     return this;
   }
 
@@ -76,26 +88,25 @@ export class UserBuilder {
   async login(): Promise<this> {
     if (!this.credentials) throw new Error('[UserBuilder] Missing credentials');
 
-    const res = await request(this.app.getHttpServer())
+    const res = await request(getTestServer(this.app))
       .post('/api/auth/login')
       .send({
         email: this.credentials.email,
         password: this.credentials.password,
       })
       .expect(200);
+    const body = getBody<TLoginResponseDTO>(res);
 
-    this.authToken = res.body.authToken;
-    this.userId = res.body.user_id ?? this.userId;
+    this.authToken = body.authToken;
+    this.userId = body.user_id ?? this.userId;
 
     if (!this.authToken) {
       throw new Error('[UserBuilder] No authToken in login response');
     }
 
     // Extract refresh cookie
-    const setCookie = res.headers['set-cookie'];
-    this.refreshCookie = Array.isArray(setCookie)
-      ? (setCookie.find((c: string) => c.startsWith('sh3pherd_refreshToken=')) ?? null)
-      : null;
+    this.refreshCookie =
+      getSetCookies(res).find((cookie) => cookie.startsWith('sh3pherd_refreshToken=')) ?? null;
 
     return this;
   }
@@ -112,27 +123,27 @@ export class UserBuilder {
     if (!this.refreshCookie) throw new Error('[UserBuilder] No refresh cookie');
 
     // NestJS @Post() defaults to 201, some setups return 200 — accept both
-    const res = await request(this.app.getHttpServer())
+    const res = await request(getTestServer(this.app))
       .post('/api/auth/refresh')
       .set('Cookie', this.refreshCookie);
+    const body = getBody<RefreshResponse>(res);
 
-    if (res.body.authToken) {
-      this.authToken = res.body.authToken;
+    if (body.authToken) {
+      this.authToken = body.authToken;
     }
 
     // Update refresh cookie if a new one was set
-    const setCookie = res.headers['set-cookie'];
-    if (Array.isArray(setCookie)) {
-      const newCookie = setCookie.find((c: string) => c.startsWith('sh3pherd_refreshToken='));
-      if (newCookie) this.refreshCookie = newCookie;
-    }
+    const newCookie = getSetCookies(res).find((cookie) =>
+      cookie.startsWith('sh3pherd_refreshToken='),
+    );
+    if (newCookie) this.refreshCookie = newCookie;
 
     return this;
   }
 
   /** Logout. Clears the stored tokens. */
   async logout(): Promise<request.Response> {
-    const res = await request(this.app.getHttpServer())
+    const res = await request(getTestServer(this.app))
       .post('/api/auth/logout')
       .set('Authorization', this.getAuthHeader())
       .set('Cookie', this.refreshCookie ?? '')

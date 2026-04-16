@@ -181,6 +181,12 @@ La conversation sur les composants réutilisables a été mise en pause :
   - Les repositories playlists v2 s'appuient sur les helpers Mongo typés du `BaseMongoRepository`.
   - `pnpm --filter @sh3pherd/backend lint` passe avec playlists v2 inclus.
 
+- [x] **E2E sorti des ignores ESLint**
+  - `src/E2E` n'est plus ignoré dans `apps/backend/eslint.config.mjs`.
+  - Les helpers E2E Nest/Supertest utilisent des wrappers typés au lieu de `any` implicites.
+  - Les specs `auth` et `workspace` lisent maintenant des bodies typés pour éviter les accès non sûrs.
+  - `pnpm --filter @sh3pherd/backend lint` passe avec `src/E2E` inclus.
+
 - [ ] **Tests spec stubs auto-générés** avec imports sans `.js` — cassés depuis longtemps
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer
   - `apps/backend/src/appBootstrap/__tests__/` — idem

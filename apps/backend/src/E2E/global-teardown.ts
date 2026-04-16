@@ -6,8 +6,12 @@
 
 import type { MongoMemoryServer } from 'mongodb-memory-server';
 
+type E2EGlobal = typeof globalThis & {
+  __MONGO_MEMORY_SERVER__?: MongoMemoryServer;
+};
+
 export default async function globalTeardown(): Promise<void> {
-  const mongod: MongoMemoryServer | undefined = (globalThis as any).__MONGO_MEMORY_SERVER__;
+  const mongod = (globalThis as E2EGlobal).__MONGO_MEMORY_SERVER__;
 
   if (mongod) {
     await mongod.stop();

@@ -30,6 +30,17 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { UserBuilder } from './user.builder.js';
 import type { UserCredentials, UserProfile } from './user.builder.js';
+import type { TCompanyId, TContractId } from '@sh3pherd/shared-types';
+import { getBody, getTestServer } from './http.js';
+
+type CompanyCreateResponse = {
+  company?: { id: TCompanyId };
+  ownerContract?: { id: TContractId };
+  data?: {
+    company?: { id: TCompanyId };
+    ownerContract?: { id: TContractId };
+  };
+};
 
 export type WorkspaceContext = {
   user: UserBuilder;
@@ -91,15 +102,15 @@ export class WorkspaceSetup {
     const authHeader = user.getAuthHeader();
 
     // 2. Create company → atomically creates owner contract
-    const companyRes = await request(this.app.getHttpServer())
+    const companyRes = await request(getTestServer(this.app))
       .post('/api/protected/companies')
       .set('Authorization', authHeader)
       .send({ name: this.companyName })
       .expect(201);
+    const companyBody = getBody<CompanyCreateResponse>(companyRes);
 
-    const companyId: string = companyRes.body.company?.id ?? companyRes.body.data?.company?.id;
-    const contractId: string =
-      companyRes.body.ownerContract?.id ?? companyRes.body.data?.ownerContract?.id;
+    const companyId = companyBody.company?.id ?? companyBody.data?.company?.id;
+    const contractId = companyBody.ownerContract?.id ?? companyBody.data?.ownerContract?.id;
 
     if (!companyId || !contractId) {
       throw new Error(
@@ -112,11 +123,11 @@ export class WorkspaceSetup {
     //    The preferences record might not exist yet (register doesn't
     //    create it). Hit GET /user/me first to trigger lazy creation,
     //    then PATCH the workspace.
-    await request(this.app.getHttpServer())
+    await request(getTestServer(this.app))
       .get('/api/protected/user/me')
       .set('Authorization', authHeader);
 
-    const prefRes = await request(this.app.getHttpServer())
+    const prefRes = await request(getTestServer(this.app))
       .patch('/api/protected/user/preferences')
       .set('Authorization', authHeader)
       .send({ contract_workspace: contractId });

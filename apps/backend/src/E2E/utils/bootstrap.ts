@@ -36,6 +36,20 @@ import cookieParser from 'cookie-parser';
 import type { INestApplication } from '@nestjs/common';
 import type { Db, MongoClient } from 'mongodb';
 
+type GuardWithCanActivate = {
+  canActivate: () => Promise<boolean>;
+  constructor?: { name?: string };
+};
+
+function isGuardWithCanActivate(value: unknown): value is GuardWithCanActivate {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'canActivate' in value &&
+    typeof (value as GuardWithCanActivate).canActivate === 'function'
+  );
+}
+
 export type E2EContext = {
   app: INestApplication;
   db: Db;
@@ -76,10 +90,13 @@ export async function bootstrapE2E(): Promise<E2EContext> {
   // global ThrottlerModule config. The only reliable bypass after
   // init: patch canActivate on the resolved guard instance(s).
   try {
-    const guards = app.get(APP_GUARD, { strict: false });
+    const guards: unknown = app.get(APP_GUARD, { strict: false });
     const allGuards = Array.isArray(guards) ? guards : [guards];
     for (const guard of allGuards) {
-      if (guard instanceof ThrottlerGuard || guard?.constructor?.name === 'ThrottlerGuard') {
+      if (
+        isGuardWithCanActivate(guard) &&
+        (guard instanceof ThrottlerGuard || guard.constructor?.name === 'ThrottlerGuard')
+      ) {
         guard.canActivate = () => Promise.resolve(true);
       }
     }

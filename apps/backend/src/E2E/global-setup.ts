@@ -15,6 +15,10 @@
 
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
+type E2EGlobal = typeof globalThis & {
+  __MONGO_MEMORY_SERVER__?: MongoMemoryServer;
+};
+
 let mongod: MongoMemoryServer;
 
 export default async function globalSetup(): Promise<void> {
@@ -37,7 +41,7 @@ export default async function globalSetup(): Promise<void> {
   // Store the server instance on globalThis so teardown can access it.
   // Jest runs setup/teardown in separate worker contexts, so we use a
   // temp file as a side-channel for the URI.
-  (globalThis as any).__MONGO_MEMORY_SERVER__ = mongod;
+  (globalThis as E2EGlobal).__MONGO_MEMORY_SERVER__ = mongod;
 
   // Also persist URI to a temp file for workers that don't share globalThis
   const fs = await import('node:fs/promises');
