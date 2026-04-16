@@ -20,6 +20,18 @@ function maxTabsForPlan(plan: TPlatformRole | null): number {
 }
 
 /**
+ * Per-plan maximum number of saved configs. Free = 0 doubles as the
+ * "feature not available" gate — the config panel collapses its save
+ * affordance whenever the quota is reached, so the Free case and the
+ * Pro-at-cap case share one mechanism.
+ */
+function maxConfigsForPlan(plan: TPlatformRole | null): number {
+  if (plan === null || plan === 'artist_free') return 0;
+  if (plan === 'artist_pro') return 5;
+  return -1; // artist_max / company_* → unlimited
+}
+
+/**
  * Single source of truth for every "can this music-tab operation go through?"
  * question in the app. Both the UI (via enriched `savedConfigsWithLock`) and
  * the mutation service (via `canAddTab` / `canMoveToConfig`) read from this
@@ -35,21 +47,33 @@ export class MusicTabQuotaChecker {
   private readonly userCtx = inject(UserContextService);
   private readonly state = inject(MusicLibraryStateService);
 
-  /** Maximum tabs allowed by the current plan. `-1` means unlimited. */
+  /** Maximum tabs per scope (strip + each config) allowed by the current plan. `-1` means unlimited. */
   readonly maxTabs = computed(() => maxTabsForPlan(this.userCtx.plan()));
 
-  /** True when the plan has a finite per-scope limit. */
-  private readonly hasLimit = computed(() => this.maxTabs() !== -1);
+  /** Maximum number of saved configs allowed by the current plan. `0` means feature unavailable; `-1` means unlimited. */
+  readonly maxConfigs = computed(() => maxConfigsForPlan(this.userCtx.plan()));
+
+  /** True when the plan has a finite per-scope tab limit. */
+  private readonly hasTabLimit = computed(() => this.maxTabs() !== -1);
+
+  /** True when the plan has a finite saved-config count limit. */
+  private readonly hasConfigLimit = computed(() => this.maxConfigs() !== -1);
 
   /** Can the user create another tab in the open strip right now? */
   canAddTab(): boolean {
-    if (!this.hasLimit()) return true;
+    if (!this.hasTabLimit()) return true;
     return this.state.tabState().tabs.length < this.maxTabs();
+  }
+
+  /** Can the user create another saved config right now? */
+  canAddConfig(): boolean {
+    if (!this.hasConfigLimit()) return true;
+    return (this.state.tabState().savedTabConfigs?.length ?? 0) < this.maxConfigs();
   }
 
   /** Is the given saved config at or over its per-config tab quota? */
   isConfigFull(configId: string): boolean {
-    if (!this.hasLimit()) return false;
+    if (!this.hasTabLimit()) return false;
     const cfg = this.state.tabState().savedTabConfigs?.find(c => c.id === configId);
     return !!cfg && cfg.tabs.length >= this.maxTabs();
   }

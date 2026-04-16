@@ -27,6 +27,11 @@ export class MusicTabMutationService
     super.addDefaultTab();
   }
 
+  override saveTabConfig(name: string): void {
+    if (!this.quota.canAddConfig()) return;
+    super.saveTabConfig(name);
+  }
+
   override moveActiveTabToConfig(tabId: string, targetConfigId: string): void {
     if (!this.quota.canMoveToConfig(targetConfigId)) return;
     super.moveActiveTabToConfig(tabId, targetConfigId);

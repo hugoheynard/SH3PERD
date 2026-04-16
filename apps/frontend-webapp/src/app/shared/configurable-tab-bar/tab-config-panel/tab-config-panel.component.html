@@ -1,13 +1,14 @@
 <div class="tab-config-actions">
 
+  <!-- Save / New / Lock — mutually exclusive.
+       When `locked` is true, both the save and the "new blank configuration"
+       affordances collapse into a single lock button; picking either would
+       lead to creating (or wanting to create) a new saved config, which the
+       quota forbids. -->
   @if (locked()) {
-    <!-- Locked: single lock button, no save/load surface -->
-    <sh3-button-icon icon="lock" size="sm" tooltip="Save / recall locked"
+    <sh3-button-icon icon="lock" size="sm" tooltip="Can't save more configurations"
       (clicked)="lockClicked.emit()" />
-  } @else {
-
-  <!-- Save / New toggle (mutually exclusive) -->
-  @if (activeConfigId()) {
+  } @else if (activeConfigId()) {
     <sh3-button-icon icon="file-add" size="sm" tooltip="New blank configuration"
       (clicked)="onNewConfig($event)" />
   } @else {
@@ -15,7 +16,8 @@
       [active]="showSaveForm()" (clicked)="toggleSaveForm()" />
   }
 
-  <!-- Load button + count badge -->
+  <!-- Load button + count badge — always visible, works even when locked
+       (existing configs can still be viewed / loaded / managed). -->
   <span class="tab-action-load-wrapper">
     <sh3-button-icon icon="folder-open" size="sm" tooltip="Load saved configuration"
       [active]="showLoadMenu()" (clicked)="toggleLoadMenu()" />
@@ -121,8 +123,6 @@
         </div>
       }
     </div>
-  }
-
   }
 
 </div>

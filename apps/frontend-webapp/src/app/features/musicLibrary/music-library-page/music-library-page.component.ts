@@ -24,7 +24,6 @@ import type { TCreateMusicVersionPayload, TMusicReferenceId } from '@sh3pherd/sh
 import type { TMasteringModalContext, TMasteringResult } from '../mastering/mastering.types';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { MusicLibraryHelpComponent } from './music-library-help.component';
-import { UserContextService } from '../../../core/services/user-context.service';
 import { UpgradePanelComponent } from '../../../core/components/upgrade-panel/upgrade-panel.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { TabLimitPopoverComponent } from '../tab-limit-popover/tab-limit-popover.component';
@@ -66,7 +65,6 @@ export class MusicLibraryPageComponent implements OnInit {
   private layout          = inject(LayoutService);
   private toast           = inject(ToastService);
   private destroyRef      = inject(DestroyRef);
-  private userCtx         = inject(UserContextService);
 
   /** Mastering modal context — shared between card and table views. */
   readonly masteringContext = signal<TMasteringModalContext | null>(null);
@@ -80,8 +78,10 @@ export class MusicLibraryPageComponent implements OnInit {
   /** Tab resource quota reached — host of the `[tabLocked]` input. */
   readonly tabLocked = computed(() => !this.quota.canAddTab());
 
-  /** Config resource locked — feature-gated on free, quota-gated otherwise. */
-  readonly configLocked = computed(() => this.userCtx.plan() === 'artist_free');
+  /** Config resource quota reached — locks save/new (load stays open).
+   *  Free plan has `maxConfigs = 0`, so the gate covers both feature-off
+   *  (Free) and Pro-at-cap in one rule. */
+  readonly configLocked = computed(() => !this.quota.canAddConfig());
 
   readonly activeSearchQuery = computed(() => {
     const tab = this.selector.activeTab();
