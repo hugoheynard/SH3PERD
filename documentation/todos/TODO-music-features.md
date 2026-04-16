@@ -9,10 +9,10 @@
 - [ ] Integration test: upload → analysis → result in DB
 
 ### Audio Player
-- [ ] Inline player component with presigned URL streaming
-- [ ] Play/pause/seek controls
-- [ ] Waveform visualization (optional, use peaks from analysis)
-- [ ] Player state shared across components (current track, playing/paused)
+- [x] Inline player component with presigned URL streaming
+- [x] Play/pause/seek controls (Space / ← / → / N / P / M shortcuts)
+- [x] Waveform visualization via pre-computed peaks (`load(url, peaks)`)
+- [x] Player state shared across components (`AudioPlayerService` signal singleton)
 
 ### Seed Script
 - [ ] Script to load reference JSONs (`seed/musicRef_init_seed/*.json`) via API
@@ -57,25 +57,20 @@
 - [x] "Master" button on table view (row actions)
 - [x] "Master" button on card view (version actions)
 - [x] Mastering modal with target specs (presets: Streaming -14 LUFS, Club -8 LUFS, custom)
+- [x] Mastered track appears as child track with `processingType: 'master'` (`MasterTrackCommand`)
+- [x] Refresh local state after mastering completes (`onMasteringClosed` → `refreshEntries()`)
 - [ ] Progress indicator while microservice processes
-- [ ] Mastered track appears as child track with `processingType: 'master'`
-- [ ] Refresh local state after mastering completes (new track in version)
 
 ### Pitch Shift
+- [x] Implement `pitchShift()` in audio-processor (ffmpeg asetrate)
+- [x] Backend command creates new version with `derivationType: 'pitch_shift'` (`PitchShiftVersionCommand`)
 - [ ] Pitch-shift modal component (UI — semitone selector +/- 12)
-- [ ] Implement `pitchShift()` in audio-processor (ffmpeg asetrate or rubberband)
 - [ ] Button in card + table view
-- [ ] Creates new version with `derivationType: 'pitch_shift'`
 
 ### Contract Audio Specs Warning
 - [ ] If user is in a contract context with audio reference specs (e.g. min LUFS, format, sample rate), show a warning on upload/analysis when the track doesn't meet the contract's audio requirements
 - [ ] Warning: "Your track is below your current contract audio requirements"
 - [ ] Requires: contract audio specs model in shared-types + backend check after analysis
-
-### Tempo Change
-- [ ] Implement tempo change in audio-processor
-- [ ] UI: BPM target selector
-- [ ] Creates new version with `derivationType: 'tempo_change'`
 
 ### Drag & Drop to Playlist
 - [ ] Right side panel with playlist list
