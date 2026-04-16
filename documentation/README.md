@@ -23,6 +23,7 @@ Process docs, TODOs, feature roadmaps, and user flows.
 | [Plans Artist/Company](todos/TODO-plans-artist-company.md) | Active | Plan model: artist/company split, pricing, feature matrix |
 | [Usage, Credits & Events](todos/TODO-usage-credits-events.md) | Active | Usage tracking, credit packs (boosters), event store |
 | [Activity Feed](todos/TODO-activity-feed.md) | Backlog | User activity feed — contribution graph + timeline |
+| [Thread Summarizer](todos/TODO-thread-summarizer.md) | Backlog | Company feature — résumé/analyse IA de threads (Slack/WhatsApp/Discord) via LLM local + microservice |
 | [Error Management](todos/TODO-error-management.md) | Done | Error class taxonomy refactoring (completed) |
 
 ## User Flows

@@ -54,6 +54,7 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | **Integrations** | `documentation/todos/TODO-integrations.md` | Slack integration roadmap |
 | **Tab Bar** | `documentation/todos/TODO-configurable-tab-bar.md` | DnD bug fix, unit tests, component split |
 | **Programs** | `documentation/todos/TODO-programs.md` | Drag engine refactoring |
+| **Thread Summarizer** | `documentation/todos/TODO-thread-summarizer.md` | Company feature — AI discussion summarizer (Slack/WhatsApp/Discord) via local LLM + microservice |
 | **Error Mgmt** | `documentation/todos/TODO-error-management.md` | Error class refactoring (completed) |
 
 ## Monorepo structure
