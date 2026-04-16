@@ -13,6 +13,7 @@
     [tabs]="tabs()"
     [activeTabId]="activeTabId()"
     [savedConfigs]="savedConfigs()"
+    [canMoveToConfig]="!saveRecallLocked()"
     (tabSelect)="dispatch('tabSelect', $event)"
     (tabClose)="dispatch('tabClose', $event)"
     (tabRename)="dispatch('tabRename', $event)"

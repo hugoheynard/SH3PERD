@@ -26,6 +26,7 @@
           [tab]="tab"
           [savedConfigs]="savedConfigs()"
           [canClose]="tabs().length > 1"
+          [canMoveToConfig]="canMoveToConfig()"
           (colorRequested)="onColorRequested($event)"
           (moveToConfig)="onMoveToConfig($event)"
           (closeRequested)="onCloseRequested($event)"

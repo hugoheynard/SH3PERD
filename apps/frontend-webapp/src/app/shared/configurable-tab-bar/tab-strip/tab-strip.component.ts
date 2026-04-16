@@ -31,6 +31,8 @@ export class TabStripComponent {
   readonly tabs = input.required<TabItem<unknown>[]>();
   readonly activeTabId = input.required<string>();
   readonly savedConfigs = input<SavedTabConfig<unknown>[]>([]);
+  /** Gate for the "move to config" action inside the per-tab ⋮ menu. */
+  readonly canMoveToConfig = input<boolean>(true);
 
   /* ── Outputs (bubble up) ───────────────────────── */
   readonly tabSelect = output<string>();

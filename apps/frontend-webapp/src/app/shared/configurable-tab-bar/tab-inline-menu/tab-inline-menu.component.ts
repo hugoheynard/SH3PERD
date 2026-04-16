@@ -29,6 +29,12 @@ export class TabInlineMenuComponent {
   readonly tab = input.required<TabItem<unknown>>();
   readonly savedConfigs = input<SavedTabConfig<unknown>[]>([]);
   readonly canClose = input<boolean>(true);
+  /**
+   * Whether the "move to config" action is available. Even with saved configs
+   * present, the host can gate this (e.g. plan downgrade leaves configs
+   * frozen but prevents mutation of them).
+   */
+  readonly canMoveToConfig = input<boolean>(true);
 
   /* ── Outputs ───────────────────────────────────── */
   readonly colorRequested = output<string>();

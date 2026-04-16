@@ -2,7 +2,7 @@
   <sh3-button-icon icon="palette" size="xs" tooltip="Color"
     (clicked)="onColor($event)" />
 
-  @if (savedConfigs().length) {
+  @if (canMoveToConfig() && savedConfigs().length) {
     <span class="tab-move-wrapper" #moveBtn>
       <sh3-button-icon icon="arrow-right" size="xs" tooltip="Move to config"
         (clicked)="onToggleMoveMenu($event, moveBtn)" />
