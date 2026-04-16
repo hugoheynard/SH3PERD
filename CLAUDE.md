@@ -3,6 +3,7 @@
 ## First thing to do in every new session
 
 Read ALL documentation files in both locations before starting any work:
+
 1. `apps/backend/documentation/` — technical architecture docs
 2. `documentation/` — process docs, TODOs, feature roadmaps
 
@@ -30,41 +31,41 @@ When creating new docs, respect this separation. A technical doc about how a sys
 
 ## Technical docs (apps/backend/documentation/)
 
-| Doc | Path | Description |
-|-----|------|-------------|
-| **README** | `apps/backend/documentation/README.md` | Technical documentation index |
-| **Auth System** | `apps/backend/documentation/sh3-auth-system.md` | Complete auth: login, tokens, password, security hardening (Mermaid diagrams) |
-| **Auth & Context** | `apps/backend/documentation/sh3-auth-and-context.md` | Request pipeline: `@ContractScoped`, `@PlatformScoped`, `@RequirePermission`, `P` object |
-| **Writing a Controller** | `apps/backend/documentation/sh3-writing-a-controller.md` | Complete guide: scope, permissions, Swagger, CQRS, Zod-to-DTO pipeline |
-| **Swagger Usage** | `apps/backend/documentation/sh3-swagger-usage.md` | Zod-first DTOs, `apiSuccessDTO`, response envelope |
-| **Error Handling** | `apps/backend/documentation/sh3-error-handling.md` | DomainError, BusinessError, TechnicalError, GlobalExceptionFilter |
-| **Dev Setup** | `apps/backend/documentation/sh3-dev-setup.md` | RSA keys, JWT config, env variables |
-| **Platform Contract** | `apps/backend/documentation/sh3-platform-contract.md` | SaaS subscription model, dual contract model (platform vs company) |
-| **Quota Service** | `apps/backend/documentation/sh3-quota-service.md` | Quota enforcement: `ensureAllowed()` / `recordUsage()`, plan limits |
-| **Music Library** | `apps/backend/documentation/sh3-music-library.md` | Full music feature architecture, 14 features across 4 tiers |
-| **Music Audio Player** | `apps/backend/documentation/sh3-music-audio-player.md` | wavesurfer.js inline player, peaks pipeline |
-| **Music Mastering** | `apps/backend/documentation/sh3-music-mastering.md` | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift |
-| **Persona Match** | `apps/backend/documentation/sh3-persona-match.md` | AI event programming: extraction, scoring, curation (Claude API) |
-| **Org Chart** | `apps/backend/documentation/sh3-orgchart.md` | Org chart features, API, architecture |
-| **Orgchart Export** | `apps/backend/documentation/sh3-orgchart-export.md` | PDF/SVG export via headless Chromium |
-| **Orgchart Print** | `apps/backend/documentation/sh3-orgchart-print.md` | Print layer reusing live component |
-| **Contracts** | `apps/backend/documentation/sh3-contracts.md` | Contract aggregate diagram |
-| **Integrations** | `apps/backend/documentation/sh3-integrations.md` | Slack OAuth, channel management |
-| **E2E Tests** | `apps/backend/documentation/sh3-e2e-tests.md` | MongoMemoryServer, test builders, factories |
+| Doc                      | Path                                                     | Description                                                                              |
+| ------------------------ | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **README**               | `apps/backend/documentation/README.md`                   | Technical documentation index                                                            |
+| **Auth System**          | `apps/backend/documentation/sh3-auth-system.md`          | Complete auth: login, tokens, password, security hardening (Mermaid diagrams)            |
+| **Auth & Context**       | `apps/backend/documentation/sh3-auth-and-context.md`     | Request pipeline: `@ContractScoped`, `@PlatformScoped`, `@RequirePermission`, `P` object |
+| **Writing a Controller** | `apps/backend/documentation/sh3-writing-a-controller.md` | Complete guide: scope, permissions, Swagger, CQRS, Zod-to-DTO pipeline                   |
+| **Swagger Usage**        | `apps/backend/documentation/sh3-swagger-usage.md`        | Zod-first DTOs, `apiSuccessDTO`, response envelope                                       |
+| **Error Handling**       | `apps/backend/documentation/sh3-error-handling.md`       | DomainError, BusinessError, TechnicalError, GlobalExceptionFilter                        |
+| **Dev Setup**            | `apps/backend/documentation/sh3-dev-setup.md`            | RSA keys, JWT config, env variables                                                      |
+| **Platform Contract**    | `apps/backend/documentation/sh3-platform-contract.md`    | SaaS subscription model, dual contract model (platform vs company)                       |
+| **Quota Service**        | `apps/backend/documentation/sh3-quota-service.md`        | Quota enforcement: `ensureAllowed()` / `recordUsage()`, plan limits                      |
+| **Music Library**        | `apps/backend/documentation/sh3-music-library.md`        | Full music feature architecture, 14 features across 4 tiers                              |
+| **Music Audio Player**   | `apps/backend/documentation/sh3-music-audio-player.md`   | wavesurfer.js inline player, peaks pipeline                                              |
+| **Music Mastering**      | `apps/backend/documentation/sh3-music-mastering.md`      | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift                                    |
+| **Persona Match**        | `apps/backend/documentation/sh3-persona-match.md`        | AI event programming: extraction, scoring, curation (Claude API)                         |
+| **Org Chart**            | `apps/backend/documentation/sh3-orgchart.md`             | Org chart features, API, architecture                                                    |
+| **Orgchart Export**      | `apps/backend/documentation/sh3-orgchart-export.md`      | PDF/SVG export via headless Chromium                                                     |
+| **Orgchart Print**       | `apps/backend/documentation/sh3-orgchart-print.md`       | Print layer reusing live component                                                       |
+| **Contracts**            | `apps/backend/documentation/sh3-contracts.md`            | Contract aggregate diagram                                                               |
+| **Integrations**         | `apps/backend/documentation/sh3-integrations.md`         | Slack OAuth, channel management                                                          |
+| **E2E Tests**            | `apps/backend/documentation/sh3-e2e-tests.md`            | MongoMemoryServer, test builders, factories                                              |
 
 ## Process docs (documentation/)
 
-| Doc | Path | Description |
-|-----|------|-------------|
-| **README** | `documentation/README.md` | Process documentation index |
-| **Tech Debt** | `documentation/todos/TODO-tech-debt.md` | Urgent bugs, architectural debt, functional backlog |
-| **Music Features** | `documentation/todos/TODO-music-features.md` | Music feature roadmap by phase |
-| **Company Features** | `documentation/todos/TODO-company-features.md` | Company module: settings, org chart, contracts |
-| **Guest to User** | `documentation/todos/TODO-guest-to-user.md` | Guest user activation flow (6 phases) |
-| **Integrations** | `documentation/todos/TODO-integrations.md` | Slack integration roadmap |
-| **Tab Bar** | `documentation/todos/TODO-configurable-tab-bar.md` | DnD bug fix, unit tests, component split |
-| **Programs** | `documentation/todos/TODO-programs.md` | Drag engine refactoring |
-| **Error Mgmt** | `documentation/todos/TODO-error-management.md` | Error class refactoring (completed) |
+| Doc                  | Path                                               | Description                                         |
+| -------------------- | -------------------------------------------------- | --------------------------------------------------- |
+| **README**           | `documentation/README.md`                          | Process documentation index                         |
+| **Tech Debt**        | `documentation/todos/TODO-tech-debt.md`            | Urgent bugs, architectural debt, functional backlog |
+| **Music Features**   | `documentation/todos/TODO-music-features.md`       | Music feature roadmap by phase                      |
+| **Company Features** | `documentation/todos/TODO-company-features.md`     | Company module: settings, org chart, contracts      |
+| **Guest to User**    | `documentation/todos/TODO-guest-to-user.md`        | Guest user activation flow (6 phases)               |
+| **Integrations**     | `documentation/todos/TODO-integrations.md`         | Slack integration roadmap                           |
+| **Tab Bar**          | `documentation/todos/TODO-configurable-tab-bar.md` | DnD bug fix, unit tests, component split            |
+| **Programs**         | `documentation/todos/TODO-programs.md`             | Drag engine refactoring                             |
+| **Error Mgmt**       | `documentation/todos/TODO-error-management.md`     | Error class refactoring (completed)                 |
 
 ## Monorepo structure
 
@@ -82,6 +83,7 @@ SH3PHERD/
 ## Documentation maintenance
 
 Every code change must be reflected in the relevant documentation:
+
 - **New endpoint or controller change** → update the technical doc in `apps/backend/documentation/` + Swagger decorators
 - **New feature started or completed** → update the corresponding TODO in `documentation/todos/`
 - **Architecture decision or pattern change** → update or create a technical doc in `apps/backend/documentation/`
@@ -100,6 +102,7 @@ Use **Mermaid diagrams** (sequence, flowchart, state, graph) in technical docs t
 ## Swagger documentation
 
 Every controller endpoint MUST have complete Swagger decorators following `apps/backend/documentation/sh3-writing-a-controller.md`:
+
 - `@ApiOperation({ summary, description })`
 - `@ApiResponse(apiSuccessDTO(...))`
 - `@ApiParam` / `@ApiBody` where relevant
@@ -108,20 +111,81 @@ Every controller endpoint MUST have complete Swagger decorators following `apps/
 
 Swagger must be updated in the same commit as the controller change. Stale docs are not acceptable.
 
-## Lint rules
+## Quality gates (three tiers, enforced top-to-bottom)
 
-- **Before working on a module**: if it is in the ESLint `ignores` list (`apps/backend/eslint.config.mjs`), REMOVE it from `ignores` first. Fix all existing lint errors in that module, then proceed with the feature work.
-- **Before every commit**: run lint on the affected app(s) and fix all errors. Never commit code that fails lint.
-  - Backend: `pnpm --filter @sh3pherd/backend lint`
-  - Audio processor: `pnpm --filter @sh3pherd/audio-processor lint`
-  - Frontend: `cd apps/frontend-webapp && npx tsc --noEmit`
-- **Before every commit**: run tests on the affected app(s) and fix all failures. Never commit code with failing tests.
-  - Backend: `pnpm --filter @sh3pherd/backend test`
-  - Audio processor: `pnpm --filter @sh3pherd/audio-processor test`
-- **No `eslint-disable` comments**: fix the root cause instead of suppressing the error.
-- **Lint before commit is BLOCKING** — if lint fails, do NOT commit. Fix first.
-- **Tests before commit are BLOCKING** — if any test fails, do NOT commit. Fix first.
-- **TypeScript compilation must pass** — run `npx tsc --noEmit` on the affected app before committing. Type errors are as blocking as lint errors.
+The repository enforces three layers of quality. Each is tighter than the last.
+Don't expect the later gates to catch what an earlier one missed — by the time
+CI rejects a PR, the feedback loop is already slow.
+
+### 1. Pre-commit (fast, local, formatting only)
+
+`.githooks/pre-commit` runs `lint-staged` on the files you staged:
+
+- ESLint `--fix` on backend and audio-processor TypeScript
+- Prettier on every supported extension
+
+Handles style and autofixable issues. Does **not** typecheck.
+
+### 2. Pre-push (local, blocking, covers correctness)
+
+`.githooks/pre-push` inspects the diff between the remote tip and HEAD, and
+for each app that has changes it runs:
+
+- `tsc --noEmit`
+- `eslint` (where an ESLint config exists — backend, audio-processor)
+
+If `packages/shared-types/**` changed, every downstream app is re-checked
+(and shared-types is rebuilt first). Tests are **not** run here — they live
+in CI to keep the push gate fast enough that nobody reaches for `--no-verify`.
+
+Activation on a fresh clone:
+
+```bash
+pnpm run setup:hooks   # points core.hooksPath at .githooks
+```
+
+Emergency bypass: `git push --no-verify`. GitHub branch protection is the
+real, unbypassable gate (see §3).
+
+### 3. CI (remote, authoritative, required for merge)
+
+`.github/workflows/ci.yml` runs on every push to `dev` and every PR into
+`dev` or `main`:
+
+- `shared-types`: build
+- `backend`: lint + `tsc --noEmit` + unit tests
+- `audio-processor`: lint + `tsc --noEmit` + unit tests
+- `frontend`: `tsc --noEmit` + unit tests + production build
+- `ci-gate`: a terminal job that waits on every other job. This is the
+  single status check to require in GitHub branch protection.
+
+### Rules that still apply before a commit
+
+- **Before working on a module**: if it is in the ESLint `ignores` list
+  (`apps/backend/eslint.config.mjs`), REMOVE it from `ignores` first.
+  Fix all existing lint errors in that module, then proceed with the
+  feature work.
+- **No `eslint-disable` comments**: fix the root cause instead of
+  suppressing the error.
+- **Never commit code with failing tests.** The pre-push hook does not
+  run tests, so this one is on you locally; CI will block the merge
+  regardless.
+
+Useful one-liners when you want to run a gate manually:
+
+```bash
+pnpm --filter @sh3pherd/backend lint
+pnpm --filter @sh3pherd/backend exec tsc --noEmit
+pnpm --filter @sh3pherd/backend test
+
+pnpm --filter @sh3pherd/audio-processor lint
+pnpm --filter @sh3pherd/audio-processor exec tsc --noEmit
+pnpm --filter @sh3pherd/audio-processor test
+
+pnpm --filter @sh3pherd/frontend-webapp exec tsc --noEmit
+pnpm --filter @sh3pherd/frontend-webapp test
+pnpm --filter @sh3pherd/frontend-webapp build
+```
 
 ## Frontend conventions (Angular 21)
 
