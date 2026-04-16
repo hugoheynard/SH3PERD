@@ -28,6 +28,7 @@ import { UserContextService } from '../../../core/services/user-context.service'
 import { UpgradePanelComponent } from '../../../core/components/upgrade-panel/upgrade-panel.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { TabLimitPopoverComponent } from '../tab-limit-popover/tab-limit-popover.component';
+import { SaveRecallLockedPopoverComponent } from '../save-recall-locked-popover/save-recall-locked-popover.component';
 
 @Component({
   selector: 'app-music-library-page',
@@ -84,10 +85,10 @@ export class MusicLibraryPageComponent implements OnInit {
     return max !== -1 && this.selector.tabs().length >= max;
   });
 
-  /** Save/recall is hidden on free plan. */
-  readonly canSaveRecall = computed(() => {
+  /** Save/recall is locked on the free plan. */
+  readonly saveRecallLocked = computed(() => {
     const plan = this.userCtx.plan();
-    return plan !== 'artist_free';
+    return plan === 'artist_free';
   });
 
   readonly activeSearchQuery = computed(() => {
@@ -143,6 +144,11 @@ export class MusicLibraryPageComponent implements OnInit {
   /** Called when the tab bar's lock button is clicked — shows the limit popover. */
   openTabLimitPopover(): void {
     this.layout.setPopover(TabLimitPopoverComponent);
+  }
+
+  /** Called when the save/recall lock button is clicked — shows the upgrade popover. */
+  openSaveRecallLockedPopover(): void {
+    this.layout.setPopover(SaveRecallLockedPopoverComponent);
   }
 
   /* ── Add entry ── */

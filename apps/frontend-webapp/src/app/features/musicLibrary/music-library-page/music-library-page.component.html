@@ -25,9 +25,10 @@
       [activeTabId]="selector.activeTabId()"
       [activeConfigId]="selector.activeConfigId()"
       [savedConfigs]="selector.savedTabConfigs()"
-      [canSaveRecall]="canSaveRecall()"
       [locked]="tabLimitReached()"
+      [saveRecallLocked]="saveRecallLocked()"
       (lockClicked)="openTabLimitPopover()"
+      (saveRecallLockClicked)="openSaveRecallLockedPopover()"
     >
       <!-- Music-specific: search input -->
       <div tabBarTrailing class="tab-search">

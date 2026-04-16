@@ -15,6 +15,11 @@ import type { SavedTabConfig } from '../configurable-tab-bar.types';
  * - **Load menu** — the list of saved configs with per-config expand, rename,
  *   delete, and per-config-tab rename/remove/move submenu.
  *
+ * When `locked` is true the save/load surface collapses to a single lock
+ * button that emits `lockClicked`. The host is responsible for responding
+ * to the click (e.g. opening an upgrade popover) — the panel knows nothing
+ * about quotas or plans.
+ *
  * All mutations are emitted as outputs for the parent bar to dispatch through
  * its TAB_HANDLERS contract. Built-in toasts for the three user-visible
  * operations (new, save, load) are triggered locally when `showToasts` is on.
@@ -35,6 +40,11 @@ export class TabConfigPanelComponent {
   readonly savedConfigs = input<SavedTabConfig<unknown>[]>([]);
   /** Show built-in toast notifications for config operations. */
   readonly showToasts = input<boolean>(true);
+  /**
+   * When true, the save/load buttons + floating panels collapse to a single
+   * lock button that emits `lockClicked`. Host decides what to do next.
+   */
+  readonly locked = input<boolean>(false);
 
   /* ── Outputs ───────────────────────────────────── */
   readonly configSave = output<string>();
@@ -45,6 +55,8 @@ export class TabConfigPanelComponent {
   readonly configTabRemove = output<{ configId: string; tabId: string }>();
   readonly configTabRename = output<{ configId: string; tabId: string; title: string }>();
   readonly configTabMove = output<{ sourceConfigId: string; targetConfigId: string; tabId: string }>();
+  /** Emitted when the user clicks the lock button (only rendered when `locked` is true). */
+  readonly lockClicked = output<void>();
 
   /* ── Save / load UI state ──────────────────────── */
   readonly showSaveForm = signal(false);

@@ -19,8 +19,9 @@ import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.com
  * The bar renders the add-tab affordance itself. When `locked` is true it
  * swaps the plus button for a lock button and emits `lockClicked` instead of
  * `tabAdd` — the host decides what to do (show an upgrade popover, a tooltip,
- * a right panel, …). The bar intentionally knows nothing about quotas,
- * plans, or popovers.
+ * a right panel, …). The save/recall panel follows the same pattern via
+ * `saveRecallLocked` + `saveRecallLockClicked`. The bar intentionally knows
+ * nothing about quotas, plans, or popovers.
  *
  * Wire tab mutations via `provideTabHandlers(MyTabMutationService)` for zero
  * boilerplate, or bind individual `(output)` events for custom overrides.
@@ -57,14 +58,18 @@ export class ConfigurableTabBarComponent {
   readonly savedConfigs = input<SavedTabConfig<unknown>[]>([]);
   /** Show built-in toast notifications for config operations. Default: true. */
   readonly showToasts = input<boolean>(true);
-  /** Whether save/recall config buttons are visible. */
-  readonly canSaveRecall = input<boolean>(true);
   /**
    * When true, the add-tab affordance becomes a lock button that emits
    * `lockClicked` instead of `tabAdd`. The host is responsible for deciding
    * when to lock and for responding to the click (e.g. opening a popover).
    */
   readonly locked = input<boolean>(false);
+  /**
+   * When true, the save/recall config panel collapses to a single lock button
+   * that emits `saveRecallLockClicked`. Same contract as `locked` — the host
+   * owns the decision and the click consequence.
+   */
+  readonly saveRecallLocked = input<boolean>(false);
 
   /* ── Outputs (public API — also dispatched via TAB_HANDLERS) ── */
   readonly tabSelect = output<string>();
@@ -84,6 +89,8 @@ export class ConfigurableTabBarComponent {
   readonly tabMoveToConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
   /** Emitted when the user clicks the lock button (only rendered when `locked` is true). */
   readonly lockClicked = output<void>();
+  /** Emitted when the user clicks the save/recall lock button (only rendered when `saveRecallLocked` is true). */
+  readonly saveRecallLockClicked = output<void>();
 
   /* ── Color picker (single shared DOM input) ─────── */
   @ViewChild('colorInput') colorInputRef!: ElementRef<HTMLInputElement>;

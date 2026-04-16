@@ -33,20 +33,20 @@
   <!-- Domain-specific slot (e.g. search input) -->
   <ng-content select="[tabBarTrailing]" />
 
-  <!-- Config panel (save / load) -->
-  @if (canSaveRecall()) {
-    <sh3-tab-config-panel
-      [activeConfigId]="activeConfigId()"
-      [savedConfigs]="savedConfigs()"
-      [showToasts]="showToasts()"
-      (configSave)="dispatch('configSave', $event)"
-      (configNew)="dispatch('configNew', undefined)"
-      (configLoad)="dispatch('configLoad', $event)"
-      (configDelete)="dispatch('configDelete', $event)"
-      (configRename)="dispatch('configRename', $event)"
-      (configTabRemove)="dispatch('configTabRemove', $event)"
-      (configTabRename)="dispatch('configTabRename', $event)"
-      (configTabMove)="dispatch('configTabMove', $event)"
-    />
-  }
+  <!-- Config panel (save / load) — always mounted, may render as locked -->
+  <sh3-tab-config-panel
+    [activeConfigId]="activeConfigId()"
+    [savedConfigs]="savedConfigs()"
+    [showToasts]="showToasts()"
+    [locked]="saveRecallLocked()"
+    (lockClicked)="saveRecallLockClicked.emit()"
+    (configSave)="dispatch('configSave', $event)"
+    (configNew)="dispatch('configNew', undefined)"
+    (configLoad)="dispatch('configLoad', $event)"
+    (configDelete)="dispatch('configDelete', $event)"
+    (configRename)="dispatch('configRename', $event)"
+    (configTabRemove)="dispatch('configTabRemove', $event)"
+    (configTabRename)="dispatch('configTabRename', $event)"
+    (configTabMove)="dispatch('configTabMove', $event)"
+  />
 </div>

@@ -1,5 +1,11 @@
 <div class="tab-config-actions">
 
+  @if (locked()) {
+    <!-- Locked: single lock button, no save/load surface -->
+    <sh3-button-icon icon="lock" size="sm" tooltip="Save / recall locked"
+      (clicked)="lockClicked.emit()" />
+  } @else {
+
   <!-- Save / New toggle (mutually exclusive) -->
   @if (activeConfigId()) {
     <sh3-button-icon icon="file-add" size="sm" tooltip="New blank configuration"
@@ -109,6 +115,8 @@
         </div>
       }
     </div>
+  }
+
   }
 
 </div>
