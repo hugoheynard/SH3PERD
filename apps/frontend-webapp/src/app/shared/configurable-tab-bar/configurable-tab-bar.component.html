@@ -1,6 +1,6 @@
 <!-- ═══════════════════════════════════════════════════
-     CONFIGURABLE TAB BAR
-     Structure: [tabs-scroll] [+] [ng-content] [actions]
+     CONFIGURABLE TAB BAR (orchestrator)
+     Structure: [tab-strip] [+/lock] [ng-content] [config-panel]
      ═══════════════════════════════════════════════════ -->
 
 <!-- Hidden color picker (positioned off-screen via CSS) -->
@@ -8,66 +8,20 @@
 
 <div class="tab-bar">
 
-  <!-- ── Scrollable tab strip ──────────────────────── -->
-  <div class="tabs-scroll" uiDndDropZone [dropZone_id]="'tab-bar'" [dropZoneAccept]="['tab']" (uiDndDrop)="onTabDrop($event)">
-    @for (tab of tabs(); track tab.id; let idx = $index) {
-      <div
-        class="tab" [class.active]="tab.id === activeTabId()"
-        [style.border-left-color]="tab.color || 'transparent'"
-        [style.border-left-width]="tab.color ? '3px' : '0'"
-        (pointerup)="onTabPointerUp(tab, $event)"
-        (dblclick)="onTabDblClick(tab, $event)"
-        role="button" tabindex="0"
-        uiDndDrag [dndType]="'tab'" [dndData]="{ tabId: tab.id, title: tab.title }"
-      >
-        <!-- Tab title (inline rename on dblclick) -->
-        @if (editingTabId() === tab.id) {
-          <input class="tab-rename-input" [(ngModel)]="editTitle"
-            (keydown.enter)="commitRename(tab.id)" (keydown.escape)="cancelRename()"
-            (blur)="commitRename(tab.id)" (pointerup)="$event.stopPropagation()" autofocus />
-        } @else {
-          <span class="tab-title">{{ tab.title }}</span>
-        }
+  <!-- Tab strip -->
+  <sh3-tab-strip
+    [tabs]="tabs()"
+    [activeTabId]="activeTabId()"
+    [savedConfigs]="savedConfigs()"
+    (tabSelect)="dispatch('tabSelect', $event)"
+    (tabClose)="dispatch('tabClose', $event)"
+    (tabRename)="dispatch('tabRename', $event)"
+    (tabReorder)="dispatch('tabReorder', $event)"
+    (tabColorRequested)="onTabColorRequested($event)"
+    (tabMoveToConfig)="dispatch('tabMoveToConfig', $event)"
+  />
 
-        <!-- ⋮ menu toggle -->
-        <button class="tab-menu-toggle" type="button" title="Tab actions"
-          (click)="toggleTabMenu(tab.id, $event)" (pointerup)="$event.stopPropagation()">⋮</button>
-
-        <!-- Inline actions (shown when ⋮ is open) -->
-        @if (openTabMenuId() === tab.id) {
-          <span class="tab-inline-actions" (pointerup)="$event.stopPropagation()">
-            <button class="tab-inline-btn" type="button" title="Color"
-              (click)="openColorPicker(tab.id, $event); openTabMenuId.set(null)">●</button>
-
-            @if (savedConfigs().length) {
-              <span class="tab-move-wrapper">
-                <button class="tab-inline-btn" type="button" title="Move to config"
-                  #moveBtn (click)="toggleTabMoveMenu(tab.id, $event, moveBtn)">⇥</button>
-
-                @if (tabMoveMenuId() === tab.id) {
-                  <div class="tab-move-dropdown"
-                    [style.top.px]="moveDropdownPos().top" [style.left.px]="moveDropdownPos().left">
-                    <span class="tab-move-label">Move to</span>
-                    @for (cfg of savedConfigs(); track cfg.id) {
-                      <button class="tab-move-option" type="button"
-                        (click)="onMoveActiveTabToConfig(tab, cfg.id, $event)">{{ cfg.name }}</button>
-                    }
-                  </div>
-                }
-              </span>
-            }
-
-            @if (tabs().length > 1) {
-              <button class="tab-inline-btn tab-inline-btn--danger" type="button" title="Close"
-                (click)="onClose($event, tab.id); openTabMenuId.set(null)">×</button>
-            }
-          </span>
-        }
-      </div>
-    }
-  </div>
-
-  <!-- ── Add tab button / Lock when limit reached ──── -->
+  <!-- Add tab button / Lock when limit reached -->
   @if (tabLimitReached()) {
     <div class="tab-add-wrapper">
       <button class="tab-add tab-add--locked" type="button" aria-label="Tab limit reached"
@@ -92,126 +46,23 @@
     </button>
   }
 
-  <!-- ── Domain-specific slot (e.g. search input) ─── -->
+  <!-- Domain-specific slot (e.g. search input) -->
   <ng-content select="[tabBarTrailing]" />
 
-  <!-- ═══════════════════════════════════════════════
-       CONFIG ACTIONS: Save/New + Load dropdown
-       Only visible when save/recall is allowed by plan.
-       ═══════════════════════════════════════════════ -->
+  <!-- Config panel (save / load) -->
   @if (canSaveRecall()) {
-    <div class="tab-config-actions">
-
-      <!-- Save / New toggle (mutually exclusive) -->
-      @if (activeConfigId()) {
-        <button class="tab-action-btn" type="button" title="New blank configuration" (click)="onNewConfig($event)">
-          <sh3-icon name="file-add" [size]="13" />
-        </button>
-      } @else {
-        <button class="tab-action-btn" [class.active]="showSaveForm()" type="button" title="Save current tab configuration" (click)="toggleSaveForm()">
-          <sh3-icon name="save" [size]="13" />
-        </button>
-      }
-
-      <!-- Load button -->
-      <button class="tab-action-btn" [class.active]="showLoadMenu()" type="button" title="Load saved configuration" (click)="toggleLoadMenu()">
-        <sh3-icon name="folder-open" [size]="13" />
-        @if (savedConfigs().length) {
-          <span class="config-count">{{ savedConfigs().length }}</span>
-        }
-      </button>
-
-      <!-- ── Save form (inline panel) ─────────────── -->
-      @if (showSaveForm()) {
-        <div class="tab-config-panel tab-config-panel--save">
-          <sh3-input class="config-name-input" size="sm"
-            [ngModel]="saveFormName()" (ngModelChange)="saveFormName.set($event)"
-            placeholder="Config name…" (keydown.enter)="submitSaveForm()" (keydown.escape)="toggleSaveForm()" [autofocus]="true" />
-          <sh3-button variant="primary" size="sm" (clicked)="submitSaveForm()">Save</sh3-button>
-        </div>
-      }
-
-      <!-- ── Load dropdown ────────────────────────── -->
-      @if (showLoadMenu()) {
-        <div class="tab-config-panel tab-config-panel--load">
-          @if (!savedConfigs().length) {
-            <span class="config-empty">No saved configs yet</span>
-          }
-
-          @for (cfg of savedConfigs(); track cfg.id) {
-            <div class="config-item-wrapper">
-
-              <!-- Config row -->
-              <div class="config-item" [class.config-item--active]="cfg.id === activeConfigId()">
-                <button class="config-item-expand" type="button" title="Show tabs"
-                  (click)="toggleConfigExpand(cfg.id, $event)">{{ expandedConfigId() === cfg.id ? '▾' : '▸' }}</button>
-
-                @if (editingConfigNameId() === cfg.id) {
-                  <input class="config-rename-input" [(ngModel)]="editConfigName"
-                    (keydown.enter)="commitConfigRename(cfg.id)" (keydown.escape)="editingConfigNameId.set(null)"
-                    (blur)="commitConfigRename(cfg.id)" (click)="$event.stopPropagation()" autofocus />
-                } @else {
-                  <span class="config-item-name" (click)="onLoadConfig(cfg)">
-                    {{ cfg.name }} <small>({{ cfg.tabs.length }})</small>
-                  </span>
-                }
-
-                <div class="config-item-actions">
-                  <button class="config-action-btn" type="button" title="Rename"
-                    (click)="startConfigRename(cfg.id, cfg.name, $event)">✎</button>
-                  <button class="config-action-btn config-action-btn--danger" type="button" title="Delete"
-                    (click)="onDeleteConfig(cfg.id, $event)">×</button>
-                </div>
-              </div>
-
-              <!-- Expanded tabs within config -->
-              @if (expandedConfigId() === cfg.id) {
-                <div class="config-tabs-list">
-                  @for (tab of cfg.tabs; track tab.id) {
-                    <div class="config-tab-item">
-
-                      @if (editingConfigTabId()?.configId === cfg.id && editingConfigTabId()?.tabId === tab.id) {
-                        <input class="config-tab-rename-input" [(ngModel)]="editConfigTabTitle"
-                          (keydown.enter)="commitConfigTabRename()" (keydown.escape)="editingConfigTabId.set(null)"
-                          (blur)="commitConfigTabRename()" (click)="$event.stopPropagation()" autofocus />
-                      } @else {
-                        <span class="config-tab-name"
-                          [style.border-left-color]="tab.color || 'transparent'"
-                          [style.border-left-width]="tab.color ? '3px' : '0'">{{ tab.title }}</span>
-                      }
-
-                      <div class="config-tab-actions">
-                        <button class="config-action-btn" type="button" title="Rename"
-                          (click)="startConfigTabRename(cfg.id, tab.id, tab.title, $event)">✎</button>
-                        @if (savedConfigs().length > 1 && cfg.tabs.length > 1) {
-                          <button class="config-action-btn" type="button" title="Move"
-                            (click)="toggleMoveMenu(cfg.id, tab.id, $event)">⇥</button>
-                        }
-                        @if (cfg.tabs.length > 1) {
-                          <button class="config-action-btn config-action-btn--danger" type="button" title="Remove"
-                            (click)="onRemoveTabFromConfig(cfg.id, tab.id, $event)">×</button>
-                        }
-                      </div>
-
-                      <!-- Move-to submenu -->
-                      @if (moveMenuTabCtx()?.configId === cfg.id && moveMenuTabCtx()?.tabId === tab.id) {
-                        <div class="config-move-menu">
-                          <span class="config-move-label">Move to:</span>
-                          @for (target of moveTargetConfigs(cfg.id); track target.id) {
-                            <button class="config-move-target" type="button"
-                              (click)="onMoveTabToConfig(target.id, $event)">{{ target.name }}</button>
-                          }
-                        </div>
-                      }
-                    </div>
-                  }
-                </div>
-              }
-            </div>
-          }
-        </div>
-      }
-
-    </div>
+    <sh3-tab-config-panel
+      [activeConfigId]="activeConfigId()"
+      [savedConfigs]="savedConfigs()"
+      [showToasts]="showToasts()"
+      (configSave)="dispatch('configSave', $event)"
+      (configNew)="dispatch('configNew', undefined)"
+      (configLoad)="dispatch('configLoad', $event)"
+      (configDelete)="dispatch('configDelete', $event)"
+      (configRename)="dispatch('configRename', $event)"
+      (configTabRemove)="dispatch('configTabRemove', $event)"
+      (configTabRename)="dispatch('configTabRename', $event)"
+      (configTabMove)="dispatch('configTabMove', $event)"
+    />
   }
 </div>

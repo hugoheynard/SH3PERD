@@ -1,26 +1,31 @@
 import { Component, computed, ElementRef, inject, input, output, signal, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { ButtonComponent } from '../button/button.component';
-import { InputComponent } from '../forms/input/input.component';
-import { DndDragDirective } from '../../core/drag-and-drop/dndDrag.directive';
-import { DndDropZoneDirective } from '../../core/drag-and-drop/dnd-drop-zone.directive';
-import type { DragState } from '../../core/drag-and-drop/drag.types';
+import { IconComponent } from '../icon/icon.component';
 import type { TabItem, SavedTabConfig } from './configurable-tab-bar.types';
 import { TAB_HANDLERS, type TabHandlers } from './tab-event.helpers';
-import { ToastService } from '../toast/toast.service';
-import { IconComponent } from '../icon/icon.component';
+import { TabStripComponent } from './tab-strip/tab-strip.component';
+import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.component';
 
 /**
  * Generic, reusable tab bar with save/recall configs, DnD reorder, color coding, and inline editing.
  *
- * All tab mutations are emitted as outputs — wire them to a `TabMutationService` subclass
- * using `wireTabEvents()` for zero-boilerplate integration.
+ * Orchestrator component — owns the public API (inputs/outputs, TAB_HANDLERS
+ * dispatch, the add-tab button, the tab-limit upgrade popover, and the
+ * single shared `<input type="color">` picker) while delegating the three
+ * major visual concerns to dedicated sub-components:
  *
- * Use `[tabBarTrailing]` content projection for domain-specific content (e.g. search input).
+ * - {@link TabStripComponent} — scrollable tab list, inline rename, DnD,
+ *   per-tab ⋮ menu (which itself hosts {@link TabInlineMenuComponent}).
+ * - {@link TabConfigPanelComponent} — save/new/load buttons + floating panels.
+ *
+ * Wire tab mutations via `provideTabHandlers(MyTabMutationService)` for zero
+ * boilerplate, or bind individual `(output)` events for custom overrides.
+ *
+ * Use `[tabBarTrailing]` content projection for domain-specific content
+ * (e.g. a search input).
  *
  * @example
  * ```html
- * <sh3-configurable-tab-bar [tabs]="tabs()" [activeTabId]="activeTabId()" ...outputs>
+ * <sh3-configurable-tab-bar [tabs]="tabs()" [activeTabId]="activeTabId()" …>
  *   <div tabBarTrailing><input placeholder="Search…" /></div>
  * </sh3-configurable-tab-bar>
  * ```
@@ -28,20 +33,19 @@ import { IconComponent } from '../icon/icon.component';
 @Component({
   selector: 'sh3-configurable-tab-bar',
   standalone: true,
-  imports: [FormsModule, ButtonComponent, InputComponent, DndDragDirective, DndDropZoneDirective, IconComponent],
+  imports: [IconComponent, TabStripComponent, TabConfigPanelComponent],
   templateUrl: './configurable-tab-bar.component.html',
   styleUrl: './configurable-tab-bar.component.scss',
 })
 export class ConfigurableTabBarComponent {
 
-  private toast = inject(ToastService);
   private _handlers: TabHandlers | null = inject(TAB_HANDLERS, { optional: true });
 
   /* ── Inputs ────────────────────────────────────── */
-  readonly tabs = input.required<TabItem<any>[]>();
+  readonly tabs = input.required<TabItem<unknown>[]>();
   readonly activeTabId = input.required<string>();
   readonly activeConfigId = input<string | null>(null);
-  readonly savedConfigs = input<SavedTabConfig<any>[]>([]);
+  readonly savedConfigs = input<SavedTabConfig<unknown>[]>([]);
   /** Show built-in toast notifications for config operations. Default: true. */
   readonly showToasts = input<boolean>(true);
   /** Maximum number of tabs allowed. -1 = unlimited (no limit). */
@@ -55,7 +59,7 @@ export class ConfigurableTabBarComponent {
     return max !== -1 && this.tabs().length >= max;
   });
 
-  /* ── Outputs (still available for custom overrides) ── */
+  /* ── Outputs (public API — also dispatched via TAB_HANDLERS) ── */
   readonly tabSelect = output<string>();
   readonly tabAdd = output<void>();
   readonly tabClose = output<string>();
@@ -64,114 +68,20 @@ export class ConfigurableTabBarComponent {
   readonly tabColorChange = output<{ id: string; color: string }>();
   readonly configSave = output<string>();
   readonly configNew = output<void>();
-  readonly configLoad = output<SavedTabConfig<any>>();
+  readonly configLoad = output<SavedTabConfig<unknown>>();
   readonly configDelete = output<string>();
   readonly configRename = output<{ configId: string; name: string }>();
   readonly configTabRemove = output<{ configId: string; tabId: string }>();
   readonly configTabRename = output<{ configId: string; tabId: string; title: string }>();
   readonly configTabMove = output<{ sourceConfigId: string; targetConfigId: string; tabId: string }>();
-  readonly tabMoveToConfig = output<{ tab: TabItem<any>; targetConfigId: string }>();
+  readonly tabMoveToConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
   readonly upgradeRequested = output<void>();
 
-  /* ── Tab editing state ─────────────────────────── */
-  editingTabId = signal<string | null>(null);
-  editTitle = '';
-
-  /* ── Config save/load UI ───────────────────────── */
-  showSaveForm = signal(false);
-  showLoadMenu = signal(false);
-  saveFormName = signal('');
-
-  /* ── Color picker ──────────────────────────────── */
+  /* ── Color picker (single shared DOM input) ─────── */
   @ViewChild('colorInput') colorInputRef!: ElementRef<HTMLInputElement>;
   private colorTargetTabId: string | null = null;
 
-  /* ── Tab inline menu ───────────────────────────── */
-  openTabMenuId = signal<string | null>(null);
-  tabMoveMenuId = signal<string | null>(null);
-  moveDropdownPos = signal<{ top: number; left: number }>({ top: 0, left: 0 });
-
-  /* ── Upgrade popover ────────────────────────────── */
-  showUpgradePopover = signal(false);
-
-  toggleUpgradePopover(): void {
-    this.showUpgradePopover.update(v => !v);
-  }
-
-  onUpgrade(): void {
-    this.showUpgradePopover.set(false);
-    this.upgradeRequested.emit();
-  }
-
-  /* ── Config editing state ──────────────────────── */
-  expandedConfigId = signal<string | null>(null);
-  editingConfigNameId = signal<string | null>(null);
-  editConfigName = '';
-  editingConfigTabId = signal<{ configId: string; tabId: string } | null>(null);
-  editConfigTabTitle = '';
-  moveMenuTabCtx = signal<{ configId: string; tabId: string } | null>(null);
-
-  /* ── Tab interactions ──────────────────────────── */
-
-  onTabPointerUp(tab: TabItem<any>, event: PointerEvent): void {
-    const target = event.target as HTMLElement;
-    if (target.closest('button, input')) return;
-    this.openTabMenuId.set(null);
-    this.dispatch('tabSelect', tab.id);
-  }
-
-  onTabDblClick(tab: TabItem<any>, event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-    if (target.closest('button, input')) return;
-    this.openTabMenuId.set(null);
-    this.editingTabId.set(tab.id);
-    this.editTitle = tab.title;
-  }
-
-  onClose(event: MouseEvent, tabId: string): void {
-    event.stopPropagation();
-    this.dispatch('tabClose', tabId);
-  }
-
-  commitRename(tabId: string): void {
-    const title = this.editTitle.trim();
-    if (title) this.dispatch('tabRename', { id: tabId, title });
-    this.editingTabId.set(null);
-  }
-
-  cancelRename(): void {
-    this.editingTabId.set(null);
-  }
-
-  /* ── Tab inline menu ───────────────────────────── */
-
-  toggleTabMenu(tabId: string, event: MouseEvent): void {
-    event.stopPropagation();
-    this.tabMoveMenuId.set(null);
-    this.openTabMenuId.update(id => id === tabId ? null : tabId);
-  }
-
-  toggleTabMoveMenu(tabId: string, event: MouseEvent, btnEl: HTMLElement): void {
-    event.stopPropagation();
-    const opening = this.tabMoveMenuId() !== tabId;
-    this.tabMoveMenuId.update(id => id === tabId ? null : tabId);
-    if (opening) {
-      const rect = btnEl.getBoundingClientRect();
-      this.moveDropdownPos.set({ top: rect.bottom + 4, left: rect.left });
-    }
-  }
-
-  onMoveActiveTabToConfig(tab: TabItem<any>, targetConfigId: string, event: MouseEvent): void {
-    event.stopPropagation();
-    this.dispatch('tabMoveToConfig', { tab, targetConfigId });
-    this.tabMoveMenuId.set(null);
-    this.openTabMenuId.set(null);
-  }
-
-  /* ── Color picker ──────────────────────────────── */
-
-  openColorPicker(tabId: string, event: MouseEvent): void {
-    event.stopPropagation();
+  onTabColorRequested(tabId: string): void {
     this.colorTargetTabId = tabId;
     this.colorInputRef.nativeElement.click();
   }
@@ -184,123 +94,19 @@ export class ConfigurableTabBarComponent {
     }
   }
 
-  /* ── DnD reorder ───────────────────────────────── */
+  /* ── Upgrade popover ────────────────────────────── */
+  readonly showUpgradePopover = signal(false);
 
-  onTabDrop(drag: DragState): void {
-    if (drag.type !== 'tab') return;
-    const tabId = drag.data.tabId;
-    const tabs = this.tabs();
-    const currentIndex = tabs.findIndex(t => t.id === tabId);
-    if (currentIndex === -1) return;
-    this.dispatch('tabReorder', { tabId, newIndex: tabs.length - 1 });
+  toggleUpgradePopover(): void {
+    this.showUpgradePopover.update(v => !v);
   }
 
-  onTabDropAtIndex(tabId: string, targetIndex: number): void {
-    this.dispatch('tabReorder', { tabId, newIndex: targetIndex });
+  onUpgrade(): void {
+    this.showUpgradePopover.set(false);
+    this.upgradeRequested.emit();
   }
 
-  /* ── Config save/load ──────────────────────────── */
-
-  onNewConfig(event: MouseEvent): void {
-    event.stopPropagation();
-    this.showLoadMenu.set(false);
-    this.showSaveForm.set(false);
-    this._handlers?.configNew();
-    this.configNew.emit();
-    if (this.showToasts()) this.toast.show('New configuration started', 'info');
-  }
-
-  toggleSaveForm(): void {
-    this.showSaveForm.update(v => !v);
-    this.showLoadMenu.set(false);
-    this.saveFormName.set('');
-  }
-
-  toggleLoadMenu(): void {
-    this.showLoadMenu.update(v => !v);
-    this.showSaveForm.set(false);
-  }
-
-  submitSaveForm(): void {
-    const name = this.saveFormName().trim();
-    if (!name) return;
-    this.dispatch('configSave', name);
-    this.showSaveForm.set(false);
-    this.saveFormName.set('');
-    if (this.showToasts()) this.toast.show(`Config "${name}" saved`, 'success');
-  }
-
-  onLoadConfig(config: SavedTabConfig<any>): void {
-    this.dispatch('configLoad', config);
-    this.showLoadMenu.set(false);
-    if (this.showToasts()) this.toast.show(`Config "${config.name}" applied`, 'success');
-  }
-
-  onDeleteConfig(id: string, event: MouseEvent): void {
-    event.stopPropagation();
-    this.dispatch('configDelete', id);
-    if (this.showToasts()) this.toast.show('Config deleted', 'info');
-  }
-
-  /* ── Config editing ────────────────────────────── */
-
-  toggleConfigExpand(configId: string, event: MouseEvent): void {
-    event.stopPropagation();
-    this.expandedConfigId.update(id => id === configId ? null : configId);
-  }
-
-  startConfigRename(configId: string, name: string, event: MouseEvent): void {
-    event.stopPropagation();
-    this.editingConfigNameId.set(configId);
-    this.editConfigName = name;
-  }
-
-  commitConfigRename(configId: string): void {
-    const name = this.editConfigName.trim();
-    if (name) this.dispatch('configRename', { configId, name });
-    this.editingConfigNameId.set(null);
-  }
-
-  startConfigTabRename(configId: string, tabId: string, title: string, event: MouseEvent): void {
-    event.stopPropagation();
-    this.editingConfigTabId.set({ configId, tabId });
-    this.editConfigTabTitle = title;
-  }
-
-  commitConfigTabRename(): void {
-    const ctx = this.editingConfigTabId();
-    if (!ctx) return;
-    const title = this.editConfigTabTitle.trim();
-    if (title) this.dispatch('configTabRename', { configId: ctx.configId, tabId: ctx.tabId, title });
-    this.editingConfigTabId.set(null);
-  }
-
-  onRemoveTabFromConfig(configId: string, tabId: string, event: MouseEvent): void {
-    event.stopPropagation();
-    this.dispatch('configTabRemove', { configId, tabId });
-  }
-
-  toggleMoveMenu(configId: string, tabId: string, event: MouseEvent): void {
-    event.stopPropagation();
-    const ctx = this.moveMenuTabCtx();
-    if (ctx?.configId === configId && ctx?.tabId === tabId) {
-      this.moveMenuTabCtx.set(null);
-    } else {
-      this.moveMenuTabCtx.set({ configId, tabId });
-    }
-  }
-
-  onMoveTabToConfig(targetConfigId: string, event: MouseEvent): void {
-    event.stopPropagation();
-    const ctx = this.moveMenuTabCtx();
-    if (!ctx) return;
-    this.dispatch('configTabMove', { sourceConfigId: ctx.configId, targetConfigId, tabId: ctx.tabId });
-    this.moveMenuTabCtx.set(null);
-  }
-
-  moveTargetConfigs(sourceConfigId: string): SavedTabConfig<any>[] {
-    return this.savedConfigs().filter(c => c.id !== sourceConfigId);
-  }
+  /* ── Add tab ───────────────────────────────────── */
 
   onTabAdd(): void {
     this._handlers?.tabAdd();
@@ -308,12 +114,12 @@ export class ConfigurableTabBarComponent {
   }
 
   /* ── Dispatch helper ─────────────────────────────
-   * Calls tabHandlers (if set) then emits the output.
-   * This lets consumers use either [tabHandlers] or (output) bindings. */
+   * Calls tabHandlers (if set) then emits the output. This keeps both the
+   * TAB_HANDLERS wiring and the (output) bindings working side-by-side. */
 
-  private dispatch<K extends keyof TabHandlers<any>>(key: K, payload: Parameters<TabHandlers<any>[K]>[0]): void {
+  dispatch<K extends keyof TabHandlers<unknown>>(key: K, payload: Parameters<TabHandlers<unknown>[K]>[0]): void {
     const handlers = this._handlers;
-    if (handlers) (handlers[key] as (p: any) => void)(payload);
-    (this[key] as any).emit(payload);
+    if (handlers) (handlers[key] as (p: unknown) => void)(payload);
+    (this[key] as { emit: (p: unknown) => void }).emit(payload);
   }
 }

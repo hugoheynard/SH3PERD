@@ -1,0 +1,111 @@
+:host {
+  display: contents;
+}
+
+/* ── Scroll container ──────────────────────────── */
+
+.tabs-scroll {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ── Individual Tab ─────────────────────────────── */
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--border-subtle);
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-left: 0 solid transparent;
+  border-radius: 6px 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+  }
+
+  &:hover:not(.active) {
+    background: var(--panel-border-color);
+    color: var(--text-primary);
+  }
+
+  &.active {
+    background: var(--panel-color, #171c23);
+    border-color: var(--border-light);
+    color: var(--text-primary);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent-color);
+      border-radius: 6px 6px 0 0;
+    }
+  }
+}
+
+.tab-title {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Tab menu toggle (⋮) ────────────────────────── */
+
+.tab-menu-toggle {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--text-faded);
+  flex-shrink: 0;
+  transition: color 0.1s, background 0.1s;
+
+  &:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* ── Rename input ───────────────────────────────── */
+
+.tab-rename-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--accent-color-border);
+  outline: none;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  width: 100px;
+  padding: 0 2px;
+  line-height: 1.4;
+}

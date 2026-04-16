@@ -1,0 +1,27 @@
+<span class="tab-inline-actions" (pointerup)="$event.stopPropagation()">
+  <button class="tab-inline-btn" type="button" title="Color"
+    (click)="onColor($event)">●</button>
+
+  @if (savedConfigs().length) {
+    <span class="tab-move-wrapper">
+      <button class="tab-inline-btn" type="button" title="Move to config"
+        #moveBtn (click)="onToggleMoveMenu($event, moveBtn)">⇥</button>
+
+      @if (moveMenuOpen()) {
+        <div class="tab-move-dropdown"
+          [style.top.px]="moveDropdownPos().top" [style.left.px]="moveDropdownPos().left">
+          <span class="tab-move-label">Move to</span>
+          @for (cfg of savedConfigs(); track cfg.id) {
+            <button class="tab-move-option" type="button"
+              (click)="onMoveTo(cfg.id, $event)">{{ cfg.name }}</button>
+          }
+        </div>
+      }
+    </span>
+  }
+
+  @if (canClose()) {
+    <button class="tab-inline-btn tab-inline-btn--danger" type="button" title="Close"
+      (click)="onClose($event)">×</button>
+  }
+</span>
