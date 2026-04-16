@@ -25,10 +25,10 @@
       [activeTabId]="selector.activeTabId()"
       [activeConfigId]="selector.activeConfigId()"
       [savedConfigs]="quota.savedConfigsWithLock()"
-      [locked]="tabLimitReached()"
-      [saveRecallLocked]="saveRecallLocked()"
-      (lockClicked)="openTabLimitPopover()"
-      (saveRecallLockClicked)="openSaveRecallLockedPopover()"
+      [tabLocked]="tabLocked()"
+      [configLocked]="configLocked()"
+      (tabLockClicked)="openTabQuotaPopover()"
+      (configLockClicked)="openConfigQuotaPopover()"
       (moveToLockedConfigClicked)="openConfigFullPopover($event)"
     >
       <!-- Music-specific: search input -->

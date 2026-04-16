@@ -71,16 +71,17 @@ export class MusicLibraryPageComponent implements OnInit {
   /** Mastering modal context — shared between card and table views. */
   readonly masteringContext = signal<TMasteringModalContext | null>(null);
 
-  /* ── Quota-derived tab limits ──
-   * The quota math lives in `MusicTabMutationService` (for service-level
-   * gates) and `MusicTabQuotaChecker` (for UI-level queries). This component
-   * just derives the boolean flags the tab bar expects from those two. */
+  /* ── Quota-derived lock flags ──
+   * Every quota check goes through `MusicTabQuotaChecker` — single source
+   * of truth for both the UI locks below and the service-level gates in
+   * `MusicTabMutationService`. This component just maps the checker's
+   * per-resource answers to the tab bar's lock inputs. */
 
-  /** True when the open tab count has caught up to the plan's max. */
-  readonly tabLimitReached = computed(() => !this.quota.canAddTab());
+  /** Tab resource quota reached — host of the `[tabLocked]` input. */
+  readonly tabLocked = computed(() => !this.quota.canAddTab());
 
-  /** Save/recall is locked on the free plan. */
-  readonly saveRecallLocked = computed(() => this.userCtx.plan() === 'artist_free');
+  /** Config resource locked — feature-gated on free, quota-gated otherwise. */
+  readonly configLocked = computed(() => this.userCtx.plan() === 'artist_free');
 
   readonly activeSearchQuery = computed(() => {
     const tab = this.selector.activeTab();
@@ -130,19 +131,19 @@ export class MusicLibraryPageComponent implements OnInit {
     this.layout.setRightPanel(UpgradePanelComponent);
   }
 
-  /* ── Tab lock ── */
+  /* ── Quota lock handlers ── */
 
-  /** Called when the tab bar's lock button is clicked — shows the limit popover. */
-  openTabLimitPopover(): void {
+  /** (tabLockClicked) — tab resource quota reached. */
+  openTabQuotaPopover(): void {
     this.layout.setPopover(TabLimitPopoverComponent);
   }
 
-  /** Called when the save/recall lock button is clicked — shows the upgrade popover. */
-  openSaveRecallLockedPopover(): void {
+  /** (configLockClicked) — config resource locked (feature gate / quota). */
+  openConfigQuotaPopover(): void {
     this.layout.setPopover(SaveRecallLockedPopoverComponent);
   }
 
-  /** Called when the user tries to move a tab into a config that's already at its quota. */
+  /** (moveToLockedConfigClicked) — target config is at its tab quota. */
   openConfigFullPopover(_event: { targetConfigId: string }): void {
     // Reuse the tab-limit popover copy — "this config is full, upgrade to add more".
     // _event.targetConfigId is available if we later want to customise the message.

@@ -13,7 +13,7 @@
     [tabs]="tabs()"
     [activeTabId]="activeTabId()"
     [savedConfigs]="savedConfigs()"
-    [canMoveToConfig]="!saveRecallLocked()"
+    [canMoveToConfig]="!configLocked()"
     (tabSelect)="dispatch('tabSelect', $event)"
     (tabClose)="dispatch('tabClose', $event)"
     (tabRename)="dispatch('tabRename', $event)"
@@ -23,10 +23,10 @@
     (tabMoveToLockedConfig)="moveToLockedConfigClicked.emit({ targetConfigId: $event.targetConfigId })"
   />
 
-  <!-- Add-tab affordance: plus by default, lock when the host flags `locked` -->
-  @if (locked()) {
+  <!-- Add-tab affordance: plus by default, lock when the host flags `tabLocked` -->
+  @if (tabLocked()) {
     <sh3-button-icon icon="lock" size="sm" tooltip="Tab limit reached"
-      (clicked)="lockClicked.emit()" />
+      (clicked)="tabLockClicked.emit()" />
   } @else {
     <sh3-button-icon icon="plus" size="sm" tooltip="Add tab"
       (clicked)="onTabAdd()" />
@@ -40,8 +40,8 @@
     [activeConfigId]="activeConfigId()"
     [savedConfigs]="savedConfigs()"
     [showToasts]="showToasts()"
-    [locked]="saveRecallLocked()"
-    (lockClicked)="saveRecallLockClicked.emit()"
+    [locked]="configLocked()"
+    (lockClicked)="configLockClicked.emit()"
     (configSave)="dispatch('configSave', $event)"
     (configNew)="dispatch('configNew', undefined)"
     (configLoad)="dispatch('configLoad', $event)"

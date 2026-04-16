@@ -70,8 +70,8 @@ flowchart TB
 | `activeConfigId` | `string \| null` | `null` | Non-null when the active tab set mirrors a saved config — toggles Save↔New button |
 | `savedConfigs` | `SavedTabConfig<unknown>[]` | `[]` | Named snapshots the user has saved |
 | `showToasts` | `boolean` | `true` | Enable built-in toasts on save / new / load / delete |
-| `locked` | `boolean` | `false` | When true, swap `+` button for a `lock` and route clicks to `lockClicked` instead of `tabAdd` |
-| `saveRecallLocked` | `boolean` | `false` | When true, collapse the config panel to a single lock button and route clicks to `saveRecallLockClicked`. Also hides the per-tab "move to config" action. |
+| `tabLocked` | `boolean` | `false` | **Tab resource.** Swap `+` button for a `lock` and route clicks to `tabLockClicked` instead of `tabAdd`. |
+| `configLocked` | `boolean` | `false` | **Config resource.** Collapse the config panel to a single lock button and route clicks to `configLockClicked`. Also hides the per-tab "move to config" action. |
 
 Per-config lock is **not a separate input** — it travels on the `SavedTabConfig` data itself via the optional `locked?: boolean` field. See "State model" below and the `moveToLockedConfigClicked` output.
 
@@ -94,8 +94,8 @@ Per-config lock is **not a separate input** — it travels on the `SavedTabConfi
 | `configTabRemove` | `{ configId; tabId }` | User removes a tab from a config in the load dropdown |
 | `configTabRename` | `{ configId; tabId; title }` | User commits a tab rename inside the load dropdown |
 | `configTabMove` | `{ sourceConfigId; targetConfigId; tabId }` | User moves a tab between configs in the load dropdown |
-| `lockClicked` | `void` | User clicks the lock affordance (replaces the `+` button when `locked`) |
-| `saveRecallLockClicked` | `void` | User clicks the lock affordance (replaces the config panel when `saveRecallLocked`) |
+| `tabLockClicked` | `void` | User clicks the lock affordance (replaces the `+` button when `tabLocked`) |
+| `configLockClicked` | `void` | User clicks the lock affordance (replaces the config panel when `configLocked`) |
 | `moveToLockedConfigClicked` | `{ targetConfigId }` | User picks a `SavedTabConfig` whose `locked` flag is `true` in either move-to dropdown |
 
 ### Content projection slots
@@ -145,7 +145,7 @@ Individual `(output)` bindings still work side-by-side with the handler map —
 if a host binds `(tabRename)="onSomething()"` on top of `provideTabHandlers`,
 both fire for every event.
 
-### Why `lockClicked` / `saveRecallLockClicked` stay out of `TabHandlers`
+### Why `tabLockClicked` / `configLockClicked` stay out of `TabHandlers`
 
 They aren't mutations — they're UI-level signals ("user hit the wall,
 decide what to do"). Routing them through the handler map would couple the
@@ -237,7 +237,7 @@ sequenceDiagram
   Note over Host: locked = true (host decides why)
 
   U->>Bar: click [🔒]
-  Bar-->>Host: (lockClicked)
+  Bar-->>Host: (tabLockClicked)
   Host->>Layout: setPopover(TabLimitPopoverComponent)
   Layout-->>U: popover frame + upgrade CTA
   U->>Layout: click Upgrade
@@ -321,15 +321,15 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-  Host[Host<br/>saveRecallLocked = true]
+  Host[Host<br/>configLocked = true]
   Bar[ConfigurableTabBar]
   Panel[TabConfigPanel]
   Strip[TabStripComponent]
   Menu[TabInlineMenu]
 
-  Host -- saveRecallLocked --> Bar
+  Host -- configLocked --> Bar
   Bar -- locked=true --> Panel
-  Panel -- renders ONE --> Lock1[🔒 button<br/>→ lockClicked]
+  Panel -- renders ONE --> Lock1[🔒 button<br/>→ configLockClicked]
   Bar -- canMoveToConfig=false --> Strip
   Strip -- canMoveToConfig=false --> Menu
   Menu -- hides --> MoveBtn[⇥ move-to button]
@@ -406,13 +406,13 @@ the zone). Fixing it is deferred, see [TODO.md § Deferred](./TODO.md).
 
 ## Lock contract — summary
 
-The bar exposes three orthogonal lock surfaces:
+The bar exposes three uniform lock surfaces — one per resource type:
 
-| Surface | Where the lock state comes from | Output | Visual swap |
-|---------|---------------------------------|--------|-------------|
-| Add tab | `[locked]` input | `lockClicked` | `+` → `lock` icon |
-| Save / recall | `[saveRecallLocked]` input | `saveRecallLockClicked` | Save + Load buttons + panels → single `lock` icon |
-| Move to a full config | `SavedTabConfig.locked` on each config item | `moveToLockedConfigClicked` | Matching row(s) in every move-to dropdown → dimmed + `lock` glyph |
+| Resource | Where the lock state comes from | Output | Visual swap |
+|----------|---------------------------------|--------|-------------|
+| **Tab** | `[tabLocked]` input | `tabLockClicked` | `+` → `lock` icon |
+| **Config** | `[configLocked]` input | `configLockClicked` | Save + Load buttons + panels → single `lock` icon |
+| **Per-config** (tabs-in-config) | `SavedTabConfig.locked` on each config item | `moveToLockedConfigClicked` | Matching row(s) in every move-to dropdown → dimmed + `lock` glyph |
 
 The first two are binary "the whole bar is in state X" switches, so they
 live as inputs on the orchestrator. The third is per-item, so it rides
@@ -421,7 +421,7 @@ tree free of an extra prop to drill through three levels.
 
 **Invariants:**
 
-- When `saveRecallLocked` is true, `canMoveToConfig` on `TabStripComponent`
+- When `configLocked` is true, `canMoveToConfig` on `TabStripComponent`
   is automatically set to `false` by the orchestrator. The host doesn't
   need to duplicate the gate.
 - Both move-to surfaces (the per-tab ⋮ menu and the expanded config panel
@@ -472,7 +472,7 @@ covers:
 
 ## Downgrade / upgrade matrix
 
-| Plan state | `locked` | `saveRecallLocked` | `cfg.locked` on each saved config | Effect |
+| Plan state | `tabLocked` | `configLocked` | `cfg.locked` on each saved config | Effect |
 |------------|----------|--------------------|-----------------------------------|--------|
 | Free (first visit) | false until N tabs | **true** | n/a (panel hidden) | Add works up to plan limit, save/recall is locked from the start. Per-tab move-to hidden. |
 | Free (hit tab limit) | **true** | **true** | n/a | Both global locks active. Clicking either surfaces the host's popover. |
@@ -565,11 +565,11 @@ export class MusicTabMutationService extends TabMutationService<MusicTabConfig> 
 ```ts
 // music-library-page.component.ts
 protected quota = inject(MusicTabQuotaChecker);
-readonly tabLimitReached = computed(() => !this.quota.canAddTab());
-readonly saveRecallLocked = computed(() => this.userCtx.plan() === 'artist_free');
+readonly tabLocked = computed(() => !this.quota.canAddTab());
+readonly configLocked = computed(() => this.userCtx.plan() === 'artist_free');
 
-openTabLimitPopover(): void       { this.layout.setPopover(TabLimitPopoverComponent); }
-openSaveRecallLockedPopover(): void { this.layout.setPopover(SaveRecallLockedPopoverComponent); }
+openTabQuotaPopover(): void    { this.layout.setPopover(TabLimitPopoverComponent); }
+openConfigQuotaPopover(): void { this.layout.setPopover(SaveRecallLockedPopoverComponent); }
 openConfigFullPopover(_e: { targetConfigId: string }): void {
   this.layout.setPopover(TabLimitPopoverComponent);
 }
@@ -581,10 +581,10 @@ openConfigFullPopover(_e: { targetConfigId: string }): void {
   [activeTabId]="selector.activeTabId()"
   [activeConfigId]="selector.activeConfigId()"
   [savedConfigs]="quota.savedConfigsWithLock()"
-  [locked]="tabLimitReached()"
-  [saveRecallLocked]="saveRecallLocked()"
-  (lockClicked)="openTabLimitPopover()"
-  (saveRecallLockClicked)="openSaveRecallLockedPopover()"
+  [tabLocked]="tabLocked()"
+  [configLocked]="configLocked()"
+  (tabLockClicked)="openTabQuotaPopover()"
+  (configLockClicked)="openConfigQuotaPopover()"
   (moveToLockedConfigClicked)="openConfigFullPopover($event)">
 
   <div tabBarTrailing>

@@ -16,16 +16,24 @@ import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.com
  *   per-tab ⋮ menu (which itself hosts {@link TabInlineMenuComponent}).
  * - {@link TabConfigPanelComponent} — save/new/load buttons + floating panels.
  *
- * The bar renders the add-tab affordance itself. When `locked` is true it
- * swaps the plus button for a lock button and emits `lockClicked` instead of
- * `tabAdd` — the host decides what to do (show an upgrade popover, a tooltip,
- * a right panel, …). The save/recall panel follows the same pattern via
- * `saveRecallLocked` + `saveRecallLockClicked`. Per-config quota is carried
- * on each `SavedTabConfig` via the optional `locked` flag — the matching
- * rows in every move-to dropdown render as locked and route clicks to
- * `moveToLockedConfigClicked` (the host computes the flag, typically via a
- * dedicated quota checker). The bar intentionally knows nothing about
- * quotas, plans, or popovers.
+ * The bar is agnostic — it just renders the state it receives (tabs +
+ * configs) and fires events on every user action. All quota / plan logic
+ * lives in the host, expressed as three uniform lock surfaces, one per
+ * resource type:
+ *
+ * - **Tab resource.** `[tabLocked]` swaps the `+` button for a `lock` icon
+ *   and routes clicks to `(tabLockClicked)` instead of `(tabAdd)`.
+ * - **Config resource.** `[configLocked]` collapses the whole save/load
+ *   panel to a single `lock` icon and routes clicks to
+ *   `(configLockClicked)`.
+ * - **Per-config (tabs-in-config).** Each `SavedTabConfig.locked` flag —
+ *   carried on the data itself — renders the matching target row in every
+ *   move-to dropdown as locked and fires `(moveToLockedConfigClicked)` on
+ *   click instead of the normal move output.
+ *
+ * The bar never changes state as a result of a lock click — it only
+ * notifies the host, which decides what to do (popover, tooltip, right
+ * panel, nothing, …).
  *
  * Wire tab mutations via `provideTabHandlers(MyTabMutationService)` for zero
  * boilerplate, or bind individual `(output)` events for custom overrides.
@@ -38,8 +46,12 @@ import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.com
  * <sh3-configurable-tab-bar
  *   [tabs]="tabs()"
  *   [activeTabId]="activeTabId()"
- *   [locked]="tabLimitReached()"
- *   (lockClicked)="openUpgradePopover()">
+ *   [savedConfigs]="quota.savedConfigsWithLock()"
+ *   [tabLocked]="quota.tabQuotaReached()"
+ *   [configLocked]="quota.configQuotaReached()"
+ *   (tabLockClicked)="openTabQuotaPopover()"
+ *   (configLockClicked)="openConfigQuotaPopover()"
+ *   (moveToLockedConfigClicked)="openConfigFullPopover($event)">
  *   <div tabBarTrailing><input placeholder="Search…" /></div>
  * </sh3-configurable-tab-bar>
  * ```
@@ -63,17 +75,18 @@ export class ConfigurableTabBarComponent {
   /** Show built-in toast notifications for config operations. Default: true. */
   readonly showToasts = input<boolean>(true);
   /**
-   * When true, the add-tab affordance becomes a lock button that emits
-   * `lockClicked` instead of `tabAdd`. The host is responsible for deciding
-   * when to lock and for responding to the click (e.g. opening a popover).
+   * Tab resource lock — the add-tab affordance becomes a lock button that
+   * emits `tabLockClicked` instead of `tabAdd`. The host is responsible for
+   * deciding when to lock (plan quota, feature gate, …) and for responding
+   * to the click (popover, tooltip, …).
    */
-  readonly locked = input<boolean>(false);
+  readonly tabLocked = input<boolean>(false);
   /**
-   * When true, the save/recall config panel collapses to a single lock button
-   * that emits `saveRecallLockClicked`. Same contract as `locked` — the host
-   * owns the decision and the click consequence.
+   * Config resource lock — when true, the entire save/recall panel
+   * collapses to a single lock button that emits `configLockClicked`. Same
+   * contract as `tabLocked`, scoped to the saved-config surface.
    */
-  readonly saveRecallLocked = input<boolean>(false);
+  readonly configLocked = input<boolean>(false);
 
   /* ── Outputs (public API — also dispatched via TAB_HANDLERS) ── */
   readonly tabSelect = output<string>();
@@ -91,11 +104,11 @@ export class ConfigurableTabBarComponent {
   readonly configTabRename = output<{ configId: string; tabId: string; title: string }>();
   readonly configTabMove = output<{ sourceConfigId: string; targetConfigId: string; tabId: string }>();
   readonly tabMoveToConfig = output<{ tab: TabItem<unknown>; targetConfigId: string }>();
-  /** Emitted when the user clicks the lock button (only rendered when `locked` is true). */
-  readonly lockClicked = output<void>();
-  /** Emitted when the user clicks the save/recall lock button (only rendered when `saveRecallLocked` is true). */
-  readonly saveRecallLockClicked = output<void>();
-  /** Emitted when the user tries to move a tab into a config listed in `lockedConfigIds`. */
+  /** Emitted when the user clicks the tab-resource lock button (only rendered when `tabLocked`). */
+  readonly tabLockClicked = output<void>();
+  /** Emitted when the user clicks the config-resource lock button (only rendered when `configLocked`). */
+  readonly configLockClicked = output<void>();
+  /** Emitted when the user picks a move-to target whose `SavedTabConfig.locked` flag is `true`. */
   readonly moveToLockedConfigClicked = output<{ targetConfigId: string }>();
 
   /* ── Color picker (single shared DOM input) ─────── */
