@@ -59,7 +59,7 @@ jobs:
       - name: Unit tests
         run: pnpm --filter @sh3pherd/backend test
 
-  # ── Audio processor: lint + tests ──
+  # ── Audio processor: lint + typecheck + tests ──
   audio-processor:
     needs: shared-types
     runs-on: ubuntu-latest
@@ -81,10 +81,13 @@ jobs:
       - name: Lint
         run: pnpm --filter @sh3pherd/audio-processor lint
 
+      - name: Type check
+        run: pnpm --filter @sh3pherd/audio-processor exec tsc --noEmit
+
       - name: Unit tests
         run: pnpm --filter @sh3pherd/audio-processor test
 
-  # ── Frontend: build (compilation check) ──
+  # ── Frontend: typecheck + tests + build ──
   frontend:
     needs: shared-types
     runs-on: ubuntu-latest
@@ -103,5 +106,20 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @sh3pherd/shared-types build
 
+      - name: Type check
+        run: pnpm --filter @sh3pherd/frontend-webapp exec tsc --noEmit
+
+      - name: Unit tests
+        run: pnpm --filter @sh3pherd/frontend-webapp test -- --ci --runInBand
+
       - name: Build
         run: pnpm --filter @sh3pherd/frontend-webapp build
+
+  # ── Final gate: every job above must pass. Use this as the
+  #    single "Required status check" in GitHub branch protection. ──
+  ci-gate:
+    name: CI gate
+    needs: [shared-types, backend, audio-processor, frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All CI jobs passed."
