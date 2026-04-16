@@ -35,6 +35,56 @@ focus ring, dark-mode tokens and hover accent now come uniformly from
 
 ---
 
+## Known bugs (open)
+
+### Pro plan: add-tab and per-config gates don't fire in practice
+**Symptom.** On `artist_pro`, tabs can be added without limit and the
+per-config lock glyph never appears on move-to rows. On `artist_free`
+the locks work as expected (both add-tab lock at 3 and the save/recall
+panel collapse).
+
+**Not yet investigated.** Candidate causes to check before any fix:
+
+1. **Plan signal not actually resolving to `artist_pro`.**
+   `UserContextService._plan` starts at `null` and is set from
+   `GET /quota/me`. If the response shape doesn't match
+   `{ data: { plan: TPlatformRole } }`, or the field is missing, the
+   signal may stay `null` (treated as `artist_free` → locks at 3) or
+   accidentally receive a string that isn't in the `TPlatformRole` union,
+   in which case
+   [`maxTabsForPlan`](./../../features/musicLibrary/services/music-tab-quota-checker.service.ts)
+   falls through to `-1` (unlimited) and nothing locks.
+   → **First thing to check:** log `userCtx.plan()` on the page while
+   repro'ing on Pro, compare against the `/quota/me` response body.
+
+2. **Signal tracking through `tabState()`.**
+   The checker reads `this.state.tabState().tabs.length`, where
+   `tabState` is an `Object.assign(fn, { update })` rather than a plain
+   signal. The function body calls `this.state()` which IS a signal,
+   so reads should be tracked, but this is the non-standard shape worth
+   double-checking with Angular's signal graph.
+   → Verify `canAddTab()` re-runs when tabs are added (`effect()` with
+   a log around the checker call).
+
+3. **No quota on the number of saved configs.**
+   `MusicTabQuotaChecker` only tracks tabs-per-strip and tabs-per-config.
+   A user on Pro can create unlimited saved configs (each capped at 10
+   tabs). If the product intent is "N configs per plan", that's a new
+   quota to add — not a regression in the current pattern.
+
+**Out of scope until investigated:** do not attempt a fix that touches
+the tab bar until step 1 + 2 are ruled in or out. The checker pattern
+and the `.locked` data flow are both working correctly on Free, so the
+bug is almost certainly in the plan-resolution layer or in a signal
+tracking subtlety, not in the tab bar.
+
+**Host-side wiring to inspect first:**
+- `apps/frontend-webapp/src/app/features/musicLibrary/services/music-tab-quota-checker.service.ts`
+- `apps/frontend-webapp/src/app/core/services/user-context.service.ts` (loadPlan / `_plan`)
+- `apps/frontend-webapp/src/app/features/musicLibrary/services/mutations-layer/music-tab-mutation.service.ts` (service-level overrides — silent no-ops on refuse, add a warn log temporarily to confirm the gate is reached)
+
+---
+
 ## Deferred
 
 ### DnD reorder always drops at end — set aside

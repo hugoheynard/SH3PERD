@@ -73,6 +73,8 @@ flowchart TB
 | `locked` | `boolean` | `false` | When true, swap `+` button for a `lock` and route clicks to `lockClicked` instead of `tabAdd` |
 | `saveRecallLocked` | `boolean` | `false` | When true, collapse the config panel to a single lock button and route clicks to `saveRecallLockClicked`. Also hides the per-tab "move to config" action. |
 
+Per-config lock is **not a separate input** — it travels on the `SavedTabConfig` data itself via the optional `locked?: boolean` field. See "State model" below and the `moveToLockedConfigClicked` output.
+
 ### Outputs
 
 | Name | Payload | Fires when |
@@ -94,6 +96,7 @@ flowchart TB
 | `configTabMove` | `{ sourceConfigId; targetConfigId; tabId }` | User moves a tab between configs in the load dropdown |
 | `lockClicked` | `void` | User clicks the lock affordance (replaces the `+` button when `locked`) |
 | `saveRecallLockClicked` | `void` | User clicks the lock affordance (replaces the config panel when `saveRecallLocked`) |
+| `moveToLockedConfigClicked` | `{ targetConfigId }` | User picks a `SavedTabConfig` whose `locked` flag is `true` in either move-to dropdown |
 
 ### Content projection slots
 
@@ -176,6 +179,7 @@ classDiagram
     +TabItem~TConfig~[] tabs
     +string activeTabId
     +number createdAt
+    +boolean? locked
   }
 
   TabSystemState "1" --> "many" TabItem
@@ -190,6 +194,13 @@ classDiagram
   active view of a saved config. Mutations are mirrored into the saved
   config so the "forgot to save" problem is avoided (see the rationale in
   `TODO-music-features.md`).
+- `SavedTabConfig.locked?` is **UI metadata, not persisted state** — it's
+  an optional flag the host enriches each config with before binding. The
+  bar reads `cfg.locked` directly in every move-to dropdown, so there's
+  no separate lookup table or input threaded through the component tree.
+  When absent it's treated as `false` (unlocked). The storage layer
+  should strip it before saving to the backend; the host's quota checker
+  recomputes it on every render.
 
 ---
 
@@ -337,7 +348,41 @@ to Free:
   "freeze, never delete" quota policy (see
   `apps/backend/documentation/sh3-platform-contract.md`).
 
-### 7. Drag to reorder (current behaviour)
+### 7. Move tab into a config that's already at quota
+
+```mermaid
+sequenceDiagram
+  participant U as User
+  participant Quota as MusicTabQuotaChecker
+  participant Host as Host component
+  participant Bar as ConfigurableTabBar
+  participant Strip as TabStrip
+  participant Menu as TabInlineMenu
+  participant Layout as LayoutService
+
+  Note over Quota: savedConfigsWithLock() enriches<br/>each SavedTabConfig with .locked
+  Host->>Bar: [savedConfigs]="quota.savedConfigsWithLock()"
+  Bar->>Strip: [savedConfigs]
+  Strip->>Menu: [savedConfigs]
+
+  U->>Menu: open ⋮ move-to dropdown
+  Menu-->>U: cfg_42 row rendered dimmed + 🔒 (cfg.locked === true)
+  U->>Menu: click cfg_42
+  Menu->>Menu: cfg.locked === true
+  Menu->>Strip: (moveToLockedConfig) { tab, targetConfigId: cfg_42 }
+  Strip->>Bar: (tabMoveToLockedConfig) {...}
+  Bar-->>Host: (moveToLockedConfigClicked) { targetConfigId: cfg_42 }
+  Host->>Layout: setPopover(TabLimitPopoverComponent)
+  Layout-->>U: upgrade popover
+```
+
+Belt-and-suspenders: even if a tab reaches the mutation service somehow
+(future keyboard shortcut, race condition, custom host binding that
+ignores the `.locked` flag), `MusicTabMutationService.moveActiveTabToConfig`
+and `moveTabToConfig` both call `quota.canMoveToConfig(id)` and no-op when
+the target config is full. The bar never bypasses quota silently.
+
+### 8. Drag to reorder (current behaviour)
 
 ```mermaid
 sequenceDiagram
@@ -361,18 +406,27 @@ the zone). Fixing it is deferred, see [TODO.md § Deferred](./TODO.md).
 
 ## Lock contract — summary
 
-The bar exposes two orthogonal lock surfaces, both with the same shape:
+The bar exposes three orthogonal lock surfaces:
 
-| Surface | Input | Output | Visual swap |
-|---------|-------|--------|-------------|
-| Add tab | `locked` | `lockClicked` | `+` → `lock` icon |
-| Save / recall | `saveRecallLocked` | `saveRecallLockClicked` | Save + Load buttons + panels → single `lock` icon |
+| Surface | Where the lock state comes from | Output | Visual swap |
+|---------|---------------------------------|--------|-------------|
+| Add tab | `[locked]` input | `lockClicked` | `+` → `lock` icon |
+| Save / recall | `[saveRecallLocked]` input | `saveRecallLockClicked` | Save + Load buttons + panels → single `lock` icon |
+| Move to a full config | `SavedTabConfig.locked` on each config item | `moveToLockedConfigClicked` | Matching row(s) in every move-to dropdown → dimmed + `lock` glyph |
+
+The first two are binary "the whole bar is in state X" switches, so they
+live as inputs on the orchestrator. The third is per-item, so it rides
+on the data rather than on a separate input — this keeps the component
+tree free of an extra prop to drill through three levels.
 
 **Invariants:**
 
 - When `saveRecallLocked` is true, `canMoveToConfig` on `TabStripComponent`
   is automatically set to `false` by the orchestrator. The host doesn't
   need to duplicate the gate.
+- Both move-to surfaces (the per-tab ⋮ menu and the expanded config panel
+  submenu) read `cfg.locked` directly from the same `savedConfigs` input,
+  so the host enriches configs once and every downstream read stays in sync.
 - The bar never modifies state as a result of a lock click — it only
   notifies the host, which decides what to do (popover, tooltip, right
   panel, nothing, …).
@@ -383,16 +437,48 @@ The bar exposes two orthogonal lock surfaces, both with the same shape:
   button by `canClose`, and neither propagates into `TabHandlers` — they're
   purely local UI decisions.
 
+**The checker pattern — single source of quota truth.** Hosts that gate
+on a quota should concentrate the "can this operation go through?"
+questions in one class rather than scattering them across components and
+services. The music library does this via `MusicTabQuotaChecker`:
+
+```mermaid
+flowchart LR
+  Plan[UserContextService.plan] --> Checker
+  State[MusicLibraryStateService] --> Checker
+  Checker[MusicTabQuotaChecker] --> Mutation[MusicTabMutationService<br/>.addDefaultTab / .moveActiveTabToConfig / .moveTabToConfig]
+  Checker --> Page[MusicLibraryPage<br/>.tabLimitReached<br/>.savedConfigsWithLock]
+  Page --> Bar[ConfigurableTabBar]
+  Mutation --> Bar
+```
+
+Every `can*` answer flows from the same source, so the UI lock and the
+service-level gates can never disagree.
+
+**Defense in depth — mutation service gates.** The UI lock is the
+primary feedback path, but `MusicTabMutationService` also calls
+`quota.canAddTab` / `quota.canMoveToConfig` in the overrides of
+`addDefaultTab`, `moveActiveTabToConfig` and `moveTabToConfig`. This
+covers:
+
+- The async race during initial plan load (before `UserContextService.plan()`
+  resolves, the UI lock hasn't kicked in yet — the checker's `null →
+  most-restrictive` fallback protects the service).
+- Any future code path that reaches the service without going through
+  the bar (keyboard shortcuts, imports, tests).
+- Custom host bindings that forget to wire one of the lock inputs.
+
 ---
 
 ## Downgrade / upgrade matrix
 
-| Plan state | `locked` | `saveRecallLocked` | Effect |
-|------------|----------|--------------------|--------|
-| Free (first visit) | false until N tabs | **true** | Add works up to plan limit, save/recall is locked from the start. Per-tab move-to hidden. |
-| Free (hit tab limit) | **true** | **true** | Both locks active. Clicking either surfaces the host's popover. |
-| Pro | false unless over plan cap | false | Full bar. |
-| Pro → Free downgrade with saved configs | false until N tabs | **true** | Configs are persisted but invisible. Move-to hidden. Re-upgrade re-exposes them as-is. |
+| Plan state | `locked` | `saveRecallLocked` | `cfg.locked` on each saved config | Effect |
+|------------|----------|--------------------|-----------------------------------|--------|
+| Free (first visit) | false until N tabs | **true** | n/a (panel hidden) | Add works up to plan limit, save/recall is locked from the start. Per-tab move-to hidden. |
+| Free (hit tab limit) | **true** | **true** | n/a | Both global locks active. Clicking either surfaces the host's popover. |
+| Pro (nominal) | false unless over plan cap | false | true for configs with `tabs.length ≥ max` | Full bar. A config that fills up auto-locks; moves into it surface the popover. |
+| Pro → Free downgrade with saved configs | false until N tabs | **true** | n/a (panel hidden) | Configs are persisted but invisible from the panel. Per-tab move-to hidden. Re-upgrade re-exposes them as-is. |
+| Plan signal not loaded yet | false | false | `false` on all configs | `MusicTabQuotaChecker.maxTabs` treats null plan as most-restrictive (free → 3 tabs), so the service gate blocks adds past 3 even before the UI lock kicks in. |
 
 The bar does not own the plan check. The host computes each boolean from
 whatever source of truth it wants — `UserContextService`, a route data
@@ -427,19 +513,65 @@ service base, and the types are public.
 
 ## Minimal host example
 
+### The checker — single source of quota truth
+
+```ts
+// music-tab-quota-checker.service.ts
+@Injectable({ providedIn: 'root' })
+export class MusicTabQuotaChecker {
+  readonly maxTabs = computed(() => maxTabsForPlan(this.userCtx.plan()));
+
+  canAddTab(): boolean {
+    return this.maxTabs() === -1 || this.state.tabState().tabs.length < this.maxTabs();
+  }
+  isConfigFull(id: string): boolean {
+    const max = this.maxTabs();
+    const cfg = this.state.tabState().savedTabConfigs?.find(c => c.id === id);
+    return max !== -1 && !!cfg && cfg.tabs.length >= max;
+  }
+  canMoveToConfig(id: string): boolean { return !this.isConfigFull(id); }
+
+  readonly savedConfigsWithLock = computed(() =>
+    (this.state.tabState().savedTabConfigs ?? [])
+      .map(c => ({ ...c, locked: this.maxTabs() !== -1 && c.tabs.length >= this.maxTabs() }))
+  );
+}
+```
+
+### The mutation service — delegates to the checker
+
+```ts
+// music-tab-mutation.service.ts
+export class MusicTabMutationService extends TabMutationService<MusicTabConfig> {
+  private quota = inject(MusicTabQuotaChecker);
+
+  override addDefaultTab(): void {
+    if (!this.quota.canAddTab()) return;
+    super.addDefaultTab();
+  }
+  override moveActiveTabToConfig(tabId: string, targetConfigId: string): void {
+    if (!this.quota.canMoveToConfig(targetConfigId)) return;
+    super.moveActiveTabToConfig(tabId, targetConfigId);
+  }
+  override moveTabToConfig(s: string, t: string, tabId: string): void {
+    if (!this.quota.canMoveToConfig(t)) return;
+    super.moveTabToConfig(s, t, tabId);
+  }
+}
+```
+
+### The page — binds + routes lock clicks
+
 ```ts
 // music-library-page.component.ts
-readonly maxTabs = computed(() => /* plan → number */);
-readonly tabLimitReached = computed(() =>
-  this.maxTabs() !== -1 && this.selector.tabs().length >= this.maxTabs()
-);
+protected quota = inject(MusicTabQuotaChecker);
+readonly tabLimitReached = computed(() => !this.quota.canAddTab());
 readonly saveRecallLocked = computed(() => this.userCtx.plan() === 'artist_free');
 
-openTabLimitPopover(): void {
+openTabLimitPopover(): void       { this.layout.setPopover(TabLimitPopoverComponent); }
+openSaveRecallLockedPopover(): void { this.layout.setPopover(SaveRecallLockedPopoverComponent); }
+openConfigFullPopover(_e: { targetConfigId: string }): void {
   this.layout.setPopover(TabLimitPopoverComponent);
-}
-openSaveRecallLockedPopover(): void {
-  this.layout.setPopover(SaveRecallLockedPopoverComponent);
 }
 ```
 
@@ -448,11 +580,12 @@ openSaveRecallLockedPopover(): void {
   [tabs]="selector.tabs()"
   [activeTabId]="selector.activeTabId()"
   [activeConfigId]="selector.activeConfigId()"
-  [savedConfigs]="selector.savedTabConfigs()"
+  [savedConfigs]="quota.savedConfigsWithLock()"
   [locked]="tabLimitReached()"
   [saveRecallLocked]="saveRecallLocked()"
   (lockClicked)="openTabLimitPopover()"
-  (saveRecallLockClicked)="openSaveRecallLockedPopover()">
+  (saveRecallLockClicked)="openSaveRecallLockedPopover()"
+  (moveToLockedConfigClicked)="openConfigFullPopover($event)">
 
   <div tabBarTrailing>
     <!-- domain-specific search input, view toggle, whatever -->
