@@ -9,12 +9,14 @@ import type express from 'express';
 type Request = express.Request;
 type Response = express.Response;
 
+type MockExecuteFn = (command: unknown) => Promise<unknown>;
+
 describe('AuthController', () => {
   let controller: AuthController;
-  let commandBus: { execute: jest.Mock };
+  let commandBus: { execute: jest.Mock<MockExecuteFn> };
 
   beforeEach(async () => {
-    commandBus = { execute: jest.fn() };
+    commandBus = { execute: jest.fn<MockExecuteFn>() };
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
@@ -35,6 +37,7 @@ describe('AuthController', () => {
       password: '1234',
       first_name: 'John',
       last_name: 'Doe',
+      account_type: 'artist' as const,
     };
     const expected = { id: 'userCredential_1', email: 'test@example.com' };
     commandBus.execute.mockResolvedValue(expected);

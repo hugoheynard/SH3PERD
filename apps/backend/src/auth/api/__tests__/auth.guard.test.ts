@@ -2,6 +2,7 @@ import { AuthGuard } from '../auth.guard.js';
 import type { TVerifyAuthTokenFn } from '../../types/auth.core.contracts.js';
 import { type ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import type { TAuthTokenPayload } from '../../types/auth.domain.tokens.js';
+import type { TUserId } from '@sh3pherd/shared-types';
 import { jest } from '@jest/globals';
 import { type Reflector } from '@nestjs/core';
 
@@ -45,10 +46,12 @@ describe('AuthGuard', () => {
   });
 
   it('should return true and attach user_id if token is valid', async () => {
-    const payload: TAuthTokenPayload = { user_id: 'user123' };
+    const payload: TAuthTokenPayload = { user_id: 'user_123' as TUserId };
     mockVerifyAuthTokenFn.mockResolvedValue(payload);
 
-    const req = { headers: { authorization: 'Bearer validToken' } };
+    const req: { headers: { authorization: string }; user_id?: TUserId } = {
+      headers: { authorization: 'Bearer validToken' },
+    };
     const ctx = {
       switchToHttp: () => ({
         getRequest: () => req,
