@@ -4,7 +4,6 @@
   "exclude": [
     "src/calendar",
     "src/contracts",
-    "src/playlists",
     "dist",
     "dist/types",
     "node_modules",

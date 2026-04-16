@@ -187,6 +187,10 @@ La conversation sur les composants réutilisables a été mise en pause :
   - Les specs `auth` et `workspace` lisent maintenant des bodies typés pour éviter les accès non sûrs.
   - `pnpm --filter @sh3pherd/backend lint` passe avec `src/E2E` inclus.
 
+- [x] **Ancien module `src/playlists` supprimé**
+  - Le dossier legacy `apps/backend/src/playlists` a été supprimé pour laisser `src/playlists-v2` comme seule implémentation backend.
+  - Les références de config (`eslint.config.mjs`, `tsconfig.build.json`, `tsconfig.eslint.json`) ont été nettoyées.
+
 - [ ] **Tests spec stubs auto-générés** avec imports sans `.js` — cassés depuis longtemps
   - `apps/backend/src/auth/**/*.spec.ts` — mettre à jour ou supprimer
   - `apps/backend/src/appBootstrap/__tests__/` — idem

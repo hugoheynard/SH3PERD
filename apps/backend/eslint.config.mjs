@@ -7,14 +7,7 @@ import jest from 'eslint-plugin-jest';
 
 export default tslint.config(
   {
-    ignores: [
-      'eslint.config.mjs',
-      'node_modules',
-      'dist',
-      // Legacy modules — not yet cleaned up for strict lint.
-      // Remove a module from this list BEFORE working on it.
-      'src/playlists',
-    ],
+    ignores: ['eslint.config.mjs', 'node_modules', 'dist'],
   },
   eslint.configs.recommended,
   ...tslint.configs.recommendedTypeChecked,
