@@ -33,11 +33,11 @@
 - [ ] Retry mechanism on transient failures
 - [ ] Loading skeleton while data fetches
 
-### Tab bar component split
-`configurable-tab-bar.component.ts` is ~300 TS + ~230 HTML.
-- [ ] Extract `TabStripComponent` (the `@for` loop with inline rename, DnD)
-- [ ] Extract `ConfigPanelComponent` (load dropdown with expand/rename/move/delete)
-- [ ] Extract `TabInlineMenuComponent` (the three-dot menu with color, move-to, close)
+### Tab bar component split — ✅ done
+Parent `configurable-tab-bar.component.ts` is now a thin orchestrator (~130 TS + ~65 HTML); three standalone children live in subfolders.
+- [x] Extract `TabStripComponent` (the `@for` loop with inline rename, DnD)
+- [x] Extract `TabConfigPanelComponent` (load dropdown with expand/rename/move/delete)
+- [x] Extract `TabInlineMenuComponent` (the three-dot menu with color, move-to, close)
 
 ### Tighten typing
 - [ ] Replace `_handlers` mutable workaround with proper DI pattern

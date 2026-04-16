@@ -16,11 +16,12 @@
 - `moveActiveTabToConfig`, `moveTabToConfig` (duplication-sensitive)
 - Auto-sync: mutating tabs while `activeConfigId` is set updates the saved config
 
-### Split component into sub-components
-The component is ~300 lines TS + ~230 lines HTML. Extract:
-- **Tab strip** — the `@for` loop with inline rename, menu toggle, DnD
-- **Config panel** — the load dropdown with expand/rename/move/delete
-- **Tab inline menu** — the ⋮ menu with color picker, move-to, close
+### Split component into sub-components — ✅ done
+Parent shrunk to a thin orchestrator; three standalone children live in
+subfolders under `configurable-tab-bar/`:
+- [x] **Tab strip** (`tab-strip/`) — the `@for` loop with inline rename, menu toggle, DnD
+- [x] **Config panel** (`tab-config-panel/`) — the load dropdown with expand/rename/move/delete
+- [x] **Tab inline menu** (`tab-inline-menu/`) — the ⋮ menu with color picker, move-to, close
 
 ### Replace `_handlers` workaround
 `_handlers` is a mutable field set via `inject(TAB_HANDLERS)` to work around Angular signal input timing issues. Investigate if a directive-based approach or `afterRender` hook would be cleaner.
@@ -44,6 +45,6 @@ The component is ~300 lines TS + ~230 lines HTML. Extract:
 - [x] Add tab button clickable (z-index fix over scroll container)
 - [ ] DnD reorder moves to correct position (currently broken)
 - [ ] Unit tests on TabMutationService
-- [ ] Component split into sub-components
+- [x] Component split into sub-components
 - [ ] Replace `_handlers` mutable workaround
 - [ ] Type-safe `dispatch` (remove `as any`)
