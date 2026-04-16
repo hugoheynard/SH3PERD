@@ -26,7 +26,7 @@ describe('AuthService', () => {
     };
 
     refreshRepo = {
-      deleteMany: jest.fn().mockResolvedValue(true),
+      deleteMany: jest.fn<IRefreshTokenRepository['deleteMany']>().mockResolvedValue(true),
     };
 
     service = new (AuthService as any)(refreshTokenService, jwtService, refreshRepo) as AuthService;

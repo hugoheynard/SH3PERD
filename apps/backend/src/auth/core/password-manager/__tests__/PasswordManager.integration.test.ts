@@ -1,14 +1,10 @@
-import { isRehashDueFromLastHashDate } from '../utils/isRehashDueFromLastHashDate.js';
-import { HashParser } from '../utils/HashParser.js';
 import { createHasherRegistry } from '../hasherRegistry/createHasherRegistry.js';
 import { PasswordService } from '../PasswordService.js';
 import bcrypt from 'bcrypt';
 
 const passwordManager = new PasswordService({
   currentStrategyKey: 'argon2id:v1',
-  registry: createHasherRegistry({ hashParser: HashParser }),
-  hashParserFunction: HashParser.extract,
-  verifyLastHashDateFunction: isRehashDueFromLastHashDate,
+  registry: createHasherRegistry(),
   rehashAfterDays: 30,
 });
 
@@ -44,9 +40,7 @@ describe('PasswordManager - real instance', () => {
     // Instance en bcrypt
     const bcryptManager = new PasswordService({
       currentStrategyKey: 'bcrypt:v1',
-      registry: createHasherRegistry({ hashParser: HashParser }),
-      hashParserFunction: HashParser.extract,
-      verifyLastHashDateFunction: isRehashDueFromLastHashDate,
+      registry: createHasherRegistry(),
       rehashAfterDays: 30,
     });
 
@@ -56,9 +50,7 @@ describe('PasswordManager - real instance', () => {
 
     const argon2Manager = new PasswordService({
       currentStrategyKey: 'argon2id:v1',
-      registry: createHasherRegistry({ hashParser: HashParser }),
-      hashParserFunction: HashParser.extract,
-      verifyLastHashDateFunction: isRehashDueFromLastHashDate,
+      registry: createHasherRegistry(),
       rehashAfterDays: 30,
     });
 
@@ -89,9 +81,7 @@ describe('PasswordManager - real instance', () => {
     // 🔐 Vérifie avec un manager qui va rehasher si date trop ancienne
     const manager = new PasswordService({
       currentStrategyKey: 'bcrypt:v1',
-      registry: createHasherRegistry({ hashParser: HashParser }),
-      hashParserFunction: HashParser.extract,
-      verifyLastHashDateFunction: isRehashDueFromLastHashDate,
+      registry: createHasherRegistry(),
       rehashAfterDays: 30, // ← forcera un rehash
     });
 

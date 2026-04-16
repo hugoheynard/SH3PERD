@@ -1,5 +1,9 @@
 import { JwtService } from '../JwtService.js';
-import type { TAuthTokenManagerOptions, TAuthTokenPayload } from '@sh3pherd/shared-types';
+import type {
+  TAuthTokenManagerOptions,
+  TAuthTokenPayload,
+} from '../../../types/auth.domain.tokens.js';
+import type { TUserId } from '@sh3pherd/shared-types';
 
 describe('JwtAuthTokenManager', () => {
   const PRIVATE_KEY_TEST = `
@@ -47,7 +51,7 @@ xwIDAQAB
   let manager: JwtService;
 
   const payload: TAuthTokenPayload = {
-    user_id: 'user-123',
+    user_id: 'user_123' as TUserId,
   };
 
   const options: TAuthTokenManagerOptions = {
@@ -70,7 +74,8 @@ xwIDAQAB
     const token = await manager.generateAuthToken({ payload });
     const decoded = await manager.verifyAuthToken({ authToken: token });
 
-    expect(decoded.user_id).toBe(payload.user_id);
+    expect(decoded).not.toBeNull();
+    expect(decoded?.user_id).toBe(payload.user_id);
   });
 
   it('should return null for an invalid token', async () => {
