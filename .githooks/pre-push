@@ -57,14 +57,20 @@ matches() {
 check_backend=0
 check_frontend=0
 check_audio=0
-rebuild_shared=0
 
-# shared-types is consumed by every app — force-check all of them.
+# Workspace package changes fan out to every consumer.
+#   shared-types → backend + frontend + audio-processor
+#   storage      → backend + audio-processor  (frontend doesn't use it)
 if matches '^packages/shared-types/'; then
   echo "→ packages/shared-types changed — checking every app"
-  rebuild_shared=1
   check_backend=1
   check_frontend=1
+  check_audio=1
+fi
+
+if matches '^packages/storage/'; then
+  echo "→ packages/storage changed — checking backend + audio-processor"
+  check_backend=1
   check_audio=1
 fi
 
@@ -76,10 +82,12 @@ if [ "$check_backend$check_frontend$check_audio" = "000" ]; then
   exit 0
 fi
 
-if [ "$rebuild_shared" = "1" ]; then
-  echo "→ Building shared-types"
-  pnpm --filter @sh3pherd/shared-types build
-fi
+# tsc --noEmit on a consumer fails with TS6305 when the referenced
+# package's dist/ is missing or stale. Build both deps up front —
+# `tsc -b` is incremental, so this is a no-op when already fresh.
+echo "→ Ensuring workspace packages are built (shared-types, storage)"
+pnpm --filter @sh3pherd/shared-types build
+pnpm --filter @sh3pherd/storage build
 
 fail() {
   echo ""

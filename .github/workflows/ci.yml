@@ -49,6 +49,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @sh3pherd/shared-types build
+      - run: pnpm --filter @sh3pherd/storage build
 
       - name: Lint
         run: pnpm --filter @sh3pherd/backend lint
@@ -77,6 +78,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @sh3pherd/shared-types build
+      - run: pnpm --filter @sh3pherd/storage build
 
       - name: Lint
         run: pnpm --filter @sh3pherd/audio-processor lint

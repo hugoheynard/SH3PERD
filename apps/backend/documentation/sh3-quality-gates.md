@@ -66,12 +66,16 @@ pushed and, for each app that changed, runs `tsc --noEmit` + `eslint`.
 flowchart TD
     start[git push] --> refs[Read refs from stdin]
     refs --> diff[git diff --name-only<br/>remote...local]
-    diff --> shared{Any<br/>packages/shared-types<br/>changed?}
-    shared -->|yes| buildShared[Rebuild shared-types]
-    buildShared --> allApps[Force-check every app]
-    shared -->|no| perApp[Check only apps<br/>with file changes]
-    allApps --> run
-    perApp --> run[Run tsc --noEmit + lint<br/>for each selected app]
+    diff --> pkg{packages/*<br/>changed?}
+    pkg -->|shared-types| fanShared[Force-check<br/>backend + frontend + audio]
+    pkg -->|storage| fanStorage[Force-check<br/>backend + audio]
+    pkg -->|no| perApp[Check only apps<br/>with file changes]
+    fanShared --> need
+    fanStorage --> need
+    perApp --> need[At least one app<br/>selected?]
+    need -->|no| exit0[Exit 0 — nothing to do]
+    need -->|yes| build[Build referenced packages<br/>tsc -b is incremental]
+    build --> run[Run tsc --noEmit + lint<br/>for each selected app]
     run -->|any failure| block[Exit 1 — push blocked]
     run -->|all pass| allow[Exit 0 — push proceeds]
 ```
@@ -79,10 +83,17 @@ flowchart TD
 Key properties:
 
 - **Targeted.** A frontend-only change doesn't retypecheck the backend.
-- **shared-types propagates.** A type change in `packages/shared-types`
+- **Workspace packages propagate.** A change in `packages/shared-types`
   forces every consumer (backend + frontend + audio-processor) to be
-  rechecked, because their tsc caches don't catch upstream type changes
-  until rebuild.
+  rechecked; `packages/storage` fans out to backend + audio-processor
+  only (frontend doesn't use it). Consumers' tsc caches don't catch
+  upstream type changes until the referenced package is rebuilt.
+- **Deps always built before tsc.** `tsc --noEmit` on a consumer fails
+  with `TS6305` when a referenced package's `dist/` is missing or stale
+  (classic fresh-clone pitfall — CI hit this in production). The hook
+  runs `pnpm --filter @sh3pherd/shared-types build` + `@sh3pherd/storage
+build` up front on every push that needs checking. `tsc -b` is
+  incremental, so this is a no-op when the builds are already fresh.
 - **Tests are not run.** Backend tests spin up MongoMemoryServer and take
   ~25s; pre-push running them would be ~2 min on a multi-app change.
   Devs would reach for `--no-verify` within a week. Tests stay in CI.
@@ -192,12 +203,26 @@ Checklist when a new app (e.g. a worker, a CLI) joins the monorepo:
    ESLint config today).
 3. **Extend `.githooks/pre-push`:** add a `matches '^apps/<app>/'` branch
    and the corresponding `tsc` / `lint` invocations. If the app consumes
-   `shared-types`, add it to the `rebuild_shared` fan-out too.
+   a `packages/*` project, add it to that package's fan-out block.
 4. **Extend `.github/workflows/ci.yml`:** copy one of the existing app
-   jobs and add its name to the `ci-gate.needs` array.
+   jobs, include every workspace package the app references in the
+   prebuild steps (`pnpm --filter @sh3pherd/<pkg> build`), and add the
+   job name to the `ci-gate.needs` array.
 5. **Smoke-test locally:** touch a file in the new app and run
    `git push` with the hook active — confirm the right checks fire.
 6. **Update this doc** with the new app's role in the pipeline.
+
+### Adding a new workspace package (`packages/<new>`)
+
+1. Ensure the package has a `build` script that writes to `dist/` (most
+   projects in the repo use `tsc -b tsconfig.json`).
+2. Add a fan-out block in `.githooks/pre-push` matching
+   `^packages/<new>/` that flips the `check_<app>=1` flags for every
+   consumer.
+3. Add `pnpm --filter @sh3pherd/<new> build` to the pre-tsc step in
+   every CI job that depends on it.
+4. Confirm `packages/<new>/tsconfig.json` has `composite: true` if apps
+   reference it via project references.
 
 ## Troubleshooting
 
@@ -209,6 +234,19 @@ locally, you skipped test typechecking. Re-run:
 
 ```bash
 pnpm --filter @sh3pherd/backend exec tsc --noEmit
+```
+
+### `TS6305: Output file '…/packages/<pkg>/dist/index.d.ts' has not been built`
+
+A referenced workspace package's `dist/` is missing or stale. Typical
+causes: fresh clone, someone ran `pnpm clean`, or a `tsc -b` build was
+interrupted. The pre-push hook builds both `shared-types` and `storage`
+on every push as insurance, but if you see this outside the hook,
+rebuild manually:
+
+```bash
+pnpm --filter @sh3pherd/shared-types build
+pnpm --filter @sh3pherd/storage build
 ```
 
 ### CI job fails but `ci-gate` shows green
