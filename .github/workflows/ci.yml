@@ -81,13 +81,13 @@ jobs:
       - run: pnpm --filter @sh3pherd/storage build
 
       - name: Lint
-        run: pnpm --filter @sh3pherd/audio-processor lint
+        run: pnpm --filter audio-processor lint
 
       - name: Type check
-        run: pnpm --filter @sh3pherd/audio-processor exec tsc --noEmit
+        run: pnpm --filter audio-processor exec tsc --noEmit
 
       - name: Unit tests
-        run: pnpm --filter @sh3pherd/audio-processor test
+        run: pnpm --filter audio-processor test
 
   # ── Frontend: typecheck + tests + build ──
   frontend:
@@ -109,13 +109,13 @@ jobs:
       - run: pnpm --filter @sh3pherd/shared-types build
 
       - name: Type check
-        run: pnpm --filter @sh3pherd/frontend-webapp exec tsc --noEmit
+        run: pnpm --filter frontend-webapp exec tsc --noEmit
 
       - name: Unit tests
-        run: pnpm --filter @sh3pherd/frontend-webapp test -- --ci --runInBand
+        run: pnpm --filter frontend-webapp test -- --ci --runInBand
 
       - name: Build
-        run: pnpm --filter @sh3pherd/frontend-webapp build
+        run: pnpm --filter frontend-webapp build
 
   # ── Final gate: every job above must pass. Use this as the
   #    single "Required status check" in GitHub branch protection. ──

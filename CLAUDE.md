@@ -189,13 +189,13 @@ pnpm --filter @sh3pherd/backend lint
 pnpm --filter @sh3pherd/backend exec tsc --noEmit
 pnpm --filter @sh3pherd/backend test
 
-pnpm --filter @sh3pherd/audio-processor lint
-pnpm --filter @sh3pherd/audio-processor exec tsc --noEmit
-pnpm --filter @sh3pherd/audio-processor test
+pnpm --filter audio-processor lint
+pnpm --filter audio-processor exec tsc --noEmit
+pnpm --filter audio-processor test
 
-pnpm --filter @sh3pherd/frontend-webapp exec tsc --noEmit
-pnpm --filter @sh3pherd/frontend-webapp test
-pnpm --filter @sh3pherd/frontend-webapp build
+pnpm --filter frontend-webapp exec tsc --noEmit
+pnpm --filter frontend-webapp test
+pnpm --filter frontend-webapp build
 ```
 
 ## Frontend conventions (Angular 21)
@@ -237,15 +237,15 @@ pnpm run dev:webapp           # Start Angular frontend
 
 # Test
 pnpm --filter @sh3pherd/backend test          # Backend unit tests
-pnpm --filter @sh3pherd/audio-processor test  # Audio processor tests
+pnpm --filter audio-processor test  # Audio processor tests
 
 # Lint
 pnpm --filter @sh3pherd/backend lint          # Backend ESLint + Prettier
-pnpm --filter @sh3pherd/audio-processor lint  # Audio processor lint
+pnpm --filter audio-processor lint  # Audio processor lint
 
 # Build
 pnpm --filter @sh3pherd/shared-types build    # Build shared types (prerequisite)
-pnpm --filter @sh3pherd/frontend-webapp build # Build Angular app
+pnpm --filter frontend-webapp build # Build Angular app
 pnpm --filter @sh3pherd/backend build         # Build NestJS backend
 
 # Type check

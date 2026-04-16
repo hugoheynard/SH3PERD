@@ -82,13 +82,6 @@ if [ "$check_backend$check_frontend$check_audio" = "000" ]; then
   exit 0
 fi
 
-# tsc --noEmit on a consumer fails with TS6305 when the referenced
-# package's dist/ is missing or stale. Build both deps up front —
-# `tsc -b` is incremental, so this is a no-op when already fresh.
-echo "→ Ensuring workspace packages are built (shared-types, storage)"
-pnpm --filter @sh3pherd/shared-types build
-pnpm --filter @sh3pherd/storage build
-
 fail() {
   echo ""
   echo "✗ Push blocked: $1"
@@ -96,6 +89,30 @@ fail() {
   echo "  Emergency bypass: git push --no-verify (CI will still block the merge)"
   exit 1
 }
+
+# A pnpm --filter that matches nothing silently exits 0. When that happens
+# inside this hook, a whole app's checks get skipped while the hook still
+# says "passed" — this is exactly how a typo in a filter name shipped to
+# production undetected. Fail loudly instead.
+assert_filter() {
+  if pnpm --filter "$1" exec true 2>&1 | grep -q "No projects matched"; then
+    fail "pnpm filter '$1' matches no workspace project (hook typo?)"
+  fi
+}
+
+# Validate every filter we're about to use before running any of them.
+assert_filter @sh3pherd/shared-types
+assert_filter @sh3pherd/storage
+[ "$check_backend"  = "1" ] && assert_filter @sh3pherd/backend
+[ "$check_audio"    = "1" ] && assert_filter audio-processor
+[ "$check_frontend" = "1" ] && assert_filter frontend-webapp
+
+# tsc --noEmit on a consumer fails with TS6305 when the referenced
+# package's dist/ is missing or stale. Build both deps up front —
+# `tsc -b` is incremental, so this is a no-op when already fresh.
+echo "→ Ensuring workspace packages are built (shared-types, storage)"
+pnpm --filter @sh3pherd/shared-types build
+pnpm --filter @sh3pherd/storage build
 
 if [ "$check_backend" = "1" ]; then
   echo "→ apps/backend: tsc --noEmit"
@@ -106,14 +123,14 @@ fi
 
 if [ "$check_audio" = "1" ]; then
   echo "→ apps/audio-processor: tsc --noEmit"
-  pnpm --filter @sh3pherd/audio-processor exec tsc --noEmit || fail "audio-processor type errors"
+  pnpm --filter audio-processor exec tsc --noEmit || fail "audio-processor type errors"
   echo "→ apps/audio-processor: lint"
-  pnpm --filter @sh3pherd/audio-processor lint              || fail "audio-processor lint errors"
+  pnpm --filter audio-processor lint              || fail "audio-processor lint errors"
 fi
 
 if [ "$check_frontend" = "1" ]; then
   echo "→ apps/frontend-webapp: tsc --noEmit"
-  ( cd apps/frontend-webapp && npx --no-install tsc --noEmit ) || fail "frontend type errors"
+  pnpm --filter frontend-webapp exec tsc --noEmit || fail "frontend type errors"
 fi
 
 echo ""
