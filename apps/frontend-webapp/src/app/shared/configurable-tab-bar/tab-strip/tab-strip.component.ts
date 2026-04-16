@@ -101,7 +101,7 @@ export class TabStripComponent {
     const tabs = this.tabs();
     const currentIndex = tabs.findIndex(t => t.id === tabId);
     if (currentIndex === -1) return;
-    // NOTE: drop-at-end-only bug tracked in TODO-configurable-tab-bar.md § Bugs.
+    // NOTE: drop-at-end-only — deferred. See ../TODO.md § Deferred.
     this.tabReorder.emit({ tabId, newIndex: tabs.length - 1 });
   }
 
