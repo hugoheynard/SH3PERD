@@ -52,6 +52,8 @@ import grid from '../../../assets/icons/ui/grid.svg';
 import list from '../../../assets/icons/ui/list.svg';
 import lock from '../../../assets/icons/ui/lock.svg';
 import menu from '../../../assets/icons/ui/menu.svg';
+import moreVertical from '../../../assets/icons/ui/more-vertical.svg';
+import palette from '../../../assets/icons/ui/palette.svg';
 import plus from '../../../assets/icons/ui/plus.svg';
 import playlistAdd from '../../../assets/icons/ui/playlist-add.svg';
 import reload from '../../../assets/icons/ui/reload.svg';
@@ -154,6 +156,8 @@ export const SH3_ICONS = {
   list,
   lock,
   menu,
+  'more-vertical': moreVertical,
+  palette,
   plus,
   'playlist-add': playlistAdd,
   reload,
