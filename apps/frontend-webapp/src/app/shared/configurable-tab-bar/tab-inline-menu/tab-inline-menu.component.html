@@ -1,19 +1,19 @@
 <span class="tab-inline-actions" (pointerup)="$event.stopPropagation()">
-  <button class="tab-inline-btn" type="button" title="Color"
-    (click)="onColor($event)">●</button>
+  <sh3-button-icon icon="palette" size="xs" tooltip="Color"
+    (clicked)="onColor($event)" />
 
   @if (savedConfigs().length) {
-    <span class="tab-move-wrapper">
-      <button class="tab-inline-btn" type="button" title="Move to config"
-        #moveBtn (click)="onToggleMoveMenu($event, moveBtn)">⇥</button>
+    <span class="tab-move-wrapper" #moveBtn>
+      <sh3-button-icon icon="arrow-right" size="xs" tooltip="Move to config"
+        (clicked)="onToggleMoveMenu($event, moveBtn)" />
 
       @if (moveMenuOpen()) {
         <div class="tab-move-dropdown"
           [style.top.px]="moveDropdownPos().top" [style.left.px]="moveDropdownPos().left">
           <span class="tab-move-label">Move to</span>
           @for (cfg of savedConfigs(); track cfg.id) {
-            <button class="tab-move-option" type="button"
-              (click)="onMoveTo(cfg.id, $event)">{{ cfg.name }}</button>
+            <sh3-button variant="ghost" size="sm"
+              (clicked)="onMoveTo(cfg.id, $event)">{{ cfg.name }}</sh3-button>
           }
         </div>
       }
@@ -21,7 +21,7 @@
   }
 
   @if (canClose()) {
-    <button class="tab-inline-btn tab-inline-btn--danger" type="button" title="Close"
-      (click)="onClose($event)">×</button>
+    <sh3-button-icon icon="close" tone="critical" size="xs" tooltip="Close"
+      (clicked)="onClose($event)" />
   }
 </span>

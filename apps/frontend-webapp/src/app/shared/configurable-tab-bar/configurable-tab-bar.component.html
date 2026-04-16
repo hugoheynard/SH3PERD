@@ -24,26 +24,19 @@
   <!-- Add tab button / Lock when limit reached -->
   @if (tabLimitReached()) {
     <div class="tab-add-wrapper">
-      <button class="tab-add tab-add--locked" type="button" aria-label="Tab limit reached"
-        (click)="toggleUpgradePopover()">
-        <sh3-icon name="lock" size='xs' />
-      </button>
+      <sh3-button-icon icon="lock" size="sm" tooltip="Tab limit reached" (clicked)="toggleUpgradePopover()" />
       @if (showUpgradePopover()) {
         <div class="upgrade-popover">
           <span class="upgrade-popover__text">
             Max tabs reached for your plan.
             <br/>Unlock more with Pro or Max.
           </span>
-          <button class="upgrade-popover__btn" type="button" (click)="onUpgrade()">
-            Upgrade
-          </button>
+          <sh3-button variant="primary" size="sm" (clicked)="onUpgrade()">Upgrade</sh3-button>
         </div>
       }
     </div>
   } @else {
-    <button class="tab-add" type="button" aria-label="Add tab" (click)="onTabAdd()">
-      <sh3-icon name="plus" size='xs' />
-    </button>
+    <sh3-button-icon class="tab-add-btn" icon="plus" size="sm" tooltip="Add tab" (clicked)="onTabAdd()" />
   }
 
   <!-- Domain-specific slot (e.g. search input) -->

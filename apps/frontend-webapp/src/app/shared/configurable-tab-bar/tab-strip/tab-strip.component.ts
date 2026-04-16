@@ -1,5 +1,6 @@
 import { Component, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ButtonIconComponent } from '../../button-icon/button-icon.component';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
@@ -20,7 +21,7 @@ import { TabInlineMenuComponent } from '../tab-inline-menu/tab-inline-menu.compo
 @Component({
   selector: 'sh3-tab-strip',
   standalone: true,
-  imports: [FormsModule, DndDragDirective, DndDropZoneDirective, TabInlineMenuComponent],
+  imports: [FormsModule, ButtonIconComponent, DndDragDirective, DndDropZoneDirective, TabInlineMenuComponent],
   templateUrl: './tab-strip.component.html',
   styleUrl: './tab-strip.component.scss',
 })

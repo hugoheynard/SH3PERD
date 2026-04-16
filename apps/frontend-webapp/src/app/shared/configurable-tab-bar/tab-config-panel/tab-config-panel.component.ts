@@ -1,8 +1,8 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../button/button.component';
+import { ButtonIconComponent } from '../../button-icon/button-icon.component';
 import { InputComponent } from '../../forms/input/input.component';
-import { IconComponent } from '../../icon/icon.component';
 import { ToastService } from '../../toast/toast.service';
 import type { SavedTabConfig } from '../configurable-tab-bar.types';
 
@@ -22,7 +22,7 @@ import type { SavedTabConfig } from '../configurable-tab-bar.types';
 @Component({
   selector: 'sh3-tab-config-panel',
   standalone: true,
-  imports: [FormsModule, ButtonComponent, InputComponent, IconComponent],
+  imports: [FormsModule, ButtonComponent, ButtonIconComponent, InputComponent],
   templateUrl: './tab-config-panel.component.html',
   styleUrl: './tab-config-panel.component.scss',
 })

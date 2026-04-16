@@ -22,57 +22,14 @@
   border-bottom: 1px solid var(--divider-color);
 }
 
-/* ── Add button / Upgrade popover ─────────────────── */
+/* ── Add button wrapper (hosts the upgrade popover when locked) ─── */
 
 .tab-add-wrapper {
   position: relative;
   flex-shrink: 0;
-  margin-left: 4px;
-  margin-bottom: 2px;
 }
 
-.tab-add {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  background: var(--border-subtle);
-  border: 1px solid var(--border-light);
-  border-radius: 6px;
-  color: var(--text-muted);
-  cursor: pointer;
-  flex-shrink: 0;
-  margin-left: 4px;
-  margin-bottom: 2px;
-  position: relative;
-  z-index: 2;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-
-  &:focus-visible {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
-  }
-
-  &:hover {
-    background: var(--accent-color-dim);
-    border-color: var(--accent-color-border);
-    color: var(--accent-color-light);
-  }
-
-  &--locked {
-    margin-left: 0;
-    margin-bottom: 0;
-    color: var(--text-faded);
-    border-color: var(--border-subtle);
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: var(--panel-border-color);
-      color: var(--text-secondary);
-    }
-  }
-}
+/* ── Upgrade popover (shown when tab limit reached) ─────────────── */
 
 .upgrade-popover {
   position: absolute;
@@ -96,30 +53,6 @@
     color: var(--text-secondary);
     line-height: 1.5;
     margin-bottom: 10px;
-  }
-
-  &__btn {
-    all: unset;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 16px;
-    border-radius: var(--radius-sm);
-    font-size: 12px;
-    font-weight: 600;
-    color: #fff;
-    background: var(--accent-color);
-    transition: background 0.15s;
-
-    &:hover {
-      background: var(--accent-color-light);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--accent-color);
-      outline-offset: 2px;
-    }
   }
 }
 

@@ -17,8 +17,9 @@
         <span class="tab-title">{{ tab.title }}</span>
       }
 
-      <button class="tab-menu-toggle" type="button" title="Tab actions"
-        (click)="toggleTabMenu(tab.id, $event)" (pointerup)="$event.stopPropagation()">⋮</button>
+      <sh3-button-icon icon="more-vertical" size="xs" tooltip="Tab actions"
+        (clicked)="toggleTabMenu(tab.id, $event)" />
+
 
       @if (openTabMenuId() === tab.id) {
         <sh3-tab-inline-menu

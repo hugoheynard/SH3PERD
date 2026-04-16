@@ -1,5 +1,6 @@
 import { Component, computed, ElementRef, inject, input, output, signal, ViewChild } from '@angular/core';
-import { IconComponent } from '../icon/icon.component';
+import { ButtonComponent } from '../button/button.component';
+import { ButtonIconComponent } from '../button-icon/button-icon.component';
 import type { TabItem, SavedTabConfig } from './configurable-tab-bar.types';
 import { TAB_HANDLERS, type TabHandlers } from './tab-event.helpers';
 import { TabStripComponent } from './tab-strip/tab-strip.component';
@@ -33,7 +34,7 @@ import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.com
 @Component({
   selector: 'sh3-configurable-tab-bar',
   standalone: true,
-  imports: [IconComponent, TabStripComponent, TabConfigPanelComponent],
+  imports: [ButtonComponent, ButtonIconComponent, TabStripComponent, TabConfigPanelComponent],
   templateUrl: './configurable-tab-bar.component.html',
   styleUrl: './configurable-tab-bar.component.scss',
 })

@@ -2,22 +2,21 @@
 
   <!-- Save / New toggle (mutually exclusive) -->
   @if (activeConfigId()) {
-    <button class="tab-action-btn" type="button" title="New blank configuration" (click)="onNewConfig($event)">
-      <sh3-icon name="file-add" [size]="13" />
-    </button>
+    <sh3-button-icon icon="file-add" size="sm" tooltip="New blank configuration"
+      (clicked)="onNewConfig($event)" />
   } @else {
-    <button class="tab-action-btn" [class.active]="showSaveForm()" type="button" title="Save current tab configuration" (click)="toggleSaveForm()">
-      <sh3-icon name="save" [size]="13" />
-    </button>
+    <sh3-button-icon icon="save" size="sm" tooltip="Save current tab configuration"
+      [active]="showSaveForm()" (clicked)="toggleSaveForm()" />
   }
 
-  <!-- Load button -->
-  <button class="tab-action-btn" [class.active]="showLoadMenu()" type="button" title="Load saved configuration" (click)="toggleLoadMenu()">
-    <sh3-icon name="folder-open" [size]="13" />
+  <!-- Load button + count badge -->
+  <span class="tab-action-load-wrapper">
+    <sh3-button-icon icon="folder-open" size="sm" tooltip="Load saved configuration"
+      [active]="showLoadMenu()" (clicked)="toggleLoadMenu()" />
     @if (savedConfigs().length) {
       <span class="config-count">{{ savedConfigs().length }}</span>
     }
-  </button>
+  </span>
 
   <!-- ── Save form (inline panel) ─────────────── -->
   @if (showSaveForm()) {
@@ -41,8 +40,10 @@
 
           <!-- Config row -->
           <div class="config-item" [class.config-item--active]="cfg.id === activeConfigId()">
-            <button class="config-item-expand" type="button" title="Show tabs"
-              (click)="toggleConfigExpand(cfg.id, $event)">{{ expandedConfigId() === cfg.id ? '▾' : '▸' }}</button>
+            <sh3-button-icon
+              [icon]="expandedConfigId() === cfg.id ? 'chevron-down' : 'chevron-right'"
+              size="xs" tooltip="Show tabs"
+              (clicked)="toggleConfigExpand(cfg.id, $event)" />
 
             @if (editingConfigNameId() === cfg.id) {
               <input class="config-rename-input" [(ngModel)]="editConfigName"
@@ -55,10 +56,10 @@
             }
 
             <div class="config-item-actions">
-              <button class="config-action-btn" type="button" title="Rename"
-                (click)="startConfigRename(cfg.id, cfg.name, $event)">✎</button>
-              <button class="config-action-btn config-action-btn--danger" type="button" title="Delete"
-                (click)="onDeleteConfig(cfg.id, $event)">×</button>
+              <sh3-button-icon icon="edit" size="xs" tooltip="Rename"
+                (clicked)="startConfigRename(cfg.id, cfg.name, $event)" />
+              <sh3-button-icon icon="bin" tone="critical" size="xs" tooltip="Delete"
+                (clicked)="onDeleteConfig(cfg.id, $event)" />
             </div>
           </div>
 
@@ -79,15 +80,15 @@
                   }
 
                   <div class="config-tab-actions">
-                    <button class="config-action-btn" type="button" title="Rename"
-                      (click)="startConfigTabRename(cfg.id, tab.id, tab.title, $event)">✎</button>
+                    <sh3-button-icon icon="edit" size="xs" tooltip="Rename"
+                      (clicked)="startConfigTabRename(cfg.id, tab.id, tab.title, $event)" />
                     @if (savedConfigs().length > 1 && cfg.tabs.length > 1) {
-                      <button class="config-action-btn" type="button" title="Move"
-                        (click)="toggleMoveMenu(cfg.id, tab.id, $event)">⇥</button>
+                      <sh3-button-icon icon="arrow-right" size="xs" tooltip="Move"
+                        (clicked)="toggleMoveMenu(cfg.id, tab.id, $event)" />
                     }
                     @if (cfg.tabs.length > 1) {
-                      <button class="config-action-btn config-action-btn--danger" type="button" title="Remove"
-                        (click)="onRemoveTabFromConfig(cfg.id, tab.id, $event)">×</button>
+                      <sh3-button-icon icon="close" tone="critical" size="xs" tooltip="Remove"
+                        (clicked)="onRemoveTabFromConfig(cfg.id, tab.id, $event)" />
                     }
                   </div>
 
@@ -96,8 +97,8 @@
                     <div class="config-move-menu">
                       <span class="config-move-label">Move to:</span>
                       @for (target of moveTargetConfigs(cfg.id); track target.id) {
-                        <button class="config-move-target" type="button"
-                          (click)="onMoveTabToConfig(target.id, $event)">{{ target.name }}</button>
+                        <sh3-button variant="ghost" size="sm"
+                          (clicked)="onMoveTabToConfig(target.id, $event)">{{ target.name }}</sh3-button>
                       }
                     </div>
                   }

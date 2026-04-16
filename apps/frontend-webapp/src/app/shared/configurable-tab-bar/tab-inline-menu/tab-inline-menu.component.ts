@@ -1,4 +1,6 @@
 import { Component, input, output, signal } from '@angular/core';
+import { ButtonComponent } from '../../button/button.component';
+import { ButtonIconComponent } from '../../button-icon/button-icon.component';
 import type { TabItem, SavedTabConfig } from '../configurable-tab-bar.types';
 
 /**
@@ -17,7 +19,7 @@ import type { TabItem, SavedTabConfig } from '../configurable-tab-bar.types';
 @Component({
   selector: 'sh3-tab-inline-menu',
   standalone: true,
-  imports: [],
+  imports: [ButtonComponent, ButtonIconComponent],
   templateUrl: './tab-inline-menu.component.html',
   styleUrl: './tab-inline-menu.component.scss',
 })
