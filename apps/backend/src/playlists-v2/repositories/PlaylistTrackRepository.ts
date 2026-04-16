@@ -53,10 +53,14 @@ export class PlaylistTrackMongoRepository
   }
 
   async updatePosition(trackId: TPlaylistTrackId, position: number): Promise<boolean> {
+    // Use the raw driver here so the boolean return reflects "did the
+    // position actually change?" (modifiedCount === 1) rather than
+    // "was the document found?" exposed by BaseMongoRepository.updateOne
+    // via findOneAndUpdate.
     const filter: Filter<TPlaylistTrackDomainModel> = { id: trackId };
     const update: UpdateFilter<TPlaylistTrackDomainModel> = { $set: { position } };
-    const result = await this.updateOne({ filter, update });
-    return result !== null;
+    const result = await this.collection.updateOne(filter, update);
+    return result.modifiedCount === 1;
   }
 
   async updateManyPositions(

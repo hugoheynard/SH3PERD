@@ -32,12 +32,14 @@ export class ReorderOrgNodesHandler implements ICommandHandler<ReorderOrgNodesCo
   async execute(cmd: ReorderOrgNodesCommand): Promise<void> {
     const { companyId, parentId, orderedIds } = cmd;
 
-    // Load all active siblings for this parent
-    const parentFilter = parentId
-      ? ({ parent_id: parentId } satisfies Filter<TOrgNodeRecord>)
+    // Load all active siblings for this parent.
+    // Root nodes may have `parent_id` absent OR explicitly stored as `null`
+    // in legacy documents — match both defensively.
+    const parentFilter: Filter<TOrgNodeRecord> = parentId
+      ? { parent_id: parentId }
       : ({
-          parent_id: { $exists: false },
-        } satisfies Filter<TOrgNodeRecord>);
+          $or: [{ parent_id: { $exists: false } }, { parent_id: null }],
+        } as Filter<TOrgNodeRecord>);
     const filter: Filter<TOrgNodeRecord> = {
       company_id: companyId,
       ...parentFilter,
