@@ -9,6 +9,16 @@ Read ALL documentation files in both locations before starting any work:
 This is mandatory — the docs contain architecture decisions, conventions, and domain context
 that are essential for making correct changes.
 
+## Development environment
+
+The user works on this repo directly in **WebStorm** on the main workspace
+at `~/WebstormProjects/SH3PHERD`. By default, work in that workspace on the
+branch the user has checked out — do not spawn an isolated Claude worktree
+unless the user explicitly asks for one. When a worktree is already in use,
+finish the task by committing and pushing the branch to `origin` and then
+exit the worktree so the user can follow along in WebStorm without having
+to pull from an auxiliary checkout.
+
 ## Documentation convention
 
 The monorepo has two documentation locations with distinct purposes:
