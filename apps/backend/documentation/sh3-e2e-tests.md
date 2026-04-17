@@ -27,6 +27,14 @@ pnpm --filter @sh3pherd/backend test src/E2E/auth
 pnpm --filter @sh3pherd/backend test --verbose
 ```
 
+In WebStorm, the same invocations are one-click via the committed
+`.run/backend test*.run.xml` configs — see
+[`documentation/WEBSTORM-RUN-CONFIGS.md`](../../../documentation/WEBSTORM-RUN-CONFIGS.md).
+Avoid right-click → "Run 'Tests in …'" on a folder: the ad-hoc Jest
+launcher it creates does not set `NODE_ENV=test` and does not pass
+`--runInBand`, re-introducing the exact divergence the `override:
+!isTest` rule below protects against.
+
 **No prerequisites** — `mongodb-memory-server` downloads and runs a
 MongoDB binary automatically on first run. No MongoDB installation,
 no `.env.app`, no `keys/*.pem` needed; the jest globalSetup seeds

@@ -253,6 +253,12 @@ cd apps/backend && npx tsc --noEmit
 cd apps/frontend-webapp && npx tsc --noEmit
 ```
 
+One-click equivalents for WebStorm users (all committed in `.run/`,
+shared across the team): `Dev all` launches every app + watched shared
+package in parallel; `backend > test`, `backend > test:watch`, and
+`backend > test (E2E only)` match the CLI `pnpm test` invocations flag
+for flag. See [`documentation/WEBSTORM-RUN-CONFIGS.md`](documentation/WEBSTORM-RUN-CONFIGS.md).
+
 ## Session start confirmation
 
 After reading all documentation files listed above, explicitly confirm to the user:
