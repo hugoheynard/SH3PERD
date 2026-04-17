@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="backend &gt; test (E2E only)" type="js.build_tools.npm" nameIsGenerated="false">
+    <package-json value="$PROJECT_DIR$/apps/backend/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="test" />
+    </scripts>
+    <arguments value="src/E2E/" />
+    <node-interpreter value="project" />
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>
