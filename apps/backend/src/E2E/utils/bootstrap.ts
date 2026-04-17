@@ -59,20 +59,34 @@ export type E2EContext = {
  * Boot the test app and return it alongside the test DB handle.
  */
 export async function bootstrapE2E(): Promise<E2EContext> {
-  // Read the in-memory MongoDB URI from the temp file written by global-setup.
-  // Fall back to env vars / localhost if the file doesn't exist (allows
-  // running against a real MongoDB for integration/staging tests).
+  // Hard rule: E2E MUST connect only to the in-memory MongoDB that
+  // `global-setup.ts` starts for this jest run. We intentionally do NOT
+  // fall back to a real `ATLAS_URI` from the developer's shell/env — a
+  // missing temp file means the global setup was skipped or is broken,
+  // and silently talking to the real database would be a disaster
+  // (insertions and `resetAllCollections()` on prod/staging).
+  let uri: string;
   try {
     const uriFile = join(process.cwd(), '.e2e-mongo-uri');
-    const uri = readFileSync(uriFile, 'utf-8').trim();
-    if (uri) {
-      process.env['ATLAS_URI'] = uri;
-      process.env['CORE_DB_NAME'] = 'sh3pherd_e2e';
-    }
-  } catch {
-    // No temp file — use whatever ATLAS_URI is already set (e.g. real MongoDB)
+    uri = readFileSync(uriFile, 'utf-8').trim();
+  } catch (cause) {
+    throw new Error(
+      '[bootstrapE2E] Could not read `.e2e-mongo-uri`. MongoMemoryServer ' +
+        'must be started by the jest globalSetup (`src/E2E/global-setup.ts`) ' +
+        'before any E2E test runs. Never point E2E tests at a real MongoDB.',
+      { cause: cause as Error },
+    );
+  }
+  if (!uri) {
+    throw new Error(
+      '[bootstrapE2E] `.e2e-mongo-uri` is empty. The globalSetup did not ' +
+        'write a MongoMemoryServer URI — refusing to boot against an ' +
+        'unknown database.',
+    );
   }
 
+  process.env['ATLAS_URI'] = uri;
+  process.env['CORE_DB_NAME'] = 'sh3pherd_e2e';
   process.env['NODE_ENV'] = 'test';
   loadEnv(process.env['NODE_ENV']);
 

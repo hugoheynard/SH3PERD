@@ -30,12 +30,13 @@ MongoDB binary automatically on first run. The audio processor on
 
 ## How it works
 
-### MongoDB in-memory
+### MongoDB in-memory — the ONLY supported mode
 
 ```
 jest.config.cjs
   ├── globalSetup:    src/E2E/global-setup.ts   → starts MongoMemoryServer
-  └── globalTeardown: src/E2E/global-teardown.ts → stops MongoMemoryServer
+  ├── globalTeardown: src/E2E/global-teardown.ts → stops MongoMemoryServer
+  └── maxWorkers: 1                             → serial runner (shared DB)
 ```
 
 1. `global-setup.ts` starts a `MongoMemoryServer` on a random port
@@ -43,9 +44,27 @@ jest.config.cjs
 3. `bootstrap.ts` reads the URI and passes it to the NestJS app
 4. After all tests, `global-teardown.ts` stops the server
 
-**Fallback**: if `.e2e-mongo-uri` doesn't exist, `bootstrap.ts` uses
-`ATLAS_URI` from env — so you can also run against a real MongoDB
-for staging/integration tests.
+> **Hard rule — no real-database fallback.** If `.e2e-mongo-uri` is
+> missing or empty, `bootstrap.ts` **throws** rather than falling back
+> to whatever `ATLAS_URI` happens to be set in the shell. E2E tests
+> perform destructive operations (`resetAllCollections()`, raw inserts
+> via factories, soft-delete/flush helpers) — pointing them at a real
+> staging or production database by accident would wipe it. The old
+> fallback made that one missing temp file away; it has been removed.
+>
+> If you genuinely want integration tests against a real MongoDB,
+> write them in a separate suite with its own bootstrap that takes the
+> URI as an explicit constructor argument, never from ambient env.
+
+### Serial execution (`maxWorkers: 1`)
+
+Every spec in the backend — unit and E2E — runs through the single
+MongoMemoryServer that globalSetup boots. Parallel jest workers share
+that instance, so two E2E suites running at once race on
+`resetAllCollections()` between tests and the later one sees the
+earlier one's writes. The config pins `maxWorkers: 1` to make
+execution deterministic. Unit-test throughput is effectively
+unchanged at this codebase size.
 
 ### Throttler bypass
 
@@ -111,13 +130,13 @@ const seed = await seedWorkspace(db, {
 
 ### When to use which
 
-| Scenario | Use |
-|----------|-----|
-| Testing auth endpoints (register, login, refresh) | `UserBuilder` |
-| Testing company/contract creation | `WorkspaceSetup` |
-| Testing music CRUD (need a workspace but testing music) | `seedWorkspace()` |
-| Testing orgchart mutations (need a workspace) | `seedWorkspace()` |
-| Testing with 50+ entities (performance matters) | `seedUser()` + `seedCompany()` |
+| Scenario                                                | Use                            |
+| ------------------------------------------------------- | ------------------------------ |
+| Testing auth endpoints (register, login, refresh)       | `UserBuilder`                  |
+| Testing company/contract creation                       | `WorkspaceSetup`               |
+| Testing music CRUD (need a workspace but testing music) | `seedWorkspace()`              |
+| Testing orgchart mutations (need a workspace)           | `seedWorkspace()`              |
+| Testing with 50+ entities (performance matters)         | `seedUser()` + `seedCompany()` |
 
 ---
 
@@ -152,6 +171,7 @@ await db.collection('user_credentials').insertOne(entity.toDomain);
 ```
 
 **Why this matters:**
+
 - Entity constructors validate invariants (non-empty name, valid
   status, required fields) — test data passes the same checks as
   production data.
@@ -176,15 +196,15 @@ import { seedUser, seedCompany, seedWorkspace } from './utils';
 
 // Seed just a user (credentials + profile + preferences + JWT)
 const user = await seedUser(db, {
-  email: 'alice@e2e.local',     // optional, auto-generated
-  firstName: 'Alice',            // optional, default: 'Factory'
-  lastName: 'Test',              // optional, default: 'User'
+  email: 'alice@e2e.local', // optional, auto-generated
+  firstName: 'Alice', // optional, default: 'Factory'
+  lastName: 'Test', // optional, default: 'User'
 });
 // user.userId, user.email, user.authToken, user.authHeader
 
 // Seed a company + owner contract for an existing user
 const company = await seedCompany(db, user.userId, {
-  name: 'Studio X',              // optional, default: 'Factory Company'
+  name: 'Studio X', // optional, default: 'Factory Company'
 });
 // company.companyId, company.contractId, company.companyName
 
@@ -205,11 +225,11 @@ with the app's RSA private key (from `keys/private.pem`) so the
 
 **Entities used by the factories:**
 
-| Factory | Entities | Collections |
-|---------|----------|-------------|
-| `seedUser()` | `UserCredentialEntity`, `UserProfileEntity`, `UserPreferences` | `user_credentials`, `user_profiles`, `user_preferences` |
-| `seedCompany()` | `CompanyEntity`, `ContractEntity` | `companies`, `contracts` |
-| `seedWorkspace()` | All of the above | All of the above |
+| Factory           | Entities                                                       | Collections                                             |
+| ----------------- | -------------------------------------------------------------- | ------------------------------------------------------- |
+| `seedUser()`      | `UserCredentialEntity`, `UserProfileEntity`, `UserPreferences` | `user_credentials`, `user_profiles`, `user_preferences` |
+| `seedCompany()`   | `CompanyEntity`, `ContractEntity`                              | `companies`, `contracts`                                |
+| `seedWorkspace()` | All of the above                                               | All of the above                                        |
 
 ---
 
@@ -217,11 +237,11 @@ with the app's RSA private key (from `keys/private.pem`) so the
 
 ```typescript
 import {
-  resetAllCollections,   // nuke everything
-  resetCollections,       // specific collections
-  resetAuthCollections,   // user_credentials + profiles + preferences + refresh_tokens
+  resetAllCollections, // nuke everything
+  resetCollections, // specific collections
+  resetAuthCollections, // user_credentials + profiles + preferences + refresh_tokens
   resetCompanyCollections, // companies + contracts + org_nodes + guest_company
-  resetMusicCollections,  // music_references + repertoire + versions + tab_configs
+  resetMusicCollections, // music_references + repertoire + versions + tab_configs
 } from './utils';
 ```
 
@@ -275,11 +295,11 @@ expect(res.body).toMatchObject({
 
 ## Test suites
 
-| File | Tests | What it covers |
-|------|-------|---------------|
-| `auth.e2e-spec.ts` | 18 | Register (5), Login (3), Refresh (3), Logout (2), AuthGuard (4), Full lifecycle (1) |
-| `workspace.e2e-spec.ts` | 6 | WorkspaceSetup chain (4), Multiple workspaces (1), DB cleanup (1) |
-| **Total** | **24** | |
+| File                    | Tests  | What it covers                                                                      |
+| ----------------------- | ------ | ----------------------------------------------------------------------------------- |
+| `auth.e2e-spec.ts`      | 18     | Register (5), Login (3), Refresh (3), Logout (2), AuthGuard (4), Full lifecycle (1) |
+| `workspace.e2e-spec.ts` | 6      | WorkspaceSetup chain (4), Multiple workspaces (1), DB cleanup (1)                   |
+| **Total**               | **24** |                                                                                     |
 
 ---
 
