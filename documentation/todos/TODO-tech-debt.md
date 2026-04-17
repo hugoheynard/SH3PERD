@@ -35,27 +35,75 @@
   pré-existantes laissées, downgrad'ées par config), `tsc --noEmit` ✅,
   38/38 tests ✅.
 
-### 🔥 2. `apps/frontend-webapp` — ~124 erreurs de typecheck
+### ✅ 2. `apps/frontend-webapp` — typecheck + build verts
 
-- [ ] Migrer les specs de syntaxe Jasmine vers Jest
-  - `toBeTrue()` → `toBe(true)`, `toBeFalse()` → `toBe(false)`
-  - `jasmine.SpyObj<T>` → `jest.Mocked<T>` (ou `Partial<jest.Mocked<T>>`)
-  - `toHaveBeenCalledOnceWith` → `toHaveBeenCalledWith` + `toHaveBeenCalledTimes(1)`
-- [ ] Fichiers les plus touchés (de mémoire, à re-vérifier avec `npx tsc --noEmit`) :
-  - `src/app/core/services/__tests__/auth.service.spec.ts`
-  - `src/app/core/services/__tests__/auth-token.service.spec.ts`
-  - `src/app/core/app/app.component.spec.ts` (propriété `label` disparue)
-  - `src/app/core/components/data-list/data-list.component.spec.ts` (generic manquant)
-- [ ] Une fois les specs migrés, vérifier que les tests tournent : `pnpm --filter frontend-webapp test`
-- Reproduction : `pnpm --filter frontend-webapp exec tsc --noEmit`
-- Cause racine : le repo utilise Jest + jest-preset-angular, mais les specs ont gardé la syntaxe Jasmine de l'époque `ng test` — jamais migrés parce que le filter `@sh3pherd/frontend-webapp` de la CI matchait zéro projet et n'a jamais tiré la sonnette.
+- [x] Migration Jasmine → Jest sur 16 specs (`refactor(test): migrate
+frontend specs from Jasmine to Jest API`) :
+  - `.toBeTrue()` → `.toBe(true)`, `.toBeFalse()` → `.toBe(false)`
+  - `jasmine.SpyObj<T>` → `jest.Mocked<T>`
+  - `jasmine.createSpyObj(name, methods)` → `{ m1: jest.fn(), ... }
+as unknown as jest.Mocked<T>`
+  - `jasmine.createSpy(name)` → `jest.fn()`
+  - `.and.returnValue` → `.mockReturnValue`,
+    `.and.callFake` → `.mockImplementation`,
+    `.and.callThrough()` → supprimé
+  - `toHaveBeenCalledOnceWith(args)` → `toHaveBeenCalledWith(args)`
+    (légère restriction sémantique documentée dans le commit)
+- [x] Stubs `ng generate` morts supprimés (deux passes,
+      18 + 6 fichiers) :
+  - `playlistTemplate/` (composants + services référencés disparus)
+  - `programs/services/**/__tests__/*.spec.ts` (classes renommées)
+  - `Directives/**/*.spec.ts` (constructeurs DI ignorés)
+  - `app/core/{app,components/data-list,services/__tests__/
+workspace-context.service}.spec.ts` (refs périmées)
+  - `shared/forms/{input,select}/*.stories.ts` (Storybook non
+    configuré)
+- [x] Vrais bugs alignés (`fix(test): align surviving frontend specs
+with current source code`) : `TabHandlers` non générique, import
+      `By` inutilisé, `spy.calls` → `spy.mock.calls`, cast
+      `as unknown as TPlayableTrack`, helper `asObservable()` pour
+      `MaybeAsync<GuardResult>` Angular 21, cast `as unknown as
+jest.Mocked<AuthService>` sur les mocks partiels.
+- État :
+  - `pnpm --filter frontend-webapp exec tsc --noEmit` → exit 0
+    (124 → 0)
+  - `pnpm --filter frontend-webapp build` → exit 0
+  - 17 spec files migrés passent à 100% (155/155 tests verts)
+- ⚠️ **Reste à régler** : 47 spec files (programs/, audio-player,
+  etc.) échouent à cause de services qui appellent `inject()` dans
+  leur initializer — pré-existant (avant ce travail : 50 fails). Voir
+  nouvelle entrée plus bas dans cette section.
 
-### Definition of done — les deux items ci-dessus
+### 🔥 3. `apps/frontend-webapp` — 47 tests pré-existants en échec
 
-- `pnpm --filter audio-processor lint` → exit 0
-- `pnpm --filter frontend-webapp exec tsc --noEmit` → exit 0
-- CI verte sur `dev` (jobs backend + audio-processor + frontend + ci-gate)
-- Le pre-push hook peut fanner-out sans bloquer sur de la dette pré-existante
+- [ ] Plusieurs services consommés par les specs utilisent `inject()`
+      au niveau du class field initializer (ex.
+      `SlotSelectionService`, `TimelineKeyboardController`,
+      `PlannerResolutionService`). Quand le spec fait
+      `TestBed.inject(X)` sans avoir au préalable provisionné les deps,
+      l'initializer plante avec `NullInjectorError`.
+- Pistes :
+  1. Provisionner les deps manquantes dans chaque `beforeEach`
+     concerné (long).
+  2. Refactorer les services pour exposer les deps en constructeur
+     plutôt qu'en field initializer (idiomatique Angular 21,
+     mais touche du code de prod).
+  3. Marquer les specs concernés `xit`/`describe.skip` le temps de
+     traiter, et ouvrir un sous-TODO dédié.
+- Reproduction : `pnpm --filter frontend-webapp test` → 47 suites en
+  rouge sur 121 (74 vertes).
+- Bloque la CI sur le job `frontend → Unit tests`. Le typecheck et le
+  build passent indépendamment.
+
+### Definition of done — items 1 + 2 ci-dessus
+
+- [x] `pnpm --filter audio-processor lint` → exit 0
+- [x] `pnpm --filter frontend-webapp exec tsc --noEmit` → exit 0
+- [x] `pnpm --filter frontend-webapp build` → exit 0
+- [ ] CI verte sur `dev` — bloquée par les 47 tests frontend
+      pré-existants (item §3 ci-dessus)
+- [x] Le pre-push hook peut fanner-out sans bloquer sur la dette
+      _de typecheck/lint_ pré-existante
 
 ---
 
