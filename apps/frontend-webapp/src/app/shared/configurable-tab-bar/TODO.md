@@ -35,22 +35,22 @@ focus ring, dark-mode tokens and hover accent now come uniformly from
 
 ---
 
-## Audit (honest review — 7.5/10 overall after the April 2026 polish pass)
+## Audit (honest review — 7.75/10 overall after the April 2026 polish pass)
 
 Full breakdown kept for reference:
 
-| Dimension          | Before | Now | Delta drivers                                                      |
-| ------------------ | ------ | --- | ------------------------------------------------------------------ |
-| Architecture / SoC | 8      | 8   | unchanged                                                          |
-| API design         | 7.5    | 8.5 | `tabAdd` routed through `dispatch()`; `TabHandlers` derived type   |
-| Code quality       | 6.5    | 7   | OnPush + signal rename buffers; zero runtime casts in `dispatch()` |
-| Documentation      | 9      | 9   | unchanged                                                          |
-| Robustness         | 5      | 5   | DnD fix still pending, CDK Overlay still pending                   |
-| Reusability        | 6      | 7   | every hardcoded label now configurable via `input<string>()`       |
-| Evolution          | 7.5    | 8   | OnPush ready; trackBy already enforced by Angular 21 `@for`        |
+| Dimension          | Before | Now | Delta drivers                                                                                 |
+| ------------------ | ------ | --- | --------------------------------------------------------------------------------------------- |
+| Architecture / SoC | 8      | 8.5 | ToastService coupling removed — bar is now truly agnostic (tabs, configs, locks, feedback)    |
+| API design         | 7.5    | 8.5 | `tabAdd` routed through `dispatch()`; `TabHandlers` derived type; no `showToasts` kill-switch |
+| Code quality       | 6.5    | 7   | OnPush + signal rename buffers; zero runtime casts in `dispatch()`                            |
+| Documentation      | 9      | 9   | unchanged                                                                                     |
+| Robustness         | 5      | 5   | DnD fix still pending, CDK Overlay still pending                                              |
+| Reusability        | 6      | 7.5 | every hardcoded label configurable; no `ToastService` injection to satisfy in tests / hosts   |
+| Evolution          | 7.5    | 8   | OnPush ready; trackBy already enforced by Angular 21 `@for`                                   |
 
 What still gates **8+ → 9+** lives in § Backlog.
-The two remaining lifts toward 8.5+ are the Robustness items (DnD,
+The remaining lifts toward 8.5+ are the Robustness items (DnD,
 CDK Overlay) and second-consumer validation.
 
 ---
@@ -199,6 +199,19 @@ lookups:
 this._handlers?.[key](payload);
 this._emit[key](payload);
 ```
+
+### ToastService coupling — ✅ done
+
+The config panel no longer injects `ToastService` and the four
+`*Toast` inputs + `showToasts` flag are gone. The bar emits
+`configSave` / `configLoad` / `configDelete` / `configNew` like it
+always did; hosts that want user-visible feedback listen to those
+outputs and toast (or log, or nothing) from there. On/off is implicit:
+no binding = no feedback.
+
+`onLoadConfig` lost its `configName` parameter — it was only used for
+the deleted toast copy; hosts that want the name in their toast
+resolve it from the `savedConfigs` they already pass in.
 
 ---
 

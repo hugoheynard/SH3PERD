@@ -55,7 +55,7 @@ flowchart TB
 | `ConfigurableTabBarComponent` | Public API surface, `TAB_HANDLERS` dispatch, shared color picker `<input>`, add/lock button, projection slots | Any domain logic (plans, quotas, popovers) |
 | `TabStripComponent`           | The `@for` loop, DnD wiring, inline rename state, ⋮ toggle                                                    | Mutations (bubbled up)                     |
 | `TabInlineMenuComponent`      | Color / move-to-config / close affordances per tab, move-dropdown position                                    | Saved config data (received as input)      |
-| `TabConfigPanelComponent`     | Save/new/load buttons + floating panels, locked variant, config edit state, built-in toasts                   | Tabs (only configs)                        |
+| `TabConfigPanelComponent`     | Save/new/load buttons + floating panels, locked variant, config edit state                                    | Tabs (only configs), user-visible feedback |
 
 ---
 
@@ -69,7 +69,6 @@ flowchart TB
 | `activeTabId`    | `string`                    | _required_ | Currently selected tab                                                                                                                                                                                                                       |
 | `activeConfigId` | `string \| null`            | `null`     | Non-null when the active tab set mirrors a saved config — toggles Save↔New button                                                                                                                                                            |
 | `savedConfigs`   | `SavedTabConfig<unknown>[]` | `[]`       | Named snapshots the user has saved                                                                                                                                                                                                           |
-| `showToasts`     | `boolean`                   | `true`     | Enable built-in toasts on save / new / load / delete                                                                                                                                                                                         |
 | `tabLocked`      | `boolean`                   | `false`    | **Tab resource.** Swap `+` button for a `lock` and route clicks to `tabLockClicked` instead of `tabAdd`.                                                                                                                                     |
 | `configLocked`   | `boolean`                   | `false`    | **Config resource.** Swap the save / new-config button for a `lock` and route clicks to `configLockClicked`. Load + per-config edit surface stay open so existing configs remain accessible. Also hides the per-tab "move to config" action. |
 
@@ -296,19 +295,26 @@ sequenceDiagram
     Panel->>Bar: (configSave) "My config"
     Bar->>S: saveTabConfig("My config")
     S->>S: push SavedTabConfig, set activeConfigId
-    Panel->>Panel: toast("Config saved")
+    Bar-->>Host: (configSave) "My config"
+    Host->>Host: toast.show(...) if desired
   end
 
   rect rgb(30, 40, 45)
     note right of U: Load (later)
     U->>Panel: click 📂 → toggleLoadMenu()
     U->>Panel: click a config row
-    Panel->>Bar: (configLoad) config
-    Bar->>S: applyTabConfig(config)
+    Panel->>Bar: (configLoad) configId
+    Bar->>S: loadTabConfig(configId)
     S->>S: replace tabs with config.tabs
-    Panel->>Panel: toast("Config applied")
+    Bar-->>Host: (configLoad) configId
+    Host->>Host: toast.show(...) if desired
   end
 ```
+
+The bar never triggers user-visible feedback itself — hosts listen to
+the mutation outputs (`configSave`, `configLoad`, `configDelete`,
+`configNew`) and decide whether/what to show. No binding = no feedback,
+so there's no kill-switch input to juggle.
 
 ### 5. Move active tab to another config
 
