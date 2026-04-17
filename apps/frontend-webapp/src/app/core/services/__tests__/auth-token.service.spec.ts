@@ -26,8 +26,8 @@ describe('AuthTokenService', () => {
     service.setToken(token);
 
     expect(service.getToken()).toBe(token);
-    expect(service.willExpireWithin(30)).toBeFalse();
-    expect(service.willExpireWithin(120)).toBeTrue();
+    expect(service.willExpireWithin(30)).toBe(false);
+    expect(service.willExpireWithin(120)).toBe(true);
   });
 
   it('prefers an explicit expiration when provided', () => {
@@ -36,14 +36,14 @@ describe('AuthTokenService', () => {
 
     service.setToken(createJwt(expFromJwt), explicitExp);
 
-    expect(service.willExpireWithin(10)).toBeTrue();
+    expect(service.willExpireWithin(10)).toBe(true);
   });
 
   it('returns false for invalid JWT payloads', () => {
     service.setToken('not-a-real-jwt');
 
     expect(service.getToken()).toBe('not-a-real-jwt');
-    expect(service.willExpireWithin()).toBeFalse();
+    expect(service.willExpireWithin()).toBe(false);
   });
 
   it('clears both token and expiration metadata', () => {
@@ -53,7 +53,7 @@ describe('AuthTokenService', () => {
     service.clear();
 
     expect(service.getToken()).toBeNull();
-    expect(service.willExpireWithin(10)).toBeFalse();
+    expect(service.willExpireWithin(10)).toBe(false);
   });
 
   it('resets expiration when setToken receives null', () => {
@@ -62,6 +62,6 @@ describe('AuthTokenService', () => {
     service.setToken(null);
 
     expect(service.getToken()).toBeNull();
-    expect(service.willExpireWithin(10)).toBeFalse();
+    expect(service.willExpireWithin(10)).toBe(false);
   });
 });

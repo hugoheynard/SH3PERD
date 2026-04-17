@@ -1,6 +1,9 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../auth.service';
@@ -12,22 +15,24 @@ import { ToastService } from '../../../shared/toast/toast.service';
 describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
-  let tokenService: jasmine.SpyObj<AuthTokenService>;
-  let userContext: jasmine.SpyObj<UserContextService>;
-  let router: jasmine.SpyObj<Router>;
+  let tokenService: jest.Mocked<AuthTokenService>;
+  let userContext: jest.Mocked<UserContextService>;
+  let router: jest.Mocked<Router>;
 
   const authUrl = 'http://localhost:3000/api/auth';
 
   beforeEach(() => {
-    tokenService = jasmine.createSpyObj<AuthTokenService>('AuthTokenService', [
-      'setToken',
-      'getToken',
-      'willExpireWithin',
-      'clear',
-    ]);
-    userContext = jasmine.createSpyObj<UserContextService>('UserContextService', ['getUser']);
-    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-    router.navigate.and.returnValue(Promise.resolve(true));
+    tokenService = {
+      setToken: jest.fn(),
+      getToken: jest.fn(),
+      willExpireWithin: jest.fn(),
+      clear: jest.fn(),
+    } as unknown as jest.Mocked<AuthTokenService>;
+    userContext = {
+      getUser: jest.fn(),
+    } as unknown as jest.Mocked<UserContextService>;
+    router = { navigate: jest.fn() } as unknown as jest.Mocked<Router>;
+    router.navigate.mockReturnValue(Promise.resolve(true));
 
     TestBed.configureTestingModule({
       providers: [
@@ -38,7 +43,7 @@ describe('AuthService', () => {
         { provide: UserContextService, useValue: userContext },
         { provide: Router, useValue: router },
         { provide: ScopedHttpClient, useValue: {} },
-        { provide: ToastService, useValue: { show: jasmine.createSpy('show') } },
+        { provide: ToastService, useValue: { show: jest.fn() } },
       ],
     });
 
@@ -57,20 +62,25 @@ describe('AuthService', () => {
   it('logs in successfully, stores the token and loads the user context', fakeAsync(() => {
     let result: boolean | undefined;
 
-    service.login$({ email: 'john@doe.com', password: 'secret' }).subscribe((value) => {
-      result = value;
-    });
+    service
+      .login$({ email: 'john@doe.com', password: 'secret' })
+      .subscribe((value) => {
+        result = value;
+      });
 
     const req = httpMock.expectOne(`${authUrl}/login`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.withCredentials).toBeTrue();
-    expect(req.request.body).toEqual({ email: 'john@doe.com', password: 'secret' });
+    expect(req.request.withCredentials).toBe(true);
+    expect(req.request.body).toEqual({
+      email: 'john@doe.com',
+      password: 'secret',
+    });
 
     req.flush({ authToken: 'token-123' });
     tick(200);
 
-    expect(result).toBeTrue();
-    expect(tokenService.setToken).toHaveBeenCalledOnceWith('token-123');
+    expect(result).toBe(true);
+    expect(tokenService.setToken).toHaveBeenCalledWith('token-123');
     expect(userContext.getUser).toHaveBeenCalled();
     expect(tokenService.clear).not.toHaveBeenCalled();
   }));
@@ -78,14 +88,16 @@ describe('AuthService', () => {
   it('returns false and clears auth state when the login response has no token', fakeAsync(() => {
     let result: boolean | undefined;
 
-    service.login$({ email: 'john@doe.com', password: 'secret' }).subscribe((value) => {
-      result = value;
-    });
+    service
+      .login$({ email: 'john@doe.com', password: 'secret' })
+      .subscribe((value) => {
+        result = value;
+      });
 
     httpMock.expectOne(`${authUrl}/login`).flush({});
     tick(200);
 
-    expect(result).toBeFalse();
+    expect(result).toBe(false);
     expect(tokenService.clear).toHaveBeenCalled();
     expect(userContext.getUser).not.toHaveBeenCalled();
   }));
@@ -93,23 +105,25 @@ describe('AuthService', () => {
   it('returns false and clears auth state when login fails', () => {
     let result: boolean | undefined;
 
-    service.login$({ email: 'john@doe.com', password: 'secret' }).subscribe((value) => {
-      result = value;
-    });
+    service
+      .login$({ email: 'john@doe.com', password: 'secret' })
+      .subscribe((value) => {
+        result = value;
+      });
 
     httpMock.expectOne(`${authUrl}/login`).flush('boom', {
       status: 401,
       statusText: 'Unauthorized',
     });
 
-    expect(result).toBeFalse();
+    expect(result).toBe(false);
     expect(tokenService.clear).toHaveBeenCalled();
   });
 
   it('reuses the same refresh request while one is already in flight', () => {
     const resultsA: Array<string | null> = [];
     const resultsB: Array<string | null> = [];
-    tokenService.getToken.and.returnValue('fresh-token');
+    tokenService.getToken.mockReturnValue('fresh-token');
 
     const refreshA$ = service.refreshSession$();
     const refreshB$ = service.refreshSession$();
@@ -121,18 +135,18 @@ describe('AuthService', () => {
 
     const req = httpMock.expectOne(`${authUrl}/refresh`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.withCredentials).toBeTrue();
+    expect(req.request.withCredentials).toBe(true);
 
     req.flush({ authToken: 'fresh-token' });
 
     expect(resultsA).toEqual(['fresh-token']);
     expect(resultsB).toEqual(['fresh-token']);
-    expect(tokenService.setToken).toHaveBeenCalledOnceWith('fresh-token');
+    expect(tokenService.setToken).toHaveBeenCalledWith('fresh-token');
     expect(userContext.getUser).toHaveBeenCalled();
   });
 
   it('clears auth state when refresh returns no token', async () => {
-    tokenService.getToken.and.returnValue(null);
+    tokenService.getToken.mockReturnValue(null);
 
     const refreshPromise = firstValueFrom(service.refreshSession$());
 
@@ -140,7 +154,7 @@ describe('AuthService', () => {
 
     await expect(refreshPromise).resolves.toBeNull();
     expect(tokenService.clear).toHaveBeenCalled();
-    expect(tokenService.setToken).toHaveBeenCalledOnceWith(null);
+    expect(tokenService.setToken).toHaveBeenCalledWith(null);
     expect(userContext.getUser).not.toHaveBeenCalled();
   });
 
@@ -163,12 +177,12 @@ describe('AuthService', () => {
 
     const req = httpMock.expectOne(`${authUrl}/logout`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.withCredentials).toBeTrue();
+    expect(req.request.withCredentials).toBe(true);
 
     req.flush({});
     tick();
 
-    expect(router.navigate).toHaveBeenCalledOnceWith(['/login']);
+    expect(router.navigate).toHaveBeenCalledWith(['/login']);
   }));
 
   it('still navigates to login when logout returns 404', fakeAsync(() => {
@@ -180,26 +194,30 @@ describe('AuthService', () => {
     });
     tick();
 
-    expect(router.navigate).toHaveBeenCalledOnceWith(['/login']);
+    expect(router.navigate).toHaveBeenCalledWith(['/login']);
   }));
 
   it('returns the current token when it is still valid', async () => {
-    tokenService.getToken.and.returnValue('cached-token');
-    tokenService.willExpireWithin.and.returnValue(false);
+    tokenService.getToken.mockReturnValue('cached-token');
+    tokenService.willExpireWithin.mockReturnValue(false);
 
-    await expect(firstValueFrom(service.getValidAccessToken$())).resolves.toBe('cached-token');
+    await expect(firstValueFrom(service.getValidAccessToken$())).resolves.toBe(
+      'cached-token',
+    );
 
     expect(tokenService.getToken).toHaveBeenCalled();
-    expect(tokenService.willExpireWithin).toHaveBeenCalledOnceWith(15);
+    expect(tokenService.willExpireWithin).toHaveBeenCalledWith(15);
     httpMock.expectNone(`${authUrl}/refresh`);
   });
 
   it('refreshes the session when the token is missing or expiring soon', async () => {
-    tokenService.getToken.and.returnValue(null);
+    tokenService.getToken.mockReturnValue(null);
 
     const tokenPromise = firstValueFrom(service.getValidAccessToken$());
 
-    httpMock.expectOne(`${authUrl}/refresh`).flush({ authToken: 'fresh-token' });
+    httpMock
+      .expectOne(`${authUrl}/refresh`)
+      .flush({ authToken: 'fresh-token' });
 
     await expect(tokenPromise).resolves.toBe('fresh-token');
   });
@@ -242,11 +260,15 @@ describe('AuthService', () => {
   });
 
   it('sends forgot-password requests and normalizes failures to false', async () => {
-    const successPromise = firstValueFrom(service.forgotPassword$('john@doe.com'));
+    const successPromise = firstValueFrom(
+      service.forgotPassword$('john@doe.com'),
+    );
     httpMock.expectOne(`${authUrl}/forgot-password`).flush({});
     await expect(successPromise).resolves.toBe(true);
 
-    const failurePromise = firstValueFrom(service.forgotPassword$('john@doe.com'));
+    const failurePromise = firstValueFrom(
+      service.forgotPassword$('john@doe.com'),
+    );
     httpMock.expectOne(`${authUrl}/forgot-password`).flush('nope', {
       status: 500,
       statusText: 'Server Error',
@@ -255,11 +277,15 @@ describe('AuthService', () => {
   });
 
   it('sends reset-password requests and normalizes failures to false', async () => {
-    const successPromise = firstValueFrom(service.resetPassword$('reset-token', 'new-secret'));
+    const successPromise = firstValueFrom(
+      service.resetPassword$('reset-token', 'new-secret'),
+    );
     httpMock.expectOne(`${authUrl}/reset-password`).flush({});
     await expect(successPromise).resolves.toBe(true);
 
-    const failurePromise = firstValueFrom(service.resetPassword$('reset-token', 'new-secret'));
+    const failurePromise = firstValueFrom(
+      service.resetPassword$('reset-token', 'new-secret'),
+    );
     httpMock.expectOne(`${authUrl}/reset-password`).flush('nope', {
       status: 400,
       statusText: 'Bad Request',
@@ -268,11 +294,13 @@ describe('AuthService', () => {
   });
 
   it('sends change-password requests with credentials', async () => {
-    const resultPromise = firstValueFrom(service.changePassword$('old-secret', 'new-secret'));
+    const resultPromise = firstValueFrom(
+      service.changePassword$('old-secret', 'new-secret'),
+    );
 
     const req = httpMock.expectOne(`${authUrl}/change-password`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.withCredentials).toBeTrue();
+    expect(req.request.withCredentials).toBe(true);
     req.flush({});
 
     await expect(resultPromise).resolves.toBe(true);
@@ -281,10 +309,12 @@ describe('AuthService', () => {
   it('propagates deactivate-account errors to the caller', async () => {
     const resultPromise = firstValueFrom(service.deactivateAccount$('secret'));
 
-    httpMock.expectOne(`${authUrl}/deactivate-account`).flush('wrong password', {
-      status: 400,
-      statusText: 'Bad Request',
-    });
+    httpMock
+      .expectOne(`${authUrl}/deactivate-account`)
+      .flush('wrong password', {
+        status: 400,
+        statusText: 'Bad Request',
+      });
 
     await expect(resultPromise).rejects.toBeTruthy();
   });
@@ -294,7 +324,7 @@ describe('AuthService', () => {
 
     const req = httpMock.expectOne(`${authUrl}/ping`);
     expect(req.request.method).toBe('GET');
-    expect(req.request.withCredentials).toBeTrue();
+    expect(req.request.withCredentials).toBe(true);
     req.flush(null);
 
     await expect(resultPromise).resolves.toBeNull();

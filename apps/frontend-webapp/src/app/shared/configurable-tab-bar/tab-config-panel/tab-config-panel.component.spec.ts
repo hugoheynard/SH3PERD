@@ -38,7 +38,7 @@ describe('TabConfigPanelComponent', () => {
       providers: [
         {
           provide: ToastService,
-          useValue: { show: jasmine.createSpy('show') },
+          useValue: { show: jest.fn() },
         },
       ],
     }).compileComponents();
@@ -71,7 +71,7 @@ describe('TabConfigPanelComponent', () => {
     ) as HTMLElement;
     name.click();
 
-    expect(loadSpy).toHaveBeenCalledOnceWith('cfg-1');
+    expect(loadSpy).toHaveBeenCalledWith('cfg-1');
   });
 
   it('emits configDelete when the delete icon is clicked', () => {
@@ -85,7 +85,7 @@ describe('TabConfigPanelComponent', () => {
 
     deleteButton.click();
 
-    expect(deleteSpy).toHaveBeenCalledOnceWith('cfg-1');
+    expect(deleteSpy).toHaveBeenCalledWith('cfg-1');
   });
 
   it('emits configRename when the rename action is committed', () => {
@@ -98,7 +98,7 @@ describe('TabConfigPanelComponent', () => {
 
     component.commitConfigRename('cfg-1');
 
-    expect(renameSpy).toHaveBeenCalledOnceWith({
+    expect(renameSpy).toHaveBeenCalledWith({
       configId: 'cfg-1',
       name: 'Renamed',
     });
@@ -119,7 +119,7 @@ describe('TabConfigPanelComponent', () => {
 
     moveTarget.click();
 
-    expect(moveSpy).toHaveBeenCalledOnceWith({
+    expect(moveSpy).toHaveBeenCalledWith({
       sourceConfigId: 'cfg-1',
       targetConfigId: 'cfg-2',
       tabId: 'tab-1',

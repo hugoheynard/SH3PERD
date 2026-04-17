@@ -8,15 +8,15 @@ import { of } from 'rxjs';
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  let authService: jasmine.SpyObj<AuthService>;
-  let toast: jasmine.SpyObj<ToastService>;
-  let router: jasmine.SpyObj<Router>;
+  let authService: jest.Mocked<AuthService>;
+  let toast: jest.Mocked<ToastService>;
+  let router: jest.Mocked<Router>;
 
   beforeEach(async () => {
-    authService = jasmine.createSpyObj<AuthService>('AuthService', ['login$']);
-    toast = jasmine.createSpyObj<ToastService>('ToastService', ['show']);
-    router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
-    router.navigateByUrl.and.returnValue(Promise.resolve(true));
+    authService = { login$: jest.fn() } as unknown as jest.Mocked<AuthService>;
+    toast = { show: jest.fn() } as unknown as jest.Mocked<ToastService>;
+    router = { navigateByUrl: jest.fn() } as unknown as jest.Mocked<Router>;
+    router.navigateByUrl.mockReturnValue(Promise.resolve(true));
 
     TestBed.overrideComponent(LoginComponent, {
       set: {
@@ -44,28 +44,31 @@ describe('LoginComponent', () => {
 
   it('updates the form validity state', () => {
     component.onValidityChange(true);
-    expect(component.isFormValid).toBeTrue();
+    expect(component.isFormValid).toBe(true);
 
     component.onValidityChange(false);
-    expect(component.isFormValid).toBeFalse();
+    expect(component.isFormValid).toBe(false);
   });
 
   it('shows an error toast when login fails', async () => {
-    authService.login$.and.returnValue(of(false));
+    authService.login$.mockReturnValue(of(false));
 
     await component.onLogin({ email: 'john@doe.com', password: 'secret' });
 
-    expect(authService.login$).toHaveBeenCalledWith({ email: 'john@doe.com', password: 'secret' });
+    expect(authService.login$).toHaveBeenCalledWith({
+      email: 'john@doe.com',
+      password: 'secret',
+    });
     expect(router.navigateByUrl).not.toHaveBeenCalled();
-    expect(toast.show).toHaveBeenCalledOnceWith('Login failed', 'error');
+    expect(toast.show).toHaveBeenCalledWith('Login failed', 'error');
   });
 
   it('navigates to the app and shows a success toast when login succeeds', async () => {
-    authService.login$.and.returnValue(of(true));
+    authService.login$.mockReturnValue(of(true));
 
     await component.onLogin({ email: 'john@doe.com', password: 'secret' });
 
-    expect(router.navigateByUrl).toHaveBeenCalledOnceWith('/app/program');
-    expect(toast.show).toHaveBeenCalledOnceWith('Welcome to SH3PHERD', 'success');
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/app/program');
+    expect(toast.show).toHaveBeenCalledWith('Welcome to SH3PHERD', 'success');
   });
 });

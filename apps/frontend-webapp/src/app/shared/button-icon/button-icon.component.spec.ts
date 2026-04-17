@@ -1,7 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ButtonIconComponent } from './button-icon.component';
 
-function create(props: Record<string, unknown>): { fixture: ComponentFixture<ButtonIconComponent>; component: ButtonIconComponent } {
+function create(props: Record<string, unknown>): {
+  fixture: ComponentFixture<ButtonIconComponent>;
+  component: ButtonIconComponent;
+} {
   const fixture = TestBed.createComponent(ButtonIconComponent);
   const ref = fixture.componentRef;
   for (const [k, v] of Object.entries(props)) ref.setInput(k, v);
@@ -23,7 +26,12 @@ describe('ButtonIconComponent', () => {
   });
 
   it('exposes shape/size/tone via data attributes for SCSS targeting', () => {
-    const { fixture } = create({ icon: 'edit', shape: 'round', size: 'lg', tone: 'accent' });
+    const { fixture } = create({
+      icon: 'edit',
+      shape: 'round',
+      size: 'lg',
+      tone: 'accent',
+    });
     const host = fixture.nativeElement as HTMLElement;
     expect(host.getAttribute('data-shape')).toBe('round');
     expect(host.getAttribute('data-size')).toBe('lg');
@@ -39,42 +47,50 @@ describe('ButtonIconComponent', () => {
 
   it('toggles the active model and emits clicked', () => {
     const { fixture, component } = create({ icon: 'eye' });
-    const spy = jasmine.createSpy('clicked');
+    const spy = jest.fn();
     component.clicked.subscribe(spy);
-    expect(component.active()).toBeFalse();
+    expect(component.active()).toBe(false);
 
     fixture.nativeElement.querySelector('button')!.click();
-    expect(component.active()).toBeTrue();
+    expect(component.active()).toBe(true);
     expect(spy).toHaveBeenCalled();
 
     fixture.nativeElement.querySelector('button')!.click();
-    expect(component.active()).toBeFalse();
+    expect(component.active()).toBe(false);
   });
 
   it('exposes active state via data-active + aria-pressed', () => {
     const { fixture, component } = create({ icon: 'eye', active: true });
     const host = fixture.nativeElement as HTMLElement;
     const btn = host.querySelector('button')!;
-    expect(host.hasAttribute('data-active')).toBeTrue();
+    expect(host.hasAttribute('data-active')).toBe(true);
     expect(btn.getAttribute('aria-pressed')).toBe('true');
     component.active.set(false);
     fixture.detectChanges();
-    expect(host.hasAttribute('data-active')).toBeFalse();
+    expect(host.hasAttribute('data-active')).toBe(false);
   });
 
   it('does not emit clicked when disabled', () => {
     const { fixture, component } = create({ icon: 'edit', disabled: true });
-    const spy = jasmine.createSpy('clicked');
+    const spy = jest.fn();
     component.clicked.subscribe(spy);
     fixture.nativeElement.querySelector('button')!.click();
     expect(spy).not.toHaveBeenCalled();
-    expect(component.active()).toBeFalse();
+    expect(component.active()).toBe(false);
   });
 
   it('maps button size to the icon size preset', () => {
-    expect(create({ icon: 'edit', size: 'xs' }).component.iconSize()).toBe('xs');
-    expect(create({ icon: 'edit', size: 'sm' }).component.iconSize()).toBe('sm');
-    expect(create({ icon: 'edit', size: 'md' }).component.iconSize()).toBe('sm');
-    expect(create({ icon: 'edit', size: 'lg' }).component.iconSize()).toBe('md');
+    expect(create({ icon: 'edit', size: 'xs' }).component.iconSize()).toBe(
+      'xs',
+    );
+    expect(create({ icon: 'edit', size: 'sm' }).component.iconSize()).toBe(
+      'sm',
+    );
+    expect(create({ icon: 'edit', size: 'md' }).component.iconSize()).toBe(
+      'sm',
+    );
+    expect(create({ icon: 'edit', size: 'lg' }).component.iconSize()).toBe(
+      'md',
+    );
   });
 });

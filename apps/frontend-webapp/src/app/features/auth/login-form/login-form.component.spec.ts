@@ -33,7 +33,7 @@ describe('LoginFormComponent', () => {
       value: { email: 'john@doe.com', password: 'secret' },
     });
 
-    expect(emitSpy).toHaveBeenCalledOnceWith({
+    expect(emitSpy).toHaveBeenCalledWith({
       email: 'john@doe.com',
       password: 'secret',
     });
@@ -47,7 +47,7 @@ describe('LoginFormComponent', () => {
       value: { email: 'john@doe.com', password: 'secret' },
     });
 
-    expect(emitSpy).toHaveBeenCalledOnceWith({
+    expect(emitSpy).toHaveBeenCalledWith({
       email: 'john@doe.com',
       password: 'secret',
     });

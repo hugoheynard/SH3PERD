@@ -9,7 +9,9 @@ import type { TPlayableTrack } from './audio-player.types';
  * Helper — build a minimal TAudioAnalysisSnapshot with sensible defaults
  * so each test can override only the fields that matter.
  */
-function snapshot(overrides: Partial<TAudioAnalysisSnapshot> = {}): TAudioAnalysisSnapshot {
+function snapshot(
+  overrides: Partial<TAudioAnalysisSnapshot> = {},
+): TAudioAnalysisSnapshot {
   return {
     integratedLUFS: -14,
     loudnessRange: 5,
@@ -31,7 +33,10 @@ function snapshot(overrides: Partial<TAudioAnalysisSnapshot> = {}): TAudioAnalys
  * Helper — build a minimal TPlayableTrack just rich enough to feed the
  * service. Only `analysis`, `peaks` and `durationSeconds` are consumed.
  */
-function track(analysis: TAudioAnalysisSnapshot | undefined, peaks?: Float32Array): TPlayableTrack {
+function track(
+  analysis: TAudioAnalysisSnapshot | undefined,
+  peaks?: Float32Array,
+): TPlayableTrack {
   return {
     id: 't1',
     fileName: 'song.wav',
@@ -62,7 +67,9 @@ describe('AudioMarkerService', () => {
       ],
     });
     service = TestBed.inject(AudioMarkerService);
-    player = TestBed.inject(AudioPlayerService) as unknown as AudioPlayerServiceStub;
+    player = TestBed.inject(
+      AudioPlayerService,
+    ) as unknown as AudioPlayerServiceStub;
   });
 
   describe('no input', () => {
@@ -85,7 +92,7 @@ describe('AudioMarkerService', () => {
     it('emits a full-width clipping stripe above ratio threshold', () => {
       player.currentTrack.set(track(snapshot({ clippingRatio: 0.02 })));
       const markers = service.markers();
-      const clip = markers.find(m => m.kind === 'clipping')!;
+      const clip = markers.find((m) => m.kind === 'clipping')!;
       expect(clip).toBeDefined();
       expect(clip.leftPct).toBe(0);
       expect(clip.widthPct).toBe(100);
@@ -94,17 +101,19 @@ describe('AudioMarkerService', () => {
 
     it('does not emit a clipping marker when the ratio is negligible', () => {
       player.currentTrack.set(track(snapshot({ clippingRatio: 0.0005 })));
-      expect(service.markers().filter(m => m.kind === 'clipping')).toEqual([]);
+      expect(service.markers().filter((m) => m.kind === 'clipping')).toEqual(
+        [],
+      );
     });
 
     it('emits a loudest-window marker when dynamic range is high', () => {
       player.currentTrack.set(track(snapshot({ loudnessRange: 10 })));
-      expect(service.markers().some(m => m.kind === 'loudest')).toBeTrue();
+      expect(service.markers().some((m) => m.kind === 'loudest')).toBe(true);
     });
 
     it('does not emit a loudest marker for a narrow dynamic range', () => {
       player.currentTrack.set(track(snapshot({ loudnessRange: 3 })));
-      expect(service.markers().some(m => m.kind === 'loudest')).toBeFalse();
+      expect(service.markers().some((m) => m.kind === 'loudest')).toBe(false);
     });
   });
 
@@ -113,7 +122,12 @@ describe('AudioMarkerService', () => {
      * Build a peaks array where a contiguous region [start, end) exceeds
      * the clip threshold (0.98). All other buckets sit at 0.2 (safe).
      */
-    function peaksWithClipRegion(length: number, start: number, end: number, amp = 0.99): Float32Array {
+    function peaksWithClipRegion(
+      length: number,
+      start: number,
+      end: number,
+      amp = 0.99,
+    ): Float32Array {
       const arr = new Float32Array(length).fill(0.2);
       for (let i = start; i < end; i++) arr[i] = amp;
       return arr;
@@ -125,7 +139,9 @@ describe('AudioMarkerService', () => {
       const peaks = peaksWithClipRegion(200, 80, 100);
       player.currentTrack.set(track(snapshot(), peaks));
 
-      const clipMarkers = service.markers().filter(m => m.kind === 'clipping');
+      const clipMarkers = service
+        .markers()
+        .filter((m) => m.kind === 'clipping');
       expect(clipMarkers.length).toBe(1);
       expect(clipMarkers[0].leftPct).toBeCloseTo(40, 1); // 80/200 * 100
       expect(clipMarkers[0].widthPct).toBeCloseTo(10, 1); // (100-80)/200 * 100
@@ -139,7 +155,9 @@ describe('AudioMarkerService', () => {
       for (let i = 180; i < 200; i++) peaks[i] = 0.99;
       player.currentTrack.set(track(snapshot(), peaks));
 
-      const clipMarkers = service.markers().filter(m => m.kind === 'clipping');
+      const clipMarkers = service
+        .markers()
+        .filter((m) => m.kind === 'clipping');
       expect(clipMarkers.length).toBe(2);
     });
 
@@ -149,7 +167,9 @@ describe('AudioMarkerService', () => {
       peaks[42] = 0.99;
       player.currentTrack.set(track(snapshot(), peaks));
 
-      expect(service.markers().filter(m => m.kind === 'clipping')).toEqual([]);
+      expect(service.markers().filter((m) => m.kind === 'clipping')).toEqual(
+        [],
+      );
     });
 
     it('locates the loudest window via sliding RMS', () => {
@@ -158,7 +178,7 @@ describe('AudioMarkerService', () => {
       for (let i = 100; i < 110; i++) peaks[i] = 0.95;
       player.currentTrack.set(track(snapshot({ loudnessRange: 8 }), peaks));
 
-      const loudest = service.markers().find(m => m.kind === 'loudest')!;
+      const loudest = service.markers().find((m) => m.kind === 'loudest')!;
       expect(loudest).toBeDefined();
       // Window size = max(10, 5% of 200) = 10. Best start should land
       // around bucket 100 (where the burst begins).
@@ -171,7 +191,7 @@ describe('AudioMarkerService', () => {
       for (let i = 100; i < 110; i++) peaks[i] = 0.95;
       player.currentTrack.set(track(snapshot({ loudnessRange: 2 }), peaks));
 
-      expect(service.markers().some(m => m.kind === 'loudest')).toBeFalse();
+      expect(service.markers().some((m) => m.kind === 'loudest')).toBe(false);
     });
 
     it('handles an empty peaks array gracefully', () => {
@@ -186,10 +206,10 @@ describe('AudioMarkerService', () => {
   describe('reactive recomputation', () => {
     it('re-derives markers when the current track changes', () => {
       player.currentTrack.set(track(snapshot({ clippingRatio: 0.02 })));
-      expect(service.markers().some(m => m.kind === 'clipping')).toBeTrue();
+      expect(service.markers().some((m) => m.kind === 'clipping')).toBe(true);
 
       player.currentTrack.set(track(snapshot({ clippingRatio: 0 })));
-      expect(service.markers().some(m => m.kind === 'clipping')).toBeFalse();
+      expect(service.markers().some((m) => m.kind === 'clipping')).toBe(false);
     });
   });
 });

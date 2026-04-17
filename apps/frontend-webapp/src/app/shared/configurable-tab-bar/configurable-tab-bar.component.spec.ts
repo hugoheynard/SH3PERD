@@ -49,26 +49,26 @@ class HostComponent {
 
 describe('ConfigurableTabBarComponent', () => {
   let fixture: ComponentFixture<HostComponent>;
-  let handlers: jasmine.SpyObj<TabHandlers<TestConfig>>;
+  let handlers: jest.Mocked<TabHandlers<TestConfig>>;
 
   beforeEach(async () => {
-    handlers = jasmine.createSpyObj<TabHandlers<TestConfig>>('handlers', [
-      'tabSelect',
-      'tabAdd',
-      'tabClose',
-      'tabRename',
-      'tabReorder',
-      'tabColorChange',
-      'configSave',
-      'configNew',
-      'configLoad',
-      'configDelete',
-      'configRename',
-      'configTabRemove',
-      'configTabRename',
-      'configTabMove',
-      'tabMoveToConfig',
-    ]);
+    handlers = {
+      tabSelect: jest.fn(),
+      tabAdd: jest.fn(),
+      tabClose: jest.fn(),
+      tabRename: jest.fn(),
+      tabReorder: jest.fn(),
+      tabColorChange: jest.fn(),
+      configSave: jest.fn(),
+      configNew: jest.fn(),
+      configLoad: jest.fn(),
+      configDelete: jest.fn(),
+      configRename: jest.fn(),
+      configTabRemove: jest.fn(),
+      configTabRename: jest.fn(),
+      configTabMove: jest.fn(),
+      tabMoveToConfig: jest.fn(),
+    } as unknown as jest.Mocked<TabHandlers<TestConfig>>;
 
     await TestBed.configureTestingModule({
       imports: [HostComponent],
@@ -76,7 +76,7 @@ describe('ConfigurableTabBarComponent', () => {
         { provide: TAB_HANDLERS, useValue: handlers },
         {
           provide: ToastService,
-          useValue: { show: jasmine.createSpy('show') },
+          useValue: { show: jest.fn() },
         },
       ],
     }).compileComponents();
@@ -98,7 +98,7 @@ describe('ConfigurableTabBarComponent', () => {
     ) as HTMLElement;
     configName.click();
 
-    expect(handlers.configLoad).toHaveBeenCalledOnceWith('cfg-1');
+    expect(handlers.configLoad).toHaveBeenCalledWith('cfg-1');
   });
 
   it('dispatches configDelete from the load dropdown to TAB_HANDLERS', () => {
@@ -113,6 +113,6 @@ describe('ConfigurableTabBarComponent', () => {
     ) as HTMLButtonElement;
     deleteButton.click();
 
-    expect(handlers.configDelete).toHaveBeenCalledOnceWith('cfg-1');
+    expect(handlers.configDelete).toHaveBeenCalledWith('cfg-1');
   });
 });

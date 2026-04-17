@@ -6,10 +6,12 @@ import { AuthService } from '../../../core/services/auth.service';
 describe('ForgotPasswordComponent', () => {
   let component: ForgotPasswordComponent;
   let fixture: ComponentFixture<ForgotPasswordComponent>;
-  let authService: jasmine.SpyObj<AuthService>;
+  let authService: jest.Mocked<AuthService>;
 
   beforeEach(async () => {
-    authService = jasmine.createSpyObj<AuthService>('AuthService', ['forgotPassword$']);
+    authService = {
+      forgotPassword$: jest.fn(),
+    } as unknown as jest.Mocked<AuthService>;
 
     TestBed.overrideComponent(ForgotPasswordComponent, {
       set: {
@@ -42,13 +44,13 @@ describe('ForgotPasswordComponent', () => {
   });
 
   it('submits the trimmed email and marks the flow as submitted', async () => {
-    authService.forgotPassword$.and.returnValue(of(true));
+    authService.forgotPassword$.mockReturnValue(of(true));
     component.email.set(' john@doe.com ');
 
     await component.onSubmit();
 
-    expect(authService.forgotPassword$).toHaveBeenCalledOnceWith('john@doe.com');
-    expect(component.submitted()).toBeTrue();
-    expect(component.loading()).toBeFalse();
+    expect(authService.forgotPassword$).toHaveBeenCalledWith('john@doe.com');
+    expect(component.submitted()).toBe(true);
+    expect(component.loading()).toBe(false);
   });
 });

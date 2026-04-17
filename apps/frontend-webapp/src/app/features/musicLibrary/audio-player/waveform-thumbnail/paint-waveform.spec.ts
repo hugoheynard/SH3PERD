@@ -11,8 +11,12 @@ function fakeCanvas(width = 60, height = 20) {
     scale: (...args: unknown[]) => calls.push({ fn: 'scale', args }),
     clearRect: (...args: unknown[]) => calls.push({ fn: 'clearRect', args }),
     fillRect: (...args: unknown[]) => calls.push({ fn: 'fillRect', args }),
-    set fillStyle(v: string) { calls.push({ fn: 'fillStyle', args: [v] }); },
-    get fillStyle() { return ''; },
+    set fillStyle(v: string) {
+      calls.push({ fn: 'fillStyle', args: [v] });
+    },
+    get fillStyle() {
+      return '';
+    },
   };
   const canvas = {
     width: 0,
@@ -27,7 +31,10 @@ function fakeCanvas(width = 60, height = 20) {
 describe('paintWaveform', () => {
   beforeEach(() => {
     // Ensure devicePixelRatio is deterministic across CI environments.
-    Object.defineProperty(window, 'devicePixelRatio', { value: 2, configurable: true });
+    Object.defineProperty(window, 'devicePixelRatio', {
+      value: 2,
+      configurable: true,
+    });
   });
 
   it('scales the backing store by devicePixelRatio', () => {
@@ -38,7 +45,9 @@ describe('paintWaveform', () => {
     });
     expect(canvas.width).toBe(120);
     expect(canvas.height).toBe(40);
-    expect(calls.some(c => c.fn === 'scale' && c.args[0] === 2 && c.args[1] === 2)).toBeTrue();
+    expect(
+      calls.some((c) => c.fn === 'scale' && c.args[0] === 2 && c.args[1] === 2),
+    ).toBe(true);
   });
 
   it('does nothing when clientWidth or clientHeight is 0', () => {
@@ -58,11 +67,12 @@ describe('paintWaveform', () => {
     });
     // clearRect is always called; fillRect is called per bar — but no
     // full-surface fillRect covering the whole canvas as a background.
-    const firstFill = calls.find(c => c.fn === 'fillRect');
+    const firstFill = calls.find((c) => c.fn === 'fillRect');
     expect(firstFill).toBeDefined();
     // A background fill would span the full (cssW, cssH).
-    const isFullSurface = firstFill?.args[2] === 60 && firstFill?.args[3] === 20;
-    expect(isFullSurface).toBeFalse();
+    const isFullSurface =
+      firstFill?.args[2] === 60 && firstFill?.args[3] === 20;
+    expect(isFullSurface).toBe(false);
   });
 
   it('fills the background first when bgColor is opaque', () => {
@@ -71,7 +81,7 @@ describe('paintWaveform', () => {
       accentColor: '#06a4a4',
       bgColor: '#000',
     });
-    const firstFill = calls.find(c => c.fn === 'fillRect')!;
+    const firstFill = calls.find((c) => c.fn === 'fillRect')!;
     expect(firstFill.args).toEqual([0, 0, 60, 20]);
   });
 
@@ -81,7 +91,7 @@ describe('paintWaveform', () => {
       accentColor: '#06a4a4',
       bgColor: 'transparent',
     });
-    const bars = calls.filter(c => c.fn === 'fillRect');
+    const bars = calls.filter((c) => c.fn === 'fillRect');
     expect(bars.length).toBe(10);
   });
 
@@ -91,7 +101,7 @@ describe('paintWaveform', () => {
       accentColor: '#06a4a4',
       bgColor: 'transparent',
     });
-    const bars = calls.filter(c => c.fn === 'fillRect');
+    const bars = calls.filter((c) => c.fn === 'fillRect');
     // barH = Math.max(1, 0 * ...) → at least 1 px per bar → height = 2
     for (const b of bars) expect(b.args[3]).toBeGreaterThan(0);
   });

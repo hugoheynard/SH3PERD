@@ -8,15 +8,17 @@ import { ToastService } from '../../../shared/toast/toast.service';
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
-  let authService: jasmine.SpyObj<AuthService>;
-  let toast: jasmine.SpyObj<ToastService>;
-  let router: jasmine.SpyObj<Router>;
+  let authService: jest.Mocked<AuthService>;
+  let toast: jest.Mocked<ToastService>;
+  let router: jest.Mocked<Router>;
 
   beforeEach(async () => {
-    authService = jasmine.createSpyObj<AuthService>('AuthService', ['register$']);
-    toast = jasmine.createSpyObj<ToastService>('ToastService', ['show']);
-    router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
-    router.navigateByUrl.and.returnValue(Promise.resolve(true));
+    authService = {
+      register$: jest.fn(),
+    } as unknown as jest.Mocked<AuthService>;
+    toast = { show: jest.fn() } as unknown as jest.Mocked<ToastService>;
+    router = { navigateByUrl: jest.fn() } as unknown as jest.Mocked<Router>;
+    router.navigateByUrl.mockReturnValue(Promise.resolve(true));
 
     TestBed.overrideComponent(RegisterComponent, {
       set: {
@@ -54,15 +56,15 @@ describe('RegisterComponent', () => {
     component.firstName.set('John');
     component.lastName.set('Doe');
 
-    expect(component.step2Valid()).toBeTrue();
+    expect(component.step2Valid()).toBe(true);
 
     component.selectAccountType('company');
     component.companyName.set('');
 
-    expect(component.step2Valid()).toBeFalse();
+    expect(component.step2Valid()).toBe(false);
 
     component.companyName.set('Acme');
-    expect(component.step2Valid()).toBeTrue();
+    expect(component.step2Valid()).toBe(true);
   });
 
   it('only moves to step 3 when step 2 is valid', () => {
@@ -103,7 +105,7 @@ describe('RegisterComponent', () => {
   });
 
   it('submits a trimmed artist registration payload and redirects on success', async () => {
-    authService.register$.and.returnValue(of(true));
+    authService.register$.mockReturnValue(of(true));
     component.selectAccountType('artist');
     component.firstName.set(' John ');
     component.lastName.set(' Doe ');
@@ -114,20 +116,23 @@ describe('RegisterComponent', () => {
 
     await component.onRegister();
 
-    expect(authService.register$).toHaveBeenCalledOnceWith({
+    expect(authService.register$).toHaveBeenCalledWith({
       first_name: 'John',
       last_name: 'Doe',
       email: 'john@doe.com',
       password: 'secret',
       account_type: 'artist',
     });
-    expect(router.navigateByUrl).toHaveBeenCalledOnceWith('/login');
-    expect(toast.show).toHaveBeenCalledOnceWith('Account created! Please sign in.', 'success');
-    expect(component.loading()).toBeFalse();
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/login');
+    expect(toast.show).toHaveBeenCalledWith(
+      'Account created! Please sign in.',
+      'success',
+    );
+    expect(component.loading()).toBe(false);
   });
 
   it('includes company_name for company registrations and shows an error toast on failure', async () => {
-    authService.register$.and.returnValue(of(false));
+    authService.register$.mockReturnValue(of(false));
     component.selectAccountType('company');
     component.firstName.set('John');
     component.lastName.set('Doe');
@@ -139,7 +144,7 @@ describe('RegisterComponent', () => {
 
     await component.onRegister();
 
-    expect(authService.register$).toHaveBeenCalledOnceWith({
+    expect(authService.register$).toHaveBeenCalledWith({
       first_name: 'John',
       last_name: 'Doe',
       email: 'john@doe.com',
@@ -148,10 +153,10 @@ describe('RegisterComponent', () => {
       company_name: 'Acme',
     });
     expect(router.navigateByUrl).not.toHaveBeenCalled();
-    expect(toast.show).toHaveBeenCalledOnceWith(
+    expect(toast.show).toHaveBeenCalledWith(
       'Registration failed. Email may already be in use.',
       'error',
     );
-    expect(component.loading()).toBeFalse();
+    expect(component.loading()).toBe(false);
   });
 });

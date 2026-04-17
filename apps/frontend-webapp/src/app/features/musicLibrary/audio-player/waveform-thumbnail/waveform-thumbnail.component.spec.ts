@@ -11,7 +11,9 @@ describe('WaveformThumbnailComponent', () => {
   it('renders a canvas host', () => {
     const fixture = TestBed.createComponent(WaveformThumbnailComponent);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('canvas.waveform-thumb')).toBeTruthy();
+    expect(
+      fixture.nativeElement.querySelector('canvas.waveform-thumb'),
+    ).toBeTruthy();
   });
 
   it('is a no-op when peaks are empty — no exception, canvas not resized', () => {
@@ -20,6 +22,6 @@ describe('WaveformThumbnailComponent', () => {
     fixture.detectChanges();
     // No assertion on output — paint() early-returns. This test guards
     // the effect against crashing on a pristine empty input.
-    expect(true).toBeTrue();
+    expect(true).toBe(true);
   });
 });
