@@ -1,30 +1,37 @@
 # SH3PHERD — E2E Test Infrastructure
 
 End-to-end test framework for the NestJS backend. Tests run against
-an **in-memory MongoDB** (via `mongodb-memory-server`) and exercise the
-full HTTP stack (guards, pipes, interceptors, filters, database) via
-`supertest`. No external MongoDB installation required.
+an **in-memory MongoDB replica set** (via `mongodb-memory-server`'s
+`MongoMemoryReplSet`, single node — transactions require a replset)
+and exercise the full HTTP stack (guards, pipes, interceptors,
+filters, database) via `supertest`. No external MongoDB installation,
+no `.env.*`, and no RSA keys on disk required — the jest globalSetup
+boots the DB, seeds the env, and generates throwaway keys itself.
 
 ---
 
 ## Quick start
 
 ```bash
-cd apps/backend
+# Run the full backend suite (unit + E2E). The script pins
+# NODE_ENV=test, --runInBand, and --forceExit — just invoke it.
+pnpm --filter @sh3pherd/backend test
 
-# Run all E2E tests (MongoDB starts automatically in-memory):
-NODE_ENV=test npx jest --config jest.config.cjs "src/E2E/" --runInBand --forceExit
+# Run only the E2E suites:
+pnpm --filter @sh3pherd/backend test src/E2E/
 
-# Run auth tests only:
-NODE_ENV=test npx jest --config jest.config.cjs "src/E2E/auth" --runInBand --forceExit
+# Run only auth E2E:
+pnpm --filter @sh3pherd/backend test src/E2E/auth
 
 # Run with verbose output:
-NODE_ENV=test npx jest --config jest.config.cjs "src/E2E/" --runInBand --forceExit --verbose
+pnpm --filter @sh3pherd/backend test --verbose
 ```
 
 **No prerequisites** — `mongodb-memory-server` downloads and runs a
-MongoDB binary automatically on first run. The audio processor on
-`:3001` is only needed for music processing tests (master, pitch-shift).
+MongoDB binary automatically on first run. No MongoDB installation,
+no `.env.app`, no `keys/*.pem` needed; the jest globalSetup seeds
+everything (see "Env seeding" below). The audio processor on `:3001`
+is only needed for music processing tests (master, pitch-shift).
 
 ---
 
@@ -34,37 +41,115 @@ MongoDB binary automatically on first run. The audio processor on
 
 ```
 jest.config.cjs
-  ├── globalSetup:    src/E2E/global-setup.ts   → starts MongoMemoryServer
-  ├── globalTeardown: src/E2E/global-teardown.ts → stops MongoMemoryServer
-  └── maxWorkers: 1                             → serial runner (shared DB)
+  ├── globalSetup:    src/E2E/global-setup.ts   → starts MongoMemoryReplSet
+  └── globalTeardown: src/E2E/global-teardown.ts → stops it
+package.json "test"    → NODE_ENV=test jest --runInBand --forceExit
 ```
 
-1. `global-setup.ts` starts a `MongoMemoryServer` on a random port
-2. Writes the URI to `.e2e-mongo-uri` (temp file, gitignored)
-3. `bootstrap.ts` reads the URI and passes it to the NestJS app
-4. After all tests, `global-teardown.ts` stops the server
+1. `global-setup.ts` starts a **single-node `MongoMemoryReplSet`** on a
+   random port, seeds every env var the app needs at module-load time,
+   and generates throwaway RSA keys on disk.
+2. Writes the URI to `.e2e-mongo-uri` (temp file, gitignored).
+3. `bootstrap.ts` reads the URI and passes it to the NestJS app.
+4. After all tests, `global-teardown.ts` stops the replset and deletes
+   the temp file.
 
-> **Hard rule — no real-database fallback.** If `.e2e-mongo-uri` is
-> missing or empty, `bootstrap.ts` **throws** rather than falling back
-> to whatever `ATLAS_URI` happens to be set in the shell. E2E tests
-> perform destructive operations (`resetAllCollections()`, raw inserts
-> via factories, soft-delete/flush helpers) — pointing them at a real
-> staging or production database by accident would wipe it. The old
-> fallback made that one missing temp file away; it has been removed.
->
-> If you genuinely want integration tests against a real MongoDB,
-> write them in a separate suite with its own bootstrap that takes the
-> URI as an explicit constructor argument, never from ambient env.
+#### Hard rule — no real-database fallback
 
-### Serial execution (`maxWorkers: 1`)
+If `.e2e-mongo-uri` is missing or empty, `bootstrap.ts` **throws**
+rather than falling back to whatever `ATLAS_URI` happens to be set in
+the shell. E2E tests perform destructive operations
+(`resetAllCollections()`, raw inserts via factories,
+soft-delete/flush helpers) — pointing them at a real staging or
+production database by accident would wipe it. The committed
+`.env.app` even points at prod Atlas on at least one developer's
+machine, so a single missing temp file would have been a disaster.
+The old fallback is gone; the bootstrap throws with a clear message.
+
+If you genuinely want integration tests against a real MongoDB, write
+them in a separate suite with its own bootstrap that takes the URI as
+an explicit constructor argument, never from ambient env.
+
+#### Why `MongoMemoryReplSet` (not `MongoMemoryServer`)
+
+`RegisterUserHandler` and several other commands wrap their inserts in
+`session.withTransaction()`. MongoDB refuses that on a standalone
+instance with:
+
+```
+MongoServerError: Transaction numbers are only allowed on a
+replica set member or mongos
+```
+
+A cached MongoDB binary on a developer laptop sometimes happened to
+cover for this; CI runners boot clean and it always failed. The
+single-node replset advertises the `setName` / `primary` capability
+transactions need, at the cost of one extra init step (~2 s). There's
+no real replication, but there doesn't need to be.
+
+#### Env seeding so CI doesn't need `.env.app`
+
+`.env.app`, `.env.test`, and `keys/{private,public}.pem` are all
+gitignored and therefore absent on every fresh CI runner. Instead of
+checking in secrets, `global-setup.ts`:
+
+- Sets safe defaults for every var the app checks at module-load time
+  (`PORT`, `TOKEN_KEY`, `AUTH_TOKEN_TTL_MS`, `REFRESH_TOKEN_TTL_MS`,
+  `COOKIE_*`, `FRONTEND_URL`) via a `setDefault()` helper that never
+  overrides values the environment has already provided. Local dev
+  setups with a real `.env.app` keep working.
+- Generates an ephemeral RSA 2048 key-pair with `node:crypto` and
+  writes it to `keys/{private,public}.pem` if either file is missing.
+  Regenerated every fresh run, never shared, only used to sign test
+  JWTs — the path is gitignored so nothing leaks into commits.
+
+`loadEnv()` was relaxed in parallel: when `envName === 'test'` it
+logs and continues past missing `.env.*` files instead of throwing.
+Dev / prod modes keep the strict behaviour — a missing `.env` there
+is still a hard error. The required-var validation at the end of
+`loadEnv` stays, so any misconfigured CI that forgot to seed
+`ATLAS_URI` / `CORE_DB_NAME` / `PORT` fails loudly.
+
+### Serial execution via `--runInBand`
 
 Every spec in the backend — unit and E2E — runs through the single
-MongoMemoryServer that globalSetup boots. Parallel jest workers share
-that instance, so two E2E suites running at once race on
+MongoMemoryReplSet that globalSetup boots. Parallel jest workers
+share that instance, so two E2E suites running at once race on
 `resetAllCollections()` between tests and the later one sees the
-earlier one's writes. The config pins `maxWorkers: 1` to make
-execution deterministic. Unit-test throughput is effectively
-unchanged at this codebase size.
+earlier one's writes.
+
+The `test` script pins `--runInBand` (everything runs in the main
+process, no workers). `maxWorkers: 1` in the jest config is **not**
+equivalent — jest still spawns one worker child, and the env-var
+hand-off to that worker is just enough out of sync with globalSetup
+on cold runs to produce sporadic `workspace.e2e-spec.ts` failures.
+Stick with `--runInBand`.
+
+The `NODE_ENV=test` prefix on the script is load-bearing too: the
+`ThrottlerModule` in `app.module.ts` reads it at module-load time to
+bump the per-endpoint limit from 30/min to 10 000/min. Setting it
+later inside `bootstrapE2E` is already past the window where it
+matters.
+
+#### CI pitfall: `pnpm test -- --flag`
+
+pnpm 10 forwards the literal `--` to the underlying script, so
+
+    pnpm --filter frontend-webapp test -- --ci --runInBand
+
+becomes
+
+    jest --config ... -- --ci --runInBand
+
+and to jest, `--` means "stop parsing options, treat the rest as
+positional file-pattern args". Jest then matches the strings
+`--ci` and `--runInBand` against test paths, finds zero tests, and
+**exits 0 or 1 with no tests run**. Frontend CI was silently
+not-running for commits before 613f0812 for this reason.
+
+Drop the `--` — pass jest flags directly:
+
+    pnpm --filter frontend-webapp test --ci --runInBand
 
 ### Throttler bypass
 
@@ -305,32 +390,45 @@ expect(res.body).toMatchObject({
 
 ## Running in CI
 
+The backend's `test` script is already fully self-contained:
+
 ```yaml
-# GitHub Actions example
-e2e-tests:
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with: { node-version: '22' }
-    - run: corepack enable pnpm && pnpm install
-    - run: cd apps/backend && NODE_ENV=test npx jest --config jest.config.cjs "src/E2E/" --runInBand --forceExit
+- name: Unit tests
+  run: pnpm --filter @sh3pherd/backend test
 ```
 
-No MongoDB service container needed — `mongodb-memory-server` handles
-everything. The only external dependency is the audio-processor
-microservice for processing tests (not needed for auth/workspace).
+That expands to `NODE_ENV=test jest --runInBand --forceExit`. CI does
+NOT need:
+
+- a MongoDB service container (`mongodb-memory-server` downloads and
+  runs a binary on first invocation, cached thereafter),
+- a committed `.env.app` / `.env.test` (globalSetup seeds defaults),
+- committed `keys/{private,public}.pem` (globalSetup generates them),
+- any Atlas URI / production credentials in secrets.
+
+The only external dependency is the audio-processor microservice on
+`:3001`, and it's only needed for music processing tests (master /
+pitch-shift) — not for auth / workspace / music CRUD.
+
+### Do not add `--` before jest flags
+
+See the "CI pitfall" section above. `pnpm --filter @sh3pherd/backend
+test -- --anything` silently breaks jest's option parser on pnpm 10.
+Pass jest flags to the script directly, or add them to the `test`
+script in `package.json`.
 
 ---
 
 ## Key design decisions
 
-### Why `--runInBand`?
+### Why `--runInBand` (not `maxWorkers: 1`)?
 
-All E2E suites share the same in-memory MongoDB. Running them in
-parallel causes data collisions. `--runInBand` serialises execution.
-For parallel E2E, each suite would need its own DB name — possible
-but not worth the complexity at this scale.
+Covered in detail in "Serial execution" above. Short version:
+`maxWorkers: 1` still spawns a worker child, and the env-var
+hand-off to that child races globalSetup on cold runs. `--runInBand`
+runs in the main process with no workers. We saw sporadic
+`workspace.e2e-spec.ts` failures with `maxWorkers: 1` that went
+away once the `test` script moved to `--runInBand`.
 
 ### Why `--forceExit`?
 
@@ -345,6 +443,37 @@ prevents the test runner from hanging.
 via `APP_GUARD` multi-providers or per-endpoint `@Throttle()` decorator
 overrides. The prototype patch after `app.init()` is the only approach
 that reliably disables all throttle checks.
+
+### Why we delete `ng generate` / `nest g` stub specs on sight
+
+The big CI unblocking pass in April 2026 removed **71** spec files
+whose entire body was a single `expect(x).toBeTruthy()` or
+`expect(controller).toBeDefined()` over a freshly-injected service
+or scaffolded component. Every one came straight from the Angular /
+Nest CLI template, none had been updated since, and many referenced
+class names that had been renamed months earlier
+(`RoomLayoutDirectiveDirective`, `PlannerDnDInitService`,
+`SlotPreviewComponent`, …).
+
+Policy going forward:
+
+- **Do not commit the auto-generated stub** when you run
+  `nest g controller foo` or `ng generate component bar`. Delete the
+  `*.spec.ts` the CLI drops in, or immediately replace its body with
+  a meaningful assertion. A placeholder that only checks
+  "the thing can be constructed when every dep is mocked" is worse
+  than no test — it shows up in coverage reports, inflates suite
+  time, and silently breaks when the constructor gains a dep.
+- **Prefer E2E coverage for controllers.** `auth.e2e-spec.ts` and
+  `workspace.e2e-spec.ts` already exercise the controllers through
+  real HTTP + guards + validation pipes + Mongo, which is the
+  coverage that matters. Per-controller `should be defined` stubs
+  duplicate nothing and stop compiling every time a new guard
+  token gets added.
+- **Prefer handler specs for CQRS logic.** Where you need tight
+  coverage of a command or query, write a colocated
+  `__tests__/XxxHandler.spec.ts` that mocks the repos directly,
+  instead of a controller stub.
 
 ### Why factories sign their own JWTs?
 
