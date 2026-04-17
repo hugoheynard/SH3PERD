@@ -56,6 +56,53 @@ describe('RefreshSessionHandler', () => {
     });
   });
 
+  /* ── Lookup contract: findOne must hash before querying ──
+   * Storing raw refresh tokens in Mongo would let a DB leak cascade
+   * into active sessions. The handler's lookup must therefore hash the
+   * cookie value BEFORE the repo query — if someone regresses this
+   * (e.g. copies the raw value into the filter), the DB is queried
+   * with the cookie, which will never match and silently produce 401
+   * on every refresh. These assertions lock the hashing into the
+   * contract rather than relying on the filter-matching in updateOne
+   * to surface the mismatch. */
+  describe('execute — lookup contract', () => {
+    it('should look up by the hashed token, not the raw cookie value', async () => {
+      const rawToken = refreshTokenId();
+      const hashedValue = hashToken(rawToken);
+      const record = makeRefreshTokenRecord({ refreshToken: rawToken });
+      const { handler, refreshTokenRepo } = createHandler();
+      refreshTokenRepo.findOne.mockResolvedValue(record);
+
+      await handler.execute(new RefreshSessionCommand(rawToken));
+
+      expect(refreshTokenRepo.findOne).toHaveBeenCalledWith({
+        filter: { refreshToken: hashedValue },
+      });
+      expect(refreshTokenRepo.findOne).not.toHaveBeenCalledWith({
+        filter: { refreshToken: rawToken },
+      });
+    });
+
+    it('should hash before looking up when the token is revoked (theft path still uses hashed lookup)', async () => {
+      // Regression guard: the theft-detection branch must not bypass
+      // hashing. If it did, the raw cookie would reach the DB on any
+      // post-logout replay and the handler would mis-classify.
+      const rawToken = refreshTokenId();
+      const hashedValue = hashToken(rawToken);
+      const revoked = makeRevokedRefreshToken({ refreshToken: rawToken });
+      const { handler, refreshTokenRepo } = createHandler();
+      refreshTokenRepo.findOne.mockResolvedValue(revoked);
+
+      await expect(handler.execute(new RefreshSessionCommand(rawToken))).rejects.toThrow(
+        BusinessError,
+      );
+
+      expect(refreshTokenRepo.findOne).toHaveBeenCalledWith({
+        filter: { refreshToken: hashedValue },
+      });
+    });
+  });
+
   describe('execute — token not found', () => {
     it('should throw TOKEN_NOT_FOUND (401)', async () => {
       const { handler, refreshTokenRepo } = createHandler();
