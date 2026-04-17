@@ -7,38 +7,46 @@ import {
 import type { TabMutationService } from './tab-mutation.service';
 
 /**
- * Handler map matching every output of `ConfigurableTabBarComponent`.
- * Provided via `TAB_HANDLERS` injection token for automatic wiring.
+ * Shape of every event the bar dispatches, keyed by event name. Single
+ * source of truth for the bar's mutation surface — both {@link TabHandlers}
+ * and the orchestrator's `dispatch()` helper are derived from this map.
  *
- * Note: the UI-only `lockClicked` output is intentionally absent — it signals
- * a host concern (show an upgrade flow, a tooltip, …) rather than a tab
- * mutation, so it's wired via a plain `(output)` binding instead of the
- * handler map.
+ * Note: the UI-only `*LockClicked` / `moveToLockedConfigClicked` outputs
+ * are intentionally absent — they signal host concerns (upgrade flow,
+ * tooltip, …) rather than tab mutations, and are wired via plain `(output)`
+ * bindings instead of the handler map.
  */
-export type TabHandlers = {
-  tabSelect: (id: string) => void;
-  tabAdd: () => void;
-  tabClose: (id: string) => void;
-  tabRename: (e: { id: string; title: string }) => void;
-  tabReorder: (e: { tabId: string; newIndex: number }) => void;
-  tabColorChange: (e: { id: string; color: string }) => void;
-  configSave: (name: string) => void;
-  configNew: () => void;
-  configLoad: (configId: string) => void;
-  configDelete: (id: string) => void;
-  configRename: (e: { configId: string; name: string }) => void;
-  configTabRemove: (e: { configId: string; tabId: string }) => void;
-  configTabRename: (e: {
-    configId: string;
-    tabId: string;
-    title: string;
-  }) => void;
-  configTabMove: (e: {
+export type TabBarDispatchPayloads = {
+  tabSelect: string;
+  tabAdd: void;
+  tabClose: string;
+  tabRename: { id: string; title: string };
+  tabReorder: { tabId: string; newIndex: number };
+  tabColorChange: { id: string; color: string };
+  configSave: string;
+  configNew: void;
+  configLoad: string;
+  configDelete: string;
+  configRename: { configId: string; name: string };
+  configTabRemove: { configId: string; tabId: string };
+  configTabRename: { configId: string; tabId: string; title: string };
+  configTabMove: {
     sourceConfigId: string;
     targetConfigId: string;
     tabId: string;
-  }) => void;
-  tabMoveToConfig: (e: { tabId: string; targetConfigId: string }) => void;
+  };
+  tabMoveToConfig: { tabId: string; targetConfigId: string };
+};
+
+export type TabBarDispatchKey = keyof TabBarDispatchPayloads;
+
+/**
+ * Handler map matching every mutation event of `ConfigurableTabBarComponent`.
+ * Provided via `TAB_HANDLERS` injection token for automatic wiring.
+ * Derived from {@link TabBarDispatchPayloads} so the two stay in lockstep.
+ */
+export type TabHandlers = {
+  [K in TabBarDispatchKey]: (payload: TabBarDispatchPayloads[K]) => void;
 };
 
 /**

@@ -9,33 +9,14 @@ import {
 } from '@angular/core';
 import { ButtonIconComponent } from '../button-icon/button-icon.component';
 import type { TabItem, SavedTabConfig } from './configurable-tab-bar.types';
-import { TAB_HANDLERS, type TabHandlers } from './tab-event.helpers';
+import {
+  TAB_HANDLERS,
+  type TabBarDispatchKey,
+  type TabBarDispatchPayloads,
+  type TabHandlers,
+} from './tab-event.helpers';
 import { TabStripComponent } from './tab-strip/tab-strip.component';
 import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.component';
-
-type TabBarDispatchPayloads = {
-  tabSelect: string;
-  tabAdd: void;
-  tabClose: string;
-  tabRename: { id: string; title: string };
-  tabReorder: { tabId: string; newIndex: number };
-  tabColorChange: { id: string; color: string };
-  configSave: string;
-  configNew: void;
-  configLoad: string;
-  configDelete: string;
-  configRename: { configId: string; name: string };
-  configTabRemove: { configId: string; tabId: string };
-  configTabRename: { configId: string; tabId: string; title: string };
-  configTabMove: {
-    sourceConfigId: string;
-    targetConfigId: string;
-    tabId: string;
-  };
-  tabMoveToConfig: { tabId: string; targetConfigId: string };
-};
-
-type TabBarDispatchKey = keyof TabBarDispatchPayloads;
 
 /**
  * Generic, reusable tab bar with save/recall configs, DnD reorder, color coding, and inline editing.
@@ -97,7 +78,7 @@ type TabBarDispatchKey = keyof TabBarDispatchPayloads;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigurableTabBarComponent {
-  private _handlers: TabHandlers | null = inject(TAB_HANDLERS, {
+  private readonly _handlers: TabHandlers | null = inject(TAB_HANDLERS, {
     optional: true,
   });
 
@@ -224,24 +205,33 @@ export class ConfigurableTabBarComponent {
   }
 
   /* ── Dispatch helper ─────────────────────────────
-   * Calls tabHandlers (if set) then emits the output. This keeps both the
-   * TAB_HANDLERS wiring and the (output) bindings working side-by-side. */
+   * Calls tabHandlers (if set) then emits the matching output. Both sides
+   * go through the typed `_emit` map below, so no runtime casts are needed
+   * to bridge the dynamic key to `OutputEmitterRef<T>.emit`. */
+
+  private readonly _emit: TabHandlers = {
+    tabSelect: (p) => this.tabSelect.emit(p),
+    tabAdd: () => this.tabAdd.emit(),
+    tabClose: (p) => this.tabClose.emit(p),
+    tabRename: (p) => this.tabRename.emit(p),
+    tabReorder: (p) => this.tabReorder.emit(p),
+    tabColorChange: (p) => this.tabColorChange.emit(p),
+    configSave: (p) => this.configSave.emit(p),
+    configNew: () => this.configNew.emit(),
+    configLoad: (p) => this.configLoad.emit(p),
+    configDelete: (p) => this.configDelete.emit(p),
+    configRename: (p) => this.configRename.emit(p),
+    configTabRemove: (p) => this.configTabRemove.emit(p),
+    configTabRename: (p) => this.configTabRename.emit(p),
+    configTabMove: (p) => this.configTabMove.emit(p),
+    tabMoveToConfig: (p) => this.tabMoveToConfig.emit(p),
+  };
 
   dispatch<K extends TabBarDispatchKey>(
     key: K,
     payload: TabBarDispatchPayloads[K],
   ): void {
-    const handlers = this._handlers;
-    const handler = handlers?.[key] as
-      | ((payload: TabBarDispatchPayloads[K]) => void)
-      | undefined;
-    const emitter = this[key] as {
-      emit: (payload: TabBarDispatchPayloads[K]) => void;
-    };
-
-    if (handler) {
-      handler(payload);
-    }
-    emitter.emit(payload);
+    this._handlers?.[key](payload);
+    this._emit[key](payload);
   }
 }
