@@ -221,6 +221,28 @@ resolve it from the `savedConfigs` they already pass in.
 
 ## Deferred / backlog (8.5 → 9+)
 
+### DnD drop-position preview
+
+The drop resolution is correct (see § Done — `onTabDrop` reads the
+cursor + live bboxes), but during the drag the user gets no visual
+cue of where the tab will land. Add a lightweight indicator driven
+by the same inputs as the resolver — typically a 2px vertical bar
+rendered between the two tabs whose midpoints bracket the cursor,
+or a placeholder gap at the computed visual slot.
+
+Should stay strictly inside `tab-strip` (the DnD directives / engine
+stay untouched). Sketch:
+
+- Track `dragHoverIndex: signal<number | null>(null)` updated on
+  pointermove **while `DragSessionService.current()?.type === 'tab'`**,
+  using the exact same midpoint scan as `onTabDrop()`.
+- Render a CSS pseudo-element / sibling spacer at that index. No need
+  for a floating overlay — sit between tabs.
+- Reset on `uiDndDrop` / pointercancel.
+
+Bonus: the resolver logic lives in one place (factor out the visual-
+slot scan) so the preview and the drop always agree.
+
 ### Validate reusability with a second consumer
 
 The bar's API claims to be generic but only one consumer
@@ -229,14 +251,6 @@ e.g. a settings-tabs scenario, or a contracts view with saved filters —
 would surface hidden assumptions (TConfig generic leaking through,
 implicit music-library-specific behaviour in the mutation service) and
 stress-test the three-resource lock contract.
-
-### Fix the `tabAdd` asymmetry
-
-`tabAdd` still flows through `TAB_HANDLERS` (legacy from the initial
-split) while `saveTabConfig` is gated directly on the mutation service
-via an override. Three different paths for mutations of the same shape
-is confusing — either route everything through the handler map, or route
-nothing through it.
 
 ### Custom color picker
 
