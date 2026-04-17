@@ -290,14 +290,56 @@ stay untouched). Sketch:
 Bonus: the resolver logic lives in one place (factor out the visual-
 slot scan) so the preview and the drop always agree.
 
-### Validate reusability with a second consumer
+### Validate reusability with a second consumer — **target: playlist feature**
 
 The bar's API claims to be generic but only one consumer
-(`music-library-page`) has ever exercised it. Wiring a second use case —
-e.g. a settings-tabs scenario, or a contracts view with saved filters —
-would surface hidden assumptions (TConfig generic leaking through,
-implicit music-library-specific behaviour in the mutation service) and
-stress-test the three-resource lock contract.
+(`music-library-page`) has ever exercised it. The **next best fit is
+the playlist feature** (roadmap: [`TODO-music-features.md`](../../../../../../documentation/todos/TODO-music-features.md)
+§ Drag & Drop to Playlist + § Rekordbox Export) — it's the closest
+sibling to music-library in domain and interaction model, so it will
+exercise the same three lock surfaces and the same DnD pattern while
+forcing the `TConfig` generic into a genuinely different shape.
+
+Why playlist is the right second consumer:
+
+- **Tabs as playlists being edited.** One open tab = one playlist
+  draft / DJ-set being curated. The user keeps several playlists
+  hot-swappable in tabs for cross-referencing. Same mental model as
+  music-library tabs (one tab = one search slice), different
+  `TConfig` (playlist id + local reorder state, not search filters).
+- **Saved configs as DJ-set workspaces.** "Save this set of open
+  playlists as _Friday night prep_" → recall later. Maps cleanly to
+  the existing `SavedTabConfig<TConfig>` pipeline.
+- **DnD carries over.** Music cards already drag (`dndType: 'tab'`
+  payload exists in `drag.types.ts` — there's also an `artist`,
+  `slot`, `cue`, `org-node` payload). A playlist tab can accept
+  drops of music cards (new DnD type + `uiDndDropZone`). The
+  tab-strip's DnD reorder (just fixed) handles the cross-playlist
+  move, the inline-menu's "move to config" handles "move this
+  playlist into _Friday night prep_".
+- **Quota / lock surfaces get exercised in a new dimension.** Free
+  plan cap: N playlists open, M saved workspaces, K tracks per
+  playlist. Same `tabLocked` / `configLocked` / `cfg.locked`
+  contract, different quota source — exactly what
+  [`MusicTabQuotaChecker`](../../../features/musicLibrary/services/music-tab-quota-checker.service.ts)
+  was designed to abstract.
+
+What this second consumer will surface (and let us fix before a third
+one lands):
+
+- Any implicit music-library-specific behaviour still hiding in
+  `TabMutationService` overrides (e.g. auto-sync semantics that
+  happen to fit search but not playlists).
+- `TConfig` generic leaks through at the component boundary
+  (currently bound as `TabItem<unknown>[]` — worth re-checking
+  whether a playlist tab needs a typed inline action).
+- Default-tab factory assumptions: `addDefaultTab` in music-library
+  creates a blank search; for playlist it would create a blank
+  playlist draft — different API shape, same hook.
+
+Scope for the first cut: read-only playlist tabs (no backend
+persistence yet), purely to exercise the contract. Persistence +
+Rekordbox export are separate items on the music features roadmap.
 
 ### Custom color picker
 

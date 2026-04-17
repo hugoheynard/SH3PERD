@@ -122,6 +122,17 @@ Plan-aware quotas on tabs + saved configs, enforced at the UI _and_ the mutation
 - [ ] Drag music card → drop on playlist name
 - [ ] Adds version (favorite track) to playlist at end position
 
+> **Note — tab-bar second consumer.** Playlists are the designated
+> next use case for `configurable-tab-bar` (see
+> [`TODO-configurable-tab-bar.md`](./TODO-configurable-tab-bar.md)
+> "Validate reusability — target: playlist feature"). The side panel
+> above is the "list view"; the tab-bar variant ("edit N playlists
+> side-by-side as tabs, save workspaces as saved configs") is the
+> stress-test for the bar's generic `TConfig` contract and the
+> three-lock quota surface. The two views aren't mutually exclusive
+> — the list stays the primary navigation, the tab-bar kicks in when
+> the user wants to work on several playlists at once.
+
 ### Search Cross-Reference
 
 - [ ] `searchMode: 'cross'` queries seed references + other users' shared refs
