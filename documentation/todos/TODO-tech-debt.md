@@ -16,17 +16,24 @@
 >
 > Référence architecture : [`sh3-quality-gates.md`](../../apps/backend/documentation/sh3-quality-gates.md).
 
-### 🔥 1. `apps/audio-processor` — 36 erreurs de lint
+### ✅ 1. `apps/audio-processor` — lint passe (0 erreurs)
 
-- [ ] Résoudre les erreurs `@typescript-eslint/no-unsafe-*` autour de essentia.js
-  - `no-unsafe-member-access` ×15, `no-unsafe-assignment` ×11, `no-unsafe-call` ×6, `no-unsafe-argument` ×4
-  - Localisation : `src/core/analyze.ts`, `src/core/master.ts`, `src/core/pitch-shift.ts`, `src/core/ai-master.ts`
-  - **Approche recommandée** : ajouter un `.d.ts` ambient pour essentia.js ou un wrapper typé au boundary. NE PAS désactiver la règle file-by-file (cf. CLAUDE.md : "fix the root cause instead of suppressing the error").
-- [ ] `prefer-promise-reject-errors` ×2 dans `pitch-shift.ts` — remplacer `reject(string)` par `reject(new Error(string))`
-- [ ] `no-misused-promises` dans `master.ts:91` — corriger la signature du callback
-- [ ] `no-floating-promises` dans `main.ts:19` — wrapper avec `void` ou `.catch()`
-- Reproduction : `pnpm --filter audio-processor lint`
-- État : `tsc --noEmit` ✅, tests 38/38 ✅, seul lint échoue
+- [x] `no-unsafe-*` autour d'essentia.js : ambient `.d.ts` ajouté dans
+      `apps/audio-processor/src/types/essentia.d.ts`, `require()` +
+      `eslint-disable` remplacés par un import ESM typé.
+- [x] `JSON.parse` ffprobe typé via `FfprobeOutput` dans
+      `analyze.ts` et `pitch-shift.ts`.
+- [x] `prefer-promise-reject-errors` : `reject(e)` enveloppé dans
+      `Error` quand `e` vient d'un `catch`.
+- [x] `no-misused-promises` (`master.ts:91`) : handler `proc.on('close')`
+      rendu synchrone, cleanup unifié dans un `try/finally`.
+- [x] `no-floating-promises` (`main.ts:19`) : `void bootstrap()`.
+- [x] `no-unsafe-return` (`ai-master.spec.ts`) : `jest.fn` migré vers la
+      signature legacy `<TReturn, TArgs>`, `requireActual` typé via
+      générique, args destructurés.
+- État : `pnpm --filter audio-processor lint` exit 0 (2 warnings
+  pré-existantes laissées, downgrad'ées par config), `tsc --noEmit` ✅,
+  38/38 tests ✅.
 
 ### 🔥 2. `apps/frontend-webapp` — ~124 erreurs de typecheck
 
