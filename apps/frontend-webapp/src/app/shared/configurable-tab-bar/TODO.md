@@ -246,6 +246,28 @@ resolve it from the `savedConfigs` they already pass in.
 
 ## Deferred / backlog (8.5 → 9+)
 
+### Keyboard-focus visual — revisit
+
+The current focus indicator works (inset 1.5px ring, `--accent-color-border`,
+radius-respecting) but still feels slightly heavy next to the `.active`
+styling. Candidates to explore next pass:
+
+- Drop the ring and let the automatic-activation pattern rely entirely
+  on the `.active` visual (background + `::after` top bar) — since
+  focus === active in this tablist, a separate indicator may be
+  redundant. Keep only a very subtle signal for high-contrast tooling.
+- Replace the full-perimeter ring with a **top-only** accent (same
+  language as the existing `::after`), slightly thicker when focused.
+- Investigate a design-system-level focus token (e.g.
+  `--focus-ring-color` / `--focus-ring-width`) and align the tab's
+  ring with the rest of the shared components (button, button-icon,
+  view-toggle currently all use `outline: 2px solid --accent-color`
+  with a 1–2px offset — the inset tab ring deviates).
+
+Scope of this item: purely a visual refinement, no behavior change.
+The a11y contract (tablist + roving tabindex + arrow/Home/End/Escape)
+is set and should not regress.
+
 ### DnD drop-position preview
 
 The drop resolution is correct (see § Done — `onTabDrop` reads the
