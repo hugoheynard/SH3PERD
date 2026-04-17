@@ -4,7 +4,6 @@ import { By } from '@angular/platform-browser';
 import { ConfigurableTabBarComponent } from './configurable-tab-bar.component';
 import { TAB_HANDLERS, type TabHandlers } from './tab-event.helpers';
 import type { SavedTabConfig, TabItem } from './configurable-tab-bar.types';
-import { ToastService } from '../toast/toast.service';
 
 type TestConfig = { filter: string };
 
@@ -72,13 +71,7 @@ describe('ConfigurableTabBarComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [HostComponent],
-      providers: [
-        { provide: TAB_HANDLERS, useValue: handlers },
-        {
-          provide: ToastService,
-          useValue: { show: jest.fn() },
-        },
-      ],
+      providers: [{ provide: TAB_HANDLERS, useValue: handlers }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HostComponent);

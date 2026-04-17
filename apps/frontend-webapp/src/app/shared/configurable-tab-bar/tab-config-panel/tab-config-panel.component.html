@@ -97,10 +97,7 @@
                 autofocus
               />
             } @else {
-              <span
-                class="config-item-name"
-                (click)="onLoadConfig(cfg.id, cfg.name)"
-              >
+              <span class="config-item-name" (click)="onLoadConfig(cfg.id)">
                 {{ cfg.name }} <small>({{ cfg.tabs.length }})</small>
               </span>
             }

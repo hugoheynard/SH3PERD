@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TabConfigPanelComponent } from './tab-config-panel.component';
 import type { SavedTabConfig, TabItem } from '../configurable-tab-bar.types';
-import { ToastService } from '../../toast/toast.service';
 
 type TestConfig = { filter: string };
 
@@ -34,17 +33,10 @@ describe('TabConfigPanelComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TabConfigPanelComponent],
-      providers: [
-        {
-          provide: ToastService,
-          useValue: { show: jest.fn() },
-        },
-      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TabConfigPanelComponent);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('showToasts', false);
     fixture.componentRef.setInput('savedConfigs', [
       makeConfig(),
       makeConfig({

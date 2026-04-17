@@ -1,10 +1,23 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, type OnInit, signal, ViewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  ElementRef,
+  inject,
+  type OnInit,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { MusicLibrarySelectorService } from '../services/selector-layer/music-library-selector.service';
 import { MusicLibraryStateService } from '../services/music-library-state.service';
 import { MusicTabMutationService } from '../services/mutations-layer/music-tab-mutation.service';
 import { MusicLibraryMutationService } from '../services/mutations-layer/music-library-mutation.service';
 import { LayoutService } from '../../../core/services/layout.service';
-import { ConfigurableTabBarComponent, provideTabHandlers } from '../../../shared/configurable-tab-bar';
+import {
+  ConfigurableTabBarComponent,
+  provideTabHandlers,
+} from '../../../shared/configurable-tab-bar';
 import { FormsModule } from '@angular/forms';
 import { MusicLibrarySidePanelComponent } from '../components/music-library-side-panel/music-library-side-panel.component';
 import { MusicReferenceCardComponent } from '../components/music-reference-card/music-reference-card.component';
@@ -20,8 +33,14 @@ import { MusicVersionApiService } from '../services/music-version-api.service';
 import { MusicTrackApiService } from '../services/music-track-api.service';
 import { MusicRepertoireApiService } from '../services/music-repertoire-api.service';
 import { VersionType } from '../music-library-types';
-import type { TCreateMusicVersionPayload, TMusicReferenceId } from '@sh3pherd/shared-types';
-import type { TMasteringModalContext, TMasteringResult } from '../mastering/mastering.types';
+import type {
+  TCreateMusicVersionPayload,
+  TMusicReferenceId,
+} from '@sh3pherd/shared-types';
+import type {
+  TMasteringModalContext,
+  TMasteringResult,
+} from '../mastering/mastering.types';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { MusicLibraryHelpComponent } from './music-library-help.component';
 import { UpgradePanelComponent } from '../../../core/components/upgrade-panel/upgrade-panel.component';
@@ -51,20 +70,19 @@ import { MusicTabQuotaChecker } from '../services/music-tab-quota-checker.servic
   providers: [provideTabHandlers(MusicTabMutationService)],
 })
 export class MusicLibraryPageComponent implements OnInit {
-
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
 
-  public selector         = inject(MusicLibrarySelectorService);
-  private stateService    = inject(MusicLibraryStateService);
-  private tabService      = inject(MusicTabMutationService);
-  protected quota         = inject(MusicTabQuotaChecker);
-  private mutation        = inject(MusicLibraryMutationService);
-  private versionApi      = inject(MusicVersionApiService);
-  private trackApi        = inject(MusicTrackApiService);
-  private repertoireApi   = inject(MusicRepertoireApiService);
-  private layout          = inject(LayoutService);
-  private toast           = inject(ToastService);
-  private destroyRef      = inject(DestroyRef);
+  public selector = inject(MusicLibrarySelectorService);
+  private stateService = inject(MusicLibraryStateService);
+  private tabService = inject(MusicTabMutationService);
+  protected quota = inject(MusicTabQuotaChecker);
+  private mutation = inject(MusicLibraryMutationService);
+  private versionApi = inject(MusicVersionApiService);
+  private trackApi = inject(MusicTrackApiService);
+  private repertoireApi = inject(MusicRepertoireApiService);
+  private layout = inject(LayoutService);
+  private toast = inject(ToastService);
+  private destroyRef = inject(DestroyRef);
 
   /** Mastering modal context — shared between card and table views. */
   readonly masteringContext = signal<TMasteringModalContext | null>(null);
@@ -92,8 +110,13 @@ export class MusicLibraryPageComponent implements OnInit {
     // When active tab switches to cross mode, load cross library data
     effect(() => {
       const tab = this.selector.activeTab();
-      if (tab?.config.searchConfig.searchMode === 'cross' && tab.config.searchConfig.target.contractId) {
-        this.stateService.loadCrossLibrary(tab.config.searchConfig.target.contractId);
+      if (
+        tab?.config.searchConfig.searchMode === 'cross' &&
+        tab.config.searchConfig.target.contractId
+      ) {
+        this.stateService.loadCrossLibrary(
+          tab.config.searchConfig.target.contractId,
+        );
       }
     });
   }
@@ -102,9 +125,9 @@ export class MusicLibraryPageComponent implements OnInit {
     this.stateService.loadLibrary();
   }
 
-  readonly viewMode            = signal<'cards' | 'table'>('cards');
+  readonly viewMode = signal<'cards' | 'table'>('cards');
   readonly analysingVersionIds = signal<Set<string>>(new Set());
-  readonly mobilePanelOpen     = signal(false);
+  readonly mobilePanelOpen = signal(false);
 
   /** Pending upload context. */
   private pendingEntryId: string | null = null;
@@ -118,11 +141,11 @@ export class MusicLibraryPageComponent implements OnInit {
   }
 
   toggleView(): void {
-    this.viewMode.update(v => v === 'cards' ? 'table' : 'cards');
+    this.viewMode.update((v) => (v === 'cards' ? 'table' : 'cards'));
   }
 
   toggleMobilePanel(): void {
-    this.mobilePanelOpen.update(v => !v);
+    this.mobilePanelOpen.update((v) => !v);
   }
 
   /* ── Upgrade ── */
@@ -148,6 +171,30 @@ export class MusicLibraryPageComponent implements OnInit {
     // Reuse the tab-limit popover copy — "this config is full, upgrade to add more".
     // _event.targetConfigId is available if we later want to customise the message.
     this.layout.setPopover(TabLimitPopoverComponent);
+  }
+
+  /* ── Saved-config toasts ──
+   * The tab bar no longer owns a ToastService — it just emits mutation
+   * events. We translate the four config moments into user-visible
+   * feedback here, where the toast copy is a product concern. */
+
+  onConfigNewStarted(): void {
+    this.toast.show('New configuration started', 'info');
+  }
+
+  onConfigSaved(name: string): void {
+    this.toast.show(`Config "${name}" saved`, 'success');
+  }
+
+  onConfigApplied(configId: string): void {
+    const name =
+      this.quota.savedConfigsWithLock().find((c) => c.id === configId)?.name ??
+      '';
+    this.toast.show(`Config "${name}" applied`, 'success');
+  }
+
+  onConfigDeleted(): void {
+    this.toast.show('Config deleted', 'info');
   }
 
   /* ── Add entry ── */
@@ -250,7 +297,10 @@ export class MusicLibraryPageComponent implements OnInit {
     this.fileInputRef.nativeElement.click();
   }
 
-  onTrackDownloadRequested(event: { versionId: string; trackId: string }): void {
+  onTrackDownloadRequested(event: {
+    versionId: string;
+    trackId: string;
+  }): void {
     // Try local cache first (freshly uploaded files)
     const file = this.trackFiles.get(event.trackId);
     if (file) {
@@ -264,40 +314,62 @@ export class MusicLibraryPageComponent implements OnInit {
     }
 
     // Otherwise fetch presigned URL from backend
-    this.trackApi.getDownloadUrl(event.versionId as any, event.trackId as any).subscribe({
-      next: (url) => {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = '';
-        a.target = '_blank';
-        a.click();
-      },
-      error: () => {
-        // Toast already shown by trackApi
-      },
-    });
+    this.trackApi
+      .getDownloadUrl(event.versionId as any, event.trackId as any)
+      .subscribe({
+        next: (url) => {
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = '';
+          a.target = '_blank';
+          a.click();
+        },
+        error: () => {
+          // Toast already shown by trackApi
+        },
+      });
   }
 
-  onFavoriteChanged(event: { entryId: string; versionId: string; trackId: string }): void {
-    this.mutation.setFavoriteTrack(event.entryId, event.versionId, event.trackId);
-    this.trackApi.setFavorite(event.versionId as any, event.trackId as any).subscribe({
-      error: () => {
-        // Revert optimistic update on failure — toast already shown
-      },
-    });
+  onFavoriteChanged(event: {
+    entryId: string;
+    versionId: string;
+    trackId: string;
+  }): void {
+    this.mutation.setFavoriteTrack(
+      event.entryId,
+      event.versionId,
+      event.trackId,
+    );
+    this.trackApi
+      .setFavorite(event.versionId as any, event.trackId as any)
+      .subscribe({
+        error: () => {
+          // Revert optimistic update on failure — toast already shown
+        },
+      });
   }
 
-  onTrackDeleteRequested(event: { entryId: string; versionId: string; trackId: string }): void {
-    this.trackApi.delete(event.versionId as any, event.trackId as any).subscribe({
-      next: () => {
-        this.mutation.removeTrack(event.entryId, event.versionId, event.trackId);
-        this.trackFiles.delete(event.trackId);
-        this.toast.show('Track deleted', 'success');
-      },
-      error: () => {
-        // Toast already shown by trackApi
-      },
-    });
+  onTrackDeleteRequested(event: {
+    entryId: string;
+    versionId: string;
+    trackId: string;
+  }): void {
+    this.trackApi
+      .delete(event.versionId as any, event.trackId as any)
+      .subscribe({
+        next: () => {
+          this.mutation.removeTrack(
+            event.entryId,
+            event.versionId,
+            event.trackId,
+          );
+          this.trackFiles.delete(event.trackId);
+          this.toast.show('Track deleted', 'success');
+        },
+        error: () => {
+          // Toast already shown by trackApi
+        },
+      });
   }
 
   onFileSelected(event: Event): void {
@@ -313,7 +385,10 @@ export class MusicLibraryPageComponent implements OnInit {
       next: (track) => {
         this.mutation.addTrackFromApi(entryId, versionId, track);
         this.trackFiles.set(track.id, file);
-        this.toast.show(`Track "${file.name}" uploaded — analysis in progress`, 'success');
+        this.toast.show(
+          `Track "${file.name}" uploaded — analysis in progress`,
+          'success',
+        );
         this.pollForAnalysis(versionId, track.id);
       },
       error: () => {
@@ -344,7 +419,7 @@ export class MusicLibraryPageComponent implements OnInit {
    * Updates local state on each poll so the UI reflects the latest data.
    */
   private pollForAnalysis(versionId: string, trackId: string): void {
-    this.analysingVersionIds.update(ids => new Set([...ids, versionId]));
+    this.analysingVersionIds.update((ids) => new Set([...ids, versionId]));
 
     let attempts = 0;
     const maxAttempts = 24; // 24 × 5 s = 2 min
@@ -358,8 +433,10 @@ export class MusicLibraryPageComponent implements OnInit {
       const timer = setTimeout(() => {
         this.stateService.refreshEntries().subscribe({
           next: (entries) => {
-            const version = entries.flatMap(e => e.versions).find(v => v.id === versionId);
-            const track = version?.tracks.find(t => t.id === trackId);
+            const version = entries
+              .flatMap((e) => e.versions)
+              .find((v) => v.id === versionId);
+            const track = version?.tracks.find((t) => t.id === trackId);
             if (track?.analysisResult) {
               this.clearAnalysing(versionId);
               this.toast.show('Track analysis complete', 'success');
@@ -379,11 +456,10 @@ export class MusicLibraryPageComponent implements OnInit {
   }
 
   private clearAnalysing(versionId: string): void {
-    this.analysingVersionIds.update(ids => {
+    this.analysingVersionIds.update((ids) => {
       const next = new Set(ids);
       next.delete(versionId);
       return next;
     });
   }
-
 }

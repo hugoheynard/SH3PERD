@@ -58,7 +58,6 @@
   <sh3-tab-config-panel
     [activeConfigId]="activeConfigId()"
     [savedConfigs]="savedConfigs()"
-    [showToasts]="showToasts()"
     [locked]="configLocked()"
     [saveLockedLabel]="saveLockedLabel()"
     [newConfigLabel]="newConfigLabel()"
@@ -73,10 +72,6 @@
     [moveLabel]="moveLabel()"
     [removeLabel]="removeLabel()"
     [moveToLabel]="configMoveToLabel()"
-    [newConfigToast]="newConfigToast()"
-    [deletedConfigToast]="deletedConfigToast()"
-    [savedConfigToast]="savedConfigToast()"
-    [appliedConfigToast]="appliedConfigToast()"
     (lockClicked)="configLockClicked.emit()"
     (configSave)="dispatch('configSave', $event)"
     (configNew)="dispatch('configNew', undefined)"

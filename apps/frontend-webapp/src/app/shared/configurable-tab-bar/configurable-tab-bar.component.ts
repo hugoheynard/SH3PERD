@@ -87,8 +87,6 @@ export class ConfigurableTabBarComponent {
   readonly activeTabId = input.required<string>();
   readonly activeConfigId = input<string | null>(null);
   readonly savedConfigs = input<SavedTabConfig<unknown>[]>([]);
-  /** Show built-in toast notifications for config operations. Default: true. */
-  readonly showToasts = input<boolean>(true);
   /**
    * Tab resource lock — the add-tab affordance becomes a lock button that
    * emits `tabLockClicked` instead of `tabAdd`. The host is responsible for
@@ -144,14 +142,6 @@ export class ConfigurableTabBarComponent {
   readonly removeLabel = input<string>('Remove');
   /** Heading shown above the list of move-to targets in the config panel. */
   readonly configMoveToLabel = input<string>('Move to:');
-  /** Toast message shown after starting a new config. */
-  readonly newConfigToast = input<string>('New configuration started');
-  /** Toast message shown after deleting a config. */
-  readonly deletedConfigToast = input<string>('Config deleted');
-  /** Template for the "config saved" toast. `{name}` is replaced with the config name. */
-  readonly savedConfigToast = input<string>('Config "{name}" saved');
-  /** Template for the "config applied" toast. `{name}` is replaced with the config name. */
-  readonly appliedConfigToast = input<string>('Config "{name}" applied');
 
   /* ── Outputs (public API — also dispatched via TAB_HANDLERS) ── */
   readonly tabSelect = output<string>();

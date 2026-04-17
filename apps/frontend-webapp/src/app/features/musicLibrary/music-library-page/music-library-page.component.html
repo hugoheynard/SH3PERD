@@ -1,11 +1,16 @@
 <!-- Hidden file input for track upload / analyse -->
-<input type="file" #fileInput accept="audio/*" class="file-input-hidden" (change)="onFileSelected($event)" />
+<input
+  type="file"
+  #fileInput
+  accept="audio/*"
+  class="file-input-hidden"
+  (change)="onFileSelected($event)"
+/>
 
 <!-- Registers help entries surfaced by the header's help right panel -->
 <app-music-library-help />
 
 <div class="library">
-
   <!-- Side panel: left sidebar on desktop, collapsible top panel on mobile -->
   <app-music-library-side-panel
     class="side-panel"
@@ -19,7 +24,6 @@
 
   <!-- Main content: tab bar + results -->
   <div class="library-content">
-
     <sh3-configurable-tab-bar
       [tabs]="selector.tabs()"
       [activeTabId]="selector.activeTabId()"
@@ -30,6 +34,10 @@
       (tabLockClicked)="openTabQuotaPopover()"
       (configLockClicked)="openConfigQuotaPopover()"
       (moveToLockedConfigClicked)="openConfigFullPopover($event)"
+      (configNew)="onConfigNewStarted()"
+      (configSave)="onConfigSaved($event)"
+      (configLoad)="onConfigApplied($event)"
+      (configDelete)="onConfigDeleted()"
     >
       <!-- Music-specific: search input -->
       <div tabBarTrailing class="tab-search">
@@ -42,42 +50,62 @@
           type="text"
         />
         @if (activeSearchQuery()) {
-          <button class="tab-search-clear" type="button" (click)="onSearchQueryChange('')">×</button>
+          <button
+            class="tab-search-clear"
+            type="button"
+            (click)="onSearchQueryChange('')"
+          >
+            ×
+          </button>
         }
       </div>
     </sh3-configurable-tab-bar>
 
     <div class="results-area">
-
       <div class="results-toolbar">
         <span class="results-count">
-          {{ selector.activeEntries().length }} result{{ selector.activeEntries().length !== 1 ? 's' : '' }}
+          {{ selector.activeEntries().length }} result{{
+            selector.activeEntries().length !== 1 ? "s" : ""
+          }}
         </span>
 
         <div class="toolbar-actions">
-          <button class="btn-filters-toggle" type="button"
-                  aria-label="Toggle filters"
-                  [class.active]="mobilePanelOpen()"
-                  (click)="toggleMobilePanel()">
+          <button
+            class="btn-filters-toggle"
+            type="button"
+            aria-label="Toggle filters"
+            [class.active]="mobilePanelOpen()"
+            (click)="toggleMobilePanel()"
+          >
             <sh3-icon name="sliders" [size]="13" />
             Filtres
           </button>
-          <sh3-button variant="primary" size="sm" (clicked)="openAddEntryPanel()">
+          <sh3-button
+            variant="primary"
+            size="sm"
+            (clicked)="openAddEntryPanel()"
+          >
             <span>+</span><span class="add-label"> Add song</span>
           </sh3-button>
-          <sh3-view-toggle [mode]="viewMode()" (modeChange)="viewMode.set($event)" />
+          <sh3-view-toggle
+            [mode]="viewMode()"
+            (modeChange)="viewMode.set($event)"
+          />
         </div>
       </div>
 
       <div class="results-scroll">
-        @if (selector.activeTab()?.config?.searchConfig?.searchMode === 'cross' && selector.crossContext()) {
+        @if (
+          selector.activeTab()?.config?.searchConfig?.searchMode === "cross" &&
+          selector.crossContext()
+        ) {
           @let ctx = selector.crossContext()!;
           <app-music-cross-table
             [members]="ctx.members"
             [results]="ctx.results"
           />
         } @else {
-          @if (viewMode() === 'cards') {
+          @if (viewMode() === "cards") {
             <div class="cards-list">
               @for (entry of selector.activeEntries(); track entry.id) {
                 <app-music-reference-card
@@ -98,7 +126,9 @@
                 <div class="empty-state">
                   <sh3-icon name="music-note" [size]="40" />
                   <span>No results found</span>
-                  <span class="empty-hint">Try adjusting the tab search configuration</span>
+                  <span class="empty-hint"
+                    >Try adjusting the tab search configuration</span
+                  >
                 </div>
               }
             </div>
@@ -117,11 +147,8 @@
           }
         }
       </div>
-
     </div>
-
   </div>
-
 </div>
 
 <!-- Mastering modal (shared between card & table views) -->

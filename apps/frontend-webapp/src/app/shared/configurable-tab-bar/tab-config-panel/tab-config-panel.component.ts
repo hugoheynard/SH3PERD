@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  inject,
   input,
   output,
   signal,
@@ -11,7 +10,6 @@ import { ButtonComponent } from '../../button/button.component';
 import { ButtonIconComponent } from '../../button-icon/button-icon.component';
 import { IconComponent } from '../../icon/icon.component';
 import { InputComponent } from '../../forms/input/input.component';
-import { ToastService } from '../../toast/toast.service';
 import type { SavedTabConfig } from '../configurable-tab-bar.types';
 
 /**
@@ -29,8 +27,10 @@ import type { SavedTabConfig } from '../configurable-tab-bar.types';
  * about quotas or plans.
  *
  * All mutations are emitted as outputs for the parent bar to dispatch through
- * its TAB_HANDLERS contract. Built-in toasts for the three user-visible
- * operations (new, save, load) are triggered locally when `showToasts` is on.
+ * its TAB_HANDLERS contract. The panel doesn't show toasts or any other
+ * feedback — hosts that want to notify the user listen to the corresponding
+ * mutation outputs (`configSave`, `configLoad`, `configDelete`, `configNew`)
+ * on the orchestrator and decide what to show.
  */
 @Component({
   selector: 'sh3-tab-config-panel',
@@ -47,13 +47,9 @@ import type { SavedTabConfig } from '../configurable-tab-bar.types';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabConfigPanelComponent {
-  private toast = inject(ToastService);
-
   /* ── Inputs ────────────────────────────────────── */
   readonly activeConfigId = input<string | null>(null);
   readonly savedConfigs = input<SavedTabConfig<unknown>[]>([]);
-  /** Show built-in toast notifications for config operations. */
-  readonly showToasts = input<boolean>(true);
   /**
    * When true, the save/load buttons + floating panels collapse to a single
    * lock button that emits `lockClicked`. Host decides what to do next.
@@ -73,11 +69,6 @@ export class TabConfigPanelComponent {
   readonly moveLabel = input<string>('Move');
   readonly removeLabel = input<string>('Remove');
   readonly moveToLabel = input<string>('Move to:');
-  readonly newConfigToast = input<string>('New configuration started');
-  readonly deletedConfigToast = input<string>('Config deleted');
-  /** `{name}` in the template is substituted with the config name at runtime. */
-  readonly savedConfigToast = input<string>('Config "{name}" saved');
-  readonly appliedConfigToast = input<string>('Config "{name}" applied');
 
   /* ── Outputs ───────────────────────────────────── */
   readonly configSave = output<string>();
@@ -129,7 +120,6 @@ export class TabConfigPanelComponent {
     this.showLoadMenu.set(false);
     this.showSaveForm.set(false);
     this.configNew.emit();
-    if (this.showToasts()) this.toast.show(this.newConfigToast(), 'info');
   }
 
   toggleSaveForm(): void {
@@ -149,27 +139,16 @@ export class TabConfigPanelComponent {
     this.configSave.emit(name);
     this.showSaveForm.set(false);
     this.saveFormName.set('');
-    if (this.showToasts())
-      this.toast.show(
-        this.savedConfigToast().replace('{name}', name),
-        'success',
-      );
   }
 
-  onLoadConfig(configId: string, configName: string): void {
+  onLoadConfig(configId: string): void {
     this.configLoad.emit(configId);
     this.showLoadMenu.set(false);
-    if (this.showToasts())
-      this.toast.show(
-        this.appliedConfigToast().replace('{name}', configName),
-        'success',
-      );
   }
 
   onDeleteConfig(id: string, event: MouseEvent): void {
     event.stopPropagation();
     this.configDelete.emit(id);
-    if (this.showToasts()) this.toast.show(this.deletedConfigToast(), 'info');
   }
 
   /* ── Config editing ────────────────────────────── */
