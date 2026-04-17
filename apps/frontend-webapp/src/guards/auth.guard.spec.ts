@@ -5,10 +5,25 @@ import {
   Router,
   UrlTree,
   type CanActivateFn,
+  type GuardResult,
+  type MaybeAsync,
 } from '@angular/router';
-import { firstValueFrom, of, throwError } from 'rxjs';
+import { firstValueFrom, from, isObservable, of, throwError } from 'rxjs';
+import type { Observable } from 'rxjs';
 import { authGuard } from './auth.guard';
 import { AuthService } from '../app/core/services/auth.service';
+
+/**
+ * Angular 21 widened `CanActivateFn`'s return type to `MaybeAsync<GuardResult>`
+ * (boolean | UrlTree | Promise | Observable). The guards under test in this
+ * spec all return Observable, but `firstValueFrom` is typed strictly, so we
+ * normalize at the test boundary.
+ */
+function asObservable(value: MaybeAsync<GuardResult>): Observable<GuardResult> {
+  if (isObservable(value)) return value;
+  if (value instanceof Promise) return from(value);
+  return of(value);
+}
 
 describe('authGuard', () => {
   let authService: jest.Mocked<AuthService>;
@@ -51,7 +66,9 @@ describe('authGuard', () => {
     configure('browser');
     authService.getValidAccessToken$.mockReturnValue(of('token-123'));
 
-    const result = await firstValueFrom(executeGuard({} as never, {} as never));
+    const result = await firstValueFrom(
+      asObservable(executeGuard({} as never, {} as never)),
+    );
 
     expect(result).toBe(true);
   });
@@ -61,7 +78,7 @@ describe('authGuard', () => {
     authService.getValidAccessToken$.mockReturnValue(of(null));
 
     const result = (await firstValueFrom(
-      executeGuard({} as never, {} as never),
+      asObservable(executeGuard({} as never, {} as never)),
     )) as UrlTree;
 
     expect(router.serializeUrl(result)).toBe('/login');
@@ -74,7 +91,7 @@ describe('authGuard', () => {
     );
 
     const result = (await firstValueFrom(
-      executeGuard({} as never, {} as never),
+      asObservable(executeGuard({} as never, {} as never)),
     )) as UrlTree;
 
     expect(router.serializeUrl(result)).toBe('/login');

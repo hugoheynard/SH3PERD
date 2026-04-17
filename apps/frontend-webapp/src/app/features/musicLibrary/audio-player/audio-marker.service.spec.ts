@@ -44,7 +44,7 @@ function track(
     durationSeconds: analysis?.durationSeconds,
     analysis,
     peaks,
-  } as TPlayableTrack;
+  } as unknown as TPlayableTrack;
 }
 
 /**

@@ -206,7 +206,7 @@ describe('PaginatorComponent', () => {
       component.goToPage(999);
       component.goToPage(-7);
 
-      expect(spy.calls.allArgs()).toEqual([[10], [1]]);
+      expect(spy.mock.calls).toEqual([[10], [1]]);
     });
 
     it('does not emit when disabled', () => {

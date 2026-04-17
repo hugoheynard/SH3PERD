@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { TabConfigPanelComponent } from './tab-config-panel.component';
 import type { SavedTabConfig, TabItem } from '../configurable-tab-bar.types';
 import { ToastService } from '../../toast/toast.service';

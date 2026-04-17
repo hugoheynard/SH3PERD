@@ -49,7 +49,7 @@ class HostComponent {
 
 describe('ConfigurableTabBarComponent', () => {
   let fixture: ComponentFixture<HostComponent>;
-  let handlers: jest.Mocked<TabHandlers<TestConfig>>;
+  let handlers: jest.Mocked<TabHandlers>;
 
   beforeEach(async () => {
     handlers = {
@@ -68,7 +68,7 @@ describe('ConfigurableTabBarComponent', () => {
       configTabRename: jest.fn(),
       configTabMove: jest.fn(),
       tabMoveToConfig: jest.fn(),
-    } as unknown as jest.Mocked<TabHandlers<TestConfig>>;
+    } as unknown as jest.Mocked<TabHandlers>;
 
     await TestBed.configureTestingModule({
       imports: [HostComponent],

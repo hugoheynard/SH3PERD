@@ -23,7 +23,7 @@ describe('authInterceptor (Angular 18+)', () => {
     authService = {
       getValidAccessToken$: jest.fn(),
       refreshSession$: jest.fn(),
-    };
+    } as unknown as jest.Mocked<AuthService>;
 
     TestBed.configureTestingModule({
       providers: [
@@ -136,7 +136,7 @@ describe('authInterceptor (Angular 18+)', () => {
     authService = {
       getValidAccessToken$: jest.fn(),
       refreshSession$: jest.fn(),
-    };
+    } as unknown as jest.Mocked<AuthService>;
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(withInterceptors([authInterceptor])),
