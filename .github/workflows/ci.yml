@@ -112,7 +112,12 @@ jobs:
         run: pnpm --filter frontend-webapp exec tsc --noEmit
 
       - name: Unit tests
-        run: pnpm --filter frontend-webapp test -- --ci --runInBand
+        # Note: do NOT use `pnpm test -- --ci --runInBand`. With pnpm 10
+        # the explicit `--` is forwarded literally to the underlying
+        # `jest` invocation, where `--` means "treat the rest as
+        # positional file-pattern args". The result is jest matching
+        # zero tests and exiting 1. Pass jest flags directly instead.
+        run: pnpm --filter frontend-webapp test --ci --runInBand
 
       - name: Build
         run: pnpm --filter frontend-webapp build
