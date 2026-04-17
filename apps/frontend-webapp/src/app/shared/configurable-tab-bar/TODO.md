@@ -35,7 +35,7 @@ focus ring, dark-mode tokens and hover accent now come uniformly from
 
 ---
 
-## Audit (honest review — 7.75/10 overall after the April 2026 polish pass)
+## Audit (honest review — 8.25/10 overall after the April 2026 polish pass)
 
 Full breakdown kept for reference:
 
@@ -45,13 +45,14 @@ Full breakdown kept for reference:
 | API design         | 7.5    | 8.5 | `tabAdd` routed through `dispatch()`; `TabHandlers` derived type; no `showToasts` kill-switch |
 | Code quality       | 6.5    | 7   | OnPush + signal rename buffers; zero runtime casts in `dispatch()`                            |
 | Documentation      | 9      | 9   | unchanged                                                                                     |
-| Robustness         | 5      | 5   | DnD fix still pending, CDK Overlay still pending                                              |
+| Robustness         | 5      | 8   | DnD drop position fixed; tablist roles + roving tabindex + arrow/Home/End/Escape              |
 | Reusability        | 6      | 7.5 | every hardcoded label configurable; no `ToastService` injection to satisfy in tests / hosts   |
 | Evolution          | 7.5    | 8   | OnPush ready; trackBy already enforced by Angular 21 `@for`                                   |
 
-What still gates **8+ → 9+** lives in § Backlog.
-The remaining lifts toward 8.5+ are the Robustness items (DnD,
-CDK Overlay) and second-consumer validation.
+What still gates **8.5+ → 9+** lives in § Backlog — primarily the
+CDK Overlay migration for the two move-to dropdowns, the DnD drop
+preview indicator, and a second consumer to stress-test the generic
+contract.
 
 ---
 
@@ -203,6 +204,30 @@ lookups:
 this._handlers?.[key](payload);
 this._emit[key](payload);
 ```
+
+### Keyboard a11y (tablist) — ✅ done
+
+`TabStripComponent` now implements the ARIA 1.2 tablist pattern with
+automatic activation:
+
+- `.tabs-scroll` → `role="tablist"`
+- Each `.tab` → `role="tab"` + `aria-selected` reflecting `activeTabId`
+  (replaces the previous `role="button"`)
+- Roving `tabindex`: `0` on the active tab, `-1` on the others — Tab
+  key enters / leaves the tablist at the active tab, arrows roam inside
+
+Keyboard shortcuts on each tab (`onTabKeydown`):
+
+- **← / →** — focus and activate prev / next tab (wraps)
+- **Home / End** — first / last tab
+- **Enter / Space** — activate the focused tab (idempotent with the
+  roving model, included for ARIA conformance)
+- **Escape** — close the ⋮ menu if open
+
+Events originating from the inline rename input or any button inside
+the tab (⋮ toggle, inline-menu actions) bail early via the same
+`closest('input, button')` check already used for pointer / dblclick,
+so typing a rename or navigating the menu never hijacks tablist keys.
 
 ### ToastService coupling — ✅ done
 

@@ -110,6 +110,69 @@ export class TabStripComponent {
     this.editingTabId.set(null);
   }
 
+  /* ── Keyboard a11y ─────────────────────────────── */
+
+  /**
+   * Handle keyboard navigation within the tablist. Uses the automatic
+   * activation pattern: arrow / Home / End move focus AND emit
+   * `tabSelect`, so the active tab follows the keyboard cursor (tabs are
+   * cheap to select — no expensive panel swap).
+   *
+   * Events originating from the inline rename input, the ⋮ menu, or the
+   * inline-menu buttons bubble up here; we bail in those cases so typing
+   * a rename or navigating the menu doesn't hijack tablist keys.
+   */
+  onTabKeydown(tab: TabItem<unknown>, event: KeyboardEvent): void {
+    const target = event.target as HTMLElement;
+    if (target.closest('input, button')) return;
+
+    const tabs = this.tabs();
+    const currentIdx = tabs.findIndex((t) => t.id === tab.id);
+    if (currentIdx === -1) return;
+
+    let nextIdx: number | null = null;
+    switch (event.key) {
+      case 'ArrowLeft':
+        nextIdx = currentIdx === 0 ? tabs.length - 1 : currentIdx - 1;
+        break;
+      case 'ArrowRight':
+        nextIdx = currentIdx === tabs.length - 1 ? 0 : currentIdx + 1;
+        break;
+      case 'Home':
+        nextIdx = 0;
+        break;
+      case 'End':
+        nextIdx = tabs.length - 1;
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        this.tabSelect.emit(tab.id);
+        return;
+      case 'Escape':
+        if (this.openTabMenuId() !== null) {
+          event.preventDefault();
+          this.openTabMenuId.set(null);
+        }
+        return;
+      default:
+        return;
+    }
+
+    if (nextIdx === null || nextIdx === currentIdx) return;
+    event.preventDefault();
+    const nextTab = tabs[nextIdx];
+    this.tabSelect.emit(nextTab.id);
+    this.focusTabAt(nextIdx);
+  }
+
+  private focusTabAt(index: number): void {
+    const tabEls = this.host.nativeElement.querySelectorAll<HTMLElement>(
+      ':scope > .tabs-scroll > .tab',
+    );
+    tabEls[index]?.focus();
+  }
+
   /* ── Inline menu relays ────────────────────────── */
 
   onColorRequested(tabId: string): void {

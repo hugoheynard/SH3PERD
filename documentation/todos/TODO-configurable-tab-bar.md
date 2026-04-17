@@ -29,8 +29,9 @@
 - [x] **`dispatch()` runtime casts eliminated** — `TabHandlers` is now a mapped type derived from `TabBarDispatchPayloads` (both live in `tab-event.helpers.ts`), and `dispatch()` uses an explicit `_emit: TabHandlers` map to wrap each `OutputEmitterRef.emit()`. Zero casts left.
 - [x] **ToastService coupling removed** — the bar no longer injects a toast system or exposes `showToasts` / `*Toast` inputs. Hosts listen to the existing mutation outputs (`configSave` / `configLoad` / `configDelete` / `configNew`) and provide their own feedback. `music-library-page` picks up its four toasts through those outputs.
 - [x] **DnD reorder** — `TabStripComponent.onTabDrop()` resolves the target index from `DragSessionService.cursor().x` and live `.tab` bboxes, with pre-compensation for the splice-remove-then-insert model so the emitted `newIndex` reflects the post-splice slot the user dropped on. DnD directives and drop-zone contract untouched.
+- [x] **Keyboard a11y (tablist)** — `.tabs-scroll` = `role="tablist"`, each `.tab` = `role="tab"` + `aria-selected` + roving `tabindex`. `onTabKeydown` handles ← / → (wrap), Home / End, Enter / Space, and Escape (closes the ⋮ menu). Automatic activation — arrow moves focus and emits `tabSelect`.
 - [ ] Migrate move-to dropdowns to `@angular/cdk/overlay` — **priority #1** next (see local TODO)
-- [ ] Keyboard a11y (tablist / ← → / Home / End / Escape / Enter)
+- [ ] DnD drop-position preview indicator — backlog (see local TODO)
 - [ ] Validate reusability with a second consumer — backlog (see local TODO)
 
 ## Testing Checklist
