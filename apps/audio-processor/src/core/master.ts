@@ -12,7 +12,10 @@ import * as fs from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
-import type { TMeasuredLoudness, TMasteringTargetSpecs } from '@sh3pherd/shared-types';
+import type {
+  TMeasuredLoudness,
+  TMasteringTargetSpecs,
+} from '@sh3pherd/shared-types';
 
 /* ── Types ─────────────────────────────────────────────────────────── */
 
@@ -26,7 +29,11 @@ export interface MasteringResult {
 
 async function cleanupTempFiles(...paths: string[]) {
   for (const p of paths) {
-    try { await fs.unlink(p); } catch { /* ignore */ }
+    try {
+      await fs.unlink(p);
+    } catch {
+      /* ignore */
+    }
   }
 }
 
@@ -61,34 +68,36 @@ export async function masterAudio(
     `measured_I=${measured.integratedLUFS}`,
     `measured_TP=${measured.truePeakdBTP}`,
     `measured_LRA=${measured.loudnessRange}`,
-    `measured_thresh=-24`,  // safe default for gating threshold
+    `measured_thresh=-24`, // safe default for gating threshold
     `linear=true`,
   ].join(':');
 
   const report: string[] = [];
 
-  await new Promise<void>((resolve, reject) => {
-    const proc = spawn('ffmpeg', [
-      '-y',
-      '-i', inputPath,
-      '-af', loudnormFilter,
-      '-c:a', 'pcm_s24le',
-      outputPath,
-    ]);
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const proc = spawn('ffmpeg', [
+        '-y',
+        '-i',
+        inputPath,
+        '-af',
+        loudnormFilter,
+        '-c:a',
+        'pcm_s24le',
+        outputPath,
+      ]);
 
-    proc.stderr.on('data', (data: Buffer) => report.push(data.toString()));
+      proc.stderr.on('data', (data: Buffer) => report.push(data.toString()));
 
-    proc.on('close', async (code) => {
-      if (code === 0) resolve();
-      else {
-        await cleanupTempFiles(inputPath, outputPath);
-        reject(new Error(`FFmpeg mastering exited with code ${code}`));
-      }
+      proc.on('close', (code) => {
+        if (code === 0) resolve();
+        else reject(new Error(`FFmpeg mastering exited with code ${code}`));
+      });
     });
-  });
 
-  const processedBuffer = await fs.readFile(outputPath);
-  await cleanupTempFiles(inputPath, outputPath);
-
-  return { processedBuffer, report: report.join('') };
+    const processedBuffer = await fs.readFile(outputPath);
+    return { processedBuffer, report: report.join('') };
+  } finally {
+    await cleanupTempFiles(inputPath, outputPath);
+  }
 }

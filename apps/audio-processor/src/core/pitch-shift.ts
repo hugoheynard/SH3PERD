@@ -21,6 +21,14 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import * as fs from 'node:fs/promises';
 
+/** Subset of ffprobe's `-show_streams` JSON output we depend on. */
+interface FfprobeStreamInfo {
+  sample_rate?: string;
+}
+interface FfprobeOutput {
+  streams?: FfprobeStreamInfo[];
+}
+
 /**
  * Probe the source sample rate using ffprobe.
  * Same pattern as analyze.ts's decodeWithFFmpeg.
@@ -28,10 +36,13 @@ import * as fs from 'node:fs/promises';
 async function probeSampleRate(inputPath: string): Promise<number> {
   return new Promise<number>((resolve, reject) => {
     const proc = spawn('ffprobe', [
-      '-v', 'quiet',
-      '-print_format', 'json',
+      '-v',
+      'quiet',
+      '-print_format',
+      'json',
       '-show_streams',
-      '-select_streams', 'a:0',
+      '-select_streams',
+      'a:0',
       inputPath,
     ]);
     const chunks: Buffer[] = [];
@@ -42,11 +53,13 @@ async function probeSampleRate(inputPath: string): Promise<number> {
         return;
       }
       try {
-        const info = JSON.parse(Buffer.concat(chunks).toString());
+        const info = JSON.parse(
+          Buffer.concat(chunks).toString(),
+        ) as FfprobeOutput;
         const stream = info.streams?.[0];
         resolve(parseInt(stream?.sample_rate ?? '44100', 10));
       } catch (e) {
-        reject(e);
+        reject(e instanceof Error ? e : new Error(String(e)));
       }
     });
     proc.on('error', reject);
@@ -61,11 +74,17 @@ async function probeSampleRate(inputPath: string): Promise<number> {
  *
  * Exported for direct unit testing.
  */
-export function computeShiftedRate(sourceSR: number, semitones: number): number {
+export function computeShiftedRate(
+  sourceSR: number,
+  semitones: number,
+): number {
   return Math.round(sourceSR * Math.pow(2, semitones / 12));
 }
 
-export async function pitchShift(audioBuffer: Buffer, semitones: number): Promise<Buffer> {
+export async function pitchShift(
+  audioBuffer: Buffer,
+  semitones: number,
+): Promise<Buffer> {
   if (semitones === 0) {
     // No shift requested — return the input as-is to avoid a pointless
     // ffmpeg round-trip that would re-encode and potentially lose quality.
@@ -93,16 +112,23 @@ export async function pitchShift(audioBuffer: Buffer, semitones: number): Promis
       const stderrChunks: Buffer[] = [];
       const proc = spawn('ffmpeg', [
         '-y',
-        '-i', inputPath,
-        '-af', filterChain,
-        '-c:a', 'pcm_s24le',
+        '-i',
+        inputPath,
+        '-af',
+        filterChain,
+        '-c:a',
+        'pcm_s24le',
         outputPath,
       ]);
       proc.stderr.on('data', (d: Buffer) => stderrChunks.push(d));
       proc.on('close', (code) => {
         if (code !== 0) {
           const stderr = Buffer.concat(stderrChunks).toString();
-          reject(new Error(`ffmpeg pitch-shift exited with code ${code}: ${stderr.slice(-500)}`));
+          reject(
+            new Error(
+              `ffmpeg pitch-shift exited with code ${code}: ${stderr.slice(-500)}`,
+            ),
+          );
           return;
         }
         resolve();

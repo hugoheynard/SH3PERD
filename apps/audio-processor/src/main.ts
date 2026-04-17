@@ -16,4 +16,4 @@ async function bootstrap() {
   logger.log(`TCP microservice listening on port ${port}`);
 }
 
-bootstrap();
+void bootstrap();

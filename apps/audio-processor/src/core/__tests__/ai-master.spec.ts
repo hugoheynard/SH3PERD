@@ -38,9 +38,14 @@ const FAKE_PREDICTED_PARAMS: TAiMasterPredictedParams = {
 
 // Mock promisify so that when ai-master.ts does promisify(execFile),
 // it gets our controlled mock function instead of the real subprocess.
-const mockExec = jest.fn<Promise<{ stdout: string; stderr: string }>, any[]>();
+// The @types/jest signature is `fn<TReturn, TArgs>`, so the function type is
+// split between the two generics rather than expressed as a single arrow.
+const mockExec = jest.fn<
+  Promise<{ stdout: string; stderr: string }>,
+  [file: string, args: readonly string[]]
+>();
 jest.mock('node:util', () => ({
-  ...jest.requireActual('node:util'),
+  ...jest.requireActual<typeof import('node:util')>('node:util'),
   promisify: jest.fn(() => mockExec),
 }));
 
@@ -116,23 +121,26 @@ describe('aiMasterAudio', () => {
 
   it('cleans up temp files on python subprocess failure', async () => {
     mockExec.mockRejectedValueOnce(new Error('python crashed'));
-    await expect(aiMasterAudio(inputBuf, refBuf, ckpt)).rejects.toThrow('python crashed');
+    await expect(aiMasterAudio(inputBuf, refBuf, ckpt)).rejects.toThrow(
+      'python crashed',
+    );
     expect(mockUnlink).toHaveBeenCalledTimes(3);
   });
 
   it('throws when python stdout is not valid JSON', async () => {
     mockExec.mockResolvedValueOnce({ stdout: 'not-json!!!', stderr: '' });
-    await expect(aiMasterAudio(inputBuf, refBuf, ckpt)).rejects.toThrow('Failed to parse');
+    await expect(aiMasterAudio(inputBuf, refBuf, ckpt)).rejects.toThrow(
+      'Failed to parse',
+    );
   });
 
   it('spawns python3 with correct args', async () => {
     await aiMasterAudio(inputBuf, refBuf, ckpt);
     expect(mockExec).toHaveBeenCalledTimes(1);
-    const args = mockExec.mock.calls[0];
-    // First arg is the python binary
-    expect(args[0]).toBe('python3');
-    // Second arg is the args array
-    const cliArgs = args[1] as string[];
+    // Destructure to keep the typed signature of mockExec instead of indexing
+    // an `any` tuple.
+    const [file, cliArgs] = mockExec.mock.calls[0];
+    expect(file).toBe('python3');
     expect(cliArgs).toContain('--input');
     expect(cliArgs).toContain('--reference');
     expect(cliArgs).toContain('--output');
