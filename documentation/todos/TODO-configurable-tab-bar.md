@@ -22,10 +22,13 @@
 ### Backlog
 
 - [x] **Unit tests on `TabMutationService`** — 48 specs in [`tab-mutation.service.spec.ts`](../../apps/frontend-webapp/src/app/shared/configurable-tab-bar/tab-mutation.service.spec.ts) cover every public mutation, the auto-sync post-processor, `onChanged` contract, and every `moveActiveTabToConfig` edge case (strip-empties, target !== active, target === active subtle interaction). Jest runner repaired along the way.
-- [ ] DnD reorder moves to correct position — **deferred** (see local TODO § Priority #2)
-- [ ] Migrate move-to dropdowns to `@angular/cdk/overlay` — **priority #3** for 8+ (see local TODO)
-- [ ] Replace `_handlers` mutable workaround — backlog (see local TODO)
-- [ ] Further narrow `dispatch()` runtime casts — backlog (see local TODO)
+- [x] **OnPush change detection** — all four components now use `ChangeDetectionStrategy.OnPush`; the three `[(ngModel)]` rename buffers migrated to signals.
+- [x] **i18n-ready labels** — every hardcoded English string exposed as an `input<string>()` with a default that reproduces the previous copy (20 surfaces, 4 toasts with `{name}` interpolation).
+- [x] **`tabAdd` asymmetry removed** — the `+` button now goes through `dispatch('tabAdd', undefined)` like every other mutation. The special-case `onTabAdd()` method is gone.
+- [x] **`_handlers` mutable workaround** — the field was never reassigned; marked `readonly`.
+- [x] **`dispatch()` runtime casts eliminated** — `TabHandlers` is now a mapped type derived from `TabBarDispatchPayloads` (both live in `tab-event.helpers.ts`), and `dispatch()` uses an explicit `_emit: TabHandlers` map to wrap each `OutputEmitterRef.emit()`. Zero casts left.
+- [ ] DnD reorder moves to correct position — **priority #1** next (see local TODO § Priority #2)
+- [ ] Migrate move-to dropdowns to `@angular/cdk/overlay` — **priority #2** next (see local TODO)
 - [ ] Validate reusability with a second consumer — backlog (see local TODO)
 
 ## Testing Checklist
@@ -63,5 +66,7 @@
 - [x] Add tab button clickable (z-index fix over scroll container)
 - [x] Component split into sub-components
 - [x] Unit tests on `TabMutationService` — 48 specs
-- [ ] Replace `_handlers` mutable workaround
-- [ ] Further narrow `dispatch()` runtime casts
+- [x] `_handlers` marked `readonly`
+- [x] `dispatch()` runtime casts eliminated (typed `_emit: TabHandlers` map)
+- [x] OnPush change detection on all four components
+- [x] All UI labels configurable via `input<string>()` (i18n-ready)

@@ -35,22 +35,23 @@ focus ring, dark-mode tokens and hover accent now come uniformly from
 
 ---
 
-## Audit (honest review — 7/10 overall)
+## Audit (honest review — 7.5/10 overall after the April 2026 polish pass)
 
 Full breakdown kept for reference:
 
-| Dimension          | Note |
-| ------------------ | ---- |
-| Architecture / SoC | 8    |
-| API design         | 7.5  |
-| Code quality       | 6.5  |
-| Documentation      | 9    |
-| Robustness         | 5    |
-| Reusability        | 6    |
-| Evolution          | 7.5  |
+| Dimension          | Before | Now | Delta drivers                                                      |
+| ------------------ | ------ | --- | ------------------------------------------------------------------ |
+| Architecture / SoC | 8      | 8   | unchanged                                                          |
+| API design         | 7.5    | 8.5 | `tabAdd` routed through `dispatch()`; `TabHandlers` derived type   |
+| Code quality       | 6.5    | 7   | OnPush + signal rename buffers; zero runtime casts in `dispatch()` |
+| Documentation      | 9      | 9   | unchanged                                                          |
+| Robustness         | 5      | 5   | DnD fix still pending, CDK Overlay still pending                   |
+| Reusability        | 6      | 7   | every hardcoded label now configurable via `input<string>()`       |
+| Evolution          | 7.5    | 8   | OnPush ready; trackBy already enforced by Angular 21 `@for`        |
 
-What lifts the component from 7 → 8+ lives in § Priority below.
-What lifts 8+ → 9+ lives in § Backlog.
+What still gates **8+ → 9+** lives in § Backlog.
+The two remaining lifts toward 8.5+ are the Robustness items (DnD,
+CDK Overlay) and second-consumer validation.
 
 ---
 
@@ -147,30 +148,61 @@ Files:
 
 ---
 
-## Deferred / backlog (8+ → 9+)
+## Done — OnPush + i18n + dispatch polish (April 2026)
 
-### Reduce `dispatch()` runtime casts further
+### OnPush change detection — ✅ done
 
-`dispatch()` is now typed through an explicit `TabBarDispatchPayloads` map, so
-the old `TabHandlers<unknown>` indexing problem is gone. There are still local
-casts when bridging the dynamic key to `this[key].emit(...)`, because Angular
-outputs are exposed as instance properties rather than through a typed event
-map object.
+All four components (`ConfigurableTabBarComponent`, `TabStripComponent`,
+`TabInlineMenuComponent`, `TabConfigPanelComponent`) now declare
+`changeDetection: ChangeDetectionStrategy.OnPush`. Because `[(ngModel)]`
+on a plain field doesn't round-trip through signal reads, the three
+rename buffers (`editTitle`, `editConfigName`, `editConfigTabTitle`)
+were converted to `signal('')` and the templates switched to
+`[ngModel]="…()" (ngModelChange)="….set($event)"`.
 
-Future cleanup options:
+### i18n-ready labels — ✅ done
 
-- build an explicit emitter map once, instead of indexing into `this`
-- or split handler invocation and output emission into separate typed helpers
+Every hardcoded English string on the bar is now an `input<string>()`
+with the literal as its default — 20 surfaces in total (tooltips, the
+save form placeholder / button, the empty-state label, the two move-to
+headings, and four toasts). Labels are declared once on the
+orchestrator and forwarded through the sub-components. Toast templates
+that interpolate the config name use a `{name}` placeholder
+substituted at runtime (`'Config "{name}" saved'`). Zero breaking
+change — defaults reproduce the previous copy verbatim.
 
-The remaining casts are much narrower than before, but this area is still a
-candidate for polish.
+### `tabAdd` asymmetry — ✅ done
 
-### Replace `_handlers` mutable workaround
+`tabAdd: void` was added to `TabBarDispatchPayloads` and the special-
+case `onTabAdd()` method was removed. The `+` button now calls
+`dispatch('tabAdd', undefined)` like every other mutation, so the
+TAB_HANDLERS path and the `(tabAdd)` output are wired through the same
+pipeline.
 
-`_handlers` is a mutable field set via `inject(TAB_HANDLERS, { optional: true })`
-to sidestep Angular's signal-input timing quirks. Investigate whether a
-directive-based injection or an `afterRender` hook would give us a stable
-pattern without the mutable slot.
+### `_handlers` mutable workaround — ✅ done
+
+The field is set once via `inject(TAB_HANDLERS, { optional: true })` and
+never reassigned. It was simply marked `readonly` — the "mutable slot
+to sidestep signal-input timing" concern was already not a real
+concern.
+
+### `dispatch()` runtime casts — ✅ done
+
+`TabHandlers` is now a mapped type derived from `TabBarDispatchPayloads`
+(both moved to `tab-event.helpers.ts` as the single source of truth).
+The dynamic `this[key] as { emit: … }` cast was replaced by an
+explicit `_emit: TabHandlers` map whose values just forward to the
+matching `OutputEmitterRef.emit()`. `dispatch()` is now two typed
+lookups:
+
+```ts
+this._handlers?.[key](payload);
+this._emit[key](payload);
+```
+
+---
+
+## Deferred / backlog (8.5 → 9+)
 
 ### Validate reusability with a second consumer
 
