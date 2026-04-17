@@ -20,10 +20,19 @@ export const loadEnv = (envName: string = process.env['NODE_ENV'] ?? 'dev'): voi
   const baseEnvPath = path.resolve(process.cwd(), '.env.app');
   const envSpecificPath = path.resolve(process.cwd(), `.env.${envName}`);
 
+  const isTest = envName === 'test';
+
   [baseEnvPath, envSpecificPath].forEach((envPath) => {
     if (fs.existsSync(envPath)) {
       // Load the environment file and override existing variables
       dotenv.config({ path: envPath, override: true });
+    } else if (isTest) {
+      // In test mode, `.env.app` / `.env.test` are optional — CI and the
+      // jest globalSetup seed the required variables programmatically so
+      // the suite never needs a developer's secrets on disk. Log and
+      // continue; the validation below still catches missing required
+      // vars regardless of whether they came from a file or the env.
+      console.log(`[ENV] Skipping missing ${envPath} (test mode, env-seeded)`);
     } else {
       throw new Error(`[ENV] Missing environment file: ${envPath}`);
     }
