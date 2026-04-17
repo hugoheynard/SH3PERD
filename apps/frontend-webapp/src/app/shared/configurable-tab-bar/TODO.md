@@ -118,14 +118,18 @@ awkward. The internal inputs remain bound as `TabItem<unknown>[]` /
 `SavedTabConfig<unknown>[]` at the component boundary, but the worst leak —
 generic domain objects escaping through outputs — has been removed.
 
-### 2. Fix the DnD drop-at-end bug
+### 2. Fix the DnD drop-at-end bug — ✅ done
 
-`TabStripComponent.onTabDrop()` emits `tabReorder` with `newIndex: tabs.length - 1`
-regardless of drop position. The underlying `dnd-drop-zone.directive.ts`
-only emits zone-level drops — fixing this requires computing the target
-index from pointer coordinates relative to sibling tab elements, either
-via a new zone event or by using the already-defined
-`onTabDropAtIndex()` hook.
+`TabStripComponent.onTabDrop()` used to emit `tabReorder` with
+`newIndex: tabs.length - 1` regardless of where the user dropped. Fixed
+without touching the DnD directives or the drop-zone contract — the
+resolver reads the last-known cursor x from `DragSessionService.cursor()`
+(a public signal kept fresh on every pointermove), then walks the live
+`.tab` DOM elements and picks the first whose horizontal midpoint sits
+right of the cursor. The raw visual index is then compensated for the
+`reorderTab()` mutation model (splice-remove-then-insert): if the source
+sat before the visual slot, subtract 1 so the emitted `newIndex` matches
+the user's intent post-splice.
 
 - **Where:** [`tab-strip/tab-strip.component.ts`](./tab-strip/tab-strip.component.ts) → `onTabDrop()`
 

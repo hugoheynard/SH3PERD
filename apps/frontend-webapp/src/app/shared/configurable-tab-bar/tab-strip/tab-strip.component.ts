@@ -1,6 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  inject,
   input,
   output,
   signal,
@@ -9,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { ButtonIconComponent } from '../../button-icon/button-icon.component';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
+import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
 import type { TabItem, SavedTabConfig } from '../configurable-tab-bar.types';
 import { TabInlineMenuComponent } from '../tab-inline-menu/tab-inline-menu.component';
@@ -39,6 +42,9 @@ import { TabInlineMenuComponent } from '../tab-inline-menu/tab-inline-menu.compo
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabStripComponent {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly dragSession = inject(DragSessionService);
+
   /* ── Inputs ────────────────────────────────────── */
   readonly tabs = input.required<TabItem<unknown>[]>();
   readonly activeTabId = input.required<string>();
@@ -128,17 +134,49 @@ export class TabStripComponent {
 
   /* ── DnD reorder ───────────────────────────────── */
 
+  /**
+   * Resolve the drop position from the pointer's last known x-coordinate
+   * at drop time (kept fresh by `DragSessionService` during the drag) and
+   * the live bounding boxes of the rendered `.tab` elements.
+   *
+   * Algorithm:
+   * 1. Find the visual slot — index of the first tab whose horizontal
+   *    midpoint sits to the right of the cursor. No match = drop past the
+   *    last tab (append).
+   * 2. Adjust for the mutation model — `reorderTab(tabId, newIndex)`
+   *    splices the source out *first*, then inserts it at `newIndex` in
+   *    the shortened array. If the source sat before the visual slot,
+   *    removing it shifts every subsequent index down by one — we pre-
+   *    compensate here so the emitted `newIndex` matches the final
+   *    post-splice position the user pointed at.
+   *
+   * Kept intentionally agnostic of the DnD engine internals — the only
+   * info we consume is `DragSessionService.cursor()`, a public signal.
+   */
   onTabDrop(drag: DragState): void {
     if (drag.type !== 'tab') return;
     const tabId = drag.data.tabId;
     const tabs = this.tabs();
     const currentIndex = tabs.findIndex((t) => t.id === tabId);
     if (currentIndex === -1) return;
-    // NOTE: drop-at-end-only — deferred. See ../TODO.md § Deferred.
-    this.tabReorder.emit({ tabId, newIndex: tabs.length - 1 });
-  }
 
-  onTabDropAtIndex(tabId: string, targetIndex: number): void {
-    this.tabReorder.emit({ tabId, newIndex: targetIndex });
+    const cursorX = this.dragSession.cursor().x;
+    const tabEls = this.host.nativeElement.querySelectorAll<HTMLElement>(
+      ':scope > .tabs-scroll > .tab',
+    );
+
+    let visualIndex = tabs.length;
+    for (let i = 0; i < tabEls.length; i++) {
+      const rect = tabEls[i].getBoundingClientRect();
+      if (cursorX < rect.left + rect.width / 2) {
+        visualIndex = i;
+        break;
+      }
+    }
+
+    const newIndex = visualIndex > currentIndex ? visualIndex - 1 : visualIndex;
+
+    if (newIndex === currentIndex) return;
+    this.tabReorder.emit({ tabId, newIndex });
   }
 }

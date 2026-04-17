@@ -28,8 +28,9 @@
 - [x] **`_handlers` mutable workaround** — the field was never reassigned; marked `readonly`.
 - [x] **`dispatch()` runtime casts eliminated** — `TabHandlers` is now a mapped type derived from `TabBarDispatchPayloads` (both live in `tab-event.helpers.ts`), and `dispatch()` uses an explicit `_emit: TabHandlers` map to wrap each `OutputEmitterRef.emit()`. Zero casts left.
 - [x] **ToastService coupling removed** — the bar no longer injects a toast system or exposes `showToasts` / `*Toast` inputs. Hosts listen to the existing mutation outputs (`configSave` / `configLoad` / `configDelete` / `configNew`) and provide their own feedback. `music-library-page` picks up its four toasts through those outputs.
-- [ ] DnD reorder moves to correct position — **priority #1** next (see local TODO § Priority #2)
-- [ ] Migrate move-to dropdowns to `@angular/cdk/overlay` — **priority #2** next (see local TODO)
+- [x] **DnD reorder** — `TabStripComponent.onTabDrop()` resolves the target index from `DragSessionService.cursor().x` and live `.tab` bboxes, with pre-compensation for the splice-remove-then-insert model so the emitted `newIndex` reflects the post-splice slot the user dropped on. DnD directives and drop-zone contract untouched.
+- [ ] Migrate move-to dropdowns to `@angular/cdk/overlay` — **priority #1** next (see local TODO)
+- [ ] Keyboard a11y (tablist / ← → / Home / End / Escape / Enter)
 - [ ] Validate reusability with a second consumer — backlog (see local TODO)
 
 ## Testing Checklist
@@ -40,7 +41,7 @@
 - [x] Active tab operations: menu (⋮), color, move-to-config, close
 - [x] No duplicate tab IDs
 - [x] Data persists across page reload
-- [ ] DnD reorder moves to correct position — deferred
+- [x] DnD reorder moves to correct position
 
 ### Config operations
 
