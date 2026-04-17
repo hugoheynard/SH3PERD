@@ -15,6 +15,7 @@ import { TabConfigPanelComponent } from './tab-config-panel/tab-config-panel.com
 
 type TabBarDispatchPayloads = {
   tabSelect: string;
+  tabAdd: void;
   tabClose: string;
   tabRename: { id: string; title: string };
   tabReorder: { tabId: string; newIndex: number };
@@ -220,13 +221,6 @@ export class ConfigurableTabBarComponent {
       this.dispatch('tabColorChange', { id: this.colorTargetTabId, color });
       this.colorTargetTabId = null;
     }
-  }
-
-  /* ── Add tab ───────────────────────────────────── */
-
-  onTabAdd(): void {
-    this._handlers?.tabAdd();
-    this.tabAdd.emit();
   }
 
   /* ── Dispatch helper ─────────────────────────────

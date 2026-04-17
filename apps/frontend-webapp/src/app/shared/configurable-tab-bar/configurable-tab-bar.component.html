@@ -47,7 +47,7 @@
       icon="plus"
       size="sm"
       [tooltip]="addTabLabel()"
-      (clicked)="onTabAdd()"
+      (clicked)="dispatch('tabAdd', undefined)"
     />
   }
 
