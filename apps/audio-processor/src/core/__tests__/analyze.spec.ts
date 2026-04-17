@@ -31,24 +31,59 @@ describe('computeQuality', () => {
   };
 
   it('returns 4 for pristine audio (no clipping, high SNR, true peak < -1)', () => {
-    expect(computeQuality({ ...base, clippingRatio: 0, SNRdB: 55, truePeakdBTP: -1.5 })).toBe(4);
+    expect(
+      computeQuality({
+        ...base,
+        clippingRatio: 0,
+        SNRdB: 55,
+        truePeakdBTP: -1.5,
+      }),
+    ).toBe(4);
   });
 
   it('returns 3 for good audio (low clipping, decent SNR)', () => {
-    expect(computeQuality({ ...base, clippingRatio: 0.003, SNRdB: 40, truePeakdBTP: -0.5 })).toBe(3);
+    expect(
+      computeQuality({
+        ...base,
+        clippingRatio: 0.003,
+        SNRdB: 40,
+        truePeakdBTP: -0.5,
+      }),
+    ).toBe(3);
   });
 
   it('returns 2 for acceptable audio (moderate clipping, low SNR)', () => {
-    expect(computeQuality({ ...base, clippingRatio: 0.01, SNRdB: 25, truePeakdBTP: 0 })).toBe(2);
+    expect(
+      computeQuality({
+        ...base,
+        clippingRatio: 0.01,
+        SNRdB: 25,
+        truePeakdBTP: 0,
+      }),
+    ).toBe(2);
   });
 
   it('returns 1 for poor audio (heavy clipping or very low SNR)', () => {
-    expect(computeQuality({ ...base, clippingRatio: 0.05, SNRdB: 10, truePeakdBTP: 0 })).toBe(1);
+    expect(
+      computeQuality({
+        ...base,
+        clippingRatio: 0.05,
+        SNRdB: 10,
+        truePeakdBTP: 0,
+      }),
+    ).toBe(1);
   });
 
   it('returns 3 when clipping is low but true peak is above -1 dBTP', () => {
     // Quality 4 requires truePeakdBTP < -1, so this should be 3
-    expect(computeQuality({ ...base, clippingRatio: 0, SNRdB: 55, truePeakdBTP: -0.5 })).toBe(3);
+    expect(
+      computeQuality({
+        ...base,
+        clippingRatio: 0,
+        SNRdB: 55,
+        truePeakdBTP: -0.5,
+      }),
+    ).toBe(3);
   });
 });
 
@@ -156,7 +191,7 @@ describe('extractPeaks (from shared-types)', () => {
   it('returns all zeros for a silent signal', () => {
     const silent = new Float32Array(4000);
     const peaks = extractPeaks(silent, 50);
-    peaks.forEach(p => expect(p).toBe(0));
+    peaks.forEach((p) => expect(p).toBe(0));
   });
 
   it('handles target count larger than input', () => {

@@ -20,12 +20,19 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import * as fs from 'node:fs/promises';
 import { masterAudio } from './master';
-import type { TAiMasterPredictedParams, TMasteringTargetSpecs, TMeasuredLoudness } from '@sh3pherd/shared-types';
+import type {
+  TAiMasterPredictedParams,
+  TMasteringTargetSpecs,
+  TMeasuredLoudness,
+} from '@sh3pherd/shared-types';
 
 const exec = promisify(execFile);
 
 /** Path to the Python worker script, resolved relative to the compiled JS output. */
-const DEFAULT_WORKER_PATH = resolve(__dirname, '../../python/deepafx_worker.py');
+const DEFAULT_WORKER_PATH = resolve(
+  __dirname,
+  '../../python/deepafx_worker.py',
+);
 
 /** Result returned by the two-stage pipeline. */
 export interface AiMasteringResult {
@@ -62,7 +69,8 @@ export async function aiMasterAudio(
 
   const pythonBin = process.env['DEEPAFX_PYTHON'] ?? 'python3';
   const workerPath = process.env['DEEPAFX_WORKER_PATH'] ?? DEFAULT_WORKER_PATH;
-  const ckptPath = checkpointPath || (process.env['DEEPAFX_CHECKPOINT_PATH'] ?? '');
+  const ckptPath =
+    checkpointPath || (process.env['DEEPAFX_CHECKPOINT_PATH'] ?? '');
 
   try {
     // Write input + reference to temp files
@@ -73,21 +81,29 @@ export async function aiMasterAudio(
 
     // ── Stage 1: DeepAFx-ST inference ────────────────────
 
-    const { stdout, stderr } = await exec(pythonBin, [
-      workerPath,
-      '--input', inputPath,
-      '--reference', referencePath,
-      '--output', deepafxOutputPath,
-      '--checkpoint', ckptPath,
-    ], {
-      timeout: 120_000, // 2 minutes — covers cold start + inference
-      maxBuffer: 10 * 1024 * 1024, // 10 MB stdout buffer
-    });
+    const { stdout, stderr } = await exec(
+      pythonBin,
+      [
+        workerPath,
+        '--input',
+        inputPath,
+        '--reference',
+        referencePath,
+        '--output',
+        deepafxOutputPath,
+        '--checkpoint',
+        ckptPath,
+      ],
+      {
+        timeout: 120_000, // 2 minutes — covers cold start + inference
+        maxBuffer: 10 * 1024 * 1024, // 10 MB stdout buffer
+      },
+    );
 
     if (stderr) {
       // DeepAFx-ST logs to stderr (model loading, inference progress).
       // Not an error — just info. We log it for observability.
-      // eslint-disable-next-line no-console
+
       console.log(`[ai-master] python stderr:\n${stderr.slice(-1000)}`);
     }
 
@@ -96,11 +112,15 @@ export async function aiMasterAudio(
     try {
       predictedParams = JSON.parse(stdout.trim()) as TAiMasterPredictedParams;
     } catch {
-      throw new Error(`Failed to parse DeepAFx-ST output JSON: ${stdout.slice(0, 500)}`);
+      throw new Error(
+        `Failed to parse DeepAFx-ST output JSON: ${stdout.slice(0, 500)}`,
+      );
     }
 
     // Read the DeepAFx-ST processed audio
-    let processedBuffer: Buffer = Buffer.from(await fs.readFile(deepafxOutputPath));
+    let processedBuffer: Buffer = Buffer.from(
+      await fs.readFile(deepafxOutputPath),
+    );
 
     // ── Stage 2: Optional loudnorm ───────────────────────
 

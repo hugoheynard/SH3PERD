@@ -26,7 +26,11 @@ export class S3Service {
     return this.inner.downloadToBuffer(key);
   }
 
-  async uploadBuffer(key: string, buffer: Buffer, contentType = 'audio/wav'): Promise<number> {
+  async uploadBuffer(
+    key: string,
+    buffer: Buffer,
+    contentType = 'audio/wav',
+  ): Promise<number> {
     this.logger.log(`Uploading ${key} (${buffer.byteLength} bytes)`);
     await this.inner.upload(key, buffer, contentType);
     return buffer.byteLength;
