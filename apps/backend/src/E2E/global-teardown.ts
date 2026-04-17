@@ -4,10 +4,10 @@
  * Called once after ALL test suites have finished.
  */
 
-import type { MongoMemoryServer } from 'mongodb-memory-server';
+import type { MongoMemoryReplSet } from 'mongodb-memory-server';
 
 type E2EGlobal = typeof globalThis & {
-  __MONGO_MEMORY_SERVER__?: MongoMemoryServer;
+  __MONGO_MEMORY_SERVER__?: MongoMemoryReplSet;
 };
 
 export default async function globalTeardown(): Promise<void> {

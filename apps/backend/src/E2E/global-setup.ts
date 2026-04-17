@@ -22,13 +22,13 @@
  *   globalTeardown: './src/E2E/global-teardown.ts'
  */
 
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
 type E2EGlobal = typeof globalThis & {
-  __MONGO_MEMORY_SERVER__?: MongoMemoryServer;
+  __MONGO_MEMORY_SERVER__?: MongoMemoryReplSet;
 };
 
-let mongod: MongoMemoryServer;
+let mongod: MongoMemoryReplSet;
 
 function setDefault(key: string, value: string): void {
   if (process.env[key] === undefined || process.env[key] === '') {
@@ -67,12 +67,20 @@ async function ensureTestKeys(): Promise<void> {
 }
 
 export default async function globalSetup(): Promise<void> {
-  mongod = await MongoMemoryServer.create({
-    instance: {
-      // Use a fixed DB name so all suites share the same server
-      // (cheaper than one server per suite). Isolation is handled
-      // by `resetAllCollections` between tests.
+  // Replica-set (1 node) so MongoDB transactions work. `RegisterUserHandler`
+  // and other commands use `session.withTransaction()`, which errors out on
+  // a standalone instance with:
+  //   `Transaction numbers are only allowed on a replica set member or mongos`
+  // A single-node replset is enough — there's no real replication, but the
+  // server advertises the mongos/replset capability transactions require.
+  mongod = await MongoMemoryReplSet.create({
+    replSet: {
+      count: 1,
+      // Fixed DB name so all suites share the same server (cheaper than
+      // one server per suite). Isolation is handled by
+      // `resetAllCollections` between tests.
       dbName: 'sh3pherd_e2e',
+      storageEngine: 'wiredTiger',
     },
   });
 
