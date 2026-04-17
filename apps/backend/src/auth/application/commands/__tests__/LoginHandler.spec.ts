@@ -209,5 +209,70 @@ describe('LoginHandler', () => {
         }),
       );
     });
+
+    /* ── Concurrent lockout race documentation ──
+     * The handler reads `failed_login_count` with `findOne`, then
+     * writes the new value via `$set: { failed_login_count: n + 1 }`.
+     * That's a non-atomic read-modify-write: two simultaneous failed
+     * attempts at the same count will both compute the same n+1 and
+     * both write it, effectively losing one increment.
+     *
+     * In practice this is benign for lockout ENFORCEMENT — the lock
+     * threshold is 5, so both racers crossing from 4→5 still trigger
+     * the lock. The window is only problematic at lower counts: an
+     * attacker firing bursts of K concurrent attempts at count=3 may
+     * observe count lag by up to K-1 before the lock lands, giving
+     * a small effective-attempts bonus per window.
+     *
+     * The test pins the current behaviour so any future switch to an
+     * atomic `$inc` / conditional update surfaces clearly in the diff.
+     * If you hit this and want the stricter semantics, the fix is in
+     * the handler's update call — not here.
+     */
+    it('[race] two concurrent 5th attempts both compute count=5 and both attempt the lock', async () => {
+      const { handler, userCredRepo, passwordService } = createHandler();
+      // Both reads return the same snapshot — the lost-update scenario.
+      userCredRepo.findOne.mockResolvedValue({ ...validUser, failed_login_count: 4 });
+      passwordService.comparePassword.mockResolvedValue({ isValid: false, wasRehashed: false });
+
+      const results = await Promise.allSettled([
+        handler.execute(new LoginCommand({ email: 'test@example.com', password: 'wrong' })),
+        handler.execute(new LoginCommand({ email: 'test@example.com', password: 'wrong' })),
+      ]);
+
+      // Both fail with INVALID_CREDENTIALS (the handler rejects on wrong
+      // password before looking at the lock, then attempts the update).
+      expect(results.every((r) => r.status === 'rejected')).toBe(true);
+      for (const r of results) {
+        if (r.status === 'rejected') {
+          expect(r.reason).toBeInstanceOf(BusinessError);
+        }
+      }
+
+      // Both invocations independently computed failed_login_count: 5
+      // and attempted the lock write — read-modify-write is not atomic.
+      const lockingCalls = userCredRepo.updateOne.mock.calls.filter((call: unknown[]) => {
+        const update = (call[0] as { update?: { $set?: { failed_login_count?: number } } })?.update;
+        return update?.$set?.failed_login_count === 5;
+      });
+      expect(lockingCalls).toHaveLength(2);
+      for (const call of lockingCalls) {
+        expect(call[0]).toEqual(
+          expect.objectContaining({
+            update: {
+              $set: expect.objectContaining({
+                failed_login_count: 5,
+                locked_until: expect.any(Date),
+              }),
+            },
+          }),
+        );
+      }
+
+      // Note on impact: the 6th attempt would read the latest write
+      // (count=5, locked_until in future) and be rejected by the
+      // lock-check branch, so no bypass of the lock itself. The race
+      // only matters for COUNT fidelity at intermediate values.
+    });
   });
 });
