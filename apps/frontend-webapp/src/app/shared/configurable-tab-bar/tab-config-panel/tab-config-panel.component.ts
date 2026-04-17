@@ -1,4 +1,11 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../button/button.component';
 import { ButtonIconComponent } from '../../button-icon/button-icon.component';
@@ -37,6 +44,7 @@ import type { SavedTabConfig } from '../configurable-tab-bar.types';
   ],
   templateUrl: './tab-config-panel.component.html',
   styleUrl: './tab-config-panel.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabConfigPanelComponent {
   private toast = inject(ToastService);
@@ -85,12 +93,12 @@ export class TabConfigPanelComponent {
   /* ── Config editing state ──────────────────────── */
   readonly expandedConfigId = signal<string | null>(null);
   readonly editingConfigNameId = signal<string | null>(null);
-  editConfigName = '';
+  readonly editConfigName = signal('');
   readonly editingConfigTabId = signal<{
     configId: string;
     tabId: string;
   } | null>(null);
-  editConfigTabTitle = '';
+  readonly editConfigTabTitle = signal('');
   readonly moveMenuTabCtx = signal<{ configId: string; tabId: string } | null>(
     null,
   );
@@ -148,11 +156,11 @@ export class TabConfigPanelComponent {
   startConfigRename(configId: string, name: string, event: MouseEvent): void {
     event.stopPropagation();
     this.editingConfigNameId.set(configId);
-    this.editConfigName = name;
+    this.editConfigName.set(name);
   }
 
   commitConfigRename(configId: string): void {
-    const name = this.editConfigName.trim();
+    const name = this.editConfigName().trim();
     if (name) this.configRename.emit({ configId, name });
     this.editingConfigNameId.set(null);
   }
@@ -165,13 +173,13 @@ export class TabConfigPanelComponent {
   ): void {
     event.stopPropagation();
     this.editingConfigTabId.set({ configId, tabId });
-    this.editConfigTabTitle = title;
+    this.editConfigTabTitle.set(title);
   }
 
   commitConfigTabRename(): void {
     const ctx = this.editingConfigTabId();
     if (!ctx) return;
-    const title = this.editConfigTabTitle.trim();
+    const title = this.editConfigTabTitle().trim();
     if (title)
       this.configTabRename.emit({
         configId: ctx.configId,

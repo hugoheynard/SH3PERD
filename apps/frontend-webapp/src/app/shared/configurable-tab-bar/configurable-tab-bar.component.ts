@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   inject,
@@ -92,6 +93,7 @@ type TabBarDispatchKey = keyof TabBarDispatchPayloads;
   imports: [ButtonIconComponent, TabStripComponent, TabConfigPanelComponent],
   templateUrl: './configurable-tab-bar.component.html',
   styleUrl: './configurable-tab-bar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigurableTabBarComponent {
   private _handlers: TabHandlers | null = inject(TAB_HANDLERS, {

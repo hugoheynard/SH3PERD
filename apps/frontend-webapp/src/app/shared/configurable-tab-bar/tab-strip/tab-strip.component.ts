@@ -1,4 +1,10 @@
-import { Component, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonIconComponent } from '../../button-icon/button-icon.component';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
@@ -30,6 +36,7 @@ import { TabInlineMenuComponent } from '../tab-inline-menu/tab-inline-menu.compo
   ],
   templateUrl: './tab-strip.component.html',
   styleUrl: './tab-strip.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabStripComponent {
   /* ── Inputs ────────────────────────────────────── */
@@ -57,7 +64,7 @@ export class TabStripComponent {
   /* ── Local UI state ────────────────────────────── */
   readonly editingTabId = signal<string | null>(null);
   readonly openTabMenuId = signal<string | null>(null);
-  editTitle = '';
+  readonly editTitle = signal('');
 
   /* ── Tab interactions ──────────────────────────── */
 
@@ -73,7 +80,7 @@ export class TabStripComponent {
     if (target.closest('button, input')) return;
     this.openTabMenuId.set(null);
     this.editingTabId.set(tab.id);
-    this.editTitle = tab.title;
+    this.editTitle.set(tab.title);
   }
 
   toggleTabMenu(tabId: string, event: MouseEvent): void {
@@ -82,7 +89,7 @@ export class TabStripComponent {
   }
 
   commitRename(tabId: string): void {
-    const title = this.editTitle.trim();
+    const title = this.editTitle().trim();
     if (title) this.tabRename.emit({ id: tabId, title });
     this.editingTabId.set(null);
   }

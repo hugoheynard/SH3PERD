@@ -88,7 +88,8 @@
             @if (editingConfigNameId() === cfg.id) {
               <input
                 class="config-rename-input"
-                [(ngModel)]="editConfigName"
+                [ngModel]="editConfigName()"
+                (ngModelChange)="editConfigName.set($event)"
                 (keydown.enter)="commitConfigRename(cfg.id)"
                 (keydown.escape)="editingConfigNameId.set(null)"
                 (blur)="commitConfigRename(cfg.id)"
@@ -132,7 +133,8 @@
                   ) {
                     <input
                       class="config-tab-rename-input"
-                      [(ngModel)]="editConfigTabTitle"
+                      [ngModel]="editConfigTabTitle()"
+                      (ngModelChange)="editConfigTabTitle.set($event)"
                       (keydown.enter)="commitConfigTabRename()"
                       (keydown.escape)="editingConfigTabId.set(null)"
                       (blur)="commitConfigTabRename()"

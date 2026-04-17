@@ -1,25 +1,45 @@
-<div class="tabs-scroll" uiDndDropZone [dropZone_id]="'tab-bar'" [dropZoneAccept]="['tab']" (uiDndDrop)="onTabDrop($event)">
+<div
+  class="tabs-scroll"
+  uiDndDropZone
+  [dropZone_id]="'tab-bar'"
+  [dropZoneAccept]="['tab']"
+  (uiDndDrop)="onTabDrop($event)"
+>
   @for (tab of tabs(); track tab.id) {
     <div
-      class="tab" [class.active]="tab.id === activeTabId()"
+      class="tab"
+      [class.active]="tab.id === activeTabId()"
       [style.border-left-color]="tab.color || 'transparent'"
       [style.border-left-width]="tab.color ? '3px' : '0'"
       (pointerup)="onTabPointerUp(tab, $event)"
       (dblclick)="onTabDblClick(tab, $event)"
-      role="button" tabindex="0"
-      uiDndDrag [dndType]="'tab'" [dndData]="{ tabId: tab.id, title: tab.title }"
+      role="button"
+      tabindex="0"
+      uiDndDrag
+      [dndType]="'tab'"
+      [dndData]="{ tabId: tab.id, title: tab.title }"
     >
       @if (editingTabId() === tab.id) {
-        <input class="tab-rename-input" [(ngModel)]="editTitle"
-          (keydown.enter)="commitRename(tab.id)" (keydown.escape)="cancelRename()"
-          (blur)="commitRename(tab.id)" (pointerup)="$event.stopPropagation()" autofocus />
+        <input
+          class="tab-rename-input"
+          [ngModel]="editTitle()"
+          (ngModelChange)="editTitle.set($event)"
+          (keydown.enter)="commitRename(tab.id)"
+          (keydown.escape)="cancelRename()"
+          (blur)="commitRename(tab.id)"
+          (pointerup)="$event.stopPropagation()"
+          autofocus
+        />
       } @else {
         <span class="tab-title">{{ tab.title }}</span>
       }
 
-      <sh3-button-icon icon="more-vertical" size="xs" tooltip="Tab actions"
-        (clicked)="toggleTabMenu(tab.id, $event)" />
-
+      <sh3-button-icon
+        icon="more-vertical"
+        size="xs"
+        tooltip="Tab actions"
+        (clicked)="toggleTabMenu(tab.id, $event)"
+      />
 
       @if (openTabMenuId() === tab.id) {
         <sh3-tab-inline-menu

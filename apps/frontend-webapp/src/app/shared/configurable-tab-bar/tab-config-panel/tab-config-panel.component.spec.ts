@@ -92,7 +92,7 @@ describe('TabConfigPanelComponent', () => {
     openLoadMenu();
 
     component.startConfigRename('cfg-1', 'Config 1', new MouseEvent('click'));
-    component.editConfigName = 'Renamed';
+    component.editConfigName.set('Renamed');
     fixture.detectChanges();
 
     component.commitConfigRename('cfg-1');

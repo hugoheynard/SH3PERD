@@ -1,4 +1,10 @@
-import { Component, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { ButtonComponent } from '../../button/button.component';
 import { ButtonIconComponent } from '../../button-icon/button-icon.component';
 import { IconComponent } from '../../icon/icon.component';
@@ -23,6 +29,7 @@ import type { TabItem, SavedTabConfig } from '../configurable-tab-bar.types';
   imports: [ButtonComponent, ButtonIconComponent, IconComponent],
   templateUrl: './tab-inline-menu.component.html',
   styleUrl: './tab-inline-menu.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabInlineMenuComponent {
   /* ── Inputs ────────────────────────────────────── */
