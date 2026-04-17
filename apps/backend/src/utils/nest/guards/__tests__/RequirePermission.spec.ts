@@ -65,7 +65,7 @@ describe('PermissionGuard', () => {
   it('should grant ANY permission when the user has the "owner" role (wildcard *)', () => {
     const { ctx, reflector } = mockCtx({
       roles: ['owner'],
-      required: ['company:settings:write', 'music:library:delete'],
+      required: ['company:settings:write', 'music:playlist:delete'],
     });
     const guard = new PermissionGuard(reflector);
 
@@ -123,7 +123,7 @@ describe('PermissionGuard', () => {
   it('should deny when the user has roles but NONE grant the required permission', () => {
     const { ctx, reflector } = mockCtx({
       roles: ['viewer'],
-      required: ['music:library:delete'],
+      required: ['music:playlist:delete'],
     });
     const guard = new PermissionGuard(reflector);
 
@@ -264,19 +264,28 @@ describe('matchPermission', () => {
 
   it('should NOT match when a middle wildcard tries to span multiple segments', () => {
     // Middle `*` replaces exactly one segment — not a greedy match.
-    expect(matchPermission('music:*:read', 'music:a:b:read')).toBe(false);
+    // Cast: `music:a:b:read` isn't a valid TPermission literal (the
+    // union constrains known resource names), but the matcher takes
+    // arbitrary segment strings at runtime — we're testing its
+    // algorithm, not just the typed inputs.
+    expect(matchPermission('music:*:read', 'music:a:b:read' as TPermission)).toBe(false);
   });
 
   /* ── Trailing wildcard (e.g. "music:playlist:*") ── */
 
   it('should match any action under a resource with "music:playlist:*"', () => {
-    expect(matchPermission('music:playlist:*', 'music:playlist:read')).toBe(true);
-    expect(matchPermission('music:playlist:*', 'music:playlist:write')).toBe(true);
-    expect(matchPermission('music:playlist:*', 'music:playlist:delete')).toBe(true);
+    // Cast: `resource:*` is not in the TPermission union (only `domain:*`
+    // is) but role templates and matcher accept it at runtime. Casting
+    // makes the test intent explicit — we're exercising the algorithm's
+    // wildcard semantics beyond what the type signature advertises.
+    const trailingWildcard = 'music:playlist:*' as TPermission;
+    expect(matchPermission(trailingWildcard, 'music:playlist:read')).toBe(true);
+    expect(matchPermission(trailingWildcard, 'music:playlist:write')).toBe(true);
+    expect(matchPermission(trailingWildcard, 'music:playlist:delete')).toBe(true);
   });
 
   it('should NOT match a different resource with a trailing wildcard', () => {
-    expect(matchPermission('music:playlist:*', 'music:library:read')).toBe(false);
+    expect(matchPermission('music:playlist:*' as TPermission, 'music:library:read')).toBe(false);
   });
 
   /* ── Length semantics ──────────────────────────── */

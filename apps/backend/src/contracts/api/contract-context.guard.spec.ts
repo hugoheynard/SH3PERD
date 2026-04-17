@@ -7,9 +7,13 @@ import type { TContractId, TUserId } from '@sh3pherd/shared-types';
 
 /**
  * Shape helpers — minimal repo doubles. We only call the methods the guard
- * uses (`findOne`), so we don't need a full interface mock here.
+ * uses (`findOne`), so we don't need a full interface mock here. The
+ * explicit `<(args?: unknown) => Promise<unknown>>` generic keeps
+ * `mockResolvedValue()` inference usable under the strict tsconfig that
+ * runs in the pre-push gate (without it, jest infers `never` as the
+ * resolved type).
  */
-type MockRepo = { findOne: jest.Mock };
+type MockRepo = { findOne: jest.Mock<(args?: unknown) => Promise<unknown>> };
 
 type MockReq = {
   headers: Record<string, string | undefined>;
@@ -43,8 +47,8 @@ describe('ContractContextGuard', () => {
   const CONTRACT = 'contract_abc' as TContractId;
 
   beforeEach(() => {
-    userPrefsRepo = { findOne: jest.fn() };
-    contractRepo = { findOne: jest.fn() };
+    userPrefsRepo = { findOne: jest.fn<(args?: unknown) => Promise<unknown>>() };
+    contractRepo = { findOne: jest.fn<(args?: unknown) => Promise<unknown>>() };
   });
 
   function makeGuard(reflectorReturn: boolean): {
