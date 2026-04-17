@@ -45,6 +45,12 @@ export class TabStripComponent {
   readonly savedConfigs = input<SavedTabConfig<unknown>[]>([]);
   /** Gate for the "move to config" action inside the per-tab ⋮ menu. */
   readonly canMoveToConfig = input<boolean>(true);
+  /** i18n labels — forwarded by the orchestrator. */
+  readonly tabActionsLabel = input<string>('Tab actions');
+  readonly colorLabel = input<string>('Color');
+  readonly moveToConfigLabel = input<string>('Move to config');
+  readonly moveToLabel = input<string>('Move to');
+  readonly closeLabel = input<string>('Close');
 
   /* ── Outputs (bubble up) ───────────────────────── */
   readonly tabSelect = output<string>();

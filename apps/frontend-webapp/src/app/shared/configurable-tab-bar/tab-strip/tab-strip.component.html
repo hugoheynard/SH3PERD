@@ -37,7 +37,7 @@
       <sh3-button-icon
         icon="more-vertical"
         size="xs"
-        tooltip="Tab actions"
+        [tooltip]="tabActionsLabel()"
         (clicked)="toggleTabMenu(tab.id, $event)"
       />
 
@@ -47,6 +47,10 @@
           [savedConfigs]="savedConfigs()"
           [canClose]="tabs().length > 1"
           [canMoveToConfig]="canMoveToConfig()"
+          [colorLabel]="colorLabel()"
+          [moveToConfigLabel]="moveToConfigLabel()"
+          [moveToLabel]="moveToLabel()"
+          [closeLabel]="closeLabel()"
           (colorRequested)="onColorRequested($event)"
           (moveToConfig)="onMoveToConfig($event)"
           (moveToLockedConfig)="onMoveToLockedConfig($event)"

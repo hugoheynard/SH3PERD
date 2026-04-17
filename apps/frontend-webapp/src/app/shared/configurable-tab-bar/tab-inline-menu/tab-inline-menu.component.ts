@@ -47,6 +47,11 @@ export class TabInlineMenuComponent {
    * downgrade leaves configs frozen but prevents mutation of them).
    */
   readonly canMoveToConfig = input<boolean>(true);
+  /** i18n labels — forwarded by the orchestrator. */
+  readonly colorLabel = input<string>('Color');
+  readonly moveToConfigLabel = input<string>('Move to config');
+  readonly moveToLabel = input<string>('Move to');
+  readonly closeLabel = input<string>('Close');
 
   /* ── Outputs ───────────────────────────────────── */
   readonly colorRequested = output<string>();

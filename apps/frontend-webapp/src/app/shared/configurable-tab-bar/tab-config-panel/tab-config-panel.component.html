@@ -8,21 +8,21 @@
     <sh3-button-icon
       icon="lock"
       size="sm"
-      tooltip="Can't save more configurations"
+      [tooltip]="saveLockedLabel()"
       (clicked)="lockClicked.emit()"
     />
   } @else if (activeConfigId()) {
     <sh3-button-icon
       icon="file-add"
       size="sm"
-      tooltip="New blank configuration"
+      [tooltip]="newConfigLabel()"
       (clicked)="onNewConfig($event)"
     />
   } @else {
     <sh3-button-icon
       icon="save"
       size="sm"
-      tooltip="Save current tab configuration"
+      [tooltip]="saveConfigLabel()"
       [active]="showSaveForm()"
       (clicked)="toggleSaveForm()"
     />
@@ -34,7 +34,7 @@
     <sh3-button-icon
       icon="folder-open"
       size="sm"
-      tooltip="Load saved configuration"
+      [tooltip]="loadConfigLabel()"
       [active]="showLoadMenu()"
       (clicked)="toggleLoadMenu()"
     />
@@ -51,14 +51,14 @@
         size="sm"
         [ngModel]="saveFormName()"
         (ngModelChange)="saveFormName.set($event)"
-        placeholder="Config name…"
+        [placeholder]="configNamePlaceholder()"
         (keydown.enter)="submitSaveForm()"
         (keydown.escape)="toggleSaveForm()"
         [autofocus]="true"
       />
-      <sh3-button variant="primary" size="sm" (clicked)="submitSaveForm()"
-        >Save</sh3-button
-      >
+      <sh3-button variant="primary" size="sm" (clicked)="submitSaveForm()">{{
+        saveButtonLabel()
+      }}</sh3-button>
     </div>
   }
 
@@ -66,7 +66,7 @@
   @if (showLoadMenu()) {
     <div class="tab-config-panel tab-config-panel--load">
       @if (!savedConfigs().length) {
-        <span class="config-empty">No saved configs yet</span>
+        <span class="config-empty">{{ emptyConfigsLabel() }}</span>
       }
 
       @for (cfg of savedConfigs(); track cfg.id) {
@@ -81,7 +81,7 @@
                 expandedConfigId() === cfg.id ? 'chevron-down' : 'chevron-right'
               "
               size="xs"
-              tooltip="Show tabs"
+              [tooltip]="showTabsLabel()"
               (clicked)="toggleConfigExpand(cfg.id, $event)"
             />
 
@@ -109,14 +109,14 @@
               <sh3-button-icon
                 icon="edit"
                 size="xs"
-                tooltip="Rename"
+                [tooltip]="renameLabel()"
                 (clicked)="startConfigRename(cfg.id, cfg.name, $event)"
               />
               <sh3-button-icon
                 icon="bin"
                 tone="critical"
                 size="xs"
-                tooltip="Delete"
+                [tooltip]="deleteLabel()"
                 (clicked)="onDeleteConfig(cfg.id, $event)"
               />
             </div>
@@ -154,7 +154,7 @@
                     <sh3-button-icon
                       icon="edit"
                       size="xs"
-                      tooltip="Rename"
+                      [tooltip]="renameLabel()"
                       (clicked)="
                         startConfigTabRename(cfg.id, tab.id, tab.title, $event)
                       "
@@ -163,7 +163,7 @@
                       <sh3-button-icon
                         icon="arrow-right"
                         size="xs"
-                        tooltip="Move"
+                        [tooltip]="moveLabel()"
                         (clicked)="toggleMoveMenu(cfg.id, tab.id, $event)"
                       />
                     }
@@ -172,7 +172,7 @@
                         icon="close"
                         tone="critical"
                         size="xs"
-                        tooltip="Remove"
+                        [tooltip]="removeLabel()"
                         (clicked)="
                           onRemoveTabFromConfig(cfg.id, tab.id, $event)
                         "
@@ -186,7 +186,7 @@
                     moveMenuTabCtx()?.tabId === tab.id
                   ) {
                     <div class="config-move-menu">
-                      <span class="config-move-label">Move to:</span>
+                      <span class="config-move-label">{{ moveToLabel() }}</span>
                       @for (
                         target of moveTargetConfigs(cfg.id);
                         track target.id

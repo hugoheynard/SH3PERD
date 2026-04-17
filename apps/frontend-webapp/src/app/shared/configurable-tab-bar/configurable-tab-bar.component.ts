@@ -121,6 +121,56 @@ export class ConfigurableTabBarComponent {
    */
   readonly configLocked = input<boolean>(false);
 
+  /* ── i18n-ready labels (English defaults) ──────── */
+  /** Tooltip on the `+` button that adds a new tab. */
+  readonly addTabLabel = input<string>('Add tab');
+  /** Tooltip on the lock button shown when `tabLocked` is true. */
+  readonly tabLimitReachedLabel = input<string>('Tab limit reached');
+  /** Tooltip on the per-tab ⋮ menu toggle. */
+  readonly tabActionsLabel = input<string>('Tab actions');
+  /** Tooltip on the inline-menu color button. */
+  readonly colorLabel = input<string>('Color');
+  /** Tooltip on the inline-menu move-to-config toggle. */
+  readonly moveToConfigLabel = input<string>('Move to config');
+  /** Heading shown above the list of move-to targets in the inline menu. */
+  readonly moveToLabel = input<string>('Move to');
+  /** Tooltip on the inline-menu close button. */
+  readonly closeLabel = input<string>('Close');
+  /** Tooltip on the config-panel lock button (shown when `configLocked` is true). */
+  readonly saveLockedLabel = input<string>("Can't save more configurations");
+  /** Tooltip on the "new blank config" button (shown when a config is active). */
+  readonly newConfigLabel = input<string>('New blank configuration');
+  /** Tooltip on the "save current config" button. */
+  readonly saveConfigLabel = input<string>('Save current tab configuration');
+  /** Tooltip on the "load saved config" button. */
+  readonly loadConfigLabel = input<string>('Load saved configuration');
+  /** Placeholder text in the save-config name input. */
+  readonly configNamePlaceholder = input<string>('Config name…');
+  /** Label on the save-confirmation button inside the save form. */
+  readonly saveButtonLabel = input<string>('Save');
+  /** Message shown when the load menu is opened with no saved configs. */
+  readonly emptyConfigsLabel = input<string>('No saved configs yet');
+  /** Tooltip on the per-config chevron that toggles the tab list. */
+  readonly showTabsLabel = input<string>('Show tabs');
+  /** Tooltip on the rename action in the load menu (both per-config and per-tab). */
+  readonly renameLabel = input<string>('Rename');
+  /** Tooltip on the delete-config action in the load menu. */
+  readonly deleteLabel = input<string>('Delete');
+  /** Tooltip on the move-tab-between-configs action in the load menu. */
+  readonly moveLabel = input<string>('Move');
+  /** Tooltip on the remove-tab-from-config action in the load menu. */
+  readonly removeLabel = input<string>('Remove');
+  /** Heading shown above the list of move-to targets in the config panel. */
+  readonly configMoveToLabel = input<string>('Move to:');
+  /** Toast message shown after starting a new config. */
+  readonly newConfigToast = input<string>('New configuration started');
+  /** Toast message shown after deleting a config. */
+  readonly deletedConfigToast = input<string>('Config deleted');
+  /** Template for the "config saved" toast. `{name}` is replaced with the config name. */
+  readonly savedConfigToast = input<string>('Config "{name}" saved');
+  /** Template for the "config applied" toast. `{name}` is replaced with the config name. */
+  readonly appliedConfigToast = input<string>('Config "{name}" applied');
+
   /* ── Outputs (public API — also dispatched via TAB_HANDLERS) ── */
   readonly tabSelect = output<string>();
   readonly tabAdd = output<void>();

@@ -4,32 +4,51 @@
      ═══════════════════════════════════════════════════ -->
 
 <!-- Hidden color picker (positioned off-screen via CSS) -->
-<input type="color" class="hidden-color-input" #colorInput (input)="onColorSelected($event)" />
+<input
+  type="color"
+  class="hidden-color-input"
+  #colorInput
+  (input)="onColorSelected($event)"
+/>
 
 <div class="tab-bar">
-
   <!-- Tab strip -->
   <sh3-tab-strip
     [tabs]="tabs()"
     [activeTabId]="activeTabId()"
     [savedConfigs]="savedConfigs()"
     [canMoveToConfig]="!configLocked()"
+    [tabActionsLabel]="tabActionsLabel()"
+    [colorLabel]="colorLabel()"
+    [moveToConfigLabel]="moveToConfigLabel()"
+    [moveToLabel]="moveToLabel()"
+    [closeLabel]="closeLabel()"
     (tabSelect)="dispatch('tabSelect', $event)"
     (tabClose)="dispatch('tabClose', $event)"
     (tabRename)="dispatch('tabRename', $event)"
     (tabReorder)="dispatch('tabReorder', $event)"
     (tabColorRequested)="onTabColorRequested($event)"
     (tabMoveToConfig)="dispatch('tabMoveToConfig', $event)"
-    (tabMoveToLockedConfig)="moveToLockedConfigClicked.emit({ targetConfigId: $event.targetConfigId })"
+    (tabMoveToLockedConfig)="
+      moveToLockedConfigClicked.emit({ targetConfigId: $event.targetConfigId })
+    "
   />
 
   <!-- Add-tab affordance: plus by default, lock when the host flags `tabLocked` -->
   @if (tabLocked()) {
-    <sh3-button-icon icon="lock" size="sm" tooltip="Tab limit reached"
-      (clicked)="tabLockClicked.emit()" />
+    <sh3-button-icon
+      icon="lock"
+      size="sm"
+      [tooltip]="tabLimitReachedLabel()"
+      (clicked)="tabLockClicked.emit()"
+    />
   } @else {
-    <sh3-button-icon icon="plus" size="sm" tooltip="Add tab"
-      (clicked)="onTabAdd()" />
+    <sh3-button-icon
+      icon="plus"
+      size="sm"
+      [tooltip]="addTabLabel()"
+      (clicked)="onTabAdd()"
+    />
   }
 
   <!-- Domain-specific slot (e.g. search input) -->
@@ -41,6 +60,23 @@
     [savedConfigs]="savedConfigs()"
     [showToasts]="showToasts()"
     [locked]="configLocked()"
+    [saveLockedLabel]="saveLockedLabel()"
+    [newConfigLabel]="newConfigLabel()"
+    [saveConfigLabel]="saveConfigLabel()"
+    [loadConfigLabel]="loadConfigLabel()"
+    [configNamePlaceholder]="configNamePlaceholder()"
+    [saveButtonLabel]="saveButtonLabel()"
+    [emptyConfigsLabel]="emptyConfigsLabel()"
+    [showTabsLabel]="showTabsLabel()"
+    [renameLabel]="renameLabel()"
+    [deleteLabel]="deleteLabel()"
+    [moveLabel]="moveLabel()"
+    [removeLabel]="removeLabel()"
+    [moveToLabel]="configMoveToLabel()"
+    [newConfigToast]="newConfigToast()"
+    [deletedConfigToast]="deletedConfigToast()"
+    [savedConfigToast]="savedConfigToast()"
+    [appliedConfigToast]="appliedConfigToast()"
     (lockClicked)="configLockClicked.emit()"
     (configSave)="dispatch('configSave', $event)"
     (configNew)="dispatch('configNew', undefined)"
@@ -50,6 +86,8 @@
     (configTabRemove)="dispatch('configTabRemove', $event)"
     (configTabRename)="dispatch('configTabRename', $event)"
     (configTabMove)="dispatch('configTabMove', $event)"
-    (moveToLockedConfig)="moveToLockedConfigClicked.emit({ targetConfigId: $event.targetConfigId })"
+    (moveToLockedConfig)="
+      moveToLockedConfigClicked.emit({ targetConfigId: $event.targetConfigId })
+    "
   />
 </div>

@@ -1,20 +1,34 @@
 <span class="tab-inline-actions" (pointerup)="$event.stopPropagation()">
-  <sh3-button-icon icon="palette" size="xs" tooltip="Color"
-    (clicked)="onColor($event)" />
+  <sh3-button-icon
+    icon="palette"
+    size="xs"
+    [tooltip]="colorLabel()"
+    (clicked)="onColor($event)"
+  />
 
   @if (canMoveToConfig() && savedConfigs().length) {
     <span class="tab-move-wrapper" #moveBtn>
-      <sh3-button-icon icon="arrow-right" size="xs" tooltip="Move to config"
-        (clicked)="onToggleMoveMenu($event, moveBtn)" />
+      <sh3-button-icon
+        icon="arrow-right"
+        size="xs"
+        [tooltip]="moveToConfigLabel()"
+        (clicked)="onToggleMoveMenu($event, moveBtn)"
+      />
 
       @if (moveMenuOpen()) {
-        <div class="tab-move-dropdown"
-          [style.top.px]="moveDropdownPos().top" [style.left.px]="moveDropdownPos().left">
-          <span class="tab-move-label">Move to</span>
+        <div
+          class="tab-move-dropdown"
+          [style.top.px]="moveDropdownPos().top"
+          [style.left.px]="moveDropdownPos().left"
+        >
+          <span class="tab-move-label">{{ moveToLabel() }}</span>
           @for (cfg of savedConfigs(); track cfg.id) {
-            <sh3-button variant="ghost" size="sm"
+            <sh3-button
+              variant="ghost"
+              size="sm"
               [class.tab-move-option--locked]="cfg.locked"
-              (clicked)="onMoveTo(cfg, $event)">
+              (clicked)="onMoveTo(cfg, $event)"
+            >
               @if (cfg.locked) {
                 <sh3-icon name="lock" size="xs" />
               }
@@ -27,7 +41,12 @@
   }
 
   @if (canClose()) {
-    <sh3-button-icon icon="close" tone="critical" size="xs" tooltip="Close"
-      (clicked)="onClose($event)" />
+    <sh3-button-icon
+      icon="close"
+      tone="critical"
+      size="xs"
+      [tooltip]="closeLabel()"
+      (clicked)="onClose($event)"
+    />
   }
 </span>

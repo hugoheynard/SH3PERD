@@ -59,6 +59,25 @@ export class TabConfigPanelComponent {
    * lock button that emits `lockClicked`. Host decides what to do next.
    */
   readonly locked = input<boolean>(false);
+  /* ── i18n labels — forwarded by the orchestrator. ── */
+  readonly saveLockedLabel = input<string>("Can't save more configurations");
+  readonly newConfigLabel = input<string>('New blank configuration');
+  readonly saveConfigLabel = input<string>('Save current tab configuration');
+  readonly loadConfigLabel = input<string>('Load saved configuration');
+  readonly configNamePlaceholder = input<string>('Config name…');
+  readonly saveButtonLabel = input<string>('Save');
+  readonly emptyConfigsLabel = input<string>('No saved configs yet');
+  readonly showTabsLabel = input<string>('Show tabs');
+  readonly renameLabel = input<string>('Rename');
+  readonly deleteLabel = input<string>('Delete');
+  readonly moveLabel = input<string>('Move');
+  readonly removeLabel = input<string>('Remove');
+  readonly moveToLabel = input<string>('Move to:');
+  readonly newConfigToast = input<string>('New configuration started');
+  readonly deletedConfigToast = input<string>('Config deleted');
+  /** `{name}` in the template is substituted with the config name at runtime. */
+  readonly savedConfigToast = input<string>('Config "{name}" saved');
+  readonly appliedConfigToast = input<string>('Config "{name}" applied');
 
   /* ── Outputs ───────────────────────────────────── */
   readonly configSave = output<string>();
@@ -110,7 +129,7 @@ export class TabConfigPanelComponent {
     this.showLoadMenu.set(false);
     this.showSaveForm.set(false);
     this.configNew.emit();
-    if (this.showToasts()) this.toast.show('New configuration started', 'info');
+    if (this.showToasts()) this.toast.show(this.newConfigToast(), 'info');
   }
 
   toggleSaveForm(): void {
@@ -130,20 +149,27 @@ export class TabConfigPanelComponent {
     this.configSave.emit(name);
     this.showSaveForm.set(false);
     this.saveFormName.set('');
-    if (this.showToasts()) this.toast.show(`Config "${name}" saved`, 'success');
+    if (this.showToasts())
+      this.toast.show(
+        this.savedConfigToast().replace('{name}', name),
+        'success',
+      );
   }
 
   onLoadConfig(configId: string, configName: string): void {
     this.configLoad.emit(configId);
     this.showLoadMenu.set(false);
     if (this.showToasts())
-      this.toast.show(`Config "${configName}" applied`, 'success');
+      this.toast.show(
+        this.appliedConfigToast().replace('{name}', configName),
+        'success',
+      );
   }
 
   onDeleteConfig(id: string, event: MouseEvent): void {
     event.stopPropagation();
     this.configDelete.emit(id);
-    if (this.showToasts()) this.toast.show('Config deleted', 'info');
+    if (this.showToasts()) this.toast.show(this.deletedConfigToast(), 'info');
   }
 
   /* ── Config editing ────────────────────────────── */
