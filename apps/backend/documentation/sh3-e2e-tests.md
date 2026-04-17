@@ -110,6 +110,40 @@ is still a hard error. The required-var validation at the end of
 `loadEnv` stays, so any misconfigured CI that forgot to seed
 `ATLAS_URI` / `CORE_DB_NAME` / `PORT` fails loudly.
 
+#### The `override: !isTest` rule (local ≠ CI trap)
+
+`bootstrapE2E()` forces `ATLAS_URI`, `CORE_DB_NAME`, `NODE_ENV` onto
+`process.env` before calling `loadEnv('test')`. For the seed to
+survive, `loadEnv` **must not** override those values when it finds a
+`.env.app` or `.env.test` on disk:
+
+```ts
+// loadEnv.ts — test mode loads files in "merge" mode (fill blanks only)
+dotenv.config({ path: envPath, override: !isTest });
+```
+
+Why this matters:
+
+- CI runners are clean — no `.env.app`, no `.env.test`. `loadEnv`
+  skips both, the globalSetup seed wins by default, and the suite
+  runs against `MongoMemoryReplSet` as intended.
+- Developer machines have a real `.env.app` on disk (usually pointing
+  `ATLAS_URI` at a staging or prod Atlas cluster so `pnpm dev` works
+  out of the box). If `loadEnv` were to call `dotenv.config({
+override: true })` in test mode, that `ATLAS_URI` would **silently
+  replace** the in-memory URI set by `bootstrapE2E()`, and E2E tests
+  would hit the developer's real database — passing in CI, failing
+  (or corrupting data) locally.
+
+The symptoms of that trap were: unique-index collisions on existing
+emails, `resetAllCollections()` wiping developer data, schema drift
+between the factories and whatever's in the real DB — everything
+pointing at a local / CI divergence with no obvious root cause.
+
+Keep the `override: !isTest` flag. Dev / prod paths still override as
+before (`.env.app` is the source of truth there); only test mode is
+protected.
+
 ### Serial execution via `--runInBand`
 
 Every spec in the backend — unit and E2E — runs through the single

@@ -24,8 +24,19 @@ export const loadEnv = (envName: string = process.env['NODE_ENV'] ?? 'dev'): voi
 
   [baseEnvPath, envSpecificPath].forEach((envPath) => {
     if (fs.existsSync(envPath)) {
-      // Load the environment file and override existing variables
-      dotenv.config({ path: envPath, override: true });
+      // In dev/prod, `.env.app` is the source of truth, so override any
+      // pre-existing values in the environment.
+      //
+      // In test mode however, the jest globalSetup (`src/E2E/global-setup.ts`)
+      // has already seeded `ATLAS_URI`, `CORE_DB_NAME`, `NODE_ENV` and the
+      // auth/cookie defaults with values pointing at the MongoMemoryReplSet.
+      // A developer's local `.env.app` typically points `ATLAS_URI` at a
+      // real Atlas cluster (staging or prod); overriding with `override:
+      // true` here would silently redirect the whole E2E suite at that real
+      // DB — tests pass in CI (no `.env.app` present) but fail or corrupt
+      // data locally. We therefore load in "merge" mode under test (only
+      // fill blanks) so the seed from globalSetup wins.
+      dotenv.config({ path: envPath, override: !isTest });
     } else if (isTest) {
       // In test mode, `.env.app` / `.env.test` are optional — CI and the
       // jest globalSetup seed the required variables programmatically so
