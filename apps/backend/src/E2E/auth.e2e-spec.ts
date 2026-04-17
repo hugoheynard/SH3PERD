@@ -73,6 +73,7 @@ describe('Auth E2E', () => {
           password: 'SecurePass123!',
           first_name: 'Alice',
           last_name: 'Tester',
+          account_type: 'artist',
         })
         .expect(201);
 
@@ -92,6 +93,7 @@ describe('Auth E2E', () => {
           password: 'SecurePass123!',
           first_name: 'Dup',
           last_name: 'User',
+          account_type: 'artist',
         })
         .expect(201);
 
@@ -100,6 +102,7 @@ describe('Auth E2E', () => {
         password: 'SecurePass123!',
         first_name: 'Dup',
         last_name: 'Again',
+        account_type: 'artist',
       });
 
       expect(res.status).toBeGreaterThanOrEqual(400);
@@ -173,6 +176,7 @@ describe('Auth E2E', () => {
         password: 'CorrectPass123',
         first_name: 'Wrong',
         last_name: 'PW',
+        account_type: 'artist',
       });
 
       // If register itself fails, skip the rest (env issue)

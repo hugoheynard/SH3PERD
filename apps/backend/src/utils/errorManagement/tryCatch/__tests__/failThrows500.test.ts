@@ -23,18 +23,19 @@ describe('failThrows500', () => {
 
   it('should wrap error in TechnicalError with custom message', async () => {
     await expect(service.failMethod()).rejects.toThrow(TechnicalError);
+    // TechnicalError exposes `code` (not `errorCode`) and no longer carries
+    // a `statusCode` field — HTTP 500 is set by the GlobalExceptionFilter,
+    // not by the error class itself.
     await expect(service.failMethod()).rejects.toMatchObject({
       message: 'Custom failure message',
-      errorCode: 'TEST_ERROR_CODE',
-      statusCode: 500,
+      code: 'TEST_ERROR_CODE',
     });
   });
 
   it('should generate message if not provided', async () => {
     await expect(service.failWithoutMessage()).rejects.toThrow(TechnicalError);
     await expect(service.failWithoutMessage()).rejects.toMatchObject({
-      errorCode: 'NO_MESSAGE_CODE',
-      statusCode: 500,
+      code: 'NO_MESSAGE_CODE',
     });
   });
 
