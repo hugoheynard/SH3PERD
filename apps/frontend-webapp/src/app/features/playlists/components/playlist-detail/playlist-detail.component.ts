@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { IconComponent } from '../../../../shared/icon/icon.component';
 import { PlaylistsApiService } from '../../services/playlists-api.service';
+import { PlaylistsStateService } from '../../services/playlists-state.service';
 import { TrackMutationService } from '../../services/mutations-layer/track-mutation.service';
 import { PlaylistsSelectorService } from '../../services/selector-layer/playlists-selector.service';
 import { formatDuration } from '../../../../shared/utils/duration.utils';
@@ -48,6 +49,7 @@ export class PlaylistDetailComponent {
   private readonly trackMutation = inject(TrackMutationService);
   private readonly selector = inject(PlaylistsSelectorService);
   private readonly session = inject(DragSessionService);
+  private readonly state = inject(PlaylistsStateService);
 
   /** Ref to the rendered `.tracklist` element — used to read per-row
    *  bounding rects and compute the insertion slot under the cursor. */
@@ -118,6 +120,16 @@ export class PlaylistDetailComponent {
   readonly isReorderDrag = computed(() => {
     const drag = this.session.current();
     return drag?.type === 'music-track' || drag?.type === 'playlist-track';
+  });
+
+  /**
+   * ID of the row currently being dragged inside this tracklist, or
+   * `null` when no internal reorder drag is active. Read by the
+   * template to dim the source row while it's being moved.
+   */
+  readonly draggingTrackId = computed(() => {
+    const drag = this.session.current();
+    return drag?.type === 'playlist-track' ? drag.data.playlistTrackId : null;
   });
 
   /**
@@ -259,7 +271,7 @@ export class PlaylistDetailComponent {
     // compensates for the removal that shifts later rows up by one.
     const newPosition = idx > current ? idx - 1 : idx;
 
-    this.trackMutation.moveTrack(trackId, newPosition);
+    this.trackMutation.moveTrack(pl.id, trackId, newPosition);
 
     // Optimistic reorder on the local detail signal so the UI
     // reflects the new order immediately.
@@ -275,5 +287,10 @@ export class PlaylistDetailComponent {
         tracks: reordered.map((t, i) => ({ ...t, position: i })),
       };
     });
+
+    // Permute the per-track rating series on the summary too so the
+    // card's sparklines redraw with the new track order. Means are
+    // unchanged by reordering so they stay put.
+    this.state.reorderSummarySeries(pl.id, current, newPosition);
   }
 }

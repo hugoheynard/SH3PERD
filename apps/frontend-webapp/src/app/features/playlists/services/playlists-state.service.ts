@@ -125,4 +125,42 @@ export class PlaylistsStateService {
     // Intentionally empty — no backend endpoint for playlist tab
     // configs yet. Mutations remain in-memory until the page reloads.
   }
+
+  /**
+   * Permute every per-track series on a playlist's summary so the
+   * card's sparklines reflect the new track order after a reorder.
+   * `fromIndex` / `toIndex` use the "splice out, splice in" semantics
+   * the `ReorderPlaylistTrackCommand` expects — same as the caller
+   * passes to `TrackMutationService.moveTrack`. Means aren't touched
+   * because reordering a multiset doesn't change its mean.
+   */
+  reorderSummarySeries(
+    playlistId: string,
+    fromIndex: number,
+    toIndex: number,
+  ): void {
+    const permute = <T>(arr: T[]): T[] => {
+      if (fromIndex < 0 || fromIndex >= arr.length) return arr;
+      const next = [...arr];
+      const [v] = next.splice(fromIndex, 1);
+      const clamped = Math.max(0, Math.min(toIndex, next.length));
+      next.splice(clamped, 0, v);
+      return next;
+    };
+
+    this.state.update((s) => ({
+      ...s,
+      playlists: s.playlists.map((pl) =>
+        pl.id !== playlistId
+          ? pl
+          : {
+              ...pl,
+              masterySeries: permute(pl.masterySeries),
+              energySeries: permute(pl.energySeries),
+              effortSeries: permute(pl.effortSeries),
+              qualitySeries: permute(pl.qualitySeries),
+            },
+      ),
+    }));
+  }
 }

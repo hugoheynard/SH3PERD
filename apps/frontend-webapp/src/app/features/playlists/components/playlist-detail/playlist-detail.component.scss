@@ -185,7 +185,8 @@ $colors: (
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   transition:
     background 0.1s,
-    opacity 0.1s;
+    opacity 0.15s,
+    filter 0.15s;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
@@ -201,6 +202,23 @@ $colors: (
     .track-drag-handle {
       opacity: 1;
       color: var(--text-primary);
+    }
+  }
+
+  /* Mark the row currently being dragged so the user's eye tracks
+     back to where they grabbed from. Slight fade + desaturation +
+     a dashed indigo outline so the "ghost stays behind" reading is
+     obvious at a glance. */
+  &.dragging {
+    opacity: 0.35;
+    filter: saturate(0.6);
+    background: rgba(129, 140, 248, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(129, 140, 248, 0.25);
+    border-bottom-color: transparent;
+    cursor: grabbing;
+
+    &:hover {
+      background: rgba(129, 140, 248, 0.06);
     }
   }
 }

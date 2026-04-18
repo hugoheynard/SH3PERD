@@ -147,6 +147,7 @@
       @for (t of pl.tracks; track t.id; let i = $index) {
         <div
           class="track-row"
+          [class.dragging]="t.id === draggingTrackId()"
           role="listitem"
           uiDndDrag
           [dndType]="'playlist-track'"
