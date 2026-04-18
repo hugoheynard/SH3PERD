@@ -150,6 +150,93 @@ fixtures.
 
 Source: [Cloudflare — Testing Turnstile](https://developers.cloudflare.com/turnstile/troubleshooting/testing/).
 
+### 3.3 Visual testing — see the captcha as a real user would
+
+The default dev config uses the "always passes" site key, which renders
+invisibly. To actually see the widget / debug the challenge flow locally,
+combine the test keys above. Pick the scenario you need:
+
+#### Scenario 1 — Widget rendering only (backend still bypassed)
+
+Fastest: just see the interactive challenge UI.
+
+```ts
+// apps/frontend-webapp/src/environments/env.dev.ts
+turnstileSiteKey: '3x00000000000000000000FF',
+```
+
+Reload — you'll see the checkbox + interactive challenge. Backend stays
+in bypass mode (no `TURNSTILE_SECRET_KEY` set), so it accepts any token
+without calling Cloudflare. **Good for UI work, won't exercise the
+backend verification path.**
+
+#### Scenario 2 — End-to-end prod-like flow (recommended)
+
+Forces the interactive UI AND makes the backend actually verify with
+Cloudflare using a test secret:
+
+```ts
+// apps/frontend-webapp/src/environments/env.dev.ts
+turnstileSiteKey: '3x00000000000000000000FF',   // forces interactive
+```
+
+```bash
+# apps/backend/.env.dev
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+```
+
+Restart the backend. Now:
+
+- Widget forces an interactive challenge (you see it)
+- The token is emitted and posted to Cloudflare's real `siteverify`
+- Cloudflare replies `success: true` for the test-pair
+- Login / register proceeds — full path exercised
+
+#### Scenario 3 — Exercise the failure path
+
+Widget passes, backend rejects — drives the frontend error handling
+(toast + widget reset).
+
+```bash
+# apps/backend/.env.dev
+TURNSTILE_SECRET_KEY=2x0000000000000000000000000000000AA
+```
+
+Expected: the widget solves, the request fires, the backend logs
+`Captcha rejected — codes=invalid-input-response`, the UI shows
+"Captcha check failed — please try again." and the widget resets.
+
+#### Scenario 4 — Real Cloudflare widget on localhost
+
+Closest to prod: exercises Cloudflare's real bot-scoring heuristics
+(invisible for humans, interactive for suspicious traffic). Requires a
+one-time dashboard setup:
+
+1. Cloudflare dashboard → Turnstile → Create widget
+2. Hostname Management: add `localhost` to allowed hostnames
+3. Widget mode: Managed
+4. Copy the site key → `env.dev.ts` `turnstileSiteKey`
+5. Copy the secret key → `.env.dev` `TURNSTILE_SECRET_KEY`
+6. Restart backend
+
+Use a **separate dev widget** — never put the prod site key in
+`env.dev.ts`. The prod widget's hostname allow-list must NOT include
+`localhost`.
+
+#### Rollback
+
+Before committing UI work, revert the dev config to the "always passes"
+defaults so the rest of the team's CI and E2E stay invisible:
+
+```ts
+// env.dev.ts — default
+turnstileSiteKey: '1x00000000000000000000AA',
+```
+
+```bash
+# .env.dev — default: remove or unset TURNSTILE_SECRET_KEY
+```
+
 ---
 
 ## 4. Current inventory
