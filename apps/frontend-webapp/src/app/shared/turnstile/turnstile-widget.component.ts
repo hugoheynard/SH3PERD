@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   NgZone,
+  PLATFORM_ID,
   effect,
   inject,
   input,
@@ -10,6 +11,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { loadTurnstile } from './turnstile-loader';
 import type {
   TurnstileAppearance,
@@ -71,6 +73,7 @@ export class TurnstileWidgetComponent {
     viewChild.required<ElementRef<HTMLDivElement>>('host');
   private readonly widgetId = signal<TurnstileWidgetId | null>(null);
   private readonly ngZone = inject(NgZone);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   constructor() {
     // Render once the view's #host reference and the required siteKey
@@ -84,7 +87,12 @@ export class TurnstileWidgetComponent {
     // SSR / `whenStable`. We load the script and render the widget
     // outside NgZone, then hop back in only to emit component outputs
     // so the parent form's change detection still fires.
+    //
+    // SSR: Turnstile needs `window` + `document`, so bail entirely on
+    // the server. The browser render will kick in during hydration.
     effect((onCleanup) => {
+      if (!this.isBrowser) return;
+
       const host = this.host().nativeElement;
       const siteKey = this.siteKey();
       const theme = this.theme();
