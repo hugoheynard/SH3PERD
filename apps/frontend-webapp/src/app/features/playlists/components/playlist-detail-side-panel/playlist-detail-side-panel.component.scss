@@ -45,7 +45,13 @@
   }
 }
 
-.close-btn {
+.head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.head-btn {
   all: unset;
   cursor: pointer;
   display: flex;

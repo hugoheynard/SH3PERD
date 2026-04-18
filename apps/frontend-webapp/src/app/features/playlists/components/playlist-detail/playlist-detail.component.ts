@@ -16,6 +16,8 @@ import {
   ratingLevel,
   RATING_DOTS,
 } from '../../../../shared/utils/rating.utils';
+import { DndDropZoneDirective } from '../../../../core/drag-and-drop/dnd-drop-zone.directive';
+import type { DragState } from '../../../../core/drag-and-drop/drag.types';
 import type { TPlaylistDetailViewModel } from '../../playlist-types';
 import type { TPlaylistId } from '@sh3pherd/shared-types';
 
@@ -29,7 +31,7 @@ import type { TPlaylistId } from '@sh3pherd/shared-types';
 @Component({
   selector: 'app-playlist-detail',
   standalone: true,
-  imports: [IconComponent],
+  imports: [IconComponent, DndDropZoneDirective],
   templateUrl: './playlist-detail.component.html',
   styleUrl: './playlist-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -109,6 +111,30 @@ export class PlaylistDetailComponent {
         ...current,
         tracks: current.tracks.filter((t) => t.id !== trackId),
       };
+    });
+  }
+
+  /**
+   * Drop handler for `music-track` payloads from the music library.
+   * Dispatches an `AddPlaylistTrack` command via TrackMutationService
+   * (which already owns optimistic add + rollback on error), and
+   * re-fetches the detail so the new row renders with its resolved
+   * title / artist / version label. Ignores drops while no playlist
+   * is open.
+   */
+  onMusicDrop(drag: DragState): void {
+    if (drag.type !== 'music-track') return;
+    const pl = this.detail();
+    if (!pl) return;
+    this.trackMutation.addTrack(
+      pl.id,
+      drag.data.referenceId,
+      drag.data.versionId,
+    );
+    // Refresh the resolved tracklist so the dropped track shows up
+    // immediately with its joined title / artist / version label.
+    this.api.getPlaylistDetail(pl.id).subscribe({
+      next: (vm) => this.detail.set(vm),
     });
   }
 }

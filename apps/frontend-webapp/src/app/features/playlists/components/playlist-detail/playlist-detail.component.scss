@@ -303,6 +303,45 @@ $colors: (
   animation: pulse 1.4s ease-in-out infinite;
 }
 
+/* ── Drop zone affordance on the empty tracklist ──────── */
+
+.state--dropzone {
+  margin: 16px 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+
+  &:hover {
+    border-color: rgba(129, 140, 248, 0.4);
+    background: rgba(129, 140, 248, 0.04);
+  }
+}
+
+/* ── Drop hint at the bottom of an existing tracklist ── */
+
+.tracklist-drop-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 28px 22px;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--text-faded);
+  opacity: 0.55;
+  transition: opacity 0.15s;
+
+  sh3-icon {
+    opacity: 0.8;
+  }
+
+  .tracklist:hover & {
+    opacity: 0.9;
+  }
+}
+
 @keyframes pulse {
   0%,
   100% {

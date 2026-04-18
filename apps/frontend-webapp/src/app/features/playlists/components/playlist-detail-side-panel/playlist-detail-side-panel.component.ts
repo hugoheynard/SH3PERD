@@ -4,6 +4,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
 import { LayoutService } from '../../../../core/services/layout.service';
 import { IconComponent } from '../../../../shared/icon/icon.component';
@@ -35,6 +36,7 @@ export interface PlaylistDetailSidePanelConfig {
 })
 export class PlaylistDetailSidePanelComponent {
   private readonly layout = inject(LayoutService);
+  private readonly router = inject(Router);
   private readonly config =
     inject<PlaylistDetailSidePanelConfig>(INJECTION_DATA);
 
@@ -47,5 +49,15 @@ export class PlaylistDetailSidePanelComponent {
 
   close(): void {
     this.layout.clearRightPanel();
+  }
+
+  /**
+   * Navigate to the music library page while keeping this side panel
+   * mounted (the layout service's panel state is route-agnostic). The
+   * expected flow: user picks a playlist → hits "Browse library" →
+   * drags a version onto the panel's tracklist.
+   */
+  openMusicLibrary(): void {
+    this.router.navigate(['/app/musicLibrary']);
   }
 }

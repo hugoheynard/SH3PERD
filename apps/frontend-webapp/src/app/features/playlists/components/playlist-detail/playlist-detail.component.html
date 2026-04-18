@@ -120,16 +120,28 @@
   <!-- ── Tracklist ── -->
 
   @if (pl.tracks.length === 0) {
-    <div class="state state--empty">
+    <div
+      class="state state--empty state--dropzone"
+      uiDndDropZone
+      [dropZone_id]="'playlist-detail-' + pl.id"
+      [dropZoneAccept]="'music-track'"
+      (uiDndDrop)="onMusicDrop($event)"
+    >
       <sh3-icon name="music-file" [size]="32" />
       <span class="state-title">No tracks yet</span>
       <span class="state-hint">
-        Drag music from the Library page onto this playlist (coming in the next
-        commit).
+        Drag a version from the Music Library onto this area to add it.
       </span>
     </div>
   } @else {
-    <div class="tracklist" role="list">
+    <div
+      class="tracklist"
+      role="list"
+      uiDndDropZone
+      [dropZone_id]="'playlist-detail-' + pl.id"
+      [dropZoneAccept]="'music-track'"
+      (uiDndDrop)="onMusicDrop($event)"
+    >
       @for (t of pl.tracks; track t.id; let i = $index) {
         <div class="track-row" role="listitem">
           <span class="track-pos">{{ i + 1 }}</span>
@@ -153,6 +165,12 @@
           </button>
         </div>
       }
+
+      <!-- Drop hint at the bottom of the existing tracklist -->
+      <div class="tracklist-drop-hint">
+        <sh3-icon name="add-doc" [size]="14" />
+        <span>Drop a music version here to add it</span>
+      </div>
     </div>
   }
 }
