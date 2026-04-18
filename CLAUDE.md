@@ -44,6 +44,7 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | **Platform Contract**    | `apps/backend/documentation/sh3-platform-contract.md`    | SaaS subscription model, dual contract model (platform vs company)                       |
 | **Quota Service**        | `apps/backend/documentation/sh3-quota-service.md`        | Quota enforcement: `ensureAllowed()` / `recordUsage()`, plan limits                      |
 | **Analytics Events**     | `apps/backend/documentation/sh3-analytics-events.md`     | Append-only event store, event types, metadata, handler status                           |
+| **Mailer**               | `apps/backend/documentation/sh3-mailer.md`               | Template-based transactional email, Resend adapter, dry-run mode                         |
 | **Music Library**        | `apps/backend/documentation/sh3-music-library.md`        | Full music feature architecture, 14 features across 4 tiers                              |
 | **Music Audio Player**   | `apps/backend/documentation/sh3-music-audio-player.md`   | wavesurfer.js inline player, peaks pipeline                                              |
 | **Music Mastering**      | `apps/backend/documentation/sh3-music-mastering.md`      | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift                                    |

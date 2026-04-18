@@ -29,6 +29,7 @@ Architecture, patterns, and how-to guides for the NestJS backend.
 | [Platform Contract](sh3-platform-contract.md) | SaaS subscription model — dual contract architecture (platform vs company)   |
 | [Quota Service](sh3-quota-service.md)         | Quota enforcement: `ensureAllowed()` / `recordUsage()`, plan limits per tier |
 | [Analytics Events](sh3-analytics-events.md)   | Append-only event store for audit, analytics dashboards, usage tracking      |
+| [Mailer](sh3-mailer.md)                       | Template-based transactional email, Resend adapter, dry-run mode             |
 
 ## Music
 
