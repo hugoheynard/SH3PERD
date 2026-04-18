@@ -90,6 +90,7 @@
                 name="firstName"
                 size="lg"
                 placeholder="John"
+                autocomplete="given-name"
                 [ngModel]="firstName()"
                 (ngModelChange)="firstName.set($event)"
                 required
@@ -102,6 +103,7 @@
                 name="lastName"
                 size="lg"
                 placeholder="Doe"
+                autocomplete="family-name"
                 [ngModel]="lastName()"
                 (ngModelChange)="lastName.set($event)"
                 required
@@ -117,6 +119,7 @@
                 name="companyName"
                 size="lg"
                 placeholder="La Folie Douce"
+                autocomplete="organization"
                 [ngModel]="companyName()"
                 (ngModelChange)="companyName.set($event)"
                 required
@@ -158,6 +161,7 @@
                 name="email"
                 size="lg"
                 placeholder="you@company.com"
+                autocomplete="email"
                 [ngModel]="email()"
                 (ngModelChange)="email.set($event)"
                 required

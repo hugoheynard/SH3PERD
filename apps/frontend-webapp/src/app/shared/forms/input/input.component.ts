@@ -46,7 +46,9 @@ export class InputComponent extends BaseControlValueAccessor<string | number> {
    * Native input type.
    * @default 'text'
    */
-  readonly type = input<'text' | 'number' | 'email' | 'password' | 'tel' | 'url'>('text');
+  readonly type = input<
+    'text' | 'number' | 'email' | 'password' | 'tel' | 'url'
+  >('text');
 
   /**
    * Size preset controlling height, font-size, padding and border-radius.
@@ -76,6 +78,21 @@ export class InputComponent extends BaseControlValueAccessor<string | number> {
 
   /** Whether to autofocus on mount. */
   readonly autofocus = input(false);
+
+  /**
+   * Native `autocomplete` attribute — passes through to the `<input>`.
+   *
+   * Recommended values for auth forms:
+   * - login email → `email` (or `username`)
+   * - login password → `current-password`
+   * - register email → `email`
+   * - register password → `new-password`
+   * - given / family names → `given-name` / `family-name`
+   *
+   * Browsers and password managers (Dashlane, 1Password, etc.) rely on
+   * this to fill credentials correctly and silence DOM warnings.
+   */
+  readonly autocomplete = input<string | null>(null);
 
   /** Minimum value (number inputs). */
   readonly min = input<number | null>(null);
