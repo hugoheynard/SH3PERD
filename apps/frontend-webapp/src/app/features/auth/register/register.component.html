@@ -172,6 +172,7 @@
 
           <sh3-turnstile
             [siteKey]="turnstileSiteKey"
+            theme="dark"
             (verified)="onCaptchaVerified($event)"
             (expired)="onCaptchaExpired()"
             (errored)="onCaptchaError()"

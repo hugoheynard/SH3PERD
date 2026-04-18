@@ -9,20 +9,31 @@ import {
   viewChild,
 } from '@angular/core';
 import { loadTurnstile } from './turnstile-loader';
-import type { TurnstileTheme, TurnstileWidgetId } from './turnstile.types';
+import type {
+  TurnstileAppearance,
+  TurnstileSize,
+  TurnstileTheme,
+  TurnstileWidgetId,
+} from './turnstile.types';
 
 /**
  * Cloudflare Turnstile widget wrapper.
  *
- * Renders the managed challenge in an empty `<div>` and emits the token
- * up through `verified`. Most legitimate users never see the challenge —
- * Cloudflare decides invisibility vs. interaction based on its own bot
- * scoring.
+ * Default posture is `interaction-only`: the widget is invisible for
+ * non-suspicious traffic (the vast majority of legitimate users), and
+ * only renders an interactive challenge when Cloudflare's heuristics
+ * flag the session. This matches the prod UX we want — the auth form
+ * stays clean and only surfaces a challenge when it's actually useful.
+ *
+ * The Cloudflare challenge is rendered inside an iframe whose internals
+ * we cannot theme; this component only controls the outer container
+ * (centering, spacing, optional label) and the pass-through options
+ * Cloudflare exposes: `theme`, `size`, `appearance`.
  *
  * Token lifecycle:
- * - `verified` fires once the challenge is solved; parent should capture
- *   the token and include it in the next auth request body as
- *   `turnstileToken`.
+ * - `verified` fires once the challenge is solved (visibly or silently);
+ *   parent should capture the token and include it in the next auth
+ *   request body as `turnstileToken`.
  * - Tokens are single-use and expire (~5 min). On `expired` or after a
  *   failed submit, the parent calls `reset()` to request a fresh token.
  */
@@ -35,8 +46,8 @@ import type { TurnstileTheme, TurnstileWidgetId } from './turnstile.types';
     `
       :host {
         display: block;
-        min-height: 65px;
       }
+
       .turnstile-host {
         display: flex;
         justify-content: center;
@@ -47,6 +58,8 @@ import type { TurnstileTheme, TurnstileWidgetId } from './turnstile.types';
 export class TurnstileWidgetComponent {
   readonly siteKey = input.required<string>();
   readonly theme = input<TurnstileTheme>('auto');
+  readonly size = input<TurnstileSize>('flexible');
+  readonly appearance = input<TurnstileAppearance>('interaction-only');
 
   readonly verified = output<string>();
   readonly expired = output<void>();
@@ -59,11 +72,14 @@ export class TurnstileWidgetComponent {
   constructor() {
     // Render once the view's #host reference and the required siteKey
     // are both resolved. The effect re-runs if either changes, so
-    // swapping siteKey / theme at runtime is supported.
+    // swapping siteKey / theme / size / appearance at runtime is
+    // supported.
     effect((onCleanup) => {
       const host = this.host().nativeElement;
       const siteKey = this.siteKey();
       const theme = this.theme();
+      const size = this.size();
+      const appearance = this.appearance();
 
       let cancelled = false;
       let renderedId: TurnstileWidgetId | null = null;
@@ -74,7 +90,8 @@ export class TurnstileWidgetComponent {
           renderedId = turnstile.render(host, {
             sitekey: siteKey,
             theme,
-            appearance: 'always',
+            size,
+            appearance,
             retry: 'auto',
             'refresh-expired': 'auto',
             callback: (token) => this.verified.emit(token),
