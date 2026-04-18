@@ -16,8 +16,12 @@ Livré 2026-04-18. Provider : **Resend**, wrappé derrière
 besoin (SES, SendGrid) sans toucher les appels. Template-only API
 (pas de méthode bas-niveau exposée aux callers).
 
-- [ ] Créer un compte Resend + domaine vérifié (SPF/DKIM) — à faire
-      côté prod, procédure dans `SECRETS.md` §3.2.
+- [~] Créer un compte Resend + domaine vérifié (SPF/DKIM) — **compte créé,
+  domaine `sh3pherd.io` ajouté, DNS (MX + SPF + DKIM + DMARC `p=none`)
+  posés côté GoDaddy et vérifiés ✅ dans le dashboard Resend**
+  (2026-04-18). Reste : génération de la clé API prod + injection
+  dans l'env du host au moment du déploiement. Procédure dans
+  `SECRETS.md` §3.2 étapes 3-6.
 - [x] `MailerModule` + `MailerService` dans `src/mailer/` avec
       l'interface `IMailerService`. API publique template-only via
       discriminated union sur `template`.

@@ -340,22 +340,22 @@ auth/
 
 ## Security Summary
 
-| Measure                                                  | Status                       |
-| -------------------------------------------------------- | ---------------------------- |
-| JWT RS256 asymmetric signing                             | ✅                           |
-| Refresh tokens hashed (SHA-256) before storage           | ✅                           |
-| Token family rotation with reuse detection               | ✅                           |
-| HttpOnly + Secure + SameSite cookies                     | ✅                           |
-| Argon2id password hashing with auto-migration            | ✅                           |
-| Account lockout (5 attempts → 15 min)                    | ✅                           |
-| Auth failure logging                                     | ✅                           |
-| CORS from environment variable                           | ✅                           |
-| Password change invalidates all sessions                 | ✅                           |
-| Password reset with single-use tokens                    | ✅                           |
-| Rate limiting per endpoint                               | ✅                           |
-| Cloudflare Turnstile captcha on `/login` and `/register` | ✅                           |
-| Email verification                                       | ❌ (blocked by mailer setup) |
-| 2FA/MFA                                                  | ❌ (v2)                      |
+| Measure                                                  | Status                                                                                                                                                                                                                                                                                                |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| JWT RS256 asymmetric signing                             | ✅                                                                                                                                                                                                                                                                                                    |
+| Refresh tokens hashed (SHA-256) before storage           | ✅                                                                                                                                                                                                                                                                                                    |
+| Token family rotation with reuse detection               | ✅                                                                                                                                                                                                                                                                                                    |
+| HttpOnly + Secure + SameSite cookies                     | ✅                                                                                                                                                                                                                                                                                                    |
+| Argon2id password hashing with auto-migration            | ✅                                                                                                                                                                                                                                                                                                    |
+| Account lockout (5 attempts → 15 min)                    | ✅                                                                                                                                                                                                                                                                                                    |
+| Auth failure logging                                     | ✅                                                                                                                                                                                                                                                                                                    |
+| CORS from environment variable                           | ✅                                                                                                                                                                                                                                                                                                    |
+| Password change invalidates all sessions                 | ✅                                                                                                                                                                                                                                                                                                    |
+| Password reset with single-use tokens                    | ✅                                                                                                                                                                                                                                                                                                    |
+| Rate limiting per endpoint                               | ✅                                                                                                                                                                                                                                                                                                    |
+| Cloudflare Turnstile captcha on `/login` and `/register` | ✅                                                                                                                                                                                                                                                                                                    |
+| Email verification                                       | ❌ (wiring pending — see [TODO-auth.md](../../../documentation/todos/TODO-auth.md) §2. Mailer module + Resend domain are ready: DNS verified on `sh3pherd.io` 2026-04-18, prod API key pending deployment per [SECRETS.md §3.2](../../../documentation/SECRETS.md#32-resend--first-time-prod-setup).) |
+| 2FA/MFA                                                  | ❌ (v2)                                                                                                                                                                                                                                                                                               |
 
 ---
 
