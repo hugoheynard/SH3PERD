@@ -197,7 +197,8 @@ Drop the `--` — pass jest flags directly:
 
 The `ThrottlerGuard` is monkey-patched after `app.init()` so it
 always passes. This prevents per-endpoint `@Throttle()` decorators
-(e.g. auth register has `limit: 3`) from causing 429s in tests.
+(e.g. `/auth/register` has `limit: 10`, `/auth/login` has `limit: 20`)
+from causing 429s in tests.
 
 ---
 

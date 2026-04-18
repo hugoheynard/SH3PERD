@@ -1,30 +1,38 @@
 # Auth — TODO & Roadmap
 
-> Dernière mise à jour : 2026-04-17 — objectif ship backend lundi 2026-04-20
+> Dernière mise à jour : 2026-04-18 — objectif ship backend lundi 2026-04-20
 
 ---
 
 ## 🚨 Ship-blocker lundi 2026-04-20 — ordre à suivre
 
-Le vendredi soir on finit la couverture de test (**fait**). Samedi + dimanche
-= mailer + email verification. Lundi matin = revérif + push. Dans l'ordre :
+Samedi 2026-04-18 = captcha (**fait**) + mailer + email verification.
+Dimanche = audit events. Lundi matin = revérif + push. Dans l'ordre :
 
 ### 1. Mailer service — **samedi matin (3-4h)**
 
-Sans ça rien ne ship. Choix et implé :
+Sans ça rien ne ship. Provider : **Resend** (décidé 2026-04-18 —
+DX rapide, domaine custom en 5 min, 100 mails/jour free tier).
+Le service doit être provider-agnostic : on wrap Resend derrière
+une interface `IMailerService.send({ to, template, data })` pour
+pouvoir swap si besoin (SES, SendGrid) sans toucher les appels.
 
-- [ ] **Choisir le provider** : recommandation **Resend** (DX la plus rapide,
-      domaine custom en 5 min, 100 mails/jour en free tier pour tester).
-      Fallback SES si le compte AWS est déjà prêt.
-- [ ] `MailerModule` + `MailerService` dans `src/mailer/` avec un seul
-      `send({ to, template, data })` — pas d'API bas-niveau exposée.
+- [ ] Créer un compte Resend + un domaine vérifié (SPF/DKIM).
+      Procédure + secret à ajouter dans `SECRETS.md`.
+- [ ] `MailerModule` + `MailerService` dans `src/mailer/` avec
+      l'interface `IMailerService`. API publique : `send({ to,
+    template, data })` uniquement — pas de méthode bas-niveau.
+- [ ] Adapter Resend interne (`ResendMailerAdapter`) — le reste de
+      l'app ne connait que l'interface via le token DI `MAILER_SERVICE`.
 - [ ] Templates HTML minimaux (inline CSS, pas de framework) :
       `email-verification.html`, `password-reset.html`. **Welcome mail
       peut attendre post-ship.**
-- [ ] Config : `MAILER_API_KEY`, `MAILER_FROM_ADDRESS`, `MAILER_REPLY_TO`
-      en env vars — et **fallback en "dry-run" mode** (logguer au lieu
-      d'envoyer) pour les tests et le dev sans clé.
-- [ ] Unit test du service avec un provider mocké + `.spec.ts` colocated.
+- [ ] Config via env : `RESEND_API_KEY`, `MAILER_FROM_ADDRESS`,
+      `MAILER_REPLY_TO`. **Fallback dry-run mode** (logguer au lieu
+      d'envoyer) quand la clé est absente — tests, CI, dev sans clé.
+- [ ] Unit tests sur le service avec adapter mocké + spec colocated.
+- [ ] Mettre à jour `SECRETS.md` §4 avec les 3 nouvelles env vars
+      et §3 avec la procédure first-time Resend setup.
 
 ### 2. Email verification — **samedi après-midi (2-3h)**
 
@@ -59,17 +67,20 @@ Reuse l'analytics event store existant, pas de nouvelle infra.
       dans la collection analytics existante. Pas de query endpoint —
       on récupère via Mongo Compass le temps d'en avoir besoin.
 
-### 4. CAPTCHA progressif sur login — ✅ **fait (backend)**
+### 4. CAPTCHA sur login + register — ✅ **fait (backend + frontend + docs)**
 
-Livré avec Cloudflare Turnstile en mode "managed" — le challenge est
-progressif côté Cloudflare (invisible pour le trafic légitime,
-interactif pour les bots), plutôt qu'un trigger local "après 2 échecs".
-Avantages du choix :
+Livré avec Cloudflare Turnstile en `appearance: interaction-only` —
+le challenge est invisible pour le trafic légitime (95% des cas en
+managed mode) et apparaît en modal quand Cloudflare détecte du trafic
+suspect, plutôt qu'un trigger local "après 2 échecs". Avantages :
 
 - Pas besoin d'audit events (étape 3) pour être protégé dès maintenant
 - Protection dès le premier hit, pas seulement après 2 échecs
-- Couvre aussi `/register` (bot signups)
+- Couvre `/login` ET `/register` (bot signups)
 - Zéro state en DB côté nous
+- Tokens single-use + 5min TTL = rate limit naturel anti-bot
+
+**Backend** :
 
 - [x] `TurnstileService` + `TurnstileModule` avec config via env
       (`TURNSTILE_SECRET_KEY`, `TURNSTILE_VERIFY_URL`). Fallback
@@ -78,18 +89,40 @@ Avantages du choix :
       d'atteindre le command bus.
 - [x] **Fail-open sur panne Cloudflare** (log warn) — throttling
       et lockout restent les garde-fous.
+- [x] **Throttle relaxé** — `/login` 5→20/min, `/register` 3→10/min.
+      Le throttle reste un garde-fou DDoS, le captcha + lockout sont
+      les vraies défenses anti brute-force.
 - [x] 15 unit tests sur le service + 4 sur le controller
       (integration captcha ✓ / captcha manquant ✗ / captcha rejeté ✗).
-- [x] Doc mise à jour — `sh3-auth-system.md` avec diagramme Mermaid.
-- [x] **Frontend** — widget Turnstile sur `login` et `register`,
-      `turnstileToken` propagé dans le body. Env `turnstileSiteKey`
-      dans `src/environments/env.{dev,prod}.ts`.
+
+**Frontend** :
+
+- [x] Widget `sh3-turnstile` standalone, signals-first, lazy script
+      loader. Tourne en `NgZone.runOutsideAngular` pour ne pas
+      déstabiliser l'app.
+- [x] Intégré dans `login-form` + wizard `register` (step 3).
+      `turnstileToken` propagé dans le body. Le bouton submit reste
+      désactivé tant que le token n'est pas présent.
+- [x] **Skip SSR** — le widget n'est rendu que côté browser
+      (`isPlatformBrowser`) pour ne pas polluer les logs dev watch.
+- [x] Env `turnstileSiteKey` dans `src/environments/env.{dev,prod}.ts`
+      — dev pointe sur la testkey always-passes de Cloudflare.
 - [x] **AuthResult type** — `login$` et `register$` renvoient
       `{ ok, code?, status? }` pour réagir spécifiquement aux
       erreurs captcha (toast dédié + reset du widget).
-- [x] **Process secrets documenté** — [`documentation/SECRETS.md`](../SECRETS.md)
-      couvre le flow dev/prod, la rotation, l'inventaire complet
-      (Turnstile, JWT, Slack, R2, Print, Mongo).
+- [x] **Autocomplete hints** — `email`, `current-password`,
+      `new-password`, `given-name`, `family-name`, `organization`
+      pour password managers + silence du warning DOM.
+
+**Docs** :
+
+- [x] `sh3-auth-system.md` — diagramme Mermaid du flow captcha +
+      section dédiée (config, fail-open rationale, error codes).
+- [x] `SECRETS.md` — process management des secrets + §3.1 first-time
+      prod setup Turnstile + §3.3 visual testing recipes (4 scénarios).
+
+**Reste à faire côté prod** :
+
 - [ ] **Prod setup Turnstile** — créer le widget dans Cloudflare
       dashboard, remplacer `REPLACE_WITH_PROD_TURNSTILE_SITE_KEY`
       dans `env.prod.ts`, set `TURNSTILE_SECRET_KEY` sur le host.
@@ -169,19 +202,23 @@ Avantages du choix :
 
 Résultat suite auth/contracts/permissions : **180 specs, 27 suites, all passing**.
 
-## In Progress
+## Done — session 2026-04-18 (captcha + frontend + docs)
 
-- [ ] **Email verification** — voir § Ship-blocker lundi #2 ci-dessus.
-      Bloquant pour ship B2C.
+- [x] **Cloudflare Turnstile** bout-en-bout — `TurnstileService`
+      backend (15 unit tests + 4 controller specs), widget Angular
+      `sh3-turnstile` frontend (standalone, signals, NgZone-safe,
+      SSR-safe), câblé sur login + register.
+- [x] **AuthResult type** sur `login$` / `register$` — propagation
+      du code d'erreur backend pour UX captcha.
+- [x] **Throttle relaxé** — `/login` 5→20/min, `/register` 3→10/min.
+      Doc + spec throttling à jour.
+- [x] **Autocomplete hints** sur les 5 champs des forms auth.
+- [x] **SECRETS.md** — process secrets documenté (stockage, rotation,
+      inventaire complet, visual testing recipes).
+
+**Résultats test suite** : backend 465/465 ✓ (58 suites), frontend 225/225 ✓ (74 suites).
 
 ## Backlog — Short Term
-
-### Mailer Service
-
-- [ ] Choisir un provider (SendGrid / AWS SES / Resend)
-- [ ] Créer `MailerModule` + `MailerService` dans `src/mailer/`
-- [ ] Templates HTML transactionnels (verification, password reset, welcome)
-- [ ] Brancher `UserRegisteredHandler` et `ForgotPasswordHandler` sur le mailer
 
 ### Register Wizard — Company Creation at Signup
 

@@ -31,6 +31,7 @@ graph TB
             JWT[JwtService<br/>RS256]
             RTS[RefreshTokenService<br/>SHA-256 hashing]
             PWD[PasswordService<br/>Argon2id + auto-migration]
+            TSV[TurnstileService<br/>captcha verify]
         end
         subgraph Repos[Repositories]
             UCRED[(user_credentials)]
@@ -39,7 +40,11 @@ graph TB
         end
     end
 
+    CFAPI[(Cloudflare<br/>siteverify)]
+
     UI --> AI --> AS --> AC
+    AC --> TSV
+    TSV -->|POST| CFAPI
     AC --> CQRS
     CQRS --> Core
     CQRS --> Repos
@@ -57,7 +62,8 @@ sequenceDiagram
     participant A as Backend
 
     Note over B,A: === LOGIN ===
-    F->>A: POST /auth/login {email, password}
+    F->>A: POST /auth/login {email, password, turnstileToken}
+    A->>A: Verify Turnstile token (see Captcha section)
     A->>A: Verify password (Argon2id)
     A->>A: Generate JWT access token (RS256, 15min)
     A->>A: Generate refresh token
