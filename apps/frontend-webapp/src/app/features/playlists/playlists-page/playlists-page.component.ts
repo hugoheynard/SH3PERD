@@ -19,6 +19,7 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { PLAYLIST_COLORS } from '../playlist-types';
 import type { PlaylistColor } from '../playlist-types';
+import { PlaylistCardComponent } from '../components/playlist-card/playlist-card.component';
 
 /**
  * Playlists page — mirrors the music-library layout:
@@ -49,6 +50,7 @@ import type { PlaylistColor } from '../playlist-types';
     ConfigurableTabBarComponent,
     IconComponent,
     ButtonComponent,
+    PlaylistCardComponent,
   ],
   templateUrl: './playlists-page.component.html',
   styleUrl: './playlists-page.component.scss',

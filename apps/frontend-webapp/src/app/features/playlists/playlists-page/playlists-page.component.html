@@ -127,31 +127,10 @@
             } @else {
               <div class="cards-grid">
                 @for (pl of selector.filteredPlaylists(); track pl.id) {
-                  <div
-                    class="card-placeholder"
-                    [attr.data-color]="pl.color"
-                    (click)="openPlaylistInTab(pl.id)"
-                    role="button"
-                    tabindex="0"
-                  >
-                    <span
-                      class="card-color-dot"
-                      [attr.data-color]="pl.color"
-                    ></span>
-                    <div class="card-body">
-                      <div class="card-title-row">
-                        <span class="card-name">{{ pl.name }}</span>
-                        <span class="card-count"
-                          >{{ pl.trackCount }} track{{
-                            pl.trackCount !== 1 ? "s" : ""
-                          }}</span
-                        >
-                      </div>
-                      @if (pl.description) {
-                        <span class="card-desc">{{ pl.description }}</span>
-                      }
-                    </div>
-                  </div>
+                  <app-playlist-card
+                    [playlist]="pl"
+                    (open)="openPlaylistInTab($event)"
+                  />
                 }
               </div>
             }
