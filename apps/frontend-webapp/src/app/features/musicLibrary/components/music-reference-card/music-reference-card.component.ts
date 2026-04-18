@@ -19,6 +19,7 @@ import { IconComponent } from '../../../../shared/icon/icon.component';
 import { WaveformThumbnailComponent } from '../../audio-player/waveform-thumbnail/waveform-thumbnail.component';
 import { DndDragDirective } from '../../../../core/drag-and-drop/dndDrag.directive';
 import type { MusicTrackDragPayload } from '../../../../core/drag-and-drop/drag.types';
+import { PlaylistsDndInitService } from '../../../playlists/services/playlists-dnd-init.service';
 
 @Component({
   selector: 'app-music-reference-card',
@@ -37,6 +38,14 @@ import type { MusicTrackDragPayload } from '../../../../core/drag-and-drop/drag.
 })
 export class MusicReferenceCardComponent {
   protected readonly audioPlayer = inject(AudioPlayerService);
+
+  constructor() {
+    // Side-effect: the init service registers the music-track drag
+    // preview with the global DragPreviewRegistryService in its
+    // constructor. Injecting it here guarantees the preview component
+    // is wired up before the first drag from this card can start.
+    inject(PlaylistsDndInitService);
+  }
 
   readonly entry = input.required<LibraryEntry>();
   readonly analysingIds = input<Set<string>>(new Set());
