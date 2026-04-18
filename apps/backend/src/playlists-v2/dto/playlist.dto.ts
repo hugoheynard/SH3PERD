@@ -62,6 +62,36 @@ export class PlaylistSummaryPayload {
       "Mean quality rating from each version's favorite-track audio analysis. `null` when no favorite track carries an analysis snapshot.",
   })
   meanQuality!: number | null;
+
+  @ApiProperty({
+    type: [Number],
+    example: [3, 4, 2, 3],
+    description:
+      'Mastery rating per playlist track in position order (tracks whose version cannot be resolved are skipped entirely). Used to draw a shape-of-the-playlist sparkline alongside the mean.',
+  })
+  masterySeries!: (number | null)[];
+
+  @ApiProperty({
+    type: [Number],
+    example: [2, 3, 3, 4],
+    description: 'Energy rating per playlist track in position order.',
+  })
+  energySeries!: (number | null)[];
+
+  @ApiProperty({
+    type: [Number],
+    example: [3, 3, 2, 3],
+    description: 'Effort rating per playlist track in position order.',
+  })
+  effortSeries!: (number | null)[];
+
+  @ApiProperty({
+    type: [Number],
+    example: [3, null, 4, 3],
+    description:
+      "Quality rating per playlist track in position order; `null` where the track's favorite hasn't been audio-analysed yet.",
+  })
+  qualitySeries!: (number | null)[];
 }
 
 // ─── Playlist Track View (resolved) ─────────────────────

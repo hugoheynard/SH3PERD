@@ -79,29 +79,43 @@ export class GetUserPlaylistsHandler implements IQueryHandler<
     return playlists.map((p, i) => {
       const tracks = allTracksPerPlaylist[i];
 
-      const mastery: number[] = [];
-      const energy: number[] = [];
-      const effort: number[] = [];
-      const quality: number[] = [];
+      // Build one aligned series per axis — mastery / energy / effort
+      // are non-nullable (come off the version, always present when the
+      // version resolves), quality may be null when the favorite track
+      // hasn't been audio-analysed yet. Keeping the series same-length
+      // across axes means the frontend can draw a sparkline per axis
+      // and reason about each dot by its index.
+      const masterySeries: (number | null)[] = [];
+      const energySeries: (number | null)[] = [];
+      const effortSeries: (number | null)[] = [];
+      const qualitySeries: (number | null)[] = [];
       let totalDurationSeconds = 0;
 
       for (const t of tracks) {
         const version = versionMap.get(t.versionId);
         if (!version) continue;
 
-        mastery.push(version.mastery);
-        energy.push(version.energy);
-        effort.push(version.effort);
+        masterySeries.push(version.mastery);
+        energySeries.push(version.energy);
+        effortSeries.push(version.effort);
 
         const favorite = pickFavoriteTrack(version.tracks);
-        if (!favorite) continue;
+        if (!favorite) {
+          qualitySeries.push(null);
+          continue;
+        }
 
         totalDurationSeconds += resolveTrackDuration(favorite);
-
-        if (favorite.analysisResult) {
-          quality.push(favorite.analysisResult.quality);
-        }
+        qualitySeries.push(favorite.analysisResult?.quality ?? null);
       }
+
+      // Helper to compute a mean ignoring null entries. Shared between
+      // all four axes so the definition of "mean" stays consistent
+      // with how the series is built.
+      const meanOfSeries = (series: (number | null)[]): number | null => {
+        const values = series.filter((v): v is number => v !== null);
+        return meanOrNull(values);
+      };
 
       return {
         id: p.id,
@@ -111,10 +125,14 @@ export class GetUserPlaylistsHandler implements IQueryHandler<
         createdAt: p.createdAt,
         trackCount: tracks.length,
         totalDurationSeconds,
-        meanMastery: meanOrNull(mastery),
-        meanEnergy: meanOrNull(energy),
-        meanEffort: meanOrNull(effort),
-        meanQuality: meanOrNull(quality),
+        meanMastery: meanOfSeries(masterySeries),
+        meanEnergy: meanOfSeries(energySeries),
+        meanEffort: meanOfSeries(effortSeries),
+        meanQuality: meanOfSeries(qualitySeries),
+        masterySeries,
+        energySeries,
+        effortSeries,
+        qualitySeries,
       };
     });
   }

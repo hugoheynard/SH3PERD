@@ -26,7 +26,8 @@ export class PlaylistMutationService {
     this.api.createPlaylist({ name, color, description }).subscribe({
       next: (created) => {
         // Empty playlist: no tracks, no duration, no ratings.
-        // Aggregates will be refreshed from the backend on next load.
+        // Aggregates + series will be refreshed from the backend on
+        // next load.
         const summary: TPlaylistSummaryViewModel = {
           id: created.id,
           name: created.name,
@@ -39,6 +40,10 @@ export class PlaylistMutationService {
           meanEnergy: null,
           meanEffort: null,
           meanQuality: null,
+          masterySeries: [],
+          energySeries: [],
+          effortSeries: [],
+          qualitySeries: [],
         };
 
         this.state.updateState((state) => ({

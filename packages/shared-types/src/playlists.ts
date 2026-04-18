@@ -152,6 +152,15 @@ export interface TPlaylistDetailViewModel {
  * The mean fields are `null` when the playlist is empty OR when none of the
  * resolved versions / favorite tracks carried a rating. Consumers MUST
  * treat `null` as "no data" (e.g. render a dash), not as zero.
+ *
+ * The `*Series` fields carry the per-track values in playlist position
+ * order. Length equals the number of playlist tracks whose version was
+ * resolvable (tracks with orphaned versions are skipped from BOTH the
+ * means and the series, so series.length ≤ trackCount). An entry is
+ * `null` when that specific track lacks data on that axis — typically
+ * only `qualitySeries` has gaps, because quality comes from the
+ * favorite track's audio analysis. Consumers can plot the values as a
+ * shape-of-the-playlist sparkline to complement the mean.
  */
 export interface TPlaylistSummaryViewModel {
   id: TPlaylistId;
@@ -165,4 +174,8 @@ export interface TPlaylistSummaryViewModel {
   meanEnergy: number | null;
   meanEffort: number | null;
   meanQuality: number | null;
+  masterySeries: (number | null)[];
+  energySeries: (number | null)[];
+  effortSeries: (number | null)[];
+  qualitySeries: (number | null)[];
 }
