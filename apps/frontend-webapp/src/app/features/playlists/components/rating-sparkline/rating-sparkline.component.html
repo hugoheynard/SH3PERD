@@ -15,7 +15,18 @@
     />
   }
 
-  <!-- Connecting line -->
+  <!-- Filled area under the smoothed line — dropped under the stroke
+       so the line sits crisp on top. -->
+  @if (areaD()) {
+    <path
+      class="area"
+      [attr.d]="areaD()"
+      [attr.fill]="accent()"
+      stroke="none"
+    />
+  }
+
+  <!-- Smoothed connecting line -->
   @if (pathD()) {
     <path
       class="line"
