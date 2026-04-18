@@ -60,24 +60,33 @@ analytics/
 
 All tracked event types are defined in `@sh3pherd/shared-types` as `TAnalyticsEventType`:
 
-| Category    | Event Type                 | Metadata example                                                                                                                                        |
-| ----------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Auth**    | `user_registered`          | `{ email, first_name, last_name }`                                                                                                                      |
-| **Auth**    | `user_login`               | `{ ip?, user_agent? }`                                                                                                                                  |
-| **Auth**    | `user_login_failed`        | `{ email, reason }`                                                                                                                                     |
-| **Auth**    | `user_deactivated`         | `{}`                                                                                                                                                    |
-| **Plan**    | `plan_changed`             | `{ from, to, billing_cycle }`                                                                                                                           |
-| **Plan**    | `billing_cycle_changed`    | `{ plan, from, to }`                                                                                                                                    |
-| **Credits** | `credit_pack_purchased`    | `{ pack_id, resource, amount, price }`                                                                                                                  |
-| **Credits** | `credit_used`              | `{ resource, amount }`                                                                                                                                  |
-| **Music**   | `track_uploaded`           | `{ track_id, version_id, file_name, file_size_bytes, duration_seconds, format }`                                                                        |
-| **Music**   | `track_analysed`           | `{ track_id, version_id, bpm, key, key_scale, duration_seconds, sample_rate, integrated_lufs, loudness_range, true_peak_dbtp, snr_db, clipping_ratio }` |
-| **Music**   | `track_mastered`           | `{ track_id, version_id, target_lufs, target_tp }`                                                                                                      |
-| **Music**   | `track_ai_mastered`        | `{ track_id, version_id, reference_track_id, target_lufs }`                                                                                             |
-| **Music**   | `track_pitch_shifted`      | `{ track_id, version_id, semitones, original_key }`                                                                                                     |
-| **Music**   | `repertoire_entry_created` | `{ entry_id, reference_id }`                                                                                                                            |
-| **Quota**   | `quota_exceeded`           | `{ resource, current, limit, plan }`                                                                                                                    |
-| **Quota**   | `quota_warning_80pct`      | `{ resource, current, limit }`                                                                                                                          |
+| Category    | Event Type                  | Metadata example                                                                                                                                        |
+| ----------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Auth**    | `user_registered`           | `{ email, first_name, last_name }`                                                                                                                      |
+| **Auth**    | `user_login`                | `{ ip?, user_agent? }`                                                                                                                                  |
+| **Auth**    | `user_login_failed`         | `{ email, reason }`                                                                                                                                     |
+| **Auth**    | `user_deactivated`          | `{}`                                                                                                                                                    |
+| **Plan**    | `plan_changed`              | `{ from, to, billing_cycle }`                                                                                                                           |
+| **Plan**    | `billing_cycle_changed`     | `{ plan, from, to }`                                                                                                                                    |
+| **Credits** | `credit_pack_purchased`     | `{ pack_id, resource, amount, price }`                                                                                                                  |
+| **Credits** | `credit_used`               | `{ resource, amount }`                                                                                                                                  |
+| **Music**   | `track_uploaded`            | `{ track_id, version_id, file_name, file_size_bytes, duration_seconds, format }`                                                                        |
+| **Music**   | `track_analysed`            | `{ track_id, version_id, bpm, key, key_scale, duration_seconds, sample_rate, integrated_lufs, loudness_range, true_peak_dbtp, snr_db, clipping_ratio }` |
+| **Music**   | `track_mastered`            | `{ track_id, version_id, target_lufs, target_tp }`                                                                                                      |
+| **Music**   | `track_ai_mastered`         | `{ track_id, version_id, reference_track_id, target_lufs }`                                                                                             |
+| **Music**   | `track_pitch_shifted`       | `{ track_id, version_id, semitones, original_key }`                                                                                                     |
+| **Music**   | `track_deleted`             | `{ track_id, version_id, file_name, processing_type }`                                                                                                  |
+| **Music**   | `track_favorited`           | `{ track_id, version_id }`                                                                                                                              |
+| **Music**   | `music_reference_created`   | `{ reference_id, title, artist }`                                                                                                                       |
+| **Music**   | `music_version_created`     | `{ version_id, reference_id, label, type, genre }`                                                                                                      |
+| **Music**   | `music_version_updated`     | `{ version_id, reference_id, updated_fields, changes }`                                                                                                 |
+| **Music**   | `music_version_deleted`     | `{ version_id, reference_id, label, track_count }`                                                                                                      |
+| **Music**   | `repertoire_entry_created`  | `{ entry_id, reference_id }`                                                                                                                            |
+| **Music**   | `repertoire_entry_deleted`  | `{ entry_id, reference_id }`                                                                                                                            |
+| **Music**   | `music_tab_configs_saved`   | `{ tab_count, saved_config_count, added_configs, active_tab_id }`                                                                                       |
+| **Music**   | `music_tab_configs_deleted` | `{}`                                                                                                                                                    |
+| **Quota**   | `quota_exceeded`            | `{ resource, current, limit, plan }`                                                                                                                    |
+| **Quota**   | `quota_warning_80pct`       | `{ resource, current, limit }`                                                                                                                          |
 
 ---
 
@@ -171,16 +180,25 @@ sequenceDiagram
 
 ## Currently active event handlers
 
-| Domain Event          | Handler                                       | Persists to analytics?           |
-| --------------------- | --------------------------------------------- | -------------------------------- |
-| `UserRegisteredEvent` | `UserRegisteredHandler` (auth module)         | Yes — `user_registered`          |
-| `PlanChangedEvent`    | `PlanChangedHandler` (analytics module)       | Yes — `plan_changed`             |
-| `TrackUploadedEvent`  | `TrackUploadedHandler` (music module)         | Yes — `track_analysed`           |
-| —                     | `UploadTrackHandler` (music module)           | Yes — `track_uploaded`           |
-| —                     | `MasterTrackHandler` (music module)           | Yes — `track_mastered`           |
-| —                     | `AiMasterTrackHandler` (music module)         | Yes — `track_ai_mastered`        |
-| —                     | `PitchShiftVersionHandler` (music module)     | Yes — `track_pitch_shifted`      |
-| —                     | `CreateRepertoireEntryHandler` (music module) | Yes — `repertoire_entry_created` |
+| Domain Event          | Handler                                       | Persists to analytics?            |
+| --------------------- | --------------------------------------------- | --------------------------------- |
+| `UserRegisteredEvent` | `UserRegisteredHandler` (auth module)         | Yes — `user_registered`           |
+| `PlanChangedEvent`    | `PlanChangedHandler` (analytics module)       | Yes — `plan_changed`              |
+| `TrackUploadedEvent`  | `TrackUploadedHandler` (music module)         | Yes — `track_analysed`            |
+| —                     | `UploadTrackHandler` (music module)           | Yes — `track_uploaded`            |
+| —                     | `DeleteTrackHandler` (music module)           | Yes — `track_deleted`             |
+| —                     | `SetTrackFavoriteHandler` (music module)      | Yes — `track_favorited`           |
+| —                     | `MasterTrackHandler` (music module)           | Yes — `track_mastered`            |
+| —                     | `AiMasterTrackHandler` (music module)         | Yes — `track_ai_mastered`         |
+| —                     | `PitchShiftVersionHandler` (music module)     | Yes — `track_pitch_shifted`       |
+| —                     | `CreateMusicReferenceHandler` (music module)  | Yes — `music_reference_created`   |
+| —                     | `CreateMusicVersionHandler` (music module)    | Yes — `music_version_created`     |
+| —                     | `UpdateMusicVersionHandler` (music module)    | Yes — `music_version_updated`     |
+| —                     | `DeleteMusicVersionHandler` (music module)    | Yes — `music_version_deleted`     |
+| —                     | `CreateRepertoireEntryHandler` (music module) | Yes — `repertoire_entry_created`  |
+| —                     | `DeleteRepertoireEntryHandler` (music module) | Yes — `repertoire_entry_deleted`  |
+| —                     | `SaveMusicTabConfigsHandler` (music module)   | Yes — `music_tab_configs_saved`   |
+| —                     | `DeleteMusicTabConfigsHandler` (music module) | Yes — `music_tab_configs_deleted` |
 
 ---
 
