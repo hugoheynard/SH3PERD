@@ -9,30 +9,34 @@
 Samedi 2026-04-18 = captcha (**fait**) + mailer + email verification.
 Dimanche = audit events. Lundi matin = revérif + push. Dans l'ordre :
 
-### 1. Mailer service — **samedi matin (3-4h)**
+### 1. Mailer service — **samedi matin** ✅
 
-Sans ça rien ne ship. Provider : **Resend** (décidé 2026-04-18 —
-DX rapide, domaine custom en 5 min, 100 mails/jour free tier).
-Le service doit être provider-agnostic : on wrap Resend derrière
-une interface `IMailerService.send({ to, template, data })` pour
-pouvoir swap si besoin (SES, SendGrid) sans toucher les appels.
+Livré 2026-04-18. Provider : **Resend**, wrappé derrière
+`IMailerService.send({ to, template, data })` pour pouvoir swap si
+besoin (SES, SendGrid) sans toucher les appels. Template-only API
+(pas de méthode bas-niveau exposée aux callers).
 
-- [ ] Créer un compte Resend + un domaine vérifié (SPF/DKIM).
-      Procédure + secret à ajouter dans `SECRETS.md`.
-- [ ] `MailerModule` + `MailerService` dans `src/mailer/` avec
-      l'interface `IMailerService`. API publique : `send({ to,
-    template, data })` uniquement — pas de méthode bas-niveau.
-- [ ] Adapter Resend interne (`ResendMailerAdapter`) — le reste de
+- [ ] Créer un compte Resend + domaine vérifié (SPF/DKIM) — à faire
+      côté prod, procédure dans `SECRETS.md` §3.2.
+- [x] `MailerModule` + `MailerService` dans `src/mailer/` avec
+      l'interface `IMailerService`. API publique template-only via
+      discriminated union sur `template`.
+- [x] Adapter Resend interne (`ResendMailerAdapter`) — le reste de
       l'app ne connait que l'interface via le token DI `MAILER_SERVICE`.
-- [ ] Templates HTML minimaux (inline CSS, pas de framework) :
-      `email-verification.html`, `password-reset.html`. **Welcome mail
-      peut attendre post-ship.**
-- [ ] Config via env : `RESEND_API_KEY`, `MAILER_FROM_ADDRESS`,
-      `MAILER_REPLY_TO`. **Fallback dry-run mode** (logguer au lieu
-      d'envoyer) quand la clé est absente — tests, CI, dev sans clé.
-- [ ] Unit tests sur le service avec adapter mocké + spec colocated.
-- [ ] Mettre à jour `SECRETS.md` §4 avec les 3 nouvelles env vars
-      et §3 avec la procédure first-time Resend setup.
+- [x] Templates HTML minimaux (inline CSS, pas de framework) :
+      `password-reset`, `email-verification`. HTML-escape sur tous les
+      champs user-interpolated. Welcome mail reporté post-ship.
+- [x] Config via env : `RESEND_API_KEY`, `MAILER_FROM_ADDRESS`,
+      `MAILER_REPLY_TO`. **Dry-run mode** actif quand la clé est
+      absente — `DryRunMailerAdapter` log la payload au lieu d'envoyer.
+- [x] Unit tests colocated : 30 specs sur le module (5 suites :
+      config, dry-run, Resend adapter, renderTemplate, htmlEscape).
+- [x] Branché sur `ForgotPasswordHandler` — 6 specs au total dont
+      happy path, profil manquant, swallow des erreurs mailer (anti
+      email-enumeration).
+- [x] Doc technique `sh3-mailer.md` + mise à jour de `sh3-auth-system.md`
+      (flow password-reset) + index `CLAUDE.md`.
+- [x] `SECRETS.md` §3.2 (first-time Resend setup) + §4 (3 env vars).
 
 ### 2. Email verification — **samedi après-midi (2-3h)**
 

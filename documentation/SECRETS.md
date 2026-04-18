@@ -136,7 +136,39 @@ Follow this order. Skipping a step is how secrets leak into git.
 verification is bypassed.` should be gone from the logs.
 6. Log the rotation (see §4).
 
-### 3.2 Dev test keys (do not use in prod)
+### 3.2 Resend — first-time prod setup
+
+Resend is the transactional mailer (password reset, email verification).
+Setup is one-time; the api key is rotated on cadence like any other
+vendor secret.
+
+1. [Resend dashboard](https://resend.com) → sign up → **Domains** →
+   **Add domain**: `sh3pherd.com`.
+2. Resend prints DNS records (SPF `TXT`, DKIM `CNAME`s, DMARC `TXT`).
+   Add them in GoDaddy (or whatever registrar currently owns the zone)
+   and wait for the dashboard to show all four green check marks.
+   Propagation is usually minutes but can be up to an hour.
+3. **API Keys** → **Create** → name `sh3pherd-prod`, permission **Full
+   access** (required to send from a verified domain), scope to the
+   verified domain. Copy the key (starts with `re_`) — shown once.
+4. Store the key in the team vault → host as `RESEND_API_KEY`.
+5. Set `MAILER_FROM_ADDRESS=noreply@sh3pherd.com` (or any address on
+   the verified domain). `MAILER_REPLY_TO` is optional — set it to
+   `support@sh3pherd.com` if you want human replies routed somewhere.
+6. Verify: trigger a password-reset on a test account in prod. The
+   backend log should switch from `[DryRun] template=password-reset`
+   to `[Sent] template=password-reset to=... providerId=email_...`.
+   The recipient receives the email; the Resend dashboard shows the
+   message under **Emails**.
+7. Revoke any older key (if rotating) and log the rotation in §6.
+
+Local dev and CI leave `RESEND_API_KEY` unset — the mailer falls back
+to `DryRunMailerAdapter` which logs the rendered payload instead of
+delivering. The log line is deliberately parsable (`template=...`,
+`to=...`) so you can grep for the email you expect without a real
+mailbox.
+
+### 3.3 Dev test keys (do not use in prod)
 
 Cloudflare publishes keys that always pass and always fail — use them
 for local dev and CI. These are **not** secrets; they are public test
@@ -150,7 +182,7 @@ fixtures.
 
 Source: [Cloudflare — Testing Turnstile](https://developers.cloudflare.com/turnstile/troubleshooting/testing/).
 
-### 3.3 Visual testing — see the captcha as a real user would
+### 3.4 Visual testing — see the captcha as a real user would
 
 The default dev config uses the "always passes" site key, which renders
 invisibly. To actually see the widget / debug the challenge flow locally,
@@ -258,6 +290,9 @@ turnstileSiteKey: '1x00000000000000000000AA',
 | `FRONTEND_URL`                                                               | all   | no                          | reset-link base                                | [configuration](../apps/backend/src/appBootstrap/config/configuration.ts)           |
 | `TURNSTILE_SECRET_KEY`                                                       | prod  | **YES**                     | Cloudflare dashboard                           | [getTurnstileConfig](../apps/backend/src/auth/turnstile/getTurnstileConfig.ts)      |
 | `TURNSTILE_VERIFY_URL`                                                       | all   | no                          | override — default fine                        | idem                                                                                |
+| `RESEND_API_KEY`                                                             | prod  | **YES**                     | Resend dashboard (see §3.2)                    | [getMailerConfig](../apps/backend/src/mailer/getMailerConfig.ts)                    |
+| `MAILER_FROM_ADDRESS`                                                        | all   | no                          | default `noreply@sh3pherd.com`                 | idem                                                                                |
+| `MAILER_REPLY_TO`                                                            | all   | no                          | optional `Reply-To:` header                    | idem                                                                                |
 | `SLACK_CLIENT_ID`                                                            | prod  | no (public OAuth client id) | Slack app config                               | [configuration](../apps/backend/src/appBootstrap/config/configuration.ts)           |
 | `SLACK_CLIENT_SECRET`                                                        | prod  | **YES**                     | Slack app config                               | idem                                                                                |
 | `SLACK_REDIRECT_URI`                                                         | prod  | no                          | Slack app config                               | idem                                                                                |
