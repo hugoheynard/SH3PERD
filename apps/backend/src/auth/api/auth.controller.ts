@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Inject, Post, Req, Res } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
@@ -24,13 +24,15 @@ import type {
   TRefreshToken,
 } from '@sh3pherd/shared-types';
 import {
-  SuserCredentialsDTO,
+  SLoginRequestDTO,
   SRegisterUserRequestDTO,
   SChangePasswordRequestDTO,
   SDeactivateAccountRequestDTO,
   SForgotPasswordRequestDTO,
   SResetPasswordRequestDTO,
 } from '@sh3pherd/shared-types';
+import { TURNSTILE_SERVICE } from '../auth.tokens.js';
+import type { ITurnstileService } from '../turnstile/types.js';
 import type { Request, Response } from 'express';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
 import { Public } from '../../utils/nest/decorators/IsPublic.js';
@@ -51,7 +53,10 @@ import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from '../auth.constants.js';
 @ApiTags('auth')
 @Controller('')
 export class AuthController {
-  constructor(private readonly cmdBus: CommandBus) {}
+  constructor(
+    private readonly cmdBus: CommandBus,
+    @Inject(TURNSTILE_SERVICE) private readonly turnstile: ITurnstileService,
+  ) {}
 
   @ApiOperation({
     summary: 'Register a new user',
@@ -59,15 +64,17 @@ export class AuthController {
       'Creates a new user account with email, password, first name and last name. Also creates a platform contract (free plan).',
   })
   @ApiResponse({ status: 201, description: 'User registered successfully.' })
-  @ApiResponse({ status: 400, description: 'Validation failed.' })
+  @ApiResponse({ status: 400, description: 'Validation failed or captcha missing/invalid.' })
   @ApiBody(apiRequestDTO(RegisterRequestPayload))
   @ApiResponse({ status: 409, description: 'Email already exists.' })
   @Public()
   @Throttle({ default: { limit: 3, ttl: 60_000 } })
   @Post('register')
-  register(
+  async register(
     @Body(new ZodValidationPipe(SRegisterUserRequestDTO)) requestDTO: TRegisterUserRequestDTO,
+    @Req() req: Request,
   ): Promise<TRegisterUserResponseDTO> {
+    await this.turnstile.verify({ token: requestDTO.turnstileToken, remoteIp: req.ip });
     return this.cmdBus.execute(new RegisterUserCommand(requestDTO));
   }
 
@@ -80,7 +87,7 @@ export class AuthController {
     status: 200,
     description: 'Login successful — access token returned, refresh cookie set.',
   })
-  @ApiResponse({ status: 400, description: 'Invalid credentials.' })
+  @ApiResponse({ status: 400, description: 'Invalid credentials or captcha missing/invalid.' })
   @ApiResponse({ status: 403, description: 'Account deactivated or not activated.' })
   @ApiBody(apiRequestDTO(LoginRequestPayload))
   @ApiResponse({ status: 429, description: 'Account locked after too many failed attempts.' })
@@ -89,9 +96,12 @@ export class AuthController {
   @Post('login')
   @HttpCode(200)
   async login(
-    @Body(new ZodValidationPipe(SuserCredentialsDTO)) requestDTO: TLoginRequestDTO,
+    @Body(new ZodValidationPipe(SLoginRequestDTO)) requestDTO: TLoginRequestDTO,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<TLoginResponseDTO> {
+    await this.turnstile.verify({ token: requestDTO.turnstileToken, remoteIp: req.ip });
+
     const result: TLoginCommandResult = await this.cmdBus.execute(new LoginCommand(requestDTO));
 
     res.cookie(

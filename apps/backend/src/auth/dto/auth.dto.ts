@@ -2,7 +2,7 @@ import { createZodDto } from 'nestjs-zod';
 import { ApiModel } from '../../utils/swagger/api-model.swagger.util.js';
 import {
   SRegisterUserRequestDTO,
-  SuserCredentialsDTO,
+  SLoginRequestDTO,
   SChangePasswordRequestDTO,
   SDeactivateAccountRequestDTO,
   SForgotPasswordRequestDTO,
@@ -15,7 +15,7 @@ import {
 export class RegisterRequestPayload extends createZodDto(SRegisterUserRequestDTO) {}
 
 @ApiModel()
-export class LoginRequestPayload extends createZodDto(SuserCredentialsDTO) {}
+export class LoginRequestPayload extends createZodDto(SLoginRequestDTO) {}
 
 @ApiModel()
 export class ChangePasswordRequestPayload extends createZodDto(SChangePasswordRequestDTO) {}
