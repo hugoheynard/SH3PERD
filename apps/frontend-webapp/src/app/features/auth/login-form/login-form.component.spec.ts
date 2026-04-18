@@ -25,8 +25,9 @@ describe('LoginFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('emits submitted credentials for a valid form payload', () => {
+  it('emits submitted credentials with the captcha token for a valid form payload', () => {
     const emitSpy = spyOn(component.login, 'emit');
+    component.onCaptchaVerified('cf-token-abc');
 
     component.onSubmit({
       valid: true,
@@ -36,10 +37,11 @@ describe('LoginFormComponent', () => {
     expect(emitSpy).toHaveBeenCalledWith({
       email: 'john@doe.com',
       password: 'secret',
+      turnstileToken: 'cf-token-abc',
     });
   });
 
-  it('still emits the form payload even when validity is false', () => {
+  it('does not emit when the form is invalid', () => {
     const emitSpy = spyOn(component.login, 'emit');
 
     component.onSubmit({
@@ -47,9 +49,18 @@ describe('LoginFormComponent', () => {
       value: { email: 'john@doe.com', password: 'secret' },
     });
 
-    expect(emitSpy).toHaveBeenCalledWith({
-      email: 'john@doe.com',
-      password: 'secret',
-    });
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
+
+  it('clears the captcha token on expiration and error', () => {
+    component.onCaptchaVerified('cf-token-abc');
+    expect(component.captchaToken()).toBe('cf-token-abc');
+
+    component.onCaptchaExpired();
+    expect(component.captchaToken()).toBeNull();
+
+    component.onCaptchaVerified('cf-token-def');
+    component.onCaptchaError();
+    expect(component.captchaToken()).toBeNull();
   });
 });

@@ -51,7 +51,7 @@ describe('LoginComponent', () => {
   });
 
   it('shows an error toast when login fails', async () => {
-    authService.login$.mockReturnValue(of(false));
+    authService.login$.mockReturnValue(of({ ok: false }));
 
     await component.onLogin({ email: 'john@doe.com', password: 'secret' });
 
@@ -63,8 +63,22 @@ describe('LoginComponent', () => {
     expect(toast.show).toHaveBeenCalledWith('Login failed', 'error');
   });
 
+  it('shows a captcha-specific toast on CAPTCHA_FAILED', async () => {
+    authService.login$.mockReturnValue(
+      of({ ok: false, code: 'CAPTCHA_FAILED', status: 400 }),
+    );
+
+    await component.onLogin({ email: 'john@doe.com', password: 'secret' });
+
+    expect(toast.show).toHaveBeenCalledWith(
+      'Captcha check failed — please try again.',
+      'error',
+    );
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+  });
+
   it('navigates to the app and shows a success toast when login succeeds', async () => {
-    authService.login$.mockReturnValue(of(true));
+    authService.login$.mockReturnValue(of({ ok: true }));
 
     await component.onLogin({ email: 'john@doe.com', password: 'secret' });
 

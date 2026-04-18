@@ -1,11 +1,9 @@
 <div class="login-page">
-
   <ui-brand-panel />
 
   <!-- Right: auth panel -->
   <main class="auth-panel">
     <div class="auth-inner">
-
       <div class="auth-logo">
         <img
           src="assets/logo/shepherd-dog-icon.png"
@@ -25,9 +23,17 @@
 
       <!-- Step indicator -->
       <div class="step-indicator">
-        <div class="step-dot" [class.step-dot--active]="step() >= 1" [class.step-dot--done]="step() > 1"></div>
+        <div
+          class="step-dot"
+          [class.step-dot--active]="step() >= 1"
+          [class.step-dot--done]="step() > 1"
+        ></div>
         <div class="step-line" [class.step-line--active]="step() > 1"></div>
-        <div class="step-dot" [class.step-dot--active]="step() >= 2" [class.step-dot--done]="step() > 2"></div>
+        <div
+          class="step-dot"
+          [class.step-dot--active]="step() >= 2"
+          [class.step-dot--done]="step() > 2"
+        ></div>
         <div class="step-line" [class.step-line--active]="step() > 2"></div>
         <div class="step-dot" [class.step-dot--active]="step() >= 3"></div>
       </div>
@@ -42,18 +48,22 @@
         <div class="type-cards">
           <button class="type-card" (click)="selectAccountType('artist')">
             <div class="type-card__icon">
-              <sh3-icon name="music-note" size='xl' />
+              <sh3-icon name="music-note" size="xl" />
             </div>
             <span class="type-card__title">I'm an Artist</span>
-            <span class="type-card__desc">Manage your music library, tracks, and setlists</span>
+            <span class="type-card__desc"
+              >Manage your music library, tracks, and setlists</span
+            >
           </button>
 
           <button class="type-card" (click)="selectAccountType('company')">
             <div class="type-card__icon">
-              <sh3-icon name="briefcase" size='xl' />
+              <sh3-icon name="briefcase" size="xl" />
             </div>
             <span class="type-card__title">I'm a Company</span>
-            <span class="type-card__desc">Manage artists, events, org chart, and contracts</span>
+            <span class="type-card__desc"
+              >Manage artists, events, org chart, and contracts</span
+            >
           </button>
         </div>
       }
@@ -63,7 +73,7 @@
         <div class="auth-header">
           <h2 class="auth-title">Tell us about you</h2>
           <p class="auth-subtitle">
-            @if (accountType() === 'company') {
+            @if (accountType() === "company") {
               Set up your profile and company.
             } @else {
               Set up your artist profile.
@@ -82,7 +92,8 @@
                 placeholder="John"
                 [ngModel]="firstName()"
                 (ngModelChange)="firstName.set($event)"
-                required />
+                required
+              />
             </div>
             <div class="field-group">
               <sh3-input
@@ -93,11 +104,12 @@
                 placeholder="Doe"
                 [ngModel]="lastName()"
                 (ngModelChange)="lastName.set($event)"
-                required />
+                required
+              />
             </div>
           </div>
 
-          @if (accountType() === 'company') {
+          @if (accountType() === "company") {
             <div class="field-group">
               <sh3-input
                 label="Company name"
@@ -107,21 +119,24 @@
                 placeholder="La Folie Douce"
                 [ngModel]="companyName()"
                 (ngModelChange)="companyName.set($event)"
-                required />
+                required
+              />
             </div>
           }
         </div>
 
         <div class="wizard-nav">
           <button class="back-link" type="button" (click)="goBack()">
-            <sh3-icon name="arrow-back" size='sm' />
+            <sh3-icon name="arrow-back" size="sm" />
             Back
           </button>
           <sh3-button
             variant="solid"
             size="lg"
             [disabled]="!step2Valid()"
-            (clicked)="goToStep3()">Continue</sh3-button>
+            (clicked)="goToStep3()"
+            >Continue</sh3-button
+          >
         </div>
       }
 
@@ -129,7 +144,9 @@
       @if (step() === 3) {
         <div class="auth-header">
           <h2 class="auth-title">Create your credentials</h2>
-          <p class="auth-subtitle">Almost there — set your email and password.</p>
+          <p class="auth-subtitle">
+            Almost there — set your email and password.
+          </p>
         </div>
 
         <form class="register-form" (ngSubmit)="onRegister()" novalidate>
@@ -143,17 +160,26 @@
                 placeholder="you@company.com"
                 [ngModel]="email()"
                 (ngModelChange)="email.set($event)"
-                required />
+                required
+              />
             </div>
 
             <sh3-password-field
               (valueChange)="password.set($event)"
-              (validChange)="passwordValid.set($event)" />
+              (validChange)="passwordValid.set($event)"
+            />
           </div>
+
+          <sh3-turnstile
+            [siteKey]="turnstileSiteKey"
+            (verified)="onCaptchaVerified($event)"
+            (expired)="onCaptchaExpired()"
+            (errored)="onCaptchaError()"
+          />
 
           <div class="wizard-nav">
             <button class="back-link" type="button" (click)="goBack()">
-              <sh3-icon name="arrow-back" size='sm' />
+              <sh3-icon name="arrow-back" size="sm" />
               Back
             </button>
             <sh3-button
@@ -161,12 +187,12 @@
               size="lg"
               type="submit"
               [disabled]="!step3Valid() || loading()"
-              (clicked)="onRegister()">Create account</sh3-button>
+              (clicked)="onRegister()"
+              >Create account</sh3-button
+            >
           </div>
         </form>
       }
-
     </div>
   </main>
-
 </div>

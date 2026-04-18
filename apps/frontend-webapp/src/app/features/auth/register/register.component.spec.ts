@@ -105,13 +105,14 @@ describe('RegisterComponent', () => {
   });
 
   it('submits a trimmed artist registration payload and redirects on success', async () => {
-    authService.register$.mockReturnValue(of(true));
+    authService.register$.mockReturnValue(of({ ok: true }));
     component.selectAccountType('artist');
     component.firstName.set(' John ');
     component.lastName.set(' Doe ');
     component.email.set(' john@doe.com ');
     component.password.set('secret');
     component.passwordValid.set(true);
+    component.captchaToken.set('cf-token');
     component.step.set(3);
 
     await component.onRegister();
@@ -122,6 +123,7 @@ describe('RegisterComponent', () => {
       email: 'john@doe.com',
       password: 'secret',
       account_type: 'artist',
+      turnstileToken: 'cf-token',
     });
     expect(router.navigateByUrl).toHaveBeenCalledWith('/login');
     expect(toast.show).toHaveBeenCalledWith(
@@ -132,7 +134,7 @@ describe('RegisterComponent', () => {
   });
 
   it('includes company_name for company registrations and shows an error toast on failure', async () => {
-    authService.register$.mockReturnValue(of(false));
+    authService.register$.mockReturnValue(of({ ok: false }));
     component.selectAccountType('company');
     component.firstName.set('John');
     component.lastName.set('Doe');
@@ -140,6 +142,7 @@ describe('RegisterComponent', () => {
     component.email.set('john@doe.com');
     component.password.set('secret');
     component.passwordValid.set(true);
+    component.captchaToken.set('cf-token');
     component.step.set(3);
 
     await component.onRegister();
@@ -151,12 +154,30 @@ describe('RegisterComponent', () => {
       password: 'secret',
       account_type: 'company',
       company_name: 'Acme',
+      turnstileToken: 'cf-token',
     });
     expect(router.navigateByUrl).not.toHaveBeenCalled();
     expect(toast.show).toHaveBeenCalledWith(
-      'Registration failed. Email may already be in use.',
+      'Registration failed. Please try again.',
       'error',
     );
     expect(component.loading()).toBe(false);
+    // Captcha token is single-use — cleared after a failed submit.
+    expect(component.captchaToken()).toBeNull();
+  });
+
+  it('blocks submit when captcha token is missing (step3 invalid)', async () => {
+    component.selectAccountType('artist');
+    component.firstName.set('John');
+    component.lastName.set('Doe');
+    component.email.set('john@doe.com');
+    component.password.set('secret');
+    component.passwordValid.set(true);
+    component.captchaToken.set(null);
+    component.step.set(3);
+
+    expect(component.step3Valid()).toBe(false);
+    await component.onRegister();
+    expect(authService.register$).not.toHaveBeenCalled();
   });
 });

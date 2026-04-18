@@ -1,7 +1,5 @@
 <form #credentials="ngForm" (ngSubmit)="onSubmit(credentials)" novalidate>
-
   <div class="fields">
-
     <div class="field-group">
       <sh3-input
         id="email"
@@ -11,7 +9,8 @@
         size="lg"
         placeholder="you@company.com"
         ngModel
-        required />
+        required
+      />
     </div>
 
     <div class="field-group">
@@ -23,17 +22,27 @@
         size="lg"
         placeholder="••••••••••••"
         ngModel
-        required />
+        required
+      />
       <div class="field-hint">
-        <a routerLink="/forgot-password" class="forgot-link" tabindex="-1">Forgot password?</a>
+        <a routerLink="/forgot-password" class="forgot-link" tabindex="-1"
+          >Forgot password?</a
+        >
       </div>
     </div>
-
   </div>
 
-  <sh3-button
-    [disabled]="!credentials.valid"
-    type="submit"
-    (clicked)="onSubmit(credentials)">Sign in</sh3-button>
+  <sh3-turnstile
+    [siteKey]="turnstileSiteKey"
+    (verified)="onCaptchaVerified($event)"
+    (expired)="onCaptchaExpired()"
+    (errored)="onCaptchaError()"
+  />
 
+  <sh3-button
+    [disabled]="!credentials.valid || !captchaToken()"
+    type="submit"
+    (clicked)="onSubmit(credentials)"
+    >Sign in</sh3-button
+  >
 </form>
