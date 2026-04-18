@@ -17,12 +17,15 @@ import {
 } from '../../../shared/configurable-tab-bar';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
+import { LayoutService } from '../../../core/services/layout.service';
 import { PLAYLIST_COLORS } from '../playlist-types';
-import type { PlaylistColor } from '../playlist-types';
 import { PlaylistCardComponent } from '../components/playlist-card/playlist-card.component';
 import { PlaylistsSidePanelComponent } from '../components/playlists-side-panel/playlists-side-panel.component';
-import { PlaylistDetailComponent } from '../components/playlist-detail/playlist-detail.component';
 import { PlaylistCompareComponent } from '../components/playlist-compare/playlist-compare.component';
+import {
+  PlaylistDetailSidePanelComponent,
+  type PlaylistDetailSidePanelConfig,
+} from '../components/playlist-detail-side-panel/playlist-detail-side-panel.component';
 import type { TPlaylistId } from '@sh3pherd/shared-types';
 
 /**
@@ -56,7 +59,6 @@ import type { TPlaylistId } from '@sh3pherd/shared-types';
     ButtonComponent,
     PlaylistCardComponent,
     PlaylistsSidePanelComponent,
-    PlaylistDetailComponent,
     PlaylistCompareComponent,
   ],
   templateUrl: './playlists-page.component.html',
@@ -69,6 +71,7 @@ export class PlaylistsPageComponent implements OnInit {
   public selector = inject(PlaylistsSelectorService);
   private playlistMutation = inject(PlaylistMutationService);
   private tabMutation = inject(PlaylistsTabMutationService);
+  private layout = inject(LayoutService);
 
   readonly colors = PLAYLIST_COLORS;
 
@@ -92,14 +95,6 @@ export class PlaylistsPageComponent implements OnInit {
   readonly isSearchMode = computed(
     () => this.selector.activeMode() === 'search',
   );
-
-  /** `playlistId` of the active tab when in `playlist` mode, else null.
-   *  Passed straight to <app-playlist-detail>. */
-  readonly activePlaylistId = computed<TPlaylistId | null>(() => {
-    const tab = this.selector.activeTab();
-    if (!tab || tab.config.mode !== 'playlist') return null;
-    return tab.config.playlistId;
-  });
 
   /** IDs being compared when the active tab is in `compare` mode. */
   readonly compareIds = computed<TPlaylistId[]>(() => {
@@ -168,29 +163,29 @@ export class PlaylistsPageComponent implements OnInit {
     this.playlistMutation.addPlaylist(`Playlist ${n}`, 'indigo');
   }
 
-  /* ── Placeholder mode-switch helpers (real call-sites wire in next commits) ── */
+  /* ── Card click → right-side panel ───────────── */
 
+  /**
+   * Open a playlist's detail in a dockable right-side panel. This
+   * replaces the previous "click switches the active tab to playlist
+   * mode" behaviour so the user can navigate to Music Library (or
+   * anywhere else) with the detail still visible — the intended
+   * staging ground for cross-page DnD from the library into the
+   * playlist tracklist.
+   */
   openPlaylistInTab(playlistId: string): void {
-    this.tabMutation.openPlaylistTab(
-      this.selector.activeTabId(),
-      playlistId as never,
-    );
+    this.layout.setRightPanel<
+      PlaylistDetailSidePanelComponent,
+      PlaylistDetailSidePanelConfig
+    >(PlaylistDetailSidePanelComponent, {
+      playlistId: playlistId as TPlaylistId,
+    });
   }
 
-  openCompareInTab(playlistIds: string[]): void {
-    this.tabMutation.openCompareTab(
-      this.selector.activeTabId(),
-      playlistIds as never,
-    );
-  }
-
+  /** Back-link from the detail/compare view — resets to search mode
+   *  and hides any open right panel. */
   returnToSearch(): void {
+    this.layout.clearRightPanel();
     this.tabMutation.openSearchTab(this.selector.activeTabId());
-  }
-
-  /** Used by placeholder cards in the content area until the dedicated
-   *  card component lands in the next commit. */
-  setPlaylistColor(id: string, color: PlaylistColor): void {
-    this.playlistMutation.updatePlaylist(id, { color });
   }
 }

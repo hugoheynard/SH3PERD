@@ -55,16 +55,6 @@
                 }}
               </span>
             }
-            @case ("playlist") {
-              <button
-                class="back-link"
-                type="button"
-                (click)="returnToSearch()"
-              >
-                <sh3-icon name="chevron-left" [size]="12" />
-                <span>Back to list</span>
-              </button>
-            }
             @case ("compare") {
               <button
                 class="back-link"
@@ -131,11 +121,6 @@
                 }
               </div>
             }
-          }
-
-          <!-- ── Playlist detail mode ── -->
-          @case ("playlist") {
-            <app-playlist-detail [playlistId]="activePlaylistId()" />
           }
 
           <!-- ── Compare mode ── -->
