@@ -116,22 +116,60 @@ Plan-aware quotas on tabs + saved configs, enforced at the UI _and_ the mutation
 - [ ] Warning: "Your track is below your current contract audio requirements"
 - [ ] Requires: contract audio specs model in shared-types + backend check after analysis
 
-### Drag & Drop to Playlist
+### Drag & Drop to Playlist — ✅ shipped
 
-- [ ] Right side panel with playlist list
-- [ ] Drag music card → drop on playlist name
-- [ ] Adds version (favorite track) to playlist at end position
+- [x] Right side panel hosts the playlist detail view (replaces the
+      earlier "drag onto a list item" design). Opened from a card
+      click via `LayoutService.setRightPanel` so it persists across
+      route changes — the user can browse `/app/musicLibrary` while
+      the drop target stays in view.
+- [x] Drag a version from `music-reference-card` → drop on the
+      tracklist in the side panel → `AddPlaylistTrack` command fires,
+      the detail re-fetches with resolved title + artist + version
+      label. See `sh3-playlists.md` § Drag & drop.
+- [x] Per-version granularity (each `.version-block` is its own drag
+      source, not the whole card) — payload carries `referenceId +
+    versionId + title + artist` for the preview chip.
 
-> **Note — tab-bar second consumer.** Playlists are the designated
-> next use case for `configurable-tab-bar` (see
-> [`TODO-configurable-tab-bar.md`](./TODO-configurable-tab-bar.md)
-> "Validate reusability — target: playlist feature"). The side panel
-> above is the "list view"; the tab-bar variant ("edit N playlists
-> side-by-side as tabs, save workspaces as saved configs") is the
-> stress-test for the bar's generic `TConfig` contract and the
-> three-lock quota surface. The two views aren't mutually exclusive
-> — the list stays the primary navigation, the tab-bar kicks in when
-> the user wants to work on several playlists at once.
+### Playlist reorder + drop-position feedback — ✅ shipped
+
+- [x] Each track row in `playlist-detail` is a drag source of type
+      `playlist-track`; dropping back onto the tracklist calls
+      `ReorderPlaylistTrackCommand` via `TrackMutationService.moveTrack`
+      (signature takes explicit `playlistId` so the API call fires
+      whether or not the flat-tracks slice is populated).
+- [x] Cursor-driven insertion bar — horizontal accent line with end
+      caps + soft pulse, positioned from
+      `DragSessionService.cursor()` + per-row bounding rects. Shows
+      for both `music-track` and `playlist-track` drags so the drop
+      affordance is unambiguous.
+- [x] `draggingTrackId` computed marks the source row with a
+      `.dragging` class (0.35 opacity + saturate 0.6 + faint indigo
+      wash) so the ghost-stays-behind reading is obvious.
+- [x] Per-card sparkline series stay in sync with the track order
+      after a reorder (`PlaylistsStateService.reorderSummarySeries`).
+
+### Playlist follow-ups
+
+- [ ] Add `playlist_count` + `playlist_search_tab` keys to
+      `PLAN_QUOTAS`. `PlaylistsTabMutationService` has the quota-override
+      hooks wired; just missing the values.
+- [ ] Add-at-position for `music-track` drops — currently appends then
+      the user reorders. Either extend `AddPlaylistTrackCommand` with
+      an optional `position`, or chain `addTrack` + `moveTrack` after
+      `addTrack` returns an observable.
+- [ ] Playlist tab-config persistence — mirror the music library's
+      `SaveMusicTabConfigsCommand` so tabs survive a reload.
+      `scheduleTabSave()` is a no-op today.
+- [ ] Analytics events on playlist commands (`playlist_created`,
+      `playlist_deleted`, `playlist_track_added`,
+      `playlist_track_removed`, `playlist_track_reordered`). Pattern
+      in `sh3-analytics-events.md`.
+- [ ] Add-playlist popover — replace the "+ New playlist" auto-namer
+      (creates `Playlist N` with indigo color) with a real popover
+      that takes name + color + optional description.
+- [ ] Per-card Compare multi-select — current toolbar Compare button
+      picks the first 2-3 filtered playlists. Add checkboxes on cards + a Compare CTA that appears when ≥ 2 are selected.
 
 ### Search Cross-Reference
 

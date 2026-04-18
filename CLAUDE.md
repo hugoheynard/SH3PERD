@@ -49,6 +49,7 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | **Music Audio Player**   | `apps/backend/documentation/sh3-music-audio-player.md`   | wavesurfer.js inline player, peaks pipeline                                              |
 | **Music Mastering**      | `apps/backend/documentation/sh3-music-mastering.md`      | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift                                    |
 | **Persona Match**        | `apps/backend/documentation/sh3-persona-match.md`        | AI event programming: extraction, scoring, curation (Claude API)                         |
+| **Playlists**            | `apps/backend/documentation/sh3-playlists.md`            | Per-user playlists: CQRS, summary aggregates + per-track series, UI layout, DnD          |
 | **Org Chart**            | `apps/backend/documentation/sh3-orgchart.md`             | Org chart features, API, architecture                                                    |
 | **Orgchart Export**      | `apps/backend/documentation/sh3-orgchart-export.md`      | PDF/SVG export via headless Chromium                                                     |
 | **Orgchart Print**       | `apps/backend/documentation/sh3-orgchart-print.md`       | Print layer reusing live component                                                       |

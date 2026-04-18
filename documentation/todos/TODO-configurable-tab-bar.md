@@ -32,7 +32,20 @@
 - [x] **Keyboard a11y (tablist)** — `.tabs-scroll` = `role="tablist"`, each `.tab` = `role="tab"` + `aria-selected` + roving `tabindex`. `onTabKeydown` handles ← / → (wrap), Home / End, Enter / Space, and Escape (closes the ⋮ menu). Automatic activation — arrow moves focus and emits `tabSelect`.
 - [ ] Migrate move-to dropdowns to `@angular/cdk/overlay` — **priority #1** next (see local TODO)
 - [ ] DnD drop-position preview indicator — backlog (see local TODO)
-- [ ] **Validate reusability — target: playlist feature** (see [`TODO-music-features.md`](./TODO-music-features.md) § Drag & Drop to Playlist + § Rekordbox Export). The playlist domain is the closest sibling to music-library: same three-lock contract, same DnD paradigm, but a genuinely different `TConfig` shape. Expected to surface any music-library-specific behaviour still hiding in `TabMutationService` and validate the default-tab factory / auto-sync hooks against a second shape before a third consumer lands. Local TODO has the full rationale.
+- [x] **Validate reusability — target: playlist feature.** Shipped:
+      the playlists page is the second consumer of
+      `ConfigurableTabBarComponent`, with a three-variant discriminated
+      `TPlaylistTabConfig` (search / playlist / compare) and
+      `PlaylistsTabMutationService extends TabMutationService<TPlaylistTabConfig>`.
+      The generic `TabMutationService` plus the `TAB_HANDLERS` dispatch
+      pipeline, saved-configs plumbing, lock contract and DnD strip
+      reorder all worked against the new shape without any changes to
+      the bar — the only music-library-specific bit that surfaced was
+      `MusicTabQuotaChecker`, which is outside the bar's scope. Tab
+      bar reusability is therefore validated; the playlist-side quota
+      gates + backend persistence are tracked on the playlist side
+      ([`TODO-music-features.md`](./TODO-music-features.md) § Playlist follow-ups).
+      Technical deep-dive: [`sh3-playlists.md`](../../apps/backend/documentation/sh3-playlists.md) § Tab model — three modes.
 
 ## Testing Checklist
 

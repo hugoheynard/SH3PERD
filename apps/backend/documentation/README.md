@@ -33,12 +33,13 @@ Architecture, patterns, and how-to guides for the NestJS backend.
 
 ## Music
 
-| Doc                                       | Description                                                                   |
-| ----------------------------------------- | ----------------------------------------------------------------------------- |
-| [Music Library](sh3-music-library.md)     | Full music feature roadmap — 14 features across 4 tiers, current status       |
-| [Audio Player](sh3-music-audio-player.md) | wavesurfer.js inline player, waveform peaks pipeline                          |
-| [Mastering](sh3-music-mastering.md)       | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift architecture            |
-| [Persona Match](sh3-persona-match.md)     | AI event programming — extraction, cross-library scoring, Claude API curation |
+| Doc                                       | Description                                                                       |
+| ----------------------------------------- | --------------------------------------------------------------------------------- |
+| [Music Library](sh3-music-library.md)     | Full music feature roadmap — 14 features across 4 tiers, current status           |
+| [Audio Player](sh3-music-audio-player.md) | wavesurfer.js inline player, waveform peaks pipeline                              |
+| [Mastering](sh3-music-mastering.md)       | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift architecture                |
+| [Persona Match](sh3-persona-match.md)     | AI event programming — extraction, cross-library scoring, Claude API curation     |
+| [Playlists](sh3-playlists.md)             | Per-user playlists — CQRS + aggregates (means + per-track series) + full UI + DnD |
 
 ## Company & Org
 
