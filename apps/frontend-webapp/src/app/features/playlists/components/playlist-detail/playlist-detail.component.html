@@ -153,8 +153,12 @@
           [dndData]="dragPayloadFor(t)"
           dragHandle=".track-drag-handle, .track-pos, .track-info"
         >
-          <span class="track-drag-handle" aria-hidden="true">
-            <sh3-icon name="menu" [size]="12" />
+          <span
+            class="track-drag-handle"
+            aria-hidden="true"
+            title="Drag to reorder"
+          >
+            <sh3-icon name="more-vertical" [size]="14" />
           </span>
           <span class="track-pos">{{ i + 1 }}</span>
           <div class="track-info">
