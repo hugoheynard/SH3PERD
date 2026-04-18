@@ -123,16 +123,9 @@
             }
           }
 
-          <!-- ── Playlist detail mode: placeholder ── -->
+          <!-- ── Playlist detail mode ── -->
           @case ("playlist") {
-            <div class="mode-placeholder">
-              <sh3-icon name="music-note" [size]="36" />
-              <span class="placeholder-title">Playlist detail</span>
-              <span class="placeholder-hint">
-                Tracklist + drag-and-drop from music library coming in the next
-                commit.
-              </span>
-            </div>
+            <app-playlist-detail [playlistId]="activePlaylistId()" />
           }
 
           <!-- ── Compare mode: placeholder ── -->

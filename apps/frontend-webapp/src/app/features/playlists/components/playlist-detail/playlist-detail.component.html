@@ -1,0 +1,158 @@
+@if (playlistId() === null) {
+  <div class="state state--empty">
+    <sh3-icon name="playlist-add" [size]="40" />
+    <span class="state-title">No playlist selected</span>
+    <span class="state-hint">
+      Pick a playlist from the list to see its tracks here.
+    </span>
+  </div>
+} @else if (loading() && detail() === null) {
+  <div class="state state--loading">
+    <sh3-icon name="music-note" [size]="32" />
+    <span class="state-title">Loading…</span>
+  </div>
+} @else if (detail(); as pl) {
+  @let sum = summary();
+
+  <!-- ── Header ── -->
+
+  <header class="detail-header" [attr.data-color]="pl.color">
+    <div class="head-row">
+      <div class="title-block">
+        <h2 class="name">{{ pl.name }}</h2>
+        @if (pl.description) {
+          <p class="desc">{{ pl.description }}</p>
+        }
+      </div>
+    </div>
+
+    <div class="meta-row">
+      <span class="meta-chip">
+        <sh3-icon name="music-note" [size]="11" />
+        <span class="meta-value">{{ pl.tracks.length }}</span>
+        <span class="meta-label">
+          track{{ pl.tracks.length !== 1 ? "s" : "" }}
+        </span>
+      </span>
+      <span class="meta-chip">
+        <sh3-icon name="clock" [size]="11" />
+        <span class="meta-value">{{ totalDuration() }}</span>
+      </span>
+    </div>
+
+    @if (sum) {
+      <div class="ratings">
+        <div class="rating-group" [class.empty]="sum.meanMastery === null">
+          <span class="rating-label">MST</span>
+          <div class="rating-dots">
+            @for (i of ratingDots; track i) {
+              <span
+                class="rating-dot"
+                [class.filled]="
+                  sum.meanMastery !== null &&
+                  i <= integerFromMean(sum.meanMastery)
+                "
+                [attr.data-level]="
+                  ratingLevel(integerFromMean(sum.meanMastery))
+                "
+              ></span>
+            }
+          </div>
+          <span class="rating-value">{{ displayMean(sum.meanMastery) }}</span>
+        </div>
+
+        <div class="rating-group" [class.empty]="sum.meanEnergy === null">
+          <span class="rating-label">NRG</span>
+          <div class="rating-dots">
+            @for (i of ratingDots; track i) {
+              <span
+                class="rating-dot"
+                [class.filled]="
+                  sum.meanEnergy !== null &&
+                  i <= integerFromMean(sum.meanEnergy)
+                "
+                [attr.data-level]="ratingLevel(integerFromMean(sum.meanEnergy))"
+              ></span>
+            }
+          </div>
+          <span class="rating-value">{{ displayMean(sum.meanEnergy) }}</span>
+        </div>
+
+        <div class="rating-group" [class.empty]="sum.meanEffort === null">
+          <span class="rating-label">EFF</span>
+          <div class="rating-dots">
+            @for (i of ratingDots; track i) {
+              <span
+                class="rating-dot"
+                [class.filled]="
+                  sum.meanEffort !== null &&
+                  i <= integerFromMean(sum.meanEffort)
+                "
+                [attr.data-level]="ratingLevel(integerFromMean(sum.meanEffort))"
+              ></span>
+            }
+          </div>
+          <span class="rating-value">{{ displayMean(sum.meanEffort) }}</span>
+        </div>
+
+        <div class="rating-group" [class.empty]="sum.meanQuality === null">
+          <span class="rating-label">QTY</span>
+          <div class="rating-dots">
+            @for (i of ratingDots; track i) {
+              <span
+                class="rating-dot"
+                [class.filled]="
+                  sum.meanQuality !== null &&
+                  i <= integerFromMean(sum.meanQuality)
+                "
+                [attr.data-level]="
+                  ratingLevel(integerFromMean(sum.meanQuality))
+                "
+              ></span>
+            }
+          </div>
+          <span class="rating-value">{{ displayMean(sum.meanQuality) }}</span>
+        </div>
+      </div>
+    }
+  </header>
+
+  <!-- ── Tracklist ── -->
+
+  @if (pl.tracks.length === 0) {
+    <div class="state state--empty">
+      <sh3-icon name="music-file" [size]="32" />
+      <span class="state-title">No tracks yet</span>
+      <span class="state-hint">
+        Drag music from the Library page onto this playlist (coming in the next
+        commit).
+      </span>
+    </div>
+  } @else {
+    <div class="tracklist" role="list">
+      @for (t of pl.tracks; track t.id; let i = $index) {
+        <div class="track-row" role="listitem">
+          <span class="track-pos">{{ i + 1 }}</span>
+          <div class="track-info">
+            <span class="track-title">{{ t.title }}</span>
+            <span class="track-artist">{{ t.originalArtist }}</span>
+          </div>
+          @if (t.versionLabel) {
+            <span class="track-version">{{ t.versionLabel }}</span>
+          }
+          @if (t.notes) {
+            <span class="track-notes">{{ t.notes }}</span>
+          }
+          <button
+            class="track-remove"
+            type="button"
+            aria-label="Remove track"
+            (click)="onRemoveTrack(t.id)"
+          >
+            ×
+          </button>
+        </div>
+      }
+    </div>
+  }
+}

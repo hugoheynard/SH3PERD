@@ -21,6 +21,8 @@ import { PLAYLIST_COLORS } from '../playlist-types';
 import type { PlaylistColor } from '../playlist-types';
 import { PlaylistCardComponent } from '../components/playlist-card/playlist-card.component';
 import { PlaylistsSidePanelComponent } from '../components/playlists-side-panel/playlists-side-panel.component';
+import { PlaylistDetailComponent } from '../components/playlist-detail/playlist-detail.component';
+import type { TPlaylistId } from '@sh3pherd/shared-types';
 
 /**
  * Playlists page — mirrors the music-library layout:
@@ -53,6 +55,7 @@ import { PlaylistsSidePanelComponent } from '../components/playlists-side-panel/
     ButtonComponent,
     PlaylistCardComponent,
     PlaylistsSidePanelComponent,
+    PlaylistDetailComponent,
   ],
   templateUrl: './playlists-page.component.html',
   styleUrl: './playlists-page.component.scss',
@@ -87,6 +90,14 @@ export class PlaylistsPageComponent implements OnInit {
   readonly isSearchMode = computed(
     () => this.selector.activeMode() === 'search',
   );
+
+  /** `playlistId` of the active tab when in `playlist` mode, else null.
+   *  Passed straight to <app-playlist-detail>. */
+  readonly activePlaylistId = computed<TPlaylistId | null>(() => {
+    const tab = this.selector.activeTab();
+    if (!tab || tab.config.mode !== 'playlist') return null;
+    return tab.config.playlistId;
+  });
 
   ngOnInit(): void {
     this.stateService.loadPlaylists();
