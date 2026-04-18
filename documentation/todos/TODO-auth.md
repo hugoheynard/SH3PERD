@@ -59,17 +59,31 @@ Reuse l'analytics event store existant, pas de nouvelle infra.
       dans la collection analytics existante. Pas de query endpoint —
       on récupère via Mongo Compass le temps d'en avoir besoin.
 
-### 4. CAPTCHA progressif sur login — **dimanche après-midi (1-2h)**
+### 4. CAPTCHA progressif sur login — ✅ **fait (backend)**
 
-Optionnel si on a du temps, retirable sinon.
+Livré avec Cloudflare Turnstile en mode "managed" — le challenge est
+progressif côté Cloudflare (invisible pour le trafic légitime,
+interactif pour les bots), plutôt qu'un trigger local "après 2 échecs".
+Avantages du choix :
 
-- [ ] Intégrer **Cloudflare Turnstile** (gratuit, pas de collecte
-      d'empreintes). Script JS frontend + endpoint de vérif côté
-      backend.
-- [ ] Trigger : activer le challenge après 2 échecs de login sur
-      la même IP ou le même email (lu depuis analytics events).
-      Ne PAS attendre le lockout — le but est de ralentir.
-- [ ] Config : `TURNSTILE_SECRET_KEY` en env. Fallback dev : skip.
+- Pas besoin d'audit events (étape 3) pour être protégé dès maintenant
+- Protection dès le premier hit, pas seulement après 2 échecs
+- Couvre aussi `/register` (bot signups)
+- Zéro state en DB côté nous
+
+- [x] `TurnstileService` + `TurnstileModule` avec config via env
+      (`TURNSTILE_SECRET_KEY`, `TURNSTILE_VERIFY_URL`). Fallback
+      bypass si la clé est absente (dev/CI).
+- [x] Câblage sur `/auth/login` et `/auth/register` — vérif avant
+      d'atteindre le command bus.
+- [x] **Fail-open sur panne Cloudflare** (log warn) — throttling
+      et lockout restent les garde-fous.
+- [x] 15 unit tests sur le service + 4 sur le controller
+      (integration captcha ✓ / captcha manquant ✗ / captcha rejeté ✗).
+- [x] Doc mise à jour — `sh3-auth-system.md` avec diagramme Mermaid.
+- [ ] **Frontend** — ajouter le widget Turnstile sur `login` et
+      `register` (side Angular), passer `turnstileToken` au backend.
+      Env `TURNSTILE_SITE_KEY` côté frontend.
 
 ### 5. Vérif finale + push — **lundi 9h-11h**
 
