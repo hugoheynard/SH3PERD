@@ -81,9 +81,19 @@ Avantages du choix :
 - [x] 15 unit tests sur le service + 4 sur le controller
       (integration captcha ✓ / captcha manquant ✗ / captcha rejeté ✗).
 - [x] Doc mise à jour — `sh3-auth-system.md` avec diagramme Mermaid.
-- [ ] **Frontend** — ajouter le widget Turnstile sur `login` et
-      `register` (side Angular), passer `turnstileToken` au backend.
-      Env `TURNSTILE_SITE_KEY` côté frontend.
+- [x] **Frontend** — widget Turnstile sur `login` et `register`,
+      `turnstileToken` propagé dans le body. Env `turnstileSiteKey`
+      dans `src/environments/env.{dev,prod}.ts`.
+- [x] **AuthResult type** — `login$` et `register$` renvoient
+      `{ ok, code?, status? }` pour réagir spécifiquement aux
+      erreurs captcha (toast dédié + reset du widget).
+- [x] **Process secrets documenté** — [`documentation/SECRETS.md`](../SECRETS.md)
+      couvre le flow dev/prod, la rotation, l'inventaire complet
+      (Turnstile, JWT, Slack, R2, Print, Mongo).
+- [ ] **Prod setup Turnstile** — créer le widget dans Cloudflare
+      dashboard, remplacer `REPLACE_WITH_PROD_TURNSTILE_SITE_KEY`
+      dans `env.prod.ts`, set `TURNSTILE_SECRET_KEY` sur le host.
+      Procédure complète dans `SECRETS.md` §3.1.
 
 ### 5. Vérif finale + push — **lundi 9h-11h**
 

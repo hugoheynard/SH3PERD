@@ -60,6 +60,7 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | Doc                      | Path                                               | Description                                         |
 | ------------------------ | -------------------------------------------------- | --------------------------------------------------- |
 | **README**               | `documentation/README.md`                          | Process documentation index                         |
+| **Secrets Management**   | `documentation/SECRETS.md`                         | How env secrets are loaded/rotated + full inventory |
 | **Tech Debt**            | `documentation/todos/TODO-tech-debt.md`            | Urgent bugs, architectural debt, functional backlog |
 | **Music Features**       | `documentation/todos/TODO-music-features.md`       | Music feature roadmap by phase                      |
 | **Company Features**     | `documentation/todos/TODO-company-features.md`     | Company module: settings, org chart, contracts      |

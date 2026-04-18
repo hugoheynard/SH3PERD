@@ -10,6 +10,7 @@ Process docs, TODOs, feature roadmaps, and user flows.
 | ----------------------------------------------- | --------------------------------------------------------------------------------------- |
 | [GitHub Hooks](GITHUB-HOOKS.md)                 | Hooks Git locaux du repo: `pre-commit` lint-staged, activation locale, piste `pre-push` |
 | [WebStorm Run Configs](WEBSTORM-RUN-CONFIGS.md) | Committed `.run/*.run.xml` configs: Dev all, backend tests — zero per-machine setup     |
+| [Secrets Management](SECRETS.md)                | How env secrets are stored, loaded, and rotated. Inventory of every secret in use.      |
 
 ---
 
