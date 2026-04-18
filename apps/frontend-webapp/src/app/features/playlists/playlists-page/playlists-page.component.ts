@@ -20,6 +20,7 @@ import { ButtonComponent } from '../../../shared/button/button.component';
 import { PLAYLIST_COLORS } from '../playlist-types';
 import type { PlaylistColor } from '../playlist-types';
 import { PlaylistCardComponent } from '../components/playlist-card/playlist-card.component';
+import { PlaylistsSidePanelComponent } from '../components/playlists-side-panel/playlists-side-panel.component';
 
 /**
  * Playlists page — mirrors the music-library layout:
@@ -51,6 +52,7 @@ import { PlaylistCardComponent } from '../components/playlist-card/playlist-card
     IconComponent,
     ButtonComponent,
     PlaylistCardComponent,
+    PlaylistsSidePanelComponent,
   ],
   templateUrl: './playlists-page.component.html',
   styleUrl: './playlists-page.component.scss',

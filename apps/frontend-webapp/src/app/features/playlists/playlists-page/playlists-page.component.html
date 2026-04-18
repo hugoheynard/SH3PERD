@@ -1,23 +1,10 @@
 <div class="playlists">
-  <!-- ── Side panel: filter + stats (filter UI comes in next commit) ── -->
+  <!-- ── Side panel: filter + stats ── -->
   <aside class="side-panel" [class.panel-open]="mobilePanelOpen()">
-    <div class="side-panel-placeholder">
-      <div class="panel-section">
-        <span class="panel-heading">Library</span>
-        <div class="panel-stat">
-          <span class="stat-label">Playlists</span>
-          <span class="stat-value">{{ selector.totalPlaylists() }}</span>
-        </div>
-      </div>
-
-      <div class="panel-section">
-        <span class="panel-heading">Filters</span>
-        <div class="panel-hint">
-          <sh3-icon name="sliders" [size]="12" />
-          <span>Coming soon</span>
-        </div>
-      </div>
-    </div>
+    <app-playlists-side-panel
+      [totalPlaylists]="selector.totalPlaylists()"
+      [filteredCount]="selector.filteredPlaylists().length"
+    />
   </aside>
 
   <!-- ── Main: tab bar + results ── -->

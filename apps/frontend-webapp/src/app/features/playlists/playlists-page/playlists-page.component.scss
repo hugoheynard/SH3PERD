@@ -32,57 +32,6 @@
   @include m.scrollbar;
 }
 
-.side-panel-placeholder {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 16px 14px;
-}
-
-.panel-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.panel-heading {
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-.panel-stat {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 8px 10px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.04);
-
-  .stat-label {
-    font-size: 12px;
-    color: var(--text-secondary);
-  }
-  .stat-value {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-}
-
-.panel-hint {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: var(--text-muted);
-  padding: 8px 10px;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-}
-
 /* ── Main content (tab-bar + results) ──────────────────── */
 
 .playlists-content {
