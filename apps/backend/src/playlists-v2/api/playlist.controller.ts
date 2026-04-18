@@ -22,7 +22,7 @@ import {
   PlaylistSummaryPayload,
   PlaylistDetailPayload,
 } from '../dto/playlist.dto.js';
-import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
+import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
 import { P } from '@sh3pherd/shared-types';
 import type {
@@ -42,7 +42,7 @@ import { SCreatePlaylistPayload, SUpdatePlaylistPayload } from '@sh3pherd/shared
 @ApiUnauthorizedResponse({
   description: 'Authentication required. Missing or invalid Bearer token.',
 })
-@ContractScoped()
+@PlatformScoped()
 @Controller()
 export class PlaylistController {
   constructor(

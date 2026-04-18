@@ -16,7 +16,7 @@ import { AddPlaylistTrackCommand } from '../application/commands/AddPlaylistTrac
 import { RemovePlaylistTrackCommand } from '../application/commands/RemovePlaylistTrackHandler.js';
 import { ReorderPlaylistTrackCommand } from '../application/commands/ReorderPlaylistTrackHandler.js';
 import { PlaylistTrackPayload } from '../dto/playlist.dto.js';
-import { ContractScoped } from '../../utils/nest/decorators/ContractScoped.js';
+import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
 import { RequirePermission } from '../../utils/nest/guards/RequirePermission.js';
 import { P } from '@sh3pherd/shared-types';
 import type {
@@ -35,7 +35,7 @@ import { SAddPlaylistTrackPayload, SReorderPlaylistTrackPayload } from '@sh3pher
 @ApiUnauthorizedResponse({
   description: 'Authentication required. Missing or invalid Bearer token.',
 })
-@ContractScoped()
+@PlatformScoped()
 @Controller()
 export class PlaylistTracksController {
   constructor(private readonly cmdBus: CommandBus) {}
