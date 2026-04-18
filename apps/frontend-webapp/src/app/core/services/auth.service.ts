@@ -5,54 +5,80 @@ import {
   finalize,
   map,
   Observable,
-  of, shareReplay, tap,
+  of,
+  shareReplay,
+  tap,
   throwError,
 } from 'rxjs';
-import {AuthTokenService} from './auth-token.service';
-import {Router} from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AuthTokenService } from './auth-token.service';
+import { Router } from '@angular/router';
 import { BaseHttpService } from './BaseHttpService';
 import { UserContextService } from './user-context.service';
-import type { TLoginRequestDTO, TRegisterUserRequestDTO } from '@sh3pherd/shared-types';
+import type {
+  TLoginRequestDTO,
+  TRegisterUserRequestDTO,
+} from '@sh3pherd/shared-types';
+
+/**
+ * Result shape for login / register calls.
+ *
+ * `code` surfaces the backend's `BusinessError.code` when present so
+ * callers can react specifically to captcha failures, invalid
+ * credentials, locked accounts, etc. without re-parsing HttpErrorResponse.
+ */
+export type AuthResult =
+  | { ok: true }
+  | { ok: false; code?: string; status?: number };
+
+function extractErrorCode(err: unknown): { code?: string; status?: number } {
+  if (err instanceof HttpErrorResponse) {
+    const body = err.error as { code?: string } | null | undefined;
+    return { code: body?.code, status: err.status };
+  }
+  return {};
+}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService extends BaseHttpService {
   private router: Router = inject(Router);
-  private tokenService: AuthTokenService =  inject(AuthTokenService);
+  private tokenService: AuthTokenService = inject(AuthTokenService);
   private URL: string = this.UrlBuilder.api().route('auth').build();
   private refreshInFlight$: Observable<string | null> | null = null;
   private readonly userCtx = inject(UserContextService);
 
-
-
   /**
    *LOGIN
    * @param credentials
-   * @returns Observable<boolean> - true if login successful, false otherwise
+   * @returns Observable<AuthResult> — ok=true on success, ok=false with
+   *   the backend `code` (e.g. INVALID_CREDENTIALS, CAPTCHA_FAILED,
+   *   ACCOUNT_LOCKED) so callers can tailor the UI reaction.
    */
-  login$(credentials: TLoginRequestDTO): Observable<boolean> {
+  login$(credentials: TLoginRequestDTO): Observable<AuthResult> {
     return this.http
-      .post<{ authToken: string }>(`${this.URL}/login`, credentials, { withCredentials: true })
+      .post<{
+        authToken: string;
+      }>(`${this.URL}/login`, credentials, { withCredentials: true })
       .pipe(
         delay(200),
-        map(res => res?.authToken ?? null),
-        tap(token => {
+        map((res) => res?.authToken ?? null),
+        tap((token) => {
           if (!token) {
             throw new Error('Missing authToken');
           }
           this.tokenService.setToken(token);
           this.userCtx.getUser();
         }),
-        map(() => true),
-        catchError(err => {
+        map((): AuthResult => ({ ok: true })),
+        catchError((err) => {
           console.error('Error in login process', err);
           this.tokenService.clear();
-          return of(false);
-        })
+          return of<AuthResult>({ ok: false, ...extractErrorCode(err) });
+        }),
       );
-  };
-
+  }
 
   /**
    * REFRESH SESSION
@@ -68,10 +94,12 @@ export class AuthService extends BaseHttpService {
     }
 
     this.refreshInFlight$ = this.http
-      .post<{ authToken: string }>(`${this.URL}/refresh`, {}, { withCredentials: true })
+      .post<{
+        authToken: string;
+      }>(`${this.URL}/refresh`, {}, { withCredentials: true })
       .pipe(
-        map(res => res?.authToken ?? null),
-        tap(token => {
+        map((res) => res?.authToken ?? null),
+        tap((token) => {
           if (!token) {
             this.tokenService.clear();
           }
@@ -85,12 +113,14 @@ export class AuthService extends BaseHttpService {
           this.tokenService.clear();
           return of(null);
         }),
-        finalize(() => { this.refreshInFlight$ = null; }),
-        shareReplay({ bufferSize: 1, refCount: true })
+        finalize(() => {
+          this.refreshInFlight$ = null;
+        }),
+        shareReplay({ bufferSize: 1, refCount: true }),
       );
 
     return this.refreshInFlight$;
-  };
+  }
 
   /**
    * LOGOUT
@@ -101,21 +131,25 @@ export class AuthService extends BaseHttpService {
   logout(): void {
     this.tokenService.clear();
 
-    this.http.post(`${this.URL}/logout`, {}, { withCredentials: true })
+    this.http
+      .post(`${this.URL}/logout`, {}, { withCredentials: true })
       .pipe(
-        catchError(error => {
+        catchError((error) => {
           if (error.status === 404) {
-            console.warn('[AuthService] Logout endpoint not found, ignoring.', error);
+            console.warn(
+              '[AuthService] Logout endpoint not found, ignoring.',
+              error,
+            );
           } else {
             console.error('[AuthService] Error during logout', error);
           }
           return of(null);
-        })
+        }),
       )
       .subscribe(() => {
         this.router.navigate(['/login']);
       });
-  };
+  }
 
   /**
    * Ensures a valid access token is available.
@@ -131,19 +165,21 @@ export class AuthService extends BaseHttpService {
       return of(t);
     }
     return this.refreshSession$();
-  };
+  }
 
   /**
    * REGISTER
    * Creates a new user account with email, password, first name and last name.
+   * Returns `AuthResult` so callers can react to CAPTCHA_FAILED /
+   * CAPTCHA_REQUIRED specifically (reset the widget, prompt a retry).
    */
-  register$(payload: TRegisterUserRequestDTO): Observable<boolean> {
-    return this.http
-      .post(`${this.URL}/register`, payload)
-      .pipe(
-        map(() => true),
-        catchError(() => of(false)),
-      );
+  register$(payload: TRegisterUserRequestDTO): Observable<AuthResult> {
+    return this.http.post(`${this.URL}/register`, payload).pipe(
+      map((): AuthResult => ({ ok: true })),
+      catchError((err) =>
+        of<AuthResult>({ ok: false, ...extractErrorCode(err) }),
+      ),
+    );
   }
 
   /**
@@ -151,12 +187,10 @@ export class AuthService extends BaseHttpService {
    * Sends a password reset link. Always succeeds (no email enumeration).
    */
   forgotPassword$(email: string): Observable<boolean> {
-    return this.http
-      .post(`${this.URL}/forgot-password`, { email })
-      .pipe(
-        map(() => true),
-        catchError(() => of(false)),
-      );
+    return this.http.post(`${this.URL}/forgot-password`, { email }).pipe(
+      map(() => true),
+      catchError(() => of(false)),
+    );
   }
 
   /**
@@ -176,9 +210,16 @@ export class AuthService extends BaseHttpService {
    * CHANGE PASSWORD (authenticated)
    * Changes the current password and invalidates all sessions.
    */
-  changePassword$(currentPassword: string, newPassword: string): Observable<boolean> {
+  changePassword$(
+    currentPassword: string,
+    newPassword: string,
+  ): Observable<boolean> {
     return this.http
-      .post(`${this.URL}/change-password`, { currentPassword, newPassword }, { withCredentials: true })
+      .post(
+        `${this.URL}/change-password`,
+        { currentPassword, newPassword },
+        { withCredentials: true },
+      )
       .pipe(
         map(() => true),
         catchError(() => of(false)),
@@ -192,7 +233,11 @@ export class AuthService extends BaseHttpService {
    */
   deactivateAccount$(password: string): Observable<boolean> {
     return this.http
-      .post(`${this.URL}/deactivate-account`, { password }, { withCredentials: true })
+      .post(
+        `${this.URL}/deactivate-account`,
+        { password },
+        { withCredentials: true },
+      )
       .pipe(
         map(() => true),
         catchError((err) => throwError(() => err)),

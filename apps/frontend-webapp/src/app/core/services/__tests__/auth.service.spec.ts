@@ -60,7 +60,7 @@ describe('AuthService', () => {
   });
 
   it('logs in successfully, stores the token and loads the user context', fakeAsync(() => {
-    let result: boolean | undefined;
+    let result: { ok: boolean; code?: string } | undefined;
 
     service
       .login$({ email: 'john@doe.com', password: 'secret' })
@@ -79,14 +79,14 @@ describe('AuthService', () => {
     req.flush({ authToken: 'token-123' });
     tick(200);
 
-    expect(result).toBe(true);
+    expect(result?.ok).toBe(true);
     expect(tokenService.setToken).toHaveBeenCalledWith('token-123');
     expect(userContext.getUser).toHaveBeenCalled();
     expect(tokenService.clear).not.toHaveBeenCalled();
   }));
 
-  it('returns false and clears auth state when the login response has no token', fakeAsync(() => {
-    let result: boolean | undefined;
+  it('returns ok=false and clears auth state when the login response has no token', fakeAsync(() => {
+    let result: { ok: boolean; code?: string } | undefined;
 
     service
       .login$({ email: 'john@doe.com', password: 'secret' })
@@ -97,13 +97,13 @@ describe('AuthService', () => {
     httpMock.expectOne(`${authUrl}/login`).flush({});
     tick(200);
 
-    expect(result).toBe(false);
+    expect(result?.ok).toBe(false);
     expect(tokenService.clear).toHaveBeenCalled();
     expect(userContext.getUser).not.toHaveBeenCalled();
   }));
 
-  it('returns false and clears auth state when login fails', () => {
-    let result: boolean | undefined;
+  it('returns ok=false with the backend error code when login fails', () => {
+    let result: { ok: boolean; code?: string; status?: number } | undefined;
 
     service
       .login$({ email: 'john@doe.com', password: 'secret' })
@@ -111,12 +111,16 @@ describe('AuthService', () => {
         result = value;
       });
 
-    httpMock.expectOne(`${authUrl}/login`).flush('boom', {
-      status: 401,
-      statusText: 'Unauthorized',
-    });
+    httpMock
+      .expectOne(`${authUrl}/login`)
+      .flush(
+        { code: 'CAPTCHA_FAILED', message: 'nope' },
+        { status: 400, statusText: 'Bad Request' },
+      );
 
-    expect(result).toBe(false);
+    expect(result?.ok).toBe(false);
+    expect(result?.code).toBe('CAPTCHA_FAILED');
+    expect(result?.status).toBe(400);
     expect(tokenService.clear).toHaveBeenCalled();
   });
 
@@ -237,7 +241,7 @@ describe('AuthService', () => {
     expect(req.request.method).toBe('POST');
     req.flush({});
 
-    await expect(resultPromise).resolves.toBe(true);
+    await expect(resultPromise).resolves.toEqual({ ok: true });
   });
 
   it('returns false when registration fails', async () => {
@@ -256,7 +260,8 @@ describe('AuthService', () => {
       statusText: 'Conflict',
     });
 
-    await expect(resultPromise).resolves.toBe(false);
+    const result = await resultPromise;
+    expect(result).toEqual({ ok: false, status: 409 });
   });
 
   it('sends forgot-password requests and normalizes failures to false', async () => {
