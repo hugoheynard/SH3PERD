@@ -10,6 +10,7 @@ import type {
   TMusicReferenceId,
   TMusicVersionId,
   TOrgNodeHierarchyViewModel,
+  TPlaylistTrackId,
 } from '@sh3pherd/shared-types';
 
 /* ---------------------------------------------------
@@ -46,6 +47,18 @@ export type MusicTrackDragPayload = {
   artist: string;
 };
 
+/**
+ * Payload emitted when reordering a row inside a playlist's tracklist.
+ * The id identifies the row being moved; title + artist feed the same
+ * drag preview used for incoming music-library drags so the visual
+ * grammar stays identical between "add" and "reorder".
+ */
+export type PlaylistTrackDragPayload = {
+  playlistTrackId: TPlaylistTrackId;
+  title: string;
+  artist: string;
+};
+
 export type DragPayloadMap = {
   template: ArtistPerformanceSlotTemplate;
   artist: PlannerArtist;
@@ -56,6 +69,7 @@ export type DragPayloadMap = {
   tab: TabDragPayload;
   'org-node': TOrgNodeHierarchyViewModel;
   'music-track': MusicTrackDragPayload;
+  'playlist-track': PlaylistTrackDragPayload;
 };
 
 export type DragType = keyof DragPayloadMap;

@@ -125,7 +125,7 @@
       uiDndDropZone
       [dropZone_id]="'playlist-detail-' + pl.id"
       [dropZoneAccept]="'music-track'"
-      (uiDndDrop)="onMusicDrop($event)"
+      (uiDndDrop)="onTracklistDrop($event)"
     >
       <sh3-icon name="music-file" [size]="32" />
       <span class="state-title">No tracks yet</span>
@@ -135,15 +135,27 @@
     </div>
   } @else {
     <div
+      #tracklistEl
       class="tracklist"
       role="list"
+      [class.is-reordering]="isReorderDrag()"
       uiDndDropZone
       [dropZone_id]="'playlist-detail-' + pl.id"
-      [dropZoneAccept]="'music-track'"
-      (uiDndDrop)="onMusicDrop($event)"
+      [dropZoneAccept]="['music-track', 'playlist-track']"
+      (uiDndDrop)="onTracklistDrop($event)"
     >
       @for (t of pl.tracks; track t.id; let i = $index) {
-        <div class="track-row" role="listitem">
+        <div
+          class="track-row"
+          role="listitem"
+          uiDndDrag
+          [dndType]="'playlist-track'"
+          [dndData]="dragPayloadFor(t)"
+          dragHandle=".track-drag-handle, .track-pos, .track-info"
+        >
+          <span class="track-drag-handle" aria-hidden="true">
+            <sh3-icon name="menu" [size]="12" />
+          </span>
           <span class="track-pos">{{ i + 1 }}</span>
           <div class="track-info">
             <span class="track-title">{{ t.title }}</span>
@@ -169,8 +181,23 @@
       <!-- Drop hint at the bottom of the existing tracklist -->
       <div class="tracklist-drop-hint">
         <sh3-icon name="add-doc" [size]="14" />
-        <span>Drop a music version here to add it</span>
+        <span
+          >Drop a music version here to add it, or drag rows to reorder</span
+        >
       </div>
+
+      <!-- Insertion bar — absolute-positioned, only shown mid-drag -->
+      @if (isReorderDrag() && insertIndex() >= 0) {
+        <div
+          class="insertion-bar"
+          [style.top.px]="insertY()"
+          aria-hidden="true"
+        >
+          <span class="insertion-dot insertion-dot--start"></span>
+          <span class="insertion-line"></span>
+          <span class="insertion-dot insertion-dot--end"></span>
+        </div>
+      }
     </div>
   }
 }

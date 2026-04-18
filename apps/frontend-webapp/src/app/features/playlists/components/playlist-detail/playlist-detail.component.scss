@@ -161,25 +161,58 @@ $colors: (
 /* ── Tracklist ─────────────────────────────────────────── */
 
 .tracklist {
+  position: relative; /* anchor for the absolute-positioned insertion bar */
   flex: 1;
   padding: 4px 0 40px;
+
+  /* Mid-drag affordances: highlight the rows + reveal the drag handle
+     so the user knows every row is grabbable. */
+  &.is-reordering {
+    .track-row {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .track-drag-handle {
+      opacity: 1;
+    }
+  }
 }
 
 .track-row {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 10px 28px;
+  gap: 12px;
+  padding: 10px 28px 10px 18px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  transition: background 0.1s;
+  transition:
+    background 0.1s,
+    opacity 0.1s;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
 
   &:hover {
     background: rgba(255, 255, 255, 0.03);
 
-    .track-remove {
+    .track-remove,
+    .track-drag-handle {
       opacity: 1;
     }
   }
+}
+
+/* Dedicated grab indicator on the left of every row. Kept subtle
+   until hover / active drag so the row chrome stays calm. */
+.track-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  flex-shrink: 0;
+  color: var(--text-faded);
+  opacity: 0.3;
+  transition: opacity 0.12s;
 }
 
 .track-pos {
@@ -339,6 +372,64 @@ $colors: (
 
   .tracklist:hover & {
     opacity: 0.9;
+  }
+
+  .tracklist.is-reordering & {
+    opacity: 0;
+  }
+}
+
+/* ── Insertion bar — horizontal line + end caps ───────── */
+
+.insertion-bar {
+  position: absolute;
+  left: 18px;
+  right: 28px;
+  height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  gap: 0;
+  pointer-events: none;
+  z-index: 3;
+
+  /* Subtle entry animation so the bar doesn't pop-flash as the
+     user drags between slots. */
+  animation: insertion-pulse 0.9s ease-in-out infinite;
+}
+
+.insertion-line {
+  flex: 1;
+  height: 2px;
+  background: var(--accent-color, #818cf8);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(129, 140, 248, 0.5);
+}
+
+.insertion-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-color, #818cf8);
+  box-shadow: 0 0 8px rgba(129, 140, 248, 0.6);
+  flex-shrink: 0;
+}
+
+.insertion-dot--start {
+  margin-right: -1px;
+}
+
+.insertion-dot--end {
+  margin-left: -1px;
+}
+
+@keyframes insertion-pulse {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
