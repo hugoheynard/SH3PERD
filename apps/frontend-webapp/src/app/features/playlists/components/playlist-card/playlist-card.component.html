@@ -47,69 +47,23 @@
       </span>
     </div>
 
-    <!-- ── Rating aggregates (mastery / energy / effort / quality) ── -->
+    <!-- ── Rating aggregates: mean + per-track sparkline ── -->
 
-    <div class="ratings" aria-label="Mean ratings">
-      @let mastery = pl.meanMastery;
-      @let energy = pl.meanEnergy;
-      @let effort = pl.meanEffort;
-      @let quality = pl.meanQuality;
-
-      <div class="rating-group" [class.empty]="mastery === null">
-        <span class="rating-label">MST</span>
-        <div class="rating-dots">
-          @for (i of ratingDots; track i) {
-            <span
-              class="rating-dot"
-              [class.filled]="mastery !== null && i <= integerFromMean(mastery)"
-              [attr.data-level]="ratingLevel(integerFromMean(mastery))"
-            ></span>
-          }
+    <div class="ratings" aria-label="Rating shape + mean">
+      @for (axis of axes; track axis.label) {
+        @let mean = meanFor(axis);
+        <div class="rating-group" [class.empty]="mean === null">
+          <div class="rating-head">
+            <span class="rating-label">{{ axis.label }}</span>
+            <span class="rating-value">{{ displayMean(mean) }}</span>
+          </div>
+          <app-rating-sparkline
+            class="rating-sparkline"
+            [series]="seriesFor(axis)"
+            [accent]="axis.accent"
+          />
         </div>
-        <span class="rating-value">{{ displayMean(mastery) }}</span>
-      </div>
-
-      <div class="rating-group" [class.empty]="energy === null">
-        <span class="rating-label">NRG</span>
-        <div class="rating-dots">
-          @for (i of ratingDots; track i) {
-            <span
-              class="rating-dot"
-              [class.filled]="energy !== null && i <= integerFromMean(energy)"
-              [attr.data-level]="ratingLevel(integerFromMean(energy))"
-            ></span>
-          }
-        </div>
-        <span class="rating-value">{{ displayMean(energy) }}</span>
-      </div>
-
-      <div class="rating-group" [class.empty]="effort === null">
-        <span class="rating-label">EFF</span>
-        <div class="rating-dots">
-          @for (i of ratingDots; track i) {
-            <span
-              class="rating-dot"
-              [class.filled]="effort !== null && i <= integerFromMean(effort)"
-              [attr.data-level]="ratingLevel(integerFromMean(effort))"
-            ></span>
-          }
-        </div>
-        <span class="rating-value">{{ displayMean(effort) }}</span>
-      </div>
-
-      <div class="rating-group" [class.empty]="quality === null">
-        <span class="rating-label">QTY</span>
-        <div class="rating-dots">
-          @for (i of ratingDots; track i) {
-            <span
-              class="rating-dot"
-              [class.filled]="quality !== null && i <= integerFromMean(quality)"
-              [attr.data-level]="ratingLevel(integerFromMean(quality))"
-            ></span>
-          }
-        </div>
-        <span class="rating-value">{{ displayMean(quality) }}</span>
-      </div>
+      }
     </div>
   </div>
 </article>

@@ -7,11 +7,40 @@ import {
 } from '@angular/core';
 import { IconComponent } from '../../../../shared/icon/icon.component';
 import { formatDuration } from '../../../../shared/utils/duration.utils';
-import {
-  RATING_DOTS,
-  ratingLevel,
-} from '../../../../shared/utils/rating.utils';
+import { RatingSparklineComponent } from '../rating-sparkline/rating-sparkline.component';
 import type { TPlaylistSummaryViewModel } from '../../playlist-types';
+
+/** The four axes rendered on the card. Each entry references the
+ *  corresponding mean + series fields on the summary; the template
+ *  iterates this list so every axis stays visually identical. */
+const RATING_AXES = [
+  {
+    label: 'MST',
+    accent: 'var(--color-rating-high, #4ade80)',
+    meanKey: 'meanMastery',
+    seriesKey: 'masterySeries',
+  },
+  {
+    label: 'NRG',
+    accent: 'var(--color-rating-max, #fbbf24)',
+    meanKey: 'meanEnergy',
+    seriesKey: 'energySeries',
+  },
+  {
+    label: 'EFF',
+    accent: 'var(--color-rating-medium, #38bdf8)',
+    meanKey: 'meanEffort',
+    seriesKey: 'effortSeries',
+  },
+  {
+    label: 'QTY',
+    accent: 'var(--color-rating-low, #a78bfa)',
+    meanKey: 'meanQuality',
+    seriesKey: 'qualitySeries',
+  },
+] as const;
+
+type RatingAxis = (typeof RATING_AXES)[number];
 
 /**
  * Visual card for one playlist in the search-mode grid.
@@ -29,7 +58,7 @@ import type { TPlaylistSummaryViewModel } from '../../playlist-types';
 @Component({
   selector: 'app-playlist-card',
   standalone: true,
-  imports: [IconComponent],
+  imports: [IconComponent, RatingSparklineComponent],
   templateUrl: './playlist-card.component.html',
   styleUrl: './playlist-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,21 +69,23 @@ export class PlaylistCardComponent {
   readonly open = output<string>();
   readonly more = output<string>();
 
-  readonly ratingDots = RATING_DOTS;
-  readonly ratingLevel = ratingLevel;
+  /** Fixed axis list rendered as a 4-column grid in the footer. */
+  readonly axes = RATING_AXES;
 
-  /** Rounded integer representation of a mean — used to decide how many
-   *  dots to fill. `null` means means no dots lit at all. */
-  integerFromMean(mean: number | null): number {
-    if (mean === null) return 0;
-    // Round to nearest, clamped to the 1–4 scale the dots render.
-    return Math.max(1, Math.min(4, Math.round(mean)));
-  }
-
-  /** Display text for a mean in the footer chip (one decimal). */
+  /** Display text for a mean in the axis chip (one decimal, or '—'). */
   displayMean(mean: number | null): string {
     if (mean === null) return '—';
     return mean.toFixed(1);
+  }
+
+  /** Type-safe accessors so the template can read a summary field by
+   *  the discriminated key on each axis. */
+  meanFor(axis: RatingAxis): number | null {
+    return this.playlist()[axis.meanKey];
+  }
+
+  seriesFor(axis: RatingAxis): (number | null)[] {
+    return this.playlist()[axis.seriesKey];
   }
 
   readonly duration = computed(() =>

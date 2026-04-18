@@ -184,48 +184,57 @@ $colors: (
   }
 }
 
-/* ── Ratings footer ────────────────────────────────────── */
+/* ── Ratings footer (mean + sparkline per axis) ─────────── */
 
 .ratings {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px 8px;
   padding-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .rating-group {
-  @include rating-group;
-  gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
 
   &.empty {
-    .rating-label {
+    .rating-label,
+    .rating-value {
       opacity: 0.5;
     }
     .rating-value {
       color: var(--text-faded);
-      opacity: 0.6;
+    }
+    .rating-sparkline {
+      opacity: 0.35;
     }
   }
+}
+
+.rating-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
 }
 
 .rating-label {
   @include rating-label;
 }
 
-.rating-dots {
-  @include rating-dots;
-  gap: 2px;
-}
-
-.rating-dot {
-  @include dot(5px);
-}
-
 .rating-value {
-  font-size: 9px;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-primary);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
+}
+
+.rating-sparkline {
+  display: block;
+  height: 22px;
+  margin-top: 1px;
 }

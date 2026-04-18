@@ -1,0 +1,36 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 22px;
+}
+
+.sparkline {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.guide {
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1;
+}
+
+.line {
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  opacity: 0.9;
+}
+
+.dot {
+  stroke: rgba(10, 12, 20, 0.9);
+  stroke-width: 0.6;
+}
+
+.dot--empty {
+  fill: transparent;
+  stroke: rgba(255, 255, 255, 0.25);
+  stroke-dasharray: 0.6 0.6;
+}
