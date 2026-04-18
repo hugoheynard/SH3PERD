@@ -68,7 +68,7 @@ export class AuthController {
   @ApiBody(apiRequestDTO(RegisterRequestPayload))
   @ApiResponse({ status: 409, description: 'Email already exists.' })
   @Public()
-  @Throttle({ default: { limit: 3, ttl: 60_000 } })
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('register')
   async register(
     @Body(new ZodValidationPipe(SRegisterUserRequestDTO)) requestDTO: TRegisterUserRequestDTO,
@@ -92,7 +92,7 @@ export class AuthController {
   @ApiBody(apiRequestDTO(LoginRequestPayload))
   @ApiResponse({ status: 429, description: 'Account locked after too many failed attempts.' })
   @Public()
-  @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @Post('login')
   @HttpCode(200)
   async login(

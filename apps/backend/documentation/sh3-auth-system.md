@@ -259,8 +259,8 @@ The cookie path `/api/auth` covers all auth endpoints (refresh, logout, change-p
 
 | Method | Path                    | Auth            | Throttle | Description                               |
 | ------ | ----------------------- | --------------- | -------- | ----------------------------------------- |
-| `POST` | `/auth/register`        | Public          | 3/min    | Create account (email + password + name)  |
-| `POST` | `/auth/login`           | Public          | 5/min    | Authenticate → JWT + refresh cookie       |
+| `POST` | `/auth/register`        | Public          | 10/min   | Create account (email + password + name)  |
+| `POST` | `/auth/login`           | Public          | 20/min   | Authenticate → JWT + refresh cookie       |
 | `POST` | `/auth/refresh`         | Public (cookie) | 10/min   | Rotate tokens via HttpOnly cookie         |
 | `POST` | `/auth/logout`          | Bearer          | 30/min   | Revoke token family + clear cookie        |
 | `POST` | `/auth/change-password` | Bearer          | 3/min    | Change password + invalidate all sessions |
@@ -408,9 +408,29 @@ worse incident than a brief window of less-protected traffic.
 
 Three defenses remain active during a fail-open window:
 
-- `@Throttle({ limit: 5, ttl: 60_000 })` on `/login` — 5 attempts/min/IP
-- `@Throttle({ limit: 3, ttl: 60_000 })` on `/register` — 3 attempts/min/IP
+- `@Throttle({ limit: 20, ttl: 60_000 })` on `/login` — 20 attempts/min/IP
+- `@Throttle({ limit: 10, ttl: 60_000 })` on `/register` — 10 attempts/min/IP
 - Account lockout after 5 failed passwords → 15 min
+
+### Why a 20/min throttle isn't the primary defence
+
+The login/register throttles are intentionally loose. They exist as a
+**DDoS floor** (stop a single IP from flooding thousands of requests
+per minute), not as the fine-grained brute-force gate. The real gates
+are:
+
+- **Captcha (Turnstile)** — tokens are single-use and ~5 min TTL, so
+  each request needs a freshly-solved challenge. Legitimate humans get
+  this silently (managed mode); bots have to burn a challenge per
+  attempt, which Cloudflare scores and progressively blocks.
+- **Account lockout** — 5 failed passwords per account → 15 min
+  cooldown. Targets credential stuffing directly (per-email, not per-IP).
+
+A tight 5/min throttle would false-positive on legitimate users with
+typos, shared NAT (office, campus, mobile carrier), or password manager
+replays. The 20/min limit gives humans room to breathe while still
+catching the extreme abuse patterns the throttle is actually designed
+to stop.
 
 ### Error codes
 

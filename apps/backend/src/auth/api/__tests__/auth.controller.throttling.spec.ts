@@ -57,8 +57,18 @@ function readSkip(method: string): unknown {
 
 describe('AuthController — throttling metadata', () => {
   describe.each([
-    ['register', 3, 60_000, 'brute-force account creation is the headline abuse vector'],
-    ['login', 5, 60_000, 'credential-stuffing defence'],
+    [
+      'register',
+      10,
+      60_000,
+      'brute-force account creation — primary defences are Turnstile (single-use tokens) + email verification; this throttle is a DDoS floor only',
+    ],
+    [
+      'login',
+      20,
+      60_000,
+      'credential stuffing — primary defences are Turnstile (single-use tokens) + 5/15min account lockout; this throttle is a DDoS floor only, not the fine-grained gate',
+    ],
     [
       'refreshSession',
       10,
