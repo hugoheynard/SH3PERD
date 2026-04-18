@@ -198,7 +198,8 @@ sequenceDiagram
         A->>A: Hash token (SHA-256)
         A->>DB: Delete old reset tokens for user
         A->>DB: Store {token: hash, user_id, expiresAt: +1h, usedAt: null}
-        A->>A: Log reset link (TODO: send email)
+        A->>A: MailerService.send (password-reset template)
+        Note over A: Mailer errors are swallowed to avoid email enumeration
     end
     A-->>F: 200 "If account exists, link sent"
 

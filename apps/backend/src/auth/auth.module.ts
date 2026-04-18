@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AuthCoreModule } from './core/auth-core.module.js';
 import { AnalyticsModule } from '../analytics/analytics.module.js';
+import { MailerModule } from '../mailer/mailer.module.js';
 import { TurnstileModule } from './turnstile/turnstile.module.js';
 import { AuthController } from './api/auth.controller.js';
 import { RegisterUserHandler } from './application/commands/RegisterUserCommand.js';
@@ -26,7 +27,7 @@ const CommandHandlers = [
 ];
 
 @Module({
-  imports: [CqrsModule, AuthCoreModule, AnalyticsModule, TurnstileModule],
+  imports: [CqrsModule, AuthCoreModule, AnalyticsModule, MailerModule, TurnstileModule],
   controllers: [AuthController],
   providers: [...CommandHandlers, UserRegisteredHandler],
   exports: [...CommandHandlers],
