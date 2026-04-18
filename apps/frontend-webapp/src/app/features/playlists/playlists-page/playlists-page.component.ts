@@ -22,6 +22,7 @@ import type { PlaylistColor } from '../playlist-types';
 import { PlaylistCardComponent } from '../components/playlist-card/playlist-card.component';
 import { PlaylistsSidePanelComponent } from '../components/playlists-side-panel/playlists-side-panel.component';
 import { PlaylistDetailComponent } from '../components/playlist-detail/playlist-detail.component';
+import { PlaylistCompareComponent } from '../components/playlist-compare/playlist-compare.component';
 import type { TPlaylistId } from '@sh3pherd/shared-types';
 
 /**
@@ -56,6 +57,7 @@ import type { TPlaylistId } from '@sh3pherd/shared-types';
     PlaylistCardComponent,
     PlaylistsSidePanelComponent,
     PlaylistDetailComponent,
+    PlaylistCompareComponent,
   ],
   templateUrl: './playlists-page.component.html',
   styleUrl: './playlists-page.component.scss',
@@ -98,6 +100,38 @@ export class PlaylistsPageComponent implements OnInit {
     if (!tab || tab.config.mode !== 'playlist') return null;
     return tab.config.playlistId;
   });
+
+  /** IDs being compared when the active tab is in `compare` mode. */
+  readonly compareIds = computed<TPlaylistId[]>(() => {
+    const tab = this.selector.activeTab();
+    if (!tab || tab.config.mode !== 'compare') return [];
+    return tab.config.playlistIds;
+  });
+
+  /** Enable the toolbar "Compare" button once at least two playlists
+   *  match the active search. Compare mode needs ≥ 2 columns to be
+   *  meaningful, so anything less renders the button as a no-op. */
+  readonly canStartQuickCompare = computed(
+    () => this.selector.filteredPlaylists().length >= 2,
+  );
+
+  /** Entry point from the toolbar. Picks up to the first 3 filtered
+   *  playlists and switches the active tab into compare mode. A finer
+   *  multi-select UX (checkboxes on cards) is tracked for a later
+   *  iteration; this default keeps the mode reachable without extra
+   *  moving parts. */
+  startQuickCompare(): void {
+    const ids = this.selector
+      .filteredPlaylists()
+      .slice(0, 3)
+      .map((p) => p.id) as TPlaylistId[];
+    if (ids.length < 2) return;
+    this.tabMutation.openCompareTab(this.selector.activeTabId(), ids);
+  }
+
+  onCompareRemove(id: TPlaylistId): void {
+    this.tabMutation.removeFromCompare(this.selector.activeTabId(), id);
+  }
 
   ngOnInit(): void {
     this.stateService.loadPlaylists();

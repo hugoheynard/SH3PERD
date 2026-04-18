@@ -89,6 +89,16 @@
             <sh3-icon name="sliders" [size]="13" />
             Filters
           </button>
+          @if (isSearchMode() && canStartQuickCompare()) {
+            <sh3-button
+              variant="secondary"
+              size="sm"
+              (clicked)="startQuickCompare()"
+            >
+              <sh3-icon name="grid" [size]="12" />
+              <span class="add-label"> Compare</span>
+            </sh3-button>
+          }
           <sh3-button variant="primary" size="sm" (clicked)="addPlaylist()">
             <span>+</span><span class="add-label"> New playlist</span>
           </sh3-button>
@@ -128,16 +138,12 @@
             <app-playlist-detail [playlistId]="activePlaylistId()" />
           }
 
-          <!-- ── Compare mode: placeholder ── -->
+          <!-- ── Compare mode ── -->
           @case ("compare") {
-            <div class="mode-placeholder">
-              <sh3-icon name="grid" [size]="36" />
-              <span class="placeholder-title">Compare view</span>
-              <span class="placeholder-hint">
-                Side-by-side comparison of 2–3 playlists coming in the next
-                commit.
-              </span>
-            </div>
+            <app-playlist-compare
+              [playlistIds]="compareIds()"
+              (remove)="onCompareRemove($event)"
+            />
           }
         }
       </div>

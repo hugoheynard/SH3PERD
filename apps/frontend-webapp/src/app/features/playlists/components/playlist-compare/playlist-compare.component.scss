@@ -1,0 +1,216 @@
+$colors: (
+  indigo: #818cf8,
+  emerald: #34d399,
+  rose: #fb7185,
+  amber: #fbbf24,
+  sky: #38bdf8,
+  violet: #a78bfa,
+);
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* ── Compare root ──────────────────────────────────────── */
+
+.compare {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 24px;
+}
+
+/* ── Column row (cards) ────────────────────────────────── */
+
+.columns {
+  display: grid;
+  gap: 12px;
+
+  &[data-count="2"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  &[data-count="3"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.column {
+  position: relative;
+}
+
+.column-remove {
+  all: unset;
+  cursor: pointer;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1;
+  z-index: 2;
+  opacity: 0;
+  transition:
+    opacity 0.12s,
+    background 0.12s,
+    color 0.12s;
+
+  &:hover {
+    background: rgba(251, 113, 133, 0.25);
+    color: #fb7185;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+    opacity: 1;
+  }
+}
+
+.column:hover .column-remove,
+.column:focus-within .column-remove {
+  opacity: 1;
+}
+
+/* ── Metric matrix ─────────────────────────────────────── */
+
+.matrix {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.matrix-head,
+.matrix-row {
+  display: grid;
+  gap: 1px;
+  background: var(--panel-color);
+
+  &[data-count="2"] {
+    grid-template-columns: 140px repeat(2, minmax(0, 1fr));
+  }
+  &[data-count="3"] {
+    grid-template-columns: 140px repeat(3, minmax(0, 1fr));
+  }
+
+  /* Head row fallback — has `matrix-head` class, defaults based on sums.length */
+}
+
+.matrix-head {
+  grid-template-columns: 140px repeat(auto-fit, minmax(0, 1fr));
+}
+
+.matrix-heading {
+  padding: 8px 14px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.04);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @each $name, $color in $colors {
+    &[data-color='#{"" + $name}'] {
+      color: $color;
+    }
+  }
+}
+
+.matrix-row {
+  background: rgba(255, 255, 255, 0.02);
+
+  &:nth-child(even) {
+    background: rgba(255, 255, 255, 0.035);
+  }
+}
+
+.metric-label {
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.metric-value {
+  position: relative;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &.leader {
+    color: var(--color-rating-max, #4ade80);
+    background: rgba(74, 222, 128, 0.08);
+
+    .leader-icon {
+      opacity: 0.7;
+    }
+  }
+}
+
+/* ── Empty state ───────────────────────────────────────── */
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 100px 20px;
+  color: var(--text-muted);
+
+  sh3-icon {
+    opacity: 0.35;
+  }
+  .state-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .state-hint {
+    font-size: 11px;
+    max-width: 340px;
+    text-align: center;
+    line-height: 1.5;
+    opacity: 0.8;
+  }
+}
+
+/* ── Mobile ────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .compare {
+    padding: 14px;
+  }
+
+  .columns {
+    grid-template-columns: 1fr !important;
+  }
+
+  .matrix-head,
+  .matrix-row {
+    &[data-count="2"],
+    &[data-count="3"] {
+      grid-template-columns: 100px repeat(auto-fit, minmax(0, 1fr));
+    }
+  }
+}
