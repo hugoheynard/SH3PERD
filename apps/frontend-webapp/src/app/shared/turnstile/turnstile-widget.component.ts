@@ -2,7 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  NgZone,
   effect,
+  inject,
   input,
   output,
   signal,
@@ -68,12 +70,20 @@ export class TurnstileWidgetComponent {
   private readonly host =
     viewChild.required<ElementRef<HTMLDivElement>>('host');
   private readonly widgetId = signal<TurnstileWidgetId | null>(null);
+  private readonly ngZone = inject(NgZone);
 
   constructor() {
     // Render once the view's #host reference and the required siteKey
     // are both resolved. The effect re-runs if either changes, so
     // swapping siteKey / theme / size / appearance at runtime is
     // supported.
+    //
+    // The Turnstile iframe runs its own timers / polls internally —
+    // leaving them inside NgZone keeps the app perpetually "unstable"
+    // (`Application did not stabilize within N seconds`) and breaks
+    // SSR / `whenStable`. We load the script and render the widget
+    // outside NgZone, then hop back in only to emit component outputs
+    // so the parent form's change detection still fires.
     effect((onCleanup) => {
       const host = this.host().nativeElement;
       const siteKey = this.siteKey();
@@ -84,40 +94,47 @@ export class TurnstileWidgetComponent {
       let cancelled = false;
       let renderedId: TurnstileWidgetId | null = null;
 
-      loadTurnstile()
-        .then((turnstile) => {
-          if (cancelled) return;
-          renderedId = turnstile.render(host, {
-            sitekey: siteKey,
-            theme,
-            size,
-            appearance,
-            retry: 'auto',
-            'refresh-expired': 'auto',
-            callback: (token) => this.verified.emit(token),
-            'expired-callback': () => this.expired.emit(),
-            'error-callback': (code) => this.errored.emit(code),
+      this.ngZone.runOutsideAngular(() => {
+        loadTurnstile()
+          .then((turnstile) => {
+            if (cancelled) return;
+            renderedId = turnstile.render(host, {
+              sitekey: siteKey,
+              theme,
+              size,
+              appearance,
+              retry: 'auto',
+              'refresh-expired': 'auto',
+              callback: (token) =>
+                this.ngZone.run(() => this.verified.emit(token)),
+              'expired-callback': () =>
+                this.ngZone.run(() => this.expired.emit()),
+              'error-callback': (code) =>
+                this.ngZone.run(() => this.errored.emit(code)),
+            });
+            this.widgetId.set(renderedId);
+          })
+          .catch((err: unknown) => {
+            if (cancelled) return;
+            // Loader failure (script blocked, offline, etc.). The backend
+            // will then see a missing token and either bypass (dev) or
+            // reject with CAPTCHA_REQUIRED — the parent toast surfaces it.
+            console.warn('[Turnstile] Failed to load widget:', err);
+            this.ngZone.run(() => this.errored.emit('loader-failed'));
           });
-          this.widgetId.set(renderedId);
-        })
-        .catch((err: unknown) => {
-          if (cancelled) return;
-          // Loader failure (script blocked, offline, etc.). The backend
-          // will then see a missing token and either bypass (dev) or
-          // reject with CAPTCHA_REQUIRED — the parent toast surfaces it.
-          console.warn('[Turnstile] Failed to load widget:', err);
-          this.errored.emit('loader-failed');
-        });
+      });
 
       onCleanup(() => {
         cancelled = true;
         const id = renderedId ?? this.widgetId();
         if (id && typeof window !== 'undefined' && window.turnstile) {
-          try {
-            window.turnstile.remove(id);
-          } catch {
-            /* widget already gone */
-          }
+          this.ngZone.runOutsideAngular(() => {
+            try {
+              window.turnstile!.remove(id);
+            } catch {
+              /* widget already gone */
+            }
+          });
         }
         this.widgetId.set(null);
       });
@@ -128,7 +145,9 @@ export class TurnstileWidgetComponent {
   reset(): void {
     const id = this.widgetId();
     if (id && typeof window !== 'undefined' && window.turnstile) {
-      window.turnstile.reset(id);
+      this.ngZone.runOutsideAngular(() => {
+        window.turnstile!.reset(id);
+      });
     }
   }
 }
