@@ -28,6 +28,8 @@ $colors: (
   overflow-y: auto;
   background: var(--content-page-bg-color);
   color: var(--text-primary);
+  user-select: none;
+  -webkit-user-select: none;
 
   @include m.scrollbar;
 }

@@ -28,8 +28,17 @@ $colors: (
   overflow-y: auto;
   background: var(--content-page-bg-color);
   color: var(--text-primary);
+  user-select: none;
+  -webkit-user-select: none;
 
   @include m.scrollbar;
+}
+
+/* Inputs inherit `user-select` in some browsers — force them back on
+   so inline rename / target editing still supports caret + selection. */
+.show-detail input {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 /* ── Header ────────────────────────────────────────────── */
