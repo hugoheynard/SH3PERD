@@ -84,19 +84,12 @@ export class ShowAggregateRepository {
 
   async save(aggregate: ShowAggregate): Promise<void> {
     const show = aggregate.showEntity;
-    await this.showRepo.saveOne(show.toDomain).catch((err) => {
-      // `saveOne` is an insert — falling through to update when the doc
-      // already exists keeps the save call idempotent from the caller's
-      // point of view. Any other failure bubbles up.
-      if (!isDuplicateKeyError(err)) throw err;
-    });
-    await this.showRepo.updateShow(show.id, {
-      name: show.name,
-      color: show.color,
-      description: show.description,
-      updatedAt: show.toDomain.updatedAt,
-      lastPlayedAt: show.lastPlayedAt ?? null,
-    });
+    // Idempotent whole-doc write keyed by the business `id`. Previously
+    // this path did `insertOne` + `updateOne`, which silently created
+    // a second row on every save (there's no unique index on `id`, so
+    // the `isDuplicateKeyError` catch never fired) — producing one
+    // duplicate show document per mutation on a loaded aggregate.
+    await this.showRepo.upsertOne(show.toDomain);
 
     // Sections — insert new, delete removed, rewrite existing.
     const newSectionRecords = aggregate.newSections.map((s) => ({
@@ -139,10 +132,4 @@ export class ShowAggregateRepository {
   async countByOwner(ownerId: TUserId): Promise<number> {
     return this.showRepo.countByOwnerId(ownerId);
   }
-}
-
-function isDuplicateKeyError(err: unknown): boolean {
-  if (!err || typeof err !== 'object') return false;
-  const e = err as { code?: number };
-  return e.code === 11000;
 }
