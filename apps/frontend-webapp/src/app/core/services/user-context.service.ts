@@ -1,13 +1,18 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import type { TApiResponse, TUserMeViewModel, TUserPreferencesDomainModel, TPlatformRole } from '@sh3pherd/shared-types';
+import type {
+  TAccountType,
+  TApiResponse,
+  TUserMeViewModel,
+  TUserPreferencesDomainModel,
+  TPlatformRole,
+} from '@sh3pherd/shared-types';
 import type { TContractId } from '@sh3pherd/shared-types';
 import { strictComputed } from '../utils/strictComputed';
 import { HttpClient } from '@angular/common/http';
 import { ApiURLService } from './api-url.service';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserContextService {
   private readonly http = inject(HttpClient);
@@ -23,12 +28,32 @@ export class UserContextService {
   /** The user's current platform plan (null until loaded). */
   readonly plan = this._plan.asReadonly();
 
+  /**
+   * Account type inferred from the plan prefix (`artist_*` vs `company_*`).
+   * Null while the plan is still loading.
+   */
+  readonly accountType = computed<TAccountType | null>(() => {
+    const p = this._plan();
+    if (!p) return null;
+    return p.startsWith('artist_') ? 'artist' : 'company';
+  });
+
+  readonly isArtist = computed(() => this.accountType() === 'artist');
+  readonly isCompany = computed(() => this.accountType() === 'company');
+
+  /** True when the user has an active contract workspace selected. */
+  readonly hasContractWorkspace = computed(
+    () => this.currentContractId() !== null,
+  );
+
   // ── Derived identity signals (safe defaults, never throw) ──
 
   readonly displayName = computed(() => {
     const u = this._user();
     if (!u?.profile) return '';
-    return u.profile.display_name ?? `${u.profile.first_name} ${u.profile.last_name}`;
+    return (
+      u.profile.display_name ?? `${u.profile.first_name} ${u.profile.last_name}`
+    );
   });
 
   readonly userInitial = computed(() => {
@@ -54,35 +79,42 @@ export class UserContextService {
   });
 
   /** Strict version — throws if workspace not set. */
-  readonly currentContractIdStrict = strictComputed<TContractId>(this.currentContractId, 'Workspace');
+  readonly currentContractIdStrict = strictComputed<TContractId>(
+    this.currentContractId,
+    'Workspace',
+  );
 
   // ── Actions ──
 
   setUser(user: TUserMeViewModel | null) {
     this._user.set(user);
-  };
+  }
 
   /**
    * Fetches the current user's profile from the backend and updates the user signal.
    */
   getUser(): void {
-    this.http.get<TApiResponse<TUserMeViewModel>>(`${this.userURL}/me`).subscribe({
-      next: (res) => {
-        this.setUser(res.data);
-        this.loadPlan();
-      },
-      error: (err) => {
-        console.error('Failed to load user profile', err);
-        this.setUser(null);
-      }
-    });
-  };
+    this.http
+      .get<TApiResponse<TUserMeViewModel>>(`${this.userURL}/me`)
+      .subscribe({
+        next: (res) => {
+          this.setUser(res.data);
+          this.loadPlan();
+        },
+        error: (err) => {
+          console.error('Failed to load user profile', err);
+          this.setUser(null);
+        },
+      });
+  }
 
   private loadPlan(): void {
-    this.http.get<{ data: { plan: TPlatformRole } }>(`${this.quotaURL}/me`).subscribe({
-      next: (res) => this._plan.set(res.data.plan),
-      error: () => this._plan.set('artist_free'),
-    });
+    this.http
+      .get<{ data: { plan: TPlatformRole } }>(`${this.quotaURL}/me`)
+      .subscribe({
+        next: (res) => this._plan.set(res.data.plan),
+        error: () => this._plan.set('artist_free'),
+      });
   }
 
   // ── Preference setters (optimistic update + backend sync) ──
@@ -105,7 +137,9 @@ export class UserContextService {
    * Generic preference update: applies the patch to the local signal first (optimistic),
    * then syncs to the backend. Reverts on failure.
    */
-  private patchPreferencesOptimistic(patch: Partial<TUserPreferencesDomainModel>): void {
+  private patchPreferencesOptimistic(
+    patch: Partial<TUserPreferencesDomainModel>,
+  ): void {
     const prev = this._user();
     if (!prev) return;
 
@@ -117,10 +151,12 @@ export class UserContextService {
 
     // Persist to backend (fire-and-forget — don't revert on failure,
     // the local value is the session source of truth)
-    this.http.patch<TUserPreferencesDomainModel>(`${this.userURL}/preferences`, patch).subscribe({
-      error: (err) => {
-        console.warn('Failed to persist preferences to backend', err);
-      },
-    });
+    this.http
+      .patch<TUserPreferencesDomainModel>(`${this.userURL}/preferences`, patch)
+      .subscribe({
+        error: (err) => {
+          console.warn('Failed to persist preferences to backend', err);
+        },
+      });
   }
 }

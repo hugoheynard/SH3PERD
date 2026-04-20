@@ -1,5 +1,4 @@
 <nav class="app-menu">
-
   <!-- Brand -->
   <div class="brand">
     <span class="brand-logo">S</span>
@@ -8,11 +7,8 @@
 
   <!-- Main navigation -->
   <div class="nav-section">
-    @for (item of navItems; track item.id) {
-      <a
-        class="nav-item"
-        [routerLink]="item.route"
-        routerLinkActive="active">
+    @for (item of navItems(); track item.id) {
+      <a class="nav-item" [routerLink]="item.route" routerLinkActive="active">
         <sh3-icon [name]="item.icon" class="nav-icon" />
         <span class="nav-label">{{ item.label }}</span>
       </a>
@@ -26,22 +22,16 @@
   <div class="nav-section nav-section--bottom">
     @for (item of bottomItems; track item.id) {
       @if (item.route) {
-        <a
-          class="nav-item"
-          [routerLink]="item.route"
-          routerLinkActive="active">
+        <a class="nav-item" [routerLink]="item.route" routerLinkActive="active">
           <sh3-icon [name]="item.icon" class="nav-icon" />
           <span class="nav-label">{{ item.label }}</span>
         </a>
       } @else {
-        <button
-          class="nav-item nav-item--btn"
-          (click)="onLogout()">
+        <button class="nav-item nav-item--btn" (click)="onLogout()">
           <sh3-icon [name]="item.icon" class="nav-icon" />
           <span class="nav-label">{{ item.label }}</span>
         </button>
       }
     }
   </div>
-
 </nav>
