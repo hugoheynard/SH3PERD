@@ -9,6 +9,7 @@ import type {
 } from '@sh3pherd/shared-types';
 import { MusicVersionEntity } from '../../domain/entities/MusicVersionEntity.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
+import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 
 /**
  * Command to create a new version of a song in a user's repertoire.
@@ -48,6 +49,7 @@ export class CreateMusicVersionHandler implements ICommandHandler<
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
     private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     private readonly quotaService: QuotaService,
+    private readonly analytics: AnalyticsEventService,
   ) {}
 
   async execute(cmd: CreateMusicVersionCommand): Promise<TMusicVersionDomainModel> {
@@ -79,6 +81,14 @@ export class CreateMusicVersionHandler implements ICommandHandler<
 
     // Record usage — after successful save
     await this.quotaService.recordUsage(cmd.actorId, 'track_version');
+
+    await this.analytics.track('music_version_created', cmd.actorId, {
+      version_id: version.id,
+      reference_id: cmd.payload.musicReference_id,
+      label: cmd.payload.label,
+      type: cmd.payload.type,
+      genre: cmd.payload.genre,
+    });
 
     return version.toDomain;
   }

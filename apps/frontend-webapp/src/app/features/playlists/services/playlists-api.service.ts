@@ -28,23 +28,21 @@ import type {
  */
 @Injectable({ providedIn: 'root' })
 export class PlaylistsApiService extends BaseHttpService {
-
   private readonly URL = this.UrlBuilder.apiProtectedRoute('playlists').build();
 
   /* ─── Playlists ───────────────────────────────────────── */
 
   getMyPlaylists(): Observable<TPlaylistSummaryViewModel[]> {
     return this.http
-      .get<TApiResponse<TPlaylistSummaryViewModel[]>>(
-        `${this.URL}/me`,
-        { withCredentials: true },
-      )
+      .get<
+        TApiResponse<TPlaylistSummaryViewModel[]>
+      >(`${this.URL}/me`, { withCredentials: true })
       .pipe(
-        map(res => {
+        map((res) => {
           if (!res?.data) throw new Error('INVALID_RESPONSE');
           return res.data;
         }),
-        catchError(err => {
+        catchError((err) => {
           return throwError(() => err);
         }),
       );
@@ -52,52 +50,52 @@ export class PlaylistsApiService extends BaseHttpService {
 
   getPlaylistDetail(id: string): Observable<TPlaylistDetailViewModel> {
     return this.http
-      .get<TApiResponse<TPlaylistDetailViewModel>>(
-        `${this.URL}/${id}`,
-        { withCredentials: true },
-      )
+      .get<
+        TApiResponse<TPlaylistDetailViewModel>
+      >(`${this.URL}/${id}`, { withCredentials: true })
       .pipe(
-        map(res => {
+        map((res) => {
           if (!res?.data) throw new Error('INVALID_RESPONSE');
           return res.data;
         }),
-        catchError(err => {
+        catchError((err) => {
           return throwError(() => err);
         }),
       );
   }
 
-  createPlaylist(payload: TCreatePlaylistPayload): Observable<TPlaylistDomainModel> {
+  createPlaylist(
+    payload: TCreatePlaylistPayload,
+  ): Observable<TPlaylistDomainModel> {
     return this.http
-      .post<TApiResponse<TPlaylistDomainModel>>(
-        this.URL,
-        payload,
-        { withCredentials: true },
-      )
+      .post<
+        TApiResponse<TPlaylistDomainModel>
+      >(this.URL, { payload }, { withCredentials: true })
       .pipe(
-        map(res => {
+        map((res) => {
           if (!res?.data) throw new Error('INVALID_RESPONSE');
           return res.data;
         }),
-        catchError(err => {
+        catchError((err) => {
           return throwError(() => err);
         }),
       );
   }
 
-  updatePlaylist(id: string, payload: TUpdatePlaylistPayload): Observable<TPlaylistDomainModel> {
+  updatePlaylist(
+    id: string,
+    payload: TUpdatePlaylistPayload,
+  ): Observable<TPlaylistDomainModel> {
     return this.http
-      .patch<TApiResponse<TPlaylistDomainModel>>(
-        `${this.URL}/${id}`,
-        payload,
-        { withCredentials: true },
-      )
+      .patch<
+        TApiResponse<TPlaylistDomainModel>
+      >(`${this.URL}/${id}`, { payload }, { withCredentials: true })
       .pipe(
-        map(res => {
+        map((res) => {
           if (!res?.data) throw new Error('INVALID_RESPONSE');
           return res.data;
         }),
-        catchError(err => {
+        catchError((err) => {
           return throwError(() => err);
         }),
       );
@@ -105,13 +103,12 @@ export class PlaylistsApiService extends BaseHttpService {
 
   deletePlaylist(id: string): Observable<void> {
     return this.http
-      .delete<TApiResponse<void>>(
-        `${this.URL}/${id}`,
-        { withCredentials: true },
-      )
+      .delete<
+        TApiResponse<void>
+      >(`${this.URL}/${id}`, { withCredentials: true })
       .pipe(
         map(() => void 0),
-        catchError(err => {
+        catchError((err) => {
           return throwError(() => err);
         }),
       );
@@ -119,19 +116,20 @@ export class PlaylistsApiService extends BaseHttpService {
 
   /* ─── Tracks ──────────────────────────────────────────── */
 
-  addTrack(playlistId: string, payload: TAddPlaylistTrackPayload): Observable<TPlaylistTrackDomainModel> {
+  addTrack(
+    playlistId: string,
+    payload: TAddPlaylistTrackPayload,
+  ): Observable<TPlaylistTrackDomainModel> {
     return this.http
-      .post<TApiResponse<TPlaylistTrackDomainModel>>(
-        `${this.URL}/${playlistId}/tracks`,
-        payload,
-        { withCredentials: true },
-      )
+      .post<
+        TApiResponse<TPlaylistTrackDomainModel>
+      >(`${this.URL}/${playlistId}/tracks`, { payload }, { withCredentials: true })
       .pipe(
-        map(res => {
+        map((res) => {
           if (!res?.data) throw new Error('INVALID_RESPONSE');
           return res.data;
         }),
-        catchError(err => {
+        catchError((err) => {
           return throwError(() => err);
         }),
       );
@@ -139,28 +137,29 @@ export class PlaylistsApiService extends BaseHttpService {
 
   removeTrack(playlistId: string, trackId: string): Observable<void> {
     return this.http
-      .delete<TApiResponse<void>>(
-        `${this.URL}/${playlistId}/tracks/${trackId}`,
-        { withCredentials: true },
-      )
+      .delete<
+        TApiResponse<void>
+      >(`${this.URL}/${playlistId}/tracks/${trackId}`, { withCredentials: true })
       .pipe(
         map(() => void 0),
-        catchError(err => {
+        catchError((err) => {
           return throwError(() => err);
         }),
       );
   }
 
-  reorderTrack(playlistId: string, trackId: string, payload: TReorderPlaylistTrackPayload): Observable<void> {
+  reorderTrack(
+    playlistId: string,
+    trackId: string,
+    payload: TReorderPlaylistTrackPayload,
+  ): Observable<void> {
     return this.http
-      .patch<TApiResponse<void>>(
-        `${this.URL}/${playlistId}/tracks/${trackId}/reorder`,
-        payload,
-        { withCredentials: true },
-      )
+      .patch<
+        TApiResponse<void>
+      >(`${this.URL}/${playlistId}/tracks/${trackId}/reorder`, { payload }, { withCredentials: true })
       .pipe(
         map(() => void 0),
-        catchError(err => {
+        catchError((err) => {
           return throwError(() => err);
         }),
       );

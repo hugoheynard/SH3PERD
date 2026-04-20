@@ -1,0 +1,53 @@
+<svg
+  class="sparkline"
+  [attr.viewBox]="'0 0 ' + width + ' ' + height"
+  preserveAspectRatio="none"
+  [attr.aria-hidden]="true"
+>
+  <!-- Faint guide lines at 1 / 2 / 3 / 4 — just subtle ticks on the left. -->
+  @for (tick of [1, 2, 3, 4]; track tick) {
+    <line
+      class="guide"
+      x1="0"
+      [attr.y1]="((4 - tick) / 3) * (height - 6) + 3"
+      x2="2"
+      [attr.y2]="((4 - tick) / 3) * (height - 6) + 3"
+    />
+  }
+
+  <!-- Filled area under the smoothed line — dropped under the stroke
+       so the line sits crisp on top. -->
+  @if (areaD()) {
+    <path
+      class="area"
+      [attr.d]="areaD()"
+      [attr.fill]="accent()"
+      stroke="none"
+    />
+  }
+
+  <!-- Smoothed connecting line -->
+  @if (pathD()) {
+    <path
+      class="line"
+      [attr.d]="pathD()"
+      [attr.stroke]="accent()"
+      fill="none"
+    />
+  }
+
+  <!-- Dots -->
+  @for (p of points(); track p.i) {
+    @if (p.y !== null) {
+      <circle
+        class="dot"
+        [attr.cx]="p.x"
+        [attr.cy]="p.y"
+        r="1.8"
+        [attr.fill]="accent()"
+      />
+    } @else {
+      <circle class="dot dot--empty" [attr.cx]="p.x" cy="11" r="1.5" />
+    }
+  }
+</svg>

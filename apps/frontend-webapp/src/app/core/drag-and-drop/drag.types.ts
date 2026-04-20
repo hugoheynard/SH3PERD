@@ -5,25 +5,27 @@ import type {
   PlannerArtist,
   TimelineCue,
 } from '../../features/programs/program-types';
+import type { MultiSlotDragPayload } from '../../features/programs/slot-multi-drag-preview/slot-multi-drag-preview.component';
 import type {
-  MultiSlotDragPayload,
-} from '../../features/programs/slot-multi-drag-preview/slot-multi-drag-preview.component';
-import type { TOrgNodeHierarchyViewModel } from '@sh3pherd/shared-types';
-
+  TMusicReferenceId,
+  TMusicVersionId,
+  TOrgNodeHierarchyViewModel,
+  TPlaylistTrackId,
+} from '@sh3pherd/shared-types';
 
 /* ---------------------------------------------------
    DRAG STATE TYPE
 --------------------------------------------------- */
 
-export type DragState = {
-  [K in DragType]: {
-    type: K;
-    data: DragPayloadMap[K];
-    preview?: Type<any>;
-  }
-}[DragType]
+export type DragState =
+  | {
+      [K in DragType]: {
+        type: K;
+        data: DragPayloadMap[K];
+        preview?: Type<any>;
+      };
+    }[DragType]
   | { type: 'resize'; data: ResizeTarget };
-
 
 /**
  * Defines the structure of the drag state for different types of draggable items in the application.
@@ -32,17 +34,43 @@ export type DragState = {
  */
 export type TabDragPayload = { tabId: string; title: string };
 
-export type DragPayloadMap = {
-  template: ArtistPerformanceSlotTemplate
-  artist: PlannerArtist
-  slot: ArtistPerformanceSlot
-  'slot-multi': MultiSlotDragPayload
-  resize: ArtistPerformanceSlot,
-  cue: TimelineCue,
-  tab: TabDragPayload,
-  'org-node': TOrgNodeHierarchyViewModel,
+/**
+ * Payload emitted when a music-library version is dragged. Consumed by
+ * the playlist detail's tracklist drop zone to call AddPlaylistTrack
+ * with the (referenceId, versionId) pair; title + artist are carried
+ * for the drag preview + optimistic view-model.
+ */
+export type MusicTrackDragPayload = {
+  referenceId: TMusicReferenceId;
+  versionId: TMusicVersionId;
+  title: string;
+  artist: string;
 };
 
+/**
+ * Payload emitted when reordering a row inside a playlist's tracklist.
+ * The id identifies the row being moved; title + artist feed the same
+ * drag preview used for incoming music-library drags so the visual
+ * grammar stays identical between "add" and "reorder".
+ */
+export type PlaylistTrackDragPayload = {
+  playlistTrackId: TPlaylistTrackId;
+  title: string;
+  artist: string;
+};
+
+export type DragPayloadMap = {
+  template: ArtistPerformanceSlotTemplate;
+  artist: PlannerArtist;
+  slot: ArtistPerformanceSlot;
+  'slot-multi': MultiSlotDragPayload;
+  resize: ArtistPerformanceSlot;
+  cue: TimelineCue;
+  tab: TabDragPayload;
+  'org-node': TOrgNodeHierarchyViewModel;
+  'music-track': MusicTrackDragPayload;
+  'playlist-track': PlaylistTrackDragPayload;
+};
 
 export type DragType = keyof DragPayloadMap;
 

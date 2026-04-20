@@ -1,118 +1,137 @@
-<div class="playlists-layout">
+<div class="playlists">
+  <!-- ── Side panel: filter + stats ── -->
+  <aside class="side-panel" [class.panel-open]="mobilePanelOpen()">
+    <app-playlists-side-panel
+      [totalPlaylists]="selector.totalPlaylists()"
+      [filteredCount]="selector.filteredPlaylists().length"
+    />
+  </aside>
 
-  <!-- ── Sidebar ── -->
-  <div class="playlists-sidebar">
-    <div class="sidebar-header">
-      <span class="sidebar-title">Playlists</span>
-      <button class="add-btn" (click)="addPlaylist()" type="button">+</button>
-    </div>
-
-    <div class="playlist-list">
-      @for (pl of selector.playlists(); track pl.id) {
-        <div
-          class="playlist-item"
-          [class.selected]="pl.id === selector.selectedPlaylistId()"
-          [attr.data-color]="pl.color"
-          (click)="selectPlaylist(pl.id)"
-        >
-          <span class="pl-color-dot" [attr.data-color]="pl.color"></span>
-
-          <div class="pl-info">
-            @if (editingId() === pl.id) {
-              <input
-                class="pl-rename-input"
-                [ngModel]="editingName()"
-                (ngModelChange)="editingName.set($event)"
-                (keydown.enter)="commitRename(pl.id)"
-                (keydown.escape)="cancelRename()"
-                (blur)="commitRename(pl.id)"
-                (click)="$event.stopPropagation()"
-                autofocus
-              />
-            } @else {
-              <span class="pl-name">{{ pl.name }}</span>
-            }
-            <span class="pl-meta">{{ selector.trackCount().get(pl.id) ?? 0 }} tracks</span>
-          </div>
-
-          <div class="pl-actions">
+  <!-- ── Main: tab bar + results ── -->
+  <div class="playlists-content">
+    <sh3-configurable-tab-bar
+      [tabs]="selector.tabs()"
+      [activeTabId]="selector.activeTabId()"
+      [activeConfigId]="selector.activeConfigId()"
+      [savedConfigs]="selector.savedTabConfigs()"
+      [tabLocked]="tabLocked()"
+      [configLocked]="configLocked()"
+      (tabLockClicked)="openTabQuotaPopover()"
+      (configLockClicked)="openConfigQuotaPopover()"
+      (moveToLockedConfigClicked)="openConfigFullPopover($event)"
+    >
+      <!-- Search input only meaningful in search mode -->
+      @if (isSearchMode()) {
+        <div tabBarTrailing class="tab-search">
+          <sh3-icon name="search" [size]="13" class="tab-search-icon" />
+          <input
+            class="tab-search-input"
+            [ngModel]="activeSearchQuery()"
+            (ngModelChange)="onSearchQueryChange($event)"
+            placeholder="Search playlists…"
+            type="text"
+          />
+          @if (activeSearchQuery()) {
             <button
-              class="pl-action-btn"
-              title="Rename"
-              (click)="startRename(pl.id, pl.name, $event)"
+              class="tab-search-clear"
               type="button"
-            >✎</button>
-            <button
-              class="pl-action-btn pl-action-btn--danger"
-              title="Delete"
-              (click)="deletePlaylist(pl.id, $event)"
-              type="button"
-            >×</button>
-          </div>
-        </div>
-      } @empty {
-        <span class="empty-hint">No playlists yet</span>
-      }
-    </div>
-  </div>
-
-  <!-- ── Main area ── -->
-  <div class="playlists-main">
-    @if (selector.selectedPlaylist(); as pl) {
-
-      <div class="detail-header" [attr.data-color]="pl.color">
-        <div class="detail-title-row">
-          <span class="detail-name">{{ pl.name }}</span>
-          <span class="detail-count">{{ selector.resolvedSelectedTracks().length }} tracks</span>
-        </div>
-        @if (pl.description) {
-          <span class="detail-desc">{{ pl.description }}</span>
-        }
-
-        <!-- Color picker -->
-        <div class="color-picker">
-          @for (color of colors; track color) {
-            <button
-              class="color-swatch"
-              [class.active]="pl.color === color"
-              [attr.data-color]="color"
-              (click)="setColor(pl.id, color, $event)"
-              type="button"
-            ></button>
+              (click)="onSearchQueryChange('')"
+            >
+              ×
+            </button>
           }
         </div>
+      }
+    </sh3-configurable-tab-bar>
+
+    <div class="results-area">
+      <div class="results-toolbar">
+        <div class="results-summary">
+          @switch (selector.activeMode()) {
+            @case ("search") {
+              <span class="results-count">
+                {{ selector.filteredPlaylists().length }} playlist{{
+                  selector.filteredPlaylists().length !== 1 ? "s" : ""
+                }}
+              </span>
+            }
+            @case ("compare") {
+              <button
+                class="back-link"
+                type="button"
+                (click)="returnToSearch()"
+              >
+                <sh3-icon name="chevron-left" [size]="12" />
+                <span>Back to list</span>
+              </button>
+            }
+          }
+        </div>
+
+        <div class="toolbar-actions">
+          <button
+            class="btn-filters-toggle"
+            type="button"
+            aria-label="Toggle filters"
+            [class.active]="mobilePanelOpen()"
+            (click)="toggleMobilePanel()"
+          >
+            <sh3-icon name="sliders" [size]="13" />
+            Filters
+          </button>
+          @if (isSearchMode() && canStartQuickCompare()) {
+            <sh3-button
+              variant="ghost"
+              size="sm"
+              (clicked)="startQuickCompare()"
+            >
+              <sh3-icon name="grid" [size]="12" />
+              <span class="add-label"> Compare</span>
+            </sh3-button>
+          }
+          <sh3-button variant="primary" size="sm" (clicked)="addPlaylist()">
+            <span>+</span><span class="add-label"> New playlist</span>
+          </sh3-button>
+        </div>
       </div>
 
-      <div class="track-list">
-        @for (track of selector.resolvedSelectedTracks(); track track.id) {
-          <div class="track-row">
-            <span class="track-pos">{{ track.position }}</span>
-
-            <div class="track-info">
-              <span class="track-title">{{ track.title }}</span>
-              <span class="track-artist">{{ track.originalArtist }}</span>
-            </div>
-
-            @if (track.versionLabel) {
-              <span class="track-version">{{ track.versionLabel }}</span>
+      <div class="results-scroll">
+        @switch (selector.activeMode()) {
+          <!-- ── Search mode: placeholder card grid ── -->
+          @case ("search") {
+            @if (selector.filteredPlaylists().length === 0) {
+              <div class="empty-state">
+                <sh3-icon name="playlist-add" [size]="40" />
+                <span>No playlists</span>
+                <span class="empty-hint">
+                  @if (selector.totalPlaylists() === 0) {
+                    Create your first playlist with the "+ New playlist" button.
+                  } @else {
+                    Try clearing the search or filters.
+                  }
+                </span>
+              </div>
+            } @else {
+              <div class="cards-grid">
+                @for (pl of selector.filteredPlaylists(); track pl.id) {
+                  <app-playlist-card
+                    [playlist]="pl"
+                    (open)="openPlaylistInTab($event)"
+                  />
+                }
+              </div>
             }
+          }
 
-            @if (track.notes) {
-              <span class="track-notes">{{ track.notes }}</span>
-            }
-
-            <button class="track-remove" (click)="removeTrack(track.id)" type="button">×</button>
-          </div>
-        } @empty {
-          <div class="tracks-empty">No tracks in this playlist</div>
+          <!-- ── Compare mode ── -->
+          @case ("compare") {
+            <app-playlist-compare
+              [playlistIds]="compareIds()"
+              (remove)="onCompareRemove($event)"
+            />
+          }
         }
       </div>
-
-    } @else {
-      <div class="no-selection">
-        <span>Select a playlist</span>
-      </div>
-    }
+    </div>
   </div>
-
 </div>

@@ -1,0 +1,58 @@
+@let sums = summaries();
+
+@if (sums.length === 0) {
+  <div class="state">
+    <sh3-icon name="grid" [size]="36" />
+    <span class="state-title">No playlists to compare</span>
+    <span class="state-hint">
+      Pick 2 or 3 playlists from the list to compare them here.
+    </span>
+  </div>
+} @else {
+  <div class="compare">
+    <!-- ── Top row: card per playlist ── -->
+
+    <div class="columns" [attr.data-count]="sums.length">
+      @for (pl of sums; track pl.id) {
+        <div class="column">
+          <button
+            class="column-remove"
+            type="button"
+            aria-label="Remove from comparison"
+            (click)="onRemove(pl.id)"
+          >
+            ×
+          </button>
+          <app-playlist-card [playlist]="pl" />
+        </div>
+      }
+    </div>
+
+    <!-- ── Metric matrix ── -->
+
+    <div class="matrix">
+      <div class="matrix-head">
+        <span class="matrix-heading">Metric</span>
+        @for (pl of sums; track pl.id) {
+          <span class="matrix-heading" [attr.data-color]="pl.color">
+            {{ pl.name }}
+          </span>
+        }
+      </div>
+
+      @for (row of rows; track row.key) {
+        <div class="matrix-row" [attr.data-count]="sums.length">
+          <span class="metric-label">{{ row.label }}</span>
+          @for (pl of sums; track pl.id; let i = $index) {
+            <span class="metric-value" [class.leader]="isLeader(row.key, i)">
+              {{ displayValue(pl, row.key) }}
+              @if (isLeader(row.key, i)) {
+                <sh3-icon name="check" [size]="10" class="leader-icon" />
+              }
+            </span>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

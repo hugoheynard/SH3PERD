@@ -5,6 +5,7 @@ import { TRACK_STORAGE_SERVICE } from '../../infra/storage/storage.tokens.js';
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
 import type { ITrackStorageService } from '../../infra/storage/ITrackStorageService.js';
 import type { TUserId, TMusicVersionId, TVersionTrackId } from '@sh3pherd/shared-types';
+import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 
 export class DeleteTrackCommand {
   constructor(
@@ -20,6 +21,7 @@ export class DeleteTrackHandler implements ICommandHandler<DeleteTrackCommand, b
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
     private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject(TRACK_STORAGE_SERVICE) private readonly storage: ITrackStorageService,
+    private readonly analytics: AnalyticsEventService,
   ) {}
 
   async execute(cmd: DeleteTrackCommand): Promise<boolean> {
@@ -32,6 +34,14 @@ export class DeleteTrackHandler implements ICommandHandler<DeleteTrackCommand, b
     }
 
     await this.aggregateRepo.save(aggregate);
+
+    await this.analytics.track('track_deleted', cmd.actorId, {
+      version_id: cmd.versionId,
+      track_id: cmd.trackId,
+      file_name: track.fileName,
+      processing_type: track.processingType,
+    });
+
     return true;
   }
 }

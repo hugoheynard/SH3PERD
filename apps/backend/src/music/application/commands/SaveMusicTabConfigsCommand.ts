@@ -3,6 +3,7 @@ import { Inject } from '@nestjs/common';
 import { MUSIC_TAB_CONFIGS_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IMusicTabConfigsRepository } from '../../repositories/MusicTabConfigsRepository.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
+import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 import type {
   TUserId,
   TMusicTabConfigsDomainModel,
@@ -33,6 +34,7 @@ export class SaveMusicTabConfigsHandler implements ICommandHandler<
   constructor(
     @Inject(MUSIC_TAB_CONFIGS_REPO) private readonly repo: IMusicTabConfigsRepository,
     private readonly quotaService: QuotaService,
+    private readonly analytics: AnalyticsEventService,
   ) {}
 
   async execute(cmd: SaveMusicTabConfigsCommand): Promise<boolean> {
@@ -54,6 +56,17 @@ export class SaveMusicTabConfigsHandler implements ICommandHandler<
       savedTabConfigs: cmd.payload.savedTabConfigs,
     };
 
-    return this.repo.upsert(cmd.actorId, doc);
+    const ok = await this.repo.upsert(cmd.actorId, doc);
+
+    if (ok) {
+      await this.analytics.track('music_tab_configs_saved', cmd.actorId, {
+        tab_count: cmd.payload.tabs.length,
+        saved_config_count: newCount,
+        added_configs: Math.max(0, newCount - existingCount),
+        active_tab_id: cmd.payload.activeTabId,
+      });
+    }
+
+    return ok;
   }
 }

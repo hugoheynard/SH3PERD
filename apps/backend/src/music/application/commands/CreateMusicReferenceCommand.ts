@@ -8,6 +8,7 @@ import type {
   TMusicReferenceDomainModel,
 } from '@sh3pherd/shared-types';
 import { MusicReferenceEntity } from '../../domain/entities/MusicReferenceEntity.js';
+import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 
 /**
  * Command to create a music reference (the canonical song entry).
@@ -44,7 +45,10 @@ export class CreateMusicReferenceHandler implements ICommandHandler<
   CreateMusicReferenceCommand,
   TMusicReferenceDomainModel
 > {
-  constructor(@Inject(MUSIC_REFERENCE_REPO) private readonly refRepo: IMusicReferenceRepository) {}
+  constructor(
+    @Inject(MUSIC_REFERENCE_REPO) private readonly refRepo: IMusicReferenceRepository,
+    private readonly analytics: AnalyticsEventService,
+  ) {}
 
   async execute(cmd: CreateMusicReferenceCommand): Promise<TMusicReferenceDomainModel> {
     const title = cmd.payload.title.trim().toLowerCase();
@@ -65,6 +69,12 @@ export class CreateMusicReferenceHandler implements ICommandHandler<
     if (!saved) {
       throw new Error('MUSIC_REFERENCE_CREATION_FAILED');
     }
+
+    await this.analytics.track('music_reference_created', cmd.actor_id, {
+      reference_id: ref.id,
+      title: cmd.payload.title,
+      artist: cmd.payload.artist,
+    });
 
     return ref.toDomain;
   }

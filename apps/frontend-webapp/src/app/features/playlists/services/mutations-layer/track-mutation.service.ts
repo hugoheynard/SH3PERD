@@ -2,11 +2,13 @@ import { inject, Injectable } from '@angular/core';
 import { PlaylistsStateService } from '../playlists-state.service';
 import { PlaylistsApiService } from '../playlists-api.service';
 import { ToastService } from '../../../../shared/toast/toast.service';
-import type { TMusicReferenceId, TMusicVersionId } from '@sh3pherd/shared-types';
+import type {
+  TMusicReferenceId,
+  TMusicVersionId,
+} from '@sh3pherd/shared-types';
 
 @Injectable({ providedIn: 'root' })
 export class TrackMutationService {
-
   private state = inject(PlaylistsStateService);
   private api = inject(PlaylistsApiService);
   private toast = inject(ToastService);
@@ -15,15 +17,22 @@ export class TrackMutationService {
    * Add a new track to the given playlist via the API.
    * The returned track is appended to state.
    */
-  addTrack(playlistId: string, referenceId: TMusicReferenceId, versionId: TMusicVersionId, notes?: string): void {
+  addTrack(
+    playlistId: string,
+    referenceId: TMusicReferenceId,
+    versionId: TMusicVersionId,
+    notes?: string,
+  ): void {
     this.api.addTrack(playlistId, { referenceId, versionId, notes }).subscribe({
       next: (track) => {
-        this.state.updateState(state => ({
+        this.state.updateState((state) => ({
           ...state,
           tracks: [...state.tracks, track],
           // Bump trackCount on the summary
-          playlists: state.playlists.map(pl =>
-            pl.id === playlistId ? { ...pl, trackCount: pl.trackCount + 1 } : pl,
+          playlists: state.playlists.map((pl) =>
+            pl.id === playlistId
+              ? { ...pl, trackCount: pl.trackCount + 1 }
+              : pl,
           ),
         }));
       },
@@ -38,18 +47,20 @@ export class TrackMutationService {
     const previousTracks = this.state.playlists().tracks;
     const previousPlaylists = this.state.playlists().playlists;
 
-    this.state.updateState(state => ({
+    this.state.updateState((state) => ({
       ...state,
-      tracks: state.tracks.filter(t => t.id !== trackId),
-      playlists: state.playlists.map(pl =>
-        pl.id === playlistId ? { ...pl, trackCount: Math.max(0, pl.trackCount - 1) } : pl,
+      tracks: state.tracks.filter((t) => t.id !== trackId),
+      playlists: state.playlists.map((pl) =>
+        pl.id === playlistId
+          ? { ...pl, trackCount: Math.max(0, pl.trackCount - 1) }
+          : pl,
       ),
     }));
 
     this.api.removeTrack(playlistId, trackId).subscribe({
       error: () => {
         // Rollback
-        this.state.updateState(state => ({
+        this.state.updateState((state) => ({
           ...state,
           tracks: previousTracks,
           playlists: previousPlaylists,
@@ -60,18 +71,27 @@ export class TrackMutationService {
   }
 
   /**
-   * Move a track to a new position: optimistic reorder, then API call.
-   * Reorders all sibling tracks to maintain a contiguous 0-based sequence.
+   * Move a track to a new position inside a playlist.
+   *
+   * `playlistId` is passed explicitly so the API call fires
+   * unconditionally — the optimistic update on `state.tracks` is a
+   * best-effort that no-ops when the flat-tracks slice isn't
+   * populated (the new detail component holds its own resolved
+   * tracklist signal; `state.tracks` stays empty unless some other
+   * caller wires it in). On backend error we roll back `state.tracks`
+   * and surface a toast; callers that paint their own optimistic UI
+   * (detail view, summary series) are responsible for their own
+   * rollback.
    */
-  moveTrack(trackId: string, newPosition: number): void {
+  moveTrack(playlistId: string, trackId: string, newPosition: number): void {
     const previousTracks = this.state.playlists().tracks;
 
-    this.state.updateState(state => {
-      const track = state.tracks.find(t => t.id === trackId);
+    this.state.updateState((state) => {
+      const track = state.tracks.find((t) => t.id === trackId);
       if (!track) return state;
 
       const siblings = state.tracks
-        .filter(t => t.playlistId === track.playlistId && t.id !== trackId)
+        .filter((t) => t.playlistId === track.playlistId && t.id !== trackId)
         .sort((a, b) => a.position - b.position);
 
       const clamped = Math.max(0, Math.min(newPosition, siblings.length));
@@ -82,7 +102,9 @@ export class TrackMutationService {
 
       const renumbered = reordered.map((t, i) => ({ ...t, position: i }));
 
-      const otherTracks = state.tracks.filter(t => t.playlistId !== track.playlistId);
+      const otherTracks = state.tracks.filter(
+        (t) => t.playlistId !== track.playlistId,
+      );
 
       return {
         ...state,
@@ -90,14 +112,14 @@ export class TrackMutationService {
       };
     });
 
-    const track = previousTracks.find(t => t.id === trackId);
-    if (track) {
-      this.api.reorderTrack(track.playlistId, trackId, { newPosition }).subscribe({
-        error: () => {
-          this.state.updateState(state => ({ ...state, tracks: previousTracks }));
-          this.toast.show('Failed to reorder track', 'error');
-        },
-      });
-    }
+    this.api.reorderTrack(playlistId, trackId, { newPosition }).subscribe({
+      error: () => {
+        this.state.updateState((state) => ({
+          ...state,
+          tracks: previousTracks,
+        }));
+        this.toast.show('Failed to reorder track', 'error');
+      },
+    });
   }
 }

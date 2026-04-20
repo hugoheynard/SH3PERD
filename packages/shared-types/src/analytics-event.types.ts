@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import type { TUserId } from './ids.js';
+import { z } from "zod";
+import type { TUserId } from "./ids.js";
 
 // ── Event types (single source of truth) ───────────────────
 
@@ -13,26 +13,35 @@ import type { TUserId } from './ids.js';
  */
 export const ANALYTICS_EVENT_TYPES = [
   // Auth
-  'user_registered',
-  'user_login',
-  'user_login_failed',
-  'user_deactivated',
+  "user_registered",
+  "user_login",
+  "user_login_failed",
+  "user_deactivated",
   // Plan
-  'plan_changed',
-  'billing_cycle_changed',
+  "plan_changed",
+  "billing_cycle_changed",
   // Credits
-  'credit_pack_purchased',
-  'credit_used',
+  "credit_pack_purchased",
+  "credit_used",
   // Music
-  'track_uploaded',
-  'track_analysed',
-  'track_mastered',
-  'track_ai_mastered',
-  'track_pitch_shifted',
-  'repertoire_entry_created',
+  "track_uploaded",
+  "track_analysed",
+  "track_mastered",
+  "track_ai_mastered",
+  "track_pitch_shifted",
+  "track_deleted",
+  "track_favorited",
+  "music_reference_created",
+  "music_version_created",
+  "music_version_updated",
+  "music_version_deleted",
+  "repertoire_entry_created",
+  "repertoire_entry_deleted",
+  "music_tab_configs_saved",
+  "music_tab_configs_deleted",
   // Quota
-  'quota_exceeded',
-  'quota_warning_80pct',
+  "quota_exceeded",
+  "quota_warning_80pct",
 ] as const;
 
 /** Union type derived from the `ANALYTICS_EVENT_TYPES` array. */

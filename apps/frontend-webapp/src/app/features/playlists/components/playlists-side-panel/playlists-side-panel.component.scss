@@ -1,0 +1,241 @@
+/* ── Color map (shared with the page & card) ───────────── */
+
+$colors: (
+  indigo: #818cf8,
+  emerald: #34d399,
+  rose: #fb7185,
+  amber: #fbbf24,
+  sky: #38bdf8,
+  violet: #a78bfa,
+);
+
+/* ── Host wrapper ──────────────────────────────────────── */
+
+:host {
+  display: block;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 14px 22px;
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.panel-heading {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.section-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-faded);
+  letter-spacing: 0.04em;
+}
+
+/* ── Stats block ───────────────────────────────────────── */
+
+.stats {
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+
+  & + & {
+    margin-top: 4px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .stat-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+
+    &.accent {
+      color: var(--accent-color, #818cf8);
+    }
+  }
+}
+
+/* ── Filters header (title + reset) ────────────────────── */
+
+.filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.reset-btn {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-faded);
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition:
+    color 0.12s,
+    background 0.12s;
+
+  &:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+  }
+}
+
+/* ── Color chips ───────────────────────────────────────── */
+
+.color-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.color-chip {
+  all: unset;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition:
+    transform 0.1s,
+    border-color 0.1s,
+    box-shadow 0.12s;
+  background: rgba(255, 255, 255, 0.15);
+
+  @each $name, $color in $colors {
+    &[data-color='#{"" + $name}'] {
+      background-color: $color;
+    }
+  }
+
+  &:hover {
+    transform: scale(1.1);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+  }
+
+  &.active {
+    border-color: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+  }
+}
+
+/* ── Numeric range input ───────────────────────────────── */
+
+.range-input {
+  width: 100%;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+  transition:
+    border-color 0.12s,
+    background 0.12s;
+
+  &::placeholder {
+    color: var(--text-faded);
+  }
+  &:focus {
+    border-color: var(--accent-color, #818cf8);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  /* Hide spinners (cleaner look) */
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+}
+
+/* ── Ratings ───────────────────────────────────────────── */
+
+.ratings {
+  gap: 10px;
+}
+
+.rating-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rating-name {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.rating-pills {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.rating-pill {
+  all: unset;
+  cursor: pointer;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 0;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-faded);
+  transition:
+    background 0.12s,
+    color 0.12s,
+    box-shadow 0.12s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 1px;
+  }
+
+  &.active {
+    background: var(--accent-color, #818cf8);
+    color: #fff;
+    box-shadow: 0 1px 4px -1px rgba(129, 140, 248, 0.5);
+  }
+}

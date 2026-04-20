@@ -1,0 +1,31 @@
+<div class="panel">
+  <header class="panel-head">
+    <div class="panel-title">
+      <sh3-icon name="playlist-add" [size]="14" />
+      <span>Playlist</span>
+    </div>
+    <div class="head-actions">
+      <button
+        class="head-btn"
+        type="button"
+        title="Browse music library"
+        aria-label="Browse music library"
+        (click)="openMusicLibrary()"
+      >
+        <sh3-icon name="music" [size]="14" />
+      </button>
+      <button
+        class="head-btn"
+        type="button"
+        aria-label="Close panel"
+        (click)="close()"
+      >
+        <sh3-icon name="close" [size]="14" />
+      </button>
+    </div>
+  </header>
+
+  <div class="panel-body">
+    <app-playlist-detail [playlistId]="playlistId()" />
+  </div>
+</div>

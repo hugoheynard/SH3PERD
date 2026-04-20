@@ -2,7 +2,10 @@ import { Component, inject, input, output, signal } from '@angular/core';
 import { ButtonComponent } from '../../../../shared/button/button.component';
 import { BadgeComponent } from '../../../../shared/badge/badge.component';
 import { InlineConfirmComponent } from '../../../../shared/inline-confirm/inline-confirm.component';
-import { RATING_DOTS, ratingLevel } from '../../../../shared/utils/rating.utils';
+import {
+  RATING_DOTS,
+  ratingLevel,
+} from '../../../../shared/utils/rating.utils';
 import { formatDuration } from '../../../../shared/utils/duration.utils';
 import { AddVersionFormComponent } from '../add-version-form/add-version-form.component';
 import type { AddVersionPayload } from '../../services/mutations-layer/music-library-mutation.service';
@@ -14,29 +17,57 @@ import type { TMasteringModalContext } from '../../mastering/mastering.types';
 import { decodePeaks, type TMusicVersionId } from '@sh3pherd/shared-types';
 import { IconComponent } from '../../../../shared/icon/icon.component';
 import { WaveformThumbnailComponent } from '../../audio-player/waveform-thumbnail/waveform-thumbnail.component';
+import { DndDragDirective } from '../../../../core/drag-and-drop/dndDrag.directive';
+import type { MusicTrackDragPayload } from '../../../../core/drag-and-drop/drag.types';
+import { PlaylistsDndInitService } from '../../../playlists/services/playlists-dnd-init.service';
 
 @Component({
   selector: 'app-music-reference-card',
   standalone: true,
-  imports: [AddVersionFormComponent, ButtonComponent, BadgeComponent, InlineConfirmComponent, IconComponent, WaveformThumbnailComponent],
+  imports: [
+    AddVersionFormComponent,
+    ButtonComponent,
+    BadgeComponent,
+    InlineConfirmComponent,
+    IconComponent,
+    WaveformThumbnailComponent,
+    DndDragDirective,
+  ],
   templateUrl: './music-reference-card.component.html',
   styleUrl: './music-reference-card.component.scss',
 })
 export class MusicReferenceCardComponent {
-
   protected readonly audioPlayer = inject(AudioPlayerService);
 
-  readonly entry        = input.required<LibraryEntry>();
+  constructor() {
+    // Side-effect: the init service registers the music-track drag
+    // preview with the global DragPreviewRegistryService in its
+    // constructor. Injecting it here guarantees the preview component
+    // is wired up before the first drag from this card can start.
+    inject(PlaylistsDndInitService);
+  }
+
+  readonly entry = input.required<LibraryEntry>();
   readonly analysingIds = input<Set<string>>(new Set());
 
-  readonly versionAdded           = output<AddVersionPayload>();
-  readonly versionDeleted         = output<{ entryId: string; versionId: string }>();
-  readonly entryDeleted           = output<string>();
-  readonly editRequested          = output<string>();
-  readonly trackUploadRequested   = output<{ entryId: string; versionId: string }>();
-  readonly trackDownloadRequested = output<{ versionId: string; trackId: string }>();
-  readonly favoriteChanged        = output<{ entryId: string; versionId: string; trackId: string }>();
-  readonly masteringRequested     = output<TMasteringModalContext>();
+  readonly versionAdded = output<AddVersionPayload>();
+  readonly versionDeleted = output<{ entryId: string; versionId: string }>();
+  readonly entryDeleted = output<string>();
+  readonly editRequested = output<string>();
+  readonly trackUploadRequested = output<{
+    entryId: string;
+    versionId: string;
+  }>();
+  readonly trackDownloadRequested = output<{
+    versionId: string;
+    trackId: string;
+  }>();
+  readonly favoriteChanged = output<{
+    entryId: string;
+    versionId: string;
+    trackId: string;
+  }>();
+  readonly masteringRequested = output<TMasteringModalContext>();
 
   readonly showForm = signal(false);
   readonly expandedVersionId = signal<string | null>(null);
@@ -71,7 +102,7 @@ export class MusicReferenceCardComponent {
    * with the peaks feature yet (legacy upload).
    */
   getVersionPeaks(version: MusicVersion): Float32Array | null {
-    const track = version.tracks.find(t => t.favorite) ?? version.tracks[0];
+    const track = version.tracks.find((t) => t.favorite) ?? version.tracks[0];
     const analysis = track?.analysisResult;
     if (!analysis?.peaks || !analysis.peakCount) return null;
     try {
@@ -97,11 +128,31 @@ export class MusicReferenceCardComponent {
   }
 
   toggleExpanded(versionId: string): void {
-    this.expandedVersionId.update(current => current === versionId ? null : versionId);
+    this.expandedVersionId.update((current) =>
+      current === versionId ? null : versionId,
+    );
   }
 
   readonly formatDuration = formatDuration;
   readonly ratingLevel = ratingLevel;
+
+  /* ── DnD source payload ── */
+
+  /**
+   * Build the drag payload for a version block. Exposes the ids +
+   * display fields the playlist tracklist drop zone needs to both
+   * persist the add (referenceId, versionId) and draw a preview
+   * (title, artist) without re-joining state at the drop site.
+   */
+  dragPayload(version: MusicVersion): MusicTrackDragPayload {
+    const entry = this.entry();
+    return {
+      referenceId: entry.reference.id as never,
+      versionId: version.id as never,
+      title: entry.reference.title,
+      artist: entry.reference.originalArtist,
+    };
+  }
 
   /* ── Audio player ── */
 
@@ -110,7 +161,7 @@ export class MusicReferenceCardComponent {
    * player. Mirrors the repertoire table's `playVersion` helper.
    */
   playVersion(version: MusicVersion): void {
-    const track = version.tracks.find(t => t.favorite) ?? version.tracks[0];
+    const track = version.tracks.find((t) => t.favorite) ?? version.tracks[0];
     if (!track) return;
     const entry = this.entry();
     this.audioPlayer.playTrack(
@@ -131,7 +182,7 @@ export class MusicReferenceCardComponent {
   /* ── Mastering ── */
 
   openMastering(version: MusicVersion): void {
-    const track = version.tracks.find(t => t.favorite) ?? version.tracks[0];
+    const track = version.tracks.find((t) => t.favorite) ?? version.tracks[0];
     if (!track) return;
     const entry = this.entry();
     this.masteringRequested.emit({

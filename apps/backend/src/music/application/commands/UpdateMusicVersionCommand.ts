@@ -8,6 +8,7 @@ import type {
   TUpdateMusicVersionPayload,
   TMusicVersionDomainModel,
 } from '@sh3pherd/shared-types';
+import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 
 export class UpdateMusicVersionCommand {
   constructor(
@@ -25,6 +26,7 @@ export class UpdateMusicVersionHandler implements ICommandHandler<
   constructor(
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
     private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    private readonly analytics: AnalyticsEventService,
   ) {}
 
   async execute(cmd: UpdateMusicVersionCommand): Promise<TMusicVersionDomainModel> {
@@ -34,6 +36,19 @@ export class UpdateMusicVersionHandler implements ICommandHandler<
 
     const version = aggregate.findVersion(cmd.versionId);
     if (!version) throw new Error('MUSIC_VERSION_NOT_FOUND');
+
+    // Only keep fields actually present in the patch (non-undefined).
+    const changes = Object.fromEntries(
+      Object.entries(cmd.patch).filter(([, v]) => v !== undefined),
+    );
+
+    await this.analytics.track('music_version_updated', cmd.actorId, {
+      version_id: cmd.versionId,
+      reference_id: version.toDomain.musicReference_id,
+      updated_fields: Object.keys(changes),
+      changes,
+    });
+
     return version.toDomain;
   }
 }

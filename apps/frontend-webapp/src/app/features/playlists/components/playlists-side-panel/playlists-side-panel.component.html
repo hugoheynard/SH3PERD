@@ -1,0 +1,107 @@
+<div class="panel">
+  <!-- ── Stats ── -->
+
+  <div class="panel-section stats">
+    <span class="panel-heading">Library</span>
+    <div class="stat-row">
+      <span class="stat-label">Playlists</span>
+      <span class="stat-value">{{ totalPlaylists() }}</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Matching</span>
+      <span class="stat-value accent">{{ filteredCount() }}</span>
+    </div>
+  </div>
+
+  <!-- ── Filters header ── -->
+
+  <div class="filters-header">
+    <span class="panel-heading">Filters</span>
+    @if (hasActiveFilters()) {
+      <button class="reset-btn" type="button" (click)="reset()">
+        <sh3-icon name="reset" [size]="11" />
+        <span>Reset</span>
+      </button>
+    }
+  </div>
+
+  <!-- ── Color filter ── -->
+
+  <div class="panel-section">
+    <span class="section-label">Color</span>
+    <div class="color-chips">
+      @for (color of allColors; track color) {
+        <button
+          class="color-chip"
+          type="button"
+          [attr.data-color]="color"
+          [class.active]="isColorActive(color)"
+          [attr.aria-pressed]="isColorActive(color)"
+          [attr.aria-label]="color"
+          (click)="toggleColor(color)"
+        ></button>
+      }
+    </div>
+  </div>
+
+  <!-- ── Track count min ── -->
+
+  <div class="panel-section">
+    <span class="section-label">Min tracks</span>
+    <input
+      type="number"
+      min="0"
+      step="1"
+      class="range-input"
+      placeholder="Any"
+      [value]="minTracks()"
+      (input)="onMinTracksChange($any($event.target).value)"
+    />
+  </div>
+
+  <!-- ── Duration min (minutes) ── -->
+
+  <div class="panel-section">
+    <span class="section-label">Min duration (min)</span>
+    <input
+      type="number"
+      min="0"
+      step="1"
+      class="range-input"
+      placeholder="Any"
+      [value]="minDurationMinutes()"
+      (input)="onMinDurationChange($any($event.target).value)"
+    />
+  </div>
+
+  <!-- ── Rating minima ── -->
+
+  <div class="panel-section ratings">
+    <span class="section-label">Min ratings</span>
+    @for (axis of ratingAxes; track axis.key) {
+      <div class="rating-row">
+        <span class="rating-name">{{ axis.label }}</span>
+        <div class="rating-pills">
+          <button
+            class="rating-pill"
+            type="button"
+            [class.active]="getMinRating(axis.key) === 0"
+            (click)="setMinRating(axis.key, 0)"
+          >
+            Any
+          </button>
+          @for (v of [1, 2, 3, 4]; track v) {
+            <button
+              class="rating-pill"
+              type="button"
+              [class.active]="getMinRating(axis.key) === v"
+              (click)="setMinRating(axis.key, v)"
+            >
+              {{ v }}+
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>
