@@ -1,0 +1,89 @@
+:host {
+  display: block;
+  pointer-events: none;
+}
+
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 14px;
+  background: rgba(30, 30, 40, 0.95);
+  border: 1px solid rgba(129, 140, 248, 0.5);
+  border-radius: 8px;
+  box-shadow:
+    0 8px 24px -6px rgba(0, 0, 0, 0.5),
+    0 0 0 2px rgba(129, 140, 248, 0.15);
+  backdrop-filter: blur(8px);
+  max-width: 260px;
+  transform: rotate(-2deg);
+  transform-origin: top left;
+  overflow: hidden;
+}
+
+/* Color stripe follows the card accent so identity stays legible at
+   a glance while dragging between features. */
+.chip-color {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--color-rating-high, #4ade80);
+}
+:host ::ng-deep .chip[data-color="indigo"] .chip-color {
+  background: #818cf8;
+}
+:host ::ng-deep .chip[data-color="emerald"] .chip-color {
+  background: #10b981;
+}
+:host ::ng-deep .chip[data-color="rose"] .chip-color {
+  background: #f43f5e;
+}
+:host ::ng-deep .chip[data-color="amber"] .chip-color {
+  background: #f59e0b;
+}
+:host ::ng-deep .chip[data-color="sky"] .chip-color {
+  background: #0ea5e9;
+}
+:host ::ng-deep .chip[data-color="violet"] .chip-color {
+  background: #8b5cf6;
+}
+
+.chip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(129, 140, 248, 0.2);
+  color: #a5b4fc;
+  flex-shrink: 0;
+}
+
+.chip-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.chip-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary, #f1f5f9);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.chip-meta {
+  font-size: 10px;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1.2;
+  white-space: nowrap;
+}

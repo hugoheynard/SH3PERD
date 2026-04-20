@@ -1,0 +1,14 @@
+<div class="chip" [attr.data-color]="color()">
+  <span class="chip-color"></span>
+  <span class="chip-icon">
+    <sh3-icon name="play" [size]="12" />
+  </span>
+  <div class="chip-body">
+    <span class="chip-title">{{ name() }}</span>
+    <span class="chip-meta"
+      >Playlist · {{ trackCount() }} track{{
+        trackCount() !== 1 ? "s" : ""
+      }}</span
+    >
+  </div>
+</div>

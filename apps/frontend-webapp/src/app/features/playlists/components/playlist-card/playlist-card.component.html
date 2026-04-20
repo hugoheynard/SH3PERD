@@ -7,6 +7,9 @@
   tabindex="0"
   (click)="onClick()"
   (keydown)="onKey($event)"
+  uiDndDrag
+  [dndType]="'playlist'"
+  [dndData]="dragPayload()"
 >
   <span class="color-stripe" [attr.data-color]="pl.color"></span>
 

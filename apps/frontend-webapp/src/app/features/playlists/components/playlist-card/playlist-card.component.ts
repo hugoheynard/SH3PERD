@@ -8,6 +8,8 @@ import {
 import { IconComponent } from '../../../../shared/icon/icon.component';
 import { formatDuration } from '../../../../shared/utils/duration.utils';
 import { RatingSparklineComponent } from '../rating-sparkline/rating-sparkline.component';
+import { DndDragDirective } from '../../../../core/drag-and-drop/dndDrag.directive';
+import type { PlaylistDragPayload } from '../../../../core/drag-and-drop/drag.types';
 import type { TPlaylistSummaryViewModel } from '../../playlist-types';
 
 /** The four axes rendered on the card. Each entry references the
@@ -58,7 +60,7 @@ type RatingAxis = (typeof RATING_AXES)[number];
 @Component({
   selector: 'app-playlist-card',
   standalone: true,
-  imports: [IconComponent, RatingSparklineComponent],
+  imports: [IconComponent, RatingSparklineComponent, DndDragDirective],
   templateUrl: './playlist-card.component.html',
   styleUrl: './playlist-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,6 +70,20 @@ export class PlaylistCardComponent {
 
   readonly open = output<string>();
   readonly more = output<string>();
+
+  /** Drag payload consumed by the Shows feature's section drop zones.
+   *  Kept as a computed so the template binding remains a stable
+   *  reference across renders and only re-creates when the card's
+   *  summary actually changes. */
+  readonly dragPayload = computed<PlaylistDragPayload>(() => {
+    const p = this.playlist();
+    return {
+      playlistId: p.id,
+      name: p.name,
+      color: p.color,
+      trackCount: p.trackCount,
+    };
+  });
 
   /** Fixed axis list rendered as a 4-column grid in the footer. */
   readonly axes = RATING_AXES;

@@ -10,6 +10,8 @@ import type {
   TMusicReferenceId,
   TMusicVersionId,
   TOrgNodeHierarchyViewModel,
+  TPlaylistColor,
+  TPlaylistId,
   TPlaylistTrackId,
 } from '@sh3pherd/shared-types';
 
@@ -59,6 +61,20 @@ export type PlaylistTrackDragPayload = {
   artist: string;
 };
 
+/**
+ * Payload emitted when a whole playlist is dragged from the playlists
+ * list grid (or its side panel). Consumed by the show detail's section
+ * drop zones to add the playlist as a section item without expanding
+ * its tracks — the show's rating series expands recursively at query
+ * time instead.
+ */
+export type PlaylistDragPayload = {
+  playlistId: TPlaylistId;
+  name: string;
+  color: TPlaylistColor;
+  trackCount: number;
+};
+
 export type DragPayloadMap = {
   template: ArtistPerformanceSlotTemplate;
   artist: PlannerArtist;
@@ -70,6 +86,7 @@ export type DragPayloadMap = {
   'org-node': TOrgNodeHierarchyViewModel;
   'music-track': MusicTrackDragPayload;
   'playlist-track': PlaylistTrackDragPayload;
+  playlist: PlaylistDragPayload;
 };
 
 export type DragType = keyof DragPayloadMap;

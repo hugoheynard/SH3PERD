@@ -8,6 +8,8 @@ import {
 } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import type {
+  TMusicVersionId,
+  TPlaylistId,
   TShowId,
   TShowSectionId,
   TShowSectionItemView,
@@ -15,7 +17,10 @@ import type {
 } from '@sh3pherd/shared-types';
 import { ShowsStateService } from '../services/shows-state.service';
 import { ShowsMutationService } from '../services/shows-mutation.service';
+import { ShowsDndInitService } from '../services/shows-dnd-init.service';
 import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
+import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
+import type { DragState } from '../../../core/drag-and-drop/drag.types';
 
 /**
  * Body of the show detail view — used by both the routed page
@@ -27,7 +32,7 @@ import { LoadingStateComponent } from '../../../shared/loading-state/loading-sta
   selector: 'app-show-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, DecimalPipe, LoadingStateComponent],
+  imports: [DatePipe, DecimalPipe, LoadingStateComponent, DndDropZoneDirective],
   templateUrl: './show-detail.component.html',
   styleUrl: './show-detail.component.scss',
 })
@@ -44,6 +49,11 @@ export class ShowDetailComponent {
   );
 
   constructor() {
+    // Ensure the `playlist` drag preview is registered before the first
+    // drop happens. Service is `providedIn: 'root'` and idempotent — no-op
+    // on subsequent component mounts. Side-effect-only inject.
+    inject(ShowsDndInitService);
+
     // Re-fetch whenever the id changes. Unmount clears the state so
     // the next detail opens cleanly (useful when the panel closes).
     effect(() => {
@@ -131,6 +141,34 @@ export class ShowDetailComponent {
     const show = this.detail();
     if (!show) return;
     this.mutations.removeItem(show.id, section.id, item.id);
+  }
+
+  /** Drop handler for a section's DnD zone. Narrows the drag type to
+   *  one of the two accepted kinds and dispatches the matching add-item
+   *  mutation. Position defaults to "end of section" — the backend's
+   *  aggregate reindexes on write. */
+  onSectionDrop(
+    showId: TShowId,
+    sectionId: TShowSectionId,
+    drag: DragState,
+  ): void {
+    if (drag.type === 'music-track') {
+      this.mutations.addItem(
+        showId,
+        sectionId,
+        'version',
+        drag.data.versionId as TMusicVersionId,
+      );
+      return;
+    }
+    if (drag.type === 'playlist') {
+      this.mutations.addItem(
+        showId,
+        sectionId,
+        'playlist',
+        drag.data.playlistId as TPlaylistId,
+      );
+    }
   }
 
   trackSection(_: number, s: TShowSectionViewModel): TShowSectionId {
