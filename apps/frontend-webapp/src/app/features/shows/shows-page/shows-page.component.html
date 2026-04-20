@@ -1,108 +1,134 @@
 <div class="shows-page">
   <header class="page-header">
-    <div>
-      <h1>Shows</h1>
-      <p class="subtitle">
+    <div class="page-header__lead">
+      <h1 class="page-header__title">Shows</h1>
+      <p class="page-header__subtitle">
         Plan your performances — one show, one or more sections, playlists or
         tracks.
       </p>
     </div>
-    <button type="button" class="btn btn--primary" (click)="onCreate()">
-      + New show
-    </button>
+    @if (state.summaries().length > 0) {
+      <sh3-button variant="solid" size="md" (clicked)="onCreate()">
+        <sh3-icon name="plus" [size]="14" />
+        <span>New show</span>
+      </sh3-button>
+    }
   </header>
 
   @if (state.loadingSummaries() && state.summaries().length === 0) {
-    <sh3-loading />
+    <sh3-loading message="Loading shows…" />
   } @else if (state.summaries().length === 0) {
     <sh3-empty-state
       title="No shows yet"
-      subtitle="Create your first show to start planning sections and sets."
-    />
+      subtitle="Create your first show to start planning sections, playlists and sets."
+    >
+      <sh3-icon empty-icon name="microphone" [size]="40" />
+      <sh3-button variant="solid" (clicked)="onCreate()">
+        <sh3-icon name="plus" [size]="14" />
+        <span>Create a show</span>
+      </sh3-button>
+    </sh3-empty-state>
   } @else {
-    <div class="grid">
+    <div class="shows-grid">
       @for (show of state.summaries(); track trackById($index, show)) {
-        <button
-          type="button"
-          class="card card--{{ show.color }}"
+        <article
+          class="show-card"
+          [attr.data-color]="show.color"
+          role="button"
+          tabindex="0"
           (click)="onOpenShow(show)"
+          (keydown.enter)="onOpenShow(show)"
+          (keydown.space)="onOpenShow(show)"
         >
-          <div class="card__head">
-            <span class="card__color-dot"></span>
-            <h2 class="card__name">{{ show.name }}</h2>
-            <div class="card__actions">
-              <button
-                type="button"
-                class="icon-btn"
-                (click)="onDuplicate($event, show)"
-                title="Duplicate"
+          <span class="show-card__stripe" [attr.data-color]="show.color"></span>
+
+          <div class="show-card__body">
+            <header class="show-card__head">
+              <div class="show-card__title-block">
+                <h2 class="show-card__name">{{ show.name }}</h2>
+                @if (show.description) {
+                  <p class="show-card__desc">{{ show.description }}</p>
+                } @else {
+                  <p class="show-card__desc show-card__desc--empty">
+                    No description
+                  </p>
+                }
+              </div>
+              <div
+                class="show-card__actions"
+                (click)="$event.stopPropagation()"
               >
-                ⎘
-              </button>
-              <button
-                type="button"
-                class="icon-btn icon-btn--danger"
-                (click)="onDelete($event, show)"
-                title="Delete"
-              >
-                ✕
-              </button>
+                <sh3-button-icon
+                  icon="add-doc"
+                  size="xs"
+                  tooltip="Duplicate"
+                  (clicked)="onDuplicate(show)"
+                />
+                <sh3-inline-confirm
+                  mode="toggle"
+                  confirmLabel="Delete?"
+                  size="sm"
+                  (confirmed)="onDelete(show)"
+                >
+                  <sh3-button-icon
+                    icon="bin"
+                    size="xs"
+                    tone="critical"
+                    tooltip="Delete"
+                  />
+                </sh3-inline-confirm>
+              </div>
+            </header>
+
+            <div class="show-card__meta">
+              <span class="meta-chip">
+                <sh3-icon name="list" [size]="11" />
+                <span class="meta-value">{{ show.sectionCount }}</span>
+                <span class="meta-label"
+                  >section{{ show.sectionCount !== 1 ? "s" : "" }}</span
+                >
+              </span>
+              <span class="meta-chip">
+                <sh3-icon name="music-note" [size]="11" />
+                <span class="meta-value">{{ show.trackCount }}</span>
+                <span class="meta-label"
+                  >track{{ show.trackCount !== 1 ? "s" : "" }}</span
+                >
+              </span>
+              @if (show.totalDurationSeconds > 0) {
+                <span class="meta-chip">
+                  <sh3-icon name="clock" [size]="11" />
+                  <span class="meta-value">{{
+                    formatDuration(show.totalDurationSeconds)
+                  }}</span>
+                </span>
+              }
             </div>
-          </div>
 
-          @if (show.description) {
-            <p class="card__description">{{ show.description }}</p>
-          }
+            <div class="show-card__ratings" aria-label="Mean rating by axis">
+              @for (axis of axes; track axis.label) {
+                @let mean = meanFor(show, axis);
+                @let level = levelFor(mean);
+                <div class="rating" [class.rating--empty]="mean === null">
+                  <span class="rating__label">{{ axis.label }}</span>
+                  <span class="rating__value" [attr.data-level]="level">{{
+                    displayMean(mean)
+                  }}</span>
+                </div>
+              }
+            </div>
 
-          <div class="card__meta">
-            <span
-              >{{ show.sectionCount }} section{{
-                show.sectionCount > 1 ? "s" : ""
-              }}</span
-            >
-            <span
-              >{{ show.trackCount }} track{{
-                show.trackCount > 1 ? "s" : ""
-              }}</span
-            >
-            @if (show.totalDurationSeconds > 0) {
-              <span>{{ formatDuration(show.totalDurationSeconds) }}</span>
+            @if (show.lastPlayedAt) {
+              <footer class="show-card__footer">
+                <sh3-icon name="clock" [size]="10" />
+                <span
+                  >Last played
+                  {{ show.lastPlayedAt | date: "mediumDate" }}</span
+                >
+              </footer>
             }
           </div>
-
-          <div class="card__means">
-            <span class="mean" title="Mastery">
-              <span class="mean__label">MST</span>
-              <span class="mean__value">{{
-                show.meanMastery !== null
-                  ? (show.meanMastery | number: "1.1-1")
-                  : "—"
-              }}</span>
-            </span>
-            <span class="mean" title="Energy">
-              <span class="mean__label">NRG</span>
-              <span class="mean__value">{{
-                show.meanEnergy !== null
-                  ? (show.meanEnergy | number: "1.1-1")
-                  : "—"
-              }}</span>
-            </span>
-            <span class="mean" title="Effort">
-              <span class="mean__label">EFF</span>
-              <span class="mean__value">{{
-                show.meanEffort !== null
-                  ? (show.meanEffort | number: "1.1-1")
-                  : "—"
-              }}</span>
-            </span>
-          </div>
-
-          @if (show.lastPlayedAt) {
-            <div class="card__played">
-              Last played {{ show.lastPlayedAt | date: "mediumDate" }}
-            </div>
-          }
-        </button>
+        </article>
       }
     </div>
   }
