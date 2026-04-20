@@ -63,6 +63,16 @@ const RATING_AXES = [
 
 type RatingAxis = (typeof RATING_AXES)[number];
 
+/** Read the target duration of a section in whole minutes, or `null`
+ *  when the section has no duration target (no target at all, or it
+ *  uses the track-count mode instead). */
+function targetMinutes(
+  target?: TShowSectionViewModel['target'],
+): number | null {
+  if (!target || target.mode !== 'duration') return null;
+  return Math.round(target.duration_s / 60);
+}
+
 /**
  * Body of the show detail view — used by both the routed page
  * (`/app/shows/:id`) and the right-side panel mounted via `LayoutService`.
@@ -112,6 +122,12 @@ export class ShowDetailComponent {
   protected readonly editingSectionId = signal<TShowSectionId | null>(null);
   protected readonly sectionNameDraft = signal('');
 
+  /** Inline-edit state for section target duration (one at a time).
+   *  Draft is the raw minutes string so the input stays untouched as
+   *  the user types — commit parses + clamps to a positive integer. */
+  protected readonly editingTargetId = signal<TShowSectionId | null>(null);
+  protected readonly targetMinutesDraft = signal('');
+
   constructor() {
     // Ensure the `playlist` drag preview is registered before the first
     // drop happens. Service is `providedIn: 'root'` and idempotent — no-op
@@ -127,9 +143,10 @@ export class ShowDetailComponent {
       } else {
         this.state.clearDetail();
       }
-      // Drop any in-flight rename when the shown entity changes.
+      // Drop any in-flight edit when the shown entity changes.
       this.editingShowName.set(false);
       this.editingSectionId.set(null);
+      this.editingTargetId.set(null);
     });
   }
 
@@ -195,6 +212,104 @@ export class ShowDetailComponent {
     }
   }
 
+  // ── Section target duration (inline) ─────────────────
+
+  /** Start editing a section's target duration. Pre-fills the input
+   *  with the current target-duration in minutes (or a sensible default
+   *  of 15 min when the section has no target yet). */
+  startEditTarget(section: TShowSectionViewModel): void {
+    const current = targetMinutes(section.target) ?? 15;
+    this.targetMinutesDraft.set(String(current));
+    this.editingTargetId.set(section.id);
+  }
+
+  commitEditTarget(section: TShowSectionViewModel): void {
+    const show = this.detail();
+    if (!show) return;
+    const raw = this.targetMinutesDraft().trim();
+    this.editingTargetId.set(null);
+    const parsed = Number.parseInt(raw, 10);
+    if (!Number.isFinite(parsed) || parsed <= 0) return;
+    const current = targetMinutes(section.target);
+    if (current === parsed) return;
+    this.mutations.updateSection(show.id, section.id, {
+      target: { mode: 'duration', duration_s: parsed * 60 },
+    });
+  }
+
+  cancelEditTarget(): void {
+    this.editingTargetId.set(null);
+  }
+
+  onTargetKey(event: KeyboardEvent, section: TShowSectionViewModel): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.commitEditTarget(section);
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.cancelEditTarget();
+    }
+  }
+
+  /** Prompt helper for the integer-minutes input. Returns null when
+   *  the user cancels or enters something non-positive. */
+  private promptMinutes(question: string, fallback: number): number | null {
+    const raw = window.prompt(question, String(fallback));
+    if (raw === null) return null;
+    const parsed = Number.parseInt(raw.trim(), 10);
+    if (!Number.isFinite(parsed) || parsed <= 0) return null;
+    return parsed;
+  }
+
+  /** Duration target for the section in seconds, or `null` when the
+   *  section uses the track-count target mode (or has none). */
+  targetSeconds(section: TShowSectionViewModel): number | null {
+    return section.target?.mode === 'duration'
+      ? section.target.duration_s
+      : null;
+  }
+
+  /** Fill ratio in [0..1.5+] — clamped display only at render-time so
+   *  the number stays truthful when the section overshoots the target. */
+  fillRatio(section: TShowSectionViewModel): number | null {
+    const target = this.targetSeconds(section);
+    if (target === null || target <= 0) return null;
+    return section.totalDurationSeconds / target;
+  }
+
+  /** Percentage label ("85%", "112%"). */
+  fillPercent(section: TShowSectionViewModel): string | null {
+    const ratio = this.fillRatio(section);
+    if (ratio === null) return null;
+    return `${Math.round(ratio * 100)}%`;
+  }
+
+  /** Progress-bar width in `0%–100%` — over-target rows still display
+   *  100% but the `data-state` attribute tells the SCSS to paint them
+   *  red so the overshoot reads at a glance. */
+  fillWidth(section: TShowSectionViewModel): string {
+    const ratio = this.fillRatio(section);
+    if (ratio === null) return '0%';
+    return `${Math.min(1, Math.max(0, ratio)) * 100}%`;
+  }
+
+  /**
+   * Semantic state of the fill so the progress bar can tint itself:
+   *  - `empty`  — no items yet
+   *  - `under`  — below ~90% of the target (ease-in colour)
+   *  - `near`   — 90%–105% (on target — accent green)
+   *  - `over`   — >105% (alert — visual over-shoot warning)
+   */
+  fillState(
+    section: TShowSectionViewModel,
+  ): 'empty' | 'under' | 'near' | 'over' {
+    const ratio = this.fillRatio(section);
+    if (ratio === null || ratio === 0) return 'empty';
+    if (ratio < 0.9) return 'under';
+    if (ratio <= 1.05) return 'near';
+    return 'over';
+  }
+
   // ── Existing actions ─────────────────────────────────
 
   onDuplicate(): void {
@@ -228,7 +343,15 @@ export class ShowDetailComponent {
       .prompt('Section name', `Set ${show.sections.length + 1}`)
       ?.trim();
     if (!name) return;
-    this.mutations.addSection(show.id, name);
+    const minutes = this.promptMinutes(
+      'Target duration (minutes) — push yourself to hit it:',
+      15,
+    );
+    if (minutes === null) return;
+    this.mutations.addSection(show.id, name, {
+      mode: 'duration',
+      duration_s: minutes * 60,
+    });
   }
 
   onRemoveSection(section: TShowSectionViewModel): void {

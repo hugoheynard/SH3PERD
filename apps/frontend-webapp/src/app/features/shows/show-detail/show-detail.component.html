@@ -157,9 +157,6 @@
                     {{ section.name }}
                   </h3>
                 }
-                @if (formatTarget(section.target); as t) {
-                  <sh3-badge [content]="t" variant="info" radius="square" />
-                }
               </div>
               <div class="section__actions">
                 <sh3-button-icon
@@ -198,6 +195,70 @@
               </div>
             </header>
           }
+
+          <!-- ── Target + fill % ─────────────────────────── -->
+          <div class="section__target" [attr.data-state]="fillState(section)">
+            <div class="section__target-head">
+              <span class="section__target-label">
+                <sh3-icon name="clock" [size]="11" />
+                <span>Target</span>
+              </span>
+              @if (editingTargetId() === section.id) {
+                <span class="section__target-edit">
+                  <input
+                    class="section__target-input"
+                    type="number"
+                    inputmode="numeric"
+                    min="1"
+                    step="1"
+                    [ngModel]="targetMinutesDraft()"
+                    (ngModelChange)="targetMinutesDraft.set($event)"
+                    (blur)="commitEditTarget(section)"
+                    (keydown)="onTargetKey($event, section)"
+                    autofocus
+                    aria-label="Target duration in minutes"
+                  />
+                  <span class="section__target-unit">min</span>
+                </span>
+              } @else if (targetSeconds(section); as targetS) {
+                <button
+                  type="button"
+                  class="section__target-value"
+                  (click)="startEditTarget(section)"
+                  title="Click to edit target"
+                >
+                  {{ formatDuration(targetS) }}
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  class="section__target-set"
+                  (click)="startEditTarget(section)"
+                >
+                  + Set target
+                </button>
+              }
+              @if (fillPercent(section); as pct) {
+                <span class="section__target-actual">
+                  {{ formatDuration(section.totalDurationSeconds) }}
+                  <span class="section__target-pct">· {{ pct }}</span>
+                </span>
+              }
+            </div>
+            @if (targetSeconds(section); as _t) {
+              <div
+                class="section__target-bar"
+                role="progressbar"
+                [attr.aria-valuenow]="fillPercent(section)"
+                [attr.data-state]="fillState(section)"
+              >
+                <span
+                  class="section__target-bar-fill"
+                  [style.width]="fillWidth(section)"
+                ></span>
+              </div>
+            }
+          </div>
 
           @if (section.items.length === 0) {
             <div class="section__empty">
@@ -240,14 +301,6 @@
                   >track{{ section.trackCount !== 1 ? "s" : "" }}</span
                 >
               </span>
-              @if (section.totalDurationSeconds > 0) {
-                <span class="meta-chip">
-                  <sh3-icon name="clock" [size]="11" />
-                  <span class="meta-value">{{
-                    formatDuration(section.totalDurationSeconds)
-                  }}</span>
-                </span>
-              }
               @if (section.lastPlayedAt) {
                 <span class="meta-chip meta-chip--played">
                   <sh3-icon name="completed" [size]="11" />
