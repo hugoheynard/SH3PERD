@@ -35,6 +35,7 @@ export const PLAN_QUOTAS: Record<TPlatformRole, TQuotaLimit[]> = {
     { resource: 'track_upload', period: 'lifetime', limit: 50 },
     { resource: 'track_version', period: 'lifetime', limit: 2 }, // per track
     { resource: 'playlist', period: 'lifetime', limit: 3 },
+    { resource: 'show_count', period: 'monthly', limit: 0 }, // feature not available
     { resource: 'search_tab', period: 'lifetime', limit: 1 },
     { resource: 'search_tab_items', period: 'lifetime', limit: 3 }, // tabs per search tab
     { resource: 'master_standard', period: 'monthly', limit: 3 },
@@ -48,6 +49,7 @@ export const PLAN_QUOTAS: Record<TPlatformRole, TQuotaLimit[]> = {
     { resource: 'track_upload', period: 'lifetime', limit: -1 },
     { resource: 'track_version', period: 'lifetime', limit: 5 }, // per track
     { resource: 'playlist', period: 'lifetime', limit: -1 },
+    { resource: 'show_count', period: 'monthly', limit: 35 },
     { resource: 'search_tab', period: 'lifetime', limit: 10 },
     { resource: 'search_tab_items', period: 'lifetime', limit: 5 }, // tabs per search tab
     { resource: 'master_standard', period: 'monthly', limit: -1 },
@@ -59,7 +61,7 @@ export const PLAN_QUOTAS: Record<TPlatformRole, TQuotaLimit[]> = {
   artist_max: [
     { resource: 'master_ai', period: 'monthly', limit: 50 },
     { resource: 'storage_bytes', period: 'lifetime', limit: 20 * 1024 * 1024 * 1024 }, // 20 Go
-    // Everything else: unlimited (not listed)
+    // Everything else: unlimited (not listed) — including show_count
   ],
 
   // ═══════════════════════════════════════════════════════════
