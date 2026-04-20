@@ -1,0 +1,183 @@
+@if (loading() && !detail()) {
+  <app-loading-state />
+} @else if (detail(); as show) {
+  <div class="show-detail">
+    <header class="show-header show-header--{{ show.color }}">
+      <div class="show-header__title">
+        <span class="show-header__dot"></span>
+        <h1 (dblclick)="onRenameShow()">{{ show.name }}</h1>
+        @if (show.description) {
+          <p class="show-header__desc">{{ show.description }}</p>
+        }
+      </div>
+      <div class="show-header__actions">
+        <button class="btn btn--ghost" (click)="onMarkShowPlayed()">
+          Mark show played
+        </button>
+        <button class="btn btn--ghost" (click)="onDuplicate()">
+          Duplicate
+        </button>
+        <button class="btn btn--ghost btn--danger" (click)="onDelete()">
+          Delete
+        </button>
+      </div>
+    </header>
+
+    <div class="show-stats">
+      <span
+        >{{ show.sections.length }} section{{
+          show.sections.length > 1 ? "s" : ""
+        }}</span
+      >
+      <span
+        >{{ show.trackCount }} track{{ show.trackCount > 1 ? "s" : "" }}</span
+      >
+      @if (show.totalDurationSeconds > 0) {
+        <span>{{ formatDuration(show.totalDurationSeconds) }}</span>
+      }
+      @if (show.lastPlayedAt) {
+        <span class="show-stats__played">
+          Last played {{ show.lastPlayedAt | date: "medium" }}
+        </span>
+      }
+      <span class="show-stats__means">
+        <span
+          >MST
+          {{
+            show.meanMastery !== null
+              ? (show.meanMastery | number: "1.1-1")
+              : "—"
+          }}</span
+        >
+        <span
+          >NRG
+          {{
+            show.meanEnergy !== null ? (show.meanEnergy | number: "1.1-1") : "—"
+          }}</span
+        >
+        <span
+          >EFF
+          {{
+            show.meanEffort !== null ? (show.meanEffort | number: "1.1-1") : "—"
+          }}</span
+        >
+      </span>
+    </div>
+
+    <div class="sections">
+      @for (section of show.sections; track trackSection($index, section)) {
+        <section class="section">
+          @if (!singleMode()) {
+            <header class="section__head">
+              <div class="section__title" (dblclick)="onRenameSection(section)">
+                <span class="section__name">{{ section.name }}</span>
+                @if (formatTarget(section.target); as t) {
+                  <span class="section__target-chip">{{ t }}</span>
+                }
+              </div>
+              <div class="section__actions">
+                <button
+                  class="btn btn--ghost btn--sm"
+                  (click)="onMarkSectionPlayed(section)"
+                >
+                  Played
+                </button>
+                <button
+                  class="btn btn--ghost btn--sm"
+                  (click)="onConvertSectionToPlaylist(section)"
+                >
+                  To playlist
+                </button>
+                @if (show.sections.length > 1) {
+                  <button
+                    class="btn btn--ghost btn--sm btn--danger"
+                    (click)="onRemoveSection(section)"
+                  >
+                    Remove
+                  </button>
+                }
+              </div>
+            </header>
+          }
+
+          @if (section.items.length === 0) {
+            <div class="section__empty">
+              No items yet — add tracks or playlists from your library.
+            </div>
+          } @else {
+            <ul class="item-list">
+              @for (item of section.items; track trackItem($index, item)) {
+                <li class="item item--{{ item.kind }}">
+                  <span class="item__badge">{{
+                    item.kind === "playlist" ? "Playlist" : "Track"
+                  }}</span>
+                  <span class="item__body">
+                    <strong>{{ itemTitle(item) }}</strong>
+                    <small>{{ itemSubtitle(item) }}</small>
+                  </span>
+                  <button
+                    class="icon-btn"
+                    (click)="onRemoveItem(section, item)"
+                    title="Remove"
+                  >
+                    ✕
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+
+          <div class="section__stats">
+            <span
+              >{{ section.trackCount }} track{{
+                section.trackCount > 1 ? "s" : ""
+              }}</span
+            >
+            @if (section.totalDurationSeconds > 0) {
+              <span>{{ formatDuration(section.totalDurationSeconds) }}</span>
+            }
+            <span
+              >MST
+              {{
+                section.meanMastery !== null
+                  ? (section.meanMastery | number: "1.1-1")
+                  : "—"
+              }}</span
+            >
+            <span
+              >NRG
+              {{
+                section.meanEnergy !== null
+                  ? (section.meanEnergy | number: "1.1-1")
+                  : "—"
+              }}</span
+            >
+            <span
+              >EFF
+              {{
+                section.meanEffort !== null
+                  ? (section.meanEffort | number: "1.1-1")
+                  : "—"
+              }}</span
+            >
+            @if (section.lastPlayedAt) {
+              <span class="section__stats--played">
+                Played {{ section.lastPlayedAt | date: "short" }}
+              </span>
+            }
+          </div>
+        </section>
+      }
+    </div>
+
+    <button
+      type="button"
+      class="btn btn--primary btn--add-section"
+      (click)="onAddSection()"
+    >
+      + Add section
+    </button>
+  </div>
+} @else {
+  <p class="show-not-found">Show not found.</p>
+}

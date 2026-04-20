@@ -1,0 +1,108 @@
+<div class="shows-page">
+  <header class="page-header">
+    <div>
+      <h1>Shows</h1>
+      <p class="subtitle">
+        Plan your performances — one show, one or more sections, playlists or
+        tracks.
+      </p>
+    </div>
+    <button type="button" class="btn btn--primary" (click)="onCreate()">
+      + New show
+    </button>
+  </header>
+
+  @if (state.loadingSummaries() && state.summaries().length === 0) {
+    <app-loading-state />
+  } @else if (state.summaries().length === 0) {
+    <app-empty-state
+      title="No shows yet"
+      message="Create your first show to start planning sections and sets."
+    />
+  } @else {
+    <div class="grid">
+      @for (show of state.summaries(); track trackById($index, show)) {
+        <a
+          class="card card--{{ show.color }}"
+          [routerLink]="['/app/shows', show.id]"
+        >
+          <div class="card__head">
+            <span class="card__color-dot"></span>
+            <h2 class="card__name">{{ show.name }}</h2>
+            <div class="card__actions">
+              <button
+                type="button"
+                class="icon-btn"
+                (click)="onDuplicate($event, show)"
+                title="Duplicate"
+              >
+                ⎘
+              </button>
+              <button
+                type="button"
+                class="icon-btn icon-btn--danger"
+                (click)="onDelete($event, show)"
+                title="Delete"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          @if (show.description) {
+            <p class="card__description">{{ show.description }}</p>
+          }
+
+          <div class="card__meta">
+            <span
+              >{{ show.sectionCount }} section{{
+                show.sectionCount > 1 ? "s" : ""
+              }}</span
+            >
+            <span
+              >{{ show.trackCount }} track{{
+                show.trackCount > 1 ? "s" : ""
+              }}</span
+            >
+            @if (show.totalDurationSeconds > 0) {
+              <span>{{ formatDuration(show.totalDurationSeconds) }}</span>
+            }
+          </div>
+
+          <div class="card__means">
+            <span class="mean" title="Mastery">
+              <span class="mean__label">MST</span>
+              <span class="mean__value">{{
+                show.meanMastery !== null
+                  ? (show.meanMastery | number: "1.1-1")
+                  : "—"
+              }}</span>
+            </span>
+            <span class="mean" title="Energy">
+              <span class="mean__label">NRG</span>
+              <span class="mean__value">{{
+                show.meanEnergy !== null
+                  ? (show.meanEnergy | number: "1.1-1")
+                  : "—"
+              }}</span>
+            </span>
+            <span class="mean" title="Effort">
+              <span class="mean__label">EFF</span>
+              <span class="mean__value">{{
+                show.meanEffort !== null
+                  ? (show.meanEffort | number: "1.1-1")
+                  : "—"
+              }}</span>
+            </span>
+          </div>
+
+          @if (show.lastPlayedAt) {
+            <div class="card__played">
+              Last played {{ show.lastPlayedAt | date: "mediumDate" }}
+            </div>
+          }
+        </a>
+      }
+    </div>
+  }
+</div>

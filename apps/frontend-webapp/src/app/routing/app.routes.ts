@@ -9,6 +9,7 @@ import { authGuard } from '../../guards/auth.guard';
 import {
   requireCompanyAccountGuard,
   requireContractWorkspaceGuard,
+  requireShowsAccessGuard,
 } from '../../guards/account-scope.guards';
 import { PlaylistsPageComponent } from '../features/playlists/playlists-page/playlists-page.component';
 import { MainLayoutComponent } from '../core/main-layout/main-layout.component';
@@ -76,6 +77,28 @@ export const routes: Routes = [
         path: 'playlistManager',
         component: PlaylistsPageComponent,
         data: { pageName: 'playlists' },
+      },
+      {
+        path: 'shows',
+        canActivate: [requireShowsAccessGuard],
+        canActivateChild: [requireShowsAccessGuard],
+        data: { pageName: 'shows' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('../features/shows/shows-page/shows-page.component').then(
+                (m) => m.ShowsPageComponent,
+              ),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('../features/shows/show-detail-page/show-detail-page.component').then(
+                (m) => m.ShowDetailPageComponent,
+              ),
+          },
+        ],
       },
       {
         path: 'contracts',

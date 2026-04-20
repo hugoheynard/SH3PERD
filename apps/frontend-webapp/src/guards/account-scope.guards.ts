@@ -69,3 +69,22 @@ export const requireContractWorkspaceGuard: CanActivateFn = () => {
     ),
   );
 };
+
+/**
+ * Blocks the Shows feature for plans that don't include it (artist_free,
+ * company_free, company_pro). Mirrors `canUseShows` on UserContextService —
+ * keep the two in sync when the plan matrix changes.
+ */
+export const requireShowsAccessGuard: CanActivateFn = () => {
+  const platformId = inject(PLATFORM_ID);
+  if (!isPlatformBrowser(platformId)) return true;
+
+  const userCtx = inject(UserContextService);
+  const router = inject(Router);
+
+  return waitForPlan(userCtx).pipe(
+    map(() =>
+      userCtx.canUseShows() ? true : router.createUrlTree([FALLBACK_ROUTE]),
+    ),
+  );
+};

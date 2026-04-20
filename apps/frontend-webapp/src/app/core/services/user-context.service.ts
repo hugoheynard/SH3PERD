@@ -41,6 +41,22 @@ export class UserContextService {
   readonly isArtist = computed(() => this.accountType() === 'artist');
   readonly isCompany = computed(() => this.accountType() === 'company');
 
+  /**
+   * True when the current plan grants access to the Shows feature.
+   * Shows are gated by plan permissions (`music:*` → show:*), which means:
+   * - `artist_pro` / `artist_max` → yes
+   * - `artist_free` → no
+   * - `company_pro` / `company_business` → yes via `music:*:read` + `*`
+   * - `company_free` → no
+   *
+   * Null plan (still loading) is treated as "no" — same "restrictive
+   * default" stance as the route guards.
+   */
+  readonly canUseShows = computed(() => {
+    const p = this._plan();
+    return p === 'artist_pro' || p === 'artist_max' || p === 'company_business';
+  });
+
   /** True when the user has an active contract workspace selected. */
   readonly hasContractWorkspace = computed(
     () => this.currentContractId() !== null,

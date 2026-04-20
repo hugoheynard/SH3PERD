@@ -27,6 +27,7 @@ const ALL_NAV_ITEMS: readonly AppMenuItem[] = [
     label: 'Playlists',
     route: 'playlistManager',
   },
+  { id: 'shows', icon: 'microphone', label: 'Shows', route: 'shows' },
   {
     id: 'contracts',
     icon: 'contracts',
@@ -48,15 +49,20 @@ export class AppMenuComponent {
   private authService = inject(AuthService);
   private userCtx = inject(UserContextService);
 
-  // Menu is scoped by account type and active contract workspace:
-  // - `company` is company-only (hidden for artists and while the plan is loading)
+  // Menu is scoped by account type, active contract workspace, and plan:
+  // - `company` is company-only (hidden for artists and while the plan loads)
   // - `program` requires an active contract workspace (company feature)
+  // - `shows` is only available on plans with music:* (artist_pro, artist_max,
+  //   company_business); `canUseShows` is the single source of truth, mirrored
+  //   by the `requireShowsAccessGuard` route guard.
   readonly navItems = computed<AppMenuItem[]>(() => {
     const isArtist = this.userCtx.isArtist();
     const hasWorkspace = this.userCtx.hasContractWorkspace();
+    const canUseShows = this.userCtx.canUseShows();
     return ALL_NAV_ITEMS.filter((item) => {
       if (item.id === 'company' && isArtist) return false;
       if (item.id === 'program' && !hasWorkspace) return false;
+      if (item.id === 'shows' && !canUseShows) return false;
       return true;
     });
   });
