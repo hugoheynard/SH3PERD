@@ -13,11 +13,11 @@
   </header>
 
   @if (state.loadingSummaries() && state.summaries().length === 0) {
-    <app-loading-state />
+    <sh3-loading />
   } @else if (state.summaries().length === 0) {
-    <app-empty-state
+    <sh3-empty-state
       title="No shows yet"
-      message="Create your first show to start planning sections and sets."
+      subtitle="Create your first show to start planning sections and sets."
     />
   } @else {
     <div class="grid">
