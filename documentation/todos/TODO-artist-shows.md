@@ -65,7 +65,9 @@ type TSectionItemId = `showSectionItem_${string}`;
 
 type TItemKind = "version" | "playlist";
 
-type TSectionTarget = { mode: "duration"; duration_s: number } | { mode: "track_count"; track_count: number };
+type TSectionTarget =
+  | { mode: "duration"; duration_s: number }
+  | { mode: "track_count"; track_count: number };
 // null/undefined target = no target, purely indicatif
 
 type TShowDomainModel = {
@@ -159,7 +161,24 @@ type TSectionViewModel = {
   qualitySeries: number[];
 };
 
-type TSectionItemViewModel = { kind: "version"; id: TSectionItemId; position: number; version: TVersionView } | { kind: "playlist"; id: TSectionItemId; position: number; playlist: { id: TPlaylistId; name: string; color: TRatingColor; trackCount: number } };
+type TSectionItemViewModel =
+  | {
+      kind: "version";
+      id: TSectionItemId;
+      position: number;
+      version: TVersionView;
+    }
+  | {
+      kind: "playlist";
+      id: TSectionItemId;
+      position: number;
+      playlist: {
+        id: TPlaylistId;
+        name: string;
+        color: TRatingColor;
+        trackCount: number;
+      };
+    };
 ```
 
 Les playlists ne sont **pas** expandées dans la réponse — le frontend affiche l'item comme un "bloc playlist" avec count + mini-sparkline. Les séries agrégées (`*Series`) du show/section sont calculées côté backend par expansion récursive (une playlist = N versions denses en mastery/energy/effort).
@@ -419,6 +438,7 @@ apps/frontend-webapp/src/app/features/shows/
 - **Snapshots** : chaque `Mark played` génère un snapshot immuable du contenu du show à ce moment, pour qu'un changement ultérieur du show ne fausse pas l'historique des plays. MVP : on stocke juste `version_id` dans l'event, c'est suffisant — le détail historique du show lui-même peut dériver.
 - **Durée réelle vs estimée** : MVP on utilise `track.durationSeconds`. Une v2 pourrait logger l'horodatage réel (start/stop) via le player bar — couplerait Show avec AudioPlayer, gros changement, à différer.
 - **Quotas finer-grained** : `section_count_per_show` ou `items_per_section` si on observe des abus. Pas d'urgence.
+- **Prédéfinir la structure du show au create** : étendre le popover "New show" pour permettre à l'artiste de seeder un set de sections (ex : `["Warm-up 10 min", "Main set 45 min", "Encore 5 min"]`) en une seule action plutôt que créer le show puis ajouter chaque section à la main. Piste : un sélecteur de template (solo acoustic / club set / rehearsal / blank) + édition libre avant création. Côté backend, `ShowAggregate.create` accepte déjà `defaultSectionName` — on l'étendrait pour accepter un tableau de `{ name, target?: TShowSectionTarget }` avec un cap sur la quantité pour éviter d'abuser du path de création. Post-MVP — la version actuelle ouvre juste un popover `name + total_duration_target`.
 
 ---
 
