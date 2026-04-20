@@ -20,6 +20,7 @@ Process docs, TODOs, feature roadmaps, and user flows.
 | -------------------------------------------------------------- | ------- | -------------------------------------------------------------------------- |
 | [Tech Debt](todos/TODO-tech-debt.md)                           | Active  | Urgent bugs, architectural debt, functional backlog                        |
 | [Music Features](todos/TODO-music-features.md)                 | Active  | Music library feature roadmap by phase (critical, architecture, post-lock) |
+| [Artist Shows](todos/TODO-artist-shows.md)                     | Spec    | Personal performance planner for artist_pro/max — sections, items, played  |
 | [Company Features](todos/TODO-company-features.md)             | Active  | Company module: settings, org chart, contracts, integrations               |
 | [Guest to User](todos/TODO-guest-to-user.md)                   | Phase 4 | Guest user activation flow — 6 phases, currently on Phase 4 (Guests tab)   |
 | [Integrations](todos/TODO-integrations.md)                     | Active  | Slack integration roadmap: channel sync, notifications, new providers      |

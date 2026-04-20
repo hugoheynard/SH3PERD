@@ -65,6 +65,7 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | **Secrets Management**   | `documentation/SECRETS.md`                         | How env secrets are loaded/rotated + full inventory |
 | **Tech Debt**            | `documentation/todos/TODO-tech-debt.md`            | Urgent bugs, architectural debt, functional backlog |
 | **Music Features**       | `documentation/todos/TODO-music-features.md`       | Music feature roadmap by phase                      |
+| **Artist Shows**         | `documentation/todos/TODO-artist-shows.md`         | Personal performance planner (spec locked, pre-dev) |
 | **Company Features**     | `documentation/todos/TODO-company-features.md`     | Company module: settings, org chart, contracts      |
 | **Guest to User**        | `documentation/todos/TODO-guest-to-user.md`        | Guest user activation flow (6 phases)               |
 | **Integrations**         | `documentation/todos/TODO-integrations.md`         | Slack integration roadmap                           |
