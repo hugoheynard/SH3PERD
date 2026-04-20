@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { IconComponent } from '../../../../shared/icon/icon.component';
 import { formatDuration } from '../../../../shared/utils/duration.utils';
-import { RatingSparklineComponent } from '../rating-sparkline/rating-sparkline.component';
+import { RatingSparklineComponent } from '../../../../shared/rating-sparkline/rating-sparkline.component';
 import { DndDragDirective } from '../../../../core/drag-and-drop/dndDrag.directive';
 import type { PlaylistDragPayload } from '../../../../core/drag-and-drop/drag.types';
 import type { TPlaylistSummaryViewModel } from '../../playlist-types';
