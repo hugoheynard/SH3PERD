@@ -13,6 +13,7 @@ import type {
   TPlaylistColor,
   TPlaylistId,
   TPlaylistTrackId,
+  TShowSectionId,
 } from '@sh3pherd/shared-types';
 
 /* ---------------------------------------------------
@@ -75,6 +76,16 @@ export type PlaylistDragPayload = {
   trackCount: number;
 };
 
+/**
+ * Payload emitted when a show section is grabbed for reordering inside
+ * the show detail. Consumed by the per-section insertion drop zones,
+ * which call `reorderSections()` with the new position.
+ */
+export type ShowSectionDragPayload = {
+  sectionId: TShowSectionId;
+  name: string;
+};
+
 export type DragPayloadMap = {
   template: ArtistPerformanceSlotTemplate;
   artist: PlannerArtist;
@@ -87,6 +98,7 @@ export type DragPayloadMap = {
   'music-track': MusicTrackDragPayload;
   'playlist-track': PlaylistTrackDragPayload;
   playlist: PlaylistDragPayload;
+  'show-section': ShowSectionDragPayload;
 };
 
 export type DragType = keyof DragPayloadMap;

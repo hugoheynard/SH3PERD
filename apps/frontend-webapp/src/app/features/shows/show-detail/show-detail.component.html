@@ -125,10 +125,22 @@
 
     <!-- ── Sections ───────────────────────────────────── -->
 
-    <div class="sections">
+    <div class="sections" [class.sections--reordering]="isReorderingSection()">
       @for (section of show.sections; track trackSection($index, section)) {
+        @if (show.sections.length > 1) {
+          <div
+            class="section-insert"
+            uiDndDropZone
+            [dropZone_id]="'insert:' + $index"
+            [dropZoneAccept]="['show-section']"
+            (uiDndDrop)="onInsertionDrop($index, $event)"
+          >
+            <span class="section-insert__line"></span>
+          </div>
+        }
         <section
           class="section"
+          [class.section--dragging]="reorderingSectionId() === section.id"
           uiDndDropZone
           [dropZone_id]="section.id"
           [dropZoneAccept]="['music-track', 'playlist']"
@@ -136,6 +148,17 @@
         >
           @if (!singleMode()) {
             <header class="section__head">
+              <button
+                type="button"
+                class="section__handle"
+                title="Drag to reorder"
+                aria-label="Drag to reorder"
+                uiDndDrag
+                [dndType]="'show-section'"
+                [dndData]="sectionDragPayload(section)"
+              >
+                <sh3-icon name="menu" [size]="14" />
+              </button>
               <div class="section__title-block">
                 @if (editingSectionId() === section.id) {
                   <input
@@ -330,6 +353,17 @@
             </div>
           </footer>
         </section>
+      }
+      @if (show.sections.length > 1) {
+        <div
+          class="section-insert section-insert--tail"
+          uiDndDropZone
+          [dropZone_id]="'insert:' + show.sections.length"
+          [dropZoneAccept]="['show-section']"
+          (uiDndDrop)="onInsertionDrop(show.sections.length, $event)"
+        >
+          <span class="section-insert__line"></span>
+        </div>
       }
     </div>
 

@@ -180,15 +180,72 @@ $colors: (
   gap: var(--gap-md);
 }
 
+/* ── Insertion indicator between sections ─────────────── */
+
+.section-insert {
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  height: 0;
+  margin: calc(var(--gap-md) * -0.5) 0;
+  padding: 0 4px;
+  pointer-events: none;
+  position: relative;
+  z-index: 2;
+  transition: height var(--t-base);
+
+  &__line {
+    flex: 1;
+    height: 2px;
+    background: transparent;
+    border-radius: 999px;
+    transform: scaleX(0.2);
+    transform-origin: center;
+    transition:
+      background var(--t-fast),
+      box-shadow var(--t-fast),
+      transform var(--t-base);
+  }
+
+  /* Active only while a section is being reordered — lit up so the
+     user sees exactly where the section will land on drop. */
+  .sections--reordering & {
+    height: 16px;
+    margin: -4px 0;
+    pointer-events: auto;
+  }
+
+  /* Hover state during an active section drag. */
+  .sections--reordering &:hover {
+    .section-insert__line {
+      background: var(--accent-color);
+      box-shadow: 0 0 0 2px var(--accent-color-dim);
+      transform: scaleX(1);
+    }
+  }
+
+  &--tail {
+    margin-top: calc(var(--gap-md) * -0.5);
+  }
+}
+
 .section {
   padding: 14px 16px;
   background: var(--panel-color);
   border: 1px solid var(--panel-border-color);
   border-radius: var(--radius-md);
-  transition: border-color var(--t-fast);
+  transition:
+    border-color var(--t-fast),
+    opacity var(--t-fast);
 
   &:hover {
     border-color: var(--floating-border-color);
+  }
+
+  // Slight dim on the source section while it's being dragged — keeps
+  // the user oriented without fully hiding the row.
+  &--dragging {
+    opacity: 0.45;
   }
 
   &__head {
@@ -197,6 +254,35 @@ $colors: (
     justify-content: space-between;
     gap: var(--gap-sm);
     margin-bottom: 10px;
+  }
+
+  &__handle {
+    all: unset;
+    cursor: grab;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-xs);
+    color: var(--text-faded);
+    transition:
+      background var(--t-fast),
+      color var(--t-fast);
+    touch-action: none;
+    flex-shrink: 0;
+
+    &:hover {
+      background: var(--surface-raised);
+      color: var(--text-primary);
+    }
+    &:active {
+      cursor: grabbing;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 1px;
+    }
   }
 
   &__title-block {

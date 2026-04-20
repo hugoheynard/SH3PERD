@@ -28,8 +28,13 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 import { InlineConfirmComponent } from '../../../shared/inline-confirm/inline-confirm.component';
 import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
 import { RatingSparklineComponent } from '../../../shared/rating-sparkline/rating-sparkline.component';
+import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
-import type { DragState } from '../../../core/drag-and-drop/drag.types';
+import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
+import type {
+  DragState,
+  ShowSectionDragPayload,
+} from '../../../core/drag-and-drop/drag.types';
 
 /** Four rating axes with per-axis accent colour — the shared rating
  *  sparkline renders a smoothed series tinted with these so every card,
@@ -93,6 +98,7 @@ function targetMinutes(
     InlineConfirmComponent,
     LoadingStateComponent,
     RatingSparklineComponent,
+    DndDragDirective,
     DndDropZoneDirective,
   ],
   templateUrl: './show-detail.component.html',
@@ -103,6 +109,24 @@ export class ShowDetailComponent {
 
   protected readonly state = inject(ShowsStateService);
   private readonly mutations = inject(ShowsMutationService);
+  private readonly dragSession = inject(DragSessionService);
+
+  /** `'show-section'` when the user is currently reordering a section,
+   *  otherwise `null`. Drives the visibility of the insertion drop
+   *  zones — they only light up during a section drag so the rest of
+   *  the time the layout stays clean. */
+  protected readonly reorderingSectionId = computed<TShowSectionId | null>(
+    () => {
+      const drag = this.dragSession.current();
+      return drag?.type === 'show-section'
+        ? ((drag.data as ShowSectionDragPayload).sectionId as TShowSectionId)
+        : null;
+    },
+  );
+
+  protected readonly isReorderingSection = computed(
+    () => this.reorderingSectionId() !== null,
+  );
 
   protected readonly detail = this.state.detail;
   protected readonly loading = this.state.detailLoadingFor;
@@ -405,6 +429,38 @@ export class ShowDetailComponent {
         drag.data.playlistId as TPlaylistId,
       );
     }
+  }
+
+  /** Payload for a section's drag source — computed per-render so the
+   *  template binding stays a stable reference. */
+  sectionDragPayload(section: TShowSectionViewModel): ShowSectionDragPayload {
+    return { sectionId: section.id, name: section.name };
+  }
+
+  /** Drop handler for an insertion zone between sections. `targetIndex`
+   *  is the slot in the ordered sections array where the dragged section
+   *  should land. The updated list is passed to `reorderSections` as the
+   *  authoritative new order. */
+  onInsertionDrop(targetIndex: number, drag: DragState): void {
+    if (drag.type !== 'show-section') return;
+    const show = this.detail();
+    if (!show) return;
+
+    const payload = drag.data as ShowSectionDragPayload;
+    const current = show.sections.map((s) => s.id);
+    const fromIdx = current.indexOf(payload.sectionId);
+    if (fromIdx === -1) return;
+
+    // Remove the dragged id, then splice it at `targetIndex` — adjust
+    // for the removal when the original position was before the target.
+    const next = current.slice();
+    next.splice(fromIdx, 1);
+    const adjustedTarget =
+      targetIndex > fromIdx ? targetIndex - 1 : targetIndex;
+    if (adjustedTarget === fromIdx) return; // no-op
+    next.splice(adjustedTarget, 0, payload.sectionId);
+
+    this.mutations.reorderSections(show.id, next);
   }
 
   trackSection(_: number, s: TShowSectionViewModel): TShowSectionId {
