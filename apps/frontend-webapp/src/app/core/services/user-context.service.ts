@@ -75,7 +75,7 @@ export class UserContextService {
    * Nullable — null if user not loaded or preference not set.
    */
   readonly currentContractId = computed<TContractId | null>(() => {
-    return this._user()?.preferences.contract_workspace ?? null;
+    return this._user()?.preferences?.contract_workspace ?? null;
   });
 
   /** Strict version — throws if workspace not set. */
