@@ -18,6 +18,7 @@ import { UserProfileModule } from '../user/profile/user-profile.module.js';
 import { GlobalCqrsModule } from './global-cqrs.module.js';
 import { CompanyModule } from '../company/company.module.js';
 import { PlaylistModule } from '../playlists-v2/playlist.module.js';
+import { ShowModule } from '../shows/show.module.js';
 import { IntegrationsModule } from '../integrations/integrations.module.js';
 import { PrintModule } from '../print/print.module.js';
 import { MusicCrossModule } from '../music/music-cross.module.js';
@@ -60,6 +61,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
     MusicCrossModule,
     ProtectedModule,
     PlaylistModule,
+    ShowModule,
     PrintModule,
     AnalyticsModule,
     MailerModule,
@@ -83,6 +85,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
           { path: '', module: PrintModule },
           { path: 'integrations', module: IntegrationsModule },
           { path: 'playlists', module: PlaylistModule },
+          { path: 'shows', module: ShowModule },
           { path: '', module: QuotaModule },
           { path: '', module: AnalyticsModule },
         ],

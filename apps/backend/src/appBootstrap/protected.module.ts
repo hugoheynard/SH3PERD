@@ -7,6 +7,7 @@ import { UserModule } from '../user/user.module.js';
 import { CompanyModule } from '../company/company.module.js';
 import { IntegrationsModule } from '../integrations/integrations.module.js';
 import { PlaylistModule } from '../playlists-v2/playlist.module.js';
+import { ShowModule } from '../shows/show.module.js';
 import { CONTRACT_SCOPED_GUARD } from './nestTokens.js';
 
 @Module({
@@ -18,6 +19,7 @@ import { CONTRACT_SCOPED_GUARD } from './nestTokens.js';
     CompanyModule,
     IntegrationsModule,
     PlaylistModule,
+    ShowModule,
   ],
   providers: [{ provide: CONTRACT_SCOPED_GUARD, useClass: ContractContextGuard }],
   exports: [],
