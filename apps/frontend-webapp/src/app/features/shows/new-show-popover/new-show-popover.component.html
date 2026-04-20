@@ -1,0 +1,85 @@
+<ui-popover-frame>
+  <div popover-title>
+    <span>New show</span>
+  </div>
+
+  <form
+    popover-body
+    class="form"
+    (ngSubmit)="submit()"
+    (keydown)="onKey($event)"
+  >
+    <!-- Name -->
+    <div class="form-field">
+      <label class="form-label" for="show-name">Name</label>
+      <input
+        id="show-name"
+        type="text"
+        class="form-input"
+        placeholder="Sunset gig"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+        autofocus
+        aria-label="Show name"
+      />
+    </div>
+
+    <!-- Total duration target (minutes) -->
+    <div class="form-field">
+      <label class="form-label" for="show-target">
+        Total duration target
+        <span class="form-label__hint">(minutes — optional)</span>
+      </label>
+      <div class="form-field__with-unit">
+        <input
+          id="show-target"
+          type="number"
+          class="form-input"
+          inputmode="numeric"
+          min="1"
+          step="5"
+          placeholder="60"
+          [ngModel]="totalDurationTargetMinutes()"
+          (ngModelChange)="totalDurationTargetMinutes.set($event)"
+          name="totalDurationTargetMinutes"
+          aria-label="Total duration target in minutes"
+        />
+        <span class="form-field__unit">min</span>
+      </div>
+      <p class="form-hint">
+        Drives a fill-% bar on the show header so you stay on time.
+      </p>
+    </div>
+
+    <!-- Color -->
+    <div class="form-field">
+      <label class="form-label">Colour</label>
+      <div class="color-row">
+        @for (c of colors; track c.key) {
+          <button
+            type="button"
+            class="color-chip"
+            [class.color-chip--active]="color() === c.key"
+            [style.--chip-color]="c.hex"
+            [attr.aria-label]="c.key"
+            [attr.aria-pressed]="color() === c.key"
+            (click)="setColor(c.key)"
+          >
+            @if (color() === c.key) {
+              <sh3-icon name="check" [size]="12" />
+            }
+          </button>
+        }
+      </div>
+    </div>
+  </form>
+
+  <div popover-footer>
+    <sh3-button variant="ghost" (clicked)="close()">Cancel</sh3-button>
+    <sh3-button variant="solid" [disabled]="!canSubmit()" (clicked)="submit()">
+      <sh3-icon name="plus" [size]="14" />
+      <span>Create show</span>
+    </sh3-button>
+  </div>
+</ui-popover-frame>

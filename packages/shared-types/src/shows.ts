@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { SShowId, SShowSectionId, SShowSectionItemId, SUserId } from './ids.js';
+import { z } from "zod";
+import { SShowId, SShowSectionId, SShowSectionItemId, SUserId } from "./ids.js";
 import type {
   TShowId,
   TShowSectionId,
@@ -9,35 +9,35 @@ import type {
   TMusicVersionId,
   TMusicReferenceId,
   TVersionTrackId,
-} from './ids.js';
-import { SPlaylistColor, type TPlaylistColor } from './playlists.js';
+} from "./ids.js";
+import { SPlaylistColor, type TPlaylistColor } from "./playlists.js";
 
 // ─── Section target ──────────────────────────────────────
 // Optional hint set by the artist when planning a section — either a
 // duration envelope ("this set should run ~45 min") or a track count
 // target ("10 songs"). Purely informational: not enforced at insert time.
 
-export const SHOW_SECTION_TARGET_MODES = ['duration', 'track_count'] as const;
+export const SHOW_SECTION_TARGET_MODES = ["duration", "track_count"] as const;
 export type TShowSectionTargetMode = (typeof SHOW_SECTION_TARGET_MODES)[number];
 
 export type TShowSectionTarget =
-  | { mode: 'duration'; duration_s: number }
-  | { mode: 'track_count'; track_count: number };
+  | { mode: "duration"; duration_s: number }
+  | { mode: "track_count"; track_count: number };
 
-export const SShowSectionTarget = z.discriminatedUnion('mode', [
+export const SShowSectionTarget = z.discriminatedUnion("mode", [
   z.object({
-    mode: z.literal('duration'),
+    mode: z.literal("duration"),
     duration_s: z.number().int().positive(),
   }),
   z.object({
-    mode: z.literal('track_count'),
+    mode: z.literal("track_count"),
     track_count: z.number().int().positive(),
   }),
 ]);
 
 // ─── Section item kind ───────────────────────────────────
 
-export const SHOW_ITEM_KINDS = ['version', 'playlist'] as const;
+export const SHOW_ITEM_KINDS = ["version", "playlist"] as const;
 export type TShowSectionItemKind = (typeof SHOW_ITEM_KINDS)[number];
 export const SShowSectionItemKind = z.enum(SHOW_ITEM_KINDS);
 
@@ -52,6 +52,11 @@ export interface TShowDomainModel {
   createdAt: number;
   updatedAt: number;
   lastPlayedAt?: number;
+  /** Planning target for the whole show — what the artist wants the
+   *  total running length to be, in seconds. Purely informational:
+   *  used by the UI to drive a fill-% progress bar at the show level
+   *  (separate from per-section targets). */
+  totalDurationTargetSeconds?: number;
 }
 
 export const SShowDomainModel = z.object({
@@ -63,6 +68,7 @@ export const SShowDomainModel = z.object({
   createdAt: z.number(),
   updatedAt: z.number(),
   lastPlayedAt: z.number().optional(),
+  totalDurationTargetSeconds: z.number().int().positive().optional(),
 });
 
 export interface TShowSectionDomainModel {
@@ -105,21 +111,30 @@ export interface TCreateShowPayload {
   name: string;
   color: TPlaylistColor;
   description?: string;
+  totalDurationTargetSeconds?: number;
 }
 
 export const SCreateShowPayload = z.object({
   name: z.string().min(1),
   color: SPlaylistColor,
   description: z.string().optional(),
+  totalDurationTargetSeconds: z.number().int().positive().optional(),
 });
 
 export interface TUpdateShowPayload {
   name?: string;
   color?: TPlaylistColor;
   description?: string;
+  /** `null` clears the target, `undefined` leaves it untouched. */
+  totalDurationTargetSeconds?: number | null;
 }
 
-export const SUpdateShowPayload = SCreateShowPayload.partial();
+export const SUpdateShowPayload = z.object({
+  name: z.string().min(1).optional(),
+  color: SPlaylistColor.optional(),
+  description: z.string().optional(),
+  totalDurationTargetSeconds: z.number().int().positive().nullable().optional(),
+});
 
 export interface TAddShowSectionPayload {
   name: string;
@@ -214,11 +229,13 @@ export interface TShowSummaryViewModel extends TShowRatingSeries {
   updatedAt: number;
   lastPlayedAt?: number;
   sectionCount: number;
+  /** Planning target for the whole show, in seconds (see domain model). */
+  totalDurationTargetSeconds?: number;
 }
 
 export type TShowSectionItemView =
   | {
-      kind: 'version';
+      kind: "version";
       id: TShowSectionItemId;
       position: number;
       version: {
@@ -232,7 +249,7 @@ export type TShowSectionItemView =
       };
     }
   | {
-      kind: 'playlist';
+      kind: "playlist";
       id: TShowSectionItemId;
       position: number;
       playlist: {
@@ -260,12 +277,12 @@ export interface TShowDetailViewModel extends TShowSummaryViewModel {
 
 export function isShowVersionItem(
   item: TShowSectionItemView,
-): item is Extract<TShowSectionItemView, { kind: 'version' }> {
-  return item.kind === 'version';
+): item is Extract<TShowSectionItemView, { kind: "version" }> {
+  return item.kind === "version";
 }
 
 export function isShowPlaylistItem(
   item: TShowSectionItemView,
-): item is Extract<TShowSectionItemView, { kind: 'playlist' }> {
-  return item.kind === 'playlist';
+): item is Extract<TShowSectionItemView, { kind: "playlist" }> {
+  return item.kind === "playlist";
 }
