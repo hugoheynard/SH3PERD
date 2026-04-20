@@ -17,6 +17,7 @@ export const QUOTA_RESOURCES = [
   'track_upload',
   'track_version',
   'playlist',
+  'show_count',
   'search_tab',
   'search_tab_items',
   'master_standard',

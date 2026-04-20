@@ -1,14 +1,12 @@
 // Entry point for @sh3pherd/shared-types
 export * from './ids.js';
 
-
 export * from './api.types.js';
 export * from './metadata.types.js';
 
 //AUTH
 export * from './auth.domain.js';
 export * from './auth.dto.types.js';
-
 
 //USER
 export * from './user/user.domain.js';
@@ -35,6 +33,11 @@ export * from './music-tab-configs.js';
 
 export * from './playlists.js';
 
+/**
+ * SHOWS (artist personal performance planner)
+ */
+
+export * from './shows.js';
 
 export { SRecordMetadata } from './metadata.types.js';
 
@@ -53,17 +56,15 @@ export * from './company/company.types.js';
 export * from './company/orgnode.types.js';
 export * from './company/membership-event.types.js';
 export * from './company/company-settings.dto.js';
-export * from './company.domain.js';    // barrel re-export + deprecated aliases
-export * from './contracts.domain.types.js'
+export * from './company.domain.js'; // barrel re-export + deprecated aliases
+export * from './contracts.domain.types.js';
 export * from './contract.viewModel.types.js';
 export * from './contracts.dto.types.js';
-
 
 //INTEGRATIONS
 export * from './integrations/index.js';
 
 export { createIdSchema } from './utils/createIdSchema.js';
-
 
 //Utils
 export * from './utils/form.js';
@@ -85,7 +86,3 @@ export * from './analytics-event.types.js';
 
 //Credit Packs
 export * from './credit-pack.types.js';
-
-
-
-

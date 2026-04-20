@@ -12,8 +12,12 @@ import type { ZodOutput } from './utils/zod.types.js';
  * - `viewer` — read-only access to company data
  */
 export type TContractRole = 'owner' | 'admin' | 'artist' | 'viewer';
-export const SContractRole: ZodOutput<TContractRole> =
-  z.enum(['owner', 'admin', 'artist', 'viewer']);
+export const SContractRole: ZodOutput<TContractRole> = z.enum([
+  'owner',
+  'admin',
+  'artist',
+  'viewer',
+]);
 
 // ─── Team Roles ─────────────────────────────────────────
 /**
@@ -26,8 +30,12 @@ export const SContractRole: ZodOutput<TContractRole> =
  * - `viewer`   — read-only on node data
  */
 export type TTeamRole = 'director' | 'manager' | 'member' | 'viewer';
-export const STeamRole: ZodOutput<TTeamRole> =
-  z.enum(['director', 'manager', 'member', 'viewer']);
+export const STeamRole: ZodOutput<TTeamRole> = z.enum([
+  'director',
+  'manager',
+  'member',
+  'viewer',
+]);
 
 // ─── Permission Registry Object ─────────────────────────
 //
@@ -51,45 +59,51 @@ export const STeamRole: ZodOutput<TTeamRole> =
 export const P = {
   Company: {
     Settings: {
-      Read:   'company:settings:read',
-      Write:  'company:settings:write',
+      Read: 'company:settings:read',
+      Write: 'company:settings:write',
       Delete: 'company:settings:delete',
     },
     Members: {
-      Read:   'company:members:read',
-      Write:  'company:members:write',
+      Read: 'company:members:read',
+      Write: 'company:members:write',
       Invite: 'company:members:invite',
     },
     OrgChart: {
-      Read:   'company:orgchart:read',
-      Write:  'company:orgchart:write',
+      Read: 'company:orgchart:read',
+      Write: 'company:orgchart:write',
     },
   },
   Music: {
     Playlist: {
-      Read:   'music:playlist:read',
-      Write:  'music:playlist:write',
+      Read: 'music:playlist:read',
+      Write: 'music:playlist:write',
       Delete: 'music:playlist:delete',
-      Own:    'music:playlist:own',
+      Own: 'music:playlist:own',
     },
     Setlist: {
-      Read:   'music:setlist:read',
-      Write:  'music:setlist:write',
+      Read: 'music:setlist:read',
+      Write: 'music:setlist:write',
     },
     Library: {
-      Read:   'music:library:read',
-      Write:  'music:library:write',
+      Read: 'music:library:read',
+      Write: 'music:library:write',
     },
     Track: {
-      Read:   'music:track:read',
-      Write:  'music:track:write',
+      Read: 'music:track:read',
+      Write: 'music:track:write',
       Delete: 'music:track:delete',
+    },
+    Show: {
+      Read: 'music:show:read',
+      Write: 'music:show:write',
+      Delete: 'music:show:delete',
+      Own: 'music:show:own',
     },
   },
   Event: {
     Planning: {
-      Read:   'event:planning:read',
-      Write:  'event:planning:write',
+      Read: 'event:planning:read',
+      Write: 'event:planning:write',
     },
   },
 } as const;
@@ -110,16 +124,15 @@ type DeepLeafValues<T> = T extends string
 type TPermissionExact = DeepLeafValues<typeof P>;
 
 /** Extract all unique domain prefixes from exact permissions. */
-type ExtractDomain<S extends string> = S extends `${infer D}:${string}:${string}` ? D : never;
+type ExtractDomain<S extends string> =
+  S extends `${infer D}:${string}:${string}` ? D : never;
 type PermDomainValues = ExtractDomain<TPermissionExact>;
 
 export type TPermission =
   | TPermissionExact
   | '*'
   | `${PermDomainValues}:*`
-  | `${PermDomainValues}:*:${string}`
-  ;
-
+  | `${PermDomainValues}:*:${string}`;
 
 // ─── Permission Override ────────────────────────────────
 /**
@@ -149,8 +162,12 @@ export const SPermissionOverride = z.object({
  * - `general`       — default, no specific feature set
  */
 export type TTeamType = 'music' | 'communication' | 'event' | 'general';
-export const STeamType: ZodOutput<TTeamType> =
-  z.enum(['music', 'communication', 'event', 'general']);
+export const STeamType: ZodOutput<TTeamType> = z.enum([
+  'music',
+  'communication',
+  'event',
+  'general',
+]);
 
 // ─── Role Templates ─────────────────────────────────────
 /**
@@ -162,12 +179,7 @@ export const STeamType: ZodOutput<TTeamType> =
  */
 export const ROLE_TEMPLATES: Record<TContractRole, TPermission[]> = {
   owner: ['*'],
-  admin: [
-    'company:*',
-    'music:*:read',
-    'event:*',
-    P.Company.Members.Invite,
-  ],
+  admin: ['company:*', 'music:*:read', 'event:*', P.Company.Members.Invite],
   artist: [
     P.Music.Playlist.Own,
     P.Music.Setlist.Read,
@@ -196,8 +208,10 @@ export const ROLE_TEMPLATES: Record<TContractRole, TPermission[]> = {
  * An artist who needs company features creates a separate company account.
  */
 export type TAccountType = 'artist' | 'company';
-export const SAccountType: ZodOutput<TAccountType> =
-  z.enum(['artist', 'company']);
+export const SAccountType: ZodOutput<TAccountType> = z.enum([
+  'artist',
+  'company',
+]);
 
 // ─── Platform Roles (SaaS subscription plans) ────────────
 
@@ -205,15 +219,21 @@ export const SAccountType: ZodOutput<TAccountType> =
  * Artist plans — personal music library, playlists, audio processing.
  */
 export type TArtistPlan = 'artist_free' | 'artist_pro' | 'artist_max';
-export const SArtistPlan: ZodOutput<TArtistPlan> =
-  z.enum(['artist_free', 'artist_pro', 'artist_max']);
+export const SArtistPlan: ZodOutput<TArtistPlan> = z.enum([
+  'artist_free',
+  'artist_pro',
+  'artist_max',
+]);
 
 /**
  * Company plans — organisation, events, integrations, team management.
  */
 export type TCompanyPlan = 'company_free' | 'company_pro' | 'company_business';
-export const SCompanyPlan: ZodOutput<TCompanyPlan> =
-  z.enum(['company_free', 'company_pro', 'company_business']);
+export const SCompanyPlan: ZodOutput<TCompanyPlan> = z.enum([
+  'company_free',
+  'company_pro',
+  'company_business',
+]);
 
 /**
  * Platform-level roles representing SaaS subscription plans.
@@ -225,11 +245,14 @@ export const SCompanyPlan: ZodOutput<TCompanyPlan> =
  * - Company: company_free → company_pro → company_business
  */
 export type TPlatformRole = TArtistPlan | TCompanyPlan;
-export const SPlatformRole: ZodOutput<TPlatformRole> =
-  z.enum([
-    'artist_free', 'artist_pro', 'artist_max',
-    'company_free', 'company_pro', 'company_business',
-  ]);
+export const SPlatformRole: ZodOutput<TPlatformRole> = z.enum([
+  'artist_free',
+  'artist_pro',
+  'artist_max',
+  'company_free',
+  'company_pro',
+  'company_business',
+]);
 
 /**
  * Permission templates for platform roles.
@@ -255,13 +278,8 @@ export const PLATFORM_ROLE_TEMPLATES: Record<TPlatformRole, TPermission[]> = {
     P.Music.Playlist.Delete,
     P.Music.Playlist.Own,
   ],
-  artist_pro: [
-    'music:*',
-  ],
-  artist_max: [
-    'music:*',
-    'event:*',
-  ],
+  artist_pro: ['music:*'],
+  artist_max: ['music:*', 'event:*'],
 
   // ── Company plans ─────────────────────────────────────
   company_free: [
@@ -281,9 +299,7 @@ export const PLATFORM_ROLE_TEMPLATES: Record<TPlatformRole, TPermission[]> = {
     P.Music.Playlist.Delete,
     P.Music.Playlist.Own,
   ],
-  company_business: [
-    '*',
-  ],
+  company_business: ['*'],
 } as const;
 
 /**
