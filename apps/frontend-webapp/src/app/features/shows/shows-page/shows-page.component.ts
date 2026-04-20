@@ -17,6 +17,7 @@ import { InlineConfirmComponent } from '../../../shared/inline-confirm/inline-co
 import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
 import { RatingSparklineComponent } from '../../../shared/rating-sparkline/rating-sparkline.component';
 import { ShowDetailSidePanelComponent } from '../show-detail-side-panel/show-detail-side-panel.component';
+import { NewShowPopoverComponent } from '../new-show-popover/new-show-popover.component';
 
 /** Four rating axes rendered on every show card — mirrors the playlist
  *  card layout so the two sibling features stay visually coherent. The
@@ -80,9 +81,7 @@ export class ShowsPageComponent implements OnInit {
   }
 
   onCreate(): void {
-    const name = window.prompt('Show name')?.trim();
-    if (!name) return;
-    this.mutations.createShow({ name, color: 'indigo' });
+    this.layout.setPopover(NewShowPopoverComponent);
   }
 
   /** Card click → open the show in the docked side panel. The main

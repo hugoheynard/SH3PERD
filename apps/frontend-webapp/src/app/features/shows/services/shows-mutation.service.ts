@@ -44,6 +44,7 @@ export class ShowsMutationService {
           updatedAt: show.updatedAt,
           lastPlayedAt: show.lastPlayedAt,
           sectionCount: 1,
+          totalDurationTargetSeconds: show.totalDurationTargetSeconds,
           trackCount: 0,
           totalDurationSeconds: 0,
           meanMastery: null,

@@ -101,6 +101,73 @@
           }
         </div>
 
+        <!-- ── Show-level target + fill % ──────────────── -->
+        <div
+          class="show-header__target"
+          [attr.data-state]="showFillState(show)"
+        >
+          <div class="show-header__target-head">
+            <span class="show-header__target-label">
+              <sh3-icon name="clock" [size]="11" />
+              <span>Total target</span>
+            </span>
+            @if (editingShowTarget()) {
+              <span class="show-header__target-edit">
+                <input
+                  class="show-header__target-input"
+                  type="number"
+                  inputmode="numeric"
+                  min="1"
+                  step="5"
+                  [ngModel]="showTargetMinutesDraft()"
+                  (ngModelChange)="showTargetMinutesDraft.set($event)"
+                  (blur)="commitEditShowTarget()"
+                  (keydown)="onShowTargetKey($event)"
+                  autofocus
+                  aria-label="Total show duration target in minutes"
+                />
+                <span class="show-header__target-unit">min</span>
+              </span>
+            } @else if (showTargetSeconds(show); as targetS) {
+              <button
+                type="button"
+                class="show-header__target-value"
+                (click)="startEditShowTarget()"
+                title="Click to edit"
+              >
+                {{ formatDuration(targetS) }}
+              </button>
+            } @else {
+              <button
+                type="button"
+                class="show-header__target-set"
+                (click)="startEditShowTarget()"
+              >
+                + Set target
+              </button>
+            }
+            @if (showFillPercent(show); as pct) {
+              <span class="show-header__target-actual">
+                {{ formatDuration(show.totalDurationSeconds) }}
+                <span class="show-header__target-pct">· {{ pct }}</span>
+              </span>
+            }
+          </div>
+          @if (showTargetSeconds(show); as _t) {
+            <div
+              class="show-header__target-bar"
+              role="progressbar"
+              [attr.aria-valuenow]="showFillPercent(show)"
+              [attr.data-state]="showFillState(show)"
+            >
+              <span
+                class="show-header__target-bar-fill"
+                [style.width]="showFillWidth(show)"
+              ></span>
+            </div>
+          }
+        </div>
+
         <div class="rating-row" aria-label="Rating shape + mean">
           @for (axis of axes; track axis.label) {
             @let mean = meanFor(show, axis);
