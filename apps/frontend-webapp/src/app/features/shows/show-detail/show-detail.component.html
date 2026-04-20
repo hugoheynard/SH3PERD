@@ -9,13 +9,26 @@
 
       <div class="show-header__content">
         <div class="show-header__lead">
-          <h1
-            class="show-header__name"
-            (dblclick)="onRenameShow()"
-            title="Double-click to rename"
-          >
-            {{ show.name }}
-          </h1>
+          @if (editingShowName()) {
+            <input
+              class="show-header__name-input"
+              type="text"
+              [ngModel]="showNameDraft()"
+              (ngModelChange)="showNameDraft.set($event)"
+              (blur)="commitRenameShow()"
+              (keydown)="onShowNameKey($event)"
+              autofocus
+              aria-label="Show name"
+            />
+          } @else {
+            <h1
+              class="show-header__name"
+              (dblclick)="startRenameShow()"
+              title="Double-click to rename"
+            >
+              {{ show.name }}
+            </h1>
+          }
           @if (show.description) {
             <p class="show-header__desc">{{ show.description }}</p>
           }
@@ -26,7 +39,7 @@
             icon="edit"
             size="sm"
             tooltip="Rename show"
-            (clicked)="onRenameShow()"
+            (clicked)="startRenameShow()"
           />
           <sh3-button-icon
             icon="check-circle"
@@ -88,15 +101,22 @@
           }
         </div>
 
-        <div class="rating-row" aria-label="Mean rating by axis">
+        <div class="rating-row" aria-label="Rating shape + mean">
           @for (axis of axes; track axis.label) {
             @let mean = meanFor(show, axis);
-            @let level = levelFor(mean);
-            <div class="rating" [class.rating--empty]="mean === null">
-              <span class="rating__label">{{ axis.label }}</span>
-              <span class="rating__value" [attr.data-level]="level">{{
-                displayMean(mean)
-              }}</span>
+            <div
+              class="rating-group"
+              [class.rating-group--empty]="mean === null"
+            >
+              <div class="rating-head">
+                <span class="rating-label">{{ axis.label }}</span>
+                <span class="rating-value">{{ displayMean(mean) }}</span>
+              </div>
+              <app-rating-sparkline
+                class="rating-sparkline"
+                [series]="seriesFor(show, axis)"
+                [accent]="axis.accent"
+              />
             </div>
           }
         </div>
@@ -116,12 +136,27 @@
         >
           @if (!singleMode()) {
             <header class="section__head">
-              <div
-                class="section__title-block"
-                (dblclick)="onRenameSection(section)"
-                title="Double-click to rename"
-              >
-                <h3 class="section__name">{{ section.name }}</h3>
+              <div class="section__title-block">
+                @if (editingSectionId() === section.id) {
+                  <input
+                    class="section__name-input"
+                    type="text"
+                    [ngModel]="sectionNameDraft()"
+                    (ngModelChange)="sectionNameDraft.set($event)"
+                    (blur)="commitRenameSection(section)"
+                    (keydown)="onSectionNameKey($event, section)"
+                    autofocus
+                    aria-label="Section name"
+                  />
+                } @else {
+                  <h3
+                    class="section__name"
+                    (dblclick)="startRenameSection(section)"
+                    title="Double-click to rename"
+                  >
+                    {{ section.name }}
+                  </h3>
+                }
                 @if (formatTarget(section.target); as t) {
                   <sh3-badge [content]="t" variant="info" radius="square" />
                 }
@@ -131,7 +166,7 @@
                   icon="edit"
                   size="xs"
                   tooltip="Rename section"
-                  (clicked)="onRenameSection(section)"
+                  (clicked)="startRenameSection(section)"
                 />
                 <sh3-button-icon
                   icon="check-circle"
@@ -197,44 +232,49 @@
           }
 
           <footer class="section__stats">
-            <span class="meta-chip">
-              <sh3-icon name="music-note" [size]="11" />
-              <span class="meta-value">{{ section.trackCount }}</span>
-              <span class="meta-label"
-                >track{{ section.trackCount !== 1 ? "s" : "" }}</span
-              >
-            </span>
-            @if (section.totalDurationSeconds > 0) {
+            <div class="section__meta">
               <span class="meta-chip">
-                <sh3-icon name="clock" [size]="11" />
-                <span class="meta-value">{{
-                  formatDuration(section.totalDurationSeconds)
-                }}</span>
+                <sh3-icon name="music-note" [size]="11" />
+                <span class="meta-value">{{ section.trackCount }}</span>
+                <span class="meta-label"
+                  >track{{ section.trackCount !== 1 ? "s" : "" }}</span
+                >
               </span>
-            }
+              @if (section.totalDurationSeconds > 0) {
+                <span class="meta-chip">
+                  <sh3-icon name="clock" [size]="11" />
+                  <span class="meta-value">{{
+                    formatDuration(section.totalDurationSeconds)
+                  }}</span>
+                </span>
+              }
+              @if (section.lastPlayedAt) {
+                <span class="meta-chip meta-chip--played">
+                  <sh3-icon name="completed" [size]="11" />
+                  <span>{{ section.lastPlayedAt | date: "short" }}</span>
+                </span>
+              }
+            </div>
 
             <div class="section__ratings">
               @for (axis of axes; track axis.label) {
                 @let mean = meanFor(section, axis);
-                @let level = levelFor(mean);
                 <div
-                  class="rating rating--compact"
-                  [class.rating--empty]="mean === null"
+                  class="rating-group rating-group--compact"
+                  [class.rating-group--empty]="mean === null"
                 >
-                  <span class="rating__label">{{ axis.label }}</span>
-                  <span class="rating__value" [attr.data-level]="level">{{
-                    displayMean(mean)
-                  }}</span>
+                  <div class="rating-head">
+                    <span class="rating-label">{{ axis.label }}</span>
+                    <span class="rating-value">{{ displayMean(mean) }}</span>
+                  </div>
+                  <app-rating-sparkline
+                    class="rating-sparkline rating-sparkline--compact"
+                    [series]="seriesFor(section, axis)"
+                    [accent]="axis.accent"
+                  />
                 </div>
               }
             </div>
-
-            @if (section.lastPlayedAt) {
-              <span class="meta-chip meta-chip--played">
-                <sh3-icon name="completed" [size]="11" />
-                <span>{{ section.lastPlayedAt | date: "short" }}</span>
-              </span>
-            }
           </footer>
         </section>
       }

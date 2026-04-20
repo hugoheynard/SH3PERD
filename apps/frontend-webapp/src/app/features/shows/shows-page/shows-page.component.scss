@@ -68,7 +68,7 @@ $colors: (
 
 .shows-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: var(--gap-md);
 }
 
@@ -104,7 +104,6 @@ $colors: (
     outline-offset: 2px;
   }
 
-  // Per-color hover accent — border + subtle glow
   @each $name, $color in $colors {
     &[data-color='#{"" + $name}']:hover {
       border-color: rgba($color, 0.4);
@@ -201,8 +200,8 @@ $colors: (
   &__ratings {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--gap-sm);
-    padding-top: 10px;
+    gap: 10px var(--gap-sm);
+    padding-top: 8px;
     border-top: 1px solid var(--border-light);
   }
 
@@ -246,34 +245,51 @@ $colors: (
   }
 }
 
-/* ── Rating tile (MST / NRG / EFF / QTY) ───────────────── */
+/* ── Rating group (per axis, mirrors playlist-card) ────── */
 
-.rating {
+.rating-group {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
 
-  &__label {
-    @include rating-label;
-  }
-
-  &__value {
-    @include rating-val;
-    min-width: 30px;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-
-    &:not([data-level]) {
-      background: var(--surface-subtle);
+  &--empty {
+    .rating-label,
+    .rating-value {
+      opacity: 0.5;
+    }
+    .rating-value {
       color: var(--text-faded);
     }
+    .rating-sparkline {
+      opacity: 0.35;
+    }
   }
+}
 
-  &--empty {
-    opacity: 0.5;
-  }
+.rating-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.rating-label {
+  @include rating-label;
+}
+
+.rating-value {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.rating-sparkline {
+  display: block;
+  height: 22px;
+  margin-top: 1px;
 }
 
 /* ── Mobile ────────────────────────────────────────────── */

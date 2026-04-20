@@ -105,15 +105,22 @@
               }
             </div>
 
-            <div class="show-card__ratings" aria-label="Mean rating by axis">
+            <div class="show-card__ratings" aria-label="Rating shape + mean">
               @for (axis of axes; track axis.label) {
                 @let mean = meanFor(show, axis);
-                @let level = levelFor(mean);
-                <div class="rating" [class.rating--empty]="mean === null">
-                  <span class="rating__label">{{ axis.label }}</span>
-                  <span class="rating__value" [attr.data-level]="level">{{
-                    displayMean(mean)
-                  }}</span>
+                <div
+                  class="rating-group"
+                  [class.rating-group--empty]="mean === null"
+                >
+                  <div class="rating-head">
+                    <span class="rating-label">{{ axis.label }}</span>
+                    <span class="rating-value">{{ displayMean(mean) }}</span>
+                  </div>
+                  <app-rating-sparkline
+                    class="rating-sparkline"
+                    [series]="seriesFor(show, axis)"
+                    [accent]="axis.accent"
+                  />
                 </div>
               }
             </div>

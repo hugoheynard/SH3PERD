@@ -5,8 +5,10 @@ import {
   effect,
   inject,
   input,
+  signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import type {
   TMusicVersionId,
   TPlaylistId,
@@ -25,22 +27,41 @@ import { BadgeComponent } from '../../../shared/badge/badge.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { InlineConfirmComponent } from '../../../shared/inline-confirm/inline-confirm.component';
 import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
+import { RatingSparklineComponent } from '../../../shared/rating-sparkline/rating-sparkline.component';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
 
-/** Four rating axes rendered on the show header and every section stat
- *  strip — mirrors the playlist / shows-page cards so the feature stays
- *  visually coherent. */
+/** Four rating axes with per-axis accent colour — the shared rating
+ *  sparkline renders a smoothed series tinted with these so every card,
+ *  detail header and section footer reads with the same grammar. */
 const RATING_AXES = [
-  { label: 'MST', meanKey: 'meanMastery' },
-  { label: 'NRG', meanKey: 'meanEnergy' },
-  { label: 'EFF', meanKey: 'meanEffort' },
-  { label: 'QTY', meanKey: 'meanQuality' },
+  {
+    label: 'MST',
+    accent: 'var(--color-rating-high, #4ade80)',
+    meanKey: 'meanMastery',
+    seriesKey: 'masterySeries',
+  },
+  {
+    label: 'NRG',
+    accent: 'var(--color-rating-max, #fbbf24)',
+    meanKey: 'meanEnergy',
+    seriesKey: 'energySeries',
+  },
+  {
+    label: 'EFF',
+    accent: 'var(--color-rating-medium, #38bdf8)',
+    meanKey: 'meanEffort',
+    seriesKey: 'effortSeries',
+  },
+  {
+    label: 'QTY',
+    accent: 'var(--color-rating-low, #a78bfa)',
+    meanKey: 'meanQuality',
+    seriesKey: 'qualitySeries',
+  },
 ] as const;
 
 type RatingAxis = (typeof RATING_AXES)[number];
-
-type RatingLevel = 'low' | 'medium' | 'high' | 'max' | null;
 
 /**
  * Body of the show detail view — used by both the routed page
@@ -54,12 +75,14 @@ type RatingLevel = 'low' | 'medium' | 'high' | 'max' | null;
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
+    FormsModule,
     ButtonComponent,
     ButtonIconComponent,
     BadgeComponent,
     IconComponent,
     InlineConfirmComponent,
     LoadingStateComponent,
+    RatingSparklineComponent,
     DndDropZoneDirective,
   ],
   templateUrl: './show-detail.component.html',
@@ -79,6 +102,16 @@ export class ShowDetailComponent {
 
   protected readonly axes = RATING_AXES;
 
+  /** Inline-edit state — the show name is replaced by an <input> when
+   *  set. Switching id clears the draft so reopening a different show
+   *  in the side panel never inherits a stale rename. */
+  protected readonly editingShowName = signal(false);
+  protected readonly showNameDraft = signal('');
+
+  /** Inline-edit state for section names (one at a time). */
+  protected readonly editingSectionId = signal<TShowSectionId | null>(null);
+  protected readonly sectionNameDraft = signal('');
+
   constructor() {
     // Ensure the `playlist` drag preview is registered before the first
     // drop happens. Service is `providedIn: 'root'` and idempotent — no-op
@@ -94,16 +127,75 @@ export class ShowDetailComponent {
       } else {
         this.state.clearDetail();
       }
+      // Drop any in-flight rename when the shown entity changes.
+      this.editingShowName.set(false);
+      this.editingSectionId.set(null);
     });
   }
 
-  onRenameShow(): void {
+  // ── Show rename (inline) ─────────────────────────────
+
+  startRenameShow(): void {
     const show = this.detail();
     if (!show) return;
-    const name = window.prompt('Show name', show.name)?.trim();
+    this.showNameDraft.set(show.name);
+    this.editingShowName.set(true);
+  }
+
+  commitRenameShow(): void {
+    const show = this.detail();
+    if (!show) return;
+    const name = this.showNameDraft().trim();
+    this.editingShowName.set(false);
     if (!name || name === show.name) return;
     this.mutations.updateShow(show.id, { name });
   }
+
+  cancelRenameShow(): void {
+    this.editingShowName.set(false);
+  }
+
+  onShowNameKey(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.commitRenameShow();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.cancelRenameShow();
+    }
+  }
+
+  // ── Section rename (inline) ──────────────────────────
+
+  startRenameSection(section: TShowSectionViewModel): void {
+    this.sectionNameDraft.set(section.name);
+    this.editingSectionId.set(section.id);
+  }
+
+  commitRenameSection(section: TShowSectionViewModel): void {
+    const show = this.detail();
+    if (!show) return;
+    const name = this.sectionNameDraft().trim();
+    this.editingSectionId.set(null);
+    if (!name || name === section.name) return;
+    this.mutations.updateSection(show.id, section.id, { name });
+  }
+
+  cancelRenameSection(): void {
+    this.editingSectionId.set(null);
+  }
+
+  onSectionNameKey(event: KeyboardEvent, section: TShowSectionViewModel): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.commitRenameSection(section);
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.cancelRenameSection();
+    }
+  }
+
+  // ── Existing actions ─────────────────────────────────
 
   onDuplicate(): void {
     const show = this.detail();
@@ -137,14 +229,6 @@ export class ShowDetailComponent {
       ?.trim();
     if (!name) return;
     this.mutations.addSection(show.id, name);
-  }
-
-  onRenameSection(section: TShowSectionViewModel): void {
-    const show = this.detail();
-    if (!show) return;
-    const name = window.prompt('Section name', section.name)?.trim();
-    if (!name || name === section.name) return;
-    this.mutations.updateSection(show.id, section.id, { name });
   }
 
   onRemoveSection(section: TShowSectionViewModel): void {
@@ -234,7 +318,8 @@ export class ShowDetailComponent {
     return `${target.track_count} song${target.track_count > 1 ? 's' : ''}`;
   }
 
-  /** Read a mean from any rating-bearing view model (show or section). */
+  // ── Rating series helpers ────────────────────────────
+
   meanFor(
     target: TShowSummaryViewModel | TShowSectionViewModel,
     axis: RatingAxis,
@@ -242,17 +327,14 @@ export class ShowDetailComponent {
     return target[axis.meanKey];
   }
 
-  displayMean(mean: number | null): string {
-    return mean === null ? '—' : mean.toFixed(1);
+  seriesFor(
+    target: TShowSummaryViewModel | TShowSectionViewModel,
+    axis: RatingAxis,
+  ): (number | null)[] {
+    return target[axis.seriesKey];
   }
 
-  /** Project a 1–4 mean onto the rating colour scale (low / medium /
-   *  high / max) — same thresholds as the shows list page. */
-  levelFor(mean: number | null): RatingLevel {
-    if (mean === null) return null;
-    if (mean < 1.75) return 'low';
-    if (mean < 2.5) return 'medium';
-    if (mean < 3.5) return 'high';
-    return 'max';
+  displayMean(mean: number | null): string {
+    return mean === null ? '—' : mean.toFixed(1);
   }
 }
