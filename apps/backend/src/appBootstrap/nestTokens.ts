@@ -23,6 +23,10 @@ export const CONTRACT_SCOPED_GUARD = Symbol('CONTRACT_SCOPED_GUARD');
 export const PLAYLIST_REPO = Symbol('PLAYLIST_REPO');
 export const PLAYLIST_TRACK_REPO = Symbol('PLAYLIST_TRACK_REPO');
 
+// SHOWS
+export const SHOW_REPO = Symbol('SHOW_REPO');
+export const SHOW_SECTION_REPO = Symbol('SHOW_SECTION_REPO');
+
 // PLATFORM CONTRACT
 export const PLATFORM_CONTRACT_REPO = Symbol('PLATFORM_CONTRACT_REPO');
 

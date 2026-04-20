@@ -99,6 +99,8 @@ import {
   PLAYLIST_TRACK_REPO,
   ANALYTICS_EVENT_REPO,
   CREDIT_PURCHASE_REPO,
+  SHOW_REPO,
+  SHOW_SECTION_REPO,
 } from '../nestTokens.js';
 import { INTEGRATION_CREDENTIALS_REPO } from '../../integrations/integrations.tokens.js';
 import {
@@ -109,6 +111,14 @@ import {
   type IPlaylistTrackRepository,
   PlaylistTrackMongoRepository,
 } from '../../playlists-v2/repositories/PlaylistTrackRepository.js';
+import {
+  type IShowRepository,
+  ShowMongoRepository,
+} from '../../shows/repositories/ShowRepository.js';
+import {
+  type IShowSectionRepository,
+  ShowSectionMongoRepository,
+} from '../../shows/repositories/ShowSectionRepository.js';
 
 // --- HELPERS ---
 /**
@@ -228,6 +238,12 @@ export type TCoreRepositories = {
       PlaylistTrackMongoRepository,
       'playlist_tracks',
     ),
+    mongoRepoProvider<IShowRepository>(SHOW_REPO, ShowMongoRepository, 'shows'),
+    mongoRepoProvider<IShowSectionRepository>(
+      SHOW_SECTION_REPO,
+      ShowSectionMongoRepository,
+      'show_sections',
+    ),
     mongoRepoProvider<ICompanyRepository>(COMPANY_REPO, CompanyMongoRepository, 'companies'),
     mongoRepoProvider<IOrgNodeRepository>(ORG_NODE_REPO, OrgNodeMongoRepository, 'org_nodes'),
     mongoRepoProvider<IOrgMembershipEventRepository>(
@@ -272,6 +288,8 @@ export type TCoreRepositories = {
     MUSIC_TAB_CONFIGS_REPO,
     PLAYLIST_REPO,
     PLAYLIST_TRACK_REPO,
+    SHOW_REPO,
+    SHOW_SECTION_REPO,
     COMPANY_REPO,
     ORG_NODE_REPO,
     ORG_MEMBERSHIP_EVENT_REPO,
