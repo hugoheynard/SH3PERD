@@ -52,6 +52,15 @@
 }
 
 .card {
+  // Reset the native <button> so the rest of the styles can treat this
+  // like a regular card (the element switched from <a> to <button> so
+  // the whole tile acts as the "open in side panel" trigger without
+  // taking over the nested action buttons).
+  appearance: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
@@ -68,6 +77,11 @@
   &:hover {
     border-color: var(--accent-color);
     transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
   }
 
   &__head {

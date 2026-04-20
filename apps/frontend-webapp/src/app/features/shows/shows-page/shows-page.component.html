@@ -22,9 +22,10 @@
   } @else {
     <div class="grid">
       @for (show of state.summaries(); track trackById($index, show)) {
-        <a
+        <button
+          type="button"
           class="card card--{{ show.color }}"
-          [routerLink]="['/app/shows', show.id]"
+          (click)="onOpenShow(show)"
         >
           <div class="card__head">
             <span class="card__color-dot"></span>
@@ -101,7 +102,7 @@
               Last played {{ show.lastPlayedAt | date: "mediumDate" }}
             </div>
           }
-        </a>
+        </button>
       }
     </div>
   }

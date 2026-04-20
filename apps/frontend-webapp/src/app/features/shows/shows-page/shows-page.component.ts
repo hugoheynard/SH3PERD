@@ -5,30 +5,26 @@ import {
   type OnInit,
 } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import type { TShowId, TShowSummaryViewModel } from '@sh3pherd/shared-types';
+import { LayoutService } from '../../../core/services/layout.service';
 import { ShowsStateService } from '../services/shows-state.service';
 import { ShowsMutationService } from '../services/shows-mutation.service';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
+import { ShowDetailSidePanelComponent } from '../show-detail-side-panel/show-detail-side-panel.component';
 
 @Component({
   selector: 'app-shows-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterLink,
-    DatePipe,
-    DecimalPipe,
-    EmptyStateComponent,
-    LoadingStateComponent,
-  ],
+  imports: [DatePipe, DecimalPipe, EmptyStateComponent, LoadingStateComponent],
   templateUrl: './shows-page.component.html',
   styleUrl: './shows-page.component.scss',
 })
 export class ShowsPageComponent implements OnInit {
   protected readonly state = inject(ShowsStateService);
   private readonly mutations = inject(ShowsMutationService);
+  private readonly layout = inject(LayoutService);
 
   ngOnInit(): void {
     this.state.loadSummaries();
@@ -38,6 +34,15 @@ export class ShowsPageComponent implements OnInit {
     const name = window.prompt('Show name')?.trim();
     if (!name) return;
     this.mutations.createShow({ name, color: 'indigo' });
+  }
+
+  /** Card click → open the show in the docked side panel. The main
+   *  area stays scrollable so the user can switch to Music Library /
+   *  Playlists and drag tracks over. */
+  onOpenShow(show: TShowSummaryViewModel): void {
+    this.layout.setRightPanel(ShowDetailSidePanelComponent, {
+      showId: show.id,
+    });
   }
 
   onDuplicate(event: Event, show: TShowSummaryViewModel): void {
