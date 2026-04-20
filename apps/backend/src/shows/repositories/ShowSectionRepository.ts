@@ -80,12 +80,12 @@ export class ShowSectionMongoRepository
   ): Promise<boolean> {
     const { target, lastPlayedAt, ...rest } = patch;
     const update: UpdateFilter<SectionRecord> = {};
-    const set = { ...rest } as Record<string, unknown>;
-    const unset: Record<string, ''> = {};
+    const set: Record<string, unknown> = { ...rest };
+    const unset: { target?: ''; lastPlayedAt?: '' } = {};
     if (target === null) unset.target = '';
-    else if (target !== undefined) set.target = target;
+    else if (target !== undefined) set['target'] = target;
     if (lastPlayedAt === null) unset.lastPlayedAt = '';
-    else if (lastPlayedAt !== undefined) set.lastPlayedAt = lastPlayedAt;
+    else if (lastPlayedAt !== undefined) set['lastPlayedAt'] = lastPlayedAt;
     if (Object.keys(set).length) update.$set = set as UpdateFilter<SectionRecord>['$set'];
     if (Object.keys(unset).length) update.$unset = unset as UpdateFilter<SectionRecord>['$unset'];
     if (!update.$set && !update.$unset) return true;
