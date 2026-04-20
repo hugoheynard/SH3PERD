@@ -31,6 +31,7 @@ export class CreateShowHandler implements ICommandHandler<CreateShowCommand, TSh
       name: cmd.payload.name,
       color: cmd.payload.color,
       description: cmd.payload.description,
+      totalDurationTargetSeconds: cmd.payload.totalDurationTargetSeconds,
     });
     await this.aggregateRepo.save(aggregate);
     await this.quota.recordUsage(cmd.actorId, 'show_count');

@@ -50,6 +50,9 @@ export class ShowEntity extends Entity<TShowDomainModel> {
   get lastPlayedAt(): number | undefined {
     return this.props.lastPlayedAt;
   }
+  get totalDurationTargetSeconds(): number | undefined {
+    return this.props.totalDurationTargetSeconds;
+  }
 
   // ── queries ─────────────────────────────────────────────
 
@@ -78,6 +81,21 @@ export class ShowEntity extends Entity<TShowDomainModel> {
 
   markPlayed(playedAt: number = Date.now()): void {
     this.props.lastPlayedAt = playedAt;
+    this.touch();
+  }
+
+  /** Set (or clear) the whole-show duration target. `undefined` removes
+   *  the target, a positive integer (seconds) sets it. Negative or zero
+   *  values are rejected — use `undefined` to clear. */
+  setTotalDurationTarget(seconds: number | undefined): void {
+    if (seconds === undefined) {
+      this.props.totalDurationTargetSeconds = undefined;
+    } else {
+      if (!Number.isFinite(seconds) || seconds <= 0) {
+        throw new Error('SHOW_TOTAL_DURATION_TARGET_INVALID');
+      }
+      this.props.totalDurationTargetSeconds = Math.floor(seconds);
+    }
     this.touch();
   }
 

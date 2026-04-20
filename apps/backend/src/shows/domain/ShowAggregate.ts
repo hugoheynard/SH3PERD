@@ -56,6 +56,7 @@ export class ShowAggregate extends AggregateRoot {
     color: TPlaylistColor;
     description?: string;
     defaultSectionName?: string;
+    totalDurationTargetSeconds?: number;
   }): ShowAggregate {
     const showId = `show_${randomUUID()}` as TShowId;
     const show = new ShowEntity({
@@ -64,6 +65,7 @@ export class ShowAggregate extends AggregateRoot {
       name: params.name,
       color: params.color,
       description: params.description,
+      totalDurationTargetSeconds: params.totalDurationTargetSeconds,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -126,6 +128,11 @@ export class ShowAggregate extends AggregateRoot {
   changeColor(actorId: TUserId, color: TPlaylistColor): void {
     this.policy.ensureOwnedBy(actorId, this.show);
     this.show.changeColor(color);
+  }
+
+  setTotalDurationTarget(actorId: TUserId, seconds: number | undefined): void {
+    this.policy.ensureOwnedBy(actorId, this.show);
+    this.show.setTotalDurationTarget(seconds);
   }
 
   markShowPlayed(actorId: TUserId, playedAt: number = Date.now()): void {
@@ -279,6 +286,7 @@ export class ShowAggregate extends AggregateRoot {
       name: `${this.show.name} (copy)`,
       color: this.show.color,
       description: this.show.description,
+      totalDurationTargetSeconds: this.show.totalDurationTargetSeconds,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });

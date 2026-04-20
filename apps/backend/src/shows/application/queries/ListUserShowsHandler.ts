@@ -102,6 +102,7 @@ export class ListUserShowsHandler implements IQueryHandler<
         updatedAt: s.show.toDomain.updatedAt,
         lastPlayedAt: s.show.lastPlayedAt,
         sectionCount: sections.length,
+        totalDurationTargetSeconds: s.show.totalDurationTargetSeconds,
         ...computeRatingSeries(showVersions),
       };
     });

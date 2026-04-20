@@ -14,6 +14,7 @@ export class ShowPayload {
   @ApiProperty({ example: 1776000000000 }) createdAt!: number;
   @ApiProperty({ example: 1776000000000 }) updatedAt!: number;
   @ApiProperty({ required: false, example: 1776100000000 }) lastPlayedAt?: number;
+  @ApiProperty({ required: false, example: 5400 }) totalDurationTargetSeconds?: number;
 }
 
 // ─── Section target (discriminated) ─────────────────────
@@ -53,6 +54,7 @@ export class ShowSummaryPayload extends RatingSeriesFields {
   @ApiProperty({ example: 1776000000000 }) updatedAt!: number;
   @ApiProperty({ required: false, example: 1776100000000 }) lastPlayedAt?: number;
   @ApiProperty({ example: 3 }) sectionCount!: number;
+  @ApiProperty({ required: false, example: 5400 }) totalDurationTargetSeconds?: number;
 }
 
 // ─── Detail / Section / Item views ──────────────────────
@@ -126,5 +128,6 @@ export class ShowDetailPayload extends RatingSeriesFields {
   @ApiProperty({ example: 1776000000000 }) updatedAt!: number;
   @ApiProperty({ required: false }) lastPlayedAt?: number;
   @ApiProperty({ example: 3 }) sectionCount!: number;
+  @ApiProperty({ required: false, example: 5400 }) totalDurationTargetSeconds?: number;
   @ApiProperty({ type: () => [ShowSectionViewPayload] }) sections!: ShowSectionViewPayload[];
 }

@@ -147,6 +147,7 @@ export class GetShowDetailHandler implements IQueryHandler<
       updatedAt: show.updatedAt,
       lastPlayedAt: show.lastPlayedAt,
       sectionCount: sections.length,
+      totalDurationTargetSeconds: show.totalDurationTargetSeconds,
       sections,
       ...computeRatingSeries(showVersions),
     };
