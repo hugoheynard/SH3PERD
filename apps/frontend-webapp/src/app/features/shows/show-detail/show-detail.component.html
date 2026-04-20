@@ -1,68 +1,109 @@
 @if (loading() && !detail()) {
-  <sh3-loading />
+  <sh3-loading message="Loading show…" />
 } @else if (detail(); as show) {
   <div class="show-detail">
-    <header class="show-header show-header--{{ show.color }}">
-      <div class="show-header__title">
-        <span class="show-header__dot"></span>
-        <h1 (dblclick)="onRenameShow()">{{ show.name }}</h1>
-        @if (show.description) {
-          <p class="show-header__desc">{{ show.description }}</p>
-        }
+    <!-- ── Header ─────────────────────────────────────── -->
+
+    <header class="show-header" [attr.data-color]="show.color">
+      <span class="show-header__stripe" [attr.data-color]="show.color"></span>
+
+      <div class="show-header__content">
+        <div class="show-header__lead">
+          <h1
+            class="show-header__name"
+            (dblclick)="onRenameShow()"
+            title="Double-click to rename"
+          >
+            {{ show.name }}
+          </h1>
+          @if (show.description) {
+            <p class="show-header__desc">{{ show.description }}</p>
+          }
+        </div>
+
+        <div class="show-header__actions">
+          <sh3-button-icon
+            icon="edit"
+            size="sm"
+            tooltip="Rename show"
+            (clicked)="onRenameShow()"
+          />
+          <sh3-button-icon
+            icon="check-circle"
+            size="sm"
+            tooltip="Mark show played"
+            (clicked)="onMarkShowPlayed()"
+          />
+          <sh3-button-icon
+            icon="add-doc"
+            size="sm"
+            tooltip="Duplicate show"
+            (clicked)="onDuplicate()"
+          />
+          <sh3-inline-confirm
+            mode="toggle"
+            confirmLabel="Delete?"
+            size="sm"
+            (confirmed)="onDelete()"
+          >
+            <sh3-button-icon
+              icon="bin"
+              size="sm"
+              tone="critical"
+              tooltip="Delete show"
+            />
+          </sh3-inline-confirm>
+        </div>
       </div>
-      <div class="show-header__actions">
-        <button class="btn btn--ghost" (click)="onMarkShowPlayed()">
-          Mark show played
-        </button>
-        <button class="btn btn--ghost" (click)="onDuplicate()">
-          Duplicate
-        </button>
-        <button class="btn btn--ghost btn--danger" (click)="onDelete()">
-          Delete
-        </button>
+
+      <div class="show-header__stats">
+        <div class="stat-group">
+          <span class="meta-chip">
+            <sh3-icon name="list" [size]="12" />
+            <span class="meta-value">{{ show.sections.length }}</span>
+            <span class="meta-label"
+              >section{{ show.sections.length !== 1 ? "s" : "" }}</span
+            >
+          </span>
+          <span class="meta-chip">
+            <sh3-icon name="music-note" [size]="12" />
+            <span class="meta-value">{{ show.trackCount }}</span>
+            <span class="meta-label"
+              >track{{ show.trackCount !== 1 ? "s" : "" }}</span
+            >
+          </span>
+          @if (show.totalDurationSeconds > 0) {
+            <span class="meta-chip">
+              <sh3-icon name="clock" [size]="12" />
+              <span class="meta-value">{{
+                formatDuration(show.totalDurationSeconds)
+              }}</span>
+            </span>
+          }
+          @if (show.lastPlayedAt) {
+            <span class="meta-chip meta-chip--played">
+              <sh3-icon name="completed" [size]="12" />
+              <span>Played {{ show.lastPlayedAt | date: "mediumDate" }}</span>
+            </span>
+          }
+        </div>
+
+        <div class="rating-row" aria-label="Mean rating by axis">
+          @for (axis of axes; track axis.label) {
+            @let mean = meanFor(show, axis);
+            @let level = levelFor(mean);
+            <div class="rating" [class.rating--empty]="mean === null">
+              <span class="rating__label">{{ axis.label }}</span>
+              <span class="rating__value" [attr.data-level]="level">{{
+                displayMean(mean)
+              }}</span>
+            </div>
+          }
+        </div>
       </div>
     </header>
 
-    <div class="show-stats">
-      <span
-        >{{ show.sections.length }} section{{
-          show.sections.length > 1 ? "s" : ""
-        }}</span
-      >
-      <span
-        >{{ show.trackCount }} track{{ show.trackCount > 1 ? "s" : "" }}</span
-      >
-      @if (show.totalDurationSeconds > 0) {
-        <span>{{ formatDuration(show.totalDurationSeconds) }}</span>
-      }
-      @if (show.lastPlayedAt) {
-        <span class="show-stats__played">
-          Last played {{ show.lastPlayedAt | date: "medium" }}
-        </span>
-      }
-      <span class="show-stats__means">
-        <span
-          >MST
-          {{
-            show.meanMastery !== null
-              ? (show.meanMastery | number: "1.1-1")
-              : "—"
-          }}</span
-        >
-        <span
-          >NRG
-          {{
-            show.meanEnergy !== null ? (show.meanEnergy | number: "1.1-1") : "—"
-          }}</span
-        >
-        <span
-          >EFF
-          {{
-            show.meanEffort !== null ? (show.meanEffort | number: "1.1-1") : "—"
-          }}</span
-        >
-      </span>
-    </div>
+    <!-- ── Sections ───────────────────────────────────── -->
 
     <div class="sections">
       @for (section of show.sections; track trackSection($index, section)) {
@@ -75,32 +116,49 @@
         >
           @if (!singleMode()) {
             <header class="section__head">
-              <div class="section__title" (dblclick)="onRenameSection(section)">
-                <span class="section__name">{{ section.name }}</span>
+              <div
+                class="section__title-block"
+                (dblclick)="onRenameSection(section)"
+                title="Double-click to rename"
+              >
+                <h3 class="section__name">{{ section.name }}</h3>
                 @if (formatTarget(section.target); as t) {
-                  <span class="section__target-chip">{{ t }}</span>
+                  <sh3-badge [content]="t" variant="info" radius="square" />
                 }
               </div>
               <div class="section__actions">
-                <button
-                  class="btn btn--ghost btn--sm"
-                  (click)="onMarkSectionPlayed(section)"
-                >
-                  Played
-                </button>
-                <button
-                  class="btn btn--ghost btn--sm"
-                  (click)="onConvertSectionToPlaylist(section)"
-                >
-                  To playlist
-                </button>
+                <sh3-button-icon
+                  icon="edit"
+                  size="xs"
+                  tooltip="Rename section"
+                  (clicked)="onRenameSection(section)"
+                />
+                <sh3-button-icon
+                  icon="check-circle"
+                  size="xs"
+                  tooltip="Mark section played"
+                  (clicked)="onMarkSectionPlayed(section)"
+                />
+                <sh3-button-icon
+                  icon="playlist-add"
+                  size="xs"
+                  tooltip="Convert to playlist"
+                  (clicked)="onConvertSectionToPlaylist(section)"
+                />
                 @if (show.sections.length > 1) {
-                  <button
-                    class="btn btn--ghost btn--sm btn--danger"
-                    (click)="onRemoveSection(section)"
+                  <sh3-inline-confirm
+                    mode="toggle"
+                    confirmLabel="Remove?"
+                    size="sm"
+                    (confirmed)="onRemoveSection(section)"
                   >
-                    Remove
-                  </button>
+                    <sh3-button-icon
+                      icon="bin"
+                      size="xs"
+                      tone="critical"
+                      tooltip="Remove section"
+                    />
+                  </sh3-inline-confirm>
                 }
               </div>
             </header>
@@ -108,82 +166,88 @@
 
           @if (section.items.length === 0) {
             <div class="section__empty">
-              No items yet — add tracks or playlists from your library.
+              <sh3-icon name="playlist-add" [size]="18" />
+              <span
+                >Drop tracks or playlists here from your library or playlist
+                manager.</span
+              >
             </div>
           } @else {
             <ul class="item-list">
               @for (item of section.items; track trackItem($index, item)) {
-                <li class="item item--{{ item.kind }}">
-                  <span class="item__badge">{{
-                    item.kind === "playlist" ? "Playlist" : "Track"
-                  }}</span>
+                <li class="item" [attr.data-kind]="item.kind">
+                  <sh3-icon
+                    class="item__kind"
+                    [name]="item.kind === 'playlist' ? 'list' : 'music-note'"
+                    [size]="14"
+                  />
                   <span class="item__body">
-                    <strong>{{ itemTitle(item) }}</strong>
-                    <small>{{ itemSubtitle(item) }}</small>
+                    <strong class="item__title">{{ itemTitle(item) }}</strong>
+                    <small class="item__sub">{{ itemSubtitle(item) }}</small>
                   </span>
-                  <button
-                    class="icon-btn"
-                    (click)="onRemoveItem(section, item)"
-                    title="Remove"
-                  >
-                    ✕
-                  </button>
+                  <sh3-button-icon
+                    icon="close"
+                    size="xs"
+                    tooltip="Remove"
+                    (clicked)="onRemoveItem(section, item)"
+                  />
                 </li>
               }
             </ul>
           }
 
-          <div class="section__stats">
-            <span
-              >{{ section.trackCount }} track{{
-                section.trackCount > 1 ? "s" : ""
-              }}</span
-            >
+          <footer class="section__stats">
+            <span class="meta-chip">
+              <sh3-icon name="music-note" [size]="11" />
+              <span class="meta-value">{{ section.trackCount }}</span>
+              <span class="meta-label"
+                >track{{ section.trackCount !== 1 ? "s" : "" }}</span
+              >
+            </span>
             @if (section.totalDurationSeconds > 0) {
-              <span>{{ formatDuration(section.totalDurationSeconds) }}</span>
-            }
-            <span
-              >MST
-              {{
-                section.meanMastery !== null
-                  ? (section.meanMastery | number: "1.1-1")
-                  : "—"
-              }}</span
-            >
-            <span
-              >NRG
-              {{
-                section.meanEnergy !== null
-                  ? (section.meanEnergy | number: "1.1-1")
-                  : "—"
-              }}</span
-            >
-            <span
-              >EFF
-              {{
-                section.meanEffort !== null
-                  ? (section.meanEffort | number: "1.1-1")
-                  : "—"
-              }}</span
-            >
-            @if (section.lastPlayedAt) {
-              <span class="section__stats--played">
-                Played {{ section.lastPlayedAt | date: "short" }}
+              <span class="meta-chip">
+                <sh3-icon name="clock" [size]="11" />
+                <span class="meta-value">{{
+                  formatDuration(section.totalDurationSeconds)
+                }}</span>
               </span>
             }
-          </div>
+
+            <div class="section__ratings">
+              @for (axis of axes; track axis.label) {
+                @let mean = meanFor(section, axis);
+                @let level = levelFor(mean);
+                <div
+                  class="rating rating--compact"
+                  [class.rating--empty]="mean === null"
+                >
+                  <span class="rating__label">{{ axis.label }}</span>
+                  <span class="rating__value" [attr.data-level]="level">{{
+                    displayMean(mean)
+                  }}</span>
+                </div>
+              }
+            </div>
+
+            @if (section.lastPlayedAt) {
+              <span class="meta-chip meta-chip--played">
+                <sh3-icon name="completed" [size]="11" />
+                <span>{{ section.lastPlayedAt | date: "short" }}</span>
+              </span>
+            }
+          </footer>
         </section>
       }
     </div>
 
-    <button
-      type="button"
-      class="btn btn--primary btn--add-section"
-      (click)="onAddSection()"
-    >
-      + Add section
-    </button>
+    <sh3-button variant="ghost" (clicked)="onAddSection()">
+      <sh3-icon name="plus" [size]="14" />
+      <span>Add section</span>
+    </sh3-button>
   </div>
 } @else {
-  <p class="show-not-found">Show not found.</p>
+  <div class="show-not-found">
+    <sh3-icon name="microphone" [size]="32" />
+    <p>Show not found.</p>
+  </div>
 }

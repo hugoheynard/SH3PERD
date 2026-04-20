@@ -6,7 +6,7 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import type {
   TMusicVersionId,
   TPlaylistId,
@@ -14,13 +14,33 @@ import type {
   TShowSectionId,
   TShowSectionItemView,
   TShowSectionViewModel,
+  TShowSummaryViewModel,
 } from '@sh3pherd/shared-types';
 import { ShowsStateService } from '../services/shows-state.service';
 import { ShowsMutationService } from '../services/shows-mutation.service';
 import { ShowsDndInitService } from '../services/shows-dnd-init.service';
+import { ButtonComponent } from '../../../shared/button/button.component';
+import { ButtonIconComponent } from '../../../shared/button-icon/button-icon.component';
+import { BadgeComponent } from '../../../shared/badge/badge.component';
+import { IconComponent } from '../../../shared/icon/icon.component';
+import { InlineConfirmComponent } from '../../../shared/inline-confirm/inline-confirm.component';
 import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
 import type { DragState } from '../../../core/drag-and-drop/drag.types';
+
+/** Four rating axes rendered on the show header and every section stat
+ *  strip — mirrors the playlist / shows-page cards so the feature stays
+ *  visually coherent. */
+const RATING_AXES = [
+  { label: 'MST', meanKey: 'meanMastery' },
+  { label: 'NRG', meanKey: 'meanEnergy' },
+  { label: 'EFF', meanKey: 'meanEffort' },
+  { label: 'QTY', meanKey: 'meanQuality' },
+] as const;
+
+type RatingAxis = (typeof RATING_AXES)[number];
+
+type RatingLevel = 'low' | 'medium' | 'high' | 'max' | null;
 
 /**
  * Body of the show detail view — used by both the routed page
@@ -32,7 +52,16 @@ import type { DragState } from '../../../core/drag-and-drop/drag.types';
   selector: 'app-show-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, DecimalPipe, LoadingStateComponent, DndDropZoneDirective],
+  imports: [
+    DatePipe,
+    ButtonComponent,
+    ButtonIconComponent,
+    BadgeComponent,
+    IconComponent,
+    InlineConfirmComponent,
+    LoadingStateComponent,
+    DndDropZoneDirective,
+  ],
   templateUrl: './show-detail.component.html',
   styleUrl: './show-detail.component.scss',
 })
@@ -47,6 +76,8 @@ export class ShowDetailComponent {
   protected readonly singleMode = computed(
     () => (this.detail()?.sections.length ?? 0) <= 1,
   );
+
+  protected readonly axes = RATING_AXES;
 
   constructor() {
     // Ensure the `playlist` drag preview is registered before the first
@@ -83,7 +114,6 @@ export class ShowDetailComponent {
   onDelete(): void {
     const show = this.detail();
     if (!show) return;
-    if (!window.confirm(`Delete "${show.name}"?`)) return;
     this.mutations.deleteShow(show.id);
   }
 
@@ -120,7 +150,6 @@ export class ShowDetailComponent {
   onRemoveSection(section: TShowSectionViewModel): void {
     const show = this.detail();
     if (!show || show.sections.length <= 1) return;
-    if (!window.confirm(`Remove section "${section.name}"?`)) return;
     this.mutations.removeSection(show.id, section.id);
   }
 
@@ -203,5 +232,27 @@ export class ShowDetailComponent {
     if (target.mode === 'duration')
       return `~${this.formatDuration(target.duration_s)}`;
     return `${target.track_count} song${target.track_count > 1 ? 's' : ''}`;
+  }
+
+  /** Read a mean from any rating-bearing view model (show or section). */
+  meanFor(
+    target: TShowSummaryViewModel | TShowSectionViewModel,
+    axis: RatingAxis,
+  ): number | null {
+    return target[axis.meanKey];
+  }
+
+  displayMean(mean: number | null): string {
+    return mean === null ? '—' : mean.toFixed(1);
+  }
+
+  /** Project a 1–4 mean onto the rating colour scale (low / medium /
+   *  high / max) — same thresholds as the shows list page. */
+  levelFor(mean: number | null): RatingLevel {
+    if (mean === null) return null;
+    if (mean < 1.75) return 'low';
+    if (mean < 2.5) return 'medium';
+    if (mean < 3.5) return 'high';
+    return 'max';
   }
 }
