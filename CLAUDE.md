@@ -31,31 +31,32 @@ When creating new docs, respect this separation. A technical doc about how a sys
 
 ## Technical docs (apps/backend/documentation/)
 
-| Doc                      | Path                                                     | Description                                                                              |
-| ------------------------ | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **README**               | `apps/backend/documentation/README.md`                   | Technical documentation index                                                            |
-| **Auth System**          | `apps/backend/documentation/sh3-auth-system.md`          | Complete auth: login, tokens, password, security hardening (Mermaid diagrams)            |
-| **Auth & Context**       | `apps/backend/documentation/sh3-auth-and-context.md`     | Request pipeline: `@ContractScoped`, `@PlatformScoped`, `@RequirePermission`, `P` object |
-| **Writing a Controller** | `apps/backend/documentation/sh3-writing-a-controller.md` | Complete guide: scope, permissions, Swagger, CQRS, Zod-to-DTO pipeline                   |
-| **Swagger Usage**        | `apps/backend/documentation/sh3-swagger-usage.md`        | Zod-first DTOs, `apiSuccessDTO`, response envelope                                       |
-| **Error Handling**       | `apps/backend/documentation/sh3-error-handling.md`       | DomainError, BusinessError, TechnicalError, GlobalExceptionFilter                        |
-| **Dev Setup**            | `apps/backend/documentation/sh3-dev-setup.md`            | RSA keys, JWT config, env variables                                                      |
-| **Quality Gates**        | `apps/backend/documentation/sh3-quality-gates.md`        | 3-tier enforcement (pre-commit/pre-push/CI), detection logic, branch protection          |
-| **Platform Contract**    | `apps/backend/documentation/sh3-platform-contract.md`    | SaaS subscription model, dual contract model (platform vs company)                       |
-| **Quota Service**        | `apps/backend/documentation/sh3-quota-service.md`        | Quota enforcement: `ensureAllowed()` / `recordUsage()`, plan limits                      |
-| **Analytics Events**     | `apps/backend/documentation/sh3-analytics-events.md`     | Append-only event store, event types, metadata, handler status                           |
-| **Mailer**               | `apps/backend/documentation/sh3-mailer.md`               | Template-based transactional email, Resend adapter, dry-run mode                         |
-| **Music Library**        | `apps/backend/documentation/sh3-music-library.md`        | Full music feature architecture, 14 features across 4 tiers                              |
-| **Music Audio Player**   | `apps/backend/documentation/sh3-music-audio-player.md`   | wavesurfer.js inline player, peaks pipeline                                              |
-| **Music Mastering**      | `apps/backend/documentation/sh3-music-mastering.md`      | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift                                    |
-| **Persona Match**        | `apps/backend/documentation/sh3-persona-match.md`        | AI event programming: extraction, scoring, curation (Claude API)                         |
-| **Playlists**            | `apps/backend/documentation/sh3-playlists.md`            | Per-user playlists: CQRS, summary aggregates + per-track series, UI layout, DnD          |
-| **Org Chart**            | `apps/backend/documentation/sh3-orgchart.md`             | Org chart features, API, architecture                                                    |
-| **Orgchart Export**      | `apps/backend/documentation/sh3-orgchart-export.md`      | PDF/SVG export via headless Chromium                                                     |
-| **Orgchart Print**       | `apps/backend/documentation/sh3-orgchart-print.md`       | Print layer reusing live component                                                       |
-| **Contracts**            | `apps/backend/documentation/sh3-contracts.md`            | Contract aggregate diagram                                                               |
-| **Integrations**         | `apps/backend/documentation/sh3-integrations.md`         | Slack OAuth, channel management                                                          |
-| **E2E Tests**            | `apps/backend/documentation/sh3-e2e-tests.md`            | MongoMemoryServer, test builders, factories                                              |
+| Doc                      | Path                                                     | Description                                                                                              |
+| ------------------------ | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **README**               | `apps/backend/documentation/README.md`                   | Technical documentation index                                                                            |
+| **Auth System**          | `apps/backend/documentation/sh3-auth-system.md`          | Complete auth: login, tokens, password, security hardening (Mermaid diagrams)                            |
+| **Auth & Context**       | `apps/backend/documentation/sh3-auth-and-context.md`     | Request pipeline: `@ContractScoped`, `@PlatformScoped`, `@RequirePermission`, `P` object                 |
+| **Writing a Controller** | `apps/backend/documentation/sh3-writing-a-controller.md` | Complete guide: scope, permissions, Swagger, CQRS, Zod-to-DTO pipeline                                   |
+| **Swagger Usage**        | `apps/backend/documentation/sh3-swagger-usage.md`        | Zod-first DTOs, `apiSuccessDTO`, response envelope                                                       |
+| **Error Handling**       | `apps/backend/documentation/sh3-error-handling.md`       | DomainError, BusinessError, TechnicalError, GlobalExceptionFilter                                        |
+| **Dev Setup**            | `apps/backend/documentation/sh3-dev-setup.md`            | RSA keys, JWT config, env variables                                                                      |
+| **Quality Gates**        | `apps/backend/documentation/sh3-quality-gates.md`        | 3-tier enforcement (pre-commit/pre-push/CI), detection logic, branch protection                          |
+| **Platform Contract**    | `apps/backend/documentation/sh3-platform-contract.md`    | SaaS subscription model, dual contract model (platform vs company)                                       |
+| **Quota Service**        | `apps/backend/documentation/sh3-quota-service.md`        | Quota enforcement: `ensureAllowed()` / `recordUsage()`, plan limits                                      |
+| **Analytics Events**     | `apps/backend/documentation/sh3-analytics-events.md`     | Append-only event store, event types, metadata, handler status                                           |
+| **Mailer**               | `apps/backend/documentation/sh3-mailer.md`               | Template-based transactional email, Resend adapter, dry-run mode                                         |
+| **Music Library**        | `apps/backend/documentation/sh3-music-library.md`        | Full music feature architecture, 14 features across 4 tiers                                              |
+| **Music Audio Player**   | `apps/backend/documentation/sh3-music-audio-player.md`   | wavesurfer.js inline player, peaks pipeline                                                              |
+| **Music Mastering**      | `apps/backend/documentation/sh3-music-mastering.md`      | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift                                                    |
+| **Persona Match**        | `apps/backend/documentation/sh3-persona-match.md`        | AI event programming: extraction, scoring, curation (Claude API)                                         |
+| **Playlists**            | `apps/backend/documentation/sh3-playlists.md`            | Per-user playlists: CQRS, summary aggregates + per-track series, UI layout, DnD                          |
+| **Shows**                | `apps/backend/documentation/sh3-shows.md`                | Artist shows: show → sections → items, show + section targets with fill %, DnD reorder, new-show popover |
+| **Org Chart**            | `apps/backend/documentation/sh3-orgchart.md`             | Org chart features, API, architecture                                                                    |
+| **Orgchart Export**      | `apps/backend/documentation/sh3-orgchart-export.md`      | PDF/SVG export via headless Chromium                                                                     |
+| **Orgchart Print**       | `apps/backend/documentation/sh3-orgchart-print.md`       | Print layer reusing live component                                                                       |
+| **Contracts**            | `apps/backend/documentation/sh3-contracts.md`            | Contract aggregate diagram                                                                               |
+| **Integrations**         | `apps/backend/documentation/sh3-integrations.md`         | Slack OAuth, channel management                                                                          |
+| **E2E Tests**            | `apps/backend/documentation/sh3-e2e-tests.md`            | MongoMemoryServer, test builders, factories                                                              |
 
 ## Process docs (documentation/)
 

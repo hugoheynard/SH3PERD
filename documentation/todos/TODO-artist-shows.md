@@ -1,6 +1,6 @@
 # Artist Shows — Feature TODO
 
-> **Status** : Spec locked, pas encore démarré
+> **Status** : MVP shipped (Phases 1–8 done). Premium UX pass shipped (sparkline stats, inline rename, per-section + whole-show duration targets + fill %, DnD section reordering with insertion indicator, new-show popover). Tests + doc polishing still to come (Phase 9 partial — technical doc landed in `apps/backend/documentation/sh3-shows.md`; E2E tests + frontend doc TBD).
 > **Date** : 2026-04-20
 > **Dépend de** : Plans artist/company (done), QuotaService (done), Playlist V2 (rating series live), account-scope guards (done)
 
@@ -364,70 +364,78 @@ apps/frontend-webapp/src/app/features/shows/
 
 ## Phases d'implémentation
 
-### Phase 1 — Modèle & shared-types (~1 jour)
+### Phase 1 — Modèle & shared-types (~1 jour) ✅
 
-- [ ] Types + Zod schemas `TShow*`, `TSection*`, `TSectionItem*`, `TSectionTarget` dans `packages/shared-types/src/shows/`
-- [ ] Types view model `TShow{Summary,Detail,Section,SectionItem}ViewModel`
-- [ ] Extension de `ANALYTICS_EVENT_TYPES` avec `track_played` + metadata schema
-- [ ] Extension de `P.Music.Show.*` dans `permissions.types.ts`
-- [ ] Allocation plans dans `PLATFORM_ROLE_TEMPLATES` : `artist_pro` → `music:show:own`, `artist_max` → `music:show:*`
-- [ ] `show_count` dans `PLAN_QUOTAS`
+- [x] Types + Zod schemas `TShow*`, `TSection*`, `TSectionItem*`, `TSectionTarget` dans `packages/shared-types/src/shows.ts`
+- [x] Types view model `TShow{Summary,Detail,Section,SectionItem}ViewModel`
+- [x] `TShowDomainModel.totalDurationTargetSeconds` (post-MVP target au niveau show, ajouté avec le popover "New show")
+- [ ] Extension de `ANALYTICS_EVENT_TYPES` avec `track_played` + metadata schema (Phase 7 — à faire)
+- [x] Extension de `P.Music.Show.*` dans `permissions.types.ts`
+- [x] Allocation plans dans `PLATFORM_ROLE_TEMPLATES` : `artist_pro` → `music:show:own`, `artist_max` → `music:show:*`
+- [x] `show_count` dans `PLAN_QUOTAS`
 
-### Phase 2 — Backend domain + aggregate (~1.5 jours)
+### Phase 2 — Backend domain + aggregate (~1.5 jours) ✅
 
-- [ ] `ShowEntity`, `SectionEntity`, `SectionItemEntity`, `ShowAggregate`, `ShowPolicy`
-- [ ] Invariants : ≥1 section, positions denses, ownership des refs
-- [ ] Unit tests aggregate (rename, add/remove section, add/remove item, reorder, mark played, duplicate)
+- [x] `ShowEntity`, `ShowSectionEntity`, `ShowAggregate`, `ShowPolicy` (items sont des plain objects embeddés dans la section, pas d'entity dédiée)
+- [x] Invariants : ≥1 section, positions denses, ownership des refs
+- [x] `ShowEntity.setTotalDurationTarget(seconds?)` + `ShowAggregate.setTotalDurationTarget(actorId, s?)` (ajouté avec le popover)
+- [x] Unit tests aggregate (rename, add/remove section, add/remove item, reorder, mark played, duplicate)
 
-### Phase 3 — Backend infra + CQRS (~1.5 jours)
+### Phase 3 — Backend infra + CQRS (~1.5 jours) ✅
 
-- [ ] `ShowMongoRepository` + `ShowAggregateRepository` (save diff + removed, load aggregate)
-- [ ] Command handlers (13 commands au total) — chacun `@PlatformScoped`, quota check sur Create
-- [ ] Query handlers : `GetShowById`, `ListShowsByOwner` (expansion playlist pour calcul séries)
-- [ ] Helper pur `computeRatingSeries(versions)` partagé avec Playlist (refactor ou duplication assumée)
-- [ ] Unit tests handlers — couvrent quota, ownership, invariants
+- [x] `ShowMongoRepository` + `ShowSectionMongoRepository` + `ShowAggregateRepository` (save diff + removed, load aggregate)
+- [x] Save utilise maintenant `replaceOne` + upsert (fix `c4926caa` — le pattern `insertOne` + catch dupliquait un doc par mutation faute d'index unique sur `id`). Détails dans `apps/backend/documentation/sh3-shows.md#persistence`.
+- [x] Command handlers (tous `@PlatformScoped`, quota check sur Create)
+- [x] Query handlers : `GetShowDetail`, `ListUserShows` (expansion playlist pour calcul séries)
+- [x] Helper pur `computeRatingSeries(versions)` (dédupliqué avec Playlist plus tard — pour l'instant dupliqué, assumé)
+- [x] Unit tests handlers — couvrent quota, ownership, invariants
 
-### Phase 4 — Backend API + Swagger (~0.5 jour)
+### Phase 4 — Backend API + Swagger (~0.5 jour) ✅
 
-- [ ] `show.controller.ts` (16 endpoints, tous `@RequirePermission`)
-- [ ] DTOs `createZodDto` + `@ApiModel`
-- [ ] Codes success dans `show.codes.ts`
-- [ ] Swagger complet (ApiOperation / ApiBody / ApiResponse) — le 403 est auto-généré par `@RequirePermission`
+- [x] `show.controller.ts` (17 endpoints, tous `@RequirePermission`)
+- [x] DTOs `@ApiModel` (`ShowPayload`, `ShowSummaryPayload`, `ShowDetailPayload`, `ShowSectionViewPayload`, `ShowSectionItemVersionView`, `ShowSectionItemPlaylistView`, `ShowSectionTargetPayload`) — incluent `totalDurationTargetSeconds`
+- [x] Codes success dans `show.codes.ts`
+- [x] Swagger complet (ApiOperation / ApiBody / ApiResponse) — le 403 est auto-généré par `@RequirePermission`
 
-### Phase 5 — Frontend data layer (~1 jour)
+### Phase 5 — Frontend data layer (~1 jour) ✅
 
-- [ ] Types frontend (réutilisent shared-types au max)
-- [ ] `ShowsService` (HTTP) + `ShowsStore` (signals, liste + currentDetail)
-- [ ] `ShowMutationsService` avec optimistic updates
-- [ ] Unit tests store + mutations
+- [x] Types frontend réutilisent shared-types au max
+- [x] `ShowsApiService` (HTTP) + `ShowsStateService` (signals, liste + currentDetail)
+- [x] `ShowsMutationService` (v1 optimistic-free volontairement — série de ratings dérivée serveur, re-fetch sur chaque mutation). Les seules actions optimistes sont `deleteShow` + `createShow`.
+- [ ] Unit tests store + mutations (à faire)
 
-### Phase 6 — Frontend UI (~3 jours)
+### Phase 6 — Frontend UI (~3 jours) ✅
 
-- [ ] `shows-page` (liste + "+ New show" + duplicate + delete avec confirm)
-- [ ] `show-detail-page` (header, section-list, section-card, item-row)
-- [ ] DnD : drop playlist card → item playlist ; drop track card → item version ; reorder items intra-section ; reorder sections ; déplacement item entre sections
-- [ ] Sparkline aggregée show header + par section
-- [ ] Menu + guard `requireShowsPlanGuard`
+- [x] `shows-page` — premium cards (stripe couleur + 4-axis rating grid + sparkline partagée) + "+ New show" (popover dédié) + duplicate + delete avec `sh3-inline-confirm`
+- [x] `show-detail-page` (routed) + `show-detail-side-panel` (dockable) — les deux hostent `ShowDetailComponent` (un seul corps partagé)
+- [x] Inline rename : show name + section name (dblclick ou pencil → `<input>`, Enter commit, Escape cancel)
+- [x] DnD : drop playlist card → item playlist ; drop track card → item version ; reorder sections avec indicateur d'insertion visuel (zones thin qui s'expandent pendant un drag de type `show-section`)
+- [ ] Reorder items intra-section, déplacement item entre sections (endpoints backend prêts — UI à faire)
+- [x] Sparkline partagée (`app-rating-sparkline` dans `shared/`) : show header + par section + cards
+- [x] New-show popover — nom, total duration target (min), colour chip. Monté via `LayoutService.setPopover`.
+- [x] Show-level + section-level duration targets avec barre de fill % tintée (`under` / `near` / `over`) et édition inline des minutes.
+- [x] `user-select: none` sur les racines feature (les inputs opt back in pour le rename / target editing).
+- [ ] Menu + guard `requireShowsPlanGuard` (à faire)
 
-### Phase 7 — Mark played + analytics (~0.5 jour)
+### Phase 7 — Mark played + analytics (~0.5 jour) 🔄
 
-- [ ] Bouton "Show played" + "Section played"
-- [ ] Handlers backend émettent `track_played` events (batch insert via `AnalyticsEventService.trackBatch`)
-- [ ] `lastPlayedAt` badges sur les cards/headers
+- [x] Bouton "Mark show played" + "Mark section played" (icon-buttons dans le header / section head)
+- [ ] Handlers backend émettent `track_played` events (batch insert via `AnalyticsEventService.trackBatch`) — **à faire**
+- [x] `lastPlayedAt` chips sur les cards/headers/sections
 
-### Phase 8 — Convert section → playlist (~0.5 jour)
+### Phase 8 — Convert section → playlist (~0.5 jour) ✅
 
-- [ ] Backend `ConvertSectionToPlaylistCommand` (expand items, dedupe, create playlist)
-- [ ] Frontend modal + toast + navigation
+- [x] Backend `ConvertSectionToPlaylistCommand` (expand items, dedupe, create playlist)
+- [x] Frontend trigger (icon-button `playlist-add` dans la section head) — utilise encore `window.prompt` pour le nom de la playlist, à inliner plus tard
 
-### Phase 9 — E2E + docs (~0.5 jour)
+### Phase 9 — E2E + docs (~0.5 jour) 🔄
 
 - [ ] E2E tests backend : create show → add section → add mixed items → duplicate → mark played (events émis)
-- [ ] Technical doc `apps/backend/documentation/sh3-shows.md` (architecture, séries, convert flow)
-- [ ] Frontend doc `apps/frontend-webapp/documentation/sh3-shows.md` (store pattern, DnD, curves)
-- [ ] Update CLAUDE.md index
+- [x] Technical doc `apps/backend/documentation/sh3-shows.md` — architecture, séries, convert flow, targets, DnD reorder, upsert persistence note
+- [x] Update CLAUDE.md index + `apps/backend/documentation/README.md`
+- [ ] Frontend doc `apps/frontend-webapp/documentation/sh3-shows.md` (store pattern, DnD, curves) — plus fin, à faire si utile
 
-**Total : ~10 jours** (estimation haute, peut réduire si des morceaux du pattern playlist se réutilisent mieux que prévu).
+**Total : ~10 jours** (estimation initiale). Implémenté en ~9 jours + 2 jours de pass premium UX / bug-fix (sparklines, inline rename, targets + fill %, DnD reorder, popover, upsert fix).
 
 ---
 
