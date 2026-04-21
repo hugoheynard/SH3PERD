@@ -33,15 +33,16 @@ Architecture, patterns, and how-to guides for the NestJS backend.
 
 ## Music
 
-| Doc                                               | Description                                                                                                          |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| [Music Library](sh3-music-library.md)             | Full music feature roadmap — 14 features across 4 tiers, current status                                              |
-| [Music Reference API](sh3-music-reference-api.md) | Canonical song catalogue — immutable user-side, community contribution, admin curation TODO                          |
-| [Audio Player](sh3-music-audio-player.md)         | wavesurfer.js inline player, waveform peaks pipeline                                                                 |
-| [Mastering](sh3-music-mastering.md)               | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift architecture                                                   |
-| [Persona Match](sh3-persona-match.md)             | AI event programming — extraction, cross-library scoring, Claude API curation                                        |
-| [Playlists](sh3-playlists.md)                     | Per-user playlists — CQRS + aggregates (means + per-track series) + full UI + DnD                                    |
-| [Shows](sh3-shows.md)                             | Artist performance plans — show → sections → items, targets + fill %, DnD reorder, sparkline stats, new-show popover |
+| Doc                                                 | Description                                                                                                          |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| [Music Library](sh3-music-library.md)               | Full music feature roadmap — 14 features across 4 tiers, current status                                              |
+| [Music Reference API](sh3-music-reference-api.md)   | Canonical song catalogue — immutable user-side, community contribution, admin curation TODO                          |
+| [Music Repertoire API](sh3-music-repertoire-api.md) | User library — entry + versions + tracks, aggregate with transactional cascade delete, quota credits, admin TODO     |
+| [Audio Player](sh3-music-audio-player.md)           | wavesurfer.js inline player, waveform peaks pipeline                                                                 |
+| [Mastering](sh3-music-mastering.md)                 | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift architecture                                                   |
+| [Persona Match](sh3-persona-match.md)               | AI event programming — extraction, cross-library scoring, Claude API curation                                        |
+| [Playlists](sh3-playlists.md)                       | Per-user playlists — CQRS + aggregates (means + per-track series) + full UI + DnD                                    |
+| [Shows](sh3-shows.md)                               | Artist performance plans — show → sections → items, targets + fill %, DnD reorder, sparkline stats, new-show popover |
 
 ## Company & Org
 
