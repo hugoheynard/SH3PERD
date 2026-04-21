@@ -33,10 +33,6 @@ export const MusicApiCodes = {
     code: 'MUSIC_VERSION_CREATION_REPO_FAIL',
     message: 'Music version creation failed, repository technical error',
   },
-  MUSIC_VERSION_CREATION_UC_FAIL: {
-    code: 'MUSIC_VERSION_CREATION_UC_FAIL',
-    message: 'Music version creation failed, use case technical error',
-  },
   MUSIC_LIBRARY_SINGLE_USER_SUCCESS: {
     code: 'MUSIC_LIBRARY_FETCHED',
     message: 'Music library fetched successfully for single user',
