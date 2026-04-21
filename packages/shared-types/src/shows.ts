@@ -41,6 +41,46 @@ export const SHOW_ITEM_KINDS = ["version", "playlist"] as const;
 export type TShowSectionItemKind = (typeof SHOW_ITEM_KINDS)[number];
 export const SShowSectionItemKind = z.enum(SHOW_ITEM_KINDS);
 
+// ─── Axis criteria ───────────────────────────────────────
+// Optional per-axis target range the artist sets to steer a section
+// (or the whole show) — "I want this set to average energy between 3
+// and 4". Purely informational, drives a chip + out-of-range tint on
+// the sparkline so the artist sees at a glance when the mean drifts
+// outside the target window.
+//
+// Both bounds are optional. `min` alone = "at least N". `max` alone =
+// "at most N". Both = a range. Neither = the criterion carries no
+// constraint (kept as a hint marker rather than a gate).
+
+export const SHOW_AXIS_KEYS = [
+  "mastery",
+  "energy",
+  "effort",
+  "quality",
+] as const;
+export type TShowAxisKey = (typeof SHOW_AXIS_KEYS)[number];
+export const SShowAxisKey = z.enum(SHOW_AXIS_KEYS);
+
+export interface TShowAxisCriterion {
+  axis: TShowAxisKey;
+  min?: number; // 1..4 inclusive
+  max?: number; // 1..4 inclusive
+}
+
+export const SShowAxisCriterion = z
+  .object({
+    axis: SShowAxisKey,
+    min: z.number().min(1).max(4).optional(),
+    max: z.number().min(1).max(4).optional(),
+  })
+  .refine((c) => c.min === undefined || c.max === undefined || c.min <= c.max, {
+    message: "axis criterion min must be <= max",
+  });
+
+/** Array form — at most one entry per axis; duplicates are the
+ *  caller's responsibility, we don't dedupe at validation time. */
+export const SShowAxisCriteria = z.array(SShowAxisCriterion);
+
 // ─── Domain models ───────────────────────────────────────
 
 export interface TShowDomainModel {
@@ -57,6 +97,18 @@ export interface TShowDomainModel {
    *  used by the UI to drive a fill-% progress bar at the show level
    *  (separate from per-section targets). */
   totalDurationTargetSeconds?: number;
+  /** Parity with per-section track-count targets — the whole show can
+   *  also be scoped by song count. When set alongside the duration
+   *  target, the UI picks whichever matches the user's pick in the
+   *  settings panel (they're mutually exclusive on the front but
+   *  independently stored so the shape stays additive). */
+  totalTrackCountTarget?: number;
+  /** Absolute scheduled start time (ms since epoch) for the show, or
+   *  unset for "no schedule" (practice/prep plan without a date). */
+  startAt?: number;
+  /** Optional axis target ranges — at most one per axis. Empty (or
+   *  undefined) means no criteria set. */
+  axisCriteria?: TShowAxisCriterion[];
 }
 
 export const SShowDomainModel = z.object({
@@ -69,6 +121,9 @@ export const SShowDomainModel = z.object({
   updatedAt: z.number(),
   lastPlayedAt: z.number().optional(),
   totalDurationTargetSeconds: z.number().int().positive().optional(),
+  totalTrackCountTarget: z.number().int().positive().optional(),
+  startAt: z.number().optional(),
+  axisCriteria: SShowAxisCriteria.optional(),
 });
 
 export interface TShowSectionDomainModel {
@@ -78,6 +133,13 @@ export interface TShowSectionDomainModel {
   position: number;
   target?: TShowSectionTarget;
   lastPlayedAt?: number;
+  /** Absolute scheduled start time for this section (ms since epoch).
+   *  Independent per section — the artist fills in what they want to
+   *  remember; no auto-cascade from the show or previous section. */
+  startAt?: number;
+  /** Per-axis target ranges — same shape as the show-level field but
+   *  scoped to this section's expanded version series. */
+  axisCriteria?: TShowAxisCriterion[];
 }
 
 export const SShowSectionDomainModel = z.object({
@@ -87,6 +149,8 @@ export const SShowSectionDomainModel = z.object({
   position: z.number().int().nonnegative(),
   target: SShowSectionTarget.optional(),
   lastPlayedAt: z.number().optional(),
+  startAt: z.number().optional(),
+  axisCriteria: SShowAxisCriteria.optional(),
 });
 
 export interface TShowSectionItemDomainModel {
@@ -112,6 +176,9 @@ export interface TCreateShowPayload {
   color: TPlaylistColor;
   description?: string;
   totalDurationTargetSeconds?: number;
+  totalTrackCountTarget?: number;
+  startAt?: number;
+  axisCriteria?: TShowAxisCriterion[];
 }
 
 export const SCreateShowPayload = z.object({
@@ -119,14 +186,21 @@ export const SCreateShowPayload = z.object({
   color: SPlaylistColor,
   description: z.string().optional(),
   totalDurationTargetSeconds: z.number().int().positive().optional(),
+  totalTrackCountTarget: z.number().int().positive().optional(),
+  startAt: z.number().optional(),
+  axisCriteria: SShowAxisCriteria.optional(),
 });
 
 export interface TUpdateShowPayload {
   name?: string;
   color?: TPlaylistColor;
   description?: string;
-  /** `null` clears the target, `undefined` leaves it untouched. */
+  /** `null` clears the field, `undefined` leaves it untouched. Same
+   *  convention across every nullable field in this payload. */
   totalDurationTargetSeconds?: number | null;
+  totalTrackCountTarget?: number | null;
+  startAt?: number | null;
+  axisCriteria?: TShowAxisCriterion[] | null;
 }
 
 export const SUpdateShowPayload = z.object({
@@ -134,26 +208,38 @@ export const SUpdateShowPayload = z.object({
   color: SPlaylistColor.optional(),
   description: z.string().optional(),
   totalDurationTargetSeconds: z.number().int().positive().nullable().optional(),
+  totalTrackCountTarget: z.number().int().positive().nullable().optional(),
+  startAt: z.number().nullable().optional(),
+  axisCriteria: SShowAxisCriteria.nullable().optional(),
 });
 
 export interface TAddShowSectionPayload {
   name: string;
   target?: TShowSectionTarget;
+  startAt?: number;
+  axisCriteria?: TShowAxisCriterion[];
 }
 
 export const SAddShowSectionPayload = z.object({
   name: z.string().min(1),
   target: SShowSectionTarget.optional(),
+  startAt: z.number().optional(),
+  axisCriteria: SShowAxisCriteria.optional(),
 });
 
 export interface TUpdateShowSectionPayload {
   name?: string;
-  target?: TShowSectionTarget | null; // null clears the target
+  /** `null` clears the field, `undefined` leaves it untouched. */
+  target?: TShowSectionTarget | null;
+  startAt?: number | null;
+  axisCriteria?: TShowAxisCriterion[] | null;
 }
 
 export const SUpdateShowSectionPayload = z.object({
   name: z.string().min(1).optional(),
   target: SShowSectionTarget.nullable().optional(),
+  startAt: z.number().nullable().optional(),
+  axisCriteria: SShowAxisCriteria.nullable().optional(),
 });
 
 export interface TReorderShowSectionsPayload {
@@ -236,6 +322,14 @@ export interface TShowSummaryViewModel extends TShowRatingSeries {
   sectionCount: number;
   /** Planning target for the whole show, in seconds (see domain model). */
   totalDurationTargetSeconds?: number;
+  /** Track-count target for the whole show (alternative to duration). */
+  totalTrackCountTarget?: number;
+  /** Absolute scheduled start (ms since epoch). */
+  startAt?: number;
+  /** Per-axis target ranges. Not rendered on the list card (too dense),
+   *  but carried in the summary so the list can filter / highlight
+   *  later if needed. */
+  axisCriteria?: TShowAxisCriterion[];
 }
 
 export type TShowSectionItemView =
@@ -271,6 +365,11 @@ export interface TShowSectionViewModel extends TShowRatingSeries {
   position: number;
   target?: TShowSectionTarget;
   lastPlayedAt?: number;
+  /** Absolute scheduled start for this section (ms since epoch). */
+  startAt?: number;
+  /** Per-axis target ranges — drive the criteria chip + out-of-range
+   *  tint on the section footer sparkline. */
+  axisCriteria?: TShowAxisCriterion[];
   items: TShowSectionItemView[];
 }
 
