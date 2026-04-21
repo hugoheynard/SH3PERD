@@ -91,6 +91,7 @@ export class MasterTrackHandler implements ICommandHandler<
       parentTrackId: sourceTrack.id,
       processingType: 'master',
       s3Key: result.masteredS3Key,
+      sizeBytes: result.sizeBytes,
     };
 
     aggregate.addTrack(cmd.actorId, cmd.versionId, masteredTrack);

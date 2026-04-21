@@ -63,6 +63,7 @@ export class UploadTrackHandler implements ICommandHandler<
       uploadedAt: Date.now(),
       favorite: isFirstTrack,
       s3Key,
+      sizeBytes: cmd.file.length,
     };
 
     // Mutate aggregate

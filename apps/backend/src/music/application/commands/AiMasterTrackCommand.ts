@@ -126,6 +126,7 @@ export class AiMasterTrackHandler implements ICommandHandler<
       parentTrackId: sourceTrack.id,
       processingType: 'ai_master',
       s3Key: result.masteredS3Key,
+      sizeBytes: result.sizeBytes,
     };
 
     aggregate.addTrack(cmd.actorId, cmd.versionId, masteredTrack);

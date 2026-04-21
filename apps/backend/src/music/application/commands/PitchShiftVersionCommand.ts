@@ -110,6 +110,7 @@ export class PitchShiftVersionHandler implements ICommandHandler<
       favorite: true,
       parentTrackId: sourceTrack.id,
       s3Key: result.shiftedS3Key,
+      sizeBytes: result.sizeBytes,
     };
 
     newVersion.addTrack(newTrack);
