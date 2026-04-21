@@ -105,6 +105,42 @@ export class RepertoireEntryAggregate extends AggregateRoot {
     return version;
   }
 
+  /**
+   * Remove a version **and every version derived from it** (pitch-shifted,
+   * future derivation types). The cascade is recursive: a derivation of a
+   * derivation is also removed. Order in the returned array is
+   * parent-first, then depth-first through the derivation tree, so the
+   * caller can iterate to collect S3 keys / sizes without thinking about
+   * pointer orphans.
+   *
+   * The source version's ownership is checked once; each descendant is
+   * ensured-mutable via policy as it is removed (they should all share
+   * the same owner in practice, but the check is free and defensive).
+   */
+  removeVersionWithDerivations(actorId: TUserId, versionId: TMusicVersionId): MusicVersionEntity[] {
+    const toRemove = this.collectDerivationChain(versionId);
+    const removed: MusicVersionEntity[] = [];
+    for (const id of toRemove) {
+      removed.push(this.removeVersion(actorId, id));
+    }
+    return removed;
+  }
+
+  /**
+   * Depth-first list of version IDs starting at `rootId`, then each of
+   * its direct children (`parentVersionId === rootId`), recursively. The
+   * root is first in the list so the caller can remove in this order
+   * without ever pointing at a child whose parent is already gone.
+   */
+  private collectDerivationChain(rootId: TMusicVersionId): TMusicVersionId[] {
+    const out: TMusicVersionId[] = [rootId];
+    const children = this.versions.filter((v) => v.toDomain.parentVersionId === rootId);
+    for (const child of children) {
+      out.push(...this.collectDerivationChain(child.id));
+    }
+    return out;
+  }
+
   /** Update version metadata (label, genre, ratings, etc.). */
   updateVersionMetadata(
     actorId: TUserId,

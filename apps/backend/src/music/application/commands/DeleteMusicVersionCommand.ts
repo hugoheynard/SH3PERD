@@ -30,15 +30,33 @@ export class DeleteMusicVersionHandler implements ICommandHandler<
 
   async execute(cmd: DeleteMusicVersionCommand): Promise<boolean> {
     const aggregate = await this.aggregateRepo.loadByVersionId(cmd.versionId);
-    const removed = aggregate.removeVersion(cmd.actorId, cmd.versionId);
 
-    // Snapshot cleanup inputs BEFORE the save wipes the aggregate-tracked data
-    const s3Keys = removed.tracks.map((t) => t.s3Key).filter((k): k is string => !!k);
-    const totalBytes = removed.tracks.reduce((sum, t) => sum + (t.sizeBytes ?? 0), 0);
+    // Cascade: the source version AND every version derived from it
+    // (pitch-shift children, future derivation types) are removed in one
+    // transactional save. Prevents orphaned `parentVersionId` pointers.
+    const removed = aggregate.removeVersionWithDerivations(cmd.actorId, cmd.versionId);
+
+    // Snapshot cleanup inputs BEFORE the save clears the tracks arrays
+    const s3Keys: string[] = [];
+    let totalBytes = 0;
+    for (const version of removed) {
+      for (const track of version.tracks) {
+        if (track.s3Key) {
+          s3Keys.push(track.s3Key);
+        }
+        if (track.sizeBytes) {
+          totalBytes += track.sizeBytes;
+        }
+      }
+    }
 
     await this.aggregateRepo.save(aggregate);
 
-    // Post-save cleanup: DB is now consistent, S3 + quota are eventual side effects
+    // Post-save cleanup: DB is now consistent, S3 + quota are eventual side effects.
+    // Note: master_standard, master_ai, pitch_shift counters are intentionally
+    // NOT credited back — those quotas meter "times the service was invoked
+    // in the period", not "results kept on disk". Deleting a derivative does
+    // not un-invoke a past mastering run.
     for (const key of s3Keys) {
       await this.storage.delete(key).catch(() => {});
     }
@@ -46,11 +64,13 @@ export class DeleteMusicVersionHandler implements ICommandHandler<
       await this.quotaService.recordUsage(cmd.actorId, 'storage_bytes', -totalBytes);
     }
 
+    const source = removed[0];
     await this.analytics.track('music_version_deleted', cmd.actorId, {
       version_id: cmd.versionId,
-      reference_id: removed.musicReference_id,
-      label: removed.label,
-      track_count: removed.tracks.length,
+      reference_id: source.musicReference_id,
+      label: source.label,
+      track_count: removed.reduce((sum, v) => sum + v.tracks.length, 0),
+      derivation_count: removed.length - 1,
       total_size_bytes: totalBytes,
     });
 

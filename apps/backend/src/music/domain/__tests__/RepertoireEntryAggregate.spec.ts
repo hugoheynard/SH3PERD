@@ -88,6 +88,116 @@ describe('RepertoireEntryAggregate', () => {
     });
   });
 
+  describe('removeVersionWithDerivations', () => {
+    it('should remove only the source when it has no derivations', () => {
+      const owner = userId();
+      const source = makeVersion({ id: versionId(1), owner_id: owner });
+      const sibling = makeVersion({ id: versionId(2), owner_id: owner });
+      const agg = makeAggregate({ owner, versions: [source, sibling] });
+
+      const removed = agg.removeVersionWithDerivations(owner, versionId(1));
+
+      expect(removed).toHaveLength(1);
+      expect(removed[0].id).toBe(versionId(1));
+      expect(agg.getVersions()).toHaveLength(1);
+      expect(agg.getVersions()[0].id).toBe(versionId(2));
+      expect(agg.removedVersions).toHaveLength(1);
+    });
+
+    it('should cascade direct derivations (1 level deep)', () => {
+      const owner = userId();
+      const source = makeVersion({ id: versionId(1), owner_id: owner });
+      const derivedA = makeVersion({
+        id: versionId(2),
+        owner_id: owner,
+        parentVersionId: versionId(1),
+        derivationType: 'pitch_shift',
+      });
+      const derivedB = makeVersion({
+        id: versionId(3),
+        owner_id: owner,
+        parentVersionId: versionId(1),
+        derivationType: 'pitch_shift',
+      });
+      const agg = makeAggregate({ owner, versions: [source, derivedA, derivedB] });
+
+      const removed = agg.removeVersionWithDerivations(owner, versionId(1));
+
+      expect(removed.map((v) => v.id)).toEqual([versionId(1), versionId(2), versionId(3)]);
+      expect(agg.getVersions()).toHaveLength(0);
+      expect(agg.removedVersions).toHaveLength(3);
+    });
+
+    it('should cascade transitive derivations (2 levels deep)', () => {
+      const owner = userId();
+      const source = makeVersion({ id: versionId(1), owner_id: owner });
+      const mid = makeVersion({
+        id: versionId(2),
+        owner_id: owner,
+        parentVersionId: versionId(1),
+        derivationType: 'pitch_shift',
+      });
+      const leaf = makeVersion({
+        id: versionId(3),
+        owner_id: owner,
+        parentVersionId: versionId(2),
+        derivationType: 'pitch_shift',
+      });
+      const agg = makeAggregate({ owner, versions: [source, mid, leaf] });
+
+      const removed = agg.removeVersionWithDerivations(owner, versionId(1));
+
+      expect(removed.map((v) => v.id)).toEqual([versionId(1), versionId(2), versionId(3)]);
+      expect(agg.getVersions()).toHaveLength(0);
+    });
+
+    it('should leave independent sibling chains untouched', () => {
+      const owner = userId();
+      const targetSource = makeVersion({ id: versionId(1), owner_id: owner });
+      const targetChild = makeVersion({
+        id: versionId(2),
+        owner_id: owner,
+        parentVersionId: versionId(1),
+        derivationType: 'pitch_shift',
+      });
+      const otherSource = makeVersion({ id: versionId(10), owner_id: owner });
+      const otherChild = makeVersion({
+        id: versionId(11),
+        owner_id: owner,
+        parentVersionId: versionId(10),
+        derivationType: 'pitch_shift',
+      });
+      const agg = makeAggregate({
+        owner,
+        versions: [targetSource, targetChild, otherSource, otherChild],
+      });
+
+      agg.removeVersionWithDerivations(owner, versionId(1));
+
+      const survivors = agg.getVersions().map((v) => v.id);
+      expect(survivors).toEqual([versionId(10), versionId(11)]);
+    });
+
+    it('should reject if the source version is not found', () => {
+      const agg = makeAggregate();
+      expectDomainError(
+        () => agg.removeVersionWithDerivations(userId(), versionId(999)),
+        'MUSIC_VERSION_NOT_FOUND',
+      );
+    });
+
+    it('should reject if the source version is not owned by the actor', () => {
+      const owner = userId(1);
+      const source = makeVersion({ id: versionId(1), owner_id: owner });
+      const agg = makeAggregate({ owner, versions: [source] });
+
+      expectDomainError(
+        () => agg.removeVersionWithDerivations(userId(2), versionId(1)),
+        'MUSIC_VERSION_NOT_OWNED',
+      );
+    });
+  });
+
   describe('updateVersionMetadata', () => {
     it('should update version metadata', () => {
       const owner = userId();
