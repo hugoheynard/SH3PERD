@@ -3,9 +3,7 @@ import {
   type TBaseMongoRepoDeps,
 } from '../../utils/repoAdaptersHelpers/BaseMongoRepository.js';
 import type { IMusicReferenceRepository } from '../types/musicReferences.types.js';
-import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
 import type { TMusicReferenceDomainModel, TMusicReferenceId } from '@sh3pherd/shared-types';
-import type { Filter } from 'mongodb';
 
 export class MusicReferenceMongoRepository
   extends BaseMongoRepository<TMusicReferenceDomainModel>
@@ -16,37 +14,30 @@ export class MusicReferenceMongoRepository
   }
 
   async findAll(): Promise<TMusicReferenceDomainModel[]> {
-    return this.collection.find().toArray() as Promise<TMusicReferenceDomainModel[]>;
+    return this.findMany({ filter: {} });
   }
 
   async findByExactTitleAndArtist(
     title: string,
     artist: string,
   ): Promise<TMusicReferenceDomainModel | null> {
-    const filter: Filter<TMusicReferenceDomainModel> = {
-      title,
-      artist,
-    };
-    return this.collection.findOne(filter) as Promise<TMusicReferenceDomainModel | null>;
+    return this.findOne({ filter: { title, artist } });
   }
 
   async findByIds(ids: TMusicReferenceId[]): Promise<TMusicReferenceDomainModel[]> {
-    if (ids.length === 0) return [];
-    const filter: Filter<TMusicReferenceDomainModel> = { id: { $in: ids } };
-    return this.collection.find(filter).toArray() as Promise<TMusicReferenceDomainModel[]>;
+    if (ids.length === 0) {
+      return [];
+    }
+    return this.findMany({ filter: { id: { $in: ids } } });
   }
 
   /**
    * Fuzzy text search via Atlas Search index.
    * Index 'default' must exist on the collection with paths ['title', 'artist'].
    */
-  @technicalFailThrows500(
-    'MUSIC_REFERENCE_TEXT_SEARCH_ERROR',
-    'Error while searching music references by text',
-  )
   async findByTextSearch(searchValue: string): Promise<TMusicReferenceDomainModel[]> {
     return this.collection
-      .aggregate([
+      .aggregate<TMusicReferenceDomainModel>([
         {
           $search: {
             index: 'default',
@@ -64,6 +55,6 @@ export class MusicReferenceMongoRepository
         { $limit: 20 },
         { $project: { _id: 0 } },
       ])
-      .toArray() as Promise<TMusicReferenceDomainModel[]>;
+      .toArray();
   }
 }

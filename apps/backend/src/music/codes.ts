@@ -5,6 +5,10 @@ export const MusicApiCodes = {
     code: 'MUSIC_REFERENCE_CREATED',
     message: 'Music reference created successfully',
   },
+  MUSIC_REFERENCES_SEARCHED: {
+    code: 'MUSIC_REFERENCES_SEARCHED',
+    message: 'Music references searched successfully',
+  },
   DUPLICATE: {
     code: 'MUSIC_REFERENCE_DUPLICATE',
     message: 'This music reference already exists',
