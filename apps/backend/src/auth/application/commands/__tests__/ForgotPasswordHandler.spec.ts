@@ -3,7 +3,7 @@ import { ForgotPasswordCommand, ForgotPasswordHandler } from '../ForgotPasswordC
 
 describe('ForgotPasswordHandler', () => {
   const mockUser = {
-    id: 'user_test-forgot' as any,
+    id: 'userCredential_test-forgot' as any,
     email: 'test@test.com',
     password: 'hashed',
     active: true,

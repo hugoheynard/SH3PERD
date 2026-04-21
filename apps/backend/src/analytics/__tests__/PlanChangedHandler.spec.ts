@@ -21,12 +21,12 @@ describe('PlanChangedHandler', () => {
   });
 
   it('should persist a plan_changed analytics event', async () => {
-    const event = new PlanChangedEvent('user_123', 'artist_free', 'artist_pro', 'annual');
+    const event = new PlanChangedEvent('userCredential_123', 'artist_free', 'artist_pro', 'annual');
 
     await handler.handle(event);
 
     expect(trackSpy).toHaveBeenCalledTimes(1);
-    expect(trackSpy).toHaveBeenCalledWith('plan_changed', 'user_123', {
+    expect(trackSpy).toHaveBeenCalledWith('plan_changed', 'userCredential_123', {
       from: 'artist_free',
       to: 'artist_pro',
       billing_cycle: 'annual',
@@ -34,11 +34,11 @@ describe('PlanChangedHandler', () => {
   });
 
   it('should handle null billing cycle', async () => {
-    const event = new PlanChangedEvent('user_456', 'company_free', 'company_pro', null);
+    const event = new PlanChangedEvent('userCredential_456', 'company_free', 'company_pro', null);
 
     await handler.handle(event);
 
-    expect(trackSpy).toHaveBeenCalledWith('plan_changed', 'user_456', {
+    expect(trackSpy).toHaveBeenCalledWith('plan_changed', 'userCredential_456', {
       from: 'company_free',
       to: 'company_pro',
       billing_cycle: null,

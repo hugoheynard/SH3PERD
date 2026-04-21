@@ -7,7 +7,7 @@ import { PlaylistColors } from '@sh3pherd/shared-types';
 @ApiModel()
 export class ShowPayload {
   @ApiProperty({ example: 'show_abc-123' }) id!: string;
-  @ApiProperty({ example: 'user_abc-123' }) owner_id!: string;
+  @ApiProperty({ example: 'userCredential_abc-123' }) owner_id!: string;
   @ApiProperty({ example: 'Sunset Gig' }) name!: string;
   @ApiProperty({ required: false, example: 'Saint-Tropez 2026' }) description?: string;
   @ApiProperty({ example: 'indigo', enum: PlaylistColors }) color!: string;

@@ -3,7 +3,7 @@ import { BusinessError } from '../../../../utils/errorManagement/BusinessError.j
 import { hashToken } from '../../../core/token-manager/hashToken.js';
 
 describe('ResetPasswordHandler', () => {
-  const mockUserId = 'user_test-reset' as any;
+  const mockUserId = 'userCredential_test-reset' as any;
   const rawToken = 'pwReset_abc-123';
   const hashedToken = hashToken(rawToken);
 

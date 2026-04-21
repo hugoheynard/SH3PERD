@@ -2,7 +2,7 @@ import type { TUserId } from '@sh3pherd/shared-types';
 import { RecordMetadataUtils } from './RecordMetadataUtils.js';
 
 describe('RecordMetadataUtils', () => {
-  const creatorId: TUserId = 'user_123';
+  const creatorId: TUserId = 'userCredential_123';
 
   describe('create', () => {
     it('should create a new metadata object with default fields', () => {

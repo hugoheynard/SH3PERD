@@ -2,7 +2,7 @@ import { ChangePasswordCommand, ChangePasswordHandler } from '../ChangePasswordC
 import { BusinessError } from '../../../../utils/errorManagement/BusinessError.js';
 
 describe('ChangePasswordHandler', () => {
-  const mockUserId = 'user_test-change-pw' as any;
+  const mockUserId = 'userCredential_test-change-pw' as any;
   const mockUser = {
     id: mockUserId,
     email: 'test@test.com',

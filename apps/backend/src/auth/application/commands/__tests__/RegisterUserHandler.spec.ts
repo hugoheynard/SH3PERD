@@ -98,7 +98,10 @@ describe('RegisterUserHandler', () => {
     it('should throw USER_ALREADY_EXISTS (409)', async () => {
       const { handler, userCredsRepo } = createHandler();
       userCredsRepo.findOne.mockResolvedValue(
-        makeCredentialsRecord({ id: 'user_existing' as TUserId, email: validPayload.email }),
+        makeCredentialsRecord({
+          id: 'userCredential_existing' as TUserId,
+          email: validPayload.email,
+        }),
       );
 
       try {
@@ -115,7 +118,10 @@ describe('RegisterUserHandler', () => {
       const { handler, userCredsRepo, passwordService, userProfileRepo, eventBus } =
         createHandler();
       userCredsRepo.findOne.mockResolvedValue(
-        makeCredentialsRecord({ id: 'user_existing' as TUserId, email: validPayload.email }),
+        makeCredentialsRecord({
+          id: 'userCredential_existing' as TUserId,
+          email: validPayload.email,
+        }),
       );
 
       try {

@@ -43,7 +43,7 @@ describe('ContractContextGuard', () => {
   let userPrefsRepo: MockRepo;
   let contractRepo: MockRepo;
 
-  const USER = 'user_42' as TUserId;
+  const USER = 'userCredential_42' as TUserId;
   const CONTRACT = 'contract_abc' as TContractId;
 
   beforeEach(() => {

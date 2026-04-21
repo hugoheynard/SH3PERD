@@ -7,7 +7,7 @@ import { PlaylistColors } from '@sh3pherd/shared-types';
 @ApiModel()
 export class PlaylistPayload {
   @ApiProperty({ example: 'playlist_abc-123', description: 'Playlist ID (prefixed)' }) id!: string;
-  @ApiProperty({ example: 'user_abc-123', description: 'Owner user ID (prefixed)' })
+  @ApiProperty({ example: 'userCredential_abc-123', description: 'Owner user ID (prefixed)' })
   owner_id!: string;
   @ApiProperty({ example: 'Friday Night Set' }) name!: string;
   @ApiProperty({ required: false, example: 'Chill vibes for Friday gig' }) description?: string;

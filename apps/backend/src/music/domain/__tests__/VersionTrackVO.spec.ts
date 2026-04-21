@@ -83,8 +83,8 @@ describe('VersionTrackVO', () => {
   describe('buildS3Key', () => {
     it('should build the correct storage key', () => {
       const vo = new VersionTrackVO(makeTrack({ id: trackId(1), fileName: 'my-song.mp3' }));
-      const key = vo.buildS3Key('user_123', 'musicVer_456');
-      expect(key).toBe(`tracks/user_123/musicVer_456/${trackId(1)}/my-song.mp3`);
+      const key = vo.buildS3Key('userCredential_123', 'musicVer_456');
+      expect(key).toBe(`tracks/userCredential_123/musicVer_456/${trackId(1)}/my-song.mp3`);
     });
   });
 

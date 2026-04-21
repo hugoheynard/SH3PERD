@@ -29,7 +29,7 @@ describe('AnalyticsEventService', () => {
 
   describe('track()', () => {
     it('should insert an analytics event with correct fields', async () => {
-      await service.track('user_registered', 'user_123', {
+      await service.track('user_registered', 'userCredential_123', {
         email: 'hugo@example.com',
         first_name: 'Hugo',
       });
@@ -39,7 +39,7 @@ describe('AnalyticsEventService', () => {
 
       const event = insertedEvents[0];
       expect(event.type).toBe('user_registered');
-      expect(event.user_id).toBe('user_123');
+      expect(event.user_id).toBe('userCredential_123');
       expect(event.id).toMatch(/^event_/);
       expect(event.timestamp).toBeInstanceOf(Date);
       expect(event.metadata).toEqual({
@@ -49,7 +49,7 @@ describe('AnalyticsEventService', () => {
     });
 
     it('should default metadata to empty object when not provided', async () => {
-      await service.track('user_login', 'user_456');
+      await service.track('user_login', 'userCredential_456');
 
       expect(insertedEvents).toHaveLength(1);
       expect(insertedEvents[0].metadata).toEqual({});
@@ -62,7 +62,10 @@ describe('AnalyticsEventService', () => {
 
       // Should NOT throw
       await expect(
-        service.track('plan_changed', 'user_789', { from: 'artist_free', to: 'artist_pro' }),
+        service.track('plan_changed', 'userCredential_789', {
+          from: 'artist_free',
+          to: 'artist_pro',
+        }),
       ).resolves.toBeUndefined();
     });
   });
@@ -70,9 +73,9 @@ describe('AnalyticsEventService', () => {
   describe('trackBatch()', () => {
     it('should insert multiple events in a single call', async () => {
       await service.trackBatch([
-        { type: 'user_registered', userId: 'user_1', metadata: { email: 'a@b.com' } },
-        { type: 'user_login', userId: 'user_1' },
-        { type: 'track_uploaded', userId: 'user_2', metadata: { track_id: 'trk_1' } },
+        { type: 'user_registered', userId: 'userCredential_1', metadata: { email: 'a@b.com' } },
+        { type: 'user_login', userId: 'userCredential_1' },
+        { type: 'track_uploaded', userId: 'userCredential_2', metadata: { track_id: 'trk_1' } },
       ]);
 
       expect(mockRepo.insertMany).toHaveBeenCalledTimes(1);
@@ -95,7 +98,7 @@ describe('AnalyticsEventService', () => {
       (mockRepo.insertMany as jest.Mock).mockRejectedValueOnce(new Error('Write concern error'));
 
       await expect(
-        service.trackBatch([{ type: 'user_login', userId: 'user_1' }]),
+        service.trackBatch([{ type: 'user_login', userId: 'userCredential_1' }]),
       ).resolves.toBeUndefined();
     });
   });

@@ -4,7 +4,7 @@ import type { TSecureCookieConfig } from '../../../types/auth.domain.tokens.js';
 import type { IRefreshTokenRepository } from '../../../repositories/RefreshTokenMongoRepository.js';
 import type { TUserId, TRefreshTokenRecord } from '@sh3pherd/shared-types';
 
-const mockUserId = 'user_test-rt' as TUserId;
+const mockUserId = 'userCredential_test-rt' as TUserId;
 
 const mockRepo: jest.Mocked<IRefreshTokenRepository> = {
   save: jest.fn().mockResolvedValue(true),

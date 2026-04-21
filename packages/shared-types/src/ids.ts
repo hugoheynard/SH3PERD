@@ -8,37 +8,43 @@
  * z.ZodType<T> annotations on all domain schemas that contain these IDs.
  */
 
-import { createIdSchema } from './utils/createIdSchema.js';
+import { createIdSchema } from "./utils/createIdSchema.js";
 
-// ─── User ──────────────────────────────────────────────────
-export type TUserId = `user_${string}`;
-export const SUserId = createIdSchema<TUserId>('user');
+// ─── User (credential) ─────────────────────────────────────
+// Name kept as `TUserId` across the codebase because in this model
+// one user === one credential document. The template literal reflects
+// the runtime shape (`UserCredentialEntity` stores docs with that prefix,
+// and the JWT's `user_id` claim carries the same value). If a distinct
+// `User` aggregate ever splits from `UserCredentials`, introduce a
+// separate `TUserCredentialsId` rather than reusing this alias.
+export type TUserId = `userCredential_${string}`;
+export const SUserId = createIdSchema<TUserId>("userCredential");
 
 // ─── Company ────────────────────────────────────────────────
 export type TCompanyId = `company_${string}`;
-export const SCompanyId = createIdSchema<TCompanyId>('company');
+export const SCompanyId = createIdSchema<TCompanyId>("company");
 
 // ─── Contract & Addendum ───────────────────────────────────
 export type TContractId = `contract_${string}`;
-export const SContractId = createIdSchema<TContractId>('contract');
+export const SContractId = createIdSchema<TContractId>("contract");
 
 export type TContractSignatureId = `contract_signature_${string}`;
 export const SContractSignatureId =
-  createIdSchema<TContractSignatureId>('contract_signature');
+  createIdSchema<TContractSignatureId>("contract_signature");
 
 export type TSignatureId = `signature_${string}`;
-export const SSignatureId = createIdSchema<TSignatureId>('signature_id');
+export const SSignatureId = createIdSchema<TSignatureId>("signature_id");
 
 export type TAddendumId = `addendum_${string}`;
-export const SAddendumId = createIdSchema<TAddendumId>('addendum');
+export const SAddendumId = createIdSchema<TAddendumId>("addendum");
 
 // ─── OrgNode (organizational tree node) ─────────────────────
 export type TOrgNodeId = `orgnode_${string}`;
-export const SOrgNodeId = createIdSchema<TOrgNodeId>('orgnode');
+export const SOrgNodeId = createIdSchema<TOrgNodeId>("orgnode");
 
 export type TOrgMembershipEventId = `orgevt_${string}`;
 export const SOrgMembershipEventId =
-  createIdSchema<TOrgMembershipEventId>('orgevt');
+  createIdSchema<TOrgMembershipEventId>("orgevt");
 
 // ─── Backward-compat aliases (will be removed) ─────────────
 /** @deprecated Use TOrgNodeId */
@@ -52,41 +58,41 @@ export const SCastMembershipEventId = SOrgMembershipEventId;
 
 // ─── Music ─────────────────────────────────────────────────
 export type TMusicReferenceId = `musicRef_${string}`;
-export const SMusicReferenceId = createIdSchema<TMusicReferenceId>('musicRef');
+export const SMusicReferenceId = createIdSchema<TMusicReferenceId>("musicRef");
 
 export type TMusicVersionId = `musicVer_${string}`;
-export const SMusicVersionId = createIdSchema<TMusicVersionId>('musicVer');
+export const SMusicVersionId = createIdSchema<TMusicVersionId>("musicVer");
 
 export type TRepertoireEntryId = `repEntry_${string}`;
 export const SRepertoireEntryId =
-  createIdSchema<TRepertoireEntryId>('repEntry');
+  createIdSchema<TRepertoireEntryId>("repEntry");
 
 export type TVersionTrackId = `track_${string}`;
-export const SVersionTrackId = createIdSchema<TVersionTrackId>('track');
+export const SVersionTrackId = createIdSchema<TVersionTrackId>("track");
 
 // ─── Integration Credentials ─────────────────────────────
 export type TIntegrationCredentialsId = `intcred_${string}`;
 export const SIntegrationCredentialsId =
-  createIdSchema<TIntegrationCredentialsId>('intcred');
+  createIdSchema<TIntegrationCredentialsId>("intcred");
 
 // ─── Playlist ─────────────────────────────────────────────
 export type TPlaylistId = `playlist_${string}`;
-export const SPlaylistId = createIdSchema<TPlaylistId>('playlist');
+export const SPlaylistId = createIdSchema<TPlaylistId>("playlist");
 
 export type TPlaylistTrackId = `plTrack_${string}`;
-export const SPlaylistTrackId = createIdSchema<TPlaylistTrackId>('plTrack');
+export const SPlaylistTrackId = createIdSchema<TPlaylistTrackId>("plTrack");
 
 // ─── Event / Calendar ──────────────────────────────────────
 export type TEventId = `event_${string}`;
-export const SEventId = createIdSchema<TEventId>('event');
+export const SEventId = createIdSchema<TEventId>("event");
 
 // ─── Show (artist personal performance planner) ────────────
 export type TShowId = `show_${string}`;
-export const SShowId = createIdSchema<TShowId>('show');
+export const SShowId = createIdSchema<TShowId>("show");
 
 export type TShowSectionId = `showSection_${string}`;
-export const SShowSectionId = createIdSchema<TShowSectionId>('showSection');
+export const SShowSectionId = createIdSchema<TShowSectionId>("showSection");
 
 export type TShowSectionItemId = `showItem_${string}`;
 export const SShowSectionItemId =
-  createIdSchema<TShowSectionItemId>('showItem');
+  createIdSchema<TShowSectionItemId>("showItem");

@@ -56,7 +56,7 @@ export class CompanyController {
           properties: {
             id: { type: 'string', example: 'company_abc-123' },
             name: { type: 'string', example: 'Acme Productions' },
-            owner_id: { type: 'string', example: 'user_xyz-456' },
+            owner_id: { type: 'string', example: 'userCredential_xyz-456' },
             status: { type: 'string', example: 'active' },
             description: { type: 'string', example: '' },
             orgLayers: {

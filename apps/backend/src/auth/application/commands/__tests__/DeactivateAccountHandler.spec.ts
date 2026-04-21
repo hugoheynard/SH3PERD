@@ -2,7 +2,7 @@ import { DeactivateAccountCommand, DeactivateAccountHandler } from '../Deactivat
 import { BusinessError } from '../../../../utils/errorManagement/BusinessError.js';
 
 describe('DeactivateAccountHandler', () => {
-  const mockUserId = 'user_test-deactivate' as any;
+  const mockUserId = 'userCredential_test-deactivate' as any;
   const mockUser = {
     id: mockUserId,
     email: 'test@test.com',

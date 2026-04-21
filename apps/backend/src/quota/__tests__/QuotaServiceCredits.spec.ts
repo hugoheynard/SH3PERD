@@ -19,7 +19,7 @@ describe('QuotaService — Credit Pack Integration', () => {
   beforeEach(async () => {
     mockPlatformRepo = {
       findByUserId: jest.fn().mockResolvedValue({
-        user_id: 'user_1',
+        user_id: 'userCredential_1',
         plan: 'artist_pro',
         account_type: 'artist',
         status: 'active',
@@ -56,7 +56,7 @@ describe('QuotaService — Credit Pack Integration', () => {
       (mockCreditRepo.getRemainingCredits as jest.Mock).mockResolvedValue(5); // 5 bonus credits
 
       // Should NOT throw — effective limit = 10 + 5 = 15, usage = 10
-      await expect(service.ensureAllowed('user_1', 'master_ai')).resolves.toBeUndefined();
+      await expect(service.ensureAllowed('userCredential_1', 'master_ai')).resolves.toBeUndefined();
     });
 
     it('should reject when both plan limit AND bonus credits are exhausted', async () => {
@@ -64,14 +64,14 @@ describe('QuotaService — Credit Pack Integration', () => {
       (mockCreditRepo.getRemainingCredits as jest.Mock).mockResolvedValue(5); // 5 bonus
 
       // Effective limit = 10 + 5 = 15. Usage = 15, trying to add 1 → 16 > 15
-      await expect(service.ensureAllowed('user_1', 'master_ai')).rejects.toThrow(
+      await expect(service.ensureAllowed('userCredential_1', 'master_ai')).rejects.toThrow(
         QuotaExceededError,
       );
     });
 
     it('should not query credits for unlimited resources', async () => {
       // artist_pro has unlimited repertoire_entry (limit = -1)
-      await service.ensureAllowed('user_1', 'repertoire_entry');
+      await service.ensureAllowed('userCredential_1', 'repertoire_entry');
 
       expect(mockCreditRepo.getRemainingCredits).not.toHaveBeenCalled();
     });
@@ -82,17 +82,17 @@ describe('QuotaService — Credit Pack Integration', () => {
       // After increment, usage is now 12 (plan limit = 10)
       (mockUsageRepo.getCount as jest.Mock).mockResolvedValue(12);
 
-      await service.recordUsage('user_1', 'master_ai', 1);
+      await service.recordUsage('userCredential_1', 'master_ai', 1);
 
       expect(mockUsageRepo.increment).toHaveBeenCalledWith(
-        'user_1',
+        'userCredential_1',
         'master_ai',
         expect.any(String),
         1,
       );
       // Usage (12) > plan limit (10), so decrement 1 credit
       expect(mockCreditRepo.decrementCredits).toHaveBeenCalledWith(
-        'user_1',
+        'userCredential_1',
         'master_ai',
         expect.any(String),
         1,
@@ -102,7 +102,7 @@ describe('QuotaService — Credit Pack Integration', () => {
     it('should NOT decrement credits when still within plan limit', async () => {
       (mockUsageRepo.getCount as jest.Mock).mockResolvedValue(5); // well within limit of 10
 
-      await service.recordUsage('user_1', 'master_ai', 1);
+      await service.recordUsage('userCredential_1', 'master_ai', 1);
 
       expect(mockCreditRepo.decrementCredits).not.toHaveBeenCalled();
     });
@@ -115,7 +115,7 @@ describe('QuotaService — Credit Pack Integration', () => {
       ]);
       (mockCreditRepo.getRemainingCredits as jest.Mock).mockResolvedValue(5);
 
-      const summary = await service.getUsageSummary('user_1');
+      const summary = await service.getUsageSummary('userCredential_1');
 
       const aiItem = summary.find((s) => s.resource === 'master_ai');
       expect(aiItem).toBeDefined();
@@ -127,7 +127,7 @@ describe('QuotaService — Credit Pack Integration', () => {
     it('should return 0 bonus for unlimited resources', async () => {
       (mockCreditRepo.getRemainingCredits as jest.Mock).mockResolvedValue(0);
 
-      const summary = await service.getUsageSummary('user_1');
+      const summary = await service.getUsageSummary('userCredential_1');
 
       const repItem = summary.find((s) => s.resource === 'repertoire_entry');
       expect(repItem).toBeDefined();

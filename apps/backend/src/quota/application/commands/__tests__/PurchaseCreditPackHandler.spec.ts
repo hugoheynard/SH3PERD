@@ -30,7 +30,7 @@ describe('PurchaseCreditPackHandler', () => {
   });
 
   it('should create a purchase record for a valid pack', async () => {
-    const cmd = new PurchaseCreditPackCommand('user_123', 'pack_ai_10', 'pi_stripe_xxx');
+    const cmd = new PurchaseCreditPackCommand('userCredential_123', 'pack_ai_10', 'pi_stripe_xxx');
 
     const result = await handler.execute(cmd);
 
@@ -39,7 +39,7 @@ describe('PurchaseCreditPackHandler', () => {
 
     const purchase = savedPurchases[0];
     expect(purchase.id).toMatch(/^creditPurchase_/);
-    expect(purchase.user_id).toBe('user_123');
+    expect(purchase.user_id).toBe('userCredential_123');
     expect(purchase.resource).toBe('master_ai');
     expect(purchase.amount).toBe(10);
     expect(purchase.remaining).toBe(10);
@@ -54,7 +54,7 @@ describe('PurchaseCreditPackHandler', () => {
   });
 
   it('should use permanent period_key for one_time packs', async () => {
-    const cmd = new PurchaseCreditPackCommand('user_456', 'pack_storage_5');
+    const cmd = new PurchaseCreditPackCommand('userCredential_456', 'pack_storage_5');
 
     await handler.execute(cmd);
 
@@ -66,7 +66,7 @@ describe('PurchaseCreditPackHandler', () => {
   });
 
   it('should throw 404 for non-existent pack', async () => {
-    const cmd = new PurchaseCreditPackCommand('user_789', 'pack_does_not_exist');
+    const cmd = new PurchaseCreditPackCommand('userCredential_789', 'pack_does_not_exist');
 
     await expect(handler.execute(cmd)).rejects.toThrow(BusinessError);
 
