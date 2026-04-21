@@ -97,7 +97,8 @@ export function makeReference(
   return new MusicReferenceEntity({
     title: 'Test Song',
     artist: 'Test Artist',
-    owner_id: userId(),
+    creator: { type: 'user', id: userId() },
+    created_at: new Date('2026-01-01T00:00:00.000Z'),
     ...overrides,
   });
 }
@@ -120,7 +121,7 @@ export function makeAggregate(
 ): RepertoireEntryAggregate {
   const owner = options.owner ?? userId();
   const entry = makeEntry({ owner_id: owner });
-  const reference = makeReference({ owner_id: owner });
+  const reference = makeReference({ creator: { type: 'user', id: owner } });
   const versions = options.versions ?? [];
   return new RepertoireEntryAggregate(entry, reference, versions);
 }

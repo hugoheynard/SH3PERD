@@ -70,7 +70,7 @@ export class MusicVersionPayload {
   @ApiProperty({ example: 'musicVer_abc-123', description: 'Version ID (prefixed)' }) id!: string;
   @ApiProperty({ example: 'musicRef_xyz-456', description: 'Music reference ID (prefixed)' })
   musicReference_id!: string;
-  @ApiProperty({ example: 'user_abc-123', description: 'Owner user ID (prefixed)' })
+  @ApiProperty({ example: 'userCredential_abc-123', description: 'Owner user ID (prefixed)' })
   owner_id!: string;
   @ApiProperty({ example: 'Acoustic cover' }) label!: string;
   @ApiProperty({ example: 'pop', enum: GENRES }) genre!: string;
@@ -108,8 +108,42 @@ export class MusicVersionPayload {
 export class MusicReferencePayload {
   @ApiProperty({ example: 'musicRef_abc-123', description: 'Music reference ID (prefixed)' })
   id!: string;
-  @ApiProperty({ example: 'Bohemian Rhapsody' }) title!: string;
-  @ApiProperty({ example: 'Queen' }) originalArtist!: string;
+  @ApiProperty({ example: 'bohemian rhapsody', description: 'Normalized (lowercased + trimmed)' })
+  title!: string;
+  @ApiProperty({ example: 'queen', description: 'Normalized (lowercased + trimmed)' })
+  artist!: string;
+  @ApiProperty({
+    description:
+      'Contribution marker (discriminated union). type="user" carries the contributor id; type="system" carries the import source and is used for crawler-seeded references.',
+    oneOf: [
+      {
+        type: 'object',
+        required: ['type', 'id'],
+        properties: {
+          type: { type: 'string', enum: ['user'] },
+          id: { type: 'string', example: 'userCredential_abc-123' },
+        },
+      },
+      {
+        type: 'object',
+        required: ['type', 'source'],
+        properties: {
+          type: { type: 'string', enum: ['system'] },
+          source: { type: 'string', enum: ['musicbrainz', 'spotify', 'seed'] },
+        },
+      },
+    ],
+  })
+  creator!:
+    | { type: 'user'; id: string }
+    | { type: 'system'; source: 'musicbrainz' | 'spotify' | 'seed' };
+  @ApiProperty({
+    type: 'string',
+    format: 'date-time',
+    example: '2026-04-21T10:16:11.000Z',
+    description: 'Timestamp of the community contribution (ISO 8601)',
+  })
+  created_at!: Date;
 }
 
 // Request body for POST /music/references — Zod-derived from shared-types
@@ -130,7 +164,7 @@ export class RepertoireEntryPayload {
   id!: string;
   @ApiProperty({ example: 'musicRef_xyz-456', description: 'Music reference ID (prefixed)' })
   musicReference_id!: string;
-  @ApiProperty({ example: 'user_abc-123', description: 'Owner user ID (prefixed)' })
+  @ApiProperty({ example: 'userCredential_abc-123', description: 'Owner user ID (prefixed)' })
   owner_id!: string;
 }
 
@@ -184,7 +218,7 @@ export class UserMusicLibraryViewModelPayload {
 
 @ApiModel()
 export class CrossMemberPayload {
-  @ApiProperty({ example: 'user_abc-123', description: 'Member user ID (prefixed)' })
+  @ApiProperty({ example: 'userCredential_abc-123', description: 'Member user ID (prefixed)' })
   userId!: string;
   @ApiProperty({ example: 'Hugo Heynard' }) displayName!: string;
   @ApiProperty({ example: 'HH' }) avatarInitials!: string;

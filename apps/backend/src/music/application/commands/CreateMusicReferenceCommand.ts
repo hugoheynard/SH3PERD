@@ -57,12 +57,14 @@ export class CreateMusicReferenceHandler implements ICommandHandler<
 
     // Deduplicate: return existing if exact match found
     const existing = await this.refRepo.findByExactTitleAndArtist(title, artist);
-    if (existing) return existing;
+    if (existing) {
+      return existing;
+    }
 
-    const ref = new MusicReferenceEntity({
+    const ref = MusicReferenceEntity.create({
       title: cmd.payload.title,
       artist: cmd.payload.artist,
-      owner_id: cmd.actor_id,
+      creator: { type: 'user', id: cmd.actor_id },
     });
 
     const saved = await this.refRepo.save(ref.toDomain);

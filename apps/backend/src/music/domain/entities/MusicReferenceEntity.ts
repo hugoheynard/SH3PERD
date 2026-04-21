@@ -1,32 +1,64 @@
 import { Entity, type TEntityInput } from '../../../utils/entities/Entity.js';
-import type { TMusicReferenceDomainModel, TUserId } from '@sh3pherd/shared-types';
+import { DomainError } from '../../../utils/errorManagement/DomainError.js';
+import type { TMusicReferenceCreator, TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
 
 /**
- * The canonical song entry — shared across all users.
+ * The canonical song entry — shared across the whole user base.
  *
- * Represents "the song itself" (e.g. "Bohemian Rhapsody" by Queen),
- * not any user's rendition. Title and artist are normalized to lowercase
- * on construction and mutation to enable case-insensitive dedup.
+ * A reference represents "the song itself" (e.g. "Bohemian Rhapsody" by Queen),
+ * not any user's rendition. Two design invariants drive this entity:
  *
- * Invariants:
- * - title must be non-empty
- * - artist must be non-empty
- * - title/artist are always stored trimmed + lowercased
+ * 1. **Immutable from the user-facing API.** Once created, title and artist
+ *    cannot be changed by end users. Any correction, dedup merge, or metadata
+ *    enrichment is an admin / cron / AI operation that must emit its own
+ *    domain event (`music_reference_merged`, `music_reference_enriched`…).
+ *    There is intentionally no `rename()` method on this entity.
  *
- * @note This entity is NOT managed by RepertoireEntryAggregate.
- *       References exist independently of any user's repertoire.
+ * 2. **No ownership.** `creator` is a contribution marker for the community
+ *    leaderboard, not an access-control field. All users can read every
+ *    reference; no user can mutate any reference. Gating of admin ops happens
+ *    at the controller / permission layer, never via this entity.
+ *
+ * Storage invariants:
+ * - `title` and `artist` are trimmed + lowercased on construction to enable
+ *   case-insensitive dedup via `findByExactTitleAndArtist`.
+ * - `title` and `artist` must be non-empty.
  */
 export class MusicReferenceEntity extends Entity<TMusicReferenceDomainModel> {
   constructor(props: TEntityInput<TMusicReferenceDomainModel>) {
     const title = props.title.trim().toLowerCase();
     const artist = props.artist.trim().toLowerCase();
     if (!title) {
-      throw new Error('MUSIC_REFERENCE_TITLE_REQUIRED');
+      throw new DomainError('Music reference title is required', {
+        code: 'MUSIC_REFERENCE_TITLE_REQUIRED',
+        context: { field: 'title' },
+      });
     }
     if (!artist) {
-      throw new Error('MUSIC_REFERENCE_ARTIST_REQUIRED');
+      throw new DomainError('Music reference artist is required', {
+        code: 'MUSIC_REFERENCE_ARTIST_REQUIRED',
+        context: { field: 'artist' },
+      });
     }
     super({ ...props, title, artist }, 'musicRef');
+  }
+
+  /**
+   * Factory for a freshly contributed reference. Stamps `created_at` at the
+   * moment of contribution so the domain model carries the community timeline
+   * without leaking a persistence-level `TRecordMetadata`.
+   */
+  static create(input: {
+    title: string;
+    artist: string;
+    creator: TMusicReferenceCreator;
+  }): MusicReferenceEntity {
+    return new MusicReferenceEntity({
+      title: input.title,
+      artist: input.artist,
+      creator: input.creator,
+      created_at: new Date(),
+    });
   }
 
   get title(): string {
@@ -35,25 +67,10 @@ export class MusicReferenceEntity extends Entity<TMusicReferenceDomainModel> {
   get artist(): string {
     return this.props.artist;
   }
-  get owner_id(): TUserId {
-    return this.props.owner_id;
+  get creator(): TMusicReferenceCreator {
+    return this.props.creator;
   }
-
-  isOwnedBy(userId: TUserId): boolean {
-    return this.props.owner_id === userId;
-  }
-
-  /** Rename the reference. Enforces non-empty title/artist invariant. */
-  rename(title: string, artist: string): void {
-    const t = title.trim().toLowerCase();
-    const a = artist.trim().toLowerCase();
-    if (!t) {
-      throw new Error('MUSIC_REFERENCE_TITLE_REQUIRED');
-    }
-    if (!a) {
-      throw new Error('MUSIC_REFERENCE_ARTIST_REQUIRED');
-    }
-    this.props.title = t;
-    this.props.artist = a;
+  get createdAt(): Date {
+    return this.props.created_at;
   }
 }
