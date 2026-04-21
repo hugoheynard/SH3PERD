@@ -73,6 +73,7 @@ export class RepertoireEntryAggregateRepository implements IRepertoireEntryAggre
       });
     }
     const refDoc = references[0];
+
     if (!refDoc) {
       throw new BusinessError('Music reference not found', {
         code: 'MUSIC_REFERENCE_NOT_FOUND',

@@ -36,7 +36,9 @@ export class CreateRepertoireEntryHandler implements ICommandHandler<
       cmd.actorId,
       cmd.payload.musicReference_id,
     );
-    if (existing) return existing;
+    if (existing) {
+      return existing;
+    }
 
     // Quota check — before creating
     await this.quotaService.ensureAllowed(cmd.actorId, 'repertoire_entry');
