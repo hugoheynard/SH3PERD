@@ -25,6 +25,7 @@ export function computeRatingSeries(
   const energySeries: (number | null)[] = [];
   const effortSeries: (number | null)[] = [];
   const qualitySeries: (number | null)[] = [];
+  const durationSeries: number[] = [];
   let totalDurationSeconds = 0;
 
   for (const version of versions) {
@@ -35,9 +36,12 @@ export function computeRatingSeries(
     const favorite = pickFavoriteTrack(version.tracks);
     if (!favorite) {
       qualitySeries.push(null);
+      durationSeries.push(0);
       continue;
     }
-    totalDurationSeconds += resolveTrackDuration(favorite);
+    const duration = resolveTrackDuration(favorite);
+    durationSeries.push(duration);
+    totalDurationSeconds += duration;
     qualitySeries.push(favorite.analysisResult?.quality ?? null);
   }
 
@@ -52,6 +56,7 @@ export function computeRatingSeries(
     energySeries,
     effortSeries,
     qualitySeries,
+    durationSeries,
   };
 }
 

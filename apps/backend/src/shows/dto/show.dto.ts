@@ -40,6 +40,7 @@ class RatingSeriesFields {
   @ApiProperty({ type: [Number], example: [2, 3, 3, 4] }) energySeries!: (number | null)[];
   @ApiProperty({ type: [Number], example: [3, 3, 2, 3] }) effortSeries!: (number | null)[];
   @ApiProperty({ type: [Number], example: [3, null, 4, 3] }) qualitySeries!: (number | null)[];
+  @ApiProperty({ type: [Number], example: [180, 240, 210, 195] }) durationSeries!: number[];
 }
 
 // ─── Summary (list view) ────────────────────────────────

@@ -218,6 +218,11 @@ export interface TShowRatingSeries {
   energySeries: (number | null)[];
   effortSeries: (number | null)[];
   qualitySeries: (number | null)[];
+  /** Per-track duration in seconds, aligned with the rating series
+   *  (same order, same length). Tracks with no resolvable duration
+   *  surface as `0` so the sparkline can fall back to uniform spacing
+   *  when every entry is zero. */
+  durationSeries: number[];
 }
 
 export interface TShowSummaryViewModel extends TShowRatingSeries {
