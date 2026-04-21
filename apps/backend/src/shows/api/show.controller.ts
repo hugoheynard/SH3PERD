@@ -191,6 +191,27 @@ export class ShowController {
     return buildShowApiResponse(ShowApiCodes.SHOW_SECTION_ADDED, result);
   }
 
+  // NOTE: `PATCH :id/sections/reorder` MUST come before
+  // `PATCH :id/sections/:sectionId` — NestJS/Express match by registration
+  // order, and the wildcard would otherwise swallow `reorder` as a
+  // section id. `SUpdateShowSectionPayload` would then strip the
+  // unknown `ordered_ids` key and the request would silently succeed
+  // as a no-op update.
+  @ApiOperation({ summary: 'Reorder sections' })
+  @RequirePermission(P.Music.Show.Write)
+  @Patch(':id/sections/reorder')
+  async reorderSections(
+    @ActorId() actorId: TUserId,
+    @Param('id') showId: TShowId,
+    @Body('payload', new ZodValidationPipe(SReorderShowSectionsPayload))
+    payload: { ordered_ids: TShowSectionId[] },
+  ): Promise<TApiResponse<TShowDomainModel>> {
+    const result = await this.cmdBus.execute<ReorderShowSectionsCommand, TShowDomainModel>(
+      new ReorderShowSectionsCommand(actorId, showId, payload.ordered_ids),
+    );
+    return buildShowApiResponse(ShowApiCodes.SHOW_SECTIONS_REORDERED, result);
+  }
+
   @ApiOperation({ summary: 'Update a section' })
   @RequirePermission(P.Music.Show.Write)
   @Patch(':id/sections/:sectionId')
@@ -225,21 +246,6 @@ export class ShowController {
       new RemoveShowSectionCommand(actorId, showId, sectionId),
     );
     return buildShowApiResponse(ShowApiCodes.SHOW_SECTION_REMOVED, result);
-  }
-
-  @ApiOperation({ summary: 'Reorder sections' })
-  @RequirePermission(P.Music.Show.Write)
-  @Patch(':id/sections/reorder')
-  async reorderSections(
-    @ActorId() actorId: TUserId,
-    @Param('id') showId: TShowId,
-    @Body('payload', new ZodValidationPipe(SReorderShowSectionsPayload))
-    payload: { ordered_ids: TShowSectionId[] },
-  ): Promise<TApiResponse<TShowDomainModel>> {
-    const result = await this.cmdBus.execute<ReorderShowSectionsCommand, TShowDomainModel>(
-      new ReorderShowSectionsCommand(actorId, showId, payload.ordered_ids),
-    );
-    return buildShowApiResponse(ShowApiCodes.SHOW_SECTIONS_REORDERED, result);
   }
 
   // ── Items ─────────────────────────────────────────────
