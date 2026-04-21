@@ -29,8 +29,34 @@
               {{ show.name }}
             </h1>
           }
-          @if (show.description) {
-            <p class="show-header__desc">{{ show.description }}</p>
+          @if (editingShowDescription()) {
+            <textarea
+              class="show-header__desc-input"
+              rows="2"
+              placeholder="Describe the show (venue, vibe, notes)…"
+              [ngModel]="showDescriptionDraft()"
+              (ngModelChange)="showDescriptionDraft.set($event)"
+              (blur)="commitEditShowDescription()"
+              (keydown)="onShowDescriptionKey($event)"
+              autofocus
+              aria-label="Show description"
+            ></textarea>
+          } @else if (show.description) {
+            <p
+              class="show-header__desc"
+              (dblclick)="startEditShowDescription()"
+              title="Double-click to edit"
+            >
+              {{ show.description }}
+            </p>
+          } @else {
+            <button
+              type="button"
+              class="show-header__desc-add"
+              (click)="startEditShowDescription()"
+            >
+              + Add description
+            </button>
           }
         </div>
 
@@ -40,6 +66,12 @@
             size="sm"
             tooltip="Rename show"
             (clicked)="startRenameShow()"
+          />
+          <sh3-button-icon
+            icon="file-add"
+            size="sm"
+            tooltip="Edit description"
+            (clicked)="startEditShowDescription()"
           />
           <sh3-button-icon
             icon="check-circle"

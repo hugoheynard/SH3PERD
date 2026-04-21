@@ -143,6 +143,53 @@ $colors: (
     font-size: var(--text-md);
     color: var(--text-secondary);
     line-height: 1.5;
+    cursor: text;
+    white-space: pre-wrap;
+  }
+
+  &__desc-input {
+    margin: 0;
+    width: 100%;
+    font-family: inherit;
+    font-size: var(--text-md);
+    color: var(--text-secondary);
+    line-height: 1.5;
+    padding: 6px 8px;
+    background: var(--surface-subtle);
+    border: 1px solid var(--accent-color-border);
+    border-radius: var(--radius-xs);
+    outline: none;
+    resize: vertical;
+    min-height: 48px;
+    transition: border-color var(--t-fast);
+
+    &:focus {
+      border-color: var(--accent-color);
+      background: var(--surface-raised);
+    }
+  }
+
+  &__desc-add {
+    all: unset;
+    cursor: pointer;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--accent-color-light);
+    padding: 2px 8px;
+    border-radius: var(--radius-xs);
+    border: 1px dashed var(--accent-color-border);
+    align-self: flex-start;
+    transition:
+      background var(--t-fast),
+      color var(--t-fast);
+
+    &:hover {
+      background: var(--accent-color-dim);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 1px;
+    }
   }
 
   &__actions {

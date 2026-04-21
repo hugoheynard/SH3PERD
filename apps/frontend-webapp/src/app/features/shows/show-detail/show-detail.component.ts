@@ -142,6 +142,13 @@ export class ShowDetailComponent {
   protected readonly editingShowName = signal(false);
   protected readonly showNameDraft = signal('');
 
+  /** Inline-edit state for the show description. Multi-line textarea
+   *  because descriptions tend to carry context (venue, setlist notes)
+   *  that doesn't fit on one line. Submitting an empty string clears
+   *  the description server-side. */
+  protected readonly editingShowDescription = signal(false);
+  protected readonly showDescriptionDraft = signal('');
+
   /** Inline-edit state for section names (one at a time). */
   protected readonly editingSectionId = signal<TShowSectionId | null>(null);
   protected readonly sectionNameDraft = signal('');
@@ -173,6 +180,7 @@ export class ShowDetailComponent {
       }
       // Drop any in-flight edit when the shown entity changes.
       this.editingShowName.set(false);
+      this.editingShowDescription.set(false);
       this.editingSectionId.set(null);
       this.editingTargetId.set(null);
       this.editingShowTarget.set(false);
@@ -208,6 +216,46 @@ export class ShowDetailComponent {
     } else if (event.key === 'Escape') {
       event.preventDefault();
       this.cancelRenameShow();
+    }
+  }
+
+  // ── Show description (inline) ────────────────────────
+
+  startEditShowDescription(): void {
+    const show = this.detail();
+    if (!show) return;
+    this.showDescriptionDraft.set(show.description ?? '');
+    this.editingShowDescription.set(true);
+  }
+
+  commitEditShowDescription(): void {
+    const show = this.detail();
+    if (!show) return;
+    const next = this.showDescriptionDraft();
+    const trimmed = next.trim();
+    this.editingShowDescription.set(false);
+    const current = show.description ?? '';
+    if (trimmed === current.trim()) return;
+    // Preserve intentional whitespace within the description but send
+    // an empty string when the user cleared everything so the backend
+    // drops the field (Zod schema accepts `''` as "no description").
+    this.mutations.updateShow(show.id, {
+      description: trimmed.length ? next : '',
+    });
+  }
+
+  cancelEditShowDescription(): void {
+    this.editingShowDescription.set(false);
+  }
+
+  /** Enter commits, Shift+Enter inserts a newline, Escape cancels. */
+  onShowDescriptionKey(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.commitEditShowDescription();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.cancelEditShowDescription();
     }
   }
 
