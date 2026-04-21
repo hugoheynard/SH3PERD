@@ -1,5 +1,6 @@
 import type { AnyBulkWriteOperation, Filter, UpdateFilter } from 'mongodb';
 import type {
+  TShowAxisCriterion,
   TShowId,
   TShowSectionDomainModel,
   TShowSectionId,
@@ -32,6 +33,8 @@ export type IShowSectionRepository = {
       Pick<TShowSectionDomainModel, 'name' | 'position'> & {
         target: TShowSectionTarget | null;
         lastPlayedAt: number | null;
+        startAt: number | null;
+        axisCriteria: TShowAxisCriterion[] | null;
       }
     >,
   ): Promise<boolean>;
@@ -75,17 +78,28 @@ export class ShowSectionMongoRepository
       Pick<TShowSectionDomainModel, 'name' | 'position'> & {
         target: TShowSectionTarget | null;
         lastPlayedAt: number | null;
+        startAt: number | null;
+        axisCriteria: TShowAxisCriterion[] | null;
       }
     >,
   ): Promise<boolean> {
-    const { target, lastPlayedAt, ...rest } = patch;
+    const { target, lastPlayedAt, startAt, axisCriteria, ...rest } = patch;
     const update: UpdateFilter<SectionRecord> = {};
     const set: Record<string, unknown> = { ...rest };
-    const unset: { target?: ''; lastPlayedAt?: '' } = {};
+    const unset: {
+      target?: '';
+      lastPlayedAt?: '';
+      startAt?: '';
+      axisCriteria?: '';
+    } = {};
     if (target === null) unset.target = '';
     else if (target !== undefined) set['target'] = target;
     if (lastPlayedAt === null) unset.lastPlayedAt = '';
     else if (lastPlayedAt !== undefined) set['lastPlayedAt'] = lastPlayedAt;
+    if (startAt === null) unset.startAt = '';
+    else if (startAt !== undefined) set['startAt'] = startAt;
+    if (axisCriteria === null) unset.axisCriteria = '';
+    else if (axisCriteria !== undefined) set['axisCriteria'] = axisCriteria;
     if (Object.keys(set).length) update.$set = set as UpdateFilter<SectionRecord>['$set'];
     if (Object.keys(unset).length) update.$unset = unset as UpdateFilter<SectionRecord>['$unset'];
     if (!update.$set && !update.$unset) return true;

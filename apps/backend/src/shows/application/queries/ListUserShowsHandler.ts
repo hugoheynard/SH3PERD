@@ -103,6 +103,9 @@ export class ListUserShowsHandler implements IQueryHandler<
         lastPlayedAt: s.show.lastPlayedAt,
         sectionCount: sections.length,
         totalDurationTargetSeconds: s.show.totalDurationTargetSeconds,
+        totalTrackCountTarget: s.show.totalTrackCountTarget,
+        startAt: s.show.startAt,
+        axisCriteria: s.show.axisCriteria ? [...s.show.axisCriteria] : undefined,
         ...computeRatingSeries(showVersions),
       };
     });

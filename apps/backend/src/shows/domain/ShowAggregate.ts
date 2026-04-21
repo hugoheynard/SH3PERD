@@ -4,6 +4,7 @@ import type {
   TMusicVersionId,
   TPlaylistColor,
   TPlaylistId,
+  TShowAxisCriterion,
   TShowId,
   TShowSectionId,
   TShowSectionItemDomainModel,
@@ -57,6 +58,9 @@ export class ShowAggregate extends AggregateRoot {
     description?: string;
     defaultSectionName?: string;
     totalDurationTargetSeconds?: number;
+    totalTrackCountTarget?: number;
+    startAt?: number;
+    axisCriteria?: TShowAxisCriterion[];
   }): ShowAggregate {
     const showId = `show_${randomUUID()}` as TShowId;
     const show = new ShowEntity({
@@ -66,6 +70,9 @@ export class ShowAggregate extends AggregateRoot {
       color: params.color,
       description: params.description,
       totalDurationTargetSeconds: params.totalDurationTargetSeconds,
+      totalTrackCountTarget: params.totalTrackCountTarget,
+      startAt: params.startAt,
+      axisCriteria: params.axisCriteria,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -135,6 +142,21 @@ export class ShowAggregate extends AggregateRoot {
     this.show.setTotalDurationTarget(seconds);
   }
 
+  setTotalTrackCountTarget(actorId: TUserId, count: number | undefined): void {
+    this.policy.ensureOwnedBy(actorId, this.show);
+    this.show.setTotalTrackCountTarget(count);
+  }
+
+  setShowStartAt(actorId: TUserId, startAt: number | undefined): void {
+    this.policy.ensureOwnedBy(actorId, this.show);
+    this.show.setStartAt(startAt);
+  }
+
+  setShowAxisCriteria(actorId: TUserId, criteria: readonly TShowAxisCriterion[] | undefined): void {
+    this.policy.ensureOwnedBy(actorId, this.show);
+    this.show.setAxisCriteria(criteria);
+  }
+
   markShowPlayed(actorId: TUserId, playedAt: number = Date.now()): void {
     this.policy.ensureOwnedBy(actorId, this.show);
     this.show.markPlayed(playedAt);
@@ -147,7 +169,12 @@ export class ShowAggregate extends AggregateRoot {
 
   addSection(
     actorId: TUserId,
-    params: { name: string; target?: TShowSectionTarget },
+    params: {
+      name: string;
+      target?: TShowSectionTarget;
+      startAt?: number;
+      axisCriteria?: TShowAxisCriterion[];
+    },
   ): ShowSectionEntity {
     this.policy.ensureOwnedBy(actorId, this.show);
     const section = new ShowSectionEntity({
@@ -155,6 +182,8 @@ export class ShowAggregate extends AggregateRoot {
       name: params.name,
       position: this.sections.length,
       target: params.target,
+      startAt: params.startAt,
+      axisCriteria: params.axisCriteria,
     });
     this.sections.push(section);
     this.show.touch();
@@ -198,6 +227,26 @@ export class ShowAggregate extends AggregateRoot {
   ): void {
     this.policy.ensureOwnedBy(actorId, this.show);
     this.getSectionOrThrow(sectionId).setTarget(target);
+    this.show.touch();
+  }
+
+  setSectionStartAt(
+    actorId: TUserId,
+    sectionId: TShowSectionId,
+    startAt: number | undefined,
+  ): void {
+    this.policy.ensureOwnedBy(actorId, this.show);
+    this.getSectionOrThrow(sectionId).setStartAt(startAt);
+    this.show.touch();
+  }
+
+  setSectionAxisCriteria(
+    actorId: TUserId,
+    sectionId: TShowSectionId,
+    criteria: readonly TShowAxisCriterion[] | undefined,
+  ): void {
+    this.policy.ensureOwnedBy(actorId, this.show);
+    this.getSectionOrThrow(sectionId).setAxisCriteria(criteria);
     this.show.touch();
   }
 
@@ -287,6 +336,12 @@ export class ShowAggregate extends AggregateRoot {
       color: this.show.color,
       description: this.show.description,
       totalDurationTargetSeconds: this.show.totalDurationTargetSeconds,
+      totalTrackCountTarget: this.show.totalTrackCountTarget,
+      // Do NOT copy startAt — a scheduled show should not clone the
+      // date; duplicates are templates to reschedule.
+      axisCriteria: this.show.axisCriteria
+        ? this.show.axisCriteria.map((c) => ({ ...c }))
+        : undefined,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -298,6 +353,8 @@ export class ShowAggregate extends AggregateRoot {
         name: src.name,
         position: idx,
         target: src.target,
+        // Same rule as the show: clones lose the schedule.
+        axisCriteria: src.axisCriteria ? src.axisCriteria.map((c) => ({ ...c })) : undefined,
       });
       const clonedItems = src.items.map((it) => ({
         ...it,

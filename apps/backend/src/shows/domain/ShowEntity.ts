@@ -1,5 +1,11 @@
 import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
-import type { TPlaylistColor, TShowDomainModel, TShowId, TUserId } from '@sh3pherd/shared-types';
+import type {
+  TPlaylistColor,
+  TShowAxisCriterion,
+  TShowDomainModel,
+  TShowId,
+  TUserId,
+} from '@sh3pherd/shared-types';
 
 /**
  * A user-owned show — the top-level container that holds sections.
@@ -53,6 +59,15 @@ export class ShowEntity extends Entity<TShowDomainModel> {
   get totalDurationTargetSeconds(): number | undefined {
     return this.props.totalDurationTargetSeconds;
   }
+  get totalTrackCountTarget(): number | undefined {
+    return this.props.totalTrackCountTarget;
+  }
+  get startAt(): number | undefined {
+    return this.props.startAt;
+  }
+  get axisCriteria(): readonly TShowAxisCriterion[] | undefined {
+    return this.props.axisCriteria;
+  }
 
   // ── queries ─────────────────────────────────────────────
 
@@ -95,6 +110,52 @@ export class ShowEntity extends Entity<TShowDomainModel> {
         throw new Error('SHOW_TOTAL_DURATION_TARGET_INVALID');
       }
       this.props.totalDurationTargetSeconds = Math.floor(seconds);
+    }
+    this.touch();
+  }
+
+  /** Set (or clear) the whole-show track-count target. Same semantics
+   *  as `setTotalDurationTarget` — they are stored independently but
+   *  meant to be mutually exclusive in the UI. */
+  setTotalTrackCountTarget(count: number | undefined): void {
+    if (count === undefined) {
+      this.props.totalTrackCountTarget = undefined;
+    } else {
+      if (!Number.isFinite(count) || count <= 0) {
+        throw new Error('SHOW_TOTAL_TRACK_COUNT_TARGET_INVALID');
+      }
+      this.props.totalTrackCountTarget = Math.floor(count);
+    }
+    this.touch();
+  }
+
+  /** Set (or clear) the absolute scheduled start time. `undefined`
+   *  clears the schedule. Any finite positive number is accepted — we
+   *  don't gate on "future" because the artist may backfill past plans. */
+  setStartAt(startAt: number | undefined): void {
+    if (startAt === undefined) {
+      this.props.startAt = undefined;
+    } else {
+      if (!Number.isFinite(startAt) || startAt < 0) {
+        throw new Error('SHOW_START_AT_INVALID');
+      }
+      this.props.startAt = Math.floor(startAt);
+    }
+    this.touch();
+  }
+
+  /** Replace the per-axis criteria list. Pass `undefined` to clear.
+   *  Empty array clears too — both are collapsed to `undefined` on
+   *  storage so diffs stay clean. At most one entry per axis: the last
+   *  occurrence wins if the caller passes duplicates. */
+  setAxisCriteria(criteria: readonly TShowAxisCriterion[] | undefined): void {
+    if (!criteria || criteria.length === 0) {
+      this.props.axisCriteria = undefined;
+    } else {
+      // Dedupe by axis keeping the last occurrence (caller-friendly).
+      const byAxis = new Map<string, TShowAxisCriterion>();
+      for (const c of criteria) byAxis.set(c.axis, { ...c });
+      this.props.axisCriteria = Array.from(byAxis.values());
     }
     this.touch();
   }

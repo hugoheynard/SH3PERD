@@ -48,6 +48,8 @@ export class ShowAggregateRepository {
               position: doc.position,
               target: doc.target,
               lastPlayedAt: doc.lastPlayedAt,
+              startAt: doc.startAt,
+              axisCriteria: doc.axisCriteria,
             },
             doc.items ?? [],
           ),
@@ -99,6 +101,8 @@ export class ShowAggregateRepository {
       position: s.position,
       target: s.target,
       lastPlayedAt: s.lastPlayedAt,
+      startAt: s.startAt,
+      axisCriteria: s.axisCriteria ? [...s.axisCriteria] : undefined,
       items: s.itemsSnapshot,
     }));
     if (newSectionRecords.length) {
@@ -119,6 +123,8 @@ export class ShowAggregateRepository {
         position: section.position,
         target: section.target ?? null,
         lastPlayedAt: section.lastPlayedAt ?? null,
+        startAt: section.startAt ?? null,
+        axisCriteria: section.axisCriteria ? [...section.axisCriteria] : null,
       });
       await this.sectionRepo.replaceItems(section.id, section.itemsSnapshot);
     }

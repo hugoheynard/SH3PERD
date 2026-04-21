@@ -3,6 +3,7 @@ import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
 import type {
   TPlaylistId,
   TMusicVersionId,
+  TShowAxisCriterion,
   TShowId,
   TShowSectionDomainModel,
   TShowSectionId,
@@ -68,6 +69,12 @@ export class ShowSectionEntity extends Entity<TShowSectionDomainModel> {
   get lastPlayedAt(): number | undefined {
     return this.props.lastPlayedAt;
   }
+  get startAt(): number | undefined {
+    return this.props.startAt;
+  }
+  get axisCriteria(): readonly TShowAxisCriterion[] | undefined {
+    return this.props.axisCriteria;
+  }
   get items(): readonly TShowSectionItemDomainModel[] {
     return this._items;
   }
@@ -92,6 +99,32 @@ export class ShowSectionEntity extends Entity<TShowSectionDomainModel> {
 
   setTarget(target: TShowSectionTarget | undefined): void {
     this.props.target = target;
+  }
+
+  /** Set (or clear) the absolute scheduled start time for this section.
+   *  Independent per section — no auto-cascade from the show or siblings. */
+  setStartAt(startAt: number | undefined): void {
+    if (startAt === undefined) {
+      this.props.startAt = undefined;
+      return;
+    }
+    if (!Number.isFinite(startAt) || startAt < 0) {
+      throw new Error('SHOW_SECTION_START_AT_INVALID');
+    }
+    this.props.startAt = Math.floor(startAt);
+  }
+
+  /** Replace the per-axis criteria list. Empty / undefined collapses
+   *  to `undefined` on storage. At most one entry per axis — caller
+   *  duplicates are deduped with "last write wins" semantics. */
+  setAxisCriteria(criteria: readonly TShowAxisCriterion[] | undefined): void {
+    if (!criteria || criteria.length === 0) {
+      this.props.axisCriteria = undefined;
+      return;
+    }
+    const byAxis = new Map<string, TShowAxisCriterion>();
+    for (const c of criteria) byAxis.set(c.axis, { ...c });
+    this.props.axisCriteria = Array.from(byAxis.values());
   }
 
   setPosition(position: number): void {

@@ -33,12 +33,24 @@ export class UpdateShowInfoHandler implements ICommandHandler<
     if (cmd.payload.description !== undefined) {
       aggregate.updateDescription(cmd.actorId, cmd.payload.description);
     }
-    // `null` explicitly clears the target; `undefined` leaves it.
+    // For every nullable field: `null` clears, `undefined` leaves it.
     if (cmd.payload.totalDurationTargetSeconds !== undefined) {
       aggregate.setTotalDurationTarget(
         cmd.actorId,
         cmd.payload.totalDurationTargetSeconds ?? undefined,
       );
+    }
+    if (cmd.payload.totalTrackCountTarget !== undefined) {
+      aggregate.setTotalTrackCountTarget(
+        cmd.actorId,
+        cmd.payload.totalTrackCountTarget ?? undefined,
+      );
+    }
+    if (cmd.payload.startAt !== undefined) {
+      aggregate.setShowStartAt(cmd.actorId, cmd.payload.startAt ?? undefined);
+    }
+    if (cmd.payload.axisCriteria !== undefined) {
+      aggregate.setShowAxisCriteria(cmd.actorId, cmd.payload.axisCriteria ?? undefined);
     }
     await this.aggregateRepo.save(aggregate);
     return aggregate.showEntity.toDomain;

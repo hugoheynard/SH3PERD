@@ -2,6 +2,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
 import { ShowAggregateRepository } from '../../repositories/ShowAggregateRepository.js';
 import type {
+  TShowAxisCriterion,
   TShowDomainModel,
   TShowId,
   TShowSectionId,
@@ -15,7 +16,12 @@ export class AddShowSectionCommand {
   constructor(
     public readonly actorId: TUserId,
     public readonly showId: TShowId,
-    public readonly payload: { name: string; target?: TShowSectionTarget },
+    public readonly payload: {
+      name: string;
+      target?: TShowSectionTarget;
+      startAt?: number;
+      axisCriteria?: TShowAxisCriterion[];
+    },
   ) {}
 }
 
@@ -42,7 +48,12 @@ export class UpdateShowSectionCommand {
     public readonly actorId: TUserId,
     public readonly showId: TShowId,
     public readonly sectionId: TShowSectionId,
-    public readonly payload: { name?: string; target?: TShowSectionTarget | null },
+    public readonly payload: {
+      name?: string;
+      target?: TShowSectionTarget | null;
+      startAt?: number | null;
+      axisCriteria?: TShowAxisCriterion[] | null;
+    },
   ) {}
 }
 
@@ -59,10 +70,19 @@ export class UpdateShowSectionHandler implements ICommandHandler<
     if (cmd.payload.name !== undefined) {
       aggregate.renameSection(cmd.actorId, cmd.sectionId, cmd.payload.name);
     }
+    // For every nullable field: `null` clears, `undefined` leaves it.
     if (cmd.payload.target !== undefined) {
-      // Payload target is `T | null`: null means "clear the target",
-      // which the domain represents as `undefined`.
       aggregate.setSectionTarget(cmd.actorId, cmd.sectionId, cmd.payload.target ?? undefined);
+    }
+    if (cmd.payload.startAt !== undefined) {
+      aggregate.setSectionStartAt(cmd.actorId, cmd.sectionId, cmd.payload.startAt ?? undefined);
+    }
+    if (cmd.payload.axisCriteria !== undefined) {
+      aggregate.setSectionAxisCriteria(
+        cmd.actorId,
+        cmd.sectionId,
+        cmd.payload.axisCriteria ?? undefined,
+      );
     }
     await this.aggregateRepo.save(aggregate);
     return aggregate.showEntity.toDomain;

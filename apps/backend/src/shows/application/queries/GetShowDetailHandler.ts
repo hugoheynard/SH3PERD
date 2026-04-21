@@ -119,6 +119,8 @@ export class GetShowDetailHandler implements IQueryHandler<
         position: section.position,
         target: section.target,
         lastPlayedAt: section.lastPlayedAt,
+        startAt: section.startAt,
+        axisCriteria: section.axisCriteria ? [...section.axisCriteria] : undefined,
         items,
         ...computeRatingSeries(sectionVersions),
       };
@@ -148,6 +150,9 @@ export class GetShowDetailHandler implements IQueryHandler<
       lastPlayedAt: show.lastPlayedAt,
       sectionCount: sections.length,
       totalDurationTargetSeconds: show.totalDurationTargetSeconds,
+      totalTrackCountTarget: show.totalTrackCountTarget,
+      startAt: show.startAt,
+      axisCriteria: show.axisCriteria ? [...show.axisCriteria] : undefined,
       sections,
       ...computeRatingSeries(showVersions),
     };
