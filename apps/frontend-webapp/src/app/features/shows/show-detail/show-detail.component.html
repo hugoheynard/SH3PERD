@@ -237,25 +237,31 @@
       @for (section of show.sections; track trackSection($index, section)) {
         <section
           class="section"
+          [attr.data-section-id]="section.id"
           [class.dragging]="reorderingSectionId() === section.id"
+          [class.is-item-reordering]="
+            isItemSlotDrag() && overSectionId() === section.id
+          "
+          uiDndDrag
+          [dndType]="'show-section'"
+          [dndData]="sectionDragPayload(section)"
+          [dragHandle]="'.section__handle'"
+          [canDrag]="!singleMode()"
           uiDndDropZone
           [dropZone_id]="section.id"
-          [dropZoneAccept]="['music-track', 'playlist']"
+          [dropZoneAccept]="['music-track', 'playlist', 'show-section-item']"
           (uiDndDrop)="onSectionDrop(show.id, section.id, $event)"
         >
           @if (!singleMode()) {
             <header class="section__head">
-              <button
-                type="button"
+              <span
                 class="section__handle"
                 title="Drag to reorder"
                 aria-label="Drag to reorder"
-                uiDndDrag
-                [dndType]="'show-section'"
-                [dndData]="sectionDragPayload(section)"
+                role="button"
               >
                 <sh3-icon name="menu" [size]="14" />
-              </button>
+              </span>
               <div class="section__title-block">
                 @if (editingSectionId() === section.id) {
                   <input
@@ -391,7 +397,23 @@
           } @else {
             <ul class="item-list">
               @for (item of section.items; track trackItem($index, item)) {
-                <li class="item" [attr.data-kind]="item.kind">
+                <li
+                  class="item"
+                  [attr.data-kind]="item.kind"
+                  [class.dragging]="reorderingItem()?.itemId === item.id"
+                  uiDndDrag
+                  [dndType]="'show-section-item'"
+                  [dndData]="itemDragPayload(section, item)"
+                  [dragHandle]="'.item__handle'"
+                >
+                  <span
+                    class="item__handle"
+                    title="Drag to reorder"
+                    aria-label="Drag to reorder"
+                    role="button"
+                  >
+                    <sh3-icon name="menu" [size]="12" />
+                  </span>
                   <sh3-icon
                     class="item__kind"
                     [name]="item.kind === 'playlist' ? 'list' : 'music-note'"
@@ -408,6 +430,25 @@
                     (clicked)="onRemoveItem(section, item)"
                   />
                 </li>
+              }
+              <!-- Cursor-driven item insertion bar — visible during any
+                   item-slot drag (reorder/move OR external add from the
+                   music library / playlists) when the cursor is over
+                   this section. -->
+              @if (
+                isItemSlotDrag() &&
+                overSectionId() === section.id &&
+                itemInsertIndex() >= 0
+              ) {
+                <div
+                  class="item-insertion-bar"
+                  [style.top.px]="itemInsertY()"
+                  aria-hidden="true"
+                >
+                  <span class="item-insertion-dot"></span>
+                  <span class="item-insertion-line"></span>
+                  <span class="item-insertion-dot"></span>
+                </div>
               }
             </ul>
           }

@@ -16,6 +16,7 @@ import type {
   TPlaylistId,
   TShowId,
   TShowSectionId,
+  TShowSectionItemId,
   TShowSectionItemView,
   TShowSectionViewModel,
   TShowSummaryViewModel,
@@ -36,6 +37,7 @@ import { DragSessionService } from '../../../core/drag-and-drop/drag-session.ser
 import type {
   DragState,
   ShowSectionDragPayload,
+  ShowSectionItemDragPayload,
 } from '../../../core/drag-and-drop/drag.types';
 
 /** Four rating axes with per-axis accent colour — the shared rating
@@ -134,6 +136,113 @@ export class ShowDetailComponent {
   protected readonly isReorderingSection = computed(
     () => this.reorderingSectionId() !== null,
   );
+
+  /** Payload of the item currently being dragged for reorder/move, or
+   *  null when no `show-section-item` drag is active. */
+  protected readonly reorderingItem =
+    computed<ShowSectionItemDragPayload | null>(() => {
+      const drag = this.dragSession.current();
+      if (drag?.type !== 'show-section-item') return null;
+      return drag.data as ShowSectionItemDragPayload;
+    });
+
+  /** True when any drag that targets an item slot is active — item
+   *  reorder/move (`show-section-item`) OR external add from the
+   *  library (`music-track`) OR playlist bundle add (`playlist`).
+   *  Drives the cursor-driven insertion bar visibility so dropping a
+   *  new track from outside lets the user choose the landing slot
+   *  instead of always appending. */
+  protected readonly isItemSlotDrag = computed<boolean>(() => {
+    const drag = this.dragSession.current();
+    return (
+      drag?.type === 'show-section-item' ||
+      drag?.type === 'music-track' ||
+      drag?.type === 'playlist'
+    );
+  });
+
+  /** Which section the cursor is currently over during an item drag,
+   *  or null when the cursor is outside every section. Used to show
+   *  the insertion bar inside the right section and to pick the
+   *  target section / landing slot on drop.
+   *
+   *  Hit-tests by scanning every rendered `<section class="section">`
+   *  element under the sections container — avoids the complexity of
+   *  viewChildren refs per row and naturally handles scroll + layout
+   *  changes. */
+  protected readonly overSectionId = computed<TShowSectionId | null>(() => {
+    if (!this.isItemSlotDrag()) return null;
+    const root = this.sectionsEl()?.nativeElement;
+    if (!root) return null;
+    const cursor = this.dragSession.cursor();
+    const rows = root.querySelectorAll<HTMLElement>('.section');
+    for (const row of Array.from(rows)) {
+      const r = row.getBoundingClientRect();
+      if (
+        cursor.x >= r.left &&
+        cursor.x <= r.right &&
+        cursor.y >= r.top &&
+        cursor.y <= r.bottom
+      ) {
+        const id = row.getAttribute('data-section-id');
+        return id ? (id as TShowSectionId) : null;
+      }
+    }
+    return null;
+  });
+
+  /** Insertion slot (0..items.length) under the cursor within the
+   *  section the cursor is currently over. `-1` when not applicable.
+   *
+   *  Semantics: `i` = "drop before item i" so `0` is top-of-list and
+   *  `items.length` is end-of-list.
+   */
+  protected readonly itemInsertIndex = computed<number>(() => {
+    const sectionId = this.overSectionId();
+    if (!sectionId) return -1;
+    const root = this.sectionsEl()?.nativeElement;
+    if (!root) return -1;
+    const list = root.querySelector<HTMLElement>(
+      `.section[data-section-id="${sectionId}"] .item-list`,
+    );
+    if (!list) return 0; // empty section — drop at position 0
+
+    const cursor = this.dragSession.cursor();
+    const rows = list.querySelectorAll<HTMLElement>('.item');
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i].getBoundingClientRect();
+      if (cursor.y < r.top + r.height / 2) return i;
+    }
+    return rows.length;
+  });
+
+  /** Y offset (in px, inside the over-section) at which to render the
+   *  item insertion bar. `-1` hides it. */
+  protected readonly itemInsertY = computed<number>(() => {
+    const sectionId = this.overSectionId();
+    if (!sectionId) return -1;
+    const idx = this.itemInsertIndex();
+    if (idx < 0) return -1;
+    const root = this.sectionsEl()?.nativeElement;
+    if (!root) return -1;
+    const list = root.querySelector<HTMLElement>(
+      `.section[data-section-id="${sectionId}"] .item-list`,
+    );
+    if (!list) return -1;
+
+    const rows = list.querySelectorAll<HTMLElement>('.item');
+    const bbox = list.getBoundingClientRect();
+
+    if (rows.length === 0) return 4;
+    if (idx === 0) {
+      return rows[0].getBoundingClientRect().top - bbox.top + list.scrollTop;
+    }
+    if (idx >= rows.length) {
+      const last = rows[rows.length - 1].getBoundingClientRect();
+      return last.bottom - bbox.top + list.scrollTop;
+    }
+    return rows[idx].getBoundingClientRect().top - bbox.top + list.scrollTop;
+  });
 
   /**
    * Insertion slot (0..sections.length) under the cursor while a
@@ -596,31 +705,113 @@ export class ShowDetailComponent {
   }
 
   /** Drop handler for a section's DnD zone. Narrows the drag type to
-   *  one of the two accepted kinds and dispatches the matching add-item
-   *  mutation. Position defaults to "end of section" — the backend's
-   *  aggregate reindexes on write. */
+   *  one of the accepted kinds and dispatches the matching mutation:
+   *  - `music-track` / `playlist` → add a new item at end of section
+   *  - `show-section-item` → reorder within section or move across
+   *    sections depending on source, using the cursor-driven insertion
+   *    slot for position. */
   onSectionDrop(
     showId: TShowId,
     sectionId: TShowSectionId,
     drag: DragState,
   ): void {
     if (drag.type === 'music-track') {
+      const position = this.resolveAddPosition();
       this.mutations.addItem(
         showId,
         sectionId,
         'version',
         drag.data.versionId as TMusicVersionId,
+        position,
       );
       return;
     }
     if (drag.type === 'playlist') {
+      const position = this.resolveAddPosition();
       this.mutations.addItem(
         showId,
         sectionId,
         'playlist',
         drag.data.playlistId as TPlaylistId,
+        position,
+      );
+      return;
+    }
+    if (drag.type === 'show-section-item') {
+      this.onItemReorderDrop(
+        showId,
+        sectionId,
+        drag.data as ShowSectionItemDragPayload,
       );
     }
+  }
+
+  /** Read the cursor-driven insertion slot at drop time for external
+   *  adds (music-track / playlist). Returns `undefined` when no valid
+   *  slot so the backend falls back to "append at end" — happens on
+   *  the rare case where the computed index resets between the last
+   *  pointermove and the pointerup (e.g. cursor exits the section). */
+  private resolveAddPosition(): number | undefined {
+    const idx = this.itemInsertIndex();
+    return idx >= 0 ? idx : undefined;
+  }
+
+  /** Apply an item drop: same-section reorder or cross-section move.
+   *  Insertion slot is captured from `itemInsertIndex()` at drop time. */
+  private onItemReorderDrop(
+    showId: TShowId,
+    targetSectionId: TShowSectionId,
+    payload: ShowSectionItemDragPayload,
+  ): void {
+    const insertIdx = this.itemInsertIndex();
+    if (insertIdx < 0) return;
+
+    if (payload.sectionId === targetSectionId) {
+      // Same section — reorder.
+      const show = this.detail();
+      if (!show) return;
+      const section = show.sections.find((s) => s.id === targetSectionId);
+      if (!section) return;
+
+      const currentIds = section.items.map((it) => it.id);
+      const fromIdx = currentIds.indexOf(payload.itemId);
+      if (fromIdx === -1) return;
+
+      // Drop-in-place is a no-op.
+      if (insertIdx === fromIdx || insertIdx === fromIdx + 1) return;
+
+      // Translate the visual slot (ghost still counts as occupying the
+      // source row) into the post-removal slot the aggregate expects.
+      const newPosition = insertIdx > fromIdx ? insertIdx - 1 : insertIdx;
+      const next = currentIds.slice();
+      next.splice(fromIdx, 1);
+      next.splice(newPosition, 0, payload.itemId);
+      this.mutations.reorderItems(showId, targetSectionId, next);
+      return;
+    }
+
+    // Cross-section — move item. Backend accepts the insertion slot
+    // directly (items from the source section are already gone).
+    this.mutations.moveItem(
+      showId,
+      payload.itemId,
+      payload.sectionId,
+      targetSectionId,
+      insertIdx,
+    );
+  }
+
+  /** Payload builder for an item drag source — carries identity + a
+   *  display title for future drag previews. */
+  itemDragPayload(
+    section: TShowSectionViewModel,
+    item: TShowSectionItemView,
+  ): ShowSectionItemDragPayload {
+    return {
+      itemId: item.id as TShowSectionItemId,
+      sectionId: section.id,
+      title: this.itemTitle(item),
+    };
   }
 
   /** Payload for a section's drag source — computed per-render so the

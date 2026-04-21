@@ -493,7 +493,8 @@ $colors: (
   &.dragging {
     opacity: 0.35;
     filter: saturate(0.6);
-    box-shadow: inset 0 0 0 1px var(--accent-color-border, rgba(129, 140, 248, 0.25));
+    box-shadow: inset 0 0 0 1px
+      var(--accent-color-border, rgba(129, 140, 248, 0.25));
   }
 
   &__head {
@@ -819,6 +820,7 @@ $colors: (
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative; /* anchor for the item-level insertion bar */
 }
 
 .item {
@@ -831,11 +833,48 @@ $colors: (
   border-radius: var(--radius-sm);
   transition:
     background var(--t-fast),
-    border-color var(--t-fast);
+    border-color var(--t-fast),
+    opacity var(--t-fast),
+    filter var(--t-fast);
 
   &:hover {
     background: var(--surface-raised);
     border-color: var(--border-light);
+
+    .item__handle {
+      color: var(--text-secondary);
+    }
+  }
+
+  /* Source row during an item reorder — dim + desaturate, same grammar
+     as the section ghost. */
+  &.dragging {
+    opacity: 0.35;
+    filter: saturate(0.6);
+  }
+
+  &__handle {
+    cursor: grab;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--radius-xs);
+    color: var(--text-faded);
+    touch-action: none;
+    flex-shrink: 0;
+    transition:
+      background var(--t-fast),
+      color var(--t-fast);
+
+    &:hover {
+      background: var(--surface-raised);
+      color: var(--text-primary);
+    }
+    &:active {
+      cursor: grabbing;
+    }
   }
 
   &__kind {
@@ -871,6 +910,50 @@ $colors: (
     overflow: hidden;
     text-overflow: ellipsis;
   }
+}
+
+/* ── Item-level insertion bar (inside item-list) ───────── */
+
+.item-insertion-bar {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  height: 0;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  pointer-events: none;
+  z-index: 2;
+  transform: translateY(-1px);
+  animation: insertion-pulse 0.9s ease-in-out infinite;
+}
+
+.item-insertion-line {
+  flex: 1;
+  height: 2px;
+  background: var(--accent-color, #818cf8);
+  border-radius: 2px;
+  box-shadow: 0 0 6px var(--accent-color-dim, rgba(129, 140, 248, 0.5));
+}
+
+.item-insertion-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-color, #818cf8);
+  box-shadow: 0 0 6px var(--accent-color-dim, rgba(129, 140, 248, 0.6));
+  flex-shrink: 0;
+}
+
+/* Subtle highlight on the section currently hovered during an item drag,
+   so the user sees which set they are about to drop into. */
+.section.is-item-reordering {
+  border-color: var(--accent-color-border, rgba(129, 140, 248, 0.35));
+  background: linear-gradient(
+    180deg,
+    var(--accent-color-dim, rgba(129, 140, 248, 0.04)) 0%,
+    transparent 60%
+  );
 }
 
 /* ── Meta chips (shared across header + section stats) ── */

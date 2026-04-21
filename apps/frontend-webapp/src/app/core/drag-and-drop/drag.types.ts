@@ -14,6 +14,7 @@ import type {
   TPlaylistId,
   TPlaylistTrackId,
   TShowSectionId,
+  TShowSectionItemId,
 } from '@sh3pherd/shared-types';
 
 /* ---------------------------------------------------
@@ -86,6 +87,18 @@ export type ShowSectionDragPayload = {
   name: string;
 };
 
+/**
+ * Payload emitted when an item (version or playlist) is grabbed for
+ * reordering inside a show section — or for moving across sections.
+ * The source `sectionId` lets the drop handler decide between
+ * `reorderItems` (same section) and `moveItem` (cross-section).
+ */
+export type ShowSectionItemDragPayload = {
+  itemId: TShowSectionItemId;
+  sectionId: TShowSectionId;
+  title: string;
+};
+
 export type DragPayloadMap = {
   template: ArtistPerformanceSlotTemplate;
   artist: PlannerArtist;
@@ -99,6 +112,7 @@ export type DragPayloadMap = {
   'playlist-track': PlaylistTrackDragPayload;
   playlist: PlaylistDragPayload;
   'show-section': ShowSectionDragPayload;
+  'show-section-item': ShowSectionItemDragPayload;
 };
 
 export type DragType = keyof DragPayloadMap;
