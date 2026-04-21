@@ -5,6 +5,7 @@ import { TRACK_STORAGE_SERVICE } from '../../infra/storage/storage.tokens.js';
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
 import type { ITrackStorageService } from '../../infra/storage/ITrackStorageService.js';
 import type { TUserId, TMusicVersionId, TVersionTrackId } from '@sh3pherd/shared-types';
+import { QuotaService } from '../../../quota/QuotaService.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 
 export class DeleteTrackCommand {
@@ -21,6 +22,7 @@ export class DeleteTrackHandler implements ICommandHandler<DeleteTrackCommand, b
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
     private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject(TRACK_STORAGE_SERVICE) private readonly storage: ITrackStorageService,
+    private readonly quotaService: QuotaService,
     private readonly analytics: AnalyticsEventService,
   ) {}
 
@@ -28,18 +30,23 @@ export class DeleteTrackHandler implements ICommandHandler<DeleteTrackCommand, b
     const aggregate = await this.aggregateRepo.loadByVersionId(cmd.versionId);
     const track = aggregate.removeTrack(cmd.actorId, cmd.versionId, cmd.trackId);
 
-    // Delete from S3 (best-effort)
+    await this.aggregateRepo.save(aggregate);
+
+    // S3 cleanup + quota restitution happen after the DB state is consistent.
+    // Best-effort S3 delete: a stale object is cheaper than refusing the user action.
     if (track.s3Key) {
       await this.storage.delete(track.s3Key).catch(() => {});
     }
-
-    await this.aggregateRepo.save(aggregate);
+    if (track.sizeBytes && track.sizeBytes > 0) {
+      await this.quotaService.recordUsage(cmd.actorId, 'storage_bytes', -track.sizeBytes);
+    }
 
     await this.analytics.track('track_deleted', cmd.actorId, {
       version_id: cmd.versionId,
       track_id: cmd.trackId,
       file_name: track.fileName,
       processing_type: track.processingType,
+      size_bytes: track.sizeBytes,
     });
 
     return true;
