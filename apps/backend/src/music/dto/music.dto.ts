@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
 import { ApiModel } from '../../utils/swagger/api-model.swagger.util.js';
+import { SCreateMusicReferencePayload } from '@sh3pherd/shared-types';
 
 // ─── Shared enum values (for Swagger docs) ───────────────
 
@@ -108,6 +110,16 @@ export class MusicReferencePayload {
   id!: string;
   @ApiProperty({ example: 'Bohemian Rhapsody' }) title!: string;
   @ApiProperty({ example: 'Queen' }) originalArtist!: string;
+}
+
+// Request body for POST /music/references — Zod-derived from shared-types
+@ApiModel()
+export class CreateMusicReferencePayload extends createZodDto(SCreateMusicReferencePayload) {}
+
+@ApiModel()
+export class CreateMusicReferenceRequestDTO {
+  @ApiProperty({ type: () => CreateMusicReferencePayload })
+  payload!: CreateMusicReferencePayload;
 }
 
 // ─── Repertoire Entry ─────────────────────────────────────

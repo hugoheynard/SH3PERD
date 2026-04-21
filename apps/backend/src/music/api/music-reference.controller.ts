@@ -1,10 +1,25 @@
 import { Controller, Get, Post, Body, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ActorId } from '../../utils/nest/decorators/ActorId.js';
 import { ZodValidationPipe } from '../../utils/nest/pipes/ZodValidation.pipe.js';
 import { MusicApiCodes } from '../codes.js';
 import { buildApiResponseDTO } from '../../utils/response/buildApiResponseDTO.js';
+import {
+  apiRequestDTO,
+  apiSuccessDTO,
+} from '../../utils/swagger/api-response.swagger.util.js';
+import {
+  CreateMusicReferenceRequestDTO,
+  MusicReferencePayload,
+} from '../dto/music.dto.js';
 import { CreateMusicReferenceCommand } from '../application/commands/CreateMusicReferenceCommand.js';
 import { SearchMusicReferencesQuery } from '../application/queries/SearchMusicReferencesQuery.js';
 import { PlatformScoped } from '../../utils/nest/decorators/PlatformScoped.js';
@@ -57,6 +72,8 @@ export class MusicReferenceController {
     description:
       'Creates a new reference or returns existing if duplicate (dedup by title+artist).',
   })
+  @ApiBody(apiRequestDTO(CreateMusicReferenceRequestDTO))
+  @ApiResponse(apiSuccessDTO(MusicApiCodes.MUSIC_REFERENCE_CREATED, MusicReferencePayload))
   @RequirePermission(P.Music.Library.Write)
   @Post()
   async createReference(
