@@ -8,18 +8,19 @@ import type {
   TRepertoireEntryId,
   TUserId,
 } from '@sh3pherd/shared-types';
-import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
-import type { Filter, OptionalUnlessRequiredId } from 'mongodb';
+import type { ClientSession, OptionalUnlessRequiredId } from 'mongodb';
 
 export type IMusicRepertoireRepository = {
-  saveOne(entry: TMusicRepertoireEntryDomainModel): Promise<boolean>;
+  saveOne(entry: TMusicRepertoireEntryDomainModel, session?: ClientSession): Promise<boolean>;
   findOneByEntryId(entryId: TRepertoireEntryId): Promise<TMusicRepertoireEntryDomainModel | null>;
   findByOwnerAndReference(
     ownerId: TUserId,
     refId: TMusicReferenceId,
   ): Promise<TMusicRepertoireEntryDomainModel | null>;
-  deleteOneByEntryId(entryId: TRepertoireEntryId): Promise<boolean>;
+  deleteOneByEntryId(entryId: TRepertoireEntryId, session?: ClientSession): Promise<boolean>;
   findByUserId(userId: TUserId): Promise<TMusicRepertoireEntryDomainModel[]>;
+  /** Expose a MongoDB client session for cross-repo transactions. */
+  startSession(): ClientSession;
 };
 
 export class MusicRepertoireMongoRepository
@@ -30,10 +31,13 @@ export class MusicRepertoireMongoRepository
     super(input);
   }
 
-  @technicalFailThrows500('REPERTOIRE_SAVE_FAILED', 'Failed to save repertoire entry')
-  async saveOne(entry: TMusicRepertoireEntryDomainModel): Promise<boolean> {
+  async saveOne(
+    entry: TMusicRepertoireEntryDomainModel,
+    session?: ClientSession,
+  ): Promise<boolean> {
     const result = await this.collection.insertOne(
       entry as OptionalUnlessRequiredId<TMusicRepertoireEntryDomainModel>,
+      { session },
     );
     return result.acknowledged;
   }
@@ -41,31 +45,22 @@ export class MusicRepertoireMongoRepository
   async findOneByEntryId(
     entryId: TRepertoireEntryId,
   ): Promise<TMusicRepertoireEntryDomainModel | null> {
-    const filter: Filter<TMusicRepertoireEntryDomainModel> = {
-      id: entryId,
-    };
-    return this.collection.findOne(filter) as Promise<TMusicRepertoireEntryDomainModel | null>;
+    return this.findOne({ filter: { id: entryId } });
   }
 
   async findByOwnerAndReference(
     ownerId: TUserId,
     refId: TMusicReferenceId,
   ): Promise<TMusicRepertoireEntryDomainModel | null> {
-    const filter: Filter<TMusicRepertoireEntryDomainModel> = {
-      owner_id: ownerId,
-      musicReference_id: refId,
-    };
-    return this.collection.findOne(filter) as Promise<TMusicRepertoireEntryDomainModel | null>;
+    return this.findOne({ filter: { owner_id: ownerId, musicReference_id: refId } });
   }
 
-  async deleteOneByEntryId(entryId: TRepertoireEntryId): Promise<boolean> {
-    const filter: Filter<TMusicRepertoireEntryDomainModel> = { id: entryId };
-    const result = await this.collection.deleteOne(filter);
+  async deleteOneByEntryId(entryId: TRepertoireEntryId, session?: ClientSession): Promise<boolean> {
+    const result = await this.collection.deleteOne({ id: entryId }, { session });
     return result.deletedCount === 1;
   }
 
   async findByUserId(userId: TUserId): Promise<TMusicRepertoireEntryDomainModel[]> {
-    const filter: Filter<TMusicRepertoireEntryDomainModel> = { owner_id: userId };
-    return this.collection.find(filter).toArray() as Promise<TMusicRepertoireEntryDomainModel[]>;
+    return this.findMany({ filter: { owner_id: userId } });
   }
 }
