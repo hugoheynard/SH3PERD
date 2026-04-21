@@ -39,6 +39,7 @@ Architecture, patterns, and how-to guides for the NestJS backend.
 | [Audio Player](sh3-music-audio-player.md) | wavesurfer.js inline player, waveform peaks pipeline                          |
 | [Mastering](sh3-music-mastering.md)       | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift architecture            |
 | [Persona Match](sh3-persona-match.md)     | AI event programming — extraction, cross-library scoring, Claude API curation |
+| [Music Version Audit](sh3-music-version-audit.md) | Prod-ready audit of the music version module vs reference/repertoire baselines |
 
 ## Company & Org
 

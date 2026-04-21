@@ -48,6 +48,7 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | **Music Library**        | `apps/backend/documentation/sh3-music-library.md`        | Full music feature architecture, 14 features across 4 tiers                              |
 | **Music Audio Player**   | `apps/backend/documentation/sh3-music-audio-player.md`   | wavesurfer.js inline player, peaks pipeline                                              |
 | **Music Mastering**      | `apps/backend/documentation/sh3-music-mastering.md`      | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift                                    |
+| **Music Version Audit**  | `apps/backend/documentation/sh3-music-version-audit.md`  | Prod-ready audit of the music version module vs reference/repertoire baselines           |
 | **Persona Match**        | `apps/backend/documentation/sh3-persona-match.md`        | AI event programming: extraction, scoring, curation (Claude API)                         |
 | **Org Chart**            | `apps/backend/documentation/sh3-orgchart.md`             | Org chart features, API, architecture                                                    |
 | **Orgchart Export**      | `apps/backend/documentation/sh3-orgchart-export.md`      | PDF/SVG export via headless Chromium                                                     |
