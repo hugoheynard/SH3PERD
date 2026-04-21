@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { createZodDto } from 'nestjs-zod';
 import { ApiModel } from '../../utils/swagger/api-model.swagger.util.js';
-import { SCreateMusicReferencePayload } from '@sh3pherd/shared-types';
+import {
+  SCreateMusicReferencePayload,
+  SCreateRepertoireEntryPayload,
+} from '@sh3pherd/shared-types';
 
 // ─── Shared enum values (for Swagger docs) ───────────────
 
@@ -166,6 +169,25 @@ export class RepertoireEntryPayload {
   musicReference_id!: string;
   @ApiProperty({ example: 'userCredential_abc-123', description: 'Owner user ID (prefixed)' })
   owner_id!: string;
+}
+
+// Request body for POST /music/repertoire — Zod-derived from shared-types
+@ApiModel()
+export class CreateRepertoireEntryPayload extends createZodDto(SCreateRepertoireEntryPayload) {}
+
+@ApiModel()
+export class CreateRepertoireEntryRequestDTO {
+  @ApiProperty({ type: () => CreateRepertoireEntryPayload })
+  payload!: CreateRepertoireEntryPayload;
+}
+
+@ApiModel()
+export class RepertoireEntryDeletedPayload {
+  @ApiProperty({
+    example: true,
+    description: 'True when the entry was deleted, false if already gone',
+  })
+  deleted!: boolean;
 }
 
 // ─── Library View Model ───────────────────────────────────
