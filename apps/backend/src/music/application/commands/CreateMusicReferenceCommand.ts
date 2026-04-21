@@ -9,6 +9,7 @@ import type {
 } from '@sh3pherd/shared-types';
 import { MusicReferenceEntity } from '../../domain/entities/MusicReferenceEntity.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
+import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
 
 /**
  * Command to create a music reference (the canonical song entry).
@@ -67,7 +68,15 @@ export class CreateMusicReferenceHandler implements ICommandHandler<
     const saved = await this.refRepo.save(ref.toDomain);
 
     if (!saved) {
-      throw new Error('MUSIC_REFERENCE_CREATION_FAILED');
+      throw new TechnicalError('Failed to persist music reference', {
+        code: 'MUSIC_REFERENCE_CREATION_FAILED',
+        context: {
+          actor_id: cmd.actor_id,
+          title: cmd.payload.title,
+          artist: cmd.payload.artist,
+          operation: 'MusicReferenceRepository.save',
+        },
+      });
     }
 
     await this.analytics.track('music_reference_created', cmd.actor_id, {
