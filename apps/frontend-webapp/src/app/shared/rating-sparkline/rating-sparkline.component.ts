@@ -67,6 +67,12 @@ export class RatingSparklineComponent {
    * how a waveform would render the centre of a chunk — so the
    * horizontal position directly reflects when the track plays in the
    * set. Otherwise we fall back to evenly-spaced dots.
+   *
+   * Zero-duration entries (track with no analysed length and no
+   * self-reported duration) are replaced with the mean of the positive
+   * entries so they don't collapse onto their neighbour's cumulative
+   * position — keeps the sparkline visually honest when only some
+   * tracks have analysis data.
    */
   private readonly xs = computed<number[]>(() => {
     const count = this.series().length;
@@ -74,28 +80,42 @@ export class RatingSparklineComponent {
     if (count === 1) return [this.width / 2];
 
     const usable = this.width - this.paddingX * 2;
-    const durations = this.durations();
-    const total = durations?.length === count
-      ? durations.reduce((a, b) => a + (b > 0 ? b : 0), 0)
-      : 0;
+    const raw = this.durations();
 
-    if (!durations || durations.length !== count || total <= 0) {
-      return Array.from(
-        { length: count },
-        (_, i) => this.paddingX + (i / (count - 1)) * usable,
-      );
+    if (!raw || raw.length !== count) {
+      return this.uniformXs(count, usable);
     }
+
+    const positives = raw.filter((d) => d > 0);
+    if (positives.length === 0) {
+      return this.uniformXs(count, usable);
+    }
+    const meanPositive =
+      positives.reduce((a, b) => a + b, 0) / positives.length;
+
+    // Normalise: every entry contributes at least `meanPositive` to the
+    // timeline so zero-duration tracks sit between their neighbours
+    // instead of overlapping the previous cumulative point.
+    const normalised = raw.map((d) => (d > 0 ? d : meanPositive));
+    const total = normalised.reduce((a, b) => a + b, 0);
 
     const xs: number[] = [];
     let cumulative = 0;
     for (let i = 0; i < count; i++) {
-      const slice = durations[i] > 0 ? durations[i] : 0;
+      const slice = normalised[i];
       const centre = cumulative + slice / 2;
       xs.push(this.paddingX + (centre / total) * usable);
       cumulative += slice;
     }
     return xs;
   });
+
+  private uniformXs(count: number, usable: number): number[] {
+    return Array.from(
+      { length: count },
+      (_, i) => this.paddingX + (i / (count - 1)) * usable,
+    );
+  }
 
   /** Baseline Y — the area path closes down to this line. Matches the
    *  "rating 1" guide tick so the fill hugs the bottom of the chart. */
