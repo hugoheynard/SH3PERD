@@ -3,7 +3,9 @@ import { createZodDto } from 'nestjs-zod';
 import { ApiModel } from '../../utils/swagger/api-model.swagger.util.js';
 import {
   SCreateMusicReferencePayload,
+  SCreateMusicVersionPayload,
   SCreateRepertoireEntryPayload,
+  SUpdateMusicVersionPayload,
 } from '@sh3pherd/shared-types';
 
 // ─── Shared enum values (for Swagger docs) ───────────────
@@ -103,6 +105,35 @@ export class MusicVersionPayload {
     description: 'How this version was derived from its parent',
   })
   derivationType?: string;
+}
+
+// Request body for POST /music/versions — Zod-derived from shared-types
+@ApiModel()
+export class CreateMusicVersionPayload extends createZodDto(SCreateMusicVersionPayload) {}
+
+@ApiModel()
+export class CreateMusicVersionRequestDTO {
+  @ApiProperty({ type: () => CreateMusicVersionPayload })
+  payload!: CreateMusicVersionPayload;
+}
+
+// Request body for PATCH /music/versions/:id — all fields optional
+@ApiModel()
+export class UpdateMusicVersionPayload extends createZodDto(SUpdateMusicVersionPayload) {}
+
+@ApiModel()
+export class UpdateMusicVersionRequestDTO {
+  @ApiProperty({ type: () => UpdateMusicVersionPayload })
+  payload!: UpdateMusicVersionPayload;
+}
+
+@ApiModel()
+export class MusicVersionDeletedPayload {
+  @ApiProperty({
+    example: true,
+    description: 'True when the version (and its derivations) were deleted.',
+  })
+  deleted!: boolean;
 }
 
 // ─── Reference ────────────────────────────────────────────
