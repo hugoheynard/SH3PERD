@@ -14,6 +14,8 @@ import type {
 import { TrackUploadedEvent } from '../events/TrackUploadedEvent.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { MusicApiCodes } from '../../codes.js';
 
 export class UploadTrackCommand {
   constructor(
@@ -45,6 +47,12 @@ export class UploadTrackHandler implements ICommandHandler<
     await this.quotaService.ensureAllowed(cmd.actorId, 'storage_bytes', cmd.file.length);
 
     const aggregate = await this.aggregateRepo.loadByVersionId(cmd.versionId);
+    if (!aggregate) {
+      throw new BusinessError(MusicApiCodes.MUSIC_VERSION_NOT_FOUND.code, {
+        code: MusicApiCodes.MUSIC_VERSION_NOT_FOUND.code,
+        status: 404,
+      });
+    }
 
     // Domain validation — structural invariants
     const version = aggregate.ensureCanAddTrack(cmd.actorId, cmd.versionId);

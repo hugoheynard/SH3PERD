@@ -62,6 +62,12 @@ export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
       }
 
       const aggregate = await this.aggregateRepo.loadByVersionId(versionId);
+      if (!aggregate) {
+        this.logger.warn(
+          `Aggregate not found for version ${versionId} — analysis snapshot discarded`,
+        );
+        return;
+      }
       aggregate.setTrackAnalysis(versionId, trackId, snapshot);
       await this.aggregateRepo.save(aggregate);
 

@@ -7,6 +7,8 @@ import type { IRepertoireEntryAggregateRepository } from '../../repositories/Rep
 import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { MusicApiCodes } from '../../codes.js';
 import {
   MicroservicePatterns,
   type TUserId,
@@ -48,6 +50,12 @@ export class MasterTrackHandler implements ICommandHandler<
 
     // 1. Load and validate via aggregate
     const aggregate = await this.aggregateRepo.loadByVersionId(cmd.versionId);
+    if (!aggregate) {
+      throw new BusinessError(MusicApiCodes.MUSIC_VERSION_NOT_FOUND.code, {
+        code: MusicApiCodes.MUSIC_VERSION_NOT_FOUND.code,
+        status: 404,
+      });
+    }
     const version = aggregate.ensureCanMasterTrack(cmd.actorId, cmd.versionId, cmd.trackId);
     const sourceTrack = version.findTrack(cmd.trackId)!;
 
