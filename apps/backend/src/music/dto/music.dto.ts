@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
 import { ApiModel } from '../../utils/swagger/api-model.swagger.util.js';
+import { SCreateMusicVersionPayload, SUpdateMusicVersionPayload } from '@sh3pherd/shared-types';
 
 // ─── Shared enum values (for Swagger docs) ───────────────
 
@@ -62,6 +64,14 @@ export class VersionTrackPayload {
 }
 
 // ─── Version ──────────────────────────────────────────────
+
+// ─── Version request payloads (Zod-derived) ───────────────
+
+@ApiModel()
+export class CreateMusicVersionRequestPayload extends createZodDto(SCreateMusicVersionPayload) {}
+
+@ApiModel()
+export class UpdateMusicVersionRequestPayload extends createZodDto(SUpdateMusicVersionPayload) {}
 
 @ApiModel()
 export class MusicVersionPayload {
