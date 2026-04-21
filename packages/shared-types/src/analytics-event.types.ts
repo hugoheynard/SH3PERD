@@ -30,6 +30,9 @@ export const ANALYTICS_EVENT_TYPES = [
   'track_ai_mastered',
   'track_pitch_shifted',
   'repertoire_entry_created',
+  'music_version_created',
+  'music_version_updated',
+  'music_version_deleted',
   // Quota
   'quota_exceeded',
   'quota_warning_80pct',
