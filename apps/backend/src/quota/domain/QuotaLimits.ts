@@ -33,7 +33,7 @@ export const PLAN_QUOTAS: Record<TPlatformRole, TQuotaLimit[]> = {
   artist_free: [
     { resource: 'repertoire_entry', period: 'lifetime', limit: 50 },
     { resource: 'track_upload', period: 'lifetime', limit: 50 },
-    { resource: 'track_version', period: 'lifetime', limit: 2 }, // per track
+    { resource: 'track_version', period: 'lifetime', limit: 2 }, // per user, lifetime — cumulative even after deletion until released
     { resource: 'playlist', period: 'lifetime', limit: 3 },
     { resource: 'search_tab', period: 'lifetime', limit: 1 },
     { resource: 'search_tab_items', period: 'lifetime', limit: 3 }, // tabs per search tab
@@ -46,7 +46,7 @@ export const PLAN_QUOTAS: Record<TPlatformRole, TQuotaLimit[]> = {
   artist_pro: [
     { resource: 'repertoire_entry', period: 'lifetime', limit: -1 },
     { resource: 'track_upload', period: 'lifetime', limit: -1 },
-    { resource: 'track_version', period: 'lifetime', limit: 5 }, // per track
+    { resource: 'track_version', period: 'lifetime', limit: 5 }, // per user, lifetime — cumulative even after deletion until released
     { resource: 'playlist', period: 'lifetime', limit: -1 },
     { resource: 'search_tab', period: 'lifetime', limit: 10 },
     { resource: 'search_tab_items', period: 'lifetime', limit: 5 }, // tabs per search tab
