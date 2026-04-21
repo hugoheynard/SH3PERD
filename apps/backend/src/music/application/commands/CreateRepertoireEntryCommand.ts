@@ -8,6 +8,7 @@ import type {
   TMusicRepertoireEntryDomainModel,
 } from '@sh3pherd/shared-types';
 import { RepertoireEntryEntity } from '../../domain/entities/RepertoireEntryEntity.js';
+import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 
@@ -46,7 +47,16 @@ export class CreateRepertoireEntryHandler implements ICommandHandler<
     });
 
     const saved = await this.repRepo.saveOne(entry.toDomain);
-    if (!saved) throw new Error('REPERTOIRE_ENTRY_CREATION_FAILED');
+    if (!saved) {
+      throw new TechnicalError('Failed to persist repertoire entry', {
+        code: 'REPERTOIRE_ENTRY_CREATION_FAILED',
+        context: {
+          actor_id: cmd.actorId,
+          reference_id: cmd.payload.musicReference_id,
+          operation: 'MusicRepertoireRepository.saveOne',
+        },
+      });
+    }
 
     // Record usage — after successful save
     await this.quotaService.recordUsage(cmd.actorId, 'repertoire_entry');

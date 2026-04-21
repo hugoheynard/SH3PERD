@@ -23,7 +23,7 @@ import { RepertoireEntryAggregate } from '../RepertoireEntryAggregate.js';
 
 // ─── Typed ID helpers ────────────────────────────────────
 
-export const userId = (n = 1) => `user_test-${n}` as TUserId;
+export const userId = (n = 1) => `userCredential_test-${n}` as TUserId;
 export const refId = (n = 1) => `musicRef_test-${n}` as TMusicReferenceId;
 export const versionId = (n = 1) => `musicVer_test-${n}` as TMusicVersionId;
 export const trackId = (n = 1) => `track_test-${n}` as TVersionTrackId;

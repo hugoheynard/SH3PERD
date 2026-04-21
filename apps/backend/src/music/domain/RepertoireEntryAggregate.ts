@@ -3,6 +3,7 @@ import type { RepertoireEntryEntity } from './entities/RepertoireEntryEntity.js'
 import type { MusicReferenceEntity } from './entities/MusicReferenceEntity.js';
 import type { MusicVersionEntity } from './entities/MusicVersionEntity.js';
 import { MusicPolicy } from './MusicPolicy.js';
+import { DomainError } from '../../utils/errorManagement/DomainError.js';
 import type {
   TRepertoireEntryId,
   TMusicReferenceId,
@@ -89,7 +90,12 @@ export class RepertoireEntryAggregate extends AggregateRoot {
   /** Remove a version. Returns the removed entity for S3 cleanup. */
   removeVersion(actorId: TUserId, versionId: TMusicVersionId): MusicVersionEntity {
     const idx = this.versions.findIndex((v) => v.id === versionId);
-    if (idx === -1) throw new Error('MUSIC_VERSION_NOT_FOUND');
+    if (idx === -1) {
+      throw new DomainError('Music version not found in aggregate', {
+        code: 'MUSIC_VERSION_NOT_FOUND',
+        context: { version_id: versionId, entry_id: this.entry.id },
+      });
+    }
 
     const version = this.versions[idx];
     this.policy.ensureCanMutateVersion(actorId, version);
@@ -214,7 +220,12 @@ export class RepertoireEntryAggregate extends AggregateRoot {
 
   private getVersionOrThrow(versionId: TMusicVersionId): MusicVersionEntity {
     const version = this.findVersion(versionId);
-    if (!version) throw new Error('MUSIC_VERSION_NOT_FOUND');
+    if (!version) {
+      throw new DomainError('Music version not found in aggregate', {
+        code: 'MUSIC_VERSION_NOT_FOUND',
+        context: { version_id: versionId, entry_id: this.entry.id },
+      });
+    }
     return version;
   }
 }

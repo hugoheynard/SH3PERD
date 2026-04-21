@@ -1,4 +1,5 @@
 import { Entity, type TEntityInput } from '../../../utils/entities/Entity.js';
+import { DomainError } from '../../../utils/errorManagement/DomainError.js';
 import type {
   TMusicRepertoireEntryDomainModel,
   TMusicReferenceId,
@@ -10,23 +11,25 @@ import type {
  *
  * This is a thin entity with no mutable state. It exists solely to express
  * ownership: a user has chosen to add this reference to their library.
- * A user can have at most one entry per reference.
+ * A user can have at most one entry per reference (enforced at the repo
+ * layer via a unique index on `(owner_id, musicReference_id)`).
  *
  * Managed by {@link RepertoireEntryAggregate}, which composes the entry
  * with its reference and all user versions of the song.
- *
- * Invariants:
- * - musicReference_id must be a valid reference
- * - owner_id must be a valid user
- * - uniqueness (owner_id + musicReference_id) is enforced at the repository level
  */
 export class RepertoireEntryEntity extends Entity<TMusicRepertoireEntryDomainModel> {
   constructor(props: TEntityInput<TMusicRepertoireEntryDomainModel>) {
     if (!props.musicReference_id) {
-      throw new Error('REPERTOIRE_ENTRY_REFERENCE_REQUIRED');
+      throw new DomainError('Repertoire entry is missing a music reference', {
+        code: 'REPERTOIRE_ENTRY_REFERENCE_REQUIRED',
+        context: { field: 'musicReference_id' },
+      });
     }
     if (!props.owner_id) {
-      throw new Error('REPERTOIRE_ENTRY_OWNER_REQUIRED');
+      throw new DomainError('Repertoire entry is missing an owner', {
+        code: 'REPERTOIRE_ENTRY_OWNER_REQUIRED',
+        context: { field: 'owner_id' },
+      });
     }
     super(props, 'repEntry');
   }

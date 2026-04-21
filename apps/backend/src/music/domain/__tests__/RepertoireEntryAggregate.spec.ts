@@ -1,3 +1,4 @@
+import { DomainError } from '../../../utils/errorManagement/DomainError.js';
 import {
   makeAggregate,
   makeVersion,
@@ -8,6 +9,16 @@ import {
   versionId,
   trackId,
 } from './test-helpers.js';
+
+function expectDomainError(fn: () => void, code: string): void {
+  try {
+    fn();
+    fail(`Expected DomainError with code ${code}`);
+  } catch (err) {
+    expect(err).toBeInstanceOf(DomainError);
+    expect((err as DomainError).code).toBe(code);
+  }
+}
 
 describe('RepertoireEntryAggregate', () => {
   // ─── Version lifecycle ────────────────────────────────
@@ -27,7 +38,7 @@ describe('RepertoireEntryAggregate', () => {
       const agg = makeAggregate({ owner: userId(1) });
       const version = makeVersion({ owner_id: userId(2) });
 
-      expect(() => agg.addVersion(version)).toThrow('REPERTOIRE_ENTRY_NOT_OWNED');
+      expectDomainError(() => agg.addVersion(version), 'REPERTOIRE_ENTRY_NOT_OWNED');
     });
 
     it('should reject when max versions reached', () => {
@@ -37,7 +48,8 @@ describe('RepertoireEntryAggregate', () => {
       );
       const agg = makeAggregate({ owner, versions });
 
-      expect(() => agg.addVersion(makeVersion({ owner_id: owner }))).toThrow(
+      expectDomainError(
+        () => agg.addVersion(makeVersion({ owner_id: owner })),
         'MAX_VERSIONS_PER_REFERENCE_REACHED',
       );
     });
@@ -58,7 +70,10 @@ describe('RepertoireEntryAggregate', () => {
 
     it('should reject if version not found', () => {
       const agg = makeAggregate();
-      expect(() => agg.removeVersion(userId(), versionId(999))).toThrow('MUSIC_VERSION_NOT_FOUND');
+      expectDomainError(
+        () => agg.removeVersion(userId(), versionId(999)),
+        'MUSIC_VERSION_NOT_FOUND',
+      );
     });
 
     it('should reject if actor does not own the version', () => {
@@ -66,7 +81,10 @@ describe('RepertoireEntryAggregate', () => {
       const v = makeVersion({ id: versionId(1), owner_id: owner });
       const agg = makeAggregate({ owner, versions: [v] });
 
-      expect(() => agg.removeVersion(userId(2), versionId(1))).toThrow('MUSIC_VERSION_NOT_OWNED');
+      expectDomainError(
+        () => agg.removeVersion(userId(2), versionId(1)),
+        'MUSIC_VERSION_NOT_OWNED',
+      );
     });
   });
 
@@ -126,7 +144,7 @@ describe('RepertoireEntryAggregate', () => {
       v.addTrack(makeTrack({ id: trackId(2) }));
       const agg = makeAggregate({ owner, versions: [v] });
 
-      expect(() => agg.ensureCanAddTrack(owner, versionId(1))).toThrow('MAX_TRACKS_REACHED');
+      expectDomainError(() => agg.ensureCanAddTrack(owner, versionId(1)), 'MAX_TRACKS_REACHED');
     });
   });
 
@@ -210,7 +228,8 @@ describe('RepertoireEntryAggregate', () => {
       v.addTrack(makeTrack({ id: trackId(1), s3Key: 'some/key' }));
       const agg = makeAggregate({ owner, versions: [v] });
 
-      expect(() => agg.ensureCanMasterTrack(owner, versionId(1), trackId(1))).toThrow(
+      expectDomainError(
+        () => agg.ensureCanMasterTrack(owner, versionId(1), trackId(1)),
         'TRACK_NOT_ANALYZED',
       );
     });
@@ -221,7 +240,8 @@ describe('RepertoireEntryAggregate', () => {
       v.addTrack(makeTrack({ id: trackId(1), analysisResult: makeAnalysis() }));
       const agg = makeAggregate({ owner, versions: [v] });
 
-      expect(() => agg.ensureCanMasterTrack(owner, versionId(1), trackId(1))).toThrow(
+      expectDomainError(
+        () => agg.ensureCanMasterTrack(owner, versionId(1), trackId(1)),
         'TRACK_NOT_IN_STORAGE',
       );
     });
@@ -233,7 +253,8 @@ describe('RepertoireEntryAggregate', () => {
       v.addTrack(makeTrack({ id: trackId(2), processingType: 'master' }));
       const agg = makeAggregate({ owner, versions: [v] });
 
-      expect(() => agg.ensureCanMasterTrack(owner, versionId(1), trackId(1))).toThrow(
+      expectDomainError(
+        () => agg.ensureCanMasterTrack(owner, versionId(1), trackId(1)),
         'MAX_MASTERS_REACHED',
       );
     });
@@ -268,7 +289,8 @@ describe('RepertoireEntryAggregate', () => {
 
       const agg = makeAggregate({ owner, versions: [source, ...derived] });
 
-      expect(() => agg.ensureCanDeriveVersion(owner, versionId(1), trackId(1))).toThrow(
+      expectDomainError(
+        () => agg.ensureCanDeriveVersion(owner, versionId(1), trackId(1)),
         'MAX_DERIVATIONS_PER_SOURCE_REACHED',
       );
     });

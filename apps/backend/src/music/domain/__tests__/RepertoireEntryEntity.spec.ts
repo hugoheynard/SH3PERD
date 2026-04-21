@@ -1,5 +1,16 @@
+import { DomainError } from '../../../utils/errorManagement/DomainError.js';
 import { RepertoireEntryEntity } from '../entities/RepertoireEntryEntity.js';
 import { makeEntry, userId, refId } from './test-helpers.js';
+
+function expectDomainError(fn: () => void, code: string): void {
+  try {
+    fn();
+    fail(`Expected DomainError with code ${code}`);
+  } catch (err) {
+    expect(err).toBeInstanceOf(DomainError);
+    expect((err as DomainError).code).toBe(code);
+  }
+}
 
 describe('RepertoireEntryEntity', () => {
   // ─── Construction invariants ────────────────────────────
@@ -13,23 +24,25 @@ describe('RepertoireEntryEntity', () => {
     });
 
     it('should reject missing musicReference_id', () => {
-      expect(
+      expectDomainError(
         () =>
           new RepertoireEntryEntity({
             musicReference_id: '' as any,
             owner_id: userId(),
           }),
-      ).toThrow('REPERTOIRE_ENTRY_REFERENCE_REQUIRED');
+        'REPERTOIRE_ENTRY_REFERENCE_REQUIRED',
+      );
     });
 
     it('should reject missing owner_id', () => {
-      expect(
+      expectDomainError(
         () =>
           new RepertoireEntryEntity({
             musicReference_id: refId(),
             owner_id: '' as any,
           }),
-      ).toThrow('REPERTOIRE_ENTRY_OWNER_REQUIRED');
+        'REPERTOIRE_ENTRY_OWNER_REQUIRED',
+      );
     });
   });
 

@@ -6,6 +6,7 @@ import type {
 } from '@sh3pherd/shared-types';
 import type { MusicVersionEntity } from './entities/MusicVersionEntity.js';
 import type { RepertoireEntryEntity } from './entities/RepertoireEntryEntity.js';
+import { DomainError } from '../../utils/errorManagement/DomainError.js';
 
 // ─── Limits ─────────────────────────────────────────────────
 
@@ -35,14 +36,20 @@ export class MusicPolicy {
   /** Ensures the actor owns the version before mutating it. */
   ensureCanMutateVersion(actorId: TUserId, version: MusicVersionEntity): void {
     if (!version.isOwnedBy(actorId)) {
-      throw new Error('MUSIC_VERSION_NOT_OWNED');
+      throw new DomainError('Actor does not own this music version', {
+        code: 'MUSIC_VERSION_NOT_OWNED',
+        context: { actor_id: actorId, version_id: version.id },
+      });
     }
   }
 
   /** Ensures the actor owns the repertoire entry. */
   ensureCanMutateEntry(actorId: TUserId, entry: RepertoireEntryEntity): void {
     if (!entry.isOwnedBy(actorId)) {
-      throw new Error('REPERTOIRE_ENTRY_NOT_OWNED');
+      throw new DomainError('Actor does not own this repertoire entry', {
+        code: 'REPERTOIRE_ENTRY_NOT_OWNED',
+        context: { actor_id: actorId, entry_id: entry.id },
+      });
     }
   }
 
@@ -51,7 +58,10 @@ export class MusicPolicy {
   /** Ensures a version can accept another track. */
   ensureCanAddTrack(version: MusicVersionEntity): void {
     if (version.tracks.length >= MAX_TRACKS_PER_VERSION) {
-      throw new Error('MAX_TRACKS_REACHED');
+      throw new DomainError('Version has reached its maximum number of tracks', {
+        code: 'MAX_TRACKS_REACHED',
+        context: { version_id: version.id, limit: MAX_TRACKS_PER_VERSION },
+      });
     }
   }
 
@@ -59,7 +69,10 @@ export class MusicPolicy {
   ensureCanMasterTrack(version: MusicVersionEntity): void {
     const masterCount = version.tracks.filter((t) => t.processingType === 'master').length;
     if (masterCount >= MAX_MASTERS_PER_VERSION) {
-      throw new Error('MAX_MASTERS_REACHED');
+      throw new DomainError('Version has reached its maximum number of master tracks', {
+        code: 'MAX_MASTERS_REACHED',
+        context: { version_id: version.id, limit: MAX_MASTERS_PER_VERSION },
+      });
     }
     this.ensureCanAddTrack(version);
   }
@@ -68,13 +81,22 @@ export class MusicPolicy {
   ensureTrackReadyForProcessing(version: MusicVersionEntity, trackId: TVersionTrackId): void {
     const track = version.findTrack(trackId);
     if (!track) {
-      throw new Error('TRACK_NOT_FOUND');
+      throw new DomainError('Track not found on version', {
+        code: 'TRACK_NOT_FOUND',
+        context: { version_id: version.id, track_id: trackId },
+      });
     }
     if (!track.analysisResult) {
-      throw new Error('TRACK_NOT_ANALYZED');
+      throw new DomainError('Track has not been analysed yet', {
+        code: 'TRACK_NOT_ANALYZED',
+        context: { version_id: version.id, track_id: trackId },
+      });
     }
     if (!track.s3Key) {
-      throw new Error('TRACK_NOT_IN_STORAGE');
+      throw new DomainError('Track is not present in storage', {
+        code: 'TRACK_NOT_IN_STORAGE',
+        context: { version_id: version.id, track_id: trackId },
+      });
     }
   }
 
@@ -86,7 +108,10 @@ export class MusicPolicy {
    */
   ensureCanCreateVersion(existingVersions: TMusicVersionDomainModel[]): void {
     if (existingVersions.length >= MAX_VERSIONS_PER_REFERENCE) {
-      throw new Error('MAX_VERSIONS_PER_REFERENCE_REACHED');
+      throw new DomainError('Reference has reached its maximum number of versions for this user', {
+        code: 'MAX_VERSIONS_PER_REFERENCE_REACHED',
+        context: { limit: MAX_VERSIONS_PER_REFERENCE, current: existingVersions.length },
+      });
     }
   }
 
@@ -107,7 +132,10 @@ export class MusicPolicy {
       (v) => v.parentVersionId === sourceVersionId,
     ).length;
     if (derivationCount >= MAX_DERIVATIONS_PER_SOURCE) {
-      throw new Error('MAX_DERIVATIONS_PER_SOURCE_REACHED');
+      throw new DomainError('Source version has reached its maximum number of derivations', {
+        code: 'MAX_DERIVATIONS_PER_SOURCE_REACHED',
+        context: { source_version_id: sourceVersionId, limit: MAX_DERIVATIONS_PER_SOURCE },
+      });
     }
   }
 }

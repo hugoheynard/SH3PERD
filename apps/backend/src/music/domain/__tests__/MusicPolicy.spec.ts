@@ -1,3 +1,4 @@
+import { DomainError } from '../../../utils/errorManagement/DomainError.js';
 import { MusicPolicy } from '../MusicPolicy.js';
 import {
   makeVersion,
@@ -9,6 +10,16 @@ import {
   trackId,
 } from './test-helpers.js';
 import type { TMusicVersionDomainModel } from '@sh3pherd/shared-types';
+
+function expectDomainError(fn: () => void, code: string): void {
+  try {
+    fn();
+    fail(`Expected DomainError with code ${code}`);
+  } catch (err) {
+    expect(err).toBeInstanceOf(DomainError);
+    expect((err as DomainError).code).toBe(code);
+  }
+}
 
 describe('MusicPolicy', () => {
   const policy = new MusicPolicy();
@@ -24,7 +35,8 @@ describe('MusicPolicy', () => {
 
     it('should throw when actor does not own the version', () => {
       const version = makeVersion({ owner_id: userId(1) });
-      expect(() => policy.ensureCanMutateVersion(userId(2), version)).toThrow(
+      expectDomainError(
+        () => policy.ensureCanMutateVersion(userId(2), version),
         'MUSIC_VERSION_NOT_OWNED',
       );
     });
@@ -39,7 +51,8 @@ describe('MusicPolicy', () => {
 
     it('should throw when actor does not own the entry', () => {
       const entry = makeEntry({ owner_id: userId(1) });
-      expect(() => policy.ensureCanMutateEntry(userId(2), entry)).toThrow(
+      expectDomainError(
+        () => policy.ensureCanMutateEntry(userId(2), entry),
         'REPERTOIRE_ENTRY_NOT_OWNED',
       );
     });
@@ -58,7 +71,7 @@ describe('MusicPolicy', () => {
       const version = makeVersion();
       version.addTrack(makeTrack({ id: trackId(1) }));
       version.addTrack(makeTrack({ id: trackId(2) }));
-      expect(() => policy.ensureCanAddTrack(version)).toThrow('MAX_TRACKS_REACHED');
+      expectDomainError(() => policy.ensureCanAddTrack(version), 'MAX_TRACKS_REACHED');
     });
   });
 
@@ -72,14 +85,14 @@ describe('MusicPolicy', () => {
     it('should throw when a master already exists', () => {
       const version = makeVersion();
       version.addTrack(makeTrack({ id: trackId(1), processingType: 'master' }));
-      expect(() => policy.ensureCanMasterTrack(version)).toThrow('MAX_MASTERS_REACHED');
+      expectDomainError(() => policy.ensureCanMasterTrack(version), 'MAX_MASTERS_REACHED');
     });
 
     it('should throw when track slots are full even without master', () => {
       const version = makeVersion();
       version.addTrack(makeTrack({ id: trackId(1) }));
       version.addTrack(makeTrack({ id: trackId(2) }));
-      expect(() => policy.ensureCanMasterTrack(version)).toThrow('MAX_TRACKS_REACHED');
+      expectDomainError(() => policy.ensureCanMasterTrack(version), 'MAX_TRACKS_REACHED');
     });
   });
 
@@ -94,7 +107,8 @@ describe('MusicPolicy', () => {
 
     it('should throw when track not found', () => {
       const version = makeVersion();
-      expect(() => policy.ensureTrackReadyForProcessing(version, trackId(999))).toThrow(
+      expectDomainError(
+        () => policy.ensureTrackReadyForProcessing(version, trackId(999)),
         'TRACK_NOT_FOUND',
       );
     });
@@ -102,7 +116,8 @@ describe('MusicPolicy', () => {
     it('should throw when track has no analysis', () => {
       const version = makeVersion();
       version.addTrack(makeTrack({ id: trackId(1), s3Key: 'some/key' }));
-      expect(() => policy.ensureTrackReadyForProcessing(version, trackId(1))).toThrow(
+      expectDomainError(
+        () => policy.ensureTrackReadyForProcessing(version, trackId(1)),
         'TRACK_NOT_ANALYZED',
       );
     });
@@ -110,7 +125,8 @@ describe('MusicPolicy', () => {
     it('should throw when track has no s3Key', () => {
       const version = makeVersion();
       version.addTrack(makeTrack({ id: trackId(1), analysisResult: { bpm: 120 } as any }));
-      expect(() => policy.ensureTrackReadyForProcessing(version, trackId(1))).toThrow(
+      expectDomainError(
+        () => policy.ensureTrackReadyForProcessing(version, trackId(1)),
         'TRACK_NOT_IN_STORAGE',
       );
     });
@@ -130,7 +146,8 @@ describe('MusicPolicy', () => {
       const versions = Array.from({ length: 10 }, (_, i) => ({
         id: versionId(i),
       })) as TMusicVersionDomainModel[];
-      expect(() => policy.ensureCanCreateVersion(versions)).toThrow(
+      expectDomainError(
+        () => policy.ensureCanCreateVersion(versions),
         'MAX_VERSIONS_PER_REFERENCE_REACHED',
       );
     });
@@ -151,7 +168,8 @@ describe('MusicPolicy', () => {
       const versions = Array.from({ length: 10 }, (_, i) => ({
         id: versionId(i),
       })) as TMusicVersionDomainModel[];
-      expect(() => policy.ensureCanDeriveVersion(versions, versionId(1))).toThrow(
+      expectDomainError(
+        () => policy.ensureCanDeriveVersion(versions, versionId(1)),
         'MAX_VERSIONS_PER_REFERENCE_REACHED',
       );
     });
@@ -162,7 +180,8 @@ describe('MusicPolicy', () => {
         id: versionId(10 + i),
         parentVersionId: sourceId,
       })) as TMusicVersionDomainModel[];
-      expect(() => policy.ensureCanDeriveVersion(versions, sourceId)).toThrow(
+      expectDomainError(
+        () => policy.ensureCanDeriveVersion(versions, sourceId),
         'MAX_DERIVATIONS_PER_SOURCE_REACHED',
       );
     });
