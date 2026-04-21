@@ -1,6 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { ClientSession, MongoClient } from 'mongodb';
 import { MONGO_CLIENT } from './db.tokens.js';
+import { BusinessError } from '../../utils/errorManagement/BusinessError.js';
+import { DomainError } from '../../utils/errorManagement/DomainError.js';
 import { TechnicalError } from '../../utils/errorManagement/TechnicalError.js';
 
 /**
@@ -42,7 +44,16 @@ export class TransactionRunner {
       });
       return result!;
     } catch (err) {
-      if (err instanceof TechnicalError) throw err;
+      // Preserve typed errors — caller-facing domain decisions (4xx / 400) and
+      // already-categorized infra failures must reach the handler unchanged,
+      // so the handler can enrich with its own context or rethrow as-is.
+      if (
+        err instanceof TechnicalError ||
+        err instanceof BusinessError ||
+        err instanceof DomainError
+      ) {
+        throw err;
+      }
       throw new TechnicalError('Transaction failed', {
         code: 'TRANSACTION_FAILED',
         cause: err as Error,

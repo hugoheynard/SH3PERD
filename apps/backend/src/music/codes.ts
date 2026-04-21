@@ -29,9 +29,29 @@ export const MusicApiCodes = {
     code: 'MUSIC_VERSION_CREATION_REPO_FAIL',
     message: 'Music version creation failed, repository technical error',
   },
-  MUSIC_VERSION_CREATION_UC_FAIL: {
-    code: 'MUSIC_VERSION_CREATION_UC_FAIL',
-    message: 'Music version creation failed, use case technical error',
+  MUSIC_VERSION_UPDATE_REPO_FAIL: {
+    code: 'MUSIC_VERSION_UPDATE_REPO_FAIL',
+    message: 'Music version update failed, repository technical error',
+  },
+  MUSIC_VERSION_DELETE_REPO_FAIL: {
+    code: 'MUSIC_VERSION_DELETE_REPO_FAIL',
+    message: 'Music version delete failed, repository technical error',
+  },
+  MUSIC_VERSION_TRACK_REPO_FAIL: {
+    code: 'MUSIC_VERSION_TRACK_REPO_FAIL',
+    message: 'Music version track operation failed, repository technical error',
+  },
+  MUSIC_VERSION_NOT_FOUND: {
+    code: 'MUSIC_VERSION_NOT_FOUND',
+    message: 'Music version not found',
+  },
+  MUSIC_VERSION_NOT_OWNED: {
+    code: 'MUSIC_VERSION_NOT_OWNED',
+    message: 'Music version is not owned by the actor',
+  },
+  MAX_VERSIONS_PER_REFERENCE_REACHED: {
+    code: 'MAX_VERSIONS_PER_REFERENCE_REACHED',
+    message: 'Maximum number of versions per reference reached',
   },
   MUSIC_LIBRARY_SINGLE_USER_SUCCESS: {
     code: 'MUSIC_LIBRARY_FETCHED',

@@ -4,6 +4,8 @@ import type {
   TVersionTrackId,
   TMusicVersionDomainModel,
 } from '@sh3pherd/shared-types';
+import { BusinessError } from '../../utils/errorManagement/BusinessError.js';
+import { MusicApiCodes } from '../codes.js';
 import type { MusicVersionEntity } from './entities/MusicVersionEntity.js';
 import type { RepertoireEntryEntity } from './entities/RepertoireEntryEntity.js';
 
@@ -35,7 +37,10 @@ export class MusicPolicy {
   /** Ensures the actor owns the version before mutating it. */
   ensureCanMutateVersion(actorId: TUserId, version: MusicVersionEntity): void {
     if (!version.isOwnedBy(actorId)) {
-      throw new Error('MUSIC_VERSION_NOT_OWNED');
+      throw new BusinessError(MusicApiCodes.MUSIC_VERSION_NOT_OWNED.code, {
+        code: MusicApiCodes.MUSIC_VERSION_NOT_OWNED.code,
+        status: 403,
+      });
     }
   }
 
@@ -86,7 +91,10 @@ export class MusicPolicy {
    */
   ensureCanCreateVersion(existingVersions: TMusicVersionDomainModel[]): void {
     if (existingVersions.length >= MAX_VERSIONS_PER_REFERENCE) {
-      throw new Error('MAX_VERSIONS_PER_REFERENCE_REACHED');
+      throw new BusinessError(MusicApiCodes.MAX_VERSIONS_PER_REFERENCE_REACHED.code, {
+        code: MusicApiCodes.MAX_VERSIONS_PER_REFERENCE_REACHED.code,
+        status: 409,
+      });
     }
   }
 

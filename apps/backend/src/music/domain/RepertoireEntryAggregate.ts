@@ -1,4 +1,6 @@
 import { AggregateRoot } from '@nestjs/cqrs';
+import { BusinessError } from '../../utils/errorManagement/BusinessError.js';
+import { MusicApiCodes } from '../codes.js';
 import type { RepertoireEntryEntity } from './entities/RepertoireEntryEntity.js';
 import type { MusicReferenceEntity } from './entities/MusicReferenceEntity.js';
 import type { MusicVersionEntity } from './entities/MusicVersionEntity.js';
@@ -89,7 +91,12 @@ export class RepertoireEntryAggregate extends AggregateRoot {
   /** Remove a version. Returns the removed entity for S3 cleanup. */
   removeVersion(actorId: TUserId, versionId: TMusicVersionId): MusicVersionEntity {
     const idx = this.versions.findIndex((v) => v.id === versionId);
-    if (idx === -1) throw new Error('MUSIC_VERSION_NOT_FOUND');
+    if (idx === -1) {
+      throw new BusinessError(MusicApiCodes.MUSIC_VERSION_NOT_FOUND.code, {
+        code: MusicApiCodes.MUSIC_VERSION_NOT_FOUND.code,
+        status: 404,
+      });
+    }
 
     const version = this.versions[idx];
     this.policy.ensureCanMutateVersion(actorId, version);
@@ -214,7 +221,12 @@ export class RepertoireEntryAggregate extends AggregateRoot {
 
   private getVersionOrThrow(versionId: TMusicVersionId): MusicVersionEntity {
     const version = this.findVersion(versionId);
-    if (!version) throw new Error('MUSIC_VERSION_NOT_FOUND');
+    if (!version) {
+      throw new BusinessError(MusicApiCodes.MUSIC_VERSION_NOT_FOUND.code, {
+        code: MusicApiCodes.MUSIC_VERSION_NOT_FOUND.code,
+        status: 404,
+      });
+    }
     return version;
   }
 }

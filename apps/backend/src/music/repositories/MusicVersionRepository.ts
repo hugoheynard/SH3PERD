@@ -11,9 +11,7 @@ import type {
   TAudioAnalysisSnapshot,
   TUserId,
 } from '@sh3pherd/shared-types';
-import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
 import type { ClientSession, Filter, OptionalUnlessRequiredId, UpdateFilter } from 'mongodb';
-import { apiCodes } from '../codes.js';
 
 export type IMusicVersionRepository = {
   saveOne(document: TMusicVersionDomainModel, session?: ClientSession): Promise<boolean>;
@@ -21,8 +19,9 @@ export type IMusicVersionRepository = {
   updateVersion(
     versionId: TMusicVersionId,
     patch: Record<string, unknown>,
+    session?: ClientSession,
   ): Promise<TMusicVersionDomainModel | null>;
-  deleteOneByVersionId(versionId: TMusicVersionId): Promise<boolean>;
+  deleteOneByVersionId(versionId: TMusicVersionId, session?: ClientSession): Promise<boolean>;
   pushTrack(versionId: TMusicVersionId, track: TVersionTrackDomainModel): Promise<boolean>;
   pullTrack(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean>;
   setTrackFavorite(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean>;
@@ -46,10 +45,6 @@ export class MusicVersionRepository
     super(input);
   }
 
-  @technicalFailThrows500(
-    apiCodes.music.MUSIC_VERSION_CREATION_REPO_FAIL.code,
-    apiCodes.music.MUSIC_VERSION_CREATION_REPO_FAIL.message,
-  )
   async saveOne(document: TMusicVersionDomainModel, session?: ClientSession): Promise<boolean> {
     const result = await this.collection.insertOne(
       document as OptionalUnlessRequiredId<TMusicVersionDomainModel>,
@@ -68,18 +63,23 @@ export class MusicVersionRepository
   async updateVersion(
     versionId: TMusicVersionId,
     patch: Record<string, unknown>,
+    session?: ClientSession,
   ): Promise<TMusicVersionDomainModel | null> {
     const filter: Filter<TMusicVersionDomainModel> = { id: versionId };
     const update: UpdateFilter<TMusicVersionDomainModel> = { $set: patch };
     const result = await this.collection.findOneAndUpdate(filter, update, {
       returnDocument: 'after',
+      session,
     });
     return result as TMusicVersionDomainModel | null;
   }
 
-  async deleteOneByVersionId(versionId: TMusicVersionId): Promise<boolean> {
+  async deleteOneByVersionId(
+    versionId: TMusicVersionId,
+    session?: ClientSession,
+  ): Promise<boolean> {
     const filter: Filter<TMusicVersionDomainModel> = { id: versionId };
-    const result = await this.collection.deleteOne(filter);
+    const result = await this.collection.deleteOne(filter, { session });
     return result.deletedCount === 1;
   }
 
