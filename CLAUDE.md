@@ -46,6 +46,7 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | **Analytics Events**     | `apps/backend/documentation/sh3-analytics-events.md`     | Append-only event store, event types, metadata, handler status                                           |
 | **Mailer**               | `apps/backend/documentation/sh3-mailer.md`               | Template-based transactional email, Resend adapter, dry-run mode                                         |
 | **Music Library**        | `apps/backend/documentation/sh3-music-library.md`        | Full music feature architecture, 14 features across 4 tiers                                              |
+| **Music Reference API**  | `apps/backend/documentation/sh3-music-reference-api.md`  | Canonical song catalogue, immutable user-side, search-first UX + throttle, admin curation TODO           |
 | **Music Audio Player**   | `apps/backend/documentation/sh3-music-audio-player.md`   | wavesurfer.js inline player, peaks pipeline                                                              |
 | **Music Mastering**      | `apps/backend/documentation/sh3-music-mastering.md`      | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift                                                    |
 | **Persona Match**        | `apps/backend/documentation/sh3-persona-match.md`        | AI event programming: extraction, scoring, curation (Claude API)                                         |
