@@ -153,6 +153,57 @@ S3 cleanup and quota credits are intentionally best-effort — a stale R2 object
 
 ---
 
+## Deletion semantics
+
+### Hard delete, by design
+
+Every delete path in this module is a **hard delete** — documents disappear from Mongo, audio objects from R2, and the state is gone. No `deleted_at` flag, no tombstone, no "Recently deleted" bin. The user's library is user-owned data and the product promise is that removing a song actually removes it. This also keeps the storage quota honest (a soft-deleted 50 MB file still costs R2 money even if it's hidden from the UI) and keeps us on the right side of GDPR's right-to-be-forgotten.
+
+The trade-off is that deletion is irreversible on the server. That's acceptable because:
+
+- The action is user-initiated on their own data — no other user can trigger it.
+- The UI surfaces a confirmation and makes the irreversibility clear before it fires.
+- External features that depend on a track (playlists, shows, practice stats…) are expected to **snapshot** what they need at the moment they reference a track, rather than relying on a live pointer. See "Snapshot-on-write for downstream consumers" below.
+
+### Cascade — versions and their derivations
+
+The three delete endpoints cascade as follows:
+
+| Endpoint                                     | Removes                                                                                                     | Through                                  |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| `DELETE /music/versions/:id/tracks/:trackId` | a single track                                                                                              | `aggregate.removeTrack`                  |
+| `DELETE /music/versions/:id`                 | the version + **every derivation** (pitch-shift children, recursive)                                        | `aggregate.removeVersionWithDerivations` |
+| `DELETE /music/repertoire/:id`               | the entry + every version of the user for that reference (derivations included by virtue of being versions) | `aggregate.removeVersion` per version    |
+
+The derivation cascade is **recursive**: if you delete a source version that has a pitch-shifted child, and that child itself has further pitch-shifts, every descendant goes too. This prevents `parentVersionId` pointer orphans (a version whose parent no longer exists) that would otherwise leak into the domain model and make `ensureCanDeriveVersion` and the analytics views reason about zombies.
+
+Ownership of each descendant is re-checked via `policy.ensureCanMutateVersion` — in practice they all share the same owner, but the check is free and defensive against a future where derivations could be shared across users.
+
+### Quota credit policy on delete
+
+Not every counter is credited back — the semantic has to match what each counter actually measures:
+
+| Counter                                       | Credited on delete?                          | Why                                                                                                                                                                                                                  |
+| --------------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `storage_bytes`                               | **Yes** — sum of removed tracks' `sizeBytes` | Physical storage is actually freed in R2.                                                                                                                                                                            |
+| `repertoire_entry`                            | **Yes** — −1 on `DELETE /repertoire/:id`     | The number of songs in the user's library genuinely dropped.                                                                                                                                                         |
+| `track_upload`                                | **No**                                       | Lifetime counter of "times a track was uploaded". Deleting the artefact doesn't un-upload it.                                                                                                                        |
+| `master_standard`, `master_ai`, `pitch_shift` | **No**                                       | Monthly counters of "times the service was invoked in the period". Deleting a master / pitch-shifted version does not un-invoke the service call that produced it — you can't trade a deletion for a free mastering. |
+
+This is enforced in code: [`DeleteTrackHandler`](../src/music/application/commands/DeleteTrackCommand.ts), [`DeleteMusicVersionHandler`](../src/music/application/commands/DeleteMusicVersionCommand.ts), [`DeleteRepertoireEntryHandler`](../src/music/application/commands/DeleteRepertoireEntryCommand.ts) only call `recordUsage` with negative amounts on `storage_bytes` and `repertoire_entry`. If a future delete path needs to touch another counter, it should be argued from the same frame — does the counter measure _artefacts present_ or _service invocations spent_?
+
+### Snapshot-on-write for downstream consumers
+
+Because the source data can disappear, any module that references tracks/versions/entries must **snapshot** the fields it needs at write time rather than re-reading them at display time. Concretely, when we wire the playlists module:
+
+- When a track is added to a playlist, the playlist item stores a local copy of `{ fileName, durationSeconds, bpm, key, energy, label, referenceTitle, artist, s3KeySnapshot, sizeBytesSnapshot }` — not just `track_id`.
+- The playlist still carries the `version_id` / `track_id` for convenience (jump-to-source), but treats them as potentially dangling. If the source is gone, the playlist row renders with "Track no longer available" and disables playback gracefully rather than 500ing.
+- Analytics events (`track_played`, `practice_session_completed`…) capture everything they need in their `metadata` payload at emission time. The `analytics_events` collection is never joined against the current state of tracks.
+
+Same rule applies to shows, setlists, and any other module that grows a pointer towards a repertoire artefact. **Live pointers are a contract violation on this side of the codebase.**
+
+---
+
 ## Endpoints
 
 ### `GET /api/protected/music/repertoire/me`

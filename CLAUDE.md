@@ -235,6 +235,32 @@ pnpm --filter frontend-webapp build
 - **Imports**: Use `.js` extension for relative imports in backend (NodeNext resolution)
 - **Colocate tests**: Unit tests live in a `__tests__/` folder adjacent to the source file they test (e.g. `commands/__tests__/LoginHandler.spec.ts`). Never put tests in a root-level `__tests__/` folder far from the source. Exception: E2E tests and shared test helpers.
 
+## Code style (all apps)
+
+- **No one-liner returns inside control flow.** Always use a block with proper indentation for `return` / `throw` / `continue` / `break` inside an `if`, `else`, `for`, `while`, `switch case`, etc. The early-return should be visually obvious from the indentation — a single-line `if (x) return y;` hides the branch and clutters review.
+
+  ```ts
+  // ❌ Don't
+  if (!existing) return [];
+  if (idx === -1) throw new Error("NOT_FOUND");
+  for (const x of xs) if (x.ok) return x;
+
+  // ✅ Do
+  if (!existing) {
+    return [];
+  }
+  if (idx === -1) {
+    throw new Error("NOT_FOUND");
+  }
+  for (const x of xs) {
+    if (x.ok) {
+      return x;
+    }
+  }
+  ```
+
+  Applies to backend, frontend, shared-types, audio-processor, and migration scripts. Guard clauses at the very top of a function still get a block.
+
 ## Useful commands
 
 ```bash
