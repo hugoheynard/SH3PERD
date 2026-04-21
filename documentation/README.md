@@ -36,7 +36,8 @@ Process docs, TODOs, feature roadmaps, and user flows.
 
 ## User Flows
 
-| Doc                                                                               | Description                                                      |
-| --------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| [Music Library Overview](user-flows/music/00-music-library-overview.md)           | Architecture overview: domain model, state shape, CQRS, services |
-| [Add Reference to Repertoire](user-flows/music/01-add-reference-to-repertoire.md) | Detailed sequence diagram for adding a reference                 |
+| Doc                                                                                  | Description                                                        |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| [Music Library Overview](user-flows/music/00-music-library-overview.md)              | Architecture overview: domain model, state shape, CQRS, services   |
+| [Add Reference to Repertoire](user-flows/music/01-add-reference-to-repertoire.md)    | Detailed sequence diagram for adding a reference                   |
+| [Program to Artist Show Flow](user-flows/programs/00-program-to-artist-show-flow.md) | Manager program assignments projected into artist show preparation |

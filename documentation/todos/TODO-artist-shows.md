@@ -18,7 +18,7 @@ Pour les artistes, un **Show** est un plan de performance personnel. Indépendan
 | Shape            | timeline multi-rooms, slots, artistes bookés     | show → sections → items (versions + playlists) |
 | Utilisateur type | manager, booker                                  | artiste                                        |
 
-**Show ≠ Program.** Ne pas toucher le module Program, même nom de concept mais métier différent. Les deux pourront plus tard se rencontrer (une participation à un event pourrait instancier un show) — hors scope ici.
+**Show ≠ Program.** Le module Program reste le planner company, et le module Show reste la surface de préparation artiste. Les deux peuvent maintenant se rencontrer via un pont explicite : une participation à un event peut instancier ou mettre à jour un show d'artiste, sans exposer toute la timeline company à l'artiste. Voir [`Program to Artist Show Flow`](../user-flows/programs/00-program-to-artist-show-flow.md).
 
 ---
 
@@ -434,6 +434,20 @@ apps/frontend-webapp/src/app/features/shows/
 - [x] Technical doc `apps/backend/documentation/sh3-shows.md` — architecture, séries, convert flow, targets, DnD reorder, upsert persistence note
 - [x] Update CLAUDE.md index + `apps/backend/documentation/README.md`
 - [ ] Frontend doc `apps/frontend-webapp/documentation/sh3-shows.md` (store pattern, DnD, curves) — plus fin, à faire si utile
+
+### Phase 10 — Program assignments → artist shows (à planifier)
+
+Voir [`Program to Artist Show Flow`](../user-flows/programs/00-program-to-artist-show-flow.md).
+
+- [ ] Ajouter un concept d'assignments publiés côté Program : le manager peut mapper des artistes en brouillon sans notifier, puis publier.
+- [ ] Créer ou mettre à jour idempotemment un Show artiste par contexte d'event / assignment.
+- [ ] Projeter chaque slot assigné en section de show : `slot.duration` devient `section.target.duration_s`.
+- [ ] Calculer `show.totalDurationTargetSeconds` comme somme des durations des slots assignés.
+- [ ] Ajouter `context: personal | company_assignment` et des métadonnées source (`company_id`, `event_id`, `program_id`, `assignment_id`) au Show.
+- [ ] Ajouter des métadonnées source aux sections générées (`program_slot_id`, `room_id`, `start_minutes`, `assignment_id`).
+- [ ] Envoyer une notification artiste après publication : "New show to prepare", deep-link vers `/app/shows/:id`.
+- [ ] Afficher les warnings de préparation sur la page Show : niveau show, set et item.
+- [ ] Garder les Shows personnels existants comme flow autonome pour fabriquer son propre programme artistique.
 
 **Total : ~10 jours** (estimation initiale). Implémenté en ~9 jours + 2 jours de pass premium UX / bug-fix (sparklines, inline rename, targets + fill %, DnD reorder, popover, upsert fix).
 
