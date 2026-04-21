@@ -225,22 +225,19 @@
 
     <!-- ── Sections ───────────────────────────────────── -->
 
-    <div class="sections" [class.sections--reordering]="isReorderingSection()">
+    <div
+      #sectionsEl
+      class="sections"
+      [class.is-reordering]="isReorderingSection()"
+      uiDndDropZone
+      [dropZone_id]="'sections:' + show.id"
+      [dropZoneAccept]="['show-section']"
+      (uiDndDrop)="onSectionsReorderDrop($event)"
+    >
       @for (section of show.sections; track trackSection($index, section)) {
-        @if (show.sections.length > 1) {
-          <div
-            class="section-insert"
-            uiDndDropZone
-            [dropZone_id]="'insert:' + $index"
-            [dropZoneAccept]="['show-section']"
-            (uiDndDrop)="onInsertionDrop($index, $event)"
-          >
-            <span class="section-insert__line"></span>
-          </div>
-        }
         <section
           class="section"
-          [class.section--dragging]="reorderingSectionId() === section.id"
+          [class.dragging]="reorderingSectionId() === section.id"
           uiDndDropZone
           [dropZone_id]="section.id"
           [dropZoneAccept]="['music-track', 'playlist']"
@@ -455,15 +452,17 @@
           </footer>
         </section>
       }
-      @if (show.sections.length > 1) {
+      <!-- Cursor-driven insertion bar — only shown during a section drag,
+           positioned at the slot under the cursor (playlist-tracks UX). -->
+      @if (isReorderingSection() && insertIndex() >= 0) {
         <div
-          class="section-insert section-insert--tail"
-          uiDndDropZone
-          [dropZone_id]="'insert:' + show.sections.length"
-          [dropZoneAccept]="['show-section']"
-          (uiDndDrop)="onInsertionDrop(show.sections.length, $event)"
+          class="insertion-bar"
+          [style.top.px]="insertY()"
+          aria-hidden="true"
         >
-          <span class="section-insert__line"></span>
+          <span class="insertion-dot insertion-dot--start"></span>
+          <span class="insertion-line"></span>
+          <span class="insertion-dot insertion-dot--end"></span>
         </div>
       }
     </div>

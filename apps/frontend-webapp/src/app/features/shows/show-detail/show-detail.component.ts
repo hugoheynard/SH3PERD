@@ -3,9 +3,11 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   input,
   signal,
+  viewChild,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -111,10 +113,15 @@ export class ShowDetailComponent {
   private readonly mutations = inject(ShowsMutationService);
   private readonly dragSession = inject(DragSessionService);
 
+  /** Ref to the rendered `.sections` container — used to read each
+   *  section's bounding rect and compute the insertion slot under the
+   *  cursor (playlist-tracks drag pattern). */
+  private readonly sectionsEl =
+    viewChild<ElementRef<HTMLElement>>('sectionsEl');
+
   /** `'show-section'` when the user is currently reordering a section,
-   *  otherwise `null`. Drives the visibility of the insertion drop
-   *  zones — they only light up during a section drag so the rest of
-   *  the time the layout stays clean. */
+   *  otherwise `null`. Drives the `.dragging` class on the source row
+   *  and the visibility of the cursor-driven insertion bar. */
   protected readonly reorderingSectionId = computed<TShowSectionId | null>(
     () => {
       const drag = this.dragSession.current();
@@ -127,6 +134,65 @@ export class ShowDetailComponent {
   protected readonly isReorderingSection = computed(
     () => this.reorderingSectionId() !== null,
   );
+
+  /**
+   * Insertion slot (0..sections.length) under the cursor while a
+   * `show-section` drag is active, or `-1` when the cursor is outside
+   * the container. Semantics: `i` means "drop before row i" so `0` is
+   * "at the top" and `sections.length` is "at the end".
+   *
+   * Runs on every cursor move because it depends on
+   * `DragSessionService.cursor()`.
+   */
+  protected readonly insertIndex = computed<number>(() => {
+    if (!this.isReorderingSection()) return -1;
+    const el = this.sectionsEl()?.nativeElement;
+    if (!el) return -1;
+
+    const cursor = this.dragSession.cursor();
+    const bbox = el.getBoundingClientRect();
+    if (
+      cursor.x < bbox.left ||
+      cursor.x > bbox.right ||
+      cursor.y < bbox.top ||
+      cursor.y > bbox.bottom
+    ) {
+      return -1;
+    }
+
+    const rows = el.querySelectorAll<HTMLElement>('.section');
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i].getBoundingClientRect();
+      if (cursor.y < r.top + r.height / 2) return i;
+    }
+    return rows.length;
+  });
+
+  /**
+   * Y offset (in px, inside the scrollable container) at which to
+   * render the insertion bar. `-1` hides the bar. Same maths as the
+   * playlist detail — accounts for scrollTop so the bar tracks rows
+   * that have been scrolled off the top.
+   */
+  protected readonly insertY = computed<number>(() => {
+    const idx = this.insertIndex();
+    if (idx < 0) return -1;
+    const el = this.sectionsEl()?.nativeElement;
+    if (!el) return -1;
+
+    const rows = el.querySelectorAll<HTMLElement>('.section');
+    const bbox = el.getBoundingClientRect();
+
+    if (rows.length === 0) return 4;
+    if (idx === 0) {
+      return rows[0].getBoundingClientRect().top - bbox.top + el.scrollTop;
+    }
+    if (idx >= rows.length) {
+      const last = rows[rows.length - 1].getBoundingClientRect();
+      return last.bottom - bbox.top + el.scrollTop;
+    }
+    return rows[idx].getBoundingClientRect().top - bbox.top + el.scrollTop;
+  });
 
   protected readonly detail = this.state.detail;
   protected readonly loading = this.state.detailLoadingFor;
@@ -563,28 +629,38 @@ export class ShowDetailComponent {
     return { sectionId: section.id, name: section.name };
   }
 
-  /** Drop handler for an insertion zone between sections. `targetIndex`
-   *  is the slot in the ordered sections array where the dragged section
-   *  should land. The updated list is passed to `reorderSections` as the
-   *  authoritative new order. */
-  onInsertionDrop(targetIndex: number, drag: DragState): void {
+  /**
+   * Drop handler for the cursor-driven sections reorder. Reads the
+   * insertion slot from `insertIndex()` (computed from the cursor
+   * position at drop time), normalises it to the "new position among
+   * siblings" semantic the backend expects, and dispatches the full
+   * ordered id list.
+   */
+  onSectionsReorderDrop(drag: DragState): void {
     if (drag.type !== 'show-section') return;
     const show = this.detail();
     if (!show) return;
+
+    const idx = this.insertIndex();
+    if (idx < 0) return;
 
     const payload = drag.data as ShowSectionDragPayload;
     const current = show.sections.map((s) => s.id);
     const fromIdx = current.indexOf(payload.sectionId);
     if (fromIdx === -1) return;
 
-    // Remove the dragged id, then splice it at `targetIndex` — adjust
-    // for the removal when the original position was before the target.
+    // Drop-in-place (slot just before or just after the dragged row)
+    // is a no-op — don't trigger an API round-trip for nothing.
+    if (idx === fromIdx || idx === fromIdx + 1) return;
+
+    // Translate the visual slot (the ghost still counts as occupying
+    // its source row) into the post-removal slot the reorder endpoint
+    // expects. Moving forward compensates for the removal shift.
+    const newPosition = idx > fromIdx ? idx - 1 : idx;
+
     const next = current.slice();
     next.splice(fromIdx, 1);
-    const adjustedTarget =
-      targetIndex > fromIdx ? targetIndex - 1 : targetIndex;
-    if (adjustedTarget === fromIdx) return; // no-op
-    next.splice(adjustedTarget, 0, payload.sectionId);
+    next.splice(newPosition, 0, payload.sectionId);
 
     this.mutations.reorderSections(show.id, next);
   }
