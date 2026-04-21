@@ -1,302 +1,121 @@
 # SH3PHERD — Claude Code Onboarding
 
-## First thing to do in every new session
+## Working context (read first)
 
-Read ALL documentation files in both locations before starting any work:
+- **Default workspace**: main repo at `~/WebstormProjects/SH3PHERD`, branch `dev`.
+  Do not create a worktree and do not switch branches unless the user explicitly asks.
+- If a worktree is already active: finish the task, commit, push to `origin`, then exit the worktree so WebStorm stays in sync.
+- **Do NOT preload docs.** Read only what the current task requires. Use the two indexes below to find the right doc on demand.
 
-1. `apps/backend/documentation/` — technical architecture docs
-2. `documentation/` — process docs, TODOs, feature roadmaps
+### Documentation indexes (navigate from here)
 
-This is mandatory — the docs contain architecture decisions, conventions, and domain context
-that are essential for making correct changes.
+- Technical (architecture, patterns, how-tos): [`apps/backend/documentation/README.md`](apps/backend/documentation/README.md)
+- Process (TODOs, roadmaps, secrets): [`documentation/README.md`](documentation/README.md)
 
-## Development environment
+Rule of thumb — open a doc only when:
 
-The user works on this repo directly in **WebStorm** on the main workspace
-at `~/WebstormProjects/SH3PHERD`. By default, work in that workspace on the
-branch the user has checked out — do not spawn an isolated Claude worktree
-unless the user explicitly asks for one. When a worktree is already in use,
-finish the task by committing and pushing the branch to `origin` and then
-exit the worktree so the user can follow along in WebStorm without having
-to pull from an auxiliary checkout.
+- the task touches a module you have not modified recently, **or**
+- the task requires a convention (auth scopes, quotas, swagger, mailer, quality gates) not already covered by this file.
 
-## Documentation convention
+Two docs are worth opening early for non-trivial backend work:
+[`sh3-writing-a-controller.md`](apps/backend/documentation/sh3-writing-a-controller.md) and [`sh3-auth-and-context.md`](apps/backend/documentation/sh3-auth-and-context.md).
 
-The monorepo has two documentation locations with distinct purposes:
-
-- **`apps/backend/documentation/`** = **Technical only** — architecture, patterns, how-to guides, module design. No TODOs, no feature tracking, no roadmaps.
-- **`documentation/`** = **Process & planning** — TODOs, feature roadmaps, status tracking, open questions, user flows.
-
-When creating new docs, respect this separation. A technical doc about how a system works goes in backend. A TODO tracking what needs to be built goes in documentation/todos/.
-
-## Technical docs (apps/backend/documentation/)
-
-| Doc                      | Path                                                     | Description                                                                                              |
-| ------------------------ | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **README**               | `apps/backend/documentation/README.md`                   | Technical documentation index                                                                            |
-| **Auth System**          | `apps/backend/documentation/sh3-auth-system.md`          | Complete auth: login, tokens, password, security hardening (Mermaid diagrams)                            |
-| **Auth & Context**       | `apps/backend/documentation/sh3-auth-and-context.md`     | Request pipeline: `@ContractScoped`, `@PlatformScoped`, `@RequirePermission`, `P` object                 |
-| **Writing a Controller** | `apps/backend/documentation/sh3-writing-a-controller.md` | Complete guide: scope, permissions, Swagger, CQRS, Zod-to-DTO pipeline                                   |
-| **Swagger Usage**        | `apps/backend/documentation/sh3-swagger-usage.md`        | Zod-first DTOs, `apiSuccessDTO`, response envelope                                                       |
-| **Error Handling**       | `apps/backend/documentation/sh3-error-handling.md`       | DomainError, BusinessError, TechnicalError, GlobalExceptionFilter                                        |
-| **Dev Setup**            | `apps/backend/documentation/sh3-dev-setup.md`            | RSA keys, JWT config, env variables                                                                      |
-| **Quality Gates**        | `apps/backend/documentation/sh3-quality-gates.md`        | 3-tier enforcement (pre-commit/pre-push/CI), detection logic, branch protection                          |
-| **Platform Contract**    | `apps/backend/documentation/sh3-platform-contract.md`    | SaaS subscription model, dual contract model (platform vs company)                                       |
-| **Quota Service**        | `apps/backend/documentation/sh3-quota-service.md`        | Quota enforcement: `ensureAllowed()` / `recordUsage()`, plan limits                                      |
-| **Analytics Events**     | `apps/backend/documentation/sh3-analytics-events.md`     | Append-only event store, event types, metadata, handler status                                           |
-| **Mailer**               | `apps/backend/documentation/sh3-mailer.md`               | Template-based transactional email, Resend adapter, dry-run mode                                         |
-| **Music Library**        | `apps/backend/documentation/sh3-music-library.md`        | Full music feature architecture, 14 features across 4 tiers                                              |
-| **Music Reference API**  | `apps/backend/documentation/sh3-music-reference-api.md`  | Canonical song catalogue, immutable user-side, search-first UX + throttle, admin curation TODO           |
-| **Music Repertoire API** | `apps/backend/documentation/sh3-music-repertoire-api.md` | User library — entry + versions + tracks, aggregate with transactional cascade delete + quota credits    |
-| **Music Version API**    | `apps/backend/documentation/sh3-music-version-api.md`    | User renditions under a repertoire entry — create/update/delete, cascade derivations, quota, analytics   |
-| **Music Version Audit**  | `apps/backend/documentation/sh3-music-version-audit.md`  | Prod-readiness audit of music version vs reference/repertoire baselines (2026-04-21)                     |
-| **Music Audio Player**   | `apps/backend/documentation/sh3-music-audio-player.md`   | wavesurfer.js inline player, peaks pipeline                                                              |
-| **Music Mastering**      | `apps/backend/documentation/sh3-music-mastering.md`      | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift                                                    |
-| **Persona Match**        | `apps/backend/documentation/sh3-persona-match.md`        | AI event programming: extraction, scoring, curation (Claude API)                                         |
-| **Playlists**            | `apps/backend/documentation/sh3-playlists.md`            | Per-user playlists: CQRS, summary aggregates + per-track series, UI layout, DnD                          |
-| **Shows**                | `apps/backend/documentation/sh3-shows.md`                | Artist shows: show → sections → items, show + section targets with fill %, DnD reorder, new-show popover |
-| **Org Chart**            | `apps/backend/documentation/sh3-orgchart.md`             | Org chart features, API, architecture                                                                    |
-| **Orgchart Export**      | `apps/backend/documentation/sh3-orgchart-export.md`      | PDF/SVG export via headless Chromium                                                                     |
-| **Orgchart Print**       | `apps/backend/documentation/sh3-orgchart-print.md`       | Print layer reusing live component                                                                       |
-| **Contracts**            | `apps/backend/documentation/sh3-contracts.md`            | Contract aggregate diagram                                                                               |
-| **Integrations**         | `apps/backend/documentation/sh3-integrations.md`         | Slack OAuth, channel management                                                                          |
-| **E2E Tests**            | `apps/backend/documentation/sh3-e2e-tests.md`            | MongoMemoryServer, test builders, factories                                                              |
-
-## Process docs (documentation/)
-
-| Doc                      | Path                                               | Description                                         |
-| ------------------------ | -------------------------------------------------- | --------------------------------------------------- |
-| **README**               | `documentation/README.md`                          | Process documentation index                         |
-| **Secrets Management**   | `documentation/SECRETS.md`                         | How env secrets are loaded/rotated + full inventory |
-| **Tech Debt**            | `documentation/todos/TODO-tech-debt.md`            | Urgent bugs, architectural debt, functional backlog |
-| **Music Features**       | `documentation/todos/TODO-music-features.md`       | Music feature roadmap by phase                      |
-| **Artist Shows**         | `documentation/todos/TODO-artist-shows.md`         | Personal performance planner (spec locked, pre-dev) |
-| **Company Features**     | `documentation/todos/TODO-company-features.md`     | Company module: settings, org chart, contracts      |
-| **Guest to User**        | `documentation/todos/TODO-guest-to-user.md`        | Guest user activation flow (6 phases)               |
-| **Integrations**         | `documentation/todos/TODO-integrations.md`         | Slack integration roadmap                           |
-| **Tab Bar**              | `documentation/todos/TODO-configurable-tab-bar.md` | DnD bug fix, unit tests, component split            |
-| **Programs**             | `documentation/todos/TODO-programs.md`             | Drag engine refactoring                             |
-| **Error Mgmt**           | `documentation/todos/TODO-error-management.md`     | Error class refactoring (completed)                 |
-| **Usage & Credits**      | `documentation/todos/TODO-usage-credits-events.md` | Usage tracking, credit packs, event store roadmap   |
-| **Plans Artist/Company** | `documentation/todos/TODO-plans-artist-company.md` | Plan matrix, pricing, feature matrix, migration     |
-
-## Monorepo structure
+## Stack synthesis
 
 ```
-SH3PHERD/
-  apps/
-    backend/           — NestJS API (DDD, CQRS, MongoDB)
-    frontend-webapp/   — Angular 21 (signals, standalone, SSR)
-    audio-processor/   — NestJS micro-service (ffmpeg, essentia.js, DeepAFx-ST)
-  packages/
-    shared-types/      — Zod schemas + TypeScript types (shared across all apps)
-    storage/           — R2/S3 storage utilities
+apps/backend/          NestJS · DDD · CQRS · MongoDB
+apps/frontend-webapp/  Angular 21 · signals-first · standalone · SSR
+apps/audio-processor/  NestJS micro-service (ffmpeg, essentia.js, DeepAFx-ST)
+packages/shared-types/ Zod schemas + TS types (source of truth for DTOs)
+packages/storage/      R2/S3 utilities
 ```
 
-## Documentation maintenance
+### Backend conventions (NestJS · DDD · CQRS · Mongo)
 
-Every code change must be reflected in the relevant documentation:
+- **DDD entities** extend `Entity<T>`, expose `toDomain` getter. IDs are prefixed (`user_`, `contract_`, `platformContract_`, …).
+- **CQRS**: Commands mutate, Queries read. Controllers call `CommandBus`/`QueryBus` with typed `execute<Command, Result>()`. No `any`.
+- **Scopes**: `@PlatformScoped()` (personal, resolves from `user_id`) vs `@ContractScoped()` (company, resolves from `X-Contract-Id`).
+- **Three enforcement layers**: Permissions (binary, `@RequirePermission()`) · Quotas (quantitative, `QuotaService.ensureAllowed()`) · Policy (domain invariants in entities).
+- **API envelope**: every response wrapped in `TApiResponse<T>` via `buildApiResponseDTO()`.
+- **Swagger is mandatory** on every endpoint: `@ApiOperation`, `@ApiResponse(apiSuccessDTO(...))`, Zod-derived DTOs from `shared-types`. Must ship in the same commit as the controller change.
+- **Imports**: relative imports use the `.js` extension (NodeNext).
+- **Tests** colocate in `__tests__/` next to the source (`commands/__tests__/LoginHandler.spec.ts`). Build test data via domain entity constructors — never raw Mongo inserts.
 
-- **New endpoint or controller change** → update the technical doc in `apps/backend/documentation/` + Swagger decorators
-- **New feature started or completed** → update the corresponding TODO in `documentation/todos/`
-- **Architecture decision or pattern change** → update or create a technical doc in `apps/backend/documentation/`
-- **New module or domain** → create a new technical doc following existing naming (`sh3-<module>.md`)
+### Frontend conventions (Angular 21, signals-first)
 
-Documentation updates must be in the same commit as the code change (or in an immediately following `docs` commit). Never leave docs stale.
+- `signal()` / `computed()` / `effect()` for all new state. No `BehaviorSubject`. No `subscribe()` in components — use `toSignal()` or `async` pipe.
+- Signal-based `input()` / `output()` (not `@Input` / `@Output`). All components `standalone: true`.
+- `inject()` in services, functional route guards (`CanActivateFn`).
+- **Reuse before you create**: check `app/shared/` first (`ButtonComponent`, `BadgeComponent`, `StatusBadgeComponent`, `AvatarComponent`, `InlineConfirmComponent`, `LoadingStateComponent`, `EmptyStateComponent`, `ViewToggleComponent`, `PillSelectorComponent`, `IconComponent`, …).
+- **Design tokens only**: CSS variables from `src/styles/_tokens.css` — never hardcode colors/spacing/fonts.
+- **SCSS mixins**: `@use "mixins" as m;` from `src/styles/mixins/` when needed. Domain-specific mixins (`rating-dots`, `buttons`) live in `src/app/shared/styles/`.
 
-Use **Mermaid diagrams** (sequence, flowchart, state, graph) in technical docs to illustrate flows, architectures, and state machines. Diagrams complement text — they don't replace it. Every non-trivial flow should have both a diagram and a textual explanation.
+## Architecture & quality bar
 
-## Commit rules
+Non-negotiable. Flag any existing code that violates these and either fix it in scope or open a TODO entry — never extend a violation.
 
-- **Atomic commits**: Split work into small, logically grouped commits. Each commit covers ONE concern (backend API, frontend component, docs, fix). Never batch unrelated changes.
-- **Conventional commits**: `feat(scope)`, `fix(scope)`, `docs(scope)`, `refactor(scope)`. Message explains WHY, not just WHAT.
-- **Example split**: 1) `feat(backend): add cross-library endpoint` 2) `feat(frontend): wire cross-library UI` 3) `docs: update music library roadmap`
+### SOLID (how it applies here)
 
-## Swagger documentation
+- **SRP** — one reason to change per class/file. Handlers do _one_ thing (one command → one handler → one outcome). Components render; services orchestrate; repositories persist. If a unit grows a second responsibility, split it.
+- **OCP** — extend via new handlers, strategies, adapters; don't grow `switch`/`if` ladders on a type discriminant. Prefer a registry or polymorphism over conditional branching on kind.
+- **LSP** — subtypes must be substitutable. No narrowing preconditions, no throwing from overrides that the base contract doesn't declare. Zod schemas stay structurally compatible; entity subclasses respect parent invariants.
+- **ISP** — keep interfaces narrow. Split fat service contracts; a consumer depends only on the methods it actually calls. Repositories expose read vs. write surfaces separately when both exist.
+- **DIP** — domain depends on abstractions, infra on concretions. Handlers depend on repository _interfaces_, never on Mongo models. Injection tokens for cross-cutting infra (mailer, storage, clock). Angular: `inject()` interface-typed services.
 
-Every controller endpoint MUST have complete Swagger decorators following `apps/backend/documentation/sh3-writing-a-controller.md`:
+### Clean boundaries
 
-- `@ApiOperation({ summary, description })`
-- `@ApiResponse(apiSuccessDTO(...))`
-- `@ApiParam` / `@ApiBody` where relevant
-- Zod-derived DTOs from shared-types for payloads
-- Responses wrapped in `TApiResponse<T>` via `buildApiResponseDTO()`
+- **Dependency direction**: `domain` ← `application` (handlers, use-cases) ← `infrastructure` (Mongo, HTTP, adapters). Domain imports nothing framework-specific — no Nest decorators, no Mongoose, no Zod leaking inward.
+- **CQRS discipline**: Commands return void or an ID, never a read model. Queries never mutate. No cross-calls between a command handler and a query handler — share through the domain or repositories.
+- **Shared types are the contract**: DTOs derive from Zod schemas in `packages/shared-types`. Never hand-write a DTO that shadows a Zod type.
+- **Entities enforce invariants**: validation lives in the entity constructor / factory. Controllers and handlers do not re-validate what the entity already guarantees.
 
-Swagger must be updated in the same commit as the controller change. Stale docs are not acceptable.
+### Code quality (enforced locally, not just "nice to have")
 
-## Quality gates (three tiers, enforced top-to-bottom)
+- **No `any`, no `as unknown as T`, no `@ts-ignore`, no `eslint-disable`.** If types fight you, the model is wrong — fix the model.
+- **Small units**: functions ≲40 lines, files ≲300. If a handler grows, extract a domain service or a pure helper — don't inline more branches.
+- **Pure where possible**: domain logic is pure + deterministic. Side effects (I/O, time, randomness) cross an explicit port (repository, clock, id generator).
+- **Errors by category**: `DomainError` / `BusinessError` / `TechnicalError` (see [`sh3-error-handling.md`](apps/backend/documentation/sh3-error-handling.md)). Never throw raw `Error` from application or domain code. Never swallow errors silently.
+- **Tests with the change**: every new handler/service/component ships with unit tests colocated in `__tests__/`. Domain logic is tested without Nest; handlers with mocked ports; no raw Mongo inserts in test factories.
+- **Reuse before create** (frontend): scan `app/shared/` and existing mixins/tokens first. Duplicating a component is a review-blocker.
+- **Signals purity** (frontend): `computed()` must be pure; side effects go in `effect()`. No reading a signal from a non-reactive context that should be reactive.
 
-The repository enforces three layers of quality. Each is tighter than the last.
-Don't expect the later gates to catch what an earlier one missed — by the time
-CI rejects a PR, the feedback loop is already slow.
+When in doubt: prefer the boring, explicit, well-typed solution over the clever one. Readability and a correct type model beat brevity.
 
-> **Deep dive:** see [`sh3-quality-gates.md`](apps/backend/documentation/sh3-quality-gates.md)
-> for the detection logic, Mermaid diagrams, troubleshooting, and the
-> checklist for adding a new app to the gates.
+## Commits
 
-### 1. Pre-commit (fast, local, formatting only)
+- **Atomic & conventional**: `feat(scope)`, `fix(scope)`, `docs(scope)`, `refactor(scope)`. One concern per commit. Message explains _why_.
+- **Docs ship with code**: update the relevant technical doc or TODO in the same commit (or an immediately following `docs:` commit). Never leave docs stale. Technical doc → `apps/backend/documentation/`. TODO/roadmap → `documentation/todos/`.
+- Use Mermaid diagrams in technical docs for non-trivial flows.
 
-`.githooks/pre-commit` runs `lint-staged` on the files you staged:
+## Quality gates
 
-- ESLint `--fix` on backend and audio-processor TypeScript
-- Prettier on every supported extension
+Three tiers enforced top-down; see [`sh3-quality-gates.md`](apps/backend/documentation/sh3-quality-gates.md) for details.
 
-Handles style and autofixable issues. Does **not** typecheck.
+1. **Pre-commit** (`.githooks/pre-commit`): `lint-staged` — ESLint `--fix` + Prettier. No typecheck.
+2. **Pre-push** (`.githooks/pre-push`): `tsc --noEmit` + `eslint` per changed app. If `packages/shared-types/**` changed, all downstream apps re-check. Tests run in CI, not here. Hooks self-install on `pnpm install`; manual fallback: `pnpm run setup:hooks`.
+3. **CI** (`.github/workflows/ci.yml`): build shared-types, lint + typecheck + unit tests per app, frontend production build, `ci-gate` as the single required status check.
 
-### 2. Pre-push (local, blocking, covers correctness)
+Before touching a module in the backend ESLint `ignores`: remove it from `ignores` and fix existing errors first. No `eslint-disable`. Never commit failing tests.
 
-`.githooks/pre-push` inspects the diff between the remote tip and HEAD, and
-for each app that has changes it runs:
-
-- `tsc --noEmit`
-- `eslint` (where an ESLint config exists — backend, audio-processor)
-
-If `packages/shared-types/**` changed, every downstream app is re-checked
-(and shared-types is rebuilt first). Tests are **not** run here — they live
-in CI to keep the push gate fast enough that nobody reaches for `--no-verify`.
-
-Activation happens **automatically** on every `pnpm install` via the root
-`prepare` script — a fresh clone is compliant after one install. The same
-setup also runs as `predev:watch`, so anyone starting the dev loop without
-having installed yet still gets the hooks wired up. Manual fallback:
+Manual gate commands:
 
 ```bash
-pnpm run setup:hooks   # points core.hooksPath at .githooks
+pnpm --filter @sh3pherd/backend lint         # or: exec tsc --noEmit   / test
+pnpm --filter audio-processor lint           # or: exec tsc --noEmit   / test
+pnpm --filter frontend-webapp exec tsc --noEmit   # + test / build
 ```
-
-Emergency bypass: `git push --no-verify`. GitHub branch protection is the
-real, unbypassable gate (see §3).
-
-### 3. CI (remote, authoritative, required for merge)
-
-`.github/workflows/ci.yml` runs on every push to `dev` and every PR into
-`dev` or `main`:
-
-- `shared-types`: build
-- `backend`: lint + `tsc --noEmit` + unit tests
-- `audio-processor`: lint + `tsc --noEmit` + unit tests
-- `frontend`: `tsc --noEmit` + unit tests + production build
-- `ci-gate`: a terminal job that waits on every other job. This is the
-  single status check to require in GitHub branch protection.
-
-### Rules that still apply before a commit
-
-- **Before working on a module**: if it is in the ESLint `ignores` list
-  (`apps/backend/eslint.config.mjs`), REMOVE it from `ignores` first.
-  Fix all existing lint errors in that module, then proceed with the
-  feature work.
-- **No `eslint-disable` comments**: fix the root cause instead of
-  suppressing the error.
-- **Never commit code with failing tests.** The pre-push hook does not
-  run tests, so this one is on you locally; CI will block the merge
-  regardless.
-
-Useful one-liners when you want to run a gate manually:
-
-```bash
-pnpm --filter @sh3pherd/backend lint
-pnpm --filter @sh3pherd/backend exec tsc --noEmit
-pnpm --filter @sh3pherd/backend test
-
-pnpm --filter audio-processor lint
-pnpm --filter audio-processor exec tsc --noEmit
-pnpm --filter audio-processor test
-
-pnpm --filter frontend-webapp exec tsc --noEmit
-pnpm --filter frontend-webapp test
-pnpm --filter frontend-webapp build
-```
-
-## Frontend conventions (Angular 21)
-
-- **Signals first**: Use `signal()`, `computed()`, `effect()` for state. No `BehaviorSubject` for new code.
-- **Component inputs/outputs**: Use `input()` and `output()` signal-based API (not `@Input()` / `@Output()` decorators).
-- **Standalone components**: All components must be `standalone: true`. No `NgModule` declarations.
-- **Shared components**: Always check `app/shared/` before creating a new component. Reuse existing: `ButtonComponent`, `BadgeComponent`, `StatusBadgeComponent`, `AvatarComponent`, `InlineConfirmComponent`, `LoadingStateComponent`, `EmptyStateComponent`, `ViewToggleComponent`, `PillSelectorComponent`, `IconComponent`, etc.
-- **Design tokens**: Use CSS variables from `src/styles/_tokens.css` — the single source of truth. Never hardcode colors, spacing, or font sizes — always reference tokens (`var(--accent-color)`, `var(--text-primary)`, `var(--radius-md)`, etc.). No SCSS-side token duplication.
-- **SCSS mixins**: Use mixins from `src/styles/mixins/` for cross-cutting patterns (`scrollbar`, `baseTab`, `form-section-title`, `settings-inline/content/responsive`). Import with `@use "mixins" as m;` only when you actually invoke one.
-- **Rating dots / button icons**: domain-specific mixins live in `src/app/shared/styles/` (`rating-dots`, `buttons`). Import via relative paths as needed.
-- **No `subscribe()` in components**: Prefer `toSignal()` or `async` pipe. Use `effect()` for side effects triggered by signal changes.
-- **Typed services**: Services use `inject()` function (not constructor injection). Use `computed()` for derived state.
-- **Route guards**: Use functional guards (`CanActivateFn`), not class-based guards.
-
-## Key conventions (backend)
-
-- **DDD entities**: Always use `Entity<T>` base class with `toDomain` getter. Prefix IDs (`user_`, `contract_`, `platformContract_`, etc.)
-- **Test factories**: Always create test data via domain entity constructors + `entity.toDomain`, never raw MongoDB inserts
-- **No `any`**: Use explicit types everywhere. Typed `execute<Command, Result>()` on CQRS buses
-- **CQRS**: Commands mutate, Queries read. Controllers call `CommandBus` / `QueryBus`
-- **Two contract scopes**:
-  - `@PlatformScoped()` — personal features (music library), resolves from `user_id`
-  - `@ContractScoped()` — company features (orgchart, cross-library), resolves from `X-Contract-Id` header
-- **Quota vs Permissions vs Policy**: Three distinct layers
-  - Permissions (binary: can/cannot) — `@RequirePermission()`
-  - Quotas (quantitative: how much) — `QuotaService.ensureAllowed()`
-  - Policy (structural: domain invariants) — entity validation
-- **API responses**: Wrap in `TApiResponse<T>` via `buildApiResponseDTO()`
-- **Imports**: Use `.js` extension for relative imports in backend (NodeNext resolution)
-- **Colocate tests**: Unit tests live in a `__tests__/` folder adjacent to the source file they test (e.g. `commands/__tests__/LoginHandler.spec.ts`). Never put tests in a root-level `__tests__/` folder far from the source. Exception: E2E tests and shared test helpers.
-
-## Code style (all apps)
-
-- **No one-liner returns inside control flow.** Always use a block with proper indentation for `return` / `throw` / `continue` / `break` inside an `if`, `else`, `for`, `while`, `switch case`, etc. The early-return should be visually obvious from the indentation — a single-line `if (x) return y;` hides the branch and clutters review.
-
-  ```ts
-  // ❌ Don't
-  if (!existing) return [];
-  if (idx === -1) throw new Error("NOT_FOUND");
-  for (const x of xs) if (x.ok) return x;
-
-  // ✅ Do
-  if (!existing) {
-    return [];
-  }
-  if (idx === -1) {
-    throw new Error("NOT_FOUND");
-  }
-  for (const x of xs) {
-    if (x.ok) {
-      return x;
-    }
-  }
-  ```
-
-  Applies to backend, frontend, shared-types, audio-processor, and migration scripts. Guard clauses at the very top of a function still get a block.
 
 ## Useful commands
 
 ```bash
 # Dev
-pnpm run dev:backend          # Start backend in watch mode
-pnpm run dev:webapp           # Start Angular frontend
-
-# Test
-pnpm --filter @sh3pherd/backend test          # Backend unit tests
-pnpm --filter audio-processor test  # Audio processor tests
-
-# Lint
-pnpm --filter @sh3pherd/backend lint          # Backend ESLint + Prettier
-pnpm --filter audio-processor lint  # Audio processor lint
+pnpm run dev:backend
+pnpm run dev:webapp
 
 # Build
-pnpm --filter @sh3pherd/shared-types build    # Build shared types (prerequisite)
-pnpm --filter frontend-webapp build # Build Angular app
-pnpm --filter @sh3pherd/backend build         # Build NestJS backend
-
-# Type check
-cd apps/backend && npx tsc --noEmit
-cd apps/frontend-webapp && npx tsc --noEmit
+pnpm --filter @sh3pherd/shared-types build   # prerequisite for others
+pnpm --filter @sh3pherd/backend build
+pnpm --filter frontend-webapp build
 ```
 
-One-click equivalents for WebStorm users (all committed in `.run/`,
-shared across the team): `Dev all` launches every app + watched shared
-package in parallel; `backend > test`, `backend > test:watch`, and
-`backend > test (E2E only)` match the CLI `pnpm test` invocations flag
-for flag. See [`documentation/WEBSTORM-RUN-CONFIGS.md`](documentation/WEBSTORM-RUN-CONFIGS.md).
-
-## Session start confirmation
-
-After reading all documentation files listed above, explicitly confirm to the user:
-"I have read all documentation files in apps/backend/documentation/. Ready to work."
-
-Do NOT start any work before this confirmation.
+WebStorm users: one-click configs live in `.run/` (`Dev all`, `backend > test`, etc.). See [`documentation/WEBSTORM-RUN-CONFIGS.md`](documentation/WEBSTORM-RUN-CONFIGS.md).
