@@ -28,6 +28,17 @@ export class RatingSparklineComponent {
   readonly series = input.required<(number | null)[]>();
 
   /**
+   * Optional per-track durations in seconds, aligned with `series`.
+   * When supplied with at least one non-zero entry, dots are placed
+   * along X proportionally to the cumulative playtime so a 4-minute
+   * track occupies roughly twice the horizontal room of a 2-minute
+   * one. Falls back to uniform index-based spacing when absent,
+   * empty, or all-zero so short/silent takes don't collapse onto
+   * each other.
+   */
+  readonly durations = input<number[] | null>(null);
+
+  /**
    * Optional semantic colour for the line + filled dots. Supply one of
    * the rating colour tokens (e.g. `var(--color-rating-high)`) or any
    * CSS colour. Defaults to the accent colour for backwards-compat.
@@ -49,13 +60,42 @@ export class RatingSparklineComponent {
     return this.height - this.paddingY - normalised * usable;
   }
 
-  /** X coordinate for the `i`-th track. Single-track playlists pin
-   *  the dot to the middle so the graph reads as "one data point". */
-  private x(i: number, count: number): number {
-    if (count <= 1) return this.width / 2;
+  /**
+   * Per-track X coordinates. When `durations` resolves to a usable
+   * timeline (length matches `series`, at least one positive value),
+   * each dot sits at the *middle* of its track's time slice — matching
+   * how a waveform would render the centre of a chunk — so the
+   * horizontal position directly reflects when the track plays in the
+   * set. Otherwise we fall back to evenly-spaced dots.
+   */
+  private readonly xs = computed<number[]>(() => {
+    const count = this.series().length;
+    if (count === 0) return [];
+    if (count === 1) return [this.width / 2];
+
     const usable = this.width - this.paddingX * 2;
-    return this.paddingX + (i / (count - 1)) * usable;
-  }
+    const durations = this.durations();
+    const total = durations?.length === count
+      ? durations.reduce((a, b) => a + (b > 0 ? b : 0), 0)
+      : 0;
+
+    if (!durations || durations.length !== count || total <= 0) {
+      return Array.from(
+        { length: count },
+        (_, i) => this.paddingX + (i / (count - 1)) * usable,
+      );
+    }
+
+    const xs: number[] = [];
+    let cumulative = 0;
+    for (let i = 0; i < count; i++) {
+      const slice = durations[i] > 0 ? durations[i] : 0;
+      const centre = cumulative + slice / 2;
+      xs.push(this.paddingX + (centre / total) * usable);
+      cumulative += slice;
+    }
+    return xs;
+  });
 
   /** Baseline Y — the area path closes down to this line. Matches the
    *  "rating 1" guide tick so the fill hugs the bottom of the chart. */
@@ -64,14 +104,15 @@ export class RatingSparklineComponent {
   /* ─── Resolved geometry signals ────────────────────────── */
 
   /** Per-track points with resolved `x` / `y` and null flag. */
-  readonly points = computed(() =>
-    this.series().map((v, i) => ({
+  readonly points = computed(() => {
+    const xs = this.xs();
+    return this.series().map((v, i) => ({
       i,
       value: v,
-      x: this.x(i, this.series().length),
+      x: xs[i],
       y: v === null ? null : this.y(v),
-    })),
-  );
+    }));
+  });
 
   /** Split the points into contiguous non-null runs so each run can
    *  be drawn with its own smooth path (and null gaps stay visible). */

@@ -591,6 +591,12 @@ export class ShowDetailComponent {
     return target[axis.seriesKey];
   }
 
+  durationsFor(
+    target: TShowSummaryViewModel | TShowSectionViewModel,
+  ): number[] {
+    return target.durationSeries;
+  }
+
   displayMean(mean: number | null): string {
     return mean === null ? '—' : mean.toFixed(1);
   }

@@ -182,6 +182,7 @@
               <app-rating-sparkline
                 class="rating-sparkline"
                 [series]="seriesFor(show, axis)"
+                [durations]="durationsFor(show)"
                 [accent]="axis.accent"
               />
             </div>
@@ -413,6 +414,7 @@
                   <app-rating-sparkline
                     class="rating-sparkline rating-sparkline--compact"
                     [series]="seriesFor(section, axis)"
+                    [durations]="durationsFor(section)"
                     [accent]="axis.accent"
                   />
                 </div>

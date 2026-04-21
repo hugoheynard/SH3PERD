@@ -55,6 +55,7 @@ export class ShowsMutationService {
           energySeries: [],
           effortSeries: [],
           qualitySeries: [],
+          durationSeries: [],
         });
         this.router.navigate(['/app/shows', show.id]);
       },

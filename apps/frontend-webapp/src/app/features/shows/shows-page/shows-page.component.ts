@@ -113,6 +113,10 @@ export class ShowsPageComponent implements OnInit {
     return show[axis.seriesKey];
   }
 
+  durationsFor(show: TShowSummaryViewModel): number[] {
+    return show.durationSeries;
+  }
+
   displayMean(mean: number | null): string {
     return mean === null ? '—' : mean.toFixed(1);
   }
