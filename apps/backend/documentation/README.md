@@ -38,6 +38,8 @@ Architecture, patterns, and how-to guides for the NestJS backend.
 | [Music Library](sh3-music-library.md)               | Full music feature roadmap — 14 features across 4 tiers, current status                                              |
 | [Music Reference API](sh3-music-reference-api.md)   | Canonical song catalogue — immutable user-side, community contribution, admin curation TODO                          |
 | [Music Repertoire API](sh3-music-repertoire-api.md) | User library — entry + versions + tracks, aggregate with transactional cascade delete, quota credits, admin TODO     |
+| [Music Version API](sh3-music-version-api.md)       | User renditions (cover/acoustic/remix/pitch-shift) under a repertoire entry — create/update/delete, cascade, quota   |
+| [Music Version Audit](sh3-music-version-audit.md)   | Prod-readiness audit of the music version module vs reference/repertoire baselines (2026-04-21)                      |
 | [Audio Player](sh3-music-audio-player.md)           | wavesurfer.js inline player, waveform peaks pipeline                                                                 |
 | [Mastering](sh3-music-mastering.md)                 | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift architecture                                                   |
 | [Persona Match](sh3-persona-match.md)               | AI event programming — extraction, cross-library scoring, Claude API curation                                        |

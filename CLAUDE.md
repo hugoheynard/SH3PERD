@@ -48,6 +48,8 @@ When creating new docs, respect this separation. A technical doc about how a sys
 | **Music Library**        | `apps/backend/documentation/sh3-music-library.md`        | Full music feature architecture, 14 features across 4 tiers                                              |
 | **Music Reference API**  | `apps/backend/documentation/sh3-music-reference-api.md`  | Canonical song catalogue, immutable user-side, search-first UX + throttle, admin curation TODO           |
 | **Music Repertoire API** | `apps/backend/documentation/sh3-music-repertoire-api.md` | User library — entry + versions + tracks, aggregate with transactional cascade delete + quota credits    |
+| **Music Version API**    | `apps/backend/documentation/sh3-music-version-api.md`    | User renditions under a repertoire entry — create/update/delete, cascade derivations, quota, analytics   |
+| **Music Version Audit**  | `apps/backend/documentation/sh3-music-version-audit.md`  | Prod-readiness audit of music version vs reference/repertoire baselines (2026-04-21)                     |
 | **Music Audio Player**   | `apps/backend/documentation/sh3-music-audio-player.md`   | wavesurfer.js inline player, peaks pipeline                                                              |
 | **Music Mastering**      | `apps/backend/documentation/sh3-music-mastering.md`      | DeepAFx-ST AI mastering, ffmpeg loudnorm, pitch-shift                                                    |
 | **Persona Match**        | `apps/backend/documentation/sh3-persona-match.md`        | AI event programming: extraction, scoring, curation (Claude API)                                         |
