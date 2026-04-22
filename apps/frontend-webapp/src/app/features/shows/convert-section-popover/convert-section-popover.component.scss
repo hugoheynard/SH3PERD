@@ -1,0 +1,83 @@
+/* Reuses the same form grammar as the other shows popovers. */
+
+:host {
+  display: contents;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 2px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.form-input {
+  height: 34px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--panel-border-color);
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+  transition:
+    border-color var(--t-fast),
+    background var(--t-fast);
+
+  &::placeholder {
+    color: var(--text-faded);
+  }
+  &:focus {
+    border-color: var(--accent-color);
+    background: var(--surface-raised);
+  }
+}
+
+.color-row {
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.color-chip {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--chip-color);
+  color: rgba(0, 0, 0, 0.65);
+  box-shadow: 0 0 0 2px var(--panel-color);
+  outline: 2px solid transparent;
+  transition:
+    outline-color var(--t-fast),
+    transform var(--t-fast);
+
+  &:hover {
+    transform: scale(1.06);
+  }
+  &:focus-visible {
+    outline-color: var(--accent-color);
+  }
+
+  &--active {
+    outline-color: var(--text-primary);
+  }
+}

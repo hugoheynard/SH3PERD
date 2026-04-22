@@ -50,6 +50,14 @@ import {
   SectionSettingsPopoverComponent,
   type SectionSettingsPopoverData,
 } from '../section-settings-popover/section-settings-popover.component';
+import {
+  NewSectionPopoverComponent,
+  type NewSectionPopoverData,
+} from '../new-section-popover/new-section-popover.component';
+import {
+  ConvertSectionPopoverComponent,
+  type ConvertSectionPopoverData,
+} from '../convert-section-popover/convert-section-popover.component';
 
 /** Four rating axes with per-axis accent colour — the shared rating
  *  sparkline renders a smoothed series tinted with these so every card,
@@ -573,16 +581,6 @@ export class ShowDetailComponent {
     }
   }
 
-  /** Prompt helper for the integer-minutes input. Returns null when
-   *  the user cancels or enters something non-positive. */
-  private promptMinutes(question: string, fallback: number): number | null {
-    const raw = window.prompt(question, String(fallback));
-    if (raw === null) return null;
-    const parsed = Number.parseInt(raw.trim(), 10);
-    if (!Number.isFinite(parsed) || parsed <= 0) return null;
-    return parsed;
-  }
-
   /** Duration target for the section in seconds, or `null` when the
    *  section uses the track-count target mode (or has none). */
   targetSeconds(section: TShowSectionViewModel): number | null {
@@ -734,19 +732,13 @@ export class ShowDetailComponent {
   onAddSection(): void {
     const show = this.detail();
     if (!show) return;
-    const name = window
-      .prompt('Section name', `Set ${show.sections.length + 1}`)
-      ?.trim();
-    if (!name) return;
-    const minutes = this.promptMinutes(
-      'Target duration (minutes) — push yourself to hit it:',
-      15,
+    this.layout.setPopover<NewSectionPopoverComponent, NewSectionPopoverData>(
+      NewSectionPopoverComponent,
+      {
+        showId: show.id,
+        defaultName: `Set ${show.sections.length + 1}`,
+      },
     );
-    if (minutes === null) return;
-    this.mutations.addSection(show.id, name, {
-      mode: 'duration',
-      duration_s: minutes * 60,
-    });
   }
 
   onRemoveSection(section: TShowSectionViewModel): void {
@@ -758,11 +750,14 @@ export class ShowDetailComponent {
   onConvertSectionToPlaylist(section: TShowSectionViewModel): void {
     const show = this.detail();
     if (!show) return;
-    const name = window
-      .prompt('Playlist name', `${section.name} — playlist`)
-      ?.trim();
-    if (!name) return;
-    this.mutations.convertSectionToPlaylist(show.id, section.id, { name });
+    this.layout.setPopover<
+      ConvertSectionPopoverComponent,
+      ConvertSectionPopoverData
+    >(ConvertSectionPopoverComponent, {
+      showId: show.id,
+      sectionId: section.id,
+      defaultName: `${section.name} — playlist`,
+    });
   }
 
   onRemoveItem(

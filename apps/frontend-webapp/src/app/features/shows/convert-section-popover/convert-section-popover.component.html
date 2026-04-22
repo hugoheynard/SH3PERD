@@ -1,0 +1,60 @@
+<ui-popover-frame>
+  <div popover-title>
+    <span>Convert section to playlist</span>
+  </div>
+
+  <form
+    popover-body
+    class="form"
+    (ngSubmit)="submit()"
+    (keydown)="onKey($event)"
+  >
+    <!-- Name -->
+    <div class="form-field">
+      <label class="form-label" for="convert-playlist-name"
+        >Playlist name</label
+      >
+      <input
+        id="convert-playlist-name"
+        type="text"
+        class="form-input"
+        placeholder="Main set"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+        autofocus
+        aria-label="Playlist name"
+      />
+    </div>
+
+    <!-- Colour -->
+    <div class="form-field">
+      <label class="form-label">Colour</label>
+      <div class="color-row">
+        @for (c of colors; track c.key) {
+          <button
+            type="button"
+            class="color-chip"
+            [class.color-chip--active]="color() === c.key"
+            [style.--chip-color]="c.hex"
+            [attr.aria-label]="c.key"
+            [attr.aria-pressed]="color() === c.key"
+            (click)="setColor(c.key)"
+          >
+            @if (color() === c.key) {
+              <sh3-icon name="check" [size]="12" />
+            }
+          </button>
+        }
+      </div>
+    </div>
+  </form>
+
+  <div popover-footer>
+    <sh3-button variant="ghost" (clicked)="close()">Cancel</sh3-button>
+    <sh3-button variant="solid" [disabled]="!canSubmit()" (clicked)="submit()">
+      <sh3-icon name="playlist-add" [size]="14" />
+      <span>Convert</span>
+    </sh3-button>
+  </div>
+</ui-popover-frame>

@@ -1,0 +1,107 @@
+<ui-popover-frame>
+  <div popover-title>
+    <span>New section</span>
+  </div>
+
+  <form
+    popover-body
+    class="form"
+    (ngSubmit)="submit()"
+    (keydown)="onKey($event)"
+  >
+    <!-- Name -->
+    <div class="form-field">
+      <label class="form-label" for="new-section-name">Name</label>
+      <input
+        id="new-section-name"
+        type="text"
+        class="form-input"
+        placeholder="Warm-up"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+        autofocus
+        aria-label="Section name"
+      />
+    </div>
+
+    <!-- Target -->
+    <div class="form-field">
+      <label class="form-label">Target (optional)</label>
+      <div class="segmented" role="radiogroup" aria-label="Target mode">
+        <button
+          type="button"
+          class="segmented__btn"
+          [class.segmented__btn--active]="targetMode() === 'none'"
+          role="radio"
+          [attr.aria-checked]="targetMode() === 'none'"
+          (click)="setTargetMode('none')"
+        >
+          None
+        </button>
+        <button
+          type="button"
+          class="segmented__btn"
+          [class.segmented__btn--active]="targetMode() === 'duration'"
+          role="radio"
+          [attr.aria-checked]="targetMode() === 'duration'"
+          (click)="setTargetMode('duration')"
+        >
+          Duration
+        </button>
+        <button
+          type="button"
+          class="segmented__btn"
+          [class.segmented__btn--active]="targetMode() === 'track_count'"
+          role="radio"
+          [attr.aria-checked]="targetMode() === 'track_count'"
+          (click)="setTargetMode('track_count')"
+        >
+          Track count
+        </button>
+      </div>
+
+      @if (targetMode() === "duration") {
+        <div class="form-field__with-unit">
+          <input
+            type="number"
+            class="form-input"
+            inputmode="numeric"
+            min="1"
+            step="5"
+            placeholder="15"
+            [ngModel]="targetDurationMinutes()"
+            (ngModelChange)="targetDurationMinutes.set($event)"
+            name="targetDurationMinutes"
+            aria-label="Target duration in minutes"
+          />
+          <span class="form-field__unit">min</span>
+        </div>
+      } @else if (targetMode() === "track_count") {
+        <div class="form-field__with-unit">
+          <input
+            type="number"
+            class="form-input"
+            inputmode="numeric"
+            min="1"
+            step="1"
+            placeholder="5"
+            [ngModel]="targetTrackCount()"
+            (ngModelChange)="targetTrackCount.set($event)"
+            name="targetTrackCount"
+            aria-label="Target track count"
+          />
+          <span class="form-field__unit">songs</span>
+        </div>
+      }
+    </div>
+  </form>
+
+  <div popover-footer>
+    <sh3-button variant="ghost" (clicked)="close()">Cancel</sh3-button>
+    <sh3-button variant="solid" [disabled]="!canSubmit()" (clicked)="submit()">
+      <sh3-icon name="plus" [size]="14" />
+      <span>Add section</span>
+    </sh3-button>
+  </div>
+</ui-popover-frame>

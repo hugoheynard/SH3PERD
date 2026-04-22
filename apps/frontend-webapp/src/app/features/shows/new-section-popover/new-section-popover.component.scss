@@ -1,0 +1,105 @@
+/* Shares the form grammar with the show / section settings popovers
+   — kept per-component rather than via `@import` so each popover
+   stays self-contained and tree-shakable. */
+
+:host {
+  display: contents;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 2px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__with-unit {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  &__unit {
+    position: absolute;
+    right: 12px;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    pointer-events: none;
+  }
+}
+
+.form-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.form-input {
+  height: 34px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--panel-border-color);
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+  transition:
+    border-color var(--t-fast),
+    background var(--t-fast);
+
+  &::placeholder {
+    color: var(--text-faded);
+  }
+  &:focus {
+    border-color: var(--accent-color);
+    background: var(--surface-raised);
+  }
+
+  &[type="number"] {
+    appearance: textfield;
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+  }
+}
+
+.segmented {
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--panel-border-color);
+  border-radius: var(--radius-sm);
+  align-self: flex-start;
+
+  &__btn {
+    all: unset;
+    cursor: pointer;
+    padding: 5px 12px;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-muted);
+    border-radius: calc(var(--radius-sm) - 2px);
+    transition:
+      background var(--t-fast),
+      color var(--t-fast);
+
+    &:hover {
+      color: var(--text-secondary);
+    }
+
+    &--active {
+      background: var(--accent-color);
+      color: var(--text-on-accent, #fff);
+    }
+  }
+}
