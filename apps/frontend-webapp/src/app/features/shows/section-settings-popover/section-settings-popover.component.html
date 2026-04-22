@@ -185,6 +185,7 @@
                 step="0.5"
                 [ngModel]="draft.min"
                 (ngModelChange)="updateAxis(row.key, { min: $event })"
+                [ngModelOptions]="{ standalone: true }"
                 [disabled]="!draft.enabled"
                 [attr.aria-label]="row.label + ' minimum'"
               />
@@ -197,6 +198,7 @@
                 step="0.5"
                 [ngModel]="draft.max"
                 (ngModelChange)="updateAxis(row.key, { max: $event })"
+                [ngModelOptions]="{ standalone: true }"
                 [disabled]="!draft.enabled"
                 [attr.aria-label]="row.label + ' maximum'"
               />
