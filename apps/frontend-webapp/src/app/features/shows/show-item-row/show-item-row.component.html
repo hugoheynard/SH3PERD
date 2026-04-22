@@ -1,0 +1,28 @@
+<sh3-sortable-row-frame
+  [dragging]="dragging()"
+  [tone]="tone()"
+  [showRemove]="true"
+  removeLabel="Remove"
+  uiDndDrag
+  [dndType]="'show-section-item'"
+  [dndData]="dragData()"
+  [dragHandle]="'.sortable-row-frame__handle'"
+  (removed)="removed.emit()"
+>
+  <sh3-icon row-leading class="item__kind" [name]="iconName()" [size]="14" />
+
+  <span row-main class="item__body">
+    <strong class="item__title">{{ title() }}</strong>
+    <small class="item__sub">{{ subtitle() }}</small>
+  </span>
+
+  @if (duration(); as durationLabel) {
+    <span
+      row-meta
+      class="item__duration"
+      [attr.aria-label]="durationAriaLabel()"
+    >
+      {{ durationLabel }}
+    </span>
+  }
+</sh3-sortable-row-frame>

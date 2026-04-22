@@ -1,0 +1,40 @@
+<div
+  class="sortable-row-frame"
+  [class.dragging]="dragging()"
+  [attr.data-tone]="tone()"
+>
+  @if (sortable()) {
+    <span
+      class="sortable-row-frame__handle"
+      aria-hidden="true"
+      title="Drag to reorder"
+      role="button"
+    >
+      <sh3-icon name="menu" [size]="14" />
+    </span>
+  }
+
+  <div class="sortable-row-frame__leading">
+    <ng-content select="[row-leading]" />
+  </div>
+
+  <div class="sortable-row-frame__main">
+    <ng-content select="[row-main]" />
+  </div>
+
+  <div class="sortable-row-frame__meta">
+    <ng-content select="[row-meta]" />
+  </div>
+
+  <div class="sortable-row-frame__actions">
+    <ng-content select="[row-actions]" />
+    @if (showRemove()) {
+      <sh3-button-icon
+        icon="close"
+        size="xs"
+        [tooltip]="removeLabel()"
+        (clicked)="removed.emit()"
+      />
+    }
+  </div>
+</div>

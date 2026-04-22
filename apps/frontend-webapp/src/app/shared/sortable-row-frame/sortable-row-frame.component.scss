@@ -1,0 +1,107 @@
+:host {
+  display: block;
+}
+
+.sortable-row-frame {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm, 8px);
+  padding: 8px 10px;
+  background: var(--surface-subtle);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  transition:
+    background var(--t-fast),
+    border-color var(--t-fast),
+    opacity var(--t-fast),
+    filter var(--t-fast);
+  user-select: none;
+  -webkit-user-select: none;
+
+  &:hover {
+    background: var(--surface-raised);
+    border-color: var(--border-light);
+
+    .sortable-row-frame__handle {
+      color: var(--text-secondary);
+    }
+  }
+
+  &[data-tone="accent"] {
+    background: var(--surface-subtle);
+  }
+
+  &[data-tone="warning"] {
+    background: var(--surface-subtle);
+  }
+
+  &[data-tone="muted"] {
+    opacity: 0.9;
+  }
+
+  &.dragging {
+    opacity: 0.35;
+    filter: saturate(0.6);
+  }
+
+  &[data-tone="accent"] .sortable-row-frame__meta ::ng-deep .track-version {
+    color: var(--accent-color-light);
+    border-color: var(--accent-color-border);
+  }
+}
+
+.sortable-row-frame__handle {
+  cursor: grab;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: var(--radius-xs);
+  color: var(--text-faded);
+  transition:
+    background var(--t-fast),
+    color var(--t-fast);
+  touch-action: none;
+
+  &:hover {
+    background: var(--surface-raised);
+    color: var(--text-primary);
+  }
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.sortable-row-frame__leading {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.sortable-row-frame__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sortable-row-frame__meta,
+.sortable-row-frame__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-sm, 8px);
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.sortable-row-frame__meta {
+  margin-left: auto;
+}
+
+.sortable-row-frame__actions {
+  flex-shrink: 0;
+}

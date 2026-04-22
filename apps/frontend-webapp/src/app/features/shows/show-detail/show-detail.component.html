@@ -2,237 +2,46 @@
   <sh3-loading message="Loading show…" />
 } @else if (detail(); as show) {
   <div class="show-detail">
-    <!-- ── Header ─────────────────────────────────────── -->
-
-    <header class="show-header" [attr.data-color]="show.color">
-      <span class="show-header__stripe" [attr.data-color]="show.color"></span>
-
-      <div class="show-header__content">
-        <div class="show-header__lead">
-          @if (editingShowName()) {
-            <input
-              class="show-header__name-input"
-              type="text"
-              [ngModel]="showNameDraft()"
-              (ngModelChange)="showNameDraft.set($event)"
-              (blur)="commitRenameShow()"
-              (keydown)="onShowNameKey($event)"
-              autofocus
-              aria-label="Show name"
-            />
-          } @else {
-            <h1
-              class="show-header__name"
-              (dblclick)="startRenameShow()"
-              title="Double-click to rename"
-            >
-              {{ show.name }}
-            </h1>
-          }
-          @if (editingShowDescription()) {
-            <textarea
-              class="show-header__desc-input"
-              rows="2"
-              placeholder="Describe the show (venue, vibe, notes)…"
-              [ngModel]="showDescriptionDraft()"
-              (ngModelChange)="showDescriptionDraft.set($event)"
-              (blur)="commitEditShowDescription()"
-              (keydown)="onShowDescriptionKey($event)"
-              autofocus
-              aria-label="Show description"
-            ></textarea>
-          } @else if (show.description) {
-            <p
-              class="show-header__desc"
-              (dblclick)="startEditShowDescription()"
-              title="Double-click to edit"
-            >
-              {{ show.description }}
-            </p>
-          } @else {
-            <button
-              type="button"
-              class="show-header__desc-add"
-              (click)="startEditShowDescription()"
-            >
-              + Add description
-            </button>
-          }
-        </div>
-
-        <div class="show-header__actions">
-          <sh3-button-icon
-            icon="settings"
-            size="sm"
-            tooltip="Show settings"
-            (clicked)="openShowSettings()"
-          />
-          <sh3-button-icon
-            icon="check-circle"
-            size="sm"
-            tooltip="Mark show played"
-            (clicked)="onMarkShowPlayed()"
-          />
-          <sh3-button-icon
-            icon="add-doc"
-            size="sm"
-            tooltip="Duplicate show"
-            (clicked)="onDuplicate()"
-          />
-          <sh3-inline-confirm
-            mode="toggle"
-            confirmLabel="Delete?"
-            size="sm"
-            (confirmed)="onDelete()"
-          >
-            <sh3-button-icon
-              icon="bin"
-              size="sm"
-              tone="critical"
-              tooltip="Delete show"
-            />
-          </sh3-inline-confirm>
-        </div>
-      </div>
-
-      <div class="show-header__stats">
-        <div class="stat-group">
-          <span class="meta-chip">
-            <sh3-icon name="list" [size]="12" />
-            <span class="meta-value">{{ show.sections.length }}</span>
-            <span class="meta-label"
-              >section{{ show.sections.length !== 1 ? "s" : "" }}</span
-            >
-          </span>
-          <span class="meta-chip">
-            <sh3-icon name="music-note" [size]="12" />
-            <span class="meta-value">{{ show.trackCount }}</span>
-            <span class="meta-label"
-              >track{{ show.trackCount !== 1 ? "s" : "" }}</span
-            >
-          </span>
-          @if (show.totalDurationSeconds > 0) {
-            <span class="meta-chip">
-              <sh3-icon name="clock" [size]="12" />
-              <span class="meta-value">{{
-                formatDuration(show.totalDurationSeconds)
-              }}</span>
-            </span>
-          }
-          @if (scheduleLabel(show.startAt); as schedule) {
-            <span class="meta-chip meta-chip--schedule">
-              <sh3-icon name="clock" [size]="12" />
-              <span>{{ schedule }}</span>
-            </span>
-          }
-          @if (show.lastPlayedAt) {
-            <span class="meta-chip meta-chip--played">
-              <sh3-icon name="completed" [size]="12" />
-              <span>Played {{ show.lastPlayedAt | date: "mediumDate" }}</span>
-            </span>
-          }
-        </div>
-
-        <!-- ── Show-level target + fill % ──────────────── -->
-        <div
-          class="show-header__target"
-          [attr.data-state]="showFillState(show)"
-        >
-          <div class="show-header__target-head">
-            <span class="show-header__target-label">
-              <sh3-icon name="clock" [size]="11" />
-              <span>Total target</span>
-            </span>
-            @if (editingShowTarget()) {
-              <span class="show-header__target-edit">
-                <input
-                  class="show-header__target-input"
-                  type="number"
-                  inputmode="numeric"
-                  min="1"
-                  step="5"
-                  [ngModel]="showTargetMinutesDraft()"
-                  (ngModelChange)="showTargetMinutesDraft.set($event)"
-                  (blur)="commitEditShowTarget()"
-                  (keydown)="onShowTargetKey($event)"
-                  autofocus
-                  aria-label="Total show duration target in minutes"
-                />
-                <span class="show-header__target-unit">min</span>
-              </span>
-            } @else if (showTargetSeconds(show); as targetS) {
-              <button
-                type="button"
-                class="show-header__target-value"
-                (click)="startEditShowTarget()"
-                title="Click to edit"
-              >
-                {{ formatDuration(targetS) }}
-              </button>
-            } @else {
-              <button
-                type="button"
-                class="show-header__target-set"
-                (click)="startEditShowTarget()"
-              >
-                + Set target
-              </button>
-            }
-            @if (showFillPercent(show); as pct) {
-              <span class="show-header__target-actual">
-                {{ formatDuration(show.totalDurationSeconds) }}
-                <span class="show-header__target-pct">· {{ pct }}</span>
-              </span>
-            }
-          </div>
-          @if (showTargetSeconds(show); as _t) {
-            <div
-              class="show-header__target-bar"
-              role="progressbar"
-              [attr.aria-valuenow]="showFillPercent(show)"
-              [attr.data-state]="showFillState(show)"
-            >
-              <span
-                class="show-header__target-bar-fill"
-                [style.width]="showFillWidth(show)"
-              ></span>
-            </div>
-          }
-        </div>
-
-        <div class="rating-row" aria-label="Rating shape + mean">
-          @for (axis of axes; track axis.label) {
-            @let mean = meanFor(show, axis);
-            @let criterion = criterionFor(show, axis.axisKey);
-            @let outOfRange = isMeanOutOfRange(show, axis.axisKey);
-            <div
-              class="rating-group"
-              [class.rating-group--empty]="mean === null"
-              [class.rating-group--out-of-range]="outOfRange"
-            >
-              <div class="rating-head">
-                <span class="rating-label">{{ axis.label }}</span>
-                <span class="rating-value">{{ displayMean(mean) }}</span>
-              </div>
-              @if (criterion) {
-                <span
-                  class="rating-criterion"
-                  [title]="'Target ' + criterionLabel(criterion)"
-                >
-                  {{ criterionLabel(criterion) }}
-                </span>
-              }
-              <app-rating-sparkline
-                class="rating-sparkline"
-                [series]="seriesFor(show, axis)"
-                [durations]="durationsFor(show)"
-                [accent]="axis.accent"
-              />
-            </div>
-          }
-        </div>
-      </div>
-    </header>
+    <app-show-detail-header
+      [show]="show"
+      [sectionCount]="show.sections.length"
+      [axes]="axes"
+      [editingShowName]="editingShowName()"
+      [showNameDraft]="showNameDraft()"
+      [editingShowDescription]="editingShowDescription()"
+      [showDescriptionDraft]="showDescriptionDraft()"
+      [editingShowTarget]="editingShowTarget()"
+      [showTargetMinutesDraft]="showTargetMinutesDraft()"
+      [formatDuration]="formatDuration.bind(this)"
+      [scheduleLabel]="scheduleLabel.bind(this)"
+      [showFillState]="showFillState.bind(this)"
+      [showFillPercent]="showFillPercent.bind(this)"
+      [showFillWidth]="showFillWidth.bind(this)"
+      [showTargetSeconds]="showTargetSeconds.bind(this)"
+      [meanFor]="showHeaderMeanFor"
+      [criterionFor]="criterionFor.bind(this)"
+      [isMeanOutOfRange]="isMeanOutOfRange.bind(this)"
+      [criterionLabel]="criterionLabel.bind(this)"
+      [seriesFor]="showHeaderSeriesFor"
+      [durationsFor]="durationsFor.bind(this)"
+      [displayMean]="displayMean.bind(this)"
+      (showNameDraftChange)="showNameDraft.set($event)"
+      (renameShowRequested)="startRenameShow()"
+      (renameShowCommitted)="commitRenameShow()"
+      (showNameKeyDown)="onShowNameKey($event)"
+      (showDescriptionDraftChange)="showDescriptionDraft.set($event)"
+      (editShowDescriptionRequested)="startEditShowDescription()"
+      (editShowDescriptionCommitted)="commitEditShowDescription()"
+      (showDescriptionKeyDown)="onShowDescriptionKey($event)"
+      (showTargetMinutesDraftChange)="showTargetMinutesDraft.set($event)"
+      (editShowTargetRequested)="startEditShowTarget()"
+      (editShowTargetCommitted)="commitEditShowTarget()"
+      (showTargetKeyDown)="onShowTargetKey($event)"
+      (openSettingsRequested)="openShowSettings()"
+      (markPlayedRequested)="onMarkShowPlayed()"
+      (duplicateRequested)="onDuplicate()"
+      (deleteRequested)="onDelete()"
+    />
 
     <!-- ── Sections ───────────────────────────────────── -->
 
@@ -437,51 +246,13 @@
           } @else {
             <ul class="item-list">
               @for (item of section.items; track trackItem($index, item)) {
-                <li
+                <app-show-item-row
                   class="item"
-                  [attr.data-kind]="item.kind"
-                  [class.dragging]="reorderingItem()?.itemId === item.id"
-                  uiDndDrag
-                  [dndType]="'show-section-item'"
-                  [dndData]="itemDragPayload(section, item)"
-                  [dragHandle]="'.item__handle'"
-                >
-                  <span
-                    class="item__handle"
-                    title="Drag to reorder"
-                    aria-label="Drag to reorder"
-                    role="button"
-                  >
-                    <sh3-icon name="menu" [size]="12" />
-                  </span>
-                  <sh3-icon
-                    class="item__kind"
-                    [name]="item.kind === 'playlist' ? 'play' : 'music-note'"
-                    [size]="14"
-                  />
-                  <span class="item__body">
-                    <strong class="item__title">{{ itemTitle(item) }}</strong>
-                    <small class="item__sub">{{ itemSubtitle(item) }}</small>
-                  </span>
-                  @if (itemDurationLabel(item); as duration) {
-                    <span
-                      class="item__duration"
-                      [attr.aria-label]="
-                        item.kind === 'version'
-                          ? 'Track duration'
-                          : 'Playlist total duration'
-                      "
-                    >
-                      {{ duration }}
-                    </span>
-                  }
-                  <sh3-button-icon
-                    icon="close"
-                    size="xs"
-                    tooltip="Remove"
-                    (clicked)="onRemoveItem(section, item)"
-                  />
-                </li>
+                  [item]="item"
+                  [dragData]="itemDragPayload(section, item)"
+                  [dragging]="reorderingItem()?.itemId === item.id"
+                  (removed)="onRemoveItem(section, item)"
+                />
               }
               <!-- Cursor-driven item insertion bar — visible during any
                    item-slot drag (reorder/move OR external add from the

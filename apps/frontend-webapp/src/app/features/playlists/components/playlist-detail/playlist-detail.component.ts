@@ -3,31 +3,21 @@ import {
   Component,
   computed,
   effect,
-  ElementRef,
   inject,
   input,
   signal,
-  viewChild,
 } from '@angular/core';
 import { IconComponent } from '../../../../shared/icon/icon.component';
 import { PlaylistsApiService } from '../../services/playlists-api.service';
 import { PlaylistsStateService } from '../../services/playlists-state.service';
 import { TrackMutationService } from '../../services/mutations-layer/track-mutation.service';
 import { PlaylistsSelectorService } from '../../services/selector-layer/playlists-selector.service';
-import { formatDuration } from '../../../../shared/utils/duration.utils';
-import {
-  ratingLevel,
-  RATING_DOTS,
-} from '../../../../shared/utils/rating.utils';
-import { DndDropZoneDirective } from '../../../../core/drag-and-drop/dnd-drop-zone.directive';
-import { DndDragDirective } from '../../../../core/drag-and-drop/dndDrag.directive';
-import { DragSessionService } from '../../../../core/drag-and-drop/drag-session.service';
-import type {
-  DragState,
-  PlaylistTrackDragPayload,
-} from '../../../../core/drag-and-drop/drag.types';
+import type { DragState } from '../../../../core/drag-and-drop/drag.types';
 import type { TPlaylistDetailViewModel } from '../../playlist-types';
 import type { TPlaylistId, TPlaylistTrackId } from '@sh3pherd/shared-types';
+import type { DropzoneListDropEvent } from '../../../../shared/dropzone-list-container/dropzone-list-container.component';
+import { PlaylistHeaderComponent } from '../playlist-header/playlist-header.component';
+import { PlaylistTrackListComponent } from '../playlist-track-list/playlist-track-list.component';
 
 /**
  * Detail view for a single playlist — mounted when the active tab is
@@ -39,7 +29,7 @@ import type { TPlaylistId, TPlaylistTrackId } from '@sh3pherd/shared-types';
 @Component({
   selector: 'app-playlist-detail',
   standalone: true,
-  imports: [IconComponent, DndDropZoneDirective, DndDragDirective],
+  imports: [IconComponent, PlaylistHeaderComponent, PlaylistTrackListComponent],
   templateUrl: './playlist-detail.component.html',
   styleUrl: './playlist-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,13 +38,7 @@ export class PlaylistDetailComponent {
   private readonly api = inject(PlaylistsApiService);
   private readonly trackMutation = inject(TrackMutationService);
   private readonly selector = inject(PlaylistsSelectorService);
-  private readonly session = inject(DragSessionService);
   private readonly state = inject(PlaylistsStateService);
-
-  /** Ref to the rendered `.tracklist` element — used to read per-row
-   *  bounding rects and compute the insertion slot under the cursor. */
-  private readonly tracklistEl =
-    viewChild<ElementRef<HTMLElement>>('tracklistEl');
 
   /** ID of the playlist to render. `null` surfaces the empty state
    *  (e.g. no playlists exist yet, or the tab was opened blank). */
@@ -66,9 +50,6 @@ export class PlaylistDetailComponent {
   /** Loading state — shown briefly while the fetch is in flight. */
   readonly loading = signal(false);
 
-  readonly ratingDots = RATING_DOTS;
-  readonly ratingLevel = ratingLevel;
-
   /** The matching summary from the state service — used for the rating
    *  aggregates + duration in the header without refetching. Falls
    *  back to the detail's own fields when the summary isn't resolved
@@ -78,11 +59,6 @@ export class PlaylistDetailComponent {
     if (!id) return null;
     return this.selector.playlistsById().get(id) ?? null;
   });
-
-  readonly totalDuration = computed(() =>
-    formatDuration(this.summary()?.totalDurationSeconds ?? 0),
-  );
-
   constructor() {
     effect(() => {
       const id = this.playlistId();
@@ -101,106 +77,6 @@ export class PlaylistDetailComponent {
         },
       });
     });
-  }
-
-  /** Round a mean rating to the closest integer dot position. */
-  integerFromMean(mean: number | null): number {
-    if (mean === null) return 0;
-    return Math.max(1, Math.min(4, Math.round(mean)));
-  }
-
-  displayMean(mean: number | null): string {
-    return mean === null ? '—' : mean.toFixed(1);
-  }
-
-  /* ── Drag & drop: cursor-driven insertion slot ── */
-
-  /** `true` while a drag of either supported type is active — used by
-   *  the template to render the insertion bar. */
-  readonly isReorderDrag = computed(() => {
-    const drag = this.session.current();
-    return drag?.type === 'music-track' || drag?.type === 'playlist-track';
-  });
-
-  /**
-   * ID of the row currently being dragged inside this tracklist, or
-   * `null` when no internal reorder drag is active. Read by the
-   * template to dim the source row while it's being moved.
-   */
-  readonly draggingTrackId = computed(() => {
-    const drag = this.session.current();
-    return drag?.type === 'playlist-track' ? drag.data.playlistTrackId : null;
-  });
-
-  /**
-   * Insertion index under the cursor, or `-1` when the cursor is
-   * outside the tracklist. Recomputes on every cursor move because
-   * it depends on the `DragSessionService.cursor()` signal.
-   *
-   * Semantics: `i` means "insert between row i-1 and row i", so `0`
-   * is "before the first row" and `tracks.length` is "after the last".
-   */
-  readonly insertIndex = computed(() => {
-    if (!this.isReorderDrag()) return -1;
-    const el = this.tracklistEl()?.nativeElement;
-    if (!el) return -1;
-
-    const cursor = this.session.cursor();
-    const bbox = el.getBoundingClientRect();
-    if (
-      cursor.x < bbox.left ||
-      cursor.x > bbox.right ||
-      cursor.y < bbox.top ||
-      cursor.y > bbox.bottom
-    ) {
-      return -1;
-    }
-
-    const rows = el.querySelectorAll<HTMLElement>('.track-row');
-    for (let i = 0; i < rows.length; i++) {
-      const r = rows[i].getBoundingClientRect();
-      if (cursor.y < r.top + r.height / 2) return i;
-    }
-    return rows.length;
-  });
-
-  /**
-   * Y offset inside the tracklist at which to render the insertion
-   * bar. Relative to the tracklist's own top (so absolute-positioned
-   * inside the scroll container). `-1` hides the bar.
-   */
-  readonly insertY = computed(() => {
-    const idx = this.insertIndex();
-    if (idx < 0) return -1;
-    const el = this.tracklistEl()?.nativeElement;
-    if (!el) return -1;
-
-    const rows = el.querySelectorAll<HTMLElement>('.track-row');
-    const bbox = el.getBoundingClientRect();
-
-    if (rows.length === 0) return 8; // empty list — align near the top
-    if (idx === 0) {
-      return rows[0].getBoundingClientRect().top - bbox.top + el.scrollTop;
-    }
-    if (idx >= rows.length) {
-      const last = rows[rows.length - 1].getBoundingClientRect();
-      return last.bottom - bbox.top + el.scrollTop;
-    }
-    return rows[idx].getBoundingClientRect().top - bbox.top + el.scrollTop;
-  });
-
-  /** Build the drag payload for a track row — identity + display
-   *  fields for the preview chip. */
-  dragPayloadFor(track: {
-    id: string;
-    title: string;
-    originalArtist: string;
-  }): PlaylistTrackDragPayload {
-    return {
-      playlistTrackId: track.id as TPlaylistTrackId,
-      title: track.title,
-      artist: track.originalArtist,
-    };
   }
 
   /**
@@ -227,16 +103,22 @@ export class PlaylistDetailComponent {
    * Computed index is captured at drop time (the template driver is
    * signal-based, so the final cursor position is fresh).
    */
-  onTracklistDrop(drag: DragState): void {
+  onTracklistDrop(
+    event: DropzoneListDropEvent<TPlaylistDetailViewModel['tracks'][number]>,
+  ): void {
+    const { drag, insertIndex } = event;
     if (drag.type === 'music-track') {
       this.dispatchAdd(drag.data.referenceId, drag.data.versionId);
       return;
     }
     if (drag.type === 'playlist-track') {
-      const idx = this.insertIndex();
-      if (idx < 0) return;
-      this.dispatchReorder(drag.data.playlistTrackId, idx);
+      this.dispatchReorder(drag.data.playlistTrackId, insertIndex);
     }
+  }
+
+  onEmptyTracklistDrop(drag: DragState): void {
+    if (drag.type !== 'music-track') return;
+    this.dispatchAdd(drag.data.referenceId, drag.data.versionId);
   }
 
   private dispatchAdd(referenceId: string, versionId: string): void {

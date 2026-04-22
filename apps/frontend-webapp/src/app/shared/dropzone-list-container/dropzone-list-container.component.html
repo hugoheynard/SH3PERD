@@ -1,0 +1,31 @@
+<div
+  #listEl
+  class="dropzone-list-container"
+  [class.dropzone-list-container--active]="isOverList()"
+  [class.is-reordering]="acceptsCurrentDrag()"
+  uiDndDropZone
+  [dropZone_id]="dropZoneId()"
+  [dropZoneAccept]="acceptedTypes()"
+  (uiDndDrop)="onDrop($event)"
+>
+  @if (insertY() >= 0) {
+    <div
+      class="dropzone-list-container__insert-bar"
+      [style.top.px]="insertY()"
+      aria-hidden="true"
+    >
+      <span class="dropzone-list-container__insert-dot"></span>
+      <span class="dropzone-list-container__insert-line"></span>
+      <span class="dropzone-list-container__insert-dot"></span>
+    </div>
+  }
+
+  @for (item of items(); track trackByItem($index, item)) {
+    <ng-container
+      [ngTemplateOutlet]="rowTemplate()"
+      [ngTemplateOutletContext]="rowContext(item, $index)"
+    />
+  }
+
+  <ng-content />
+</div>

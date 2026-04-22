@@ -458,6 +458,143 @@ Voir [`Program to Artist Show Flow`](../user-flows/programs/00-program-to-artist
 - [ ] Afficher les warnings de préparation sur la page Show : niveau show, set et item.
 - [ ] Garder les Shows personnels existants comme flow autonome pour fabriquer son propre programme artistique.
 
+### Phase 11 — Frontend refactor: shows ↔ playlists compatibility (à planifier)
+
+Objectif : alléger la feature `shows`, rapprocher les patterns UI compatibles avec `playlists`, et sortir les primitives de liste droppable / analytics sans mélanger les métiers.
+
+#### Constats
+
+- `show-detail.component.ts` est devenu le principal point chaud de la feature : chargement, état d'édition inline, calculs de target/fill, rendu header, rendu sections, rendu items, DnD, mutations et popovers sont encore regroupés.
+- `shows-page` et `playlist-card` dupliquent la logique de présentation des axes de rating (`RATING_AXES`, sparkline + mean + accent).
+- `playlist-detail` et `show-detail` portent une mécanique voisine de liste droppable avec barre d'insertion, index calculé depuis le curseur, reorder interne et drop externe.
+- La compatibilité avec `playlists` est surtout une compatibilité de primitives UI et de mécanique DnD, pas une fusion de métier.
+
+#### Principe de refactor
+
+- Mutualiser la présentation et les primitives.
+- Garder séparés les stores, mutations et modèles métier.
+- Extraire d'abord les helpers purs, puis les petits composants de présentation, puis les conteneurs DnD.
+- Ne pas créer tout de suite une abstraction trop générale : commencer par une liste verticale simple, headless-ish, compatible avec la stack DnD existante.
+
+#### Plan proposé
+
+##### Étape 1 — Sortir les helpers purs hors de `show-detail`
+
+- [ ] Créer `show-target.utils.ts` pour :
+  - `targetSeconds`
+  - `fillRatio`
+  - `fillPercent`
+  - `fillWidth`
+  - `fillState`
+  - `showTargetSeconds`
+  - `showFillRatio`
+  - `showFillPercent`
+  - `showFillWidth`
+  - `showFillState`
+- [ ] Créer `show-item.utils.ts` pour :
+  - `itemTitle`
+  - `itemSubtitle`
+  - `itemDuration`
+  - `itemDurationLabel`
+  - `formatTarget`
+- [ ] Créer `show-rating.utils.ts` pour :
+  - `displayMean`
+  - `criterionLabel`
+  - `isMeanOutOfRange`
+- [ ] Réutiliser au maximum `shared/utils/duration.utils.ts` pour éviter les duplications de `formatDuration`.
+
+##### Étape 2 — Mutualiser les primitives analytics show / playlist
+
+- [ ] Créer `shared/music-analytics/rating-axes.ts` et y déplacer la constante `RATING_AXES`.
+- [ ] Aligner `shows-page`, `show-detail` et `playlist-card` sur cette source unique.
+- [ ] Évaluer l'extraction d'un petit composant shared du type :
+  - `rating-summary-row.component.ts`
+  - ou `rating-stat-card.component.ts`
+- [ ] Garder les données métier dans les features et ne mutualiser que la représentation visuelle.
+
+##### Étape 3 — Découper `ShowDetailComponent`
+
+- [ ] Introduire un découpage plus clair entre container et composants de présentation.
+- [ ] Extraire `show-detail-header.component.ts` pour :
+  - nom
+  - description
+  - actions globales
+  - stats
+  - target global
+  - rating header
+- [ ] Extraire `show-section-card.component.ts` pour :
+  - header de section
+  - description
+  - target de section
+  - actions de section
+  - ancrage de la liste d'items
+- [ ] Extraire `show-item-row.component.ts` pour le rendu d'un item `version | playlist`.
+- [ ] Garder dans le container :
+  - `showId`
+  - chargement via `ShowsStateService`
+  - appels à `ShowsMutationService`
+  - ouverture des popovers
+  - orchestration des événements DnD
+
+##### Étape 4 — Introduire une primitive shared `DropzoneListContainer`
+
+But : encapsuler la mécanique commune de liste droppable avec la techno DnD existante, sans embarquer de logique métier.
+
+- [x] Créer `shared/dropzone-list-container/dropzone-list-container.component.ts`
+- [ ] Le composant doit gérer :
+  - `uiDndDropZone`
+  - lecture du `DragSessionService`
+  - calcul `insertIndex`
+  - calcul `insertY`
+  - rendu de la barre d'insertion
+  - état visuel de drag interne
+  - cas liste vide
+- [ ] Le composant ne doit pas gérer :
+  - mutations API
+  - logique métier show / playlist / program
+  - mapping du `DragState` vers une commande backend
+  - rendu métier des rows
+- [ ] API visée :
+  - `items`
+  - `acceptedTypes`
+  - `itemId`
+  - éventuellement `itemSelector`
+  - `dropped`
+  - `reorderDropped`
+  - `externalDropped`
+- [ ] Pattern de rendu visé : projection de template / container headless-ish, pour laisser les features projeter leurs propres rows.
+
+##### Étape 5 — Migration progressive vers `DropzoneListContainer`
+
+- [x] D'abord brancher `playlist-detail` sur `DropzoneListContainer` pour valider la primitive sur le cas le plus simple :
+  - liste verticale unique
+  - reorder interne
+  - drop externe `music-track`
+- [ ] Ensuite brancher les listes d'items de `show-detail` / `show-section-card` :
+  - reorder item interne
+  - move inter-section
+  - drop externe `music-track`
+  - drop externe `playlist`
+- [ ] Extraire ensuite la géométrie de liste item-level de `show-detail` vers `DropzoneListContainer` avant d'attaquer le reorder des sections.
+- [ ] N'utiliser le composant pour le reorder des sections qu'après validation du cas item-list.
+
+##### Étape 6 — Stabilisation et tests
+
+- [ ] Ajouter des tests ciblés sur les helpers purs extraits.
+- [ ] Ajouter des tests unitaires sur `DropzoneListContainer` :
+  - calcul d'index
+  - rendu barre d'insertion
+  - liste vide
+  - no-op drop
+- [ ] Revoir ensuite les tests de `show-detail` et `playlist-detail` pour qu'ils portent davantage sur l'orchestration que sur la géométrie DnD.
+
+#### Règles de conception
+
+- `Show` et `Playlist` peuvent partager des primitives de rendu, pas leur métier.
+- `DropzoneListContainer` est une primitive d'UI et de géométrie DnD, pas une abstraction métier.
+- Le premier scope doit rester simple : liste verticale, insertion bar, reorder interne, drop externe.
+- Toute généralisation supplémentaire doit venir après migration réelle de `playlist-detail` puis `shows`.
+
 **Total : ~10 jours** (estimation initiale). Implémenté en ~9 jours + 2 jours de pass premium UX / bug-fix (sparklines, inline rename, targets + fill %, DnD reorder, popover, upsert fix).
 
 ---

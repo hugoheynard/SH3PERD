@@ -1,0 +1,69 @@
+@if (tracks().length === 0) {
+  <div
+    class="state state--empty state--dropzone"
+    uiDndDropZone
+    [dropZone_id]="'playlist-detail-' + playlistId()"
+    [dropZoneAccept]="'music-track'"
+    (uiDndDrop)="emptyDropped.emit($event)"
+  >
+    <sh3-icon name="music-file" [size]="32" />
+    <span class="state-title">No tracks yet</span>
+    <span class="state-hint">
+      Drag a version from the Music Library onto this area to add it.
+    </span>
+  </div>
+} @else {
+  <sh3-dropzone-list-container
+    class="tracklist"
+    [items]="tracks()"
+    [dropZoneId]="'playlist-detail-' + playlistId()"
+    [acceptedTypes]="['music-track', 'playlist-track']"
+    [itemId]="trackById"
+    [itemSelector]="'.track-row'"
+    [internalDragType]="'playlist-track'"
+    [internalDragId]="dragTrackId"
+    (dropped)="dropped.emit($event)"
+  >
+    <ng-template let-t let-i="index" let-dragging="dragging">
+      <sh3-sortable-row-frame
+        class="track-row"
+        role="listitem"
+        [dragging]="dragging"
+        [showRemove]="true"
+        removeLabel="Remove track"
+        uiDndDrag
+        [dndType]="'playlist-track'"
+        [dndData]="dragPayloadFor(t)"
+        [tone]="t.versionLabel ? 'accent' : 'default'"
+        dragHandle=".sortable-row-frame__handle"
+        (removed)="removeTrack.emit(t.id)"
+      >
+        <sh3-icon row-leading name="music-note" [size]="14" />
+
+        <div row-main class="track-info">
+          <strong class="track-title">{{ t.title }}</strong>
+          <small class="track-artist">
+            {{ i + 1 }} · {{ t.originalArtist }}
+          </small>
+        </div>
+
+        <span row-meta>
+          @if (t.versionLabel) {
+            <span class="track-version">{{ t.versionLabel }}</span>
+          }
+        </span>
+
+        <span row-meta>
+          @if (t.notes) {
+            <span class="track-notes">{{ t.notes }}</span>
+          }
+        </span>
+      </sh3-sortable-row-frame>
+    </ng-template>
+
+    <div class="tracklist-drop-hint">
+      <sh3-icon name="add-doc" [size]="14" />
+      <span>Drop a music version here to add it, or drag rows to reorder</span>
+    </div>
+  </sh3-dropzone-list-container>
+}

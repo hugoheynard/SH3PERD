@@ -9,10 +9,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { IconComponent } from '../icon/icon.component';
+import type { Sh3IconName } from '../icon/icon.registry';
 
 export interface CrossPageNavLink {
   /** Icon registered in `icon.registry.ts`. */
-  icon: string;
+  icon: Sh3IconName;
   /** Human-readable label — used for tooltip + aria-label. */
   label: string;
   /** Target URL. The button highlights when the current URL matches
