@@ -19,7 +19,7 @@ import { PopoverFrameComponent } from '../../../shared/ui-frames/popover-frame/p
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ShowsStateService } from '../services/shows-state.service';
-import { ShowsMutationService } from '../services/shows-mutation.service';
+import { SectionMutationService } from '../services/mutations-layer/section-mutation.service';
 
 export interface SectionSettingsPopoverData {
   showId: TShowId;
@@ -69,7 +69,7 @@ interface AxisDraft {
 export class SectionSettingsPopoverComponent implements OnInit {
   private readonly data = inject(INJECTION_DATA) as SectionSettingsPopoverData;
   private readonly state = inject(ShowsStateService);
-  private readonly mutations = inject(ShowsMutationService);
+  private readonly mutations = inject(SectionMutationService);
   private readonly layout = inject(LayoutService);
 
   protected readonly axisRows = AXIS_ROWS;

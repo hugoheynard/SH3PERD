@@ -11,7 +11,7 @@ import { LayoutService } from '../../../core/services/layout.service';
 import { PopoverFrameComponent } from '../../../shared/ui-frames/popover-frame/popover-frame.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
-import { ShowsMutationService } from '../services/shows-mutation.service';
+import { ShowMutationService } from '../services/mutations-layer/show-mutation.service';
 
 const DEFAULT_COLOR: TPlaylistColor = 'indigo';
 
@@ -46,7 +46,7 @@ const SHOW_COLORS = [
 })
 export class NewShowPopoverComponent {
   private readonly layout = inject(LayoutService);
-  private readonly mutations = inject(ShowsMutationService);
+  private readonly mutations = inject(ShowMutationService);
 
   protected readonly colors = SHOW_COLORS;
 

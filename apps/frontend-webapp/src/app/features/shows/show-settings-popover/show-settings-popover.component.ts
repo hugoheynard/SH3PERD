@@ -19,7 +19,7 @@ import { PopoverFrameComponent } from '../../../shared/ui-frames/popover-frame/p
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ShowsStateService } from '../services/shows-state.service';
-import { ShowsMutationService } from '../services/shows-mutation.service';
+import { ShowMutationService } from '../services/mutations-layer/show-mutation.service';
 
 export interface ShowSettingsPopoverData {
   showId: TShowId;
@@ -60,7 +60,7 @@ interface AxisDraft {
 /**
  * Edit every show-level setting in one panel — replaces the scattered
  * inline-edit buttons on the show header. Pre-fills from the current
- * detail state, submits via `ShowsMutationService.updateShow` which
+ * detail state, submits via `ShowMutationService.updateShow` which
  * re-fetches the detail so the header view refreshes authoritatively.
  *
  * Target mode is the one tricky field — a show can have at most one
@@ -79,7 +79,7 @@ interface AxisDraft {
 export class ShowSettingsPopoverComponent implements OnInit {
   private readonly data = inject(INJECTION_DATA) as ShowSettingsPopoverData;
   private readonly state = inject(ShowsStateService);
-  private readonly mutations = inject(ShowsMutationService);
+  private readonly mutations = inject(ShowMutationService);
   private readonly layout = inject(LayoutService);
 
   protected readonly colors = SHOW_COLORS;

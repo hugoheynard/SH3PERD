@@ -16,7 +16,7 @@ import { LayoutService } from '../../../core/services/layout.service';
 import { PopoverFrameComponent } from '../../../shared/ui-frames/popover-frame/popover-frame.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
-import { ShowsMutationService } from '../services/shows-mutation.service';
+import { PlaylistBridgeService } from '../services/mutations-layer/playlist-bridge.service';
 
 export interface ConvertSectionPopoverData {
   showId: TShowId;
@@ -52,7 +52,7 @@ const PLAYLIST_COLORS = [
 })
 export class ConvertSectionPopoverComponent {
   private readonly data = inject(INJECTION_DATA) as ConvertSectionPopoverData;
-  private readonly mutations = inject(ShowsMutationService);
+  private readonly bridge = inject(PlaylistBridgeService);
   private readonly layout = inject(LayoutService);
 
   protected readonly colors = PLAYLIST_COLORS;
@@ -73,7 +73,7 @@ export class ConvertSectionPopoverComponent {
   submit(): void {
     const name = this.name().trim();
     if (!name) return;
-    this.mutations.convertSectionToPlaylist(
+    this.bridge.convertSectionToPlaylist(
       this.data.showId,
       this.data.sectionId,
       { name, color: this.color() },

@@ -12,7 +12,7 @@ import { LayoutService } from '../../../core/services/layout.service';
 import { PopoverFrameComponent } from '../../../shared/ui-frames/popover-frame/popover-frame.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
-import { ShowsMutationService } from '../services/shows-mutation.service';
+import { SectionMutationService } from '../services/mutations-layer/section-mutation.service';
 
 export interface NewSectionPopoverData {
   showId: TShowId;
@@ -41,7 +41,7 @@ type TargetMode = 'none' | 'duration' | 'track_count';
 })
 export class NewSectionPopoverComponent {
   private readonly data = inject(INJECTION_DATA) as NewSectionPopoverData;
-  private readonly mutations = inject(ShowsMutationService);
+  private readonly mutations = inject(SectionMutationService);
   private readonly layout = inject(LayoutService);
 
   protected readonly name = signal(this.data.defaultName);

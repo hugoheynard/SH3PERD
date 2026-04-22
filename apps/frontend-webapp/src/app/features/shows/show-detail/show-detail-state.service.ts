@@ -6,7 +6,7 @@ import type {
   TShowSummaryViewModel,
 } from '@sh3pherd/shared-types';
 import { LayoutService } from '../../../core/services/layout.service';
-import { ShowsMutationService } from '../services/shows-mutation.service';
+import { ShowMutationService } from '../services/mutations-layer/show-mutation.service';
 import { ShowsStateService } from '../services/shows-state.service';
 import {
   ShowSettingsPopoverComponent,
@@ -20,7 +20,7 @@ import {
 @Injectable()
 export class ShowDetailStateService {
   private readonly showsState = inject(ShowsStateService);
-  private readonly mutations = inject(ShowsMutationService);
+  private readonly mutations = inject(ShowMutationService);
   private readonly layout = inject(LayoutService);
 
   readonly detail = this.showsState.detail;

@@ -23,7 +23,8 @@ import type {
   TShowSectionViewModel,
   TShowSummaryViewModel,
 } from '@sh3pherd/shared-types';
-import { ShowsMutationService } from '../services/shows-mutation.service';
+import { ItemMutationService } from '../services/mutations-layer/item-mutation.service';
+import { SectionMutationService } from '../services/mutations-layer/section-mutation.service';
 import { ShowsDndInitService } from '../services/shows-dnd-init.service';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { ButtonIconComponent } from '../../../shared/button-icon/button-icon.component';
@@ -103,7 +104,8 @@ export class ShowDetailComponent {
   readonly showId = input<TShowId | null>(null);
 
   private readonly detailState = inject(ShowDetailStateService);
-  private readonly mutations = inject(ShowsMutationService);
+  private readonly sectionMutations = inject(SectionMutationService);
+  private readonly itemMutations = inject(ItemMutationService);
   private readonly dragSession = inject(DragSessionService);
   private readonly layout = inject(LayoutService);
 
@@ -351,7 +353,7 @@ export class ShowDetailComponent {
     const name = this.sectionNameDraft().trim();
     this.editingSectionId.set(null);
     if (!name || name === section.name) return;
-    this.mutations.updateSection(show.id, section.id, { name });
+    this.sectionMutations.updateSection(show.id, section.id, { name });
   }
 
   cancelRenameSection(): void {
@@ -385,7 +387,7 @@ export class ShowDetailComponent {
     if (trimmed === current.trim()) return;
     // Empty string is the "clear" signal — backend's updateDescription
     // collapses whitespace-only / empty to `undefined` on storage.
-    this.mutations.updateSection(show.id, section.id, {
+    this.sectionMutations.updateSection(show.id, section.id, {
       description: trimmed.length ? next : '',
     });
   }
@@ -429,7 +431,7 @@ export class ShowDetailComponent {
     if (!Number.isFinite(parsed) || parsed <= 0) return;
     const current = targetMinutes(section.target);
     if (current === parsed) return;
-    this.mutations.updateSection(show.id, section.id, {
+    this.sectionMutations.updateSection(show.id, section.id, {
       target: { mode: 'duration', duration_s: parsed * 60 },
     });
   }
@@ -500,7 +502,7 @@ export class ShowDetailComponent {
   onMarkSectionPlayed(section: TShowSectionViewModel): void {
     const show = this.detail();
     if (!show) return;
-    this.mutations.markSectionPlayed(show.id, section.id);
+    this.sectionMutations.markSectionPlayed(show.id, section.id);
   }
 
   onAddSection(): void {
@@ -518,7 +520,7 @@ export class ShowDetailComponent {
   onRemoveSection(section: TShowSectionViewModel): void {
     const show = this.detail();
     if (!show || show.sections.length <= 1) return;
-    this.mutations.removeSection(show.id, section.id);
+    this.sectionMutations.removeSection(show.id, section.id);
   }
 
   onConvertSectionToPlaylist(section: TShowSectionViewModel): void {
@@ -540,7 +542,7 @@ export class ShowDetailComponent {
   ): void {
     const show = this.detail();
     if (!show) return;
-    this.mutations.removeItem(show.id, section.id, item.id);
+    this.itemMutations.removeItem(show.id, section.id, item.id);
   }
 
   /** Drop handler for a section's DnD zone. Narrows the drag type to
@@ -556,7 +558,7 @@ export class ShowDetailComponent {
   ): void {
     if (drag.type === 'music-track') {
       const position = this.resolveAddPosition();
-      this.mutations.addItem(
+      this.itemMutations.addItem(
         showId,
         sectionId,
         'version',
@@ -567,7 +569,7 @@ export class ShowDetailComponent {
     }
     if (drag.type === 'playlist') {
       const position = this.resolveAddPosition();
-      this.mutations.addItem(
+      this.itemMutations.addItem(
         showId,
         sectionId,
         'playlist',
@@ -625,13 +627,13 @@ export class ShowDetailComponent {
       const next = currentIds.slice();
       next.splice(fromIdx, 1);
       next.splice(newPosition, 0, payload.itemId);
-      this.mutations.reorderItems(showId, targetSectionId, next);
+      this.itemMutations.reorderItems(showId, targetSectionId, next);
       return;
     }
 
     // Cross-section — move item. Backend accepts the insertion slot
     // directly (items from the source section are already gone).
-    this.mutations.moveItem(
+    this.itemMutations.moveItem(
       showId,
       payload.itemId,
       payload.sectionId,
@@ -692,7 +694,7 @@ export class ShowDetailComponent {
     next.splice(fromIdx, 1);
     next.splice(newPosition, 0, payload.sectionId);
 
-    this.mutations.reorderSections(show.id, next);
+    this.sectionMutations.reorderSections(show.id, next);
   }
 
   trackSection(_: number, s: TShowSectionViewModel): TShowSectionId {

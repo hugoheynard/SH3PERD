@@ -8,7 +8,7 @@ import { DatePipe } from '@angular/common';
 import type { TShowId, TShowSummaryViewModel } from '@sh3pherd/shared-types';
 import { LayoutService } from '../../../core/services/layout.service';
 import { ShowsStateService } from '../services/shows-state.service';
-import { ShowsMutationService } from '../services/shows-mutation.service';
+import { ShowMutationService } from '../services/mutations-layer/show-mutation.service';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { ButtonIconComponent } from '../../../shared/button-icon/button-icon.component';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
@@ -71,7 +71,7 @@ type RatingAxis = (typeof RATING_AXES)[number];
 })
 export class ShowsPageComponent implements OnInit {
   protected readonly state = inject(ShowsStateService);
-  private readonly mutations = inject(ShowsMutationService);
+  private readonly mutations = inject(ShowMutationService);
   private readonly layout = inject(LayoutService);
 
   protected readonly axes = RATING_AXES;
