@@ -29,6 +29,7 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 import { InlineConfirmComponent } from '../../../shared/inline-confirm/inline-confirm.component';
 import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
 import { RatingRowComponent } from '../../../shared/music-analytics/rating-row/rating-row.component';
+import { TargetBarComponent } from '../../../shared/target-bar/target-bar.component';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
 import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
@@ -55,16 +56,6 @@ import { ShowItemRowComponent } from '../show-item-row/show-item-row.component';
 import { showItemTitle } from '../show-item-row/show-item-row.utils';
 import { ShowDetailStateService } from './show-detail-state.service';
 
-/** Read the target duration of a section in whole minutes, or `null`
- *  when the section has no duration target (no target at all, or it
- *  uses the track-count mode instead). */
-function targetMinutes(
-  target?: TShowSectionViewModel['target'],
-): number | null {
-  if (!target || target.mode !== 'duration') return null;
-  return Math.round(target.duration_s / 60);
-}
-
 /**
  * Body of the show detail view — used by both the routed page
  * (`/app/shows/:id`) and the right-side panel mounted via `LayoutService`.
@@ -84,6 +75,7 @@ function targetMinutes(
     InlineConfirmComponent,
     LoadingStateComponent,
     RatingRowComponent,
+    TargetBarComponent,
     ShowDetailHeaderComponent,
     ShowItemRowComponent,
     DndDragDirective,
@@ -303,12 +295,6 @@ export class ShowDetailComponent {
     signal<TShowSectionId | null>(null);
   protected readonly sectionDescriptionDraft = signal('');
 
-  /** Inline-edit state for section target duration (one at a time).
-   *  Draft is the raw minutes string so the input stays untouched as
-   *  the user types — commit parses + clamps to a positive integer. */
-  protected readonly editingTargetId = signal<TShowSectionId | null>(null);
-  protected readonly targetMinutesDraft = signal('');
-
   constructor() {
     // Ensure the `playlist` drag preview is registered before the first
     // drop happens. Service is `providedIn: 'root'` and idempotent — no-op
@@ -327,7 +313,6 @@ export class ShowDetailComponent {
       this.detailState.resetHeaderState();
       this.editingSectionId.set(null);
       this.editingSectionDescriptionId.set(null);
-      this.editingTargetId.set(null);
     });
   }
 
@@ -402,92 +387,28 @@ export class ShowDetailComponent {
     }
   }
 
-  // ── Section target duration (inline) ─────────────────
-
-  /** Start editing a section's target duration. Pre-fills the input
-   *  with the current target-duration in minutes (or a sensible default
-   *  of 15 min when the section has no target yet). */
-  startEditTarget(section: TShowSectionViewModel): void {
-    const current = targetMinutes(section.target) ?? 15;
-    this.targetMinutesDraft.set(String(current));
-    this.editingTargetId.set(section.id);
-  }
-
-  commitEditTarget(section: TShowSectionViewModel): void {
-    const show = this.detail();
-    if (!show) return;
-    const raw = this.targetMinutesDraft().trim();
-    this.editingTargetId.set(null);
-    const parsed = Number.parseInt(raw, 10);
-    if (!Number.isFinite(parsed) || parsed <= 0) return;
-    const current = targetMinutes(section.target);
-    if (current === parsed) return;
-    this.sectionMutations.updateSection(show.id, section.id, {
-      target: { mode: 'duration', duration_s: parsed * 60 },
-    });
-  }
-
-  cancelEditTarget(): void {
-    this.editingTargetId.set(null);
-  }
-
-  onTargetKey(event: KeyboardEvent, section: TShowSectionViewModel): void {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      this.commitEditTarget(section);
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      this.cancelEditTarget();
-    }
-  }
+  // ── Section target duration ──────────────────────────
 
   /** Duration target for the section in seconds, or `null` when the
-   *  section uses the track-count target mode (or has none). */
+   *  section uses the track-count target mode (or has none). Feeds the
+   *  `<app-target-bar>` input. */
   targetSeconds(section: TShowSectionViewModel): number | null {
     return section.target?.mode === 'duration'
       ? section.target.duration_s
       : null;
   }
 
-  /** Fill ratio in [0..1.5+] — clamped display only at render-time so
-   *  the number stays truthful when the section overshoots the target. */
-  fillRatio(section: TShowSectionViewModel): number | null {
-    const target = this.targetSeconds(section);
-    if (target === null || target <= 0) return null;
-    return section.totalDurationSeconds / target;
-  }
-
-  /** Percentage label ("85%", "112%"). */
-  fillPercent(section: TShowSectionViewModel): string | null {
-    const ratio = this.fillRatio(section);
-    if (ratio === null) return null;
-    return `${Math.round(ratio * 100)}%`;
-  }
-
-  /** Progress-bar width in `0%–100%` — over-target rows still display
-   *  100% but the `data-state` attribute tells the SCSS to paint them
-   *  red so the overshoot reads at a glance. */
-  fillWidth(section: TShowSectionViewModel): string {
-    const ratio = this.fillRatio(section);
-    if (ratio === null) return '0%';
-    return `${Math.min(1, Math.max(0, ratio)) * 100}%`;
-  }
-
-  /**
-   * Semantic state of the fill so the progress bar can tint itself:
-   *  - `empty`  — no items yet
-   *  - `under`  — below ~90% of the target (ease-in colour)
-   *  - `near`   — 90%–105% (on target — accent green)
-   *  - `over`   — >105% (alert — visual over-shoot warning)
-   */
-  fillState(
+  /** Commit from `<app-target-bar>` for a section — component has
+   *  already validated + diffed the minutes value. */
+  updateSectionTargetMinutes(
     section: TShowSectionViewModel,
-  ): 'empty' | 'under' | 'near' | 'over' {
-    const ratio = this.fillRatio(section);
-    if (ratio === null || ratio === 0) return 'empty';
-    if (ratio < 0.9) return 'under';
-    if (ratio <= 1.05) return 'near';
-    return 'over';
+    minutes: number,
+  ): void {
+    const show = this.detail();
+    if (!show) return;
+    this.sectionMutations.updateSection(show.id, section.id, {
+      target: { mode: 'duration', duration_s: minutes * 60 },
+    });
   }
 
   onMarkSectionPlayed(section: TShowSectionViewModel): void {
@@ -694,21 +615,6 @@ export class ShowDetailComponent {
 
   trackItem(_: number, item: TShowSectionItemView): string {
     return item.id;
-  }
-
-  formatDuration(seconds: number): string {
-    const m = Math.round(seconds / 60);
-    if (m < 60) return `${m} min`;
-    const h = Math.floor(m / 60);
-    const rm = m % 60;
-    return rm === 0 ? `${h}h` : `${h}h ${rm}m`;
-  }
-
-  formatTarget(target?: TShowSectionViewModel['target']): string | null {
-    if (!target) return null;
-    if (target.mode === 'duration')
-      return `~${this.formatDuration(target.duration_s)}`;
-    return `${target.track_count} song${target.track_count > 1 ? 's' : ''}`;
   }
 
   // ── Rating series helpers ────────────────────────────

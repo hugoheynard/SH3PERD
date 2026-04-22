@@ -1,0 +1,54 @@
+<div class="head">
+  <span class="head__label">
+    <sh3-icon name="clock" [size]="11" />
+    <span>{{ label() }}</span>
+  </span>
+  @if (editing()) {
+    <span class="head__edit">
+      <input
+        class="head__input"
+        type="number"
+        inputmode="numeric"
+        min="1"
+        [step]="stepMinutes()"
+        [ngModel]="draft()"
+        (ngModelChange)="draft.set($event)"
+        (blur)="commit()"
+        (keydown)="onKey($event)"
+        autofocus
+        [attr.aria-label]="ariaLabel()"
+      />
+      <span class="head__unit">min</span>
+    </span>
+  } @else if (targetLabel(); as label) {
+    <button
+      type="button"
+      class="head__value"
+      (click)="startEdit()"
+      title="Click to edit"
+    >
+      {{ label }}
+    </button>
+  } @else {
+    <button type="button" class="head__set" (click)="startEdit()">
+      + Set target
+    </button>
+  }
+  @if (fillPercent(); as pct) {
+    <span class="head__actual">
+      {{ actualLabel() }}
+      <span class="head__pct">· {{ pct }}</span>
+    </span>
+  }
+</div>
+
+@if (targetMinutes() !== null) {
+  <div
+    class="bar"
+    role="progressbar"
+    [attr.aria-valuenow]="fillPercent()"
+    [attr.data-state]="fillState()"
+  >
+    <span class="bar__fill" [style.width]="fillWidth()"></span>
+  </div>
+}

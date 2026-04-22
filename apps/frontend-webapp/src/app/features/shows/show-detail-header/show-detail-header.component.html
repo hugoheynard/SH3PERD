@@ -129,73 +129,15 @@
         }
       </div>
 
-      @let showTargetS = state.showTargetSeconds(show);
-      <div
+      <app-target-bar
         class="show-header__target"
-        [attr.data-state]="state.showFillState(show)"
-      >
-        <div class="show-header__target-head">
-          <span class="show-header__target-label">
-            <sh3-icon name="clock" [size]="11" />
-            <span>Total target</span>
-          </span>
-          @if (state.editingShowTarget()) {
-            <span class="show-header__target-edit">
-              <input
-                class="show-header__target-input"
-                type="number"
-                inputmode="numeric"
-                min="1"
-                step="5"
-                [ngModel]="state.showTargetMinutesDraft()"
-                (ngModelChange)="state.showTargetMinutesDraft.set($event)"
-                (blur)="state.commitEditShowTarget()"
-                (keydown)="state.onShowTargetKey($event)"
-                autofocus
-                aria-label="Total show duration target in minutes"
-              />
-              <span class="show-header__target-unit">min</span>
-            </span>
-          } @else if (showTargetS !== null) {
-            <button
-              type="button"
-              class="show-header__target-value"
-              (click)="state.startEditShowTarget()"
-              title="Click to edit"
-            >
-              {{ state.formatDuration(showTargetS) }}
-            </button>
-          } @else {
-            <button
-              type="button"
-              class="show-header__target-set"
-              (click)="state.startEditShowTarget()"
-            >
-              + Set target
-            </button>
-          }
-          @if (state.showFillPercent(show); as pct) {
-            <span class="show-header__target-actual">
-              {{ state.formatDuration(show.totalDurationSeconds) }}
-              <span class="show-header__target-pct">· {{ pct }}</span>
-            </span>
-          }
-        </div>
-
-        @if (showTargetS !== null) {
-          <div
-            class="show-header__target-bar"
-            role="progressbar"
-            [attr.aria-valuenow]="state.showFillPercent(show)"
-            [attr.data-state]="state.showFillState(show)"
-          >
-            <span
-              class="show-header__target-bar-fill"
-              [style.width]="state.showFillWidth(show)"
-            ></span>
-          </div>
-        }
-      </div>
+        label="Total target"
+        [targetSeconds]="show.totalDurationTargetSeconds ?? null"
+        [actualSeconds]="show.totalDurationSeconds"
+        [stepMinutes]="5"
+        ariaLabel="Total show duration target in minutes"
+        (commitMinutes)="state.updateShowTargetMinutes($event)"
+      />
 
       <app-rating-row
         class="rating-row"

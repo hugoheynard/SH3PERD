@@ -40,8 +40,6 @@ export class ShowDetailStateService {
   readonly showNameDraft = signal('');
   readonly editingShowDescription = signal(false);
   readonly showDescriptionDraft = signal('');
-  readonly editingShowTarget = signal(false);
-  readonly showTargetMinutesDraft = signal('');
 
   loadDetail(id: TShowId): void {
     this.showsState.loadDetail(id);
@@ -55,7 +53,6 @@ export class ShowDetailStateService {
   resetHeaderState(): void {
     this.editingShowName.set(false);
     this.editingShowDescription.set(false);
-    this.editingShowTarget.set(false);
   }
 
   startRenameShow(): void {
@@ -122,75 +119,14 @@ export class ShowDetailStateService {
     }
   }
 
-  showTargetSeconds(show: TShowSummaryViewModel): number | null {
-    return show.totalDurationTargetSeconds ?? null;
-  }
-
-  showFillRatio(show: TShowSummaryViewModel): number | null {
-    const target = this.showTargetSeconds(show);
-    if (target === null || target <= 0) return null;
-    return show.totalDurationSeconds / target;
-  }
-
-  showFillPercent(show: TShowSummaryViewModel): string | null {
-    const ratio = this.showFillRatio(show);
-    return ratio === null ? null : `${Math.round(ratio * 100)}%`;
-  }
-
-  showFillWidth(show: TShowSummaryViewModel): string {
-    const ratio = this.showFillRatio(show);
-    if (ratio === null) return '0%';
-    return `${Math.min(1, Math.max(0, ratio)) * 100}%`;
-  }
-
-  showFillState(
-    show: TShowSummaryViewModel,
-  ): 'empty' | 'under' | 'near' | 'over' {
-    const ratio = this.showFillRatio(show);
-    if (ratio === null || ratio === 0) return 'empty';
-    if (ratio < 0.9) return 'under';
-    if (ratio <= 1.05) return 'near';
-    return 'over';
-  }
-
-  startEditShowTarget(): void {
+  /** Commit from `<app-target-bar>` — the component has already
+   *  validated + diffed the minutes value. */
+  updateShowTargetMinutes(minutes: number): void {
     const show = this.detail();
     if (!show) return;
-    const current = show.totalDurationTargetSeconds
-      ? Math.round(show.totalDurationTargetSeconds / 60)
-      : 60;
-    this.showTargetMinutesDraft.set(String(current));
-    this.editingShowTarget.set(true);
-  }
-
-  commitEditShowTarget(): void {
-    const show = this.detail();
-    if (!show) return;
-    const raw = this.showTargetMinutesDraft().trim();
-    this.editingShowTarget.set(false);
-    const parsed = Number.parseInt(raw, 10);
-    if (!Number.isFinite(parsed) || parsed <= 0) return;
-    const currentMinutes = show.totalDurationTargetSeconds
-      ? Math.round(show.totalDurationTargetSeconds / 60)
-      : null;
-    if (currentMinutes === parsed) return;
     this.mutations.updateShow(show.id, {
-      totalDurationTargetSeconds: parsed * 60,
+      totalDurationTargetSeconds: minutes * 60,
     });
-  }
-
-  cancelEditShowTarget(): void {
-    this.editingShowTarget.set(false);
-  }
-
-  onShowTargetKey(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      this.commitEditShowTarget();
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      this.cancelEditShowTarget();
-    }
   }
 
   onDuplicate(): void {
