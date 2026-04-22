@@ -23,7 +23,6 @@ import type {
   TShowSectionViewModel,
   TShowSummaryViewModel,
 } from '@sh3pherd/shared-types';
-import { ShowsStateService } from '../services/shows-state.service';
 import { ShowsMutationService } from '../services/shows-mutation.service';
 import { ShowsDndInitService } from '../services/shows-dnd-init.service';
 import { ButtonComponent } from '../../../shared/button/button.component';
@@ -42,10 +41,6 @@ import type {
 } from '../../../core/drag-and-drop/drag.types';
 import { LayoutService } from '../../../core/services/layout.service';
 import {
-  ShowSettingsPopoverComponent,
-  type ShowSettingsPopoverData,
-} from '../show-settings-popover/show-settings-popover.component';
-import {
   SectionSettingsPopoverComponent,
   type SectionSettingsPopoverData,
 } from '../section-settings-popover/section-settings-popover.component';
@@ -60,48 +55,11 @@ import {
 import { ShowDetailHeaderComponent } from '../show-detail-header/show-detail-header.component';
 import { ShowItemRowComponent } from '../show-item-row/show-item-row.component';
 import { showItemTitle } from '../show-item-row/show-item-row.utils';
-
-/** Four rating axes with per-axis accent colour — the shared rating
- *  sparkline renders a smoothed series tinted with these so every card,
- *  detail header and section footer reads with the same grammar. */
-const RATING_AXES = [
-  {
-    label: 'MST',
-    axisKey: 'mastery',
-    accent: 'var(--color-rating-high, #4ade80)',
-    meanKey: 'meanMastery',
-    seriesKey: 'masterySeries',
-  },
-  {
-    label: 'NRG',
-    axisKey: 'energy',
-    accent: 'var(--color-rating-max, #fbbf24)',
-    meanKey: 'meanEnergy',
-    seriesKey: 'energySeries',
-  },
-  {
-    label: 'EFF',
-    axisKey: 'effort',
-    accent: 'var(--color-rating-medium, #38bdf8)',
-    meanKey: 'meanEffort',
-    seriesKey: 'effortSeries',
-  },
-  {
-    label: 'QTY',
-    axisKey: 'quality',
-    accent: 'var(--color-rating-low, #a78bfa)',
-    meanKey: 'meanQuality',
-    seriesKey: 'qualitySeries',
-  },
-] as const satisfies readonly {
-  label: string;
-  axisKey: TShowAxisKey;
-  accent: string;
-  meanKey: keyof TShowSummaryViewModel & keyof TShowSectionViewModel;
-  seriesKey: keyof TShowSummaryViewModel & keyof TShowSectionViewModel;
-}[];
-
-type RatingAxis = (typeof RATING_AXES)[number];
+import {
+  SHOW_DETAIL_RATING_AXES,
+  type ShowDetailRatingAxis,
+} from './show-detail.constants';
+import { ShowDetailStateService } from './show-detail-state.service';
 
 /** Read the target duration of a section in whole minutes, or `null`
  *  when the section has no duration target (no target at all, or it
@@ -123,6 +81,7 @@ function targetMinutes(
   selector: 'app-show-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [ShowDetailStateService],
   imports: [
     DatePipe,
     FormsModule,
@@ -143,7 +102,7 @@ function targetMinutes(
 export class ShowDetailComponent {
   readonly showId = input<TShowId | null>(null);
 
-  protected readonly state = inject(ShowsStateService);
+  private readonly detailState = inject(ShowDetailStateService);
   private readonly mutations = inject(ShowsMutationService);
   private readonly dragSession = inject(DragSessionService);
   private readonly layout = inject(LayoutService);
@@ -336,34 +295,10 @@ export class ShowDetailComponent {
     return rows[idx].getBoundingClientRect().top - bbox.top + el.scrollTop;
   });
 
-  protected readonly detail = this.state.detail;
-  protected readonly loading = this.state.detailLoadingFor;
-  protected readonly singleMode = computed(
-    () => (this.detail()?.sections.length ?? 0) <= 1,
-  );
-
-  protected readonly axes = RATING_AXES;
-  protected readonly showHeaderMeanFor = (
-    show: TShowSummaryViewModel,
-    axis: unknown,
-  ): number | null => this.meanFor(show, axis as RatingAxis);
-  protected readonly showHeaderSeriesFor = (
-    show: TShowSummaryViewModel,
-    axis: unknown,
-  ): (number | null)[] => this.seriesFor(show, axis as RatingAxis);
-
-  /** Inline-edit state — the show name is replaced by an <input> when
-   *  set. Switching id clears the draft so reopening a different show
-   *  in the side panel never inherits a stale rename. */
-  protected readonly editingShowName = signal(false);
-  protected readonly showNameDraft = signal('');
-
-  /** Inline-edit state for the show description. Multi-line textarea
-   *  because descriptions tend to carry context (venue, setlist notes)
-   *  that doesn't fit on one line. Submitting an empty string clears
-   *  the description server-side. */
-  protected readonly editingShowDescription = signal(false);
-  protected readonly showDescriptionDraft = signal('');
+  protected readonly detail = this.detailState.detail;
+  protected readonly loading = this.detailState.loading;
+  protected readonly singleMode = this.detailState.singleMode;
+  protected readonly axes = SHOW_DETAIL_RATING_AXES;
 
   /** Inline-edit state for section names (one at a time). */
   protected readonly editingSectionId = signal<TShowSectionId | null>(null);
@@ -381,10 +316,6 @@ export class ShowDetailComponent {
   protected readonly editingTargetId = signal<TShowSectionId | null>(null);
   protected readonly targetMinutesDraft = signal('');
 
-  /** Inline-edit state for the whole-show duration target. */
-  protected readonly editingShowTarget = signal(false);
-  protected readonly showTargetMinutesDraft = signal('');
-
   constructor() {
     // Ensure the `playlist` drag preview is registered before the first
     // drop happens. Service is `providedIn: 'root'` and idempotent — no-op
@@ -396,90 +327,15 @@ export class ShowDetailComponent {
     effect(() => {
       const id = this.showId();
       if (id) {
-        this.state.loadDetail(id);
+        this.detailState.loadDetail(id);
       } else {
-        this.state.clearDetail();
+        this.detailState.clearDetail();
       }
-      // Drop any in-flight edit when the shown entity changes.
-      this.editingShowName.set(false);
-      this.editingShowDescription.set(false);
+      this.detailState.resetHeaderState();
       this.editingSectionId.set(null);
       this.editingSectionDescriptionId.set(null);
       this.editingTargetId.set(null);
-      this.editingShowTarget.set(false);
     });
-  }
-
-  // ── Show rename (inline) ─────────────────────────────
-
-  startRenameShow(): void {
-    const show = this.detail();
-    if (!show) return;
-    this.showNameDraft.set(show.name);
-    this.editingShowName.set(true);
-  }
-
-  commitRenameShow(): void {
-    const show = this.detail();
-    if (!show) return;
-    const name = this.showNameDraft().trim();
-    this.editingShowName.set(false);
-    if (!name || name === show.name) return;
-    this.mutations.updateShow(show.id, { name });
-  }
-
-  cancelRenameShow(): void {
-    this.editingShowName.set(false);
-  }
-
-  onShowNameKey(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      this.commitRenameShow();
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      this.cancelRenameShow();
-    }
-  }
-
-  // ── Show description (inline) ────────────────────────
-
-  startEditShowDescription(): void {
-    const show = this.detail();
-    if (!show) return;
-    this.showDescriptionDraft.set(show.description ?? '');
-    this.editingShowDescription.set(true);
-  }
-
-  commitEditShowDescription(): void {
-    const show = this.detail();
-    if (!show) return;
-    const next = this.showDescriptionDraft();
-    const trimmed = next.trim();
-    this.editingShowDescription.set(false);
-    const current = show.description ?? '';
-    if (trimmed === current.trim()) return;
-    // Preserve intentional whitespace within the description but send
-    // an empty string when the user cleared everything so the backend
-    // drops the field (Zod schema accepts `''` as "no description").
-    this.mutations.updateShow(show.id, {
-      description: trimmed.length ? next : '',
-    });
-  }
-
-  cancelEditShowDescription(): void {
-    this.editingShowDescription.set(false);
-  }
-
-  /** Enter commits, Shift+Enter inserts a newline, Escape cancels. */
-  onShowDescriptionKey(event: KeyboardEvent): void {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      this.commitEditShowDescription();
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      this.cancelEditShowDescription();
-    }
   }
 
   // ── Section rename (inline) ──────────────────────────
@@ -639,99 +495,6 @@ export class ShowDetailComponent {
     if (ratio < 0.9) return 'under';
     if (ratio <= 1.05) return 'near';
     return 'over';
-  }
-
-  // ── Show-level target (inline edit on the header) ────
-
-  showTargetSeconds(show: TShowSummaryViewModel): number | null {
-    return show.totalDurationTargetSeconds ?? null;
-  }
-
-  showFillRatio(show: TShowSummaryViewModel): number | null {
-    const target = this.showTargetSeconds(show);
-    if (target === null || target <= 0) return null;
-    return show.totalDurationSeconds / target;
-  }
-
-  showFillPercent(show: TShowSummaryViewModel): string | null {
-    const ratio = this.showFillRatio(show);
-    return ratio === null ? null : `${Math.round(ratio * 100)}%`;
-  }
-
-  showFillWidth(show: TShowSummaryViewModel): string {
-    const ratio = this.showFillRatio(show);
-    if (ratio === null) return '0%';
-    return `${Math.min(1, Math.max(0, ratio)) * 100}%`;
-  }
-
-  showFillState(
-    show: TShowSummaryViewModel,
-  ): 'empty' | 'under' | 'near' | 'over' {
-    const ratio = this.showFillRatio(show);
-    if (ratio === null || ratio === 0) return 'empty';
-    if (ratio < 0.9) return 'under';
-    if (ratio <= 1.05) return 'near';
-    return 'over';
-  }
-
-  startEditShowTarget(): void {
-    const show = this.detail();
-    if (!show) return;
-    const current = show.totalDurationTargetSeconds
-      ? Math.round(show.totalDurationTargetSeconds / 60)
-      : 60;
-    this.showTargetMinutesDraft.set(String(current));
-    this.editingShowTarget.set(true);
-  }
-
-  commitEditShowTarget(): void {
-    const show = this.detail();
-    if (!show) return;
-    const raw = this.showTargetMinutesDraft().trim();
-    this.editingShowTarget.set(false);
-    const parsed = Number.parseInt(raw, 10);
-    if (!Number.isFinite(parsed) || parsed <= 0) return;
-    const currentMinutes = show.totalDurationTargetSeconds
-      ? Math.round(show.totalDurationTargetSeconds / 60)
-      : null;
-    if (currentMinutes === parsed) return;
-    this.mutations.updateShow(show.id, {
-      totalDurationTargetSeconds: parsed * 60,
-    });
-  }
-
-  cancelEditShowTarget(): void {
-    this.editingShowTarget.set(false);
-  }
-
-  onShowTargetKey(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      this.commitEditShowTarget();
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      this.cancelEditShowTarget();
-    }
-  }
-
-  // ── Existing actions ─────────────────────────────────
-
-  onDuplicate(): void {
-    const show = this.detail();
-    if (!show) return;
-    this.mutations.duplicateShow(show.id);
-  }
-
-  onDelete(): void {
-    const show = this.detail();
-    if (!show) return;
-    this.mutations.deleteShow(show.id);
-  }
-
-  onMarkShowPlayed(): void {
-    const show = this.detail();
-    if (!show) return;
-    this.mutations.markShowPlayed(show.id);
   }
 
   onMarkSectionPlayed(section: TShowSectionViewModel): void {
@@ -959,14 +722,14 @@ export class ShowDetailComponent {
 
   meanFor(
     target: TShowSummaryViewModel | TShowSectionViewModel,
-    axis: RatingAxis,
+    axis: ShowDetailRatingAxis,
   ): number | null {
     return target[axis.meanKey];
   }
 
   seriesFor(
     target: TShowSummaryViewModel | TShowSectionViewModel,
-    axis: RatingAxis,
+    axis: ShowDetailRatingAxis,
   ): (number | null)[] {
     return target[axis.seriesKey];
   }
@@ -982,15 +745,6 @@ export class ShowDetailComponent {
   }
 
   // ── Settings popovers ────────────────────────────────
-
-  openShowSettings(): void {
-    const show = this.detail();
-    if (!show) return;
-    this.layout.setPopover<
-      ShowSettingsPopoverComponent,
-      ShowSettingsPopoverData
-    >(ShowSettingsPopoverComponent, { showId: show.id });
-  }
 
   openSectionSettings(section: TShowSectionViewModel): void {
     const show = this.detail();

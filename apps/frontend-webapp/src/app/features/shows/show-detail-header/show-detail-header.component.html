@@ -1,230 +1,232 @@
-<header class="show-header" [attr.data-color]="show().color">
-  <span class="show-header__stripe" [attr.data-color]="show().color"></span>
+@if (state.detail(); as show) {
+  <header class="show-header" [attr.data-color]="show.color">
+    <span class="show-header__stripe" [attr.data-color]="show.color"></span>
 
-  <div class="show-header__content">
-    <div class="show-header__lead">
-      @if (editingShowName()) {
-        <input
-          class="show-header__name-input"
-          type="text"
-          [ngModel]="showNameDraft()"
-          (ngModelChange)="showNameDraftChange.emit($event)"
-          (blur)="renameShowCommitted.emit()"
-          (keydown)="showNameKeyDown.emit($event)"
-          autofocus
-          aria-label="Show name"
-        />
-      } @else {
-        <h1
-          class="show-header__name"
-          (dblclick)="renameShowRequested.emit()"
-          title="Double-click to rename"
-        >
-          {{ show().name }}
-        </h1>
-      }
-
-      @if (editingShowDescription()) {
-        <textarea
-          class="show-header__desc-input"
-          rows="2"
-          placeholder="Describe the show (venue, vibe, notes)…"
-          [ngModel]="showDescriptionDraft()"
-          (ngModelChange)="showDescriptionDraftChange.emit($event)"
-          (blur)="editShowDescriptionCommitted.emit()"
-          (keydown)="showDescriptionKeyDown.emit($event)"
-          autofocus
-          aria-label="Show description"
-        ></textarea>
-      } @else if (show().description) {
-        <p
-          class="show-header__desc"
-          (dblclick)="editShowDescriptionRequested.emit()"
-          title="Double-click to edit"
-        >
-          {{ show().description }}
-        </p>
-      } @else {
-        <button
-          type="button"
-          class="show-header__desc-add"
-          (click)="editShowDescriptionRequested.emit()"
-        >
-          + Add description
-        </button>
-      }
-    </div>
-
-    <div class="show-header__actions">
-      <sh3-button-icon
-        icon="settings"
-        size="sm"
-        tooltip="Show settings"
-        (clicked)="openSettingsRequested.emit()"
-      />
-      <sh3-button-icon
-        icon="check-circle"
-        size="sm"
-        tooltip="Mark show played"
-        (clicked)="markPlayedRequested.emit()"
-      />
-      <sh3-button-icon
-        icon="add-doc"
-        size="sm"
-        tooltip="Duplicate show"
-        (clicked)="duplicateRequested.emit()"
-      />
-      <sh3-inline-confirm
-        mode="toggle"
-        confirmLabel="Delete?"
-        size="sm"
-        (confirmed)="deleteRequested.emit()"
-      >
-        <sh3-button-icon
-          icon="bin"
-          size="sm"
-          tone="critical"
-          tooltip="Delete show"
-        />
-      </sh3-inline-confirm>
-    </div>
-  </div>
-
-  <div class="show-header__stats">
-    <div class="stat-group">
-      <span class="meta-chip">
-        <sh3-icon name="list" [size]="12" />
-        <span class="meta-value">{{ sectionCount() }}</span>
-        <span class="meta-label"
-          >section{{ sectionCount() !== 1 ? "s" : "" }}</span
-        >
-      </span>
-      <span class="meta-chip">
-        <sh3-icon name="music-note" [size]="12" />
-        <span class="meta-value">{{ show().trackCount }}</span>
-        <span class="meta-label"
-          >track{{ show().trackCount !== 1 ? "s" : "" }}</span
-        >
-      </span>
-      @if (show().totalDurationSeconds > 0) {
-        <span class="meta-chip">
-          <sh3-icon name="clock" [size]="12" />
-          <span class="meta-value">{{
-            formatDuration()(show().totalDurationSeconds)
-          }}</span>
-        </span>
-      }
-      @if (scheduleLabel()(show().startAt); as schedule) {
-        <span class="meta-chip meta-chip--schedule">
-          <sh3-icon name="clock" [size]="12" />
-          <span>{{ schedule }}</span>
-        </span>
-      }
-      @if (show().lastPlayedAt) {
-        <span class="meta-chip meta-chip--played">
-          <sh3-icon name="completed" [size]="12" />
-          <span>Played {{ show().lastPlayedAt | date: "mediumDate" }}</span>
-        </span>
-      }
-    </div>
-
-    <div
-      class="show-header__target"
-      [attr.data-state]="showFillState()(show())"
-    >
-      <div class="show-header__target-head">
-        <span class="show-header__target-label">
-          <sh3-icon name="clock" [size]="11" />
-          <span>Total target</span>
-        </span>
-        @if (editingShowTarget()) {
-          <span class="show-header__target-edit">
-            <input
-              class="show-header__target-input"
-              type="number"
-              inputmode="numeric"
-              min="1"
-              step="5"
-              [ngModel]="showTargetMinutesDraft()"
-              (ngModelChange)="showTargetMinutesDraftChange.emit($event)"
-              (blur)="editShowTargetCommitted.emit()"
-              (keydown)="showTargetKeyDown.emit($event)"
-              autofocus
-              aria-label="Total show duration target in minutes"
-            />
-            <span class="show-header__target-unit">min</span>
-          </span>
-        } @else if (showTargetSeconds()(show()); as targetS) {
-          <button
-            type="button"
-            class="show-header__target-value"
-            (click)="editShowTargetRequested.emit()"
-            title="Click to edit"
+    <div class="show-header__content">
+      <div class="show-header__lead">
+        @if (state.editingShowName()) {
+          <input
+            class="show-header__name-input"
+            type="text"
+            [ngModel]="state.showNameDraft()"
+            (ngModelChange)="state.showNameDraft.set($event)"
+            (blur)="state.commitRenameShow()"
+            (keydown)="state.onShowNameKey($event)"
+            autofocus
+            aria-label="Show name"
+          />
+        } @else {
+          <h1
+            class="show-header__name"
+            (dblclick)="state.startRenameShow()"
+            title="Double-click to rename"
           >
-            {{ formatDuration()(targetS) }}
-          </button>
+            {{ show.name }}
+          </h1>
+        }
+
+        @if (state.editingShowDescription()) {
+          <textarea
+            class="show-header__desc-input"
+            rows="2"
+            placeholder="Describe the show (venue, vibe, notes)…"
+            [ngModel]="state.showDescriptionDraft()"
+            (ngModelChange)="state.showDescriptionDraft.set($event)"
+            (blur)="state.commitEditShowDescription()"
+            (keydown)="state.onShowDescriptionKey($event)"
+            autofocus
+            aria-label="Show description"
+          ></textarea>
+        } @else if (show.description) {
+          <p
+            class="show-header__desc"
+            (dblclick)="state.startEditShowDescription()"
+            title="Double-click to edit"
+          >
+            {{ show.description }}
+          </p>
         } @else {
           <button
             type="button"
-            class="show-header__target-set"
-            (click)="editShowTargetRequested.emit()"
+            class="show-header__desc-add"
+            (click)="state.startEditShowDescription()"
           >
-            + Set target
+            + Add description
           </button>
         }
-        @if (showFillPercent()(show()); as pct) {
-          <span class="show-header__target-actual">
-            {{ formatDuration()(show().totalDurationSeconds) }}
-            <span class="show-header__target-pct">· {{ pct }}</span>
+      </div>
+
+      <div class="show-header__actions">
+        <sh3-button-icon
+          icon="settings"
+          size="sm"
+          tooltip="Show settings"
+          (clicked)="state.openShowSettings()"
+        />
+        <sh3-button-icon
+          icon="check-circle"
+          size="sm"
+          tooltip="Mark show played"
+          (clicked)="state.onMarkShowPlayed()"
+        />
+        <sh3-button-icon
+          icon="add-doc"
+          size="sm"
+          tooltip="Duplicate show"
+          (clicked)="state.onDuplicate()"
+        />
+        <sh3-inline-confirm
+          mode="toggle"
+          confirmLabel="Delete?"
+          size="sm"
+          (confirmed)="state.onDelete()"
+        >
+          <sh3-button-icon
+            icon="bin"
+            size="sm"
+            tone="critical"
+            tooltip="Delete show"
+          />
+        </sh3-inline-confirm>
+      </div>
+    </div>
+
+    <div class="show-header__stats">
+      <div class="stat-group">
+        <span class="meta-chip">
+          <sh3-icon name="list" [size]="12" />
+          <span class="meta-value">{{ show.sections.length }}</span>
+          <span class="meta-label"
+            >section{{ show.sections.length !== 1 ? "s" : "" }}</span
+          >
+        </span>
+        <span class="meta-chip">
+          <sh3-icon name="music-note" [size]="12" />
+          <span class="meta-value">{{ show.trackCount }}</span>
+          <span class="meta-label"
+            >track{{ show.trackCount !== 1 ? "s" : "" }}</span
+          >
+        </span>
+        @if (show.totalDurationSeconds > 0) {
+          <span class="meta-chip">
+            <sh3-icon name="clock" [size]="12" />
+            <span class="meta-value">{{
+              state.formatDuration(show.totalDurationSeconds)
+            }}</span>
+          </span>
+        }
+        @if (state.scheduleLabel(show.startAt); as schedule) {
+          <span class="meta-chip meta-chip--schedule">
+            <sh3-icon name="clock" [size]="12" />
+            <span>{{ schedule }}</span>
+          </span>
+        }
+        @if (show.lastPlayedAt) {
+          <span class="meta-chip meta-chip--played">
+            <sh3-icon name="completed" [size]="12" />
+            <span>Played {{ show.lastPlayedAt | date: "mediumDate" }}</span>
           </span>
         }
       </div>
 
-      @if (showTargetSeconds()(show()); as _t) {
-        <div
-          class="show-header__target-bar"
-          role="progressbar"
-          [attr.aria-valuenow]="showFillPercent()(show())"
-          [attr.data-state]="showFillState()(show())"
-        >
-          <span
-            class="show-header__target-bar-fill"
-            [style.width]="showFillWidth()(show())"
-          ></span>
-        </div>
-      }
-    </div>
-
-    <div class="rating-row" aria-label="Rating shape + mean">
-      @for (axis of axes(); track axis.label) {
-        @let mean = meanFor()(show(), axis);
-        @let criterion = criterionFor()(show(), axis.axisKey);
-        @let outOfRange = isMeanOutOfRange()(show(), axis.axisKey);
-        <div
-          class="rating-group"
-          [class.rating-group--empty]="mean === null"
-          [class.rating-group--out-of-range]="outOfRange"
-        >
-          <div class="rating-head">
-            <span class="rating-label">{{ axis.label }}</span>
-            <span class="rating-value">{{ displayMean()(mean) }}</span>
-          </div>
-          @if (criterion) {
-            <span
-              class="rating-criterion"
-              [title]="'Target ' + criterionLabel()(criterion)"
+      <div
+        class="show-header__target"
+        [attr.data-state]="state.showFillState(show)"
+      >
+        <div class="show-header__target-head">
+          <span class="show-header__target-label">
+            <sh3-icon name="clock" [size]="11" />
+            <span>Total target</span>
+          </span>
+          @if (state.editingShowTarget()) {
+            <span class="show-header__target-edit">
+              <input
+                class="show-header__target-input"
+                type="number"
+                inputmode="numeric"
+                min="1"
+                step="5"
+                [ngModel]="state.showTargetMinutesDraft()"
+                (ngModelChange)="state.showTargetMinutesDraft.set($event)"
+                (blur)="state.commitEditShowTarget()"
+                (keydown)="state.onShowTargetKey($event)"
+                autofocus
+                aria-label="Total show duration target in minutes"
+              />
+              <span class="show-header__target-unit">min</span>
+            </span>
+          } @else if (state.showTargetSeconds(show); as targetS) {
+            <button
+              type="button"
+              class="show-header__target-value"
+              (click)="state.startEditShowTarget()"
+              title="Click to edit"
             >
-              {{ criterionLabel()(criterion) }}
+              {{ state.formatDuration(targetS) }}
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="show-header__target-set"
+              (click)="state.startEditShowTarget()"
+            >
+              + Set target
+            </button>
+          }
+          @if (state.showFillPercent(show); as pct) {
+            <span class="show-header__target-actual">
+              {{ state.formatDuration(show.totalDurationSeconds) }}
+              <span class="show-header__target-pct">· {{ pct }}</span>
             </span>
           }
-          <app-rating-sparkline
-            class="rating-sparkline"
-            [series]="seriesFor()(show(), axis)"
-            [durations]="durationsFor()(show())"
-            [accent]="axis.accent"
-          />
         </div>
-      }
+
+        @if (state.showTargetSeconds(show); as _t) {
+          <div
+            class="show-header__target-bar"
+            role="progressbar"
+            [attr.aria-valuenow]="state.showFillPercent(show)"
+            [attr.data-state]="state.showFillState(show)"
+          >
+            <span
+              class="show-header__target-bar-fill"
+              [style.width]="state.showFillWidth(show)"
+            ></span>
+          </div>
+        }
+      </div>
+
+      <div class="rating-row" aria-label="Rating shape + mean">
+        @for (axis of state.axes; track axis.label) {
+          @let mean = state.showHeaderMeanFor(show, axis);
+          @let criterion = state.criterionFor(show, axis.axisKey);
+          @let outOfRange = state.isMeanOutOfRange(show, axis.axisKey);
+          <div
+            class="rating-group"
+            [class.rating-group--empty]="mean === null"
+            [class.rating-group--out-of-range]="outOfRange"
+          >
+            <div class="rating-head">
+              <span class="rating-label">{{ axis.label }}</span>
+              <span class="rating-value">{{ state.displayMean(mean) }}</span>
+            </div>
+            @if (criterion) {
+              <span
+                class="rating-criterion"
+                [title]="'Target ' + state.criterionLabel(criterion)"
+              >
+                {{ state.criterionLabel(criterion) }}
+              </span>
+            }
+            <app-rating-sparkline
+              class="rating-sparkline"
+              [series]="state.showHeaderSeriesFor(show, axis)"
+              [durations]="state.durationsFor(show)"
+              [accent]="axis.accent"
+            />
+          </div>
+        }
+      </div>
     </div>
-  </div>
-</header>
+  </header>
+}

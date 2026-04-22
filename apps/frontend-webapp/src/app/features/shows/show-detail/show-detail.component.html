@@ -2,46 +2,7 @@
   <sh3-loading message="Loading show…" />
 } @else if (detail(); as show) {
   <div class="show-detail">
-    <app-show-detail-header
-      [show]="show"
-      [sectionCount]="show.sections.length"
-      [axes]="axes"
-      [editingShowName]="editingShowName()"
-      [showNameDraft]="showNameDraft()"
-      [editingShowDescription]="editingShowDescription()"
-      [showDescriptionDraft]="showDescriptionDraft()"
-      [editingShowTarget]="editingShowTarget()"
-      [showTargetMinutesDraft]="showTargetMinutesDraft()"
-      [formatDuration]="formatDuration.bind(this)"
-      [scheduleLabel]="scheduleLabel.bind(this)"
-      [showFillState]="showFillState.bind(this)"
-      [showFillPercent]="showFillPercent.bind(this)"
-      [showFillWidth]="showFillWidth.bind(this)"
-      [showTargetSeconds]="showTargetSeconds.bind(this)"
-      [meanFor]="showHeaderMeanFor"
-      [criterionFor]="criterionFor.bind(this)"
-      [isMeanOutOfRange]="isMeanOutOfRange.bind(this)"
-      [criterionLabel]="criterionLabel.bind(this)"
-      [seriesFor]="showHeaderSeriesFor"
-      [durationsFor]="durationsFor.bind(this)"
-      [displayMean]="displayMean.bind(this)"
-      (showNameDraftChange)="showNameDraft.set($event)"
-      (renameShowRequested)="startRenameShow()"
-      (renameShowCommitted)="commitRenameShow()"
-      (showNameKeyDown)="onShowNameKey($event)"
-      (showDescriptionDraftChange)="showDescriptionDraft.set($event)"
-      (editShowDescriptionRequested)="startEditShowDescription()"
-      (editShowDescriptionCommitted)="commitEditShowDescription()"
-      (showDescriptionKeyDown)="onShowDescriptionKey($event)"
-      (showTargetMinutesDraftChange)="showTargetMinutesDraft.set($event)"
-      (editShowTargetRequested)="startEditShowTarget()"
-      (editShowTargetCommitted)="commitEditShowTarget()"
-      (showTargetKeyDown)="onShowTargetKey($event)"
-      (openSettingsRequested)="openShowSettings()"
-      (markPlayedRequested)="onMarkShowPlayed()"
-      (duplicateRequested)="onDuplicate()"
-      (deleteRequested)="onDelete()"
-    />
+    <app-show-detail-header />
 
     <!-- ── Sections ───────────────────────────────────── -->
 

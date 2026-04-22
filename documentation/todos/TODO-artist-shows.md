@@ -522,6 +522,11 @@ Objectif : alléger la feature `shows`, rapprocher les patterns UI compatibles a
   - stats
   - target global
   - rating header
+- [x] Introduire `show-detail/show-detail-state.service.ts` comme facade locale au detail :
+  - source unique de l'etat d'edition du header
+  - source unique des helpers header (`fill`, `schedule`, `criteria`, `ratings`)
+  - orchestration des actions header (`duplicate`, `delete`, `mark played`, `open settings`)
+  - wrapping de `ShowsStateService` pour `detail`, `loading`, `singleMode`
 - [ ] Extraire `show-section-card.component.ts` pour :
   - header de section
   - description
@@ -531,10 +536,14 @@ Objectif : alléger la feature `shows`, rapprocher les patterns UI compatibles a
 - [ ] Extraire `show-item-row.component.ts` pour le rendu d'un item `version | playlist`.
 - [ ] Garder dans le container :
   - `showId`
-  - chargement via `ShowsStateService`
-  - appels à `ShowsMutationService`
-  - ouverture des popovers
+  - chargement / clear du detail via la facade locale
+  - appels section/item encore transversaux
+  - ouverture des popovers de section
   - orchestration des événements DnD
+- [x] `ShowDetailHeaderComponent` est maintenant branche directement sur `ShowDetailStateService` :
+  - plus de paquet massif de `@Input()` / `@Output()` pour le header
+  - le composant enfant appelle la facade locale
+  - les mutations header restent centralisees dans une seule couche UI-oriented
 
 ##### Étape 4 — Introduire une primitive shared `DropzoneListContainer`
 
@@ -592,6 +601,10 @@ But : encapsuler la mécanique commune de liste droppable avec la techno DnD exi
 
 - `Show` et `Playlist` peuvent partager des primitives de rendu, pas leur métier.
 - `DropzoneListContainer` est une primitive d'UI et de géométrie DnD, pas une abstraction métier.
+- `ShowDetailStateService` est une facade locale de feature, pas un store global bis :
+  - il compose l'etat UI du detail
+  - il orchestre les mutations du header
+  - il laisse `ShowsStateService` rester la source de vérité du detail chargé
 - Le premier scope doit rester simple : liste verticale, insertion bar, reorder interne, drop externe.
 - Toute généralisation supplémentaire doit venir après migration réelle de `playlist-detail` puis `shows`.
 
