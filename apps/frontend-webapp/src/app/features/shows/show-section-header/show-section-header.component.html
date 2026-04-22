@@ -1,4 +1,4 @@
-@let section = section();
+@let sec = section();
 <header class="head">
   @if (multiSection()) {
     <span
@@ -29,7 +29,7 @@
         (dblclick)="startRename()"
         title="Double-click to rename"
       >
-        {{ section.name }}
+        {{ sec.name }}
       </h3>
     }
 
@@ -45,13 +45,13 @@
         autofocus
         aria-label="Section description"
       ></textarea>
-    } @else if (section.description) {
+    } @else if (sec.description) {
       <p
         class="head__desc"
         (dblclick)="startEditDesc()"
         title="Double-click to edit"
       >
-        {{ section.description }}
+        {{ sec.description }}
       </p>
     } @else {
       <button type="button" class="head__desc-add" (click)="startEditDesc()">
