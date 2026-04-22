@@ -17,82 +17,27 @@
       (uiDndDrop)="onSectionsReorderDrop($event)"
     >
       @for (section of show.sections; track trackSection($index, section)) {
-        <section
-          class="section"
-          [attr.data-section-id]="section.id"
-          [class.dragging]="reorderingSectionId() === section.id"
-          [class.is-item-reordering]="
-            isItemSlotDrag() && overSectionId() === section.id
-          "
-          uiDndDrag
-          [dndType]="'show-section'"
-          [dndData]="sectionDragPayload(section)"
-          [dragHandle]="'.head__handle'"
-          [canDrag]="!singleMode()"
-          uiDndDropZone
-          [dropZone_id]="section.id"
-          [dropZoneAccept]="['music-track', 'playlist', 'show-section-item']"
-          (uiDndDrop)="onSectionDrop(show.id, section.id, $event)"
+        <app-show-section
+          [showId]="show.id"
+          [section]="section"
+          [multiSection]="show.sections.length > 1"
         >
           <app-show-section-header
+            sectionHeader
             [showId]="show.id"
             [section]="section"
             [multiSection]="show.sections.length > 1"
           />
-
-          <!-- ── Target + fill % ─────────────────────────── -->
           <app-target-bar
-            class="section__target"
+            sectionTarget
             label="Target"
             [targetSeconds]="targetSeconds(section)"
             [actualSeconds]="section.totalDurationSeconds"
             ariaLabel="Target duration in minutes"
             (commitMinutes)="updateSectionTargetMinutes(section, $event)"
           />
-
-          @if (section.items.length === 0) {
-            <div class="section__empty">
-              <sh3-icon name="playlist-add" [size]="18" />
-              <span
-                >Drop tracks or playlists here from your library or playlist
-                manager.</span
-              >
-            </div>
-          } @else {
-            <ul class="item-list">
-              @for (item of section.items; track trackItem($index, item)) {
-                <app-show-item-row
-                  class="item"
-                  [item]="item"
-                  [dragData]="itemDragPayload(section, item)"
-                  [dragging]="reorderingItem()?.itemId === item.id"
-                  (removed)="onRemoveItem(section, item)"
-                />
-              }
-              <!-- Cursor-driven item insertion bar — visible during any
-                   item-slot drag (reorder/move OR external add from the
-                   music library / playlists) when the cursor is over
-                   this section. -->
-              @if (
-                isItemSlotDrag() &&
-                overSectionId() === section.id &&
-                itemInsertIndex() >= 0
-              ) {
-                <div
-                  class="item-insertion-bar"
-                  [style.top.px]="itemInsertY()"
-                  aria-hidden="true"
-                >
-                  <span class="item-insertion-dot"></span>
-                  <span class="item-insertion-line"></span>
-                  <span class="item-insertion-dot"></span>
-                </div>
-              }
-            </ul>
-          }
-
-          <app-show-section-footer [section]="section" />
-        </section>
+          <app-show-section-footer sectionFooter [section]="section" />
+        </app-show-section>
       }
       <!-- Cursor-driven insertion bar — only shown during a section drag,
            positioned at the slot under the cursor (playlist-tracks UX). -->

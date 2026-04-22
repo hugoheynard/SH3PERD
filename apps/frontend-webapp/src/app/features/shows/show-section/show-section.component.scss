@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  padding: 14px 16px;
+  background: var(--panel-color);
+  border: 1px solid var(--panel-border-color);
+  border-radius: var(--radius-md);
+  transition:
+    border-color var(--t-fast),
+    opacity var(--t-fast),
+    filter var(--t-fast);
+
+  &:hover {
+    border-color: var(--floating-border-color);
+  }
+
+  /* Source row during a section reorder — dim + desaturate to match
+     the "ghost stays behind" reading used in playlist tracks. */
+  &.dragging {
+    opacity: 0.35;
+    filter: saturate(0.6);
+    box-shadow: inset 0 0 0 1px
+      var(--accent-color-border, rgba(129, 140, 248, 0.25));
+  }
+
+  /* Subtle highlight while an item drag is live anywhere, so the user
+     sees which set they are about to drop into. */
+  &.is-item-reordering {
+    border-color: var(--accent-color-border, rgba(129, 140, 248, 0.35));
+    background: linear-gradient(
+      180deg,
+      var(--accent-color-dim, rgba(129, 140, 248, 0.04)) 0%,
+      transparent 60%
+    );
+  }
+}
+
+.items {
+  display: block;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-sm);
+  padding: 20px 16px;
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  border: 1px dashed var(--panel-border-color);
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+
+  sh3-icon {
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+}
