@@ -1,0 +1,23 @@
+@for (group of groups(); track group.label) {
+  <div
+    class="rating-group"
+    [class.rating-group--empty]="group.mean === null"
+    [class.rating-group--out-of-range]="group.outOfRange"
+  >
+    <div class="rating-head">
+      <span class="rating-label">{{ group.label }}</span>
+      <span class="rating-value">{{ displayMean(group.mean) }}</span>
+    </div>
+    @if (group.criterion) {
+      <span class="rating-criterion" [title]="'Target ' + group.criterion">
+        {{ group.criterion }}
+      </span>
+    }
+    <app-rating-sparkline
+      class="rating-sparkline"
+      [series]="group.series"
+      [durations]="durations()"
+      [accent]="group.accent"
+    />
+  </div>
+}
