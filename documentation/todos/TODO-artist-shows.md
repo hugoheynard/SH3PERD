@@ -1,7 +1,7 @@
 # Artist Shows — Feature TODO
 
-> **Status** : MVP shipped (Phases 1–8 done). Premium UX pass shipped (sparkline stats, inline rename, per-section + whole-show duration targets + fill %, DnD section reordering with insertion indicator, new-show popover). Tests + doc polishing still to come (Phase 9 partial — technical doc landed in `apps/backend/documentation/sh3-shows.md`; E2E tests + frontend doc TBD).
-> **Date** : 2026-04-20
+> **Status** : MVP shipped (Phases 1–8 done). Premium UX pass shipped (sparkline stats, inline rename, per-section + whole-show duration targets + fill %, DnD section reordering with insertion indicator, new-show popover). Polish pass 2026-04-22 shipped: section drag regression fix (button → span + dragHandle selector), proportional-x sparkline fix (zero-duration redistribution), intra + cross-section item reorder/move with cursor-driven insertion bar, position-aware external adds, section header always visible + per-section `description` field, full settings popovers for show & section (target mode + scheduling + per-axis criteria with out-of-range tint). Tests + doc polishing still to come (Phase 9 partial — technical doc landed in `apps/backend/documentation/sh3-shows.md`; E2E tests + frontend doc TBD).
+> **Date** : 2026-04-22
 > **Dépend de** : Plans artist/company (done), QuotaService (done), Playlist V2 (rating series live), account-scope guards (done)
 
 ---
@@ -410,11 +410,20 @@ apps/frontend-webapp/src/app/features/shows/
 - [x] `show-detail-page` (routed) + `show-detail-side-panel` (dockable) — les deux hostent `ShowDetailComponent` (un seul corps partagé)
 - [x] Inline rename : show name + section name (dblclick ou pencil → `<input>`, Enter commit, Escape cancel)
 - [x] DnD : drop playlist card → item playlist ; drop track card → item version ; reorder sections avec indicateur d'insertion visuel (zones thin qui s'expandent pendant un drag de type `show-section`)
-- [ ] Reorder items intra-section, déplacement item entre sections (endpoints backend prêts — UI à faire)
+- [x] **Reorder items intra-section + move entre sections** — cursor-driven insertion bar interne à chaque `.item-list`, handle grip visible par défaut sur chaque `<li>`. Même DnD pattern que les sections, type `show-section-item`. Cross-section move wired via `moveItem` endpoint (shipped 2026-04-22).
+- [x] **Proportional-x sparkline fix** — entrées `durationSeries` à 0 (tracks sans analyse) étaient collapsées sur la position cumulative précédente. Patché avec distribution "mean of positives" pour garder la sparkline visuellement honnête.
+- [x] **Section reordering fix** — `uiDndDrag` était sur un `<button>` que `DndDragDirective` bloquait (early return sur interactive children). Déplacé sur `<section>` avec `dragHandle=".section__handle"` et le handle devient un `<span role="button">`.
+- [x] **Section drop-route order fix** — `PATCH :id/sections/reorder` était masqué par `PATCH :id/sections/:sectionId` dans le controller (Express first-match), `SUpdateShowSectionPayload` stripait la clé `ordered_ids` et retournait silencieusement 200. Décorateurs ré-ordonnés.
+- [x] **Insertion bar aussi sur external adds** — drop d'une `music-track` ou d'un `playlist` montre maintenant la barre et respecte le slot cursor-driven au lieu d'ajouter toujours en fin de section.
+- [x] **Section header toujours visible** — drop du `@if (!singleMode())` qui cachait le header quand il n'y avait qu'une section. Le drag handle seul reste conditionnel (≥2 sections).
 - [x] Sparkline partagée (`app-rating-sparkline` dans `shared/`) : show header + par section + cards
 - [x] New-show popover — nom, total duration target (min), colour chip. Monté via `LayoutService.setPopover`.
 - [x] Show-level + section-level duration targets avec barre de fill % tintée (`under` / `near` / `over`) et édition inline des minutes.
 - [x] `user-select: none` sur les racines feature (les inputs opt back in pour le rename / target editing).
+- [x] **Settings popovers** (show + section) — name, description, colour (show only), target mode (none/duration/track_count) + value, scheduled start (date + time), per-axis criteria (MST/NRG/EFF/QTY, enable + min/max). Remplace les inline-edit scattered sur le header (le double-click rename reste comme raccourci).
+- [x] **Schedule chip** dans le show header + section footer quand `startAt` défini — format `"Fri 3 May · 22:00"`, date-only si l'heure est pile minuit.
+- [x] **Axis criterion chip + out-of-range tint** dans chaque rating group — chip affichant la range configurée (`"2.5–4"`, `"≥ 3"`), mean + chip tintés en couleur alerte quand la moyenne réelle sort de la fenêtre cible.
+- [x] **Section `description` field** — nouveau champ optionnel sur `TShowSectionDomainModel` + display + inline edit (même grammaire que la description show).
 - [ ] Menu + guard `requireShowsPlanGuard` (à faire)
 
 ### Phase 7 — Mark played + analytics (~0.5 jour) 🔄

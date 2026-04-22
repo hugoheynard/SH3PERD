@@ -489,13 +489,15 @@ see `documentation/todos/TODO-artist-shows.md`.
 
 Two targets, two scopes:
 
-- **Show-level** — `TShowDomainModel.totalDurationTargetSeconds`.
-  Set at creation via the popover, editable inline from the header.
-  Persisted directly on the show doc.
+- **Show-level** — `TShowDomainModel.totalDurationTargetSeconds`
+  (seconds) OR `TShowDomainModel.totalTrackCountTarget` (songs).
+  Mutually exclusive in the UI — the settings popover picks one
+  mode and clears the other on submit. Both fields are independently
+  persisted on the show doc so the payload shape stays additive.
 - **Section-level** — `TShowSectionDomainModel.target`, a
-  discriminated union (`duration` or `track_count`). Set at section
-  creation via a `window.prompt` minutes question (for now) and
-  editable inline from the section header.
+  discriminated union (`{ mode: 'duration'; duration_s: number }`
+  or `{ mode: 'track_count'; track_count: number }`). Set from the
+  section settings popover; `null` clears.
 
 The section-level sum is independent of the show-level target — a
 show can exceed its total target while each section is individually
@@ -504,6 +506,65 @@ their own target; there's no cross-check.
 
 Both respect the same state thresholds (`under < 90%`, `near
 90–105%`, `over > 105%`) and reuse the same colour ramp.
+
+### Scheduling (`startAt`)
+
+Both `TShowDomainModel` and `TShowSectionDomainModel` carry an
+optional `startAt: number` (ms since epoch) — the absolute planned
+start time. Independent per section — no auto-cascade from the show
+or from the previous section's duration target. An artist with a
+rigid 22:00 → 22:30 → 23:15 running order fills those stamps by hand
+from the section settings popover, gets a schedule chip in the
+corresponding header, and the chip renders date-only when the stamp
+lands on exactly 00:00 (treated as "date anchor, no precise time").
+
+Duplicating a show intentionally **drops** `startAt` on both levels
+— the clone is a template for re-scheduling, not a re-run of the
+same date.
+
+### Axis criteria (`axisCriteria`)
+
+Per-axis target ranges the artist sets to steer a section (or the
+whole show). Each criterion is `{ axis: 'mastery' | 'energy' |
+'effort' | 'quality', min?: number, max?: number }`, stored as
+an optional array on both the show and section domain models
+(at most one entry per axis — enforced by a dedupe-on-write in
+`setAxisCriteria`).
+
+The UI renders the configured range as a chip next to the axis mean
+in every rating group (header + section footer). When the current
+`mean*` drifts outside the window, the `rating-group--out-of-range`
+modifier tints both the mean number and the chip with the alert
+colour — so the artist sees the drift at a glance without reading
+the numeric comparison.
+
+Backend Zod refine guarantees `min <= max` when both are set, so
+handlers can trust the ordering downstream.
+
+### Settings popovers
+
+Two components consolidate every editable field into a single
+panel per scope:
+
+- `ShowSettingsPopoverComponent` (opened from the show header cog)
+  — name, description, colour, target (mode + value), scheduled
+  start, per-axis criteria.
+- `SectionSettingsPopoverComponent` (opened from the section head
+  cog) — same shape minus colour (sections inherit from the show).
+
+Both mount via `LayoutService.setPopover()` with a typed data
+payload (`{ showId }` / `{ showId, sectionId }`) that resolves the
+current view model from `ShowsStateService.detail()` at `ngOnInit`
+to pre-fill the form. Submits go through `ShowsMutationService`
+which reloads the detail authoritatively so the header view
+refreshes as a single coherent update.
+
+Double-click-to-rename + description inline-edit stay as quick
+shortcuts on the headers — the popover is the primary entry for
+everything else (target mode toggle, schedule, criteria). Mark
+played / duplicate / delete remain as visible icon-buttons next
+to the cog so the common single-click actions don't hide behind a
+settings panel.
 
 ### Shared components used
 
