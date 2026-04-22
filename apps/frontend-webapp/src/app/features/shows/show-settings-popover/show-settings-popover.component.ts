@@ -234,13 +234,22 @@ export class ShowSettingsPopoverComponent implements OnInit {
   }
 }
 
-function parsePositiveInt(raw: string): number {
-  const parsed = Number.parseInt(raw.trim(), 10);
+/**
+ * Parse to a positive integer. Accepts both `string` (typical signal
+ * draft) and `number` — Angular's `ngModel` on `<input type="number">`
+ * emits the parsed number when the browser parses it successfully, so
+ * the signal's actual runtime type can be either. We coerce through
+ * `String()` so the downstream parser always sees a trimmable value.
+ */
+function parsePositiveInt(raw: unknown): number {
+  const str = raw === null || raw === undefined ? '' : String(raw);
+  const parsed = Number.parseInt(str.trim(), 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
 }
 
-function parseRating(raw: string): number | undefined {
-  const parsed = Number.parseFloat(raw.trim());
+function parseRating(raw: unknown): number | undefined {
+  const str = raw === null || raw === undefined ? '' : String(raw);
+  const parsed = Number.parseFloat(str.trim());
   if (!Number.isFinite(parsed)) return undefined;
   if (parsed < 1 || parsed > 4) return undefined;
   return parsed;
