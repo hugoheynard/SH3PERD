@@ -14,6 +14,8 @@ import { FormsModule } from '@angular/forms';
 import type {
   TMusicVersionId,
   TPlaylistId,
+  TShowAxisCriterion,
+  TShowAxisKey,
   TShowId,
   TShowSectionId,
   TShowSectionItemId,
@@ -39,6 +41,15 @@ import type {
   ShowSectionDragPayload,
   ShowSectionItemDragPayload,
 } from '../../../core/drag-and-drop/drag.types';
+import { LayoutService } from '../../../core/services/layout.service';
+import {
+  ShowSettingsPopoverComponent,
+  type ShowSettingsPopoverData,
+} from '../show-settings-popover/show-settings-popover.component';
+import {
+  SectionSettingsPopoverComponent,
+  type SectionSettingsPopoverData,
+} from '../section-settings-popover/section-settings-popover.component';
 
 /** Four rating axes with per-axis accent colour — the shared rating
  *  sparkline renders a smoothed series tinted with these so every card,
@@ -46,29 +57,39 @@ import type {
 const RATING_AXES = [
   {
     label: 'MST',
+    axisKey: 'mastery',
     accent: 'var(--color-rating-high, #4ade80)',
     meanKey: 'meanMastery',
     seriesKey: 'masterySeries',
   },
   {
     label: 'NRG',
+    axisKey: 'energy',
     accent: 'var(--color-rating-max, #fbbf24)',
     meanKey: 'meanEnergy',
     seriesKey: 'energySeries',
   },
   {
     label: 'EFF',
+    axisKey: 'effort',
     accent: 'var(--color-rating-medium, #38bdf8)',
     meanKey: 'meanEffort',
     seriesKey: 'effortSeries',
   },
   {
     label: 'QTY',
+    axisKey: 'quality',
     accent: 'var(--color-rating-low, #a78bfa)',
     meanKey: 'meanQuality',
     seriesKey: 'qualitySeries',
   },
-] as const;
+] as const satisfies readonly {
+  label: string;
+  axisKey: TShowAxisKey;
+  accent: string;
+  meanKey: keyof TShowSummaryViewModel & keyof TShowSectionViewModel;
+  seriesKey: keyof TShowSummaryViewModel & keyof TShowSectionViewModel;
+}[];
 
 type RatingAxis = (typeof RATING_AXES)[number];
 
@@ -114,6 +135,7 @@ export class ShowDetailComponent {
   protected readonly state = inject(ShowsStateService);
   private readonly mutations = inject(ShowsMutationService);
   private readonly dragSession = inject(DragSessionService);
+  private readonly layout = inject(LayoutService);
 
   /** Ref to the rendered `.sections` container — used to read each
    *  section's bounding rect and compute the insertion slot under the
@@ -963,4 +985,118 @@ export class ShowDetailComponent {
   displayMean(mean: number | null): string {
     return mean === null ? '—' : mean.toFixed(1);
   }
+
+  // ── Settings popovers ────────────────────────────────
+
+  openShowSettings(): void {
+    const show = this.detail();
+    if (!show) return;
+    this.layout.setPopover<
+      ShowSettingsPopoverComponent,
+      ShowSettingsPopoverData
+    >(ShowSettingsPopoverComponent, { showId: show.id });
+  }
+
+  openSectionSettings(section: TShowSectionViewModel): void {
+    const show = this.detail();
+    if (!show) return;
+    this.layout.setPopover<
+      SectionSettingsPopoverComponent,
+      SectionSettingsPopoverData
+    >(SectionSettingsPopoverComponent, {
+      showId: show.id,
+      sectionId: section.id,
+    });
+  }
+
+  // ── Schedule helpers ─────────────────────────────────
+
+  /** Short human-readable schedule chip ("Fri 3 May · 22:00"), or null
+   *  when the show / section has no `startAt` set. Date + time split
+   *  is rendered as a single chip; time alone would be ambiguous. */
+  scheduleLabel(startAt: number | undefined): string | null {
+    if (!startAt) return null;
+    const d = new Date(startAt);
+    if (!Number.isFinite(d.getTime())) return null;
+    const datePart = d.toLocaleDateString(undefined, {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+    });
+    // Suppress the time part for 00:00 — likely "no time set" rather
+    // than a midnight gig; the popover clears both together anyway
+    // so this is just defensive display polish.
+    const h = d.getHours();
+    const m = d.getMinutes();
+    if (h === 0 && m === 0) return datePart;
+    const timePart = d.toLocaleTimeString(undefined, {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    return `${datePart} · ${timePart}`;
+  }
+
+  // ── Axis criteria helpers ────────────────────────────
+
+  /** Look up the criterion set on a target (show or section) for a
+   *  given axis, or null when no criterion / axis mismatch. */
+  criterionFor(
+    target: TShowSummaryViewModel | TShowSectionViewModel,
+    axisKey: TShowAxisKey,
+  ): TShowAxisCriterion | null {
+    return target.axisCriteria?.find((c) => c.axis === axisKey) ?? null;
+  }
+
+  /** Formatted criterion label for the chip ("≥ 3.0", "≤ 3.5",
+   *  "2.5–4"). Null bounds are omitted. */
+  criterionLabel(criterion: TShowAxisCriterion): string {
+    const min = criterion.min;
+    const max = criterion.max;
+    if (min !== undefined && max !== undefined) {
+      return `${formatRating(min)}–${formatRating(max)}`;
+    }
+    if (min !== undefined) return `≥ ${formatRating(min)}`;
+    if (max !== undefined) return `≤ ${formatRating(max)}`;
+    return '—';
+  }
+
+  /** Decide whether the mean of a rating axis sits outside the
+   *  criterion window — used to tint the mean value + sparkline when
+   *  the artist has set a target and the current series drifts out. */
+  isMeanOutOfRange(
+    target: TShowSummaryViewModel | TShowSectionViewModel,
+    axisKey: TShowAxisKey,
+  ): boolean {
+    const c = this.criterionFor(target, axisKey);
+    if (!c) return false;
+    const mean = this.meanForAxisKey(target, axisKey);
+    if (mean === null) return false;
+    if (c.min !== undefined && mean < c.min) return true;
+    if (c.max !== undefined && mean > c.max) return true;
+    return false;
+  }
+
+  /** Read the mean rating from the view-model by canonical axis key.
+   *  Separate from the template's `meanFor(axis)` because that one
+   *  takes a `RatingAxis` descriptor; here we just need the raw value
+   *  per axis key for the out-of-range check. */
+  private meanForAxisKey(
+    target: TShowSummaryViewModel | TShowSectionViewModel,
+    axisKey: TShowAxisKey,
+  ): number | null {
+    switch (axisKey) {
+      case 'mastery':
+        return target.meanMastery;
+      case 'energy':
+        return target.meanEnergy;
+      case 'effort':
+        return target.meanEffort;
+      case 'quality':
+        return target.meanQuality;
+    }
+  }
+}
+
+function formatRating(value: number): string {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }

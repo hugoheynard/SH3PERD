@@ -1,0 +1,239 @@
+<ui-popover-frame>
+  <div popover-title>
+    <span>Show settings</span>
+  </div>
+
+  <form
+    popover-body
+    class="form"
+    (ngSubmit)="submit()"
+    (keydown)="onKey($event)"
+  >
+    <!-- Name -->
+    <div class="form-field">
+      <label class="form-label" for="show-settings-name">Name</label>
+      <input
+        id="show-settings-name"
+        type="text"
+        class="form-input"
+        placeholder="Sunset gig"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+        autofocus
+        aria-label="Show name"
+      />
+    </div>
+
+    <!-- Description -->
+    <div class="form-field">
+      <label class="form-label" for="show-settings-desc">
+        Description
+        <span class="form-label__hint">(optional)</span>
+      </label>
+      <textarea
+        id="show-settings-desc"
+        class="form-input form-input--textarea"
+        rows="2"
+        placeholder="Venue, vibe, setlist notes…"
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+        name="description"
+        aria-label="Show description"
+      ></textarea>
+    </div>
+
+    <!-- Color -->
+    <div class="form-field">
+      <label class="form-label">Colour</label>
+      <div class="color-row">
+        @for (c of colors; track c.key) {
+          <button
+            type="button"
+            class="color-chip"
+            [class.color-chip--active]="color() === c.key"
+            [style.--chip-color]="c.hex"
+            [attr.aria-label]="c.key"
+            [attr.aria-pressed]="color() === c.key"
+            (click)="setColor(c.key)"
+          >
+            @if (color() === c.key) {
+              <sh3-icon name="check" [size]="12" />
+            }
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Target -->
+    <div class="form-field">
+      <label class="form-label">Total target</label>
+      <div class="segmented" role="radiogroup" aria-label="Target mode">
+        <button
+          type="button"
+          class="segmented__btn"
+          [class.segmented__btn--active]="targetMode() === 'none'"
+          role="radio"
+          [attr.aria-checked]="targetMode() === 'none'"
+          (click)="setTargetMode('none')"
+        >
+          None
+        </button>
+        <button
+          type="button"
+          class="segmented__btn"
+          [class.segmented__btn--active]="targetMode() === 'duration'"
+          role="radio"
+          [attr.aria-checked]="targetMode() === 'duration'"
+          (click)="setTargetMode('duration')"
+        >
+          Duration
+        </button>
+        <button
+          type="button"
+          class="segmented__btn"
+          [class.segmented__btn--active]="targetMode() === 'track_count'"
+          role="radio"
+          [attr.aria-checked]="targetMode() === 'track_count'"
+          (click)="setTargetMode('track_count')"
+        >
+          Track count
+        </button>
+      </div>
+
+      @if (targetMode() === "duration") {
+        <div class="form-field__with-unit">
+          <input
+            type="number"
+            class="form-input"
+            inputmode="numeric"
+            min="1"
+            step="5"
+            placeholder="60"
+            [ngModel]="targetDurationMinutes()"
+            (ngModelChange)="targetDurationMinutes.set($event)"
+            name="targetDurationMinutes"
+            aria-label="Target duration in minutes"
+          />
+          <span class="form-field__unit">min</span>
+        </div>
+      } @else if (targetMode() === "track_count") {
+        <div class="form-field__with-unit">
+          <input
+            type="number"
+            class="form-input"
+            inputmode="numeric"
+            min="1"
+            step="1"
+            placeholder="10"
+            [ngModel]="targetTrackCount()"
+            (ngModelChange)="targetTrackCount.set($event)"
+            name="targetTrackCount"
+            aria-label="Target track count"
+          />
+          <span class="form-field__unit">songs</span>
+        </div>
+      }
+    </div>
+
+    <!-- StartAt -->
+    <div class="form-field">
+      <label class="form-label">
+        Scheduled start
+        <span class="form-label__hint">(optional)</span>
+      </label>
+      <div class="datetime-row">
+        <input
+          type="date"
+          class="form-input form-input--date"
+          [ngModel]="startAtDate()"
+          (ngModelChange)="startAtDate.set($event)"
+          name="startAtDate"
+          aria-label="Scheduled start date"
+        />
+        <input
+          type="time"
+          class="form-input form-input--time"
+          [ngModel]="startAtTime()"
+          (ngModelChange)="startAtTime.set($event)"
+          name="startAtTime"
+          aria-label="Scheduled start time"
+          [disabled]="!startAtDate()"
+        />
+        @if (startAtDate()) {
+          <button
+            type="button"
+            class="form-icon-btn"
+            (click)="startAtDate.set(''); startAtTime.set('')"
+            aria-label="Clear scheduled start"
+            title="Clear schedule"
+          >
+            <sh3-icon name="close" [size]="12" />
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Axis criteria -->
+    <div class="form-field">
+      <label class="form-label">
+        Axis targets
+        <span class="form-label__hint">(optional — min/max per axis)</span>
+      </label>
+      <div class="axes">
+        @for (row of axisRows; track row.key) {
+          @let draft = axes()[row.key];
+          <div class="axis" [class.axis--enabled]="draft.enabled">
+            <label class="axis__toggle">
+              <input
+                type="checkbox"
+                [checked]="draft.enabled"
+                (change)="
+                  updateAxis(row.key, { enabled: $any($event.target).checked })
+                "
+                [attr.aria-label]="row.label + ' criterion'"
+              />
+              <span class="axis__label" [style.--axis-accent]="row.accent">
+                {{ row.label }}
+              </span>
+            </label>
+            <div class="axis__range" [attr.aria-hidden]="!draft.enabled">
+              <span class="axis__range-label">min</span>
+              <input
+                type="number"
+                class="form-input form-input--tiny"
+                min="1"
+                max="4"
+                step="0.5"
+                [ngModel]="draft.min"
+                (ngModelChange)="updateAxis(row.key, { min: $event })"
+                [disabled]="!draft.enabled"
+                [attr.aria-label]="row.label + ' minimum'"
+              />
+              <span class="axis__range-label">max</span>
+              <input
+                type="number"
+                class="form-input form-input--tiny"
+                min="1"
+                max="4"
+                step="0.5"
+                [ngModel]="draft.max"
+                (ngModelChange)="updateAxis(row.key, { max: $event })"
+                [disabled]="!draft.enabled"
+                [attr.aria-label]="row.label + ' maximum'"
+              />
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </form>
+
+  <div popover-footer>
+    <sh3-button variant="ghost" (clicked)="close()">Cancel</sh3-button>
+    <sh3-button variant="solid" [disabled]="!canSubmit()" (clicked)="submit()">
+      <sh3-icon name="check" [size]="14" />
+      <span>Save</span>
+    </sh3-button>
+  </div>
+</ui-popover-frame>

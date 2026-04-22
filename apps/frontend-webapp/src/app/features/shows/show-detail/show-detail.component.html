@@ -62,16 +62,10 @@
 
         <div class="show-header__actions">
           <sh3-button-icon
-            icon="edit"
+            icon="settings"
             size="sm"
-            tooltip="Rename show"
-            (clicked)="startRenameShow()"
-          />
-          <sh3-button-icon
-            icon="file-add"
-            size="sm"
-            tooltip="Edit description"
-            (clicked)="startEditShowDescription()"
+            tooltip="Show settings"
+            (clicked)="openShowSettings()"
           />
           <sh3-button-icon
             icon="check-circle"
@@ -123,6 +117,12 @@
               <span class="meta-value">{{
                 formatDuration(show.totalDurationSeconds)
               }}</span>
+            </span>
+          }
+          @if (scheduleLabel(show.startAt); as schedule) {
+            <span class="meta-chip meta-chip--schedule">
+              <sh3-icon name="clock" [size]="12" />
+              <span>{{ schedule }}</span>
             </span>
           }
           @if (show.lastPlayedAt) {
@@ -203,14 +203,25 @@
         <div class="rating-row" aria-label="Rating shape + mean">
           @for (axis of axes; track axis.label) {
             @let mean = meanFor(show, axis);
+            @let criterion = criterionFor(show, axis.axisKey);
+            @let outOfRange = isMeanOutOfRange(show, axis.axisKey);
             <div
               class="rating-group"
               [class.rating-group--empty]="mean === null"
+              [class.rating-group--out-of-range]="outOfRange"
             >
               <div class="rating-head">
                 <span class="rating-label">{{ axis.label }}</span>
                 <span class="rating-value">{{ displayMean(mean) }}</span>
               </div>
+              @if (criterion) {
+                <span
+                  class="rating-criterion"
+                  [title]="'Target ' + criterionLabel(criterion)"
+                >
+                  {{ criterionLabel(criterion) }}
+                </span>
+              }
               <app-rating-sparkline
                 class="rating-sparkline"
                 [series]="seriesFor(show, axis)"
@@ -316,16 +327,10 @@
             </div>
             <div class="section__actions">
               <sh3-button-icon
-                icon="edit"
+                icon="settings"
                 size="xs"
-                tooltip="Rename section"
-                (clicked)="startRenameSection(section)"
-              />
-              <sh3-button-icon
-                icon="file-add"
-                size="xs"
-                tooltip="Edit description"
-                (clicked)="startEditSectionDescription(section)"
+                tooltip="Section settings"
+                (clicked)="openSectionSettings(section)"
               />
               <sh3-button-icon
                 icon="check-circle"
@@ -497,6 +502,12 @@
                   >track{{ section.trackCount !== 1 ? "s" : "" }}</span
                 >
               </span>
+              @if (scheduleLabel(section.startAt); as schedule) {
+                <span class="meta-chip meta-chip--schedule">
+                  <sh3-icon name="clock" [size]="11" />
+                  <span>{{ schedule }}</span>
+                </span>
+              }
               @if (section.lastPlayedAt) {
                 <span class="meta-chip meta-chip--played">
                   <sh3-icon name="completed" [size]="11" />
@@ -508,14 +519,25 @@
             <div class="section__ratings">
               @for (axis of axes; track axis.label) {
                 @let mean = meanFor(section, axis);
+                @let criterion = criterionFor(section, axis.axisKey);
+                @let outOfRange = isMeanOutOfRange(section, axis.axisKey);
                 <div
                   class="rating-group rating-group--compact"
                   [class.rating-group--empty]="mean === null"
+                  [class.rating-group--out-of-range]="outOfRange"
                 >
                   <div class="rating-head">
                     <span class="rating-label">{{ axis.label }}</span>
                     <span class="rating-value">{{ displayMean(mean) }}</span>
                   </div>
+                  @if (criterion) {
+                    <span
+                      class="rating-criterion rating-criterion--compact"
+                      [title]="'Target ' + criterionLabel(criterion)"
+                    >
+                      {{ criterionLabel(criterion) }}
+                    </span>
+                  }
                   <app-rating-sparkline
                     class="rating-sparkline rating-sparkline--compact"
                     [series]="seriesFor(section, axis)"

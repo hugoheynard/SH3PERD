@@ -5,6 +5,7 @@ import type {
   TMusicVersionId,
   TPlaylistColor,
   TPlaylistId,
+  TShowAxisCriterion,
   TShowId,
   TShowSectionId,
   TShowSectionItemId,
@@ -99,6 +100,8 @@ export class ShowsMutationService {
       name?: string;
       description?: string;
       target?: TShowSectionTarget | null;
+      startAt?: number | null;
+      axisCriteria?: TShowAxisCriterion[] | null;
     },
   ): void {
     this.api.updateSection(showId, sectionId, payload).subscribe({

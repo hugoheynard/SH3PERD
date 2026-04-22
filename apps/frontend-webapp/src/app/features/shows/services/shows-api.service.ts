@@ -8,6 +8,7 @@ import type {
   TPlaylistColor,
   TPlaylistDomainModel,
   TPlaylistId,
+  TShowAxisCriterion,
   TShowDetailViewModel,
   TShowDomainModel,
   TShowId,
@@ -121,6 +122,8 @@ export class ShowsApiService extends BaseHttpService {
       name?: string;
       description?: string;
       target?: TShowSectionTarget | null;
+      startAt?: number | null;
+      axisCriteria?: TShowAxisCriterion[] | null;
     },
   ): Observable<TShowDomainModel> {
     return this.http
