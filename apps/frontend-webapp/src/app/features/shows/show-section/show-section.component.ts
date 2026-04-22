@@ -30,7 +30,7 @@ import { ItemMutationService } from '../services/mutations-layer/item-mutation.s
 import { ShowItemRowComponent } from '../show-item-row/show-item-row.component';
 import { showItemTitle } from '../show-item-row/show-item-row.utils';
 
-const ITEM_DRAG_TYPES: readonly DragType[] = [
+const ITEM_DRAG_TYPES: DragType[] = [
   'music-track',
   'playlist',
   'show-section-item',
