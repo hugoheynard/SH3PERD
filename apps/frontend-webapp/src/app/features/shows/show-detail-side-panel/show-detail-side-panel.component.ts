@@ -49,10 +49,20 @@ export class ShowDetailSidePanelComponent {
   }
 
   openMusicLibrary(): void {
-    this.router.navigate(['/app/musicLibrary']);
+    this.navigateWithReturn('/app/musicLibrary');
   }
 
   openPlaylists(): void {
-    this.router.navigate(['/app/playlistManager']);
+    this.navigateWithReturn('/app/playlistManager');
+  }
+
+  /** Navigate to a source page while stamping the current URL as the
+   *  `returnTo` target — drives the `app-back-to-chip` on the landing
+   *  page so the user can jump back without hunting in the menu. */
+  private navigateWithReturn(target: string): void {
+    const returnTo = this.router.url;
+    this.router.navigate([target], {
+      queryParams: { returnTo, returnLabel: 'Shows' },
+    });
   }
 }

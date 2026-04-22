@@ -1,0 +1,11 @@
+@if (returnTo()) {
+  <button
+    type="button"
+    class="chip"
+    (click)="navigateBack()"
+    [attr.aria-label]="'Back to ' + returnLabel()"
+  >
+    <sh3-icon name="chevron-left" [size]="12" />
+    <span>Back to {{ returnLabel() }}</span>
+  </button>
+}

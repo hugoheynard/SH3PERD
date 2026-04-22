@@ -48,6 +48,7 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 import { TabLimitPopoverComponent } from '../tab-limit-popover/tab-limit-popover.component';
 import { SaveRecallLockedPopoverComponent } from '../save-recall-locked-popover/save-recall-locked-popover.component';
 import { MusicTabQuotaChecker } from '../services/music-tab-quota-checker.service';
+import { BackToChipComponent } from '../../../shared/back-to-chip/back-to-chip.component';
 
 @Component({
   selector: 'app-music-library-page',
@@ -64,6 +65,7 @@ import { MusicTabQuotaChecker } from '../services/music-tab-quota-checker.servic
     MasteringModalComponent,
     MusicLibraryHelpComponent,
     IconComponent,
+    BackToChipComponent,
   ],
   templateUrl: './music-library-page.component.html',
   styleUrl: './music-library-page.component.scss',

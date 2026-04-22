@@ -10,6 +10,13 @@
 <!-- Registers help entries surfaced by the header's help right panel -->
 <app-music-library-help />
 
+<!-- Floating "Back to …" chip — rendered only when the route carries
+     `?returnTo=...&returnLabel=...` query params (set by the show /
+     playlist side panel when the user hops here to grab tracks). -->
+<div class="library-return">
+  <app-back-to-chip />
+</div>
+
 <div class="library">
   <!-- Side panel: left sidebar on desktop, collapsible top panel on mobile -->
   <app-music-library-side-panel

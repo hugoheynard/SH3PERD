@@ -56,8 +56,15 @@ export class PlaylistDetailSidePanelComponent {
    * mounted (the layout service's panel state is route-agnostic). The
    * expected flow: user picks a playlist → hits "Browse library" →
    * drags a version onto the panel's tracklist.
+   *
+   * Stamps the current URL as `returnTo` so the `app-back-to-chip`
+   * on the library page gives a one-click path back to wherever the
+   * user came from.
    */
   openMusicLibrary(): void {
-    this.router.navigate(['/app/musicLibrary']);
+    const returnTo = this.router.url;
+    this.router.navigate(['/app/musicLibrary'], {
+      queryParams: { returnTo, returnLabel: 'Playlists' },
+    });
   }
 }

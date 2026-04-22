@@ -26,6 +26,7 @@ import {
   PlaylistDetailSidePanelComponent,
   type PlaylistDetailSidePanelConfig,
 } from '../components/playlist-detail-side-panel/playlist-detail-side-panel.component';
+import { BackToChipComponent } from '../../../shared/back-to-chip/back-to-chip.component';
 import type { TPlaylistId } from '@sh3pherd/shared-types';
 
 /**
@@ -60,6 +61,7 @@ import type { TPlaylistId } from '@sh3pherd/shared-types';
     PlaylistCardComponent,
     PlaylistsSidePanelComponent,
     PlaylistCompareComponent,
+    BackToChipComponent,
   ],
   templateUrl: './playlists-page.component.html',
   styleUrl: './playlists-page.component.scss',
