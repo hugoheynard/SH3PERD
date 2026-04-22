@@ -17,7 +17,7 @@ import {
   type ShowDetailRatingAxis,
 } from './show-detail.constants';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ShowDetailStateService {
   private readonly showsState = inject(ShowsStateService);
   private readonly mutations = inject(ShowMutationService);

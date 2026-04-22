@@ -82,7 +82,6 @@ function targetMinutes(
   selector: 'app-show-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [ShowDetailStateService],
   imports: [
     DatePipe,
     FormsModule,
