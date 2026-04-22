@@ -129,6 +129,7 @@
         }
       </div>
 
+      @let showTargetS = state.showTargetSeconds(show);
       <div
         class="show-header__target"
         [attr.data-state]="state.showFillState(show)"
@@ -155,14 +156,14 @@
               />
               <span class="show-header__target-unit">min</span>
             </span>
-          } @else if (state.showTargetSeconds(show); as targetS) {
+          } @else if (showTargetS !== null) {
             <button
               type="button"
               class="show-header__target-value"
               (click)="state.startEditShowTarget()"
               title="Click to edit"
             >
-              {{ state.formatDuration(targetS) }}
+              {{ state.formatDuration(showTargetS) }}
             </button>
           } @else {
             <button
@@ -181,7 +182,7 @@
           }
         </div>
 
-        @if (state.showTargetSeconds(show); as _t) {
+        @if (showTargetS !== null) {
           <div
             class="show-header__target-bar"
             role="progressbar"
