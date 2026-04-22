@@ -1,0 +1,29 @@
+@let sec = section();
+<footer class="stats">
+  <div class="meta">
+    <span class="meta-chip">
+      <sh3-icon name="music-note" [size]="11" />
+      <span class="meta-value">{{ sec.trackCount }}</span>
+      <span class="meta-label">track{{ sec.trackCount !== 1 ? "s" : "" }}</span>
+    </span>
+    @if (scheduleLabel(sec.startAt); as schedule) {
+      <span class="meta-chip meta-chip--schedule">
+        <sh3-icon name="clock" [size]="11" />
+        <span>{{ schedule }}</span>
+      </span>
+    }
+    @if (sec.lastPlayedAt) {
+      <span class="meta-chip meta-chip--played">
+        <sh3-icon name="completed" [size]="11" />
+        <span>{{ sec.lastPlayedAt | date: "short" }}</span>
+      </span>
+    }
+  </div>
+
+  <app-rating-row
+    class="ratings"
+    variant="compact"
+    [groups]="ratingGroups()"
+    [durations]="sec.durationSeries"
+  />
+</footer>

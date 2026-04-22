@@ -91,36 +91,7 @@
             </ul>
           }
 
-          <footer class="section__stats">
-            <div class="section__meta">
-              <span class="meta-chip">
-                <sh3-icon name="music-note" [size]="11" />
-                <span class="meta-value">{{ section.trackCount }}</span>
-                <span class="meta-label"
-                  >track{{ section.trackCount !== 1 ? "s" : "" }}</span
-                >
-              </span>
-              @if (scheduleLabel(section.startAt); as schedule) {
-                <span class="meta-chip meta-chip--schedule">
-                  <sh3-icon name="clock" [size]="11" />
-                  <span>{{ schedule }}</span>
-                </span>
-              }
-              @if (section.lastPlayedAt) {
-                <span class="meta-chip meta-chip--played">
-                  <sh3-icon name="completed" [size]="11" />
-                  <span>{{ section.lastPlayedAt | date: "short" }}</span>
-                </span>
-              }
-            </div>
-
-            <app-rating-row
-              class="section__ratings"
-              variant="compact"
-              [groups]="ratingGroupsFor(section)"
-              [durations]="section.durationSeries"
-            />
-          </footer>
+          <app-show-section-footer [section]="section" />
         </section>
       }
       <!-- Cursor-driven insertion bar — only shown during a section drag,

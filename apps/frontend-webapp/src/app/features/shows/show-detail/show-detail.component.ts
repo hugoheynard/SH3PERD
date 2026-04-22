@@ -8,7 +8,6 @@ import {
   input,
   viewChild,
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import type {
   TMusicVersionId,
   TPlaylistId,
@@ -24,7 +23,6 @@ import { ShowsDndInitService } from '../services/shows-dnd-init.service';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
-import { RatingRowComponent } from '../../../shared/music-analytics/rating-row/rating-row.component';
 import { TargetBarComponent } from '../../../shared/target-bar/target-bar.component';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
@@ -42,6 +40,7 @@ import {
 import { ShowDetailHeaderComponent } from '../show-detail-header/show-detail-header.component';
 import { ShowItemRowComponent } from '../show-item-row/show-item-row.component';
 import { ShowSectionHeaderComponent } from '../show-section-header/show-section-header.component';
+import { ShowSectionFooterComponent } from '../show-section-footer/show-section-footer.component';
 import { showItemTitle } from '../show-item-row/show-item-row.utils';
 import { ShowDetailStateService } from './show-detail-state.service';
 
@@ -56,15 +55,14 @@ import { ShowDetailStateService } from './show-detail-state.service';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    DatePipe,
     ButtonComponent,
     IconComponent,
     LoadingStateComponent,
-    RatingRowComponent,
     TargetBarComponent,
     ShowDetailHeaderComponent,
     ShowItemRowComponent,
     ShowSectionHeaderComponent,
+    ShowSectionFooterComponent,
     DndDragDirective,
     DndDropZoneDirective,
   ],
@@ -495,39 +493,4 @@ export class ShowDetailComponent {
   trackItem(_: number, item: TShowSectionItemView): string {
     return item.id;
   }
-
-  // ── Rating series helpers ────────────────────────────
-
-  ratingGroupsFor(section: TShowSectionViewModel) {
-    return this.detailState.buildRatingRow(section);
-  }
-
-  // ── Schedule helpers ─────────────────────────────────
-
-  /** Short human-readable schedule chip ("Fri 3 May · 22:00"), or null
-   *  when the show / section has no `startAt` set. Date + time split
-   *  is rendered as a single chip; time alone would be ambiguous. */
-  scheduleLabel(startAt: number | undefined): string | null {
-    if (!startAt) return null;
-    const d = new Date(startAt);
-    if (!Number.isFinite(d.getTime())) return null;
-    const datePart = d.toLocaleDateString(undefined, {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-    });
-    // Suppress the time part for 00:00 — likely "no time set" rather
-    // than a midnight gig; the popover clears both together anyway
-    // so this is just defensive display polish.
-    const h = d.getHours();
-    const m = d.getMinutes();
-    if (h === 0 && m === 0) return datePart;
-    const timePart = d.toLocaleTimeString(undefined, {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    return `${datePart} · ${timePart}`;
-  }
-
-  // ── Axis criteria helpers ────────────────────────────
 }

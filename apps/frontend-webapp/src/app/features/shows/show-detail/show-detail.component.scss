@@ -147,22 +147,6 @@ $colors: (
       flex-shrink: 0;
     }
   }
-
-  &__stats {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid var(--border-light);
-  }
-
-  &__meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px var(--gap-md);
-  }
 }
 
 /* ── Item list ─────────────────────────────────────────── */
@@ -223,53 +207,6 @@ $colors: (
     var(--accent-color-dim, rgba(129, 140, 248, 0.04)) 0%,
     transparent 60%
   );
-}
-
-/* ── Meta chips (shared across header + section stats) ── */
-
-.meta-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-
-  sh3-icon {
-    opacity: 0.75;
-    flex-shrink: 0;
-  }
-
-  .meta-value {
-    font-weight: 600;
-    color: var(--text-primary);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .meta-label {
-    color: var(--text-muted);
-    font-size: 10px;
-  }
-
-  &--played {
-    color: var(--text-faded);
-    font-style: italic;
-    font-size: var(--text-xs);
-
-    sh3-icon {
-      color: var(--color-success);
-      opacity: 0.85;
-    }
-  }
-
-  &--schedule {
-    color: var(--accent-color-light);
-    font-weight: 600;
-
-    sh3-icon {
-      color: var(--accent-color);
-      opacity: 0.9;
-    }
-  }
 }
 
 /* ── Not-found fallback ────────────────────────────────── */
