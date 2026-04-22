@@ -1,0 +1,213 @@
+<div class="stats-page">
+  <header class="stats-page__header">
+    <div>
+      <h1 class="stats-page__title">Stats</h1>
+      <p class="stats-page__subtitle">
+        Overview of your music library, playlists and shows.
+      </p>
+    </div>
+  </header>
+
+  <div class="stats-inline">
+    <sh3-tab-nav
+      [tabs]="tabs()"
+      [activeKey]="activeTab()"
+      activeStyle="fill"
+      direction="vertical"
+      (tabChange)="onTabChange($event)"
+    />
+
+    <div class="stats-content">
+      @if (activeTab() === "music") {
+        @if (musicLoading()) {
+          <sh3-loading message="Loading music library stats…" />
+        } @else if (musicSummary().primary === 0) {
+          <sh3-empty-state
+            title="No music stats yet"
+            subtitle="Add references and versions to your music library to start building your stats."
+          >
+            <sh3-icon empty-icon name="music" [size]="40" />
+            <sh3-button variant="solid" (clicked)="openMusicLibrary()">
+              Open Music Library
+            </sh3-button>
+          </sh3-empty-state>
+        } @else {
+          <section class="stats-panel">
+            <div class="stats-grid">
+              <article class="stat-card">
+                <span class="stat-card__label">References</span>
+                <strong class="stat-card__value">{{
+                  musicSummary().primary
+                }}</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-card__label">Versions</span>
+                <strong class="stat-card__value">{{
+                  musicSummary().secondary
+                }}</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-card__label">Tracks</span>
+                <strong class="stat-card__value">{{
+                  musicSummary().tertiary
+                }}</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-card__label">Density</span>
+                <strong class="stat-card__value stat-card__value--sm">
+                  {{ musicSummary().quaternary }}
+                </strong>
+              </article>
+            </div>
+
+            <div class="stats-callout">
+              <div>
+                <h2 class="stats-callout__title">Music Library overview</h2>
+                <p class="stats-callout__body">
+                  Your library currently contains
+                  {{ musicSummary().primary }} reference{{
+                    musicSummary().primary !== 1 ? "s" : ""
+                  }}
+                  and {{ musicSummary().secondary }} version{{
+                    musicSummary().secondary !== 1 ? "s" : ""
+                  }}.
+                </p>
+              </div>
+              <sh3-button variant="ghost" (clicked)="openMusicLibrary()">
+                Open Music Library
+              </sh3-button>
+            </div>
+          </section>
+        }
+      }
+
+      @if (activeTab() === "playlists") {
+        @if (playlistsLoading()) {
+          <sh3-loading message="Loading playlist stats…" />
+        } @else if (playlistsSummary().primary === 0) {
+          <sh3-empty-state
+            title="No playlist stats yet"
+            subtitle="Create playlists to see how your sets are taking shape."
+          >
+            <sh3-icon empty-icon name="play" [size]="40" />
+            <sh3-button variant="solid" (clicked)="openPlaylists()">
+              Open Playlists
+            </sh3-button>
+          </sh3-empty-state>
+        } @else {
+          <section class="stats-panel">
+            <div class="stats-grid">
+              <article class="stat-card">
+                <span class="stat-card__label">Playlists</span>
+                <strong class="stat-card__value">{{
+                  playlistsSummary().primary
+                }}</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-card__label">Tracks across playlists</span>
+                <strong class="stat-card__value">{{
+                  playlistsSummary().secondary
+                }}</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-card__label">Total duration</span>
+                <strong class="stat-card__value">
+                  {{ formatDuration(playlistsSummary().tertiary) }}
+                </strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-card__label">Average density</span>
+                <strong class="stat-card__value stat-card__value--sm">
+                  {{ playlistsSummary().quaternary }}
+                </strong>
+              </article>
+            </div>
+
+            @if (largestPlaylist(); as playlist) {
+              <div class="stats-callout">
+                <div>
+                  <h2 class="stats-callout__title">Largest playlist</h2>
+                  <p class="stats-callout__body">
+                    <strong>{{ playlist.name }}</strong> has
+                    {{ playlist.trackCount }} track{{
+                      playlist.trackCount !== 1 ? "s" : ""
+                    }}
+                    for {{ formatDuration(playlist.totalDurationSeconds) }}.
+                  </p>
+                </div>
+                <sh3-button variant="ghost" (clicked)="openPlaylists()">
+                  Open Playlists
+                </sh3-button>
+              </div>
+            }
+          </section>
+        }
+      }
+
+      @if (activeTab() === "shows" && canUseShows()) {
+        @if (showsLoading()) {
+          <sh3-loading message="Loading show stats…" />
+        } @else if (showsSummary().primary === 0) {
+          <sh3-empty-state
+            title="No show stats yet"
+            subtitle="Create a show to start tracking sections, set size and prep density."
+          >
+            <sh3-icon empty-icon name="microphone" [size]="40" />
+            <sh3-button variant="solid" (clicked)="openShows()">
+              Open Shows
+            </sh3-button>
+          </sh3-empty-state>
+        } @else {
+          <section class="stats-panel">
+            <div class="stats-grid">
+              <article class="stat-card">
+                <span class="stat-card__label">Shows</span>
+                <strong class="stat-card__value">{{
+                  showsSummary().primary
+                }}</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-card__label">Sections</span>
+                <strong class="stat-card__value">{{
+                  showsSummary().secondary
+                }}</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-card__label">Tracks across shows</span>
+                <strong class="stat-card__value">{{
+                  showsSummary().tertiary
+                }}</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-card__label">Total duration</span>
+                <strong class="stat-card__value stat-card__value--sm">
+                  {{ showsSummary().quaternary }}
+                </strong>
+              </article>
+            </div>
+
+            @if (largestShow(); as show) {
+              <div class="stats-callout">
+                <div>
+                  <h2 class="stats-callout__title">Largest show</h2>
+                  <p class="stats-callout__body">
+                    <strong>{{ show.name }}</strong> spans
+                    {{ show.sectionCount }} section{{
+                      show.sectionCount !== 1 ? "s" : ""
+                    }}
+                    and {{ show.trackCount }} track{{
+                      show.trackCount !== 1 ? "s" : ""
+                    }}.
+                  </p>
+                </div>
+                <sh3-button variant="ghost" (clicked)="openShows()">
+                  Open Shows
+                </sh3-button>
+              </div>
+            }
+          </section>
+        }
+      }
+    </div>
+  </div>
+</div>

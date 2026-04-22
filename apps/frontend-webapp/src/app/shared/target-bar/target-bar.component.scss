@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
   padding: 8px 10px;
   background: var(--surface-subtle);
   border: 1px solid var(--border-subtle);
@@ -117,11 +118,23 @@
     font-size: var(--text-sm);
     color: var(--text-secondary);
     font-variant-numeric: tabular-nums;
+    min-width: 0;
   }
 
   &__pct {
     font-weight: 700;
     color: var(--text-primary);
+  }
+}
+
+@media (max-width: 640px) {
+  .head {
+    align-items: flex-start;
+
+    &__actual {
+      width: 100%;
+      margin-left: 0;
+    }
   }
 }
 

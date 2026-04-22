@@ -118,3 +118,9 @@
     min-height: 12px;
   }
 }
+
+@media (max-width: 420px) {
+  :host([data-variant="regular"]) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

@@ -101,6 +101,14 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'stats',
+        loadComponent: () =>
+          import('../features/stats/stats-page/stats-page.component').then(
+            (m) => m.StatsPageComponent,
+          ),
+        data: { pageName: 'stats' },
+      },
+      {
         path: 'contracts',
         component: ContractPageComponent,
         data: { pageName: 'contracts' },

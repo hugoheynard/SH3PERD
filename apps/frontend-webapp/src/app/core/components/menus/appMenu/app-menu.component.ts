@@ -28,6 +28,7 @@ const ALL_NAV_ITEMS: readonly AppMenuItem[] = [
     route: 'playlistManager',
   },
   { id: 'shows', icon: 'microphone', label: 'Shows', route: 'shows' },
+  { id: 'stats', icon: 'stats', label: 'Stats', route: 'stats' },
   {
     id: 'contracts',
     icon: 'contracts',

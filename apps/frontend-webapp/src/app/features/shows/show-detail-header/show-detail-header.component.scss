@@ -170,29 +170,40 @@ $colors: (
 
   &__stats {
     grid-column: 2;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "meta"
+      "target"
+      "ratings";
+    align-items: stretch;
+    justify-content: stretch;
     gap: var(--gap-lg);
-    flex-wrap: wrap;
     position: relative;
     z-index: 1;
   }
 
   &__target {
-    grid-column: 2;
+    grid-area: target;
     width: 100%;
-    flex-basis: 100%;
+    min-width: 0;
     position: relative;
     z-index: 1;
   }
 }
 
 .stat-group {
+  grid-area: meta;
   display: inline-flex;
   align-items: center;
   gap: var(--gap-lg);
   flex-wrap: wrap;
+}
+
+.rating-row {
+  grid-area: ratings;
+  width: 100%;
+  min-width: 0;
 }
 
 .meta-chip {
@@ -254,12 +265,14 @@ $colors: (
     }
 
     &__stats {
-      flex-direction: column;
-      align-items: stretch;
+      gap: 12px;
     }
   }
 
+  .stat-group,
+  .show-header__target,
   .rating-row {
-    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+    min-width: 0;
   }
 }

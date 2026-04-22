@@ -3,8 +3,10 @@ import {
   Component,
   inject,
   type OnInit,
+  PLATFORM_ID,
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 import type { TShowId, TShowSummaryViewModel } from '@sh3pherd/shared-types';
 import { LayoutService } from '../../../core/services/layout.service';
 import { ShowsStateService } from '../services/shows-state.service';
@@ -41,6 +43,8 @@ export class ShowsPageComponent implements OnInit {
   protected readonly state = inject(ShowsStateService);
   private readonly mutations = inject(ShowMutationService);
   private readonly layout = inject(LayoutService);
+  private readonly router = inject(Router);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   ngOnInit(): void {
     this.state.loadSummaries();
@@ -54,6 +58,11 @@ export class ShowsPageComponent implements OnInit {
    *  area stays scrollable so the user can switch to Music Library /
    *  Playlists and drag tracks over. */
   onOpenShow(show: TShowSummaryViewModel): void {
+    if (this.shouldOpenFullPage()) {
+      this.router.navigate(['/app/shows', show.id]);
+      return;
+    }
+
     this.layout.setRightPanel(ShowDetailSidePanelComponent, {
       showId: show.id,
     });
@@ -83,5 +92,10 @@ export class ShowsPageComponent implements OnInit {
     const h = Math.floor(m / 60);
     const rm = m % 60;
     return rm === 0 ? `${h}h` : `${h}h ${rm}m`;
+  }
+
+  private shouldOpenFullPage(): boolean {
+    if (!this.isBrowser) return false;
+    return window.matchMedia('(max-width: 768px)').matches;
   }
 }
