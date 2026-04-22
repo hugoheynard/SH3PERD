@@ -8,6 +8,10 @@ import { Router } from '@angular/router';
 import { INJECTION_DATA } from '../../../core/main-layout/main-layout.component';
 import { LayoutService } from '../../../core/services/layout.service';
 import { IconComponent } from '../../../shared/icon/icon.component';
+import {
+  CrossPageNavComponent,
+  type CrossPageNavLink,
+} from '../../../shared/cross-page-nav/cross-page-nav.component';
 import { ShowDetailComponent } from '../show-detail/show-detail.component';
 import type { TShowId } from '@sh3pherd/shared-types';
 
@@ -21,10 +25,15 @@ export interface ShowDetailSidePanelConfig {
   showId: TShowId;
 }
 
+const SHOW_NAV_LINKS: CrossPageNavLink[] = [
+  { icon: 'music', label: 'Music library', url: '/app/musicLibrary' },
+  { icon: 'play', label: 'Playlists', url: '/app/playlistManager' },
+];
+
 @Component({
   selector: 'app-show-detail-side-panel',
   standalone: true,
-  imports: [IconComponent, ShowDetailComponent],
+  imports: [IconComponent, ShowDetailComponent, CrossPageNavComponent],
   templateUrl: './show-detail-side-panel.component.html',
   styleUrl: './show-detail-side-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,6 +46,14 @@ export class ShowDetailSidePanelComponent {
   /** Swappable source-of-truth so the panel survives id-swaps without remount. */
   readonly showId = signal<TShowId | null>(this.config.showId);
 
+  /** Captured at mount-time — the URL the user was on when they opened
+   *  this panel. Drives the back button in the cross-page-nav cluster
+   *  so one click returns them there regardless of where they've
+   *  hopped to since. */
+  readonly originUrl = signal(this.router.url);
+
+  readonly navLinks = SHOW_NAV_LINKS;
+
   close(): void {
     this.layout.clearRightPanel();
   }
@@ -46,23 +63,5 @@ export class ShowDetailSidePanelComponent {
     if (!id) return;
     this.router.navigate(['/app/shows', id]);
     this.layout.clearRightPanel();
-  }
-
-  openMusicLibrary(): void {
-    this.navigateWithReturn('/app/musicLibrary');
-  }
-
-  openPlaylists(): void {
-    this.navigateWithReturn('/app/playlistManager');
-  }
-
-  /** Navigate to a source page while stamping the current URL as the
-   *  `returnTo` target — drives the `app-back-to-chip` on the landing
-   *  page so the user can jump back without hunting in the menu. */
-  private navigateWithReturn(target: string): void {
-    const returnTo = this.router.url;
-    this.router.navigate([target], {
-      queryParams: { returnTo, returnLabel: 'Shows' },
-    });
   }
 }

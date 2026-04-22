@@ -1,0 +1,63 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+.cross-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nav-btn {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-xs);
+  color: var(--text-faded);
+  transition:
+    background var(--t-fast),
+    color var(--t-fast),
+    box-shadow var(--t-fast);
+
+  &:hover {
+    background: var(--surface-raised);
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 1px;
+  }
+
+  /* Current-page highlight — accent fill + the icon colour matches
+     the panel's primary text so the button reads "active" without
+     competing with hover + focus states. */
+  &--active {
+    background: var(--accent-color-dim);
+    color: var(--accent-color-light);
+    box-shadow: inset 0 0 0 1px var(--accent-color-border);
+
+    &:hover {
+      background: var(--accent-color-dim);
+      color: var(--accent-color-light);
+    }
+  }
+
+  /* Back button — slightly more prominent than the forward links so
+     the return affordance is the first thing the eye catches when
+     the user is on a non-origin page. */
+  &--back {
+    color: var(--text-secondary);
+    margin-right: 2px;
+
+    &:hover {
+      color: var(--accent-color-light);
+      background: var(--accent-color-dim);
+    }
+  }
+}

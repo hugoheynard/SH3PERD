@@ -5,15 +5,11 @@
       <span>Playlist</span>
     </div>
     <div class="head-actions">
-      <button
-        class="head-btn"
-        type="button"
-        title="Browse music library"
-        aria-label="Browse music library"
-        (click)="openMusicLibrary()"
-      >
-        <sh3-icon name="music" [size]="14" />
-      </button>
+      <app-cross-page-nav
+        [originUrl]="originUrl()"
+        originLabel="Playlists"
+        [links]="navLinks"
+      />
       <button
         class="head-btn"
         type="button"

@@ -1,0 +1,27 @@
+<nav class="cross-nav" aria-label="Cross-page navigation">
+  @if (showBack()) {
+    <button
+      type="button"
+      class="nav-btn nav-btn--back"
+      (click)="goBack()"
+      [title]="'Back to ' + originLabel()"
+      [attr.aria-label]="'Back to ' + originLabel()"
+    >
+      <sh3-icon name="chevron-left" [size]="14" />
+    </button>
+  }
+
+  @for (link of links(); track link.url) {
+    <button
+      type="button"
+      class="nav-btn"
+      [class.nav-btn--active]="isActive(link.url)"
+      (click)="navigate(link)"
+      [title]="link.label"
+      [attr.aria-label]="link.label"
+      [attr.aria-current]="isActive(link.url) ? 'page' : null"
+    >
+      <sh3-icon [name]="link.icon" [size]="14" />
+    </button>
+  }
+</nav>

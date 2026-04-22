@@ -5,24 +5,11 @@
       <span>Show</span>
     </div>
     <div class="head-actions">
-      <button
-        class="head-btn"
-        type="button"
-        title="Browse music library"
-        aria-label="Browse music library"
-        (click)="openMusicLibrary()"
-      >
-        <sh3-icon name="music" [size]="14" />
-      </button>
-      <button
-        class="head-btn"
-        type="button"
-        title="Browse playlists"
-        aria-label="Browse playlists"
-        (click)="openPlaylists()"
-      >
-        <sh3-icon name="play" [size]="14" />
-      </button>
+      <app-cross-page-nav
+        [originUrl]="originUrl()"
+        originLabel="Shows"
+        [links]="navLinks"
+      />
       <button
         class="head-btn"
         type="button"

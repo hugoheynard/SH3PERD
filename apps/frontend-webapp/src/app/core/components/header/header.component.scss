@@ -40,17 +40,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
-    /* Back-to chip — neutralise the header's uppercase + wide tracking
-       so the chip keeps its own compact typography. Margin pushes it
-       off the page-name without growing the .left gap for everyone. */
-    .header-return {
-      margin-left: 0.75rem;
-      text-transform: none;
-      letter-spacing: normal;
-      font-weight: 400;
-      font-size: 0.875rem;
-    }
   }
 
   .right {

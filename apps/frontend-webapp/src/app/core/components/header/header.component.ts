@@ -18,11 +18,10 @@ import { UserContextService } from '../../services/user-context.service';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { ThemeToggleComponent } from '../../../shared/theme-toggle/theme-toggle.component';
-import { BackToChipComponent } from '../../../shared/back-to-chip/back-to-chip.component';
 
 @Component({
   selector: 'app-header',
-  imports: [IconComponent, ThemeToggleComponent, BackToChipComponent],
+  imports: [IconComponent, ThemeToggleComponent],
   templateUrl: './header.component.html',
   standalone: true,
   styleUrl: './header.component.scss',

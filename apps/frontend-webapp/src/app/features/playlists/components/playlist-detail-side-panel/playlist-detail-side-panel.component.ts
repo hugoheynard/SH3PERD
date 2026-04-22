@@ -8,6 +8,10 @@ import { Router } from '@angular/router';
 import { INJECTION_DATA } from '../../../../core/main-layout/main-layout.component';
 import { LayoutService } from '../../../../core/services/layout.service';
 import { IconComponent } from '../../../../shared/icon/icon.component';
+import {
+  CrossPageNavComponent,
+  type CrossPageNavLink,
+} from '../../../../shared/cross-page-nav/cross-page-nav.component';
 import { PlaylistDetailComponent } from '../playlist-detail/playlist-detail.component';
 import type { TPlaylistId } from '@sh3pherd/shared-types';
 
@@ -26,10 +30,15 @@ export interface PlaylistDetailSidePanelConfig {
   playlistId: TPlaylistId;
 }
 
+const PLAYLIST_NAV_LINKS: CrossPageNavLink[] = [
+  { icon: 'music', label: 'Music library', url: '/app/musicLibrary' },
+  { icon: 'play', label: 'Playlists', url: '/app/playlistManager' },
+];
+
 @Component({
   selector: 'app-playlist-detail-side-panel',
   standalone: true,
-  imports: [IconComponent, PlaylistDetailComponent],
+  imports: [IconComponent, PlaylistDetailComponent, CrossPageNavComponent],
   templateUrl: './playlist-detail-side-panel.component.html',
   styleUrl: './playlist-detail-side-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,24 +56,13 @@ export class PlaylistDetailSidePanelComponent {
    */
   readonly playlistId = signal<TPlaylistId | null>(this.config.playlistId);
 
+  /** Captured at mount-time — the URL the user was on when they opened
+   *  this panel. Drives the back button in the cross-page-nav cluster. */
+  readonly originUrl = signal(this.router.url);
+
+  readonly navLinks = PLAYLIST_NAV_LINKS;
+
   close(): void {
     this.layout.clearRightPanel();
-  }
-
-  /**
-   * Navigate to the music library page while keeping this side panel
-   * mounted (the layout service's panel state is route-agnostic). The
-   * expected flow: user picks a playlist → hits "Browse library" →
-   * drags a version onto the panel's tracklist.
-   *
-   * Stamps the current URL as `returnTo` so the `app-back-to-chip`
-   * on the library page gives a one-click path back to wherever the
-   * user came from.
-   */
-  openMusicLibrary(): void {
-    const returnTo = this.router.url;
-    this.router.navigate(['/app/musicLibrary'], {
-      queryParams: { returnTo, returnLabel: 'Playlists' },
-    });
   }
 }
