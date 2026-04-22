@@ -196,37 +196,13 @@
         }
       </div>
 
-      <div class="rating-row" aria-label="Rating shape + mean">
-        @for (axis of state.axes; track axis.label) {
-          @let mean = state.showHeaderMeanFor(show, axis);
-          @let criterion = state.criterionFor(show, axis.axisKey);
-          @let outOfRange = state.isMeanOutOfRange(show, axis.axisKey);
-          <div
-            class="rating-group"
-            [class.rating-group--empty]="mean === null"
-            [class.rating-group--out-of-range]="outOfRange"
-          >
-            <div class="rating-head">
-              <span class="rating-label">{{ axis.label }}</span>
-              <span class="rating-value">{{ state.displayMean(mean) }}</span>
-            </div>
-            @if (criterion) {
-              <span
-                class="rating-criterion"
-                [title]="'Target ' + state.criterionLabel(criterion)"
-              >
-                {{ state.criterionLabel(criterion) }}
-              </span>
-            }
-            <app-rating-sparkline
-              class="rating-sparkline"
-              [series]="state.showHeaderSeriesFor(show, axis)"
-              [durations]="state.durationsFor(show)"
-              [accent]="axis.accent"
-            />
-          </div>
-        }
-      </div>
+      <app-rating-row
+        class="rating-row"
+        variant="regular"
+        background="surface"
+        [groups]="state.showHeaderGroups()"
+        [durations]="show.durationSeries"
+      />
     </div>
   </header>
 }

@@ -38,6 +38,32 @@ export interface RatingAxisDescriptor {
   seriesKey: RatingSeriesKey;
 }
 
+/** Minimal shape any summary must satisfy to feed a rating row. */
+export type RatingSummaryLike = Record<RatingMeanKey, number | null> &
+  Record<RatingSeriesKey, (number | null)[]>;
+
+/**
+ * Build the 4-axis group array consumed by `<app-rating-row>` from any
+ * summary that exposes the canonical `mean{Axis}` + `{axis}Series`
+ * fields. Callers that carry criterion data (shows) map over the
+ * result to inject `criterion` + `outOfRange` per axis.
+ */
+export function buildRatingGroups(target: RatingSummaryLike): {
+  label: string;
+  axisKey: RatingAxisKey;
+  accent: string;
+  mean: number | null;
+  series: (number | null)[];
+}[] {
+  return RATING_AXES.map((axis) => ({
+    label: axis.label,
+    axisKey: axis.axisKey,
+    accent: axis.accent,
+    mean: target[axis.meanKey],
+    series: target[axis.seriesKey],
+  }));
+}
+
 export const RATING_AXES: readonly RatingAxisDescriptor[] = [
   {
     label: 'MST',

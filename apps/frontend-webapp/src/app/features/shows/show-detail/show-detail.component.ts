@@ -31,7 +31,7 @@ import { ButtonIconComponent } from '../../../shared/button-icon/button-icon.com
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { InlineConfirmComponent } from '../../../shared/inline-confirm/inline-confirm.component';
 import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
-import { RatingSparklineComponent } from '../../../shared/rating-sparkline/rating-sparkline.component';
+import { RatingRowComponent } from '../../../shared/music-analytics/rating-row/rating-row.component';
 import { DndDragDirective } from '../../../core/drag-and-drop/dndDrag.directive';
 import { DndDropZoneDirective } from '../../../core/drag-and-drop/dnd-drop-zone.directive';
 import { DragSessionService } from '../../../core/drag-and-drop/drag-session.service';
@@ -56,10 +56,7 @@ import {
 import { ShowDetailHeaderComponent } from '../show-detail-header/show-detail-header.component';
 import { ShowItemRowComponent } from '../show-item-row/show-item-row.component';
 import { showItemTitle } from '../show-item-row/show-item-row.utils';
-import {
-  RATING_AXES,
-  type RatingAxisDescriptor,
-} from '../../../shared/music-analytics/rating-axes';
+import { RATING_AXES } from '../../../shared/music-analytics/rating-axes';
 import { ShowDetailStateService } from './show-detail-state.service';
 
 /** Read the target duration of a section in whole minutes, or `null`
@@ -90,7 +87,7 @@ function targetMinutes(
     IconComponent,
     InlineConfirmComponent,
     LoadingStateComponent,
-    RatingSparklineComponent,
+    RatingRowComponent,
     ShowDetailHeaderComponent,
     ShowItemRowComponent,
     DndDragDirective,
@@ -721,28 +718,8 @@ export class ShowDetailComponent {
 
   // ── Rating series helpers ────────────────────────────
 
-  meanFor(
-    target: TShowSummaryViewModel | TShowSectionViewModel,
-    axis: RatingAxisDescriptor,
-  ): number | null {
-    return target[axis.meanKey];
-  }
-
-  seriesFor(
-    target: TShowSummaryViewModel | TShowSectionViewModel,
-    axis: RatingAxisDescriptor,
-  ): (number | null)[] {
-    return target[axis.seriesKey];
-  }
-
-  durationsFor(
-    target: TShowSummaryViewModel | TShowSectionViewModel,
-  ): number[] {
-    return target.durationSeries;
-  }
-
-  displayMean(mean: number | null): string {
-    return mean === null ? '—' : mean.toFixed(1);
+  ratingGroupsFor(section: TShowSectionViewModel) {
+    return this.detailState.buildRatingRow(section);
   }
 
   // ── Settings popovers ────────────────────────────────

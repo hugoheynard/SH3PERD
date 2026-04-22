@@ -260,37 +260,12 @@
               }
             </div>
 
-            <div class="section__ratings">
-              @for (axis of axes; track axis.label) {
-                @let mean = meanFor(section, axis);
-                @let criterion = criterionFor(section, axis.axisKey);
-                @let outOfRange = isMeanOutOfRange(section, axis.axisKey);
-                <div
-                  class="rating-group rating-group--compact"
-                  [class.rating-group--empty]="mean === null"
-                  [class.rating-group--out-of-range]="outOfRange"
-                >
-                  <div class="rating-head">
-                    <span class="rating-label">{{ axis.label }}</span>
-                    <span class="rating-value">{{ displayMean(mean) }}</span>
-                  </div>
-                  @if (criterion) {
-                    <span
-                      class="rating-criterion rating-criterion--compact"
-                      [title]="'Target ' + criterionLabel(criterion)"
-                    >
-                      {{ criterionLabel(criterion) }}
-                    </span>
-                  }
-                  <app-rating-sparkline
-                    class="rating-sparkline rating-sparkline--compact"
-                    [series]="seriesFor(section, axis)"
-                    [durations]="durationsFor(section)"
-                    [accent]="axis.accent"
-                  />
-                </div>
-              }
-            </div>
+            <app-rating-row
+              class="section__ratings"
+              variant="compact"
+              [groups]="ratingGroupsFor(section)"
+              [durations]="section.durationSeries"
+            />
           </footer>
         </section>
       }

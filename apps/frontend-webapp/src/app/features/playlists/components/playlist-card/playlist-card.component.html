@@ -52,21 +52,6 @@
 
     <!-- ── Rating aggregates: mean + per-track sparkline ── -->
 
-    <div class="ratings" aria-label="Rating shape + mean">
-      @for (axis of axes; track axis.label) {
-        @let mean = meanFor(axis);
-        <div class="rating-group" [class.empty]="mean === null">
-          <div class="rating-head">
-            <span class="rating-label">{{ axis.label }}</span>
-            <span class="rating-value">{{ displayMean(mean) }}</span>
-          </div>
-          <app-rating-sparkline
-            class="rating-sparkline"
-            [series]="seriesFor(axis)"
-            [accent]="axis.accent"
-          />
-        </div>
-      }
-    </div>
+    <app-rating-row class="ratings" variant="card" [groups]="ratingGroups()" />
   </div>
 </article>

@@ -3,6 +3,7 @@ import type {
   TShowAxisCriterion,
   TShowAxisKey,
   TShowId,
+  TShowSectionViewModel,
   TShowSummaryViewModel,
 } from '@sh3pherd/shared-types';
 import { LayoutService } from '../../../core/services/layout.service';
@@ -16,6 +17,7 @@ import {
   RATING_AXES,
   type RatingAxisDescriptor,
 } from '../../../shared/music-analytics/rating-axes';
+import type { RatingRowGroup } from '../../../shared/music-analytics/rating-row/rating-row.component';
 
 @Injectable({ providedIn: 'root' })
 export class ShowDetailStateService {
@@ -30,6 +32,14 @@ export class ShowDetailStateService {
   );
   readonly axes = RATING_AXES;
 
+  /** Full 4-axis row for the show header — mean + series + criterion
+   *  label + out-of-range tint, pre-computed so the template is a
+   *  one-liner. Re-evaluates when `detail` changes. */
+  readonly showHeaderGroups = computed<RatingRowGroup[]>(() => {
+    const show = this.detail();
+    return show ? this.buildRatingRow(show) : [];
+  });
+
   readonly editingShowName = signal(false);
   readonly showNameDraft = signal('');
   readonly editingShowDescription = signal(false);
@@ -38,12 +48,12 @@ export class ShowDetailStateService {
   readonly showTargetMinutesDraft = signal('');
 
   readonly showHeaderMeanFor = (
-    show: TShowSummaryViewModel,
+    show: TShowSummaryViewModel | TShowSectionViewModel,
     axis: unknown,
   ): number | null => this.meanFor(show, axis as RatingAxisDescriptor);
 
   readonly showHeaderSeriesFor = (
-    show: TShowSummaryViewModel,
+    show: TShowSummaryViewModel | TShowSectionViewModel,
     axis: unknown,
   ): (number | null)[] => this.seriesFor(show, axis as RatingAxisDescriptor);
 
@@ -252,14 +262,14 @@ export class ShowDetailStateService {
   }
 
   meanFor(
-    target: TShowSummaryViewModel,
+    target: TShowSummaryViewModel | TShowSectionViewModel,
     axis: RatingAxisDescriptor,
   ): number | null {
     return target[axis.meanKey];
   }
 
   seriesFor(
-    target: TShowSummaryViewModel,
+    target: TShowSummaryViewModel | TShowSectionViewModel,
     axis: RatingAxisDescriptor,
   ): (number | null)[] {
     return target[axis.seriesKey];
@@ -274,7 +284,7 @@ export class ShowDetailStateService {
   }
 
   criterionFor(
-    target: TShowSummaryViewModel,
+    target: TShowSummaryViewModel | TShowSectionViewModel,
     axisKey: TShowAxisKey,
   ): TShowAxisCriterion | null {
     return (
@@ -295,7 +305,7 @@ export class ShowDetailStateService {
   }
 
   isMeanOutOfRange(
-    target: TShowSummaryViewModel,
+    target: TShowSummaryViewModel | TShowSectionViewModel,
     axisKey: TShowAxisKey,
   ): boolean {
     const criterion = this.criterionFor(target, axisKey);
@@ -308,7 +318,7 @@ export class ShowDetailStateService {
   }
 
   private meanForAxisKey(
-    target: TShowSummaryViewModel,
+    target: TShowSummaryViewModel | TShowSectionViewModel,
     axisKey: TShowAxisKey,
   ): number | null {
     switch (axisKey) {
@@ -321,6 +331,24 @@ export class ShowDetailStateService {
       case 'quality':
         return target.meanQuality;
     }
+  }
+
+  /** Show/section → RatingRowGroup[] with criterion label + out-of-range
+   *  tint applied per axis. Feeds `<app-rating-row>` in header + footer. */
+  buildRatingRow(
+    target: TShowSummaryViewModel | TShowSectionViewModel,
+  ): RatingRowGroup[] {
+    return RATING_AXES.map((axis) => {
+      const criterion = this.criterionFor(target, axis.axisKey);
+      return {
+        label: axis.label,
+        accent: axis.accent,
+        mean: target[axis.meanKey],
+        series: target[axis.seriesKey],
+        criterion: criterion ? this.criterionLabel(criterion) : null,
+        outOfRange: this.isMeanOutOfRange(target, axis.axisKey),
+      };
+    });
   }
 }
 

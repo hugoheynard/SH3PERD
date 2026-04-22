@@ -105,26 +105,12 @@
               }
             </div>
 
-            <div class="show-card__ratings" aria-label="Rating shape + mean">
-              @for (axis of axes; track axis.label) {
-                @let mean = meanFor(show, axis);
-                <div
-                  class="rating-group"
-                  [class.rating-group--empty]="mean === null"
-                >
-                  <div class="rating-head">
-                    <span class="rating-label">{{ axis.label }}</span>
-                    <span class="rating-value">{{ displayMean(mean) }}</span>
-                  </div>
-                  <app-rating-sparkline
-                    class="rating-sparkline"
-                    [series]="seriesFor(show, axis)"
-                    [durations]="durationsFor(show)"
-                    [accent]="axis.accent"
-                  />
-                </div>
-              }
-            </div>
+            <app-rating-row
+              class="show-card__ratings"
+              variant="card"
+              [groups]="ratingGroupsFor(show)"
+              [durations]="show.durationSeries"
+            />
 
             @if (show.lastPlayedAt) {
               <footer class="show-card__footer">

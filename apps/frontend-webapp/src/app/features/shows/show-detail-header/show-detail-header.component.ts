@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ButtonIconComponent } from '../../../shared/button-icon/button-icon.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { InlineConfirmComponent } from '../../../shared/inline-confirm/inline-confirm.component';
-import { RatingSparklineComponent } from '../../../shared/rating-sparkline/rating-sparkline.component';
+import { RatingRowComponent } from '../../../shared/music-analytics/rating-row/rating-row.component';
 import { ShowDetailStateService } from '../show-detail/show-detail-state.service';
 
 @Component({
@@ -17,7 +17,7 @@ import { ShowDetailStateService } from '../show-detail/show-detail-state.service
     ButtonIconComponent,
     IconComponent,
     InlineConfirmComponent,
-    RatingSparklineComponent,
+    RatingRowComponent,
   ],
   templateUrl: './show-detail-header.component.html',
   styleUrl: './show-detail-header.component.scss',

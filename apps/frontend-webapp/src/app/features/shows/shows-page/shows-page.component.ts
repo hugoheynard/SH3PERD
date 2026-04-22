@@ -15,13 +15,10 @@ import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.com
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { InlineConfirmComponent } from '../../../shared/inline-confirm/inline-confirm.component';
 import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
-import { RatingSparklineComponent } from '../../../shared/rating-sparkline/rating-sparkline.component';
 import { ShowDetailSidePanelComponent } from '../show-detail-side-panel/show-detail-side-panel.component';
 import { NewShowPopoverComponent } from '../new-show-popover/new-show-popover.component';
-import {
-  RATING_AXES,
-  type RatingAxisDescriptor,
-} from '../../../shared/music-analytics/rating-axes';
+import { buildRatingGroups } from '../../../shared/music-analytics/rating-axes';
+import { RatingRowComponent } from '../../../shared/music-analytics/rating-row/rating-row.component';
 
 @Component({
   selector: 'app-shows-page',
@@ -35,7 +32,7 @@ import {
     IconComponent,
     InlineConfirmComponent,
     LoadingStateComponent,
-    RatingSparklineComponent,
+    RatingRowComponent,
   ],
   templateUrl: './shows-page.component.html',
   styleUrl: './shows-page.component.scss',
@@ -44,8 +41,6 @@ export class ShowsPageComponent implements OnInit {
   protected readonly state = inject(ShowsStateService);
   private readonly mutations = inject(ShowMutationService);
   private readonly layout = inject(LayoutService);
-
-  protected readonly axes = RATING_AXES;
 
   ngOnInit(): void {
     this.state.loadSummaries();
@@ -76,26 +71,10 @@ export class ShowsPageComponent implements OnInit {
     return s.id;
   }
 
-  meanFor(
+  ratingGroupsFor(
     show: TShowSummaryViewModel,
-    axis: RatingAxisDescriptor,
-  ): number | null {
-    return show[axis.meanKey];
-  }
-
-  seriesFor(
-    show: TShowSummaryViewModel,
-    axis: RatingAxisDescriptor,
-  ): (number | null)[] {
-    return show[axis.seriesKey];
-  }
-
-  durationsFor(show: TShowSummaryViewModel): number[] {
-    return show.durationSeries;
-  }
-
-  displayMean(mean: number | null): string {
-    return mean === null ? '—' : mean.toFixed(1);
+  ): ReturnType<typeof buildRatingGroups> {
+    return buildRatingGroups(show);
   }
 
   formatDuration(seconds: number): string {

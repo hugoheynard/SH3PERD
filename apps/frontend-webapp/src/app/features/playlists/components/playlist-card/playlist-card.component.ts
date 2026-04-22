@@ -7,11 +7,8 @@ import {
 } from '@angular/core';
 import { IconComponent } from '../../../../shared/icon/icon.component';
 import { formatDuration } from '../../../../shared/utils/duration.utils';
-import { RatingSparklineComponent } from '../../../../shared/rating-sparkline/rating-sparkline.component';
-import {
-  RATING_AXES,
-  type RatingAxisDescriptor,
-} from '../../../../shared/music-analytics/rating-axes';
+import { buildRatingGroups } from '../../../../shared/music-analytics/rating-axes';
+import { RatingRowComponent } from '../../../../shared/music-analytics/rating-row/rating-row.component';
 import { DndDragDirective } from '../../../../core/drag-and-drop/dndDrag.directive';
 import type { PlaylistDragPayload } from '../../../../core/drag-and-drop/drag.types';
 import type { TPlaylistSummaryViewModel } from '../../playlist-types';
@@ -32,7 +29,7 @@ import type { TPlaylistSummaryViewModel } from '../../playlist-types';
 @Component({
   selector: 'app-playlist-card',
   standalone: true,
-  imports: [IconComponent, RatingSparklineComponent, DndDragDirective],
+  imports: [IconComponent, RatingRowComponent, DndDragDirective],
   templateUrl: './playlist-card.component.html',
   styleUrl: './playlist-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,24 +54,8 @@ export class PlaylistCardComponent {
     };
   });
 
-  /** Fixed axis list rendered as a 4-column grid in the footer. */
-  readonly axes = RATING_AXES;
-
-  /** Display text for a mean in the axis chip (one decimal, or '—'). */
-  displayMean(mean: number | null): string {
-    if (mean === null) return '—';
-    return mean.toFixed(1);
-  }
-
-  /** Type-safe accessors so the template can read a summary field by
-   *  the discriminated key on each axis. */
-  meanFor(axis: RatingAxisDescriptor): number | null {
-    return this.playlist()[axis.meanKey];
-  }
-
-  seriesFor(axis: RatingAxisDescriptor): (number | null)[] {
-    return this.playlist()[axis.seriesKey];
-  }
+  /** 4-axis descriptor list pre-built from the current summary. */
+  readonly ratingGroups = computed(() => buildRatingGroups(this.playlist()));
 
   readonly duration = computed(() =>
     formatDuration(this.playlist().totalDurationSeconds),
