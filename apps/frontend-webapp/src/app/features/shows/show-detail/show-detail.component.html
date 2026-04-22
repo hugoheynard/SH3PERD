@@ -456,13 +456,25 @@
                   </span>
                   <sh3-icon
                     class="item__kind"
-                    [name]="item.kind === 'playlist' ? 'list' : 'music-note'"
+                    [name]="item.kind === 'playlist' ? 'play' : 'music-note'"
                     [size]="14"
                   />
                   <span class="item__body">
                     <strong class="item__title">{{ itemTitle(item) }}</strong>
                     <small class="item__sub">{{ itemSubtitle(item) }}</small>
                   </span>
+                  @if (itemDurationLabel(item); as duration) {
+                    <span
+                      class="item__duration"
+                      [attr.aria-label]="
+                        item.kind === 'version'
+                          ? 'Track duration'
+                          : 'Playlist total duration'
+                      "
+                    >
+                      {{ duration }}
+                    </span>
+                  }
                   <sh3-button-icon
                     icon="close"
                     size="xs"

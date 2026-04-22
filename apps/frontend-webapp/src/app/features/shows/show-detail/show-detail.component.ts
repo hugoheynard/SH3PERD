@@ -940,6 +940,32 @@ export class ShowDetailComponent {
     return `Playlist · ${item.playlist.trackCount} track${item.playlist.trackCount > 1 ? 's' : ''}`;
   }
 
+  /** Read the item's run-time in seconds for the duration chip — a
+   *  single track's own duration for version items, the expanded
+   *  playlist total for playlist items. Returns `null` when the
+   *  value is unknown (no analysis / empty playlist) so the chip can
+   *  be skipped rather than rendering "0:00". */
+  itemDuration(item: TShowSectionItemView): number | null {
+    if (item.kind === 'version') {
+      const d = item.version.durationSeconds;
+      return typeof d === 'number' && d > 0 ? d : null;
+    }
+    const d = item.playlist.totalDurationSeconds;
+    return typeof d === 'number' && d > 0 ? d : null;
+  }
+
+  /** Format the duration for an item chip — per-track uses `m:ss` so
+   *  the chip reads like a track list ("3:42"), playlists fall back
+   *  to the coarse minute-level formatter already used on the section
+   *  stats ("22 min", "1h 5m"). */
+  itemDurationLabel(item: TShowSectionItemView): string | null {
+    const seconds = this.itemDuration(item);
+    if (seconds === null) return null;
+    return item.kind === 'version'
+      ? formatTrackDuration(seconds)
+      : this.formatDuration(seconds);
+  }
+
   formatDuration(seconds: number): string {
     const m = Math.round(seconds / 60);
     if (m < 60) return `${m} min`;
@@ -1094,4 +1120,13 @@ export class ShowDetailComponent {
 
 function formatRating(value: number): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
+}
+
+/** `m:ss` formatter for individual track durations — tracks are
+ *  usually 2–5 min so minute-only loses too much resolution. */
+function formatTrackDuration(seconds: number): string {
+  const total = Math.max(0, Math.round(seconds));
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
 }

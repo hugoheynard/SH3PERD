@@ -971,6 +971,23 @@ $colors: (
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  &__duration {
+    flex-shrink: 0;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    padding: 2px 6px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xs);
+  }
+
+  &[data-kind="playlist"] &__duration {
+    color: var(--accent-color-light);
+    border-color: var(--accent-color-border);
+  }
 }
 
 /* ── Item-level insertion bar (inside item-list) ───────── */

@@ -98,12 +98,38 @@ export class GetShowDetailHandler implements IQueryHandler<
       playlistIds.map((id, i) => [id, playlistTracksByPlaylist[i].length]),
     );
 
+    // Per-playlist total run-time — sum of favourite-track durations
+    // across every version the playlist references. Resolved once here
+    // so each section item view can read a precomputed value instead
+    // of redoing the expansion at render time.
+    const playlistDurationById = new Map<TPlaylistId, number>(
+      playlistIds.map((id, i) => {
+        const tracks = playlistTracksByPlaylist[i];
+        let total = 0;
+        for (const t of tracks) {
+          const version = versionMap.get(t.versionId);
+          if (!version) continue;
+          const favorite = version.tracks.find((tr) => tr.favorite) ?? version.tracks[0];
+          if (!favorite) continue;
+          total += favorite.analysisResult?.durationSeconds ?? favorite.durationSeconds ?? 0;
+        }
+        return [id, total];
+      }),
+    );
+
     // Build section view models with expanded versions for the rating
     // series. Items themselves keep their original shape (playlists not
     // expanded in the response) for the frontend to render as blocks.
     const sections: TShowSectionViewModel[] = allSections.map((section) => {
       const items: TShowSectionItemView[] = section.items.map((it) =>
-        buildItemView(it, versionMap, referenceMap, playlistMap, playlistTrackCountById),
+        buildItemView(
+          it,
+          versionMap,
+          referenceMap,
+          playlistMap,
+          playlistTrackCountById,
+          playlistDurationById,
+        ),
       );
       const sectionVersionIds = collectSectionVersions(
         [...section.items],
@@ -197,6 +223,7 @@ function buildItemView(
   referenceMap: Map<TMusicReferenceId, TMusicReferenceDomainModel>,
   playlistMap: Map<TPlaylistId, TPlaylistDomainModel>,
   playlistTrackCount: Map<TPlaylistId, number>,
+  playlistDuration: Map<TPlaylistId, number>,
 ): TShowSectionItemView {
   if (item.kind === 'version') {
     const version = versionMap.get(item.ref_id as TMusicVersionId);
@@ -218,6 +245,7 @@ function buildItemView(
     };
   }
   const playlist = playlistMap.get(item.ref_id as TPlaylistId);
+  const totalDurationSeconds = playlistDuration.get(item.ref_id as TPlaylistId) ?? 0;
   return {
     kind: 'playlist',
     id: item.id,
@@ -227,6 +255,10 @@ function buildItemView(
       name: playlist?.name ?? 'Unknown playlist',
       color: playlist?.color ?? 'indigo',
       trackCount: playlistTrackCount.get(item.ref_id as TPlaylistId) ?? 0,
+      // Omit the field rather than emitting 0 so the frontend can
+      // cleanly distinguish "computed + zero duration" (empty playlist)
+      // from "not computed" (legacy response).
+      totalDurationSeconds: totalDurationSeconds > 0 ? totalDurationSeconds : undefined,
     },
   };
 }

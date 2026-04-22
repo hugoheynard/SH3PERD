@@ -366,6 +366,11 @@ export type TShowSectionItemView =
         name: string;
         color: TPlaylistColor;
         trackCount: number;
+        /** Total run-time of the expanded playlist (sum of favourite-
+         *  track durations across every version it references), in
+         *  seconds. Optional so legacy responses without the field
+         *  still parse — the UI falls back to hiding the duration chip. */
+        totalDurationSeconds?: number;
       };
     };
 
