@@ -1,37 +1,49 @@
 @let sec = section();
-<ng-content select="[sectionHeader]" />
-<ng-content select="[sectionTarget]" />
-
-<sh3-dropzone-list-container
-  class="items"
-  [items]="items()"
-  [dropZoneId]="sec.id"
-  [acceptedTypes]="itemDragTypes"
-  [itemId]="itemId"
-  [internalDragType]="'show-section-item'"
-  [internalDragId]="internalDragId"
-  [itemSelector]="'.item'"
-  (dropped)="onItemDrop($event)"
+<section
+  class="section"
+  [class.dragging]="dragging()"
+  [class.is-item-reordering]="itemDragOverThis()"
+  [attr.data-section-id]="sec.id"
+  uiDndDrag
+  [dndType]="'show-section'"
+  [dndData]="sectionDragPayload()"
+  [dragHandle]="'.head__handle'"
+  [canDrag]="multiSection()"
 >
-  <ng-template let-item let-dragging="dragging">
-    <app-show-item-row
-      class="item"
-      [item]="item"
-      [dragData]="itemDragPayload(item)"
-      [dragging]="dragging"
-      (removed)="onRemoveItem(item)"
-    />
-  </ng-template>
-</sh3-dropzone-list-container>
+  <ng-content select="[sectionHeader]" />
+  <ng-content select="[sectionTarget]" />
 
-@if (items().length === 0) {
-  <div class="empty">
-    <sh3-icon name="playlist-add" [size]="18" />
-    <span
-      >Drop tracks or playlists here from your library or playlist
-      manager.</span
-    >
-  </div>
-}
+  <sh3-dropzone-list-container
+    class="items"
+    [items]="items()"
+    [dropZoneId]="sec.id"
+    [acceptedTypes]="itemDragTypes"
+    [itemId]="itemId"
+    [internalDragType]="'show-section-item'"
+    [internalDragId]="internalDragId"
+    [itemSelector]="'.item'"
+    (dropped)="onItemDrop($event)"
+  >
+    <ng-template let-item let-dragging="dragging">
+      <app-show-item-row
+        class="item"
+        [item]="item"
+        [dragData]="itemDragPayload(item)"
+        [dragging]="dragging"
+        (removed)="onRemoveItem(item)"
+      />
+    </ng-template>
+  </sh3-dropzone-list-container>
 
-<ng-content select="[sectionFooter]" />
+  @if (items().length === 0) {
+    <div class="empty">
+      <sh3-icon name="playlist-add" [size]="18" />
+      <span
+        >Drop tracks or playlists here from your library or playlist
+        manager.</span
+      >
+    </div>
+  }
+
+  <ng-content select="[sectionFooter]" />
+</section>

@@ -66,11 +66,6 @@ const ITEM_DRAG_TYPES: readonly DragType[] = [
   ],
   templateUrl: './show-section.component.html',
   styleUrl: './show-section.component.scss',
-  host: {
-    '[class.dragging]': 'dragging()',
-    '[class.is-item-reordering]': 'itemDragOverThis()',
-    '[attr.data-section-id]': 'section().id',
-  },
 })
 export class ShowSectionComponent {
   readonly showId = input.required<TShowId>();
