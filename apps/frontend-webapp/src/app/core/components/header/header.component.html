@@ -1,5 +1,9 @@
 <div class="left">
-  <button class="mobile-menu-btn" (click)="onMenuClick()" aria-label="Open menu">
+  <button
+    class="mobile-menu-btn"
+    (click)="onMenuClick()"
+    aria-label="Open menu"
+  >
     <sh3-icon name="menu" size="lg" title="Open menu" />
   </button>
   <!-- Logo ou nom d'application -->
@@ -8,19 +12,36 @@
     <span class="page-name">{{ getCurrentPageName() }}</span>
   </div>
 
+  <!-- "Back to …" chip — visible only when the current URL carries
+       `?returnTo=…&returnLabel=…`. Lives in the header so every page
+       surfaces the return path in the same spot regardless of where
+       the user landed. -->
+  <app-back-to-chip class="header-return" />
 </div>
 
 <div class="right">
   @if (planLabel()) {
     <div class="plan-badge-area">
-      <button class="plan-badge" type="button" (click)="goToUpgrade()"
-            [class.plan-badge--free]="userPlan() === 'artist_free' || userPlan() === 'company_free'"
-            [class.plan-badge--pro]="userPlan() === 'artist_pro' || userPlan() === 'company_pro'"
-            [class.plan-badge--max]="userPlan() === 'artist_max' || userPlan() === 'company_business'">
+      <button
+        class="plan-badge"
+        type="button"
+        (click)="goToUpgrade()"
+        [class.plan-badge--free]="
+          userPlan() === 'artist_free' || userPlan() === 'company_free'
+        "
+        [class.plan-badge--pro]="
+          userPlan() === 'artist_pro' || userPlan() === 'company_pro'
+        "
+        [class.plan-badge--max]="
+          userPlan() === 'artist_max' || userPlan() === 'company_business'
+        "
+      >
         {{ planLabel() }}
       </button>
       @if (showUpgrade()) {
-        <button class="upgrade-btn" type="button" (click)="goToUpgrade()">Upgrade</button>
+        <button class="upgrade-btn" type="button" (click)="goToUpgrade()">
+          Upgrade
+        </button>
       }
     </div>
   }
@@ -31,24 +52,40 @@
     <sh3-icon name="help" [size]="18" />
   </button>
 
-  <button class="notification-bell" type="button" (click)="openNotifications()" aria-label="Notifications">
-    <sh3-icon name="bell" size='md' class="bell-icon" />
+  <button
+    class="notification-bell"
+    type="button"
+    (click)="openNotifications()"
+    aria-label="Notifications"
+  >
+    <sh3-icon name="bell" size="md" class="bell-icon" />
     <div class="notif-badges">
       @if (unreadByType().error > 0) {
-        <span class="notif-badge notif-badge--alert">{{ unreadByType().error }}</span>
+        <span class="notif-badge notif-badge--alert">{{
+          unreadByType().error
+        }}</span>
       }
       @if (unreadByType().warning > 0) {
-        <span class="notif-badge notif-badge--warning">{{ unreadByType().warning }}</span>
+        <span class="notif-badge notif-badge--warning">{{
+          unreadByType().warning
+        }}</span>
       }
       @if (unreadByType().info > 0) {
-        <span class="notif-badge notif-badge--info">{{ unreadByType().info }}</span>
+        <span class="notif-badge notif-badge--info">{{
+          unreadByType().info
+        }}</span>
       }
     </div>
   </button>
 
   <!-- Profile pastille + dropdown -->
   <div class="profile-area">
-    <button class="profile-circle" (click)="toggleProfileMenu()" type="button" aria-label="User menu">
+    <button
+      class="profile-circle"
+      (click)="toggleProfileMenu()"
+      type="button"
+      aria-label="User menu"
+    >
       {{ userInitial() }}
     </button>
 
@@ -59,12 +96,20 @@
             <span class="profile-dropdown__name">{{ userDisplayName() }}</span>
           </div>
         }
-        <button class="profile-dropdown__item" type="button" (click)="goToProfile()">
+        <button
+          class="profile-dropdown__item"
+          type="button"
+          (click)="goToProfile()"
+        >
           <span class="profile-dropdown__icon">👤</span>
           Profile
         </button>
-        <div class="profile-dropdown__divider profile-dropdown__mobile-only"></div>
-        <div class="profile-dropdown__item profile-dropdown__theme-row profile-dropdown__mobile-only">
+        <div
+          class="profile-dropdown__divider profile-dropdown__mobile-only"
+        ></div>
+        <div
+          class="profile-dropdown__item profile-dropdown__theme-row profile-dropdown__mobile-only"
+        >
           <span class="profile-dropdown__icon">
             <sh3-icon name="theme-dark" [size]="14" />
           </span>
@@ -72,7 +117,11 @@
           <sh3-theme-toggle class="profile-dropdown__theme-toggle" />
         </div>
         <div class="profile-dropdown__divider"></div>
-        <button class="profile-dropdown__item profile-dropdown__item--danger" type="button" (click)="logout()">
+        <button
+          class="profile-dropdown__item profile-dropdown__item--danger"
+          type="button"
+          (click)="logout()"
+        >
           <span class="profile-dropdown__icon">🚪</span>
           Log out
         </button>

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, HostListener, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  HostListener,
+  inject,
+  signal,
+} from '@angular/core';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { Router } from '@angular/router';
 import { NavigationService } from '../../services/navigation.service';
@@ -11,13 +18,11 @@ import { UserContextService } from '../../services/user-context.service';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { ThemeToggleComponent } from '../../../shared/theme-toggle/theme-toggle.component';
+import { BackToChipComponent } from '../../../shared/back-to-chip/back-to-chip.component';
 
 @Component({
   selector: 'app-header',
-  imports: [
-    IconComponent,
-    ThemeToggleComponent,
-  ],
+  imports: [IconComponent, ThemeToggleComponent, BackToChipComponent],
   templateUrl: './header.component.html',
   standalone: true,
   styleUrl: './header.component.scss',
@@ -31,7 +36,9 @@ export class HeaderComponent {
   private readonly userCtx = inject(UserContextService);
   private readonly auth = inject(AuthService);
 
-  constructor() { void inject(ThemeService); }
+  constructor() {
+    void inject(ThemeService);
+  }
 
   readonly showProfileMenu = signal(false);
   readonly userInitial = this.userCtx.userInitial;
@@ -59,11 +66,11 @@ export class HeaderComponent {
 
   onMenuClick(): void {
     this.layout.openMobileMenu();
-  };
+  }
 
   getCurrentPageName(): string {
     return this.navigationService.pageName();
-  };
+  }
 
   unreadNotificationsCount(): number {
     return this.notif.unreadCount();
@@ -82,7 +89,7 @@ export class HeaderComponent {
   /* ── Profile dropdown ── */
 
   toggleProfileMenu(): void {
-    this.showProfileMenu.update(v => !v);
+    this.showProfileMenu.update((v) => !v);
   }
 
   goToUpgrade(): void {

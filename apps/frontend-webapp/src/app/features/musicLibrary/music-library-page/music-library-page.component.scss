@@ -5,17 +5,6 @@
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
-  position: relative; /* anchor for the floating return chip */
-}
-
-/* ── Floating return chip ───────────────────────── */
-
-.library-return {
-  position: absolute;
-  top: 10px;
-  left: 14px;
-  z-index: 5;
-  pointer-events: auto;
 }
 
 /* ── Library container ──────────────────────────── */
