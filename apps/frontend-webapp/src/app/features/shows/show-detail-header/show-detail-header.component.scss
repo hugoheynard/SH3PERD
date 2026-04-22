@@ -181,6 +181,8 @@ $colors: (
 
   &__target {
     grid-column: 2;
+    width: 100%;
+    flex-basis: 100%;
     position: relative;
     z-index: 1;
   }
