@@ -54,7 +54,15 @@ export class ShowsStateService {
   }
 
   loadDetail(id: TShowId): void {
-    this._state.update((s) => ({ ...s, detail: null, detailLoadingFor: id }));
+    // Keep the currently-rendered detail visible when we're refreshing
+    // the same show (after a reorder / add / mark-played / …). Only
+    // null it out when we're switching to a different show, so the
+    // user doesn't see a previous show's data while the new one loads.
+    this._state.update((s) => ({
+      ...s,
+      detail: s.detail?.id === id ? s.detail : null,
+      detailLoadingFor: id,
+    }));
     this.api.getShowDetail(id).subscribe({
       next: (detail) =>
         this._state.update((s) =>
