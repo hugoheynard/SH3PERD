@@ -8,41 +8,13 @@ import {
 import { IconComponent } from '../../../../shared/icon/icon.component';
 import { formatDuration } from '../../../../shared/utils/duration.utils';
 import { RatingSparklineComponent } from '../../../../shared/rating-sparkline/rating-sparkline.component';
+import {
+  RATING_AXES,
+  type RatingAxisDescriptor,
+} from '../../../../shared/music-analytics/rating-axes';
 import { DndDragDirective } from '../../../../core/drag-and-drop/dndDrag.directive';
 import type { PlaylistDragPayload } from '../../../../core/drag-and-drop/drag.types';
 import type { TPlaylistSummaryViewModel } from '../../playlist-types';
-
-/** The four axes rendered on the card. Each entry references the
- *  corresponding mean + series fields on the summary; the template
- *  iterates this list so every axis stays visually identical. */
-const RATING_AXES = [
-  {
-    label: 'MST',
-    accent: 'var(--color-rating-high, #4ade80)',
-    meanKey: 'meanMastery',
-    seriesKey: 'masterySeries',
-  },
-  {
-    label: 'NRG',
-    accent: 'var(--color-rating-max, #fbbf24)',
-    meanKey: 'meanEnergy',
-    seriesKey: 'energySeries',
-  },
-  {
-    label: 'EFF',
-    accent: 'var(--color-rating-medium, #38bdf8)',
-    meanKey: 'meanEffort',
-    seriesKey: 'effortSeries',
-  },
-  {
-    label: 'QTY',
-    accent: 'var(--color-rating-low, #a78bfa)',
-    meanKey: 'meanQuality',
-    seriesKey: 'qualitySeries',
-  },
-] as const;
-
-type RatingAxis = (typeof RATING_AXES)[number];
 
 /**
  * Visual card for one playlist in the search-mode grid.
@@ -96,11 +68,11 @@ export class PlaylistCardComponent {
 
   /** Type-safe accessors so the template can read a summary field by
    *  the discriminated key on each axis. */
-  meanFor(axis: RatingAxis): number | null {
+  meanFor(axis: RatingAxisDescriptor): number | null {
     return this.playlist()[axis.meanKey];
   }
 
-  seriesFor(axis: RatingAxis): (number | null)[] {
+  seriesFor(axis: RatingAxisDescriptor): (number | null)[] {
     return this.playlist()[axis.seriesKey];
   }
 

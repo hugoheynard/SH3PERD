@@ -18,39 +18,10 @@ import { LoadingStateComponent } from '../../../shared/loading-state/loading-sta
 import { RatingSparklineComponent } from '../../../shared/rating-sparkline/rating-sparkline.component';
 import { ShowDetailSidePanelComponent } from '../show-detail-side-panel/show-detail-side-panel.component';
 import { NewShowPopoverComponent } from '../new-show-popover/new-show-popover.component';
-
-/** Four rating axes rendered on every show card — mirrors the playlist
- *  card layout so the two sibling features stay visually coherent. The
- *  accent colours are pulled from the rating colour scale (low/medium/
- *  high/max) so a show card reads identically to a playlist card. */
-const RATING_AXES = [
-  {
-    label: 'MST',
-    accent: 'var(--color-rating-high, #4ade80)',
-    meanKey: 'meanMastery',
-    seriesKey: 'masterySeries',
-  },
-  {
-    label: 'NRG',
-    accent: 'var(--color-rating-max, #fbbf24)',
-    meanKey: 'meanEnergy',
-    seriesKey: 'energySeries',
-  },
-  {
-    label: 'EFF',
-    accent: 'var(--color-rating-medium, #38bdf8)',
-    meanKey: 'meanEffort',
-    seriesKey: 'effortSeries',
-  },
-  {
-    label: 'QTY',
-    accent: 'var(--color-rating-low, #a78bfa)',
-    meanKey: 'meanQuality',
-    seriesKey: 'qualitySeries',
-  },
-] as const;
-
-type RatingAxis = (typeof RATING_AXES)[number];
+import {
+  RATING_AXES,
+  type RatingAxisDescriptor,
+} from '../../../shared/music-analytics/rating-axes';
 
 @Component({
   selector: 'app-shows-page',
@@ -105,11 +76,17 @@ export class ShowsPageComponent implements OnInit {
     return s.id;
   }
 
-  meanFor(show: TShowSummaryViewModel, axis: RatingAxis): number | null {
+  meanFor(
+    show: TShowSummaryViewModel,
+    axis: RatingAxisDescriptor,
+  ): number | null {
     return show[axis.meanKey];
   }
 
-  seriesFor(show: TShowSummaryViewModel, axis: RatingAxis): (number | null)[] {
+  seriesFor(
+    show: TShowSummaryViewModel,
+    axis: RatingAxisDescriptor,
+  ): (number | null)[] {
     return show[axis.seriesKey];
   }
 

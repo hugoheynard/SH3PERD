@@ -57,9 +57,9 @@ import { ShowDetailHeaderComponent } from '../show-detail-header/show-detail-hea
 import { ShowItemRowComponent } from '../show-item-row/show-item-row.component';
 import { showItemTitle } from '../show-item-row/show-item-row.utils';
 import {
-  SHOW_DETAIL_RATING_AXES,
-  type ShowDetailRatingAxis,
-} from './show-detail.constants';
+  RATING_AXES,
+  type RatingAxisDescriptor,
+} from '../../../shared/music-analytics/rating-axes';
 import { ShowDetailStateService } from './show-detail-state.service';
 
 /** Read the target duration of a section in whole minutes, or `null`
@@ -299,7 +299,7 @@ export class ShowDetailComponent {
   protected readonly detail = this.detailState.detail;
   protected readonly loading = this.detailState.loading;
   protected readonly singleMode = this.detailState.singleMode;
-  protected readonly axes = SHOW_DETAIL_RATING_AXES;
+  protected readonly axes = RATING_AXES;
 
   /** Inline-edit state for section names (one at a time). */
   protected readonly editingSectionId = signal<TShowSectionId | null>(null);
@@ -723,14 +723,14 @@ export class ShowDetailComponent {
 
   meanFor(
     target: TShowSummaryViewModel | TShowSectionViewModel,
-    axis: ShowDetailRatingAxis,
+    axis: RatingAxisDescriptor,
   ): number | null {
     return target[axis.meanKey];
   }
 
   seriesFor(
     target: TShowSummaryViewModel | TShowSectionViewModel,
-    axis: ShowDetailRatingAxis,
+    axis: RatingAxisDescriptor,
   ): (number | null)[] {
     return target[axis.seriesKey];
   }

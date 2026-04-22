@@ -13,9 +13,9 @@ import {
   type ShowSettingsPopoverData,
 } from '../show-settings-popover/show-settings-popover.component';
 import {
-  SHOW_DETAIL_RATING_AXES,
-  type ShowDetailRatingAxis,
-} from './show-detail.constants';
+  RATING_AXES,
+  type RatingAxisDescriptor,
+} from '../../../shared/music-analytics/rating-axes';
 
 @Injectable({ providedIn: 'root' })
 export class ShowDetailStateService {
@@ -28,7 +28,7 @@ export class ShowDetailStateService {
   readonly singleMode = computed(
     () => (this.detail()?.sections.length ?? 0) <= 1,
   );
-  readonly axes = SHOW_DETAIL_RATING_AXES;
+  readonly axes = RATING_AXES;
 
   readonly editingShowName = signal(false);
   readonly showNameDraft = signal('');
@@ -40,12 +40,12 @@ export class ShowDetailStateService {
   readonly showHeaderMeanFor = (
     show: TShowSummaryViewModel,
     axis: unknown,
-  ): number | null => this.meanFor(show, axis as ShowDetailRatingAxis);
+  ): number | null => this.meanFor(show, axis as RatingAxisDescriptor);
 
   readonly showHeaderSeriesFor = (
     show: TShowSummaryViewModel,
     axis: unknown,
-  ): (number | null)[] => this.seriesFor(show, axis as ShowDetailRatingAxis);
+  ): (number | null)[] => this.seriesFor(show, axis as RatingAxisDescriptor);
 
   loadDetail(id: TShowId): void {
     this.showsState.loadDetail(id);
@@ -253,14 +253,14 @@ export class ShowDetailStateService {
 
   meanFor(
     target: TShowSummaryViewModel,
-    axis: ShowDetailRatingAxis,
+    axis: RatingAxisDescriptor,
   ): number | null {
     return target[axis.meanKey];
   }
 
   seriesFor(
     target: TShowSummaryViewModel,
-    axis: ShowDetailRatingAxis,
+    axis: RatingAxisDescriptor,
   ): (number | null)[] {
     return target[axis.seriesKey];
   }
