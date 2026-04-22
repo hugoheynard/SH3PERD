@@ -1,0 +1,98 @@
+@let section = section();
+<header class="head">
+  @if (multiSection()) {
+    <span
+      class="head__handle"
+      title="Drag to reorder"
+      aria-label="Drag to reorder"
+      role="button"
+    >
+      <sh3-icon name="menu" [size]="14" />
+    </span>
+  }
+
+  <div class="head__title-block">
+    @if (editingName()) {
+      <input
+        class="head__name-input"
+        type="text"
+        [ngModel]="nameDraft()"
+        (ngModelChange)="nameDraft.set($event)"
+        (blur)="commitRename()"
+        (keydown)="onNameKey($event)"
+        autofocus
+        aria-label="Section name"
+      />
+    } @else {
+      <h3
+        class="head__name"
+        (dblclick)="startRename()"
+        title="Double-click to rename"
+      >
+        {{ section.name }}
+      </h3>
+    }
+
+    @if (editingDesc()) {
+      <textarea
+        class="head__desc-input"
+        rows="2"
+        placeholder="Describe this set (venue, vibe, transition)…"
+        [ngModel]="descDraft()"
+        (ngModelChange)="descDraft.set($event)"
+        (blur)="commitEditDesc()"
+        (keydown)="onDescKey($event)"
+        autofocus
+        aria-label="Section description"
+      ></textarea>
+    } @else if (section.description) {
+      <p
+        class="head__desc"
+        (dblclick)="startEditDesc()"
+        title="Double-click to edit"
+      >
+        {{ section.description }}
+      </p>
+    } @else {
+      <button type="button" class="head__desc-add" (click)="startEditDesc()">
+        + Add description
+      </button>
+    }
+  </div>
+
+  <div class="head__actions">
+    <sh3-button-icon
+      icon="settings"
+      size="xs"
+      tooltip="Section settings"
+      (clicked)="openSettings()"
+    />
+    <sh3-button-icon
+      icon="check-circle"
+      size="xs"
+      tooltip="Mark section played"
+      (clicked)="markPlayed()"
+    />
+    <sh3-button-icon
+      icon="playlist-add"
+      size="xs"
+      tooltip="Convert to playlist"
+      (clicked)="convertToPlaylist()"
+    />
+    @if (multiSection()) {
+      <sh3-inline-confirm
+        mode="toggle"
+        confirmLabel="Remove?"
+        size="sm"
+        (confirmed)="remove()"
+      >
+        <sh3-button-icon
+          icon="bin"
+          size="xs"
+          tone="critical"
+          tooltip="Remove section"
+        />
+      </sh3-inline-confirm>
+    }
+  </div>
+</header>

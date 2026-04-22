@@ -6,11 +6,9 @@ import {
   ElementRef,
   inject,
   input,
-  signal,
   viewChild,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import type {
   TMusicVersionId,
   TPlaylistId,
@@ -24,9 +22,7 @@ import { ItemMutationService } from '../services/mutations-layer/item-mutation.s
 import { SectionMutationService } from '../services/mutations-layer/section-mutation.service';
 import { ShowsDndInitService } from '../services/shows-dnd-init.service';
 import { ButtonComponent } from '../../../shared/button/button.component';
-import { ButtonIconComponent } from '../../../shared/button-icon/button-icon.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
-import { InlineConfirmComponent } from '../../../shared/inline-confirm/inline-confirm.component';
 import { LoadingStateComponent } from '../../../shared/loading-state/loading-state.component';
 import { RatingRowComponent } from '../../../shared/music-analytics/rating-row/rating-row.component';
 import { TargetBarComponent } from '../../../shared/target-bar/target-bar.component';
@@ -40,19 +36,12 @@ import type {
 } from '../../../core/drag-and-drop/drag.types';
 import { LayoutService } from '../../../core/services/layout.service';
 import {
-  SectionSettingsPopoverComponent,
-  type SectionSettingsPopoverData,
-} from '../section-settings-popover/section-settings-popover.component';
-import {
   NewSectionPopoverComponent,
   type NewSectionPopoverData,
 } from '../new-section-popover/new-section-popover.component';
-import {
-  ConvertSectionPopoverComponent,
-  type ConvertSectionPopoverData,
-} from '../convert-section-popover/convert-section-popover.component';
 import { ShowDetailHeaderComponent } from '../show-detail-header/show-detail-header.component';
 import { ShowItemRowComponent } from '../show-item-row/show-item-row.component';
+import { ShowSectionHeaderComponent } from '../show-section-header/show-section-header.component';
 import { showItemTitle } from '../show-item-row/show-item-row.utils';
 import { ShowDetailStateService } from './show-detail-state.service';
 
@@ -68,16 +57,14 @@ import { ShowDetailStateService } from './show-detail-state.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
-    FormsModule,
     ButtonComponent,
-    ButtonIconComponent,
     IconComponent,
-    InlineConfirmComponent,
     LoadingStateComponent,
     RatingRowComponent,
     TargetBarComponent,
     ShowDetailHeaderComponent,
     ShowItemRowComponent,
+    ShowSectionHeaderComponent,
     DndDragDirective,
     DndDropZoneDirective,
   ],
@@ -285,16 +272,6 @@ export class ShowDetailComponent {
   protected readonly loading = this.detailState.loading;
   protected readonly singleMode = this.detailState.singleMode;
 
-  /** Inline-edit state for section names (one at a time). */
-  protected readonly editingSectionId = signal<TShowSectionId | null>(null);
-  protected readonly sectionNameDraft = signal('');
-
-  /** Inline-edit state for section descriptions (one at a time). Multi-
-   *  line textarea, same grammar as the show-level description editor. */
-  protected readonly editingSectionDescriptionId =
-    signal<TShowSectionId | null>(null);
-  protected readonly sectionDescriptionDraft = signal('');
-
   constructor() {
     // Ensure the `playlist` drag preview is registered before the first
     // drop happens. Service is `providedIn: 'root'` and idempotent — no-op
@@ -311,80 +288,7 @@ export class ShowDetailComponent {
         this.detailState.clearDetail();
       }
       this.detailState.resetHeaderState();
-      this.editingSectionId.set(null);
-      this.editingSectionDescriptionId.set(null);
     });
-  }
-
-  // ── Section rename (inline) ──────────────────────────
-
-  startRenameSection(section: TShowSectionViewModel): void {
-    this.sectionNameDraft.set(section.name);
-    this.editingSectionId.set(section.id);
-  }
-
-  commitRenameSection(section: TShowSectionViewModel): void {
-    const show = this.detail();
-    if (!show) return;
-    const name = this.sectionNameDraft().trim();
-    this.editingSectionId.set(null);
-    if (!name || name === section.name) return;
-    this.sectionMutations.updateSection(show.id, section.id, { name });
-  }
-
-  cancelRenameSection(): void {
-    this.editingSectionId.set(null);
-  }
-
-  onSectionNameKey(event: KeyboardEvent, section: TShowSectionViewModel): void {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      this.commitRenameSection(section);
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      this.cancelRenameSection();
-    }
-  }
-
-  // ── Section description (inline) ─────────────────────
-
-  startEditSectionDescription(section: TShowSectionViewModel): void {
-    this.sectionDescriptionDraft.set(section.description ?? '');
-    this.editingSectionDescriptionId.set(section.id);
-  }
-
-  commitEditSectionDescription(section: TShowSectionViewModel): void {
-    const show = this.detail();
-    if (!show) return;
-    const next = this.sectionDescriptionDraft();
-    const trimmed = next.trim();
-    this.editingSectionDescriptionId.set(null);
-    const current = section.description ?? '';
-    if (trimmed === current.trim()) return;
-    // Empty string is the "clear" signal — backend's updateDescription
-    // collapses whitespace-only / empty to `undefined` on storage.
-    this.sectionMutations.updateSection(show.id, section.id, {
-      description: trimmed.length ? next : '',
-    });
-  }
-
-  cancelEditSectionDescription(): void {
-    this.editingSectionDescriptionId.set(null);
-  }
-
-  /** Enter commits, Shift+Enter inserts a newline, Escape cancels —
-   *  same grammar as the show-level description editor. */
-  onSectionDescriptionKey(
-    event: KeyboardEvent,
-    section: TShowSectionViewModel,
-  ): void {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      this.commitEditSectionDescription(section);
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      this.cancelEditSectionDescription();
-    }
   }
 
   // ── Section target duration ──────────────────────────
@@ -411,12 +315,6 @@ export class ShowDetailComponent {
     });
   }
 
-  onMarkSectionPlayed(section: TShowSectionViewModel): void {
-    const show = this.detail();
-    if (!show) return;
-    this.sectionMutations.markSectionPlayed(show.id, section.id);
-  }
-
   onAddSection(): void {
     const show = this.detail();
     if (!show) return;
@@ -427,25 +325,6 @@ export class ShowDetailComponent {
         defaultName: `Set ${show.sections.length + 1}`,
       },
     );
-  }
-
-  onRemoveSection(section: TShowSectionViewModel): void {
-    const show = this.detail();
-    if (!show || show.sections.length <= 1) return;
-    this.sectionMutations.removeSection(show.id, section.id);
-  }
-
-  onConvertSectionToPlaylist(section: TShowSectionViewModel): void {
-    const show = this.detail();
-    if (!show) return;
-    this.layout.setPopover<
-      ConvertSectionPopoverComponent,
-      ConvertSectionPopoverData
-    >(ConvertSectionPopoverComponent, {
-      showId: show.id,
-      sectionId: section.id,
-      defaultName: `${section.name} — playlist`,
-    });
   }
 
   onRemoveItem(
@@ -621,20 +500,6 @@ export class ShowDetailComponent {
 
   ratingGroupsFor(section: TShowSectionViewModel) {
     return this.detailState.buildRatingRow(section);
-  }
-
-  // ── Settings popovers ────────────────────────────────
-
-  openSectionSettings(section: TShowSectionViewModel): void {
-    const show = this.detail();
-    if (!show) return;
-    this.layout.setPopover<
-      SectionSettingsPopoverComponent,
-      SectionSettingsPopoverData
-    >(SectionSettingsPopoverComponent, {
-      showId: show.id,
-      sectionId: section.id,
-    });
   }
 
   // ── Schedule helpers ─────────────────────────────────

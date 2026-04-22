@@ -27,111 +27,18 @@
           uiDndDrag
           [dndType]="'show-section'"
           [dndData]="sectionDragPayload(section)"
-          [dragHandle]="'.section__handle'"
+          [dragHandle]="'.head__handle'"
           [canDrag]="!singleMode()"
           uiDndDropZone
           [dropZone_id]="section.id"
           [dropZoneAccept]="['music-track', 'playlist', 'show-section-item']"
           (uiDndDrop)="onSectionDrop(show.id, section.id, $event)"
         >
-          <header class="section__head">
-            @if (show.sections.length > 1) {
-              <span
-                class="section__handle"
-                title="Drag to reorder"
-                aria-label="Drag to reorder"
-                role="button"
-              >
-                <sh3-icon name="menu" [size]="14" />
-              </span>
-            }
-            <div class="section__title-block">
-              @if (editingSectionId() === section.id) {
-                <input
-                  class="section__name-input"
-                  type="text"
-                  [ngModel]="sectionNameDraft()"
-                  (ngModelChange)="sectionNameDraft.set($event)"
-                  (blur)="commitRenameSection(section)"
-                  (keydown)="onSectionNameKey($event, section)"
-                  autofocus
-                  aria-label="Section name"
-                />
-              } @else {
-                <h3
-                  class="section__name"
-                  (dblclick)="startRenameSection(section)"
-                  title="Double-click to rename"
-                >
-                  {{ section.name }}
-                </h3>
-              }
-              @if (editingSectionDescriptionId() === section.id) {
-                <textarea
-                  class="section__desc-input"
-                  rows="2"
-                  placeholder="Describe this set (venue, vibe, transition)…"
-                  [ngModel]="sectionDescriptionDraft()"
-                  (ngModelChange)="sectionDescriptionDraft.set($event)"
-                  (blur)="commitEditSectionDescription(section)"
-                  (keydown)="onSectionDescriptionKey($event, section)"
-                  autofocus
-                  aria-label="Section description"
-                ></textarea>
-              } @else if (section.description) {
-                <p
-                  class="section__desc"
-                  (dblclick)="startEditSectionDescription(section)"
-                  title="Double-click to edit"
-                >
-                  {{ section.description }}
-                </p>
-              } @else {
-                <button
-                  type="button"
-                  class="section__desc-add"
-                  (click)="startEditSectionDescription(section)"
-                >
-                  + Add description
-                </button>
-              }
-            </div>
-            <div class="section__actions">
-              <sh3-button-icon
-                icon="settings"
-                size="xs"
-                tooltip="Section settings"
-                (clicked)="openSectionSettings(section)"
-              />
-              <sh3-button-icon
-                icon="check-circle"
-                size="xs"
-                tooltip="Mark section played"
-                (clicked)="onMarkSectionPlayed(section)"
-              />
-              <sh3-button-icon
-                icon="playlist-add"
-                size="xs"
-                tooltip="Convert to playlist"
-                (clicked)="onConvertSectionToPlaylist(section)"
-              />
-              @if (show.sections.length > 1) {
-                <sh3-inline-confirm
-                  mode="toggle"
-                  confirmLabel="Remove?"
-                  size="sm"
-                  (confirmed)="onRemoveSection(section)"
-                >
-                  <sh3-button-icon
-                    icon="bin"
-                    size="xs"
-                    tone="critical"
-                    tooltip="Remove section"
-                  />
-                </sh3-inline-confirm>
-              }
-            </div>
-          </header>
+          <app-show-section-header
+            [showId]="show.id"
+            [section]="section"
+            [multiSection]="show.sections.length > 1"
+          />
 
           <!-- ── Target + fill % ─────────────────────────── -->
           <app-target-bar
