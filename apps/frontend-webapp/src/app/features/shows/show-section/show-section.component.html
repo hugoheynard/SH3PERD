@@ -33,17 +33,17 @@
         (removed)="onRemoveItem(item)"
       />
     </ng-template>
-  </sh3-dropzone-list-container>
 
-  @if (items().length === 0) {
-    <div class="empty">
-      <sh3-icon name="playlist-add" [size]="18" />
-      <span
-        >Drop tracks or playlists here from your library or playlist
-        manager.</span
-      >
-    </div>
-  }
+    @if (items().length === 0) {
+      <div class="empty">
+        <sh3-icon name="playlist-add" [size]="18" />
+        <span
+          >Drop tracks or playlists here from your library or playlist
+          manager.</span
+        >
+      </div>
+    }
+  </sh3-dropzone-list-container>
 
   <ng-content select="[sectionFooter]" />
 </section>

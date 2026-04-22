@@ -424,7 +424,7 @@ apps/frontend-webapp/src/app/features/shows/
 - [x] **Schedule chip** dans le show header + section footer quand `startAt` défini — format `"Fri 3 May · 22:00"`, date-only si l'heure est pile minuit.
 - [x] **Axis criterion chip + out-of-range tint** dans chaque rating group — chip affichant la range configurée (`"2.5–4"`, `"≥ 3"`), mean + chip tintés en couleur alerte quand la moyenne réelle sort de la fenêtre cible.
 - [x] **Section `description` field** — nouveau champ optionnel sur `TShowSectionDomainModel` + display + inline edit (même grammaire que la description show).
-- [ ] Menu + guard `requireShowsPlanGuard` (à faire)
+- [x] Menu + guard shows livrés — route `/app/shows` + `requireShowsAccessGuard` + `UserContextService.canUseShows()` + entrée menu conditionnelle
 
 ### Phase 7 — Mark played + analytics (~0.5 jour) 🔄
 
@@ -501,15 +501,18 @@ Objectif : alléger la feature `shows`, rapprocher les patterns UI compatibles a
   - `displayMean`
   - `criterionLabel`
   - `isMeanOutOfRange`
+- [x] `show-item-row/show-item-row.utils.ts` existe déjà pour :
+  - `showItemTitle`
+  - `showItemSubtitle`
+  - `showItemDuration`
+  - `showItemDurationLabel`
 - [ ] Réutiliser au maximum `shared/utils/duration.utils.ts` pour éviter les duplications de `formatDuration`.
 
 ##### Étape 2 — Mutualiser les primitives analytics show / playlist
 
-- [ ] Créer `shared/music-analytics/rating-axes.ts` et y déplacer la constante `RATING_AXES`.
-- [ ] Aligner `shows-page`, `show-detail` et `playlist-card` sur cette source unique.
-- [ ] Évaluer l'extraction d'un petit composant shared du type :
-  - `rating-summary-row.component.ts`
-  - ou `rating-stat-card.component.ts`
+- [x] `shared/music-analytics/rating-axes.ts` existe et porte désormais la source commune.
+- [x] `shows-page`, `show-detail` et `playlist-card` sont alignés sur cette source unique.
+- [x] Extraction d'un composant shared réalisée avec `shared/music-analytics/rating-row/rating-row.component.ts`
 - [ ] Garder les données métier dans les features et ne mutualiser que la représentation visuelle.
 
 ##### Étape 3 — Découper `ShowDetailComponent`
@@ -533,7 +536,7 @@ Objectif : alléger la feature `shows`, rapprocher les patterns UI compatibles a
   - target de section
   - actions de section
   - ancrage de la liste d'items
-- [ ] Extraire `show-item-row.component.ts` pour le rendu d'un item `version | playlist`.
+- [x] `show-item-row.component.ts` extrait pour le rendu d'un item `version | playlist`.
 - [ ] Garder dans le container :
   - `showId`
   - chargement / clear du detail via la facade locale
@@ -550,7 +553,7 @@ Objectif : alléger la feature `shows`, rapprocher les patterns UI compatibles a
 But : encapsuler la mécanique commune de liste droppable avec la techno DnD existante, sans embarquer de logique métier.
 
 - [x] Créer `shared/dropzone-list-container/dropzone-list-container.component.ts`
-- [ ] Le composant doit gérer :
+- [x] Le composant gère :
   - `uiDndDropZone`
   - lecture du `DragSessionService`
   - calcul `insertIndex`
@@ -563,7 +566,7 @@ But : encapsuler la mécanique commune de liste droppable avec la techno DnD exi
   - logique métier show / playlist / program
   - mapping du `DragState` vers une commande backend
   - rendu métier des rows
-- [ ] API visée :
+- [x] API visée implémentée :
   - `items`
   - `acceptedTypes`
   - `itemId`
@@ -579,7 +582,7 @@ But : encapsuler la mécanique commune de liste droppable avec la techno DnD exi
   - liste verticale unique
   - reorder interne
   - drop externe `music-track`
-- [ ] Ensuite brancher les listes d'items de `show-detail` / `show-section-card` :
+- [x] Ensuite brancher les listes d'items de `show-detail` / `show-section` :
   - reorder item interne
   - move inter-section
   - drop externe `music-track`
