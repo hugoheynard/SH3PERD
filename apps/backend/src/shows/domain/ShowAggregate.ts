@@ -171,6 +171,7 @@ export class ShowAggregate extends AggregateRoot {
     actorId: TUserId,
     params: {
       name: string;
+      description?: string;
       target?: TShowSectionTarget;
       startAt?: number;
       axisCriteria?: TShowAxisCriterion[];
@@ -180,6 +181,7 @@ export class ShowAggregate extends AggregateRoot {
     const section = new ShowSectionEntity({
       show_id: this.show.id,
       name: params.name,
+      description: params.description,
       position: this.sections.length,
       target: params.target,
       startAt: params.startAt,
@@ -217,6 +219,16 @@ export class ShowAggregate extends AggregateRoot {
   renameSection(actorId: TUserId, sectionId: TShowSectionId, name: string): void {
     this.policy.ensureOwnedBy(actorId, this.show);
     this.getSectionOrThrow(sectionId).rename(name);
+    this.show.touch();
+  }
+
+  updateSectionDescription(
+    actorId: TUserId,
+    sectionId: TShowSectionId,
+    description: string | undefined,
+  ): void {
+    this.policy.ensureOwnedBy(actorId, this.show);
+    this.getSectionOrThrow(sectionId).updateDescription(description);
     this.show.touch();
   }
 
@@ -351,6 +363,7 @@ export class ShowAggregate extends AggregateRoot {
         id: newSectionId,
         show_id: newShowId,
         name: src.name,
+        description: src.description,
         position: idx,
         target: src.target,
         // Same rule as the show: clones lose the schedule.

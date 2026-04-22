@@ -117,7 +117,11 @@ export class ShowsApiService extends BaseHttpService {
   updateSection(
     showId: TShowId,
     sectionId: TShowSectionId,
-    payload: { name?: string; target?: TShowSectionTarget | null },
+    payload: {
+      name?: string;
+      description?: string;
+      target?: TShowSectionTarget | null;
+    },
   ): Observable<TShowDomainModel> {
     return this.http
       .patch<

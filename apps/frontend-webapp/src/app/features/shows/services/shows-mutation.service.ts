@@ -95,7 +95,11 @@ export class ShowsMutationService {
   updateSection(
     showId: TShowId,
     sectionId: TShowSectionId,
-    payload: { name?: string; target?: TShowSectionTarget | null },
+    payload: {
+      name?: string;
+      description?: string;
+      target?: TShowSectionTarget | null;
+    },
   ): void {
     this.api.updateSection(showId, sectionId, payload).subscribe({
       next: () => this.state.loadDetail(showId),

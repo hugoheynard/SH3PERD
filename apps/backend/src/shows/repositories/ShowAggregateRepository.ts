@@ -45,6 +45,7 @@ export class ShowAggregateRepository {
               id: doc.id,
               show_id: doc.show_id,
               name: doc.name,
+              description: doc.description,
               position: doc.position,
               target: doc.target,
               lastPlayedAt: doc.lastPlayedAt,
@@ -98,6 +99,7 @@ export class ShowAggregateRepository {
       id: s.id,
       show_id: s.show_id,
       name: s.name,
+      description: s.description,
       position: s.position,
       target: s.target,
       lastPlayedAt: s.lastPlayedAt,
@@ -120,6 +122,7 @@ export class ShowAggregateRepository {
     for (const section of aggregate.existingSections) {
       await this.sectionRepo.updateMeta(section.id, {
         name: section.name,
+        description: section.description ?? null,
         position: section.position,
         target: section.target ?? null,
         lastPlayedAt: section.lastPlayedAt ?? null,

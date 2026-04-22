@@ -31,6 +31,7 @@ export type IShowSectionRepository = {
     sectionId: TShowSectionId,
     patch: Partial<
       Pick<TShowSectionDomainModel, 'name' | 'position'> & {
+        description: string | null;
         target: TShowSectionTarget | null;
         lastPlayedAt: number | null;
         startAt: number | null;
@@ -76,6 +77,7 @@ export class ShowSectionMongoRepository
     sectionId: TShowSectionId,
     patch: Partial<
       Pick<TShowSectionDomainModel, 'name' | 'position'> & {
+        description: string | null;
         target: TShowSectionTarget | null;
         lastPlayedAt: number | null;
         startAt: number | null;
@@ -83,15 +85,18 @@ export class ShowSectionMongoRepository
       }
     >,
   ): Promise<boolean> {
-    const { target, lastPlayedAt, startAt, axisCriteria, ...rest } = patch;
+    const { description, target, lastPlayedAt, startAt, axisCriteria, ...rest } = patch;
     const update: UpdateFilter<SectionRecord> = {};
     const set: Record<string, unknown> = { ...rest };
     const unset: {
+      description?: '';
       target?: '';
       lastPlayedAt?: '';
       startAt?: '';
       axisCriteria?: '';
     } = {};
+    if (description === null) unset.description = '';
+    else if (description !== undefined) set['description'] = description;
     if (target === null) unset.target = '';
     else if (target !== undefined) set['target'] = target;
     if (lastPlayedAt === null) unset.lastPlayedAt = '';

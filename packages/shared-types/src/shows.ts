@@ -130,6 +130,10 @@ export interface TShowSectionDomainModel {
   id: TShowSectionId;
   show_id: TShowId;
   name: string;
+  /** Optional free-text note on this section — venue cue, transition
+   *  reminder, set intent. Rendered in the section header the same way
+   *  the show description renders in the show header. */
+  description?: string;
   position: number;
   target?: TShowSectionTarget;
   lastPlayedAt?: number;
@@ -146,6 +150,7 @@ export const SShowSectionDomainModel = z.object({
   id: SShowSectionId,
   show_id: SShowId,
   name: z.string().min(1),
+  description: z.string().optional(),
   position: z.number().int().nonnegative(),
   target: SShowSectionTarget.optional(),
   lastPlayedAt: z.number().optional(),
@@ -215,6 +220,7 @@ export const SUpdateShowPayload = z.object({
 
 export interface TAddShowSectionPayload {
   name: string;
+  description?: string;
   target?: TShowSectionTarget;
   startAt?: number;
   axisCriteria?: TShowAxisCriterion[];
@@ -222,6 +228,7 @@ export interface TAddShowSectionPayload {
 
 export const SAddShowSectionPayload = z.object({
   name: z.string().min(1),
+  description: z.string().optional(),
   target: SShowSectionTarget.optional(),
   startAt: z.number().optional(),
   axisCriteria: SShowAxisCriteria.optional(),
@@ -229,6 +236,8 @@ export const SAddShowSectionPayload = z.object({
 
 export interface TUpdateShowSectionPayload {
   name?: string;
+  /** Empty string clears (same convention as show description). */
+  description?: string;
   /** `null` clears the field, `undefined` leaves it untouched. */
   target?: TShowSectionTarget | null;
   startAt?: number | null;
@@ -237,6 +246,7 @@ export interface TUpdateShowSectionPayload {
 
 export const SUpdateShowSectionPayload = z.object({
   name: z.string().min(1).optional(),
+  description: z.string().optional(),
   target: SShowSectionTarget.nullable().optional(),
   startAt: z.number().nullable().optional(),
   axisCriteria: SShowAxisCriteria.nullable().optional(),
@@ -362,6 +372,8 @@ export type TShowSectionItemView =
 export interface TShowSectionViewModel extends TShowRatingSeries {
   id: TShowSectionId;
   name: string;
+  /** Optional free-text note on this section. */
+  description?: string;
   position: number;
   target?: TShowSectionTarget;
   lastPlayedAt?: number;

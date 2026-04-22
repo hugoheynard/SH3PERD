@@ -18,6 +18,7 @@ export class AddShowSectionCommand {
     public readonly showId: TShowId,
     public readonly payload: {
       name: string;
+      description?: string;
       target?: TShowSectionTarget;
       startAt?: number;
       axisCriteria?: TShowAxisCriterion[];
@@ -50,6 +51,7 @@ export class UpdateShowSectionCommand {
     public readonly sectionId: TShowSectionId,
     public readonly payload: {
       name?: string;
+      description?: string;
       target?: TShowSectionTarget | null;
       startAt?: number | null;
       axisCriteria?: TShowAxisCriterion[] | null;
@@ -69,6 +71,11 @@ export class UpdateShowSectionHandler implements ICommandHandler<
     if (!aggregate) throw new Error('SHOW_NOT_FOUND');
     if (cmd.payload.name !== undefined) {
       aggregate.renameSection(cmd.actorId, cmd.sectionId, cmd.payload.name);
+    }
+    if (cmd.payload.description !== undefined) {
+      // Empty string clears — normaliseOptionalText in the entity
+      // collapses whitespace-only / empty to `undefined`.
+      aggregate.updateSectionDescription(cmd.actorId, cmd.sectionId, cmd.payload.description);
     }
     // For every nullable field: `null` clears, `undefined` leaves it.
     if (cmd.payload.target !== undefined) {

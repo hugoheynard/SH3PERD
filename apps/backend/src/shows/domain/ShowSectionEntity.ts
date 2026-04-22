@@ -36,6 +36,7 @@ export class ShowSectionEntity extends Entity<TShowSectionDomainModel> {
       {
         ...props,
         name: props.name.trim(),
+        description: normaliseOptionalText(props.description),
       },
       'showSection',
     );
@@ -59,6 +60,9 @@ export class ShowSectionEntity extends Entity<TShowSectionDomainModel> {
   }
   get name(): string {
     return this.props.name;
+  }
+  get description(): string | undefined {
+    return this.props.description;
   }
   get position(): number {
     return this.props.position;
@@ -95,6 +99,13 @@ export class ShowSectionEntity extends Entity<TShowSectionDomainModel> {
     const trimmed = name.trim();
     if (!trimmed) throw new Error('SHOW_SECTION_NAME_REQUIRED');
     this.props.name = trimmed;
+  }
+
+  /** Update (or clear) the section's free-text description. Empty /
+   *  whitespace-only input collapses to `undefined` — same grammar as
+   *  `ShowEntity.updateDescription`. */
+  updateDescription(description: string | undefined): void {
+    this.props.description = normaliseOptionalText(description);
   }
 
   setTarget(target: TShowSectionTarget | undefined): void {
@@ -228,4 +239,11 @@ export class ShowSectionEntity extends Entity<TShowSectionDomainModel> {
   private reindexItems(): void {
     this._items = this._items.map((it, i) => ({ ...it, position: i }));
   }
+}
+
+/** Trim + collapse empty → undefined. Mirrors `ShowEntity`'s helper
+ *  so the "no description" diff is canonical across both levels. */
+function normaliseOptionalText(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : undefined;
 }

@@ -328,6 +328,12 @@ export class ShowDetailComponent {
   protected readonly editingSectionId = signal<TShowSectionId | null>(null);
   protected readonly sectionNameDraft = signal('');
 
+  /** Inline-edit state for section descriptions (one at a time). Multi-
+   *  line textarea, same grammar as the show-level description editor. */
+  protected readonly editingSectionDescriptionId =
+    signal<TShowSectionId | null>(null);
+  protected readonly sectionDescriptionDraft = signal('');
+
   /** Inline-edit state for section target duration (one at a time).
    *  Draft is the raw minutes string so the input stays untouched as
    *  the user types — commit parses + clamps to a positive integer. */
@@ -357,6 +363,7 @@ export class ShowDetailComponent {
       this.editingShowName.set(false);
       this.editingShowDescription.set(false);
       this.editingSectionId.set(null);
+      this.editingSectionDescriptionId.set(null);
       this.editingTargetId.set(null);
       this.editingShowTarget.set(false);
     });
@@ -461,6 +468,47 @@ export class ShowDetailComponent {
     } else if (event.key === 'Escape') {
       event.preventDefault();
       this.cancelRenameSection();
+    }
+  }
+
+  // ── Section description (inline) ─────────────────────
+
+  startEditSectionDescription(section: TShowSectionViewModel): void {
+    this.sectionDescriptionDraft.set(section.description ?? '');
+    this.editingSectionDescriptionId.set(section.id);
+  }
+
+  commitEditSectionDescription(section: TShowSectionViewModel): void {
+    const show = this.detail();
+    if (!show) return;
+    const next = this.sectionDescriptionDraft();
+    const trimmed = next.trim();
+    this.editingSectionDescriptionId.set(null);
+    const current = section.description ?? '';
+    if (trimmed === current.trim()) return;
+    // Empty string is the "clear" signal — backend's updateDescription
+    // collapses whitespace-only / empty to `undefined` on storage.
+    this.mutations.updateSection(show.id, section.id, {
+      description: trimmed.length ? next : '',
+    });
+  }
+
+  cancelEditSectionDescription(): void {
+    this.editingSectionDescriptionId.set(null);
+  }
+
+  /** Enter commits, Shift+Enter inserts a newline, Escape cancels —
+   *  same grammar as the show-level description editor. */
+  onSectionDescriptionKey(
+    event: KeyboardEvent,
+    section: TShowSectionViewModel,
+  ): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.commitEditSectionDescription(section);
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.cancelEditSectionDescription();
     }
   }
 

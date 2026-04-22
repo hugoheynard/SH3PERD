@@ -116,6 +116,7 @@ export class GetShowDetailHandler implements IQueryHandler<
       return {
         id: section.id,
         name: section.name,
+        description: section.description,
         position: section.position,
         target: section.target,
         lastPlayedAt: section.lastPlayedAt,
