@@ -13,10 +13,7 @@ import {
   ShowSettingsPopoverComponent,
   type ShowSettingsPopoverData,
 } from '../show-settings-popover/show-settings-popover.component';
-import {
-  RATING_AXES,
-  type RatingAxisDescriptor,
-} from '../../../shared/music-analytics/rating-axes';
+import { RATING_AXES } from '../../../shared/music-analytics/rating-axes';
 import type { RatingRowGroup } from '../../../shared/music-analytics/rating-row/rating-row.component';
 
 @Injectable({ providedIn: 'root' })
@@ -30,7 +27,6 @@ export class ShowDetailStateService {
   readonly singleMode = computed(
     () => (this.detail()?.sections.length ?? 0) <= 1,
   );
-  readonly axes = RATING_AXES;
 
   /** Full 4-axis row for the show header — mean + series + criterion
    *  label + out-of-range tint, pre-computed so the template is a
@@ -46,16 +42,6 @@ export class ShowDetailStateService {
   readonly showDescriptionDraft = signal('');
   readonly editingShowTarget = signal(false);
   readonly showTargetMinutesDraft = signal('');
-
-  readonly showHeaderMeanFor = (
-    show: TShowSummaryViewModel | TShowSectionViewModel,
-    axis: unknown,
-  ): number | null => this.meanFor(show, axis as RatingAxisDescriptor);
-
-  readonly showHeaderSeriesFor = (
-    show: TShowSummaryViewModel | TShowSectionViewModel,
-    axis: unknown,
-  ): (number | null)[] => this.seriesFor(show, axis as RatingAxisDescriptor);
 
   loadDetail(id: TShowId): void {
     this.showsState.loadDetail(id);
@@ -261,95 +247,53 @@ export class ShowDetailStateService {
     return `${datePart} · ${timePart}`;
   }
 
-  meanFor(
-    target: TShowSummaryViewModel | TShowSectionViewModel,
-    axis: RatingAxisDescriptor,
-  ): number | null {
-    return target[axis.meanKey];
-  }
-
-  seriesFor(
-    target: TShowSummaryViewModel | TShowSectionViewModel,
-    axis: RatingAxisDescriptor,
-  ): (number | null)[] {
-    return target[axis.seriesKey];
-  }
-
-  durationsFor(target: TShowSummaryViewModel): number[] {
-    return target.durationSeries;
-  }
-
-  displayMean(mean: number | null): string {
-    return mean === null ? '—' : mean.toFixed(1);
-  }
-
-  criterionFor(
-    target: TShowSummaryViewModel | TShowSectionViewModel,
-    axisKey: TShowAxisKey,
-  ): TShowAxisCriterion | null {
-    return (
-      target.axisCriteria?.find((criterion) => criterion.axis === axisKey) ??
-      null
-    );
-  }
-
-  criterionLabel(criterion: TShowAxisCriterion): string {
-    const min = criterion.min;
-    const max = criterion.max;
-    if (min !== undefined && max !== undefined) {
-      return `${formatRating(min)}–${formatRating(max)}`;
-    }
-    if (min !== undefined) return `≥ ${formatRating(min)}`;
-    if (max !== undefined) return `≤ ${formatRating(max)}`;
-    return '—';
-  }
-
-  isMeanOutOfRange(
-    target: TShowSummaryViewModel | TShowSectionViewModel,
-    axisKey: TShowAxisKey,
-  ): boolean {
-    const criterion = this.criterionFor(target, axisKey);
-    if (!criterion) return false;
-    const mean = this.meanForAxisKey(target, axisKey);
-    if (mean === null) return false;
-    if (criterion.min !== undefined && mean < criterion.min) return true;
-    if (criterion.max !== undefined && mean > criterion.max) return true;
-    return false;
-  }
-
-  private meanForAxisKey(
-    target: TShowSummaryViewModel | TShowSectionViewModel,
-    axisKey: TShowAxisKey,
-  ): number | null {
-    switch (axisKey) {
-      case 'mastery':
-        return target.meanMastery;
-      case 'energy':
-        return target.meanEnergy;
-      case 'effort':
-        return target.meanEffort;
-      case 'quality':
-        return target.meanQuality;
-    }
-  }
-
   /** Show/section → RatingRowGroup[] with criterion label + out-of-range
    *  tint applied per axis. Feeds `<app-rating-row>` in header + footer. */
   buildRatingRow(
     target: TShowSummaryViewModel | TShowSectionViewModel,
   ): RatingRowGroup[] {
     return RATING_AXES.map((axis) => {
-      const criterion = this.criterionFor(target, axis.axisKey);
+      const criterion = criterionFor(target, axis.axisKey);
+      const mean = target[axis.meanKey];
       return {
         label: axis.label,
         accent: axis.accent,
-        mean: target[axis.meanKey],
+        mean,
         series: target[axis.seriesKey],
-        criterion: criterion ? this.criterionLabel(criterion) : null,
-        outOfRange: this.isMeanOutOfRange(target, axis.axisKey),
+        criterion: criterion ? criterionLabel(criterion) : null,
+        outOfRange: criterion ? outOfRange(mean, criterion) : false,
       };
     });
   }
+}
+
+function criterionFor(
+  target: TShowSummaryViewModel | TShowSectionViewModel,
+  axisKey: TShowAxisKey,
+): TShowAxisCriterion | null {
+  return (
+    target.axisCriteria?.find((criterion) => criterion.axis === axisKey) ?? null
+  );
+}
+
+function criterionLabel(criterion: TShowAxisCriterion): string {
+  const { min, max } = criterion;
+  if (min !== undefined && max !== undefined) {
+    return `${formatRating(min)}–${formatRating(max)}`;
+  }
+  if (min !== undefined) return `≥ ${formatRating(min)}`;
+  if (max !== undefined) return `≤ ${formatRating(max)}`;
+  return '—';
+}
+
+function outOfRange(
+  mean: number | null,
+  criterion: TShowAxisCriterion,
+): boolean {
+  if (mean === null) return false;
+  if (criterion.min !== undefined && mean < criterion.min) return true;
+  if (criterion.max !== undefined && mean > criterion.max) return true;
+  return false;
 }
 
 function formatRating(value: number): string {

@@ -14,14 +14,11 @@ import { FormsModule } from '@angular/forms';
 import type {
   TMusicVersionId,
   TPlaylistId,
-  TShowAxisCriterion,
-  TShowAxisKey,
   TShowId,
   TShowSectionId,
   TShowSectionItemId,
   TShowSectionItemView,
   TShowSectionViewModel,
-  TShowSummaryViewModel,
 } from '@sh3pherd/shared-types';
 import { ItemMutationService } from '../services/mutations-layer/item-mutation.service';
 import { SectionMutationService } from '../services/mutations-layer/section-mutation.service';
@@ -56,7 +53,6 @@ import {
 import { ShowDetailHeaderComponent } from '../show-detail-header/show-detail-header.component';
 import { ShowItemRowComponent } from '../show-item-row/show-item-row.component';
 import { showItemTitle } from '../show-item-row/show-item-row.utils';
-import { RATING_AXES } from '../../../shared/music-analytics/rating-axes';
 import { ShowDetailStateService } from './show-detail-state.service';
 
 /** Read the target duration of a section in whole minutes, or `null`
@@ -296,7 +292,6 @@ export class ShowDetailComponent {
   protected readonly detail = this.detailState.detail;
   protected readonly loading = this.detailState.loading;
   protected readonly singleMode = this.detailState.singleMode;
-  protected readonly axes = RATING_AXES;
 
   /** Inline-edit state for section names (one at a time). */
   protected readonly editingSectionId = signal<TShowSectionId | null>(null);
@@ -764,66 +759,4 @@ export class ShowDetailComponent {
   }
 
   // ── Axis criteria helpers ────────────────────────────
-
-  /** Look up the criterion set on a target (show or section) for a
-   *  given axis, or null when no criterion / axis mismatch. */
-  criterionFor(
-    target: TShowSummaryViewModel | TShowSectionViewModel,
-    axisKey: TShowAxisKey,
-  ): TShowAxisCriterion | null {
-    return target.axisCriteria?.find((c) => c.axis === axisKey) ?? null;
-  }
-
-  /** Formatted criterion label for the chip ("≥ 3.0", "≤ 3.5",
-   *  "2.5–4"). Null bounds are omitted. */
-  criterionLabel(criterion: TShowAxisCriterion): string {
-    const min = criterion.min;
-    const max = criterion.max;
-    if (min !== undefined && max !== undefined) {
-      return `${formatRating(min)}–${formatRating(max)}`;
-    }
-    if (min !== undefined) return `≥ ${formatRating(min)}`;
-    if (max !== undefined) return `≤ ${formatRating(max)}`;
-    return '—';
-  }
-
-  /** Decide whether the mean of a rating axis sits outside the
-   *  criterion window — used to tint the mean value + sparkline when
-   *  the artist has set a target and the current series drifts out. */
-  isMeanOutOfRange(
-    target: TShowSummaryViewModel | TShowSectionViewModel,
-    axisKey: TShowAxisKey,
-  ): boolean {
-    const c = this.criterionFor(target, axisKey);
-    if (!c) return false;
-    const mean = this.meanForAxisKey(target, axisKey);
-    if (mean === null) return false;
-    if (c.min !== undefined && mean < c.min) return true;
-    if (c.max !== undefined && mean > c.max) return true;
-    return false;
-  }
-
-  /** Read the mean rating from the view-model by canonical axis key.
-   *  Separate from the template's `meanFor(axis)` because that one
-   *  takes a `RatingAxis` descriptor; here we just need the raw value
-   *  per axis key for the out-of-range check. */
-  private meanForAxisKey(
-    target: TShowSummaryViewModel | TShowSectionViewModel,
-    axisKey: TShowAxisKey,
-  ): number | null {
-    switch (axisKey) {
-      case 'mastery':
-        return target.meanMastery;
-      case 'energy':
-        return target.meanEnergy;
-      case 'effort':
-        return target.meanEffort;
-      case 'quality':
-        return target.meanQuality;
-    }
-  }
-}
-
-function formatRating(value: number): string {
-  return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }

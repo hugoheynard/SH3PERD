@@ -1,5 +1,4 @@
 @use "mixins" as m;
-@use "../../../shared/styles/rating-dots" as *;
 
 /* ── Color map (matches playlist-card) ─────────────────── */
 
@@ -200,9 +199,6 @@ $colors: (
   }
 
   &__ratings {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px var(--gap-sm);
     padding-top: 8px;
     border-top: 1px solid var(--border-light);
   }
@@ -245,53 +241,6 @@ $colors: (
     color: var(--text-muted);
     font-size: 10px;
   }
-}
-
-/* ── Rating group (per axis, mirrors playlist-card) ────── */
-
-.rating-group {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-
-  &--empty {
-    .rating-label,
-    .rating-value {
-      opacity: 0.5;
-    }
-    .rating-value {
-      color: var(--text-faded);
-    }
-    .rating-sparkline {
-      opacity: 0.35;
-    }
-  }
-}
-
-.rating-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 4px;
-}
-
-.rating-label {
-  @include rating-label;
-}
-
-.rating-value {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-}
-
-.rating-sparkline {
-  display: block;
-  height: 22px;
-  margin-top: 1px;
 }
 
 /* ── Mobile ────────────────────────────────────────────── */

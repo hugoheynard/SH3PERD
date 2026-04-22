@@ -1,5 +1,4 @@
 @use "mixins" as m;
-@use "../../../shared/styles/rating-dots" as *;
 
 /* ── Color map (matches playlist-card / shows-page) ────── */
 
@@ -493,12 +492,6 @@ $colors: (
     align-items: center;
     gap: 10px var(--gap-md);
   }
-
-  &__ratings {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--gap-sm);
-  }
 }
 
 /* ── Item list ─────────────────────────────────────────── */
@@ -606,97 +599,6 @@ $colors: (
       opacity: 0.9;
     }
   }
-}
-
-/* ── Rating group (per-axis, header + section) ─────────── */
-
-.rating-group {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-
-  &--empty {
-    .rating-label,
-    .rating-value {
-      opacity: 0.5;
-    }
-    .rating-value {
-      color: var(--text-faded);
-    }
-    .rating-sparkline {
-      opacity: 0.35;
-    }
-  }
-
-  /* The axis mean sits outside the configured criterion window — tint
-     the headline number + criterion chip so the artist sees the drift
-     without having to read the numeric comparison. */
-  &--out-of-range {
-    .rating-value {
-      color: var(--color-alert-light, #f39e86);
-    }
-    .rating-criterion {
-      color: var(--color-alert-light, #f39e86);
-      border-color: var(--color-alert, #e06450);
-    }
-  }
-
-  &--compact {
-    .rating-sparkline {
-      height: 18px;
-    }
-  }
-}
-
-/* ── Axis criterion chip ───────────────────────────────── */
-
-.rating-criterion {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  padding: 0 5px;
-  min-height: 14px;
-  font-size: 10px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.03em;
-  color: var(--text-secondary);
-  background: var(--surface-subtle);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xs);
-  white-space: nowrap;
-
-  &--compact {
-    font-size: 9px;
-    padding: 0 4px;
-    min-height: 12px;
-  }
-}
-
-.rating-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 4px;
-}
-
-.rating-label {
-  @include rating-label;
-}
-
-.rating-value {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-}
-
-.rating-sparkline {
-  display: block;
-  height: 22px;
-  margin-top: 1px;
 }
 
 /* ── Not-found fallback ────────────────────────────────── */
