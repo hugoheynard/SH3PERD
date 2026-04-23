@@ -5,7 +5,9 @@
 ### Tests
 
 - [ ] Unit tests for `TabMutationService` (~20 public mutations)
-- [ ] Unit tests for backend CQRS handlers (Create/Update/Delete version, Upload/Master track)
+- [x] Unit tests for backend CQRS handlers — Upload/Master/AiMaster/PitchShift,
+      Create/Update/Delete version, Create/Delete repertoire entry,
+      Save/Delete tab configs, Create reference, Set favorite, Delete track
 - [ ] Unit tests for `MusicLibrarySelectorService` (filter logic, fuzzy search)
 - [ ] Integration test: upload → analysis → result in DB
 
@@ -129,7 +131,7 @@ Plan-aware quotas on tabs + saved configs, enforced at the UI _and_ the mutation
       label. See `sh3-playlists.md` § Drag & drop.
 - [x] Per-version granularity (each `.version-block` is its own drag
       source, not the whole card) — payload carries `referenceId +
-    versionId + title + artist` for the preview chip.
+  versionId + title + artist` for the preview chip.
 
 ### Playlist reorder + drop-position feedback — ✅ shipped
 
