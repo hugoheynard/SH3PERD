@@ -110,7 +110,17 @@ export abstract class TabMutationService<TConfig> {
 
   /* ── Domain-specific config mutation ──────────── */
 
-  patchTabConfig(id: string, updater: (config: TConfig) => TConfig): void {
+  /**
+   * Protected — intended as the **only** escape hatch for subclasses that
+   * need to mutate the domain-specific config on a tab. Keeping this
+   * public would let any consumer bypass the quota / policy overrides
+   * that subclasses layer on top of the tab mutations. Subclasses expose
+   * their own narrow mutation API; consumers go through those.
+   */
+  protected patchTabConfig(
+    id: string,
+    updater: (config: TConfig) => TConfig,
+  ): void {
     this.patchTab(id, (t) => ({ ...t, config: updater(t.config) }));
   }
 

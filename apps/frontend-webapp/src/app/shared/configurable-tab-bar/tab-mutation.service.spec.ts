@@ -1,4 +1,9 @@
-import type { TabItem, SavedTabConfig, TabStateSignal, TabSystemState } from './configurable-tab-bar.types';
+import type {
+  TabItem,
+  SavedTabConfig,
+  TabStateSignal,
+  TabSystemState,
+} from './configurable-tab-bar.types';
 import { TabMutationService } from './tab-mutation.service';
 
 // ── Crypto polyfill ──────────────────────────────────────────
@@ -6,7 +11,10 @@ import { TabMutationService } from './tab-mutation.service';
 // `crypto.randomUUID`, which the production mutation service calls
 // when creating new tab ids. Install the node implementation once
 // before anything in this suite runs.
-if (typeof globalThis.crypto === 'undefined' || typeof globalThis.crypto.randomUUID !== 'function') {
+if (
+  typeof globalThis.crypto === 'undefined' ||
+  typeof globalThis.crypto.randomUUID !== 'function'
+) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const nodeCrypto = require('node:crypto');
   Object.defineProperty(globalThis, 'crypto', {
@@ -23,9 +31,22 @@ if (typeof globalThis.crypto === 'undefined' || typeof globalThis.crypto.randomU
 
 type TestConfig = { search: string };
 
-class TestMutationService extends TabMutationService<TestConfig> {}
+class TestMutationService extends TabMutationService<TestConfig> {
+  // Re-expose `patchTabConfig` for the test spec. Production subclasses
+  // wrap it behind a narrow domain API (setSearchQuery, etc.); the test
+  // harness just needs direct access to prove the base behaviour.
+  public patchTabConfigForTest(
+    id: string,
+    updater: (c: TestConfig) => TestConfig,
+  ): void {
+    this.patchTabConfig(id, updater);
+  }
+}
 
-function makeTab(id: string, overrides: Partial<TabItem<TestConfig>> = {}): TabItem<TestConfig> {
+function makeTab(
+  id: string,
+  overrides: Partial<TabItem<TestConfig>> = {},
+): TabItem<TestConfig> {
   return {
     id,
     title: `Tab ${id}`,
@@ -40,7 +61,7 @@ function makeSavedConfig(
   tabIds: string[],
   overrides: Partial<SavedTabConfig<TestConfig>> = {},
 ): SavedTabConfig<TestConfig> {
-  const tabs = tabIds.map(tid => makeTab(tid));
+  const tabs = tabIds.map((tid) => makeTab(tid));
   return {
     id,
     name: `Config ${id}`,
@@ -62,17 +83,25 @@ function createService(initial: Partial<TabSystemState<TestConfig>> = {}) {
   const tabStateSignal: TabStateSignal<TestConfig> = Object.assign(
     () => state,
     {
-      update: (fn: (s: TabSystemState<TestConfig>) => TabSystemState<TestConfig>) => {
+      update: (
+        fn: (s: TabSystemState<TestConfig>) => TabSystemState<TestConfig>,
+      ) => {
         state = fn(state);
       },
     },
   );
   const defaultConfigFactory = jest.fn<TestConfig, []>(() => ({ search: '' }));
   const onChanged = jest.fn<void, []>();
-  const service = new TestMutationService(tabStateSignal, defaultConfigFactory, onChanged);
+  const service = new TestMutationService(
+    tabStateSignal,
+    defaultConfigFactory,
+    onChanged,
+  );
   return {
     service,
-    get state(): TabSystemState<TestConfig> { return state; },
+    get state(): TabSystemState<TestConfig> {
+      return state;
+    },
     onChanged,
     defaultConfigFactory,
   };
@@ -81,7 +110,6 @@ function createService(initial: Partial<TabSystemState<TestConfig>> = {}) {
 // ── Tests ─────────────────────────────────────────────────────
 
 describe('TabMutationService', () => {
-
   describe('setActiveTab', () => {
     it('updates activeTabId', () => {
       const h = createService({
@@ -126,7 +154,7 @@ describe('TabMutationService', () => {
         activeTabId: 'a',
       });
       h.service.closeTab('b');
-      expect(h.state.tabs.map(t => t.id)).toEqual(['a']);
+      expect(h.state.tabs.map((t) => t.id)).toEqual(['a']);
     });
 
     it('refuses to close the last remaining tab (no-op)', () => {
@@ -193,7 +221,10 @@ describe('TabMutationService', () => {
     });
 
     it('clears color when an empty string is passed', () => {
-      const h = createService({ tabs: [makeTab('t1', { color: '#abc' })], activeTabId: 't1' });
+      const h = createService({
+        tabs: [makeTab('t1', { color: '#abc' })],
+        activeTabId: 't1',
+      });
       h.service.setTabColor('t1', '');
       expect(h.state.tabs[0].color).toBeUndefined();
     });
@@ -206,7 +237,7 @@ describe('TabMutationService', () => {
         activeTabId: 'a',
       });
       h.service.reorderTab('a', 2);
-      expect(h.state.tabs.map(t => t.id)).toEqual(['b', 'c', 'a']);
+      expect(h.state.tabs.map((t) => t.id)).toEqual(['b', 'c', 'a']);
     });
 
     it('no-ops on unknown tabId', () => {
@@ -215,7 +246,7 @@ describe('TabMutationService', () => {
         activeTabId: 'a',
       });
       h.service.reorderTab('missing', 0);
-      expect(h.state.tabs.map(t => t.id)).toEqual(['a', 'b']);
+      expect(h.state.tabs.map((t) => t.id)).toEqual(['a', 'b']);
     });
 
     it('no-ops when the new index equals the old index', () => {
@@ -224,14 +255,14 @@ describe('TabMutationService', () => {
         activeTabId: 'a',
       });
       h.service.reorderTab('a', 0);
-      expect(h.state.tabs.map(t => t.id)).toEqual(['a', 'b']);
+      expect(h.state.tabs.map((t) => t.id)).toEqual(['a', 'b']);
     });
   });
 
   describe('patchTabConfig', () => {
     it('applies the updater to the tab config', () => {
       const h = createService();
-      h.service.patchTabConfig('t1', c => ({ ...c, search: 'query' }));
+      h.service.patchTabConfigForTest('t1', (c) => ({ ...c, search: 'query' }));
       expect(h.state.tabs[0].config.search).toBe('query');
     });
   });
@@ -248,7 +279,7 @@ describe('TabMutationService', () => {
       const saved = h.state.savedTabConfigs!;
       expect(saved).toHaveLength(1);
       expect(saved[0].name).toBe('My config');
-      expect(saved[0].tabs.map(t => t.id)).toEqual(['a', 'b']);
+      expect(saved[0].tabs.map((t) => t.id)).toEqual(['a', 'b']);
       expect(saved[0].activeTabId).toBe('b');
       expect(h.state.activeConfigId).toBe(saved[0].id);
     });
@@ -264,10 +295,13 @@ describe('TabMutationService', () => {
   describe('deleteTabConfig', () => {
     it('removes the config from savedTabConfigs', () => {
       const h = createService({
-        savedTabConfigs: [makeSavedConfig('c1', ['a']), makeSavedConfig('c2', ['b'])],
+        savedTabConfigs: [
+          makeSavedConfig('c1', ['a']),
+          makeSavedConfig('c2', ['b']),
+        ],
       });
       h.service.deleteTabConfig('c1');
-      expect(h.state.savedTabConfigs!.map(c => c.id)).toEqual(['c2']);
+      expect(h.state.savedTabConfigs!.map((c) => c.id)).toEqual(['c2']);
     });
 
     it('clears activeConfigId when the deleted config was active', () => {
@@ -281,7 +315,10 @@ describe('TabMutationService', () => {
 
     it('keeps activeConfigId when deleting a non-active config', () => {
       const h = createService({
-        savedTabConfigs: [makeSavedConfig('c1', ['a']), makeSavedConfig('c2', ['b'])],
+        savedTabConfigs: [
+          makeSavedConfig('c1', ['a']),
+          makeSavedConfig('c2', ['b']),
+        ],
         activeConfigId: 'c2',
       });
       h.service.deleteTabConfig('c1');
@@ -292,11 +329,18 @@ describe('TabMutationService', () => {
   describe('renameTabConfig', () => {
     it('renames only the target config', () => {
       const h = createService({
-        savedTabConfigs: [makeSavedConfig('c1', ['a']), makeSavedConfig('c2', ['b'])],
+        savedTabConfigs: [
+          makeSavedConfig('c1', ['a']),
+          makeSavedConfig('c2', ['b']),
+        ],
       });
       h.service.renameTabConfig('c2', 'New name');
-      expect(h.state.savedTabConfigs!.find(c => c.id === 'c2')!.name).toBe('New name');
-      expect(h.state.savedTabConfigs!.find(c => c.id === 'c1')!.name).toBe('Config c1');
+      expect(h.state.savedTabConfigs!.find((c) => c.id === 'c2')!.name).toBe(
+        'New name',
+      );
+      expect(h.state.savedTabConfigs!.find((c) => c.id === 'c1')!.name).toBe(
+        'Config c1',
+      );
     });
   });
 
@@ -306,7 +350,7 @@ describe('TabMutationService', () => {
         savedTabConfigs: [makeSavedConfig('c1', ['a', 'b'])],
       });
       h.service.removeTabFromConfig('c1', 'a');
-      expect(h.state.savedTabConfigs![0].tabs.map(t => t.id)).toEqual(['b']);
+      expect(h.state.savedTabConfigs![0].tabs.map((t) => t.id)).toEqual(['b']);
     });
 
     it('no-ops when the removal would leave the config empty', () => {
@@ -314,12 +358,16 @@ describe('TabMutationService', () => {
         savedTabConfigs: [makeSavedConfig('c1', ['only'])],
       });
       h.service.removeTabFromConfig('c1', 'only');
-      expect(h.state.savedTabConfigs![0].tabs.map(t => t.id)).toEqual(['only']);
+      expect(h.state.savedTabConfigs![0].tabs.map((t) => t.id)).toEqual([
+        'only',
+      ]);
     });
 
     it('picks a new activeTabId when the active tab was removed', () => {
       const h = createService({
-        savedTabConfigs: [makeSavedConfig('c1', ['a', 'b'], { activeTabId: 'a' })],
+        savedTabConfigs: [
+          makeSavedConfig('c1', ['a', 'b'], { activeTabId: 'a' }),
+        ],
       });
       h.service.removeTabFromConfig('c1', 'a');
       expect(h.state.savedTabConfigs![0].activeTabId).toBe('b');
@@ -333,8 +381,8 @@ describe('TabMutationService', () => {
       });
       h.service.renameTabInConfig('c1', 'a', 'Renamed');
       const saved = h.state.savedTabConfigs![0];
-      expect(saved.tabs.find(t => t.id === 'a')!.title).toBe('Renamed');
-      expect(saved.tabs.find(t => t.id === 'a')!.autoTitle).toBe(false);
+      expect(saved.tabs.find((t) => t.id === 'a')!.title).toBe('Renamed');
+      expect(saved.tabs.find((t) => t.id === 'a')!.autoTitle).toBe(false);
     });
   });
 
@@ -349,10 +397,10 @@ describe('TabMutationService', () => {
         ],
       });
       h.service.moveTabToConfig('src', 'tgt', 'a');
-      const src = h.state.savedTabConfigs!.find(c => c.id === 'src')!;
-      const tgt = h.state.savedTabConfigs!.find(c => c.id === 'tgt')!;
-      expect(src.tabs.map(t => t.id)).toEqual(['b']);
-      expect(tgt.tabs.map(t => t.id)).toEqual(['x', 'a']);
+      const src = h.state.savedTabConfigs!.find((c) => c.id === 'src')!;
+      const tgt = h.state.savedTabConfigs!.find((c) => c.id === 'tgt')!;
+      expect(src.tabs.map((t) => t.id)).toEqual(['b']);
+      expect(tgt.tabs.map((t) => t.id)).toEqual(['x', 'a']);
     });
 
     it('no-ops when the source would be emptied by the move', () => {
@@ -363,10 +411,10 @@ describe('TabMutationService', () => {
         ],
       });
       h.service.moveTabToConfig('src', 'tgt', 'only');
-      const src = h.state.savedTabConfigs!.find(c => c.id === 'src')!;
-      const tgt = h.state.savedTabConfigs!.find(c => c.id === 'tgt')!;
-      expect(src.tabs.map(t => t.id)).toEqual(['only']);
-      expect(tgt.tabs.map(t => t.id)).toEqual(['x']);
+      const src = h.state.savedTabConfigs!.find((c) => c.id === 'src')!;
+      const tgt = h.state.savedTabConfigs!.find((c) => c.id === 'tgt')!;
+      expect(src.tabs.map((t) => t.id)).toEqual(['only']);
+      expect(tgt.tabs.map((t) => t.id)).toEqual(['x']);
     });
 
     it('adjusts source.activeTabId when the active tab was moved', () => {
@@ -377,19 +425,25 @@ describe('TabMutationService', () => {
         ],
       });
       h.service.moveTabToConfig('src', 'tgt', 'a');
-      const src = h.state.savedTabConfigs!.find(c => c.id === 'src')!;
+      const src = h.state.savedTabConfigs!.find((c) => c.id === 'src')!;
       expect(src.activeTabId).toBe('b');
     });
 
     it('no-ops when sourceConfigId is unknown', () => {
-      const initial = [makeSavedConfig('src', ['a']), makeSavedConfig('tgt', ['x'])];
+      const initial = [
+        makeSavedConfig('src', ['a']),
+        makeSavedConfig('tgt', ['x']),
+      ];
       const h = createService({ savedTabConfigs: initial });
       h.service.moveTabToConfig('missing', 'tgt', 'a');
       expect(h.state.savedTabConfigs).toEqual(initial);
     });
 
     it('no-ops when the tab is not in the source config', () => {
-      const initial = [makeSavedConfig('src', ['a']), makeSavedConfig('tgt', ['x'])];
+      const initial = [
+        makeSavedConfig('src', ['a']),
+        makeSavedConfig('tgt', ['x']),
+      ];
       const h = createService({ savedTabConfigs: initial });
       h.service.moveTabToConfig('src', 'tgt', 'ghost');
       expect(h.state.savedTabConfigs).toEqual(initial);
@@ -406,9 +460,9 @@ describe('TabMutationService', () => {
         savedTabConfigs: [makeSavedConfig('tgt', ['x'])],
       });
       h.service.moveActiveTabToConfig('a', 'tgt');
-      const tgt = h.state.savedTabConfigs!.find(c => c.id === 'tgt')!;
+      const tgt = h.state.savedTabConfigs!.find((c) => c.id === 'tgt')!;
       expect(tgt.tabs).toHaveLength(2);
-      expect(tgt.tabs.map(t => t.title)).toEqual(['Tab x', 'Tab a']);
+      expect(tgt.tabs.map((t) => t.title)).toEqual(['Tab x', 'Tab a']);
       // the moved copy gets a new id (dedup) — not the original 'a'
       expect(tgt.tabs[1].id).not.toBe('a');
     });
@@ -420,7 +474,7 @@ describe('TabMutationService', () => {
         savedTabConfigs: [makeSavedConfig('tgt', ['x'])],
       });
       h.service.moveActiveTabToConfig('a', 'tgt');
-      expect(h.state.tabs.map(t => t.id)).toEqual(['b']);
+      expect(h.state.tabs.map((t) => t.id)).toEqual(['b']);
       expect(h.state.activeTabId).toBe('b');
     });
 
@@ -451,9 +505,11 @@ describe('TabMutationService', () => {
         activeConfigId: 'active-cfg',
       });
       h.service.moveActiveTabToConfig('a', 'tgt');
-      const activeCfg = h.state.savedTabConfigs!.find(c => c.id === 'active-cfg')!;
+      const activeCfg = h.state.savedTabConfigs!.find(
+        (c) => c.id === 'active-cfg',
+      )!;
       // 'a' removed from the active config and activeTabId bumped to 'b'
-      expect(activeCfg.tabs.map(t => t.id)).toEqual(['b']);
+      expect(activeCfg.tabs.map((t) => t.id)).toEqual(['b']);
       expect(activeCfg.activeTabId).toBe('b');
     });
 
@@ -485,9 +541,9 @@ describe('TabMutationService', () => {
         activeConfigId: 'cfg',
       });
       h.service.moveActiveTabToConfig('a', 'cfg');
-      const cfg = h.state.savedTabConfigs!.find(c => c.id === 'cfg')!;
-      expect(cfg.tabs.map(t => t.id)).toEqual(['b']);
-      expect(h.state.tabs.map(t => t.id)).toEqual(['b']);
+      const cfg = h.state.savedTabConfigs!.find((c) => c.id === 'cfg')!;
+      expect(cfg.tabs.map((t) => t.id)).toEqual(['b']);
+      expect(h.state.tabs.map((t) => t.id)).toEqual(['b']);
     });
 
     it('keeps the active-config mirror unchanged when there is no activeConfigId', () => {
@@ -498,7 +554,9 @@ describe('TabMutationService', () => {
         activeConfigId: null,
       });
       h.service.moveActiveTabToConfig('a', 'tgt');
-      expect(h.state.savedTabConfigs!.find(c => c.id === 'tgt')!.tabs).toHaveLength(2);
+      expect(
+        h.state.savedTabConfigs!.find((c) => c.id === 'tgt')!.tabs,
+      ).toHaveLength(2);
     });
 
     it('no-ops when the tab id is not in the open strip', () => {
@@ -509,7 +567,7 @@ describe('TabMutationService', () => {
       });
       h.service.moveActiveTabToConfig('ghost', 'tgt');
       expect(h.state.tabs).toHaveLength(1);
-      expect(h.state.savedTabConfigs![0].tabs.map(t => t.id)).toEqual(['x']);
+      expect(h.state.savedTabConfigs![0].tabs.map((t) => t.id)).toEqual(['x']);
     });
   });
 
@@ -520,7 +578,7 @@ describe('TabMutationService', () => {
       const cfg = makeSavedConfig('c1', ['x', 'y'], { activeTabId: 'y' });
       const h = createService({ tabs: [makeTab('old')], activeTabId: 'old' });
       h.service.applyTabConfig(cfg);
-      expect(h.state.tabs.map(t => t.id)).toEqual(['x', 'y']);
+      expect(h.state.tabs.map((t) => t.id)).toEqual(['x', 'y']);
       expect(h.state.activeTabId).toBe('y');
       expect(h.state.activeConfigId).toBe('c1');
       // deep copy — mutating the restored tabs must not leak into the cfg object
@@ -565,7 +623,9 @@ describe('TabMutationService', () => {
         activeConfigId: 'c1',
       });
       h.service.updateTabTitle('a', 'Renamed');
-      const mirrored = h.state.savedTabConfigs![0].tabs.find(t => t.id === 'a')!;
+      const mirrored = h.state.savedTabConfigs![0].tabs.find(
+        (t) => t.id === 'a',
+      )!;
       expect(mirrored.title).toBe('Renamed');
     });
 
@@ -590,7 +650,9 @@ describe('TabMutationService', () => {
         activeConfigId: null,
       });
       h.service.updateTabTitle('a', 'Renamed');
-      const mirrored = h.state.savedTabConfigs![0].tabs.find(t => t.id === 'a')!;
+      const mirrored = h.state.savedTabConfigs![0].tabs.find(
+        (t) => t.id === 'a',
+      )!;
       expect(mirrored.title).toBe('Tab a'); // original title preserved
     });
 
@@ -605,8 +667,8 @@ describe('TabMutationService', () => {
         activeConfigId: 'active',
       });
       h.service.updateTabTitle('a', 'Renamed');
-      const active = h.state.savedTabConfigs!.find(c => c.id === 'active')!;
-      const other = h.state.savedTabConfigs!.find(c => c.id === 'other')!;
+      const active = h.state.savedTabConfigs!.find((c) => c.id === 'active')!;
+      const other = h.state.savedTabConfigs!.find((c) => c.id === 'other')!;
       expect(active.tabs[0].title).toBe('Renamed');
       expect(other.tabs[0].title).toBe('Tab a');
     });
