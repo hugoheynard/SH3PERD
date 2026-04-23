@@ -85,10 +85,12 @@
       Fix : histogramme
       `audio_processor_stage_duration_seconds{stage, outcome}`.
 
-- [ ] **Pas d'alerting sur `storage_bytes` approchant du quota**
-      User à 90 % n'est pas prévenu, tape le mur à l'upload suivant.
-      Fix : threshold côté back, event `quota_threshold_reached` → toast +
-      email.
+- [x] **Pas d'alerting sur `storage_bytes` approchant du quota** — `StorageQuotaWarningService`
+      côté frontend : probe `GET /quota/me` après chaque upload/master, fire toast +
+      notification panel aux seuils 80 % / 95 %, dedup per-session par (resource, seuil).
+      Swallow-HTTP-error pour ne jamais bloquer une mutation. Wiring : hook dans
+      `music-library-page` au succès upload + mastering-closed. Email push reste
+      en follow-up (infra notif email absente).
 
 - [ ] **Logs handlers = `Logger.log` sans corrélation ni JSON**
       Pas de `requestId`, pas de structured logging — grep en prod =
@@ -98,21 +100,22 @@
 
 ## P3 — Dette de correctness qui revient hanter
 
-- [ ] **Compensation S3 testée partiellement**
-      Les specs vérifient que `storage.delete(key)` est appelé, mais pas le
-      "best-effort" quand `delete` throw. Ajouter un test
-      `swallows S3 compensation failure` sur Master / AiMaster / PitchShift.
+- [x] **Compensation S3 testée partiellement** — ajout d'un
+      `swallows a compensation-delete failure` sur les 3 handlers Master / AiMaster /
+      PitchShift. Les specs Upload et Delete avaient déjà ce cas, les trois autres
+      s'alignent maintenant sur le même contrat.
 
-- [ ] **Pas de test d'intégration upload → analyse → DB**
-      Sans lui, un changement de forme sur `TrackUploadedEvent` casse
-      silencieusement.
-      Fix : spec e2e avec Mongo memory + mock AP TCP transport + vrai
-      fichier WAV 1 s.
+- [x] **Pas de test d'intégration upload → analyse → DB** — `music-upload-analysis.e2e-spec.ts`
+      boot le full AppModule avec `AUDIO_PROCESSOR` et `TRACK_STORAGE_SERVICE` overridés,
+      injecte un fake analysis snapshot via `of(...)`, poll le doc Mongo jusqu'à ce que
+      `analysisResult` apparaisse sur le track. Cas null (AP répond null) couvert aussi.
 
 - [x] **`MusicPolicy` hardcode les limites en constantes locales** — `MusicPolicyLimits`
-      injecté au constructeur avec `DEFAULT_MUSIC_POLICY_LIMITS` fallback. Le context
-      des erreurs embarque maintenant la limite effective, pas la constante. Wiring
-      plan-aware à faire côté aggregate repo (follow-up P1).
+      injecté au constructeur avec `DEFAULT_MUSIC_POLICY_LIMITS` fallback. Tableau
+      `MUSIC_POLICY_LIMITS_BY_PLAN` avec tiers cohérents (free = default ; pro = 4/2/5/25 ;
+      max / business = 8-10/4/10/100). `MusicPolicyLimitsProvider` résout via
+      `QuotaService.getPlan`, `RepertoireEntryAggregateRepository` passe les limits
+      résolues à la policy au moment du load. Fallback au default si QuotaService throw.
 
 - [x] **Dedup référence = `title.trim().toLowerCase()` simple** — extrait dans
       `domain/normalizeRefKey.ts` : NFKD + strip des diacritiques + strip zero-width
