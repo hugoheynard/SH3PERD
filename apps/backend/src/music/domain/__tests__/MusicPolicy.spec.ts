@@ -197,4 +197,53 @@ describe('MusicPolicy', () => {
       expect(() => policy.ensureCanDeriveVersion(versions, sourceId)).not.toThrow();
     });
   });
+
+  // ─── Injectable limits ──────────────────────────────────
+
+  describe('limits injection', () => {
+    it('accepts a custom track limit and enforces it', () => {
+      const custom = new MusicPolicy({
+        maxTracksPerVersion: 4,
+        maxMastersPerVersion: 1,
+        maxDerivationsPerSource: 3,
+        maxVersionsPerReference: 10,
+      });
+      const v = makeVersion();
+      for (let i = 0; i < 3; i++) v.addTrack(makeTrack());
+      expect(() => custom.ensureCanAddTrack(v)).not.toThrow();
+
+      v.addTrack(makeTrack());
+      expectDomainError(() => custom.ensureCanAddTrack(v), 'MAX_TRACKS_REACHED');
+    });
+
+    it('accepts a relaxed master limit (e.g. Pro plan) allowing multiple masters per version', () => {
+      const custom = new MusicPolicy({
+        maxTracksPerVersion: 10,
+        maxMastersPerVersion: 3,
+        maxDerivationsPerSource: 3,
+        maxVersionsPerReference: 10,
+      });
+      const v = makeVersion();
+      v.addTrack(makeAnalyzedTrack(trackId(1)));
+      v.addTrack({ ...makeAnalyzedTrack(trackId(2)), processingType: 'master' });
+      expect(() => custom.ensureCanMasterTrack(v)).not.toThrow();
+    });
+
+    it('surfaces the effective limit in the error context', () => {
+      const custom = new MusicPolicy({
+        maxTracksPerVersion: 1,
+        maxMastersPerVersion: 1,
+        maxDerivationsPerSource: 3,
+        maxVersionsPerReference: 10,
+      });
+      const v = makeVersion();
+      v.addTrack(makeTrack());
+      try {
+        custom.ensureCanAddTrack(v);
+        fail('Expected MAX_TRACKS_REACHED');
+      } catch (err) {
+        expect((err as DomainError).context).toEqual(expect.objectContaining({ limit: 1 }));
+      }
+    });
+  });
 });

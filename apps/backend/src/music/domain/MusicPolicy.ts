@@ -8,19 +8,31 @@ import type { MusicVersionEntity } from './entities/MusicVersionEntity.js';
 import type { RepertoireEntryEntity } from './entities/RepertoireEntryEntity.js';
 import { DomainError } from '../../utils/errorManagement/DomainError.js';
 
-// ─── Limits ─────────────────────────────────────────────────
+// ─── Injectable limits ───────────────────────────────────────
+//
+// Previously hardcoded. Exposing them as a constructor dep opens the
+// door for plan-aware provisioning (Pro = 4 tracks / version, etc.)
+// without coupling the domain layer to `QuotaService` or any config
+// source. A plan-aware factory stays at the handler / aggregate-repo
+// boundary; the policy itself remains pure + deterministic.
 
-/** Max tracks per version (1 original upload + 1 master). */
-const MAX_TRACKS_PER_VERSION = 2;
+export type MusicPolicyLimits = {
+  /** Max tracks per version (original upload + masters + children). */
+  readonly maxTracksPerVersion: number;
+  /** Max mastered children per version (across `processingType: 'master'` and `'ai_master'`). */
+  readonly maxMastersPerVersion: number;
+  /** Max derived versions (pitch_shift, etc.) from a single source version. */
+  readonly maxDerivationsPerSource: number;
+  /** Max total versions per user per reference (original + all derivations). */
+  readonly maxVersionsPerReference: number;
+};
 
-/** Max master tracks per version. */
-const MAX_MASTERS_PER_VERSION = 1;
-
-/** Max derived versions from a single source version. */
-const MAX_DERIVATIONS_PER_SOURCE = 3;
-
-/** Max total versions per user per reference. */
-const MAX_VERSIONS_PER_REFERENCE = 10;
+export const DEFAULT_MUSIC_POLICY_LIMITS: MusicPolicyLimits = {
+  maxTracksPerVersion: 2,
+  maxMastersPerVersion: 1,
+  maxDerivationsPerSource: 3,
+  maxVersionsPerReference: 10,
+};
 
 // ─── Policy ─────────────────────────────────────────────────
 
@@ -31,6 +43,8 @@ const MAX_VERSIONS_PER_REFERENCE = 10;
  * Each method either passes silently or throws with an explicit error code.
  */
 export class MusicPolicy {
+  constructor(private readonly limits: MusicPolicyLimits = DEFAULT_MUSIC_POLICY_LIMITS) {}
+
   // ── Ownership ───────────────────────────────────────────
 
   /** Ensures the actor owns the version before mutating it. */
@@ -57,10 +71,10 @@ export class MusicPolicy {
 
   /** Ensures a version can accept another track. */
   ensureCanAddTrack(version: MusicVersionEntity): void {
-    if (version.tracks.length >= MAX_TRACKS_PER_VERSION) {
+    if (version.tracks.length >= this.limits.maxTracksPerVersion) {
       throw new DomainError('Version has reached its maximum number of tracks', {
         code: 'MAX_TRACKS_REACHED',
-        context: { version_id: version.id, limit: MAX_TRACKS_PER_VERSION },
+        context: { version_id: version.id, limit: this.limits.maxTracksPerVersion },
       });
     }
   }
@@ -68,10 +82,10 @@ export class MusicPolicy {
   /** Ensures a version can accept a master track. */
   ensureCanMasterTrack(version: MusicVersionEntity): void {
     const masterCount = version.tracks.filter((t) => t.processingType === 'master').length;
-    if (masterCount >= MAX_MASTERS_PER_VERSION) {
+    if (masterCount >= this.limits.maxMastersPerVersion) {
       throw new DomainError('Version has reached its maximum number of master tracks', {
         code: 'MAX_MASTERS_REACHED',
-        context: { version_id: version.id, limit: MAX_MASTERS_PER_VERSION },
+        context: { version_id: version.id, limit: this.limits.maxMastersPerVersion },
       });
     }
     this.ensureCanAddTrack(version);
@@ -107,10 +121,13 @@ export class MusicPolicy {
    * @param existingVersions — all versions by this user for this reference.
    */
   ensureCanCreateVersion(existingVersions: TMusicVersionDomainModel[]): void {
-    if (existingVersions.length >= MAX_VERSIONS_PER_REFERENCE) {
+    if (existingVersions.length >= this.limits.maxVersionsPerReference) {
       throw new DomainError('Reference has reached its maximum number of versions for this user', {
         code: 'MAX_VERSIONS_PER_REFERENCE_REACHED',
-        context: { limit: MAX_VERSIONS_PER_REFERENCE, current: existingVersions.length },
+        context: {
+          limit: this.limits.maxVersionsPerReference,
+          current: existingVersions.length,
+        },
       });
     }
   }
@@ -131,10 +148,13 @@ export class MusicPolicy {
     const derivationCount = existingVersions.filter(
       (v) => v.parentVersionId === sourceVersionId,
     ).length;
-    if (derivationCount >= MAX_DERIVATIONS_PER_SOURCE) {
+    if (derivationCount >= this.limits.maxDerivationsPerSource) {
       throw new DomainError('Source version has reached its maximum number of derivations', {
         code: 'MAX_DERIVATIONS_PER_SOURCE_REACHED',
-        context: { source_version_id: sourceVersionId, limit: MAX_DERIVATIONS_PER_SOURCE },
+        context: {
+          source_version_id: sourceVersionId,
+          limit: this.limits.maxDerivationsPerSource,
+        },
       });
     }
   }
