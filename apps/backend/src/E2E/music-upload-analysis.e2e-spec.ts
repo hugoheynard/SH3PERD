@@ -175,9 +175,9 @@ describe('Music — Upload → Analysis → DB E2E', () => {
     expect(apSend).toHaveBeenCalledTimes(1);
     const [pattern, payload] = apSend.mock.calls[0];
     expect(pattern).toBe('analyze_track');
-    expect(payload.versionId).toBe(versionId);
-    expect(payload.ownerId).toBe(ownerId);
-    expect(typeof payload.trackId).toBe('string');
+    expect(payload['versionId']).toBe(versionId);
+    expect(payload['ownerId']).toBe(ownerId);
+    expect(typeof payload['trackId']).toBe('string');
   });
 
   it('leaves the track un-analysed when the AP microservice returns null', async () => {
