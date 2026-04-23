@@ -1,1 +1,7 @@
-<app-widget-grid />
+<div class="home">
+  <div class="home-main">
+    <app-widget-grid />
+  </div>
+
+  <app-widget-library-panel class="home-library" (insert)="onInsert($event)" />
+</div>

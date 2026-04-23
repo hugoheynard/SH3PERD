@@ -1,10 +1,51 @@
-<div class="widget">
-  <div class="workspace-title">{{ contractName }}</div>
-  @if (clientName) {
-    <div class="workspace-client">{{ clientName }}</div>
+<button
+  type="button"
+  class="contract-widget"
+  [attr.data-status]="contract() ? 'ready' : loading() ? 'loading' : 'empty'"
+  (click)="open()"
+>
+  @if (loading() && !contract()) {
+    <div class="state-loading">
+      <sh3-icon name="reload" [size]="16" />
+      <span>Loading…</span>
+    </div>
+  } @else if (contract(); as c) {
+    <header class="header">
+      <sh3-avatar
+        [name]="c.company_id"
+        [colorSeed]="c.company_id"
+        [square]="true"
+        size="md"
+      />
+      <div class="title-block">
+        <span class="eyebrow">Current contract</span>
+        <span class="title">{{ title() }}</span>
+      </div>
+      <sh3-status-badge [status]="c.status" />
+    </header>
+
+    <div class="body">
+      @if (primaryRoles().length > 0) {
+        <div class="roles">
+          @for (role of primaryRoles(); track role) {
+            <sh3-badge [content]="role" radius="pill" variant="info" />
+          }
+          @if (extraRoleCount() > 0) {
+            <span class="role-extra">+{{ extraRoleCount() }}</span>
+          }
+        </div>
+      }
+
+      <div class="dates">
+        <sh3-icon name="clock" [size]="12" />
+        <span>{{ dateRange() }}</span>
+      </div>
+    </div>
+  } @else {
+    <div class="state-empty">
+      <sh3-icon name="contracts" [size]="22" />
+      <span class="empty-title">No active contract</span>
+      <span class="empty-hint">Star one in your contracts list.</span>
+    </div>
   }
-  <div class="workspace-dates">{{ startDate }} → {{ endDate }}</div>
-  <div class="workspace-status" [ngClass]="status.toLowerCase()">
-    {{ status }}
-  </div>
-</div>
+</button>

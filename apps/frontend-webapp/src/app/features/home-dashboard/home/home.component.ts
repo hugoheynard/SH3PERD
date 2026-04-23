@@ -1,42 +1,20 @@
-import { Component } from '@angular/core';
-import { TodayDateWidgetComponent } from '../today-date-widget/today-date-widget.component';
-import { type CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { WorkspaceContractWidgetComponent } from '../workspace-contract-widget/workspace-contract-widget.component';
+import { ChangeDetectionStrategy, Component, viewChild } from '@angular/core';
 import { WidgetGridComponent } from '../widget-grid/widget-grid.component';
+import { WidgetLibraryPanelComponent } from '../widget-library-panel/widget-library-panel.component';
+import type { WidgetDefinition } from '../widget-catalog/widget-catalog';
 
 @Component({
   selector: 'app-home',
-  imports: [
-    WidgetGridComponent,
-  ],
-  templateUrl: './home.component.html',
   standalone: true,
+  imports: [WidgetGridComponent, WidgetLibraryPanelComponent],
+  templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent {
+  private readonly grid = viewChild.required(WidgetGridComponent);
 
-  widgets: any[] = [
-    { id: 'date-1',
-      cols: 1,
-      rows: 1,
-      component: TodayDateWidgetComponent
-    },
-    {
-      id: 'workspaceContract',
-      cols: 2,
-      rows: 1,
-      component: WorkspaceContractWidgetComponent
-    },
-    {
-      id: 'workspaceContract',
-      cols: 2,
-      rows: 2,
-      component: WorkspaceContractWidgetComponent
-    },
-  ]
-
-  drop(event: CdkDragDrop<any[]>) {
-    moveItemInArray(this.widgets, event.previousIndex, event.currentIndex)
+  onInsert(def: WidgetDefinition): void {
+    this.grid().addWidget(def);
   }
-
 }

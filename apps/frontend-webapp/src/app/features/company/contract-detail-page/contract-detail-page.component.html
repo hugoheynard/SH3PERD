@@ -13,260 +13,549 @@
 }
 
 @if (!loading() && detail(); as c) {
-  <div class="contract-page">
-
-    <!-- ── Header ─────────────────────────────────────────── -->
-    <header class="contract-header">
-      <div class="user-block">
-        <div class="user-avatar">{{ initials(c) }}</div>
-        <div class="user-info">
-          <span class="user-name">{{ fullName(c) }}</span>
-          @if (c.user_email) { <span class="user-email">{{ c.user_email }}</span> }
+  <div class="page">
+    <!-- ══════════════ MAIN COLUMN ══════════════ -->
+    <div class="main-col">
+      <!-- Hero ─────────────────────────────────── -->
+      <header class="hero">
+        <div class="hero-left">
+          <sh3-avatar [name]="fullName(c)" size="lg" />
+          <div class="hero-text">
+            <span class="hero-name">{{ fullName(c) }}</span>
+            @if (c.user_email) {
+              <span class="hero-email">{{ c.user_email }}</span>
+            }
+          </div>
         </div>
-      </div>
-      <div class="header-right">
-        <span class="status-badge" [class]="'cstatus-' + c.status">{{ c.status }}</span>
-        @if (!editing()) {
-          <button class="btn-edit" (click)="startEdit()">
-            <sh3-icon name="edit" [size]="13" />
-            Edit
-          </button>
-        }
-      </div>
-    </header>
 
-    <!-- ── View mode ──────────────────────────────────────── -->
-    @if (!editing()) {
-      <div class="contract-body">
+        <div class="hero-right">
+          @if (!editingStatus()) {
+            <button
+              type="button"
+              class="status-pill"
+              [attr.data-status]="c.status"
+              (click)="editingStatus.set(true)"
+              title="Change status"
+            >
+              {{ c.status }}
+            </button>
+          } @else {
+            <div class="pick-row">
+              @for (s of STATUS_OPTIONS; track s) {
+                <button
+                  type="button"
+                  class="pick-pill"
+                  [class.active]="c.status === s"
+                  [disabled]="saving()"
+                  (click)="setStatus(s)"
+                >
+                  {{ s }}
+                </button>
+              }
+              <button
+                type="button"
+                class="pick-pill"
+                (click)="editingStatus.set(false)"
+              >
+                ✕
+              </button>
+            </div>
+          }
+        </div>
+      </header>
 
-        <!-- Roles section -->
-        <section class="info-section">
-          <h3 class="section-label">Roles</h3>
+      <!-- Signature progress stepper ─────────────── -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Signature progress</h3>
+        </div>
+        <div class="card-body">
+          <div class="stepper">
+            <div
+              class="stepper-progress"
+              [style.width.%]="progressPercent()"
+            ></div>
+            @for (step of steps(); track step.key) {
+              <div
+                class="step"
+                [class.done]="step.state === 'done'"
+                [class.current]="step.state === 'current'"
+              >
+                <div class="step-dot">
+                  @if (step.state === "done") {
+                    ✓
+                  } @else {
+                    {{ $index + 1 }}
+                  }
+                </div>
+                <span class="step-label">{{ step.label }}</span>
+                @if (step.date) {
+                  <span class="step-date">{{
+                    step.date | date: "mediumDate"
+                  }}</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Roles ─────────────────────────────────── -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Roles</h3>
+        </div>
+        <div class="card-body">
           <div class="roles-row">
             @for (role of c.roles; track role) {
-              <span class="role-chip" [style.background]="getRoleColor(role) + '22'" [style.color]="getRoleColor(role)" [style.border-color]="getRoleColor(role) + '44'">
+              <span class="role-chip" [attr.data-role]="role">
                 {{ role }}
-                <button class="role-remove-btn" (click)="removeRole(role)" title="Remove role">
+                <button
+                  class="role-remove"
+                  (click)="removeRole(role)"
+                  title="Remove role"
+                >
                   <sh3-icon name="close" [size]="10" />
                 </button>
               </span>
             }
             @if (c.roles.length === 0) {
-              <span class="info-value">No roles assigned</span>
+              <span class="info-val empty">No roles assigned</span>
+            }
+            @if (!addingRole() && getAvailableRolesToAdd().length > 0) {
+              <button class="btn-add-role" (click)="addingRole.set(true)">
+                + Add role
+              </button>
             }
           </div>
+
           @if (addingRole()) {
-            <div class="add-role-form">
-              <div class="pill-selector wrap">
-                @for (role of getAvailableRolesToAdd(); track role) {
-                  <button class="pill sm" [class.active]="selectedNewRole() === role" (click)="selectedNewRole.set(role)" type="button">{{ role }}</button>
-                }
-              </div>
-              <div class="form-actions" style="margin-top: 8px;">
-                <button class="btn-save" style="padding: 4px 12px; font-size: 12px;" (click)="assignRole()">Add</button>
-                <button class="btn-cancel" style="padding: 4px 12px; font-size: 12px;" (click)="addingRole.set(false)">Cancel</button>
-              </div>
+            <div class="role-picker">
+              @for (role of getAvailableRolesToAdd(); track role) {
+                <button
+                  type="button"
+                  class="pick-pill"
+                  [class.active]="selectedNewRole() === role"
+                  (click)="selectedNewRole.set(role)"
+                >
+                  {{ role }}
+                </button>
+              }
             </div>
-          } @else if (getAvailableRolesToAdd().length > 0) {
-            <button class="btn-add-member" style="margin-top: 8px;" (click)="addingRole.set(true)">+ Add role</button>
+            <div class="section-actions">
+              <sh3-button
+                variant="ghost"
+                size="sm"
+                (clicked)="addingRole.set(false)"
+                >Cancel</sh3-button
+              >
+              <sh3-button variant="solid" size="sm" (clicked)="assignRole()"
+                >Add role</sh3-button
+              >
+            </div>
           }
-        </section>
+        </div>
+      </section>
 
-        <section class="info-section">
-          <h3 class="section-label">Position</h3>
-          <div class="info-grid">
-            <div class="info-row">
-              <span class="info-label">Contract type</span>
-              <span class="info-value">{{ c.contract_type ?? '—' }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Job title</span>
-              <span class="info-value">{{ c.job_title ?? '—' }}</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="info-section">
-          <h3 class="section-label">Dates</h3>
-          <div class="info-grid">
-            <div class="info-row">
-              <span class="info-label">Start date</span>
-              <span class="info-value">{{ c.startDate | date:'mediumDate' }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">End date</span>
-              <span class="info-value">{{ c.endDate ? (c.endDate | date:'mediumDate') : 'Open-ended' }}</span>
-            </div>
-            @if (c.trial_period_days) {
-              <div class="info-row">
-                <span class="info-label">Trial period</span>
-                <span class="info-value">{{ c.trial_period_days }} days</span>
+      <!-- Position ──────────────────────────────── -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Position</h3>
+          @if (editing() !== "position") {
+            <button
+              class="btn-icon-edit"
+              (click)="startEdit('position')"
+              title="Edit position"
+            >
+              <sh3-icon name="edit" [size]="13" />
+            </button>
+          }
+        </div>
+        <div class="card-body">
+          @if (editing() !== "position") {
+            <div class="info-list">
+              <div class="info-item">
+                <span class="info-key">Contract type</span>
+                <span class="info-val" [class.empty]="!c.contract_type">{{
+                  c.contract_type ?? "Not set"
+                }}</span>
               </div>
-            }
-          </div>
-        </section>
-
-        <section class="info-section">
-          <h3 class="section-label">Terms</h3>
-          <div class="info-grid">
-            <div class="info-row">
-              <span class="info-label">Compensation</span>
-              <span class="info-value">{{ formatCompensation(c) }}</span>
+              <div class="info-item">
+                <span class="info-key">Job title</span>
+                <span class="info-val" [class.empty]="!c.job_title">{{
+                  c.job_title ?? "Not set"
+                }}</span>
+              </div>
             </div>
-            <div class="info-row">
-              <span class="info-label">Work time</span>
-              <span class="info-value">{{ formatWorkTime(c) }}</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="info-section">
-          <h3 class="section-label">Signatures</h3>
-          <div class="signature-grid">
-            <div class="signature-card" [class.signed]="c.signatures?.user">
-              <span class="sig-role">Employee</span>
-              @if (c.signatures?.user) {
-                <span class="sig-date">{{ c.signatures!.user!.signed_at | date:'mediumDate' }}</span>
-                <span class="sig-badge signed">Signed</span>
-              } @else {
-                <span class="sig-badge pending">Pending</span>
-              }
-            </div>
-            <div class="signature-card" [class.signed]="c.signatures?.company">
-              <span class="sig-role">Company</span>
-              @if (c.signatures?.company) {
-                <span class="sig-date">{{ c.signatures!.company!.signed_at | date:'mediumDate' }}</span>
-                <span class="sig-badge signed">Signed</span>
-              } @else {
-                <span class="sig-badge pending">Pending</span>
-              }
-            </div>
-          </div>
-        </section>
-
-        <div class="contract-id">ID: {{ c.id }}</div>
-      </div>
-    }
-
-    <!-- ── Edit mode ──────────────────────────────────────── -->
-    @if (editing()) {
-      @let f = form();
-      <div class="edit-form">
-
-        <section class="form-section">
-          <h3 class="section-label">Status</h3>
-          <div class="pill-selector">
-            @for (s of STATUS_OPTIONS; track s) {
-              <button class="pill" [class.active]="f.status === s" [class]="'pill cstatus-pill-' + s"
-                (click)="patch('status', $any(s))" type="button">{{ s }}</button>
-            }
-          </div>
-        </section>
-
-        <section class="form-section">
-          <h3 class="section-label">Position</h3>
-          <div class="form-grid">
-            <div class="form-field">
-              <label class="field-label">Contract type</label>
-              <div class="pill-selector wrap">
-                @for (t of CONTRACT_TYPES; track t) {
-                  @if (t !== '') {
-                    <button class="pill" [class.active]="f.contract_type === t"
-                      (click)="patch('contract_type', $any(t))" type="button">{{ t }}</button>
+          } @else {
+            @let f = form();
+            <div class="form-grid">
+              <div class="field">
+                <label class="field-label">Contract type</label>
+                <div class="pick-row">
+                  @for (t of CONTRACT_TYPES; track t) {
+                    <button
+                      type="button"
+                      class="pick-pill"
+                      [class.active]="f.contract_type === t"
+                      (click)="patch('contract_type', $any(t))"
+                    >
+                      {{ t || "Not set" }}
+                    </button>
                   }
-                }
-                <button class="pill" [class.active]="f.contract_type === ''"
-                  (click)="patch('contract_type', '')" type="button">Not set</button>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="jobTitle">Job title</label>
+                <input
+                  id="jobTitle"
+                  class="input"
+                  type="text"
+                  placeholder="e.g. Sound Engineer"
+                  [value]="f.job_title"
+                  (input)="patch('job_title', $any($event.target).value)"
+                />
               </div>
             </div>
-            <div class="form-field">
-              <label class="field-label" for="jobTitle">Job title</label>
-              <input id="jobTitle" class="field-input" type="text" placeholder="e.g. Frontend Developer"
-                [value]="f.job_title" (input)="patch('job_title', $any($event.target).value)"/>
+            <div class="section-actions">
+              <sh3-button
+                variant="ghost"
+                size="sm"
+                [disabled]="saving()"
+                (clicked)="cancelEdit()"
+                >Cancel</sh3-button
+              >
+              <sh3-button
+                variant="solid"
+                size="sm"
+                [disabled]="saving()"
+                (clicked)="saveSection('position')"
+              >
+                {{ saving() ? "Saving…" : "Save" }}
+              </sh3-button>
             </div>
-          </div>
-        </section>
+          }
+        </div>
+      </section>
 
-        <section class="form-section">
-          <h3 class="section-label">Dates</h3>
-          <div class="form-grid cols-3">
-            <div class="form-field">
-              <label class="field-label" for="startDate">Start date</label>
-              <input id="startDate" class="field-input" type="date"
-                [value]="f.startDate" (input)="patch('startDate', $any($event.target).value)"/>
+      <!-- Dates ─────────────────────────────────── -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Dates</h3>
+          @if (editing() !== "dates") {
+            <button
+              class="btn-icon-edit"
+              (click)="startEdit('dates')"
+              title="Edit dates"
+            >
+              <sh3-icon name="edit" [size]="13" />
+            </button>
+          }
+        </div>
+        <div class="card-body">
+          @if (editing() !== "dates") {
+            <div class="info-list">
+              <div class="info-item">
+                <span class="info-key">Start date</span>
+                <span class="info-val">{{
+                  c.startDate | date: "mediumDate"
+                }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-key">End date</span>
+                <span class="info-val" [class.empty]="!c.endDate">
+                  {{
+                    c.endDate ? (c.endDate | date: "mediumDate") : "Open-ended"
+                  }}
+                </span>
+              </div>
+              @if (c.trial_period_days) {
+                <div class="info-item">
+                  <span class="info-key">Trial period</span>
+                  <span class="info-val">{{ c.trial_period_days }} days</span>
+                </div>
+              }
             </div>
-            <div class="form-field">
-              <label class="field-label" for="endDate">End date <span class="optional">(optional)</span></label>
-              <input id="endDate" class="field-input" type="date"
-                [value]="f.endDate" (input)="patch('endDate', $any($event.target).value)"/>
-            </div>
-            <div class="form-field">
-              <label class="field-label" for="trialDays">Trial period (days)</label>
-              <input id="trialDays" class="field-input" type="number" min="1" placeholder="e.g. 90"
-                [value]="f.trial_period_days" (input)="patch('trial_period_days', $any($event.target).value)"/>
-            </div>
-          </div>
-        </section>
-
-        <section class="form-section">
-          <h3 class="section-label">Compensation</h3>
-          <div class="form-grid cols-3">
-            <div class="form-field">
-              <label class="field-label" for="compAmount">Amount</label>
-              <input id="compAmount" class="field-input" type="number" min="0" placeholder="e.g. 3500"
-                [value]="f.compensation_amount" (input)="patch('compensation_amount', $any($event.target).value)"/>
-            </div>
-            <div class="form-field">
-              <label class="field-label" for="compCurrency">Currency</label>
-              <select id="compCurrency" class="field-input field-select"
-                [value]="f.compensation_currency" (change)="patch('compensation_currency', $any($event.target).value)">
-                @for (cur of CURRENCIES; track cur) {
-                  <option [value]="cur" [selected]="f.compensation_currency === cur">{{ cur }}</option>
-                }
-              </select>
-            </div>
-            <div class="form-field">
-              <label class="field-label">Period</label>
-              <div class="pill-selector">
-                @for (p of PERIOD_OPTIONS; track p) {
-                  <button class="pill sm" [class.active]="f.compensation_period === p"
-                    (click)="patch('compensation_period', $any(p))" type="button">{{ p }}</button>
-                }
+          } @else {
+            @let f = form();
+            <div class="form-grid cols-3">
+              <div class="field">
+                <label class="field-label" for="startDate">Start date</label>
+                <input
+                  id="startDate"
+                  class="input"
+                  type="date"
+                  [value]="f.startDate"
+                  (input)="patch('startDate', $any($event.target).value)"
+                />
+              </div>
+              <div class="field">
+                <label class="field-label" for="endDate"
+                  >End date <span class="optional">(optional)</span></label
+                >
+                <input
+                  id="endDate"
+                  class="input"
+                  type="date"
+                  [value]="f.endDate"
+                  (input)="patch('endDate', $any($event.target).value)"
+                />
+              </div>
+              <div class="field">
+                <label class="field-label" for="trialDays"
+                  >Trial period (days)</label
+                >
+                <input
+                  id="trialDays"
+                  class="input"
+                  type="number"
+                  min="1"
+                  placeholder="e.g. 90"
+                  [value]="f.trial_period_days"
+                  (input)="
+                    patch('trial_period_days', $any($event.target).value)
+                  "
+                />
               </div>
             </div>
-          </div>
-        </section>
+            <div class="section-actions">
+              <sh3-button
+                variant="ghost"
+                size="sm"
+                [disabled]="saving()"
+                (clicked)="cancelEdit()"
+                >Cancel</sh3-button
+              >
+              <sh3-button
+                variant="solid"
+                size="sm"
+                [disabled]="saving()"
+                (clicked)="saveSection('dates')"
+              >
+                {{ saving() ? "Saving…" : "Save" }}
+              </sh3-button>
+            </div>
+          }
+        </div>
+      </section>
 
-        <section class="form-section">
-          <h3 class="section-label">Work time</h3>
-          <div class="form-grid">
-            <div class="form-field">
-              <label class="field-label">Type</label>
-              <div class="pill-selector">
-                <button class="pill" [class.active]="f.work_time_type === 'full_time'"
-                  (click)="patch('work_time_type', 'full_time')" type="button">Full time</button>
-                <button class="pill" [class.active]="f.work_time_type === 'part_time'"
-                  (click)="patch('work_time_type', 'part_time')" type="button">Part time</button>
+      <!-- Terms ─────────────────────────────────── -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Terms</h3>
+          @if (editing() !== "terms") {
+            <button
+              class="btn-icon-edit"
+              (click)="startEdit('terms')"
+              title="Edit terms"
+            >
+              <sh3-icon name="edit" [size]="13" />
+            </button>
+          }
+        </div>
+        <div class="card-body">
+          @if (editing() !== "terms") {
+            <div class="info-list">
+              <div class="info-item">
+                <span class="info-key">Compensation</span>
+                <span class="info-val" [class.empty]="!c.compensation">{{
+                  formatCompensation(c)
+                }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-key">Work time</span>
+                <span class="info-val" [class.empty]="!c.work_time">{{
+                  formatWorkTime(c)
+                }}</span>
               </div>
             </div>
-            @if (f.work_time_type === 'part_time') {
-              <div class="form-field">
-                <label class="field-label" for="wtPct">Percentage (%)</label>
-                <input id="wtPct" class="field-input" type="number" min="1" max="99" placeholder="e.g. 80"
-                  [value]="f.work_time_percentage" (input)="patch('work_time_percentage', $any($event.target).value)"/>
+          } @else {
+            @let f = form();
+            <div class="form-grid cols-3">
+              <div class="field">
+                <label class="field-label" for="compAmount">Amount</label>
+                <input
+                  id="compAmount"
+                  class="input"
+                  type="number"
+                  min="0"
+                  placeholder="e.g. 3500"
+                  [value]="f.compensation_amount"
+                  (input)="
+                    patch('compensation_amount', $any($event.target).value)
+                  "
+                />
               </div>
-            }
-          </div>
-        </section>
+              <div class="field">
+                <label class="field-label" for="compCurrency">Currency</label>
+                <select
+                  id="compCurrency"
+                  class="input"
+                  [value]="f.compensation_currency"
+                  (change)="
+                    patch('compensation_currency', $any($event.target).value)
+                  "
+                >
+                  @for (cur of CURRENCIES; track cur) {
+                    <option
+                      [value]="cur"
+                      [selected]="f.compensation_currency === cur"
+                    >
+                      {{ cur }}
+                    </option>
+                  }
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label">Period</label>
+                <div class="pick-row">
+                  @for (p of PERIOD_OPTIONS; track p) {
+                    <button
+                      type="button"
+                      class="pick-pill"
+                      [class.active]="f.compensation_period === p"
+                      (click)="patch('compensation_period', $any(p))"
+                    >
+                      {{ p }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
 
-        <div class="form-actions">
-          <button class="btn-save" (click)="saveEdit()" [disabled]="saving()">
-            {{ saving() ? 'Saving…' : 'Save changes' }}
-          </button>
-          <button class="btn-cancel" (click)="cancelEdit()" [disabled]="saving()">Cancel</button>
+            <div class="form-grid" style="margin-top: var(--gap-md)">
+              <div class="field">
+                <label class="field-label">Work time</label>
+                <div class="pick-row">
+                  <button
+                    type="button"
+                    class="pick-pill"
+                    [class.active]="f.work_time_type === 'full_time'"
+                    (click)="patch('work_time_type', 'full_time')"
+                  >
+                    Full time
+                  </button>
+                  <button
+                    type="button"
+                    class="pick-pill"
+                    [class.active]="f.work_time_type === 'part_time'"
+                    (click)="patch('work_time_type', 'part_time')"
+                  >
+                    Part time
+                  </button>
+                </div>
+              </div>
+              @if (f.work_time_type === "part_time") {
+                <div class="field">
+                  <label class="field-label" for="wtPct">Percentage (%)</label>
+                  <input
+                    id="wtPct"
+                    class="input"
+                    type="number"
+                    min="1"
+                    max="99"
+                    placeholder="e.g. 80"
+                    [value]="f.work_time_percentage"
+                    (input)="
+                      patch('work_time_percentage', $any($event.target).value)
+                    "
+                  />
+                </div>
+              }
+            </div>
+
+            <div class="section-actions">
+              <sh3-button
+                variant="ghost"
+                size="sm"
+                [disabled]="saving()"
+                (clicked)="cancelEdit()"
+                >Cancel</sh3-button
+              >
+              <sh3-button
+                variant="solid"
+                size="sm"
+                [disabled]="saving()"
+                (clicked)="saveSection('terms')"
+              >
+                {{ saving() ? "Saving…" : "Save" }}
+              </sh3-button>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+
+    <!-- ══════════════ SIDEBAR ══════════════ -->
+    <aside class="sidebar-col">
+      <!-- Summary -->
+      <div class="side-card">
+        <span class="side-label">Summary</span>
+        <div class="summary-rows">
+          <div class="summary-row">
+            <span class="k">Start</span>
+            <span class="v">{{ c.startDate | date: "mediumDate" }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="k">End</span>
+            <span class="v">{{
+              c.endDate ? (c.endDate | date: "mediumDate") : "—"
+            }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="k">Type</span>
+            <span class="v">{{ c.contract_type ?? "—" }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="k">Roles</span>
+            <span class="v">{{ c.roles.length }}</span>
+          </div>
         </div>
       </div>
-    }
 
+      <!-- Signatures -->
+      <div class="side-card">
+        <span class="side-label">Signatures</span>
+        <div class="signature-block">
+          <div class="sig-card" [class.signed]="c.signatures?.user">
+            <div class="sig-header">
+              <span class="sig-role">Employee</span>
+              <span
+                class="sig-badge"
+                [class.signed]="c.signatures?.user"
+                [class.pending]="!c.signatures?.user"
+              >
+                {{ c.signatures?.user ? "Signed" : "Pending" }}
+              </span>
+            </div>
+            @if (c.signatures?.user) {
+              <span class="sig-date">{{
+                c.signatures!.user!.signed_at | date: "mediumDate"
+              }}</span>
+            }
+          </div>
+          <div class="sig-card" [class.signed]="c.signatures?.company">
+            <div class="sig-header">
+              <span class="sig-role">Company</span>
+              <span
+                class="sig-badge"
+                [class.signed]="c.signatures?.company"
+                [class.pending]="!c.signatures?.company"
+              >
+                {{ c.signatures?.company ? "Signed" : "Pending" }}
+              </span>
+            </div>
+            @if (c.signatures?.company) {
+              <span class="sig-date">{{
+                c.signatures!.company!.signed_at | date: "mediumDate"
+              }}</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Contract ID -->
+      <div class="contract-id">{{ c.id }}</div>
+    </aside>
   </div>
 }

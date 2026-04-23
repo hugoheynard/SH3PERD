@@ -1,88 +1,91 @@
 // Entry point for @sh3pherd/shared-types
-export * from './ids.js';
+export * from "./ids.js";
 
-export * from './api.types.js';
-export * from './metadata.types.js';
+export * from "./api.types.js";
+export * from "./metadata.types.js";
 
 //AUTH
-export * from './auth.domain.js';
-export * from './auth.dto.types.js';
+export * from "./auth.domain.js";
+export * from "./auth.dto.types.js";
 
 //USER
-export * from './user/user.domain.js';
-export * from './user/user-credentials.js';
-export * from './user/user-profile.js';
-export * from './user/user-preferences.js';
-export * from './user/user.readModels.types.js';
+export * from "./user/user.domain.js";
+export * from "./user/user-credentials.js";
+export * from "./user/user-profile.js";
+export * from "./user/user-preferences.js";
+export * from "./user/user.readModels.types.js";
 
 /**
  * MUSIC
  */
 
-export * from './music.domain.schemas.js';
-export * from './music.domain.types.js';
-export * from './music-versions.types.js';
-export * from './music-references.types.js';
-export * from './music-repertoire.types.js';
-export * from './music-tracks.js';
-export * from './music-tab-configs.js';
+export * from "./music.domain.schemas.js";
+export * from "./music.domain.types.js";
+export * from "./music-versions.types.js";
+export * from "./music-references.types.js";
+export * from "./music-repertoire.types.js";
+export * from "./music-tracks.js";
+export * from "./music-tab-configs.js";
 
 /**
  * PLAYLISTS
  */
 
-export * from './playlists.js';
+export * from "./playlists.js";
 
 /**
  * SHOWS (artist personal performance planner)
  */
 
-export * from './shows.js';
+export * from "./shows.js";
 
-export { SRecordMetadata } from './metadata.types.js';
+export { SRecordMetadata } from "./metadata.types.js";
 
 //PERMISSIONS
-export * from './permissions.types.js';
+export * from "./permissions.types.js";
 
 //PLATFORM CONTRACT
-export * from './platform-contract.types.js';
+export * from "./platform-contract.types.js";
 
 //PRICING
-export * from './pricing.types.js';
+export * from "./pricing.types.js";
 
 //COMPANY
-export * from './company/communication.types.js';
-export * from './company/company.types.js';
-export * from './company/orgnode.types.js';
-export * from './company/membership-event.types.js';
-export * from './company/company-settings.dto.js';
-export * from './company.domain.js'; // barrel re-export + deprecated aliases
-export * from './contracts.domain.types.js';
-export * from './contract.viewModel.types.js';
-export * from './contracts.dto.types.js';
+export * from "./company/communication.types.js";
+export * from "./company/company.types.js";
+export * from "./company/orgnode.types.js";
+export * from "./company/membership-event.types.js";
+export * from "./company/company-settings.dto.js";
+export * from "./company.domain.js"; // barrel re-export + deprecated aliases
+export * from "./contracts.domain.types.js";
+export * from "./contract.viewModel.types.js";
+export * from "./contracts.dto.types.js";
 
 //INTEGRATIONS
-export * from './integrations/index.js';
+export * from "./integrations/index.js";
 
-export { createIdSchema } from './utils/createIdSchema.js';
+export { createIdSchema } from "./utils/createIdSchema.js";
 
 //Utils
-export * from './utils/form.js';
+export * from "./utils/form.js";
 
 //CROSS SEARCH
-export * from './music-cross-search.types.js';
+export * from "./music-cross-search.types.js";
 
 //Microservices
-export * from './microservice-patterns.js';
+export * from "./microservice-patterns.js";
 
 //Password Reset
-export * from './password-reset.types.js';
+export * from "./password-reset.types.js";
 
 //Quota
-export * from './quota.types.js';
+export * from "./quota.types.js";
 
 //Analytics
-export * from './analytics-event.types.js';
+export * from "./analytics-event.types.js";
 
 //Credit Packs
-export * from './credit-pack.types.js';
+export * from "./credit-pack.types.js";
+
+//Home Dashboard
+export * from "./home-dashboard.types.js";

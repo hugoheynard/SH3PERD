@@ -4,6 +4,7 @@ import {
   mockUserCredentialsRepo,
   mockUserProfileRepo,
   mockPlatformContractRepo,
+  mockUserPreferencesRepo,
 } from '../../../__tests__/test-helpers.js';
 import { makeCredentialsRecord } from '../../../../user/__tests__/test-helpers.js';
 import { BusinessError } from '../../../../utils/errorManagement/BusinessError.js';
@@ -15,6 +16,7 @@ describe('RegisterUserHandler', () => {
     const userCredsRepo = mockUserCredentialsRepo();
     const userProfileRepo = mockUserProfileRepo();
     const platformContractRepo = mockPlatformContractRepo();
+    const userPrefsRepo = mockUserPreferencesRepo();
     const eventBus = { publish: jest.fn() };
 
     // Simulate startSession + withTransaction
@@ -29,6 +31,7 @@ describe('RegisterUserHandler', () => {
       userCredsRepo,
       userProfileRepo,
       platformContractRepo,
+      userPrefsRepo,
       eventBus,
     ) as RegisterUserHandler;
 
@@ -38,6 +41,7 @@ describe('RegisterUserHandler', () => {
       userCredsRepo,
       userProfileRepo,
       platformContractRepo,
+      userPrefsRepo,
       eventBus,
       mockSession,
     };

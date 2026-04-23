@@ -1,0 +1,68 @@
+<aside class="library-panel">
+  <header class="panel-header">
+    <div class="title-row">
+      <h2 class="title">Widget library</h2>
+      <span class="count">{{ totalMatches() }}</span>
+    </div>
+    <p class="subtitle">Pick a widget to add it to your dashboard.</p>
+  </header>
+
+  <div class="search-row">
+    <sh3-icon name="search" [size]="13" class="search-icon" />
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Search widgets…"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event)"
+    />
+    @if (query()) {
+      <button
+        type="button"
+        class="search-clear"
+        aria-label="Clear search"
+        (click)="clearQuery()"
+      >
+        ×
+      </button>
+    }
+  </div>
+
+  <div class="sections">
+    @for (section of sections(); track trackSection($index, section)) {
+      <app-side-panel-section
+        [title]="section.label"
+        [count]="section.widgets.length"
+      >
+        <div section-content class="widget-cards">
+          @for (widget of section.widgets; track widget.id) {
+            <button
+              type="button"
+              class="widget-card"
+              [attr.aria-label]="'Insert ' + widget.label"
+              (click)="onInsert(widget)"
+            >
+              <span class="card-icon">
+                <sh3-icon [name]="widget.icon" [size]="18" />
+              </span>
+              <span class="card-meta">
+                <span class="card-label">{{ widget.label }}</span>
+                <span class="card-desc">{{ widget.description }}</span>
+              </span>
+              <span class="card-insert" aria-hidden="true">
+                <sh3-icon name="plus" [size]="12" />
+              </span>
+            </button>
+          }
+        </div>
+      </app-side-panel-section>
+    }
+
+    @if (sections().length === 0) {
+      <div class="empty-state">
+        <sh3-icon name="search" [size]="24" />
+        <span>No widget matches “{{ query() }}”</span>
+      </div>
+    }
+  </div>
+</aside>

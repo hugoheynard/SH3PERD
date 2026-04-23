@@ -2,10 +2,14 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { USER_PREFERENCES_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IUserPreferencesRepository } from '../../infra/UserPreferencesMongoRepo.repository.js';
-import type { TUserId, TUserPreferencesDomainModel } from '@sh3pherd/shared-types';
+import type {
+  TContractId,
+  TUserId,
+  TUserPreferencesDomainModel,
+  TUserPreferencesRecord,
+} from '@sh3pherd/shared-types';
 import { UserPreferences } from '../../domain/UserPreferences.entity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
-import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class UpdateUserPreferencesCommand {
   constructor(
@@ -16,7 +20,9 @@ export class UpdateUserPreferencesCommand {
 
 /**
  * Updates user preferences (theme, workspace, etc.).
- * Pattern: repo.findOne → hydrate entity → mutate → repo.updateOne
+ * Upserts when no record exists yet — the first update materialises the
+ * document so users who predate the preferences collection can still
+ * set their workspace/theme without a 404.
  */
 @CommandHandler(UpdateUserPreferencesCommand)
 export class UpdateUserPreferencesHandler implements ICommandHandler<
@@ -29,11 +35,19 @@ export class UpdateUserPreferencesHandler implements ICommandHandler<
 
   async execute(cmd: UpdateUserPreferencesCommand): Promise<TUserPreferencesDomainModel> {
     const record = await this.prefsRepo.findOne({ filter: { user_id: cmd.userId } });
+
     if (!record) {
-      throw new BusinessError('User preferences not found', {
-        code: 'USER_PREFERENCES_NOT_FOUND',
-        status: 404,
+      const entity = new UserPreferences({
+        user_id: cmd.userId,
+        theme: cmd.patch.theme ?? 'dark',
+        contract_workspace: (cmd.patch.contract_workspace ?? '') as TContractId,
       });
+      const newRecord: TUserPreferencesRecord = {
+        ...entity.toDomain,
+        ...RecordMetadataUtils.create(cmd.userId),
+      };
+      await this.prefsRepo.save(newRecord);
+      return entity.toDomain;
     }
 
     const entity = new UserPreferences(RecordMetadataUtils.stripDocMetadata(record));

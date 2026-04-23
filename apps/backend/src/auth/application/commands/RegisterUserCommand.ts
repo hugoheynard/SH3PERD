@@ -1,18 +1,25 @@
 import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import type { TRegisterUserRequestDTO, TRegisterUserResponseDTO } from '@sh3pherd/shared-types';
+import type {
+  TContractId,
+  TRegisterUserRequestDTO,
+  TRegisterUserResponseDTO,
+} from '@sh3pherd/shared-types';
 import type { IPasswordService } from '../../core/password-manager/types/Interfaces.js';
 import type { IUserCredentialsRepository } from '../../../user/infra/UserCredentialsMongoRepo.repository.js';
 import type { IUserProfileRepository } from '../../../user/infra/UserProfileMongoRepo.repository.js';
+import type { IUserPreferencesRepository } from '../../../user/infra/UserPreferencesMongoRepo.repository.js';
 import type { IPlatformContractRepository } from '../../../platform-contract/infra/PlatformContractMongoRepo.js';
 import { PASSWORD_SERVICE } from '../../auth.tokens.js';
 import {
   USER_CREDENTIALS_REPO,
   USER_PROFILE_REPO,
+  USER_PREFERENCES_REPO,
   PLATFORM_CONTRACT_REPO,
 } from '../../../appBootstrap/nestTokens.js';
 import { UserCredentialEntity } from '../../../user/domain/UserCredential.entity.js';
 import { UserProfileEntity } from '../../../user/domain/UserProfileEntity.js';
+import { UserPreferences } from '../../../user/domain/UserPreferences.entity.js';
 import { PlatformContractEntity } from '../../../platform-contract/domain/PlatformContractEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
@@ -33,6 +40,8 @@ export class RegisterUserHandler implements ICommandHandler<
     @Inject(USER_PROFILE_REPO) private readonly userProfileRepo: IUserProfileRepository,
     @Inject(PLATFORM_CONTRACT_REPO)
     private readonly platformContractRepo: IPlatformContractRepository,
+    @Inject(USER_PREFERENCES_REPO)
+    private readonly userPrefsRepo: IUserPreferencesRepository,
     private readonly eventBus: EventBus,
   ) {}
 
@@ -65,6 +74,14 @@ export class RegisterUserHandler implements ICommandHandler<
       cmd.payload.account_type,
     );
 
+    // Default preferences — theme dark, no workspace yet (set once the
+    // user enters a company space and resolves their active contract).
+    const preferences = new UserPreferences({
+      user_id: credentials.id,
+      theme: 'dark',
+      contract_workspace: '' as TContractId,
+    });
+
     const session = this.userCredsRepo.startSession();
 
     try {
@@ -79,6 +96,10 @@ export class RegisterUserHandler implements ICommandHandler<
         );
         await this.platformContractRepo.save(
           { ...platformContract.toDomain, ...RecordMetadataUtils.create(credentials.id) },
+          session,
+        );
+        await this.userPrefsRepo.save(
+          { ...preferences.toDomain, ...RecordMetadataUtils.create(credentials.id) },
           session,
         );
       });

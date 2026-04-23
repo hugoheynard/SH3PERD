@@ -1,0 +1,140 @@
+<div class="picker-overlay" (click)="onBackdropClick($event)">
+  <div
+    class="picker-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="picker-title"
+  >
+    <header class="picker-header">
+      <div class="header-text">
+        <span class="eyebrow">Home music widget</span>
+        <h2 id="picker-title" class="title">Pin a track</h2>
+      </div>
+      <button
+        type="button"
+        class="close-btn"
+        aria-label="Close"
+        (click)="close()"
+      >
+        <sh3-icon name="close" [size]="16" />
+      </button>
+    </header>
+
+    <div class="search-row">
+      <sh3-icon name="search" [size]="14" class="search-icon" />
+      <input
+        class="search-input"
+        type="text"
+        autofocus
+        placeholder="Search by title, artist or version…"
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)"
+      />
+      @if (query()) {
+        <button
+          type="button"
+          class="search-clear"
+          aria-label="Clear search"
+          (click)="clearQuery()"
+        >
+          ×
+        </button>
+      }
+    </div>
+
+    <div class="entries">
+      @if (filteredEntries().length === 0) {
+        <div class="empty-state">
+          <sh3-icon name="music-note" [size]="28" />
+          @if (entries().length === 0) {
+            <span>No tracks in your library yet.</span>
+            <span class="empty-hint"
+              >Add one from the music library first.</span
+            >
+          } @else {
+            <span>No result for “{{ query() }}”.</span>
+          }
+        </div>
+      }
+
+      @for (entry of filteredEntries(); track entry.id) {
+        <div class="entry" [class.open]="expandedEntryId() === entry.id">
+          <button
+            type="button"
+            class="entry-head"
+            [attr.aria-expanded]="expandedEntryId() === entry.id"
+            (click)="toggleEntry(entry.id)"
+          >
+            <div class="entry-meta">
+              <span class="entry-title">{{ entry.reference.title }}</span>
+              <span class="entry-artist">{{
+                entry.reference.originalArtist
+              }}</span>
+            </div>
+            <div class="entry-tail">
+              <span class="entry-count">
+                {{ entry.versions.length }} version{{
+                  entry.versions.length !== 1 ? "s" : ""
+                }}
+              </span>
+              <sh3-icon name="chevron-down" [size]="14" class="entry-chevron" />
+            </div>
+          </button>
+
+          @if (expandedEntryId() === entry.id) {
+            <ul class="versions">
+              @for (version of entry.versions; track version.id) {
+                <li class="version-row">
+                  <button
+                    type="button"
+                    class="version"
+                    [disabled]="version.tracks.length === 0"
+                    (click)="onVersionPick(entry, version)"
+                  >
+                    <div class="version-meta">
+                      <span class="version-label">{{ version.label }}</span>
+                      <span class="version-sub">
+                        {{ version.genre }} · mastery {{ version.mastery }}
+                      </span>
+                    </div>
+                    <div class="version-tail">
+                      @if (version.tracks.length === 0) {
+                        <span class="no-track">No track</span>
+                      } @else if (version.tracks.length === 1) {
+                        <sh3-icon name="plus" [size]="12" />
+                        <span>Pin</span>
+                      } @else {
+                        <span>{{ version.tracks.length }} tracks</span>
+                        <sh3-icon name="chevron-down" [size]="12" />
+                      }
+                    </div>
+                  </button>
+
+                  @if (
+                    version.tracks.length > 1 &&
+                    expandedVersionId() === version.id
+                  ) {
+                    <ul class="tracks">
+                      @for (track of version.tracks; track track.id) {
+                        <li>
+                          <button
+                            type="button"
+                            class="track"
+                            (click)="onTrackPick(entry, version, track)"
+                          >
+                            <sh3-icon name="music-file" [size]="12" />
+                            <span class="track-name">{{ track.fileName }}</span>
+                          </button>
+                        </li>
+                      }
+                    </ul>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

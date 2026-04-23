@@ -1,0 +1,88 @@
+<div #root class="music-widget" [attr.data-status]="status()">
+  <svg
+    class="contour"
+    [attr.viewBox]="'0 0 ' + boxSize().w + ' ' + boxSize().h"
+    preserveAspectRatio="none"
+  >
+    <rect
+      class="contour-rect"
+      x="1"
+      y="1"
+      [attr.width]="boxSize().w - 2"
+      [attr.height]="boxSize().h - 2"
+      rx="10"
+      ry="10"
+      [attr.stroke-dasharray]="perimeter()"
+      [attr.stroke-dashoffset]="dashOffset()"
+    />
+  </svg>
+
+  <div class="content">
+    <div class="header">
+      <span class="label">Now playing</span>
+      <button
+        type="button"
+        class="icon-btn"
+        [class.active]="loopMode() !== 'off'"
+        [attr.aria-label]="'Repeat: ' + loopMode()"
+        (click)="toggleRepeat()"
+      >
+        <sh3-icon name="repeat" [size]="14" />
+        @if (loopMode() === "one") {
+          <span class="loop-badge">1</span>
+        }
+      </button>
+    </div>
+
+    <div class="body">
+      @if (status() === "empty") {
+        <div class="empty">
+          <sh3-icon name="music-note" [size]="26" />
+          <span class="empty-hint">No track pinned</span>
+        </div>
+      } @else {
+        <div class="track-title" [title]="title()">{{ title() }}</div>
+        @if (subtitle()) {
+          <div class="track-subtitle" [title]="subtitle()">
+            {{ subtitle() }}
+          </div>
+        }
+      }
+    </div>
+
+    <div class="controls">
+      <button
+        type="button"
+        class="play-btn"
+        [disabled]="isLoading()"
+        [attr.aria-label]="isPlaying() ? 'Pause' : 'Play'"
+        (click)="togglePlay()"
+      >
+        @if (isLoading()) {
+          <sh3-icon name="reload" [size]="18" />
+        } @else if (isPlaying()) {
+          <sh3-icon name="pause" [size]="18" />
+        } @else {
+          <sh3-icon name="play" [size]="18" />
+        }
+      </button>
+
+      <button
+        type="button"
+        class="pick-btn"
+        aria-label="Choose track"
+        (click)="chooseTrack()"
+      >
+        <sh3-icon name="music-file" [size]="13" />
+        <span>{{ track() ? "Change" : "Choose track" }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+@if (pickerOpen()) {
+  <app-music-picker-dialog
+    (selected)="onPickerSelected($event)"
+    (cancelled)="onPickerCancelled()"
+  />
+}

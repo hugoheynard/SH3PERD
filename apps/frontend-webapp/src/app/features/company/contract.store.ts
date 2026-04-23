@@ -31,23 +31,36 @@ export class ContractStore {
     companyId: TCompanyId,
     userId: TUserId,
     dto: { status: TContractStatus; startDate: string; endDate?: string },
-    onSuccess?: () => void,
+    onDone?: (ok: boolean) => void,
   ): void {
-    this.service.createContractForUser({ company_id: companyId, user_id: userId, ...dto }).subscribe({
-      next: (res) => {
-        this._contracts.update(list => [...list, res.data]);
-        onSuccess?.();
-      },
-    });
+    this.service
+      .createContractForUser({ company_id: companyId, user_id: userId, ...dto })
+      .subscribe({
+        next: () => {
+          // Refetch so the list contains the full view model (with user
+          // identity fields), not the bare record returned by POST.
+          this.loadCompanyContracts(companyId);
+          onDone?.(true);
+        },
+        error: () => onDone?.(false),
+      });
   }
 
-  assignContractRole(contractId: TContractId, role: TContractRole, onSuccess?: () => void): void {
+  assignContractRole(
+    contractId: TContractId,
+    role: TContractRole,
+    onSuccess?: () => void,
+  ): void {
     this.service.assignContractRole(contractId, role).subscribe({
       next: () => onSuccess?.(),
     });
   }
 
-  removeContractRole(contractId: TContractId, role: TContractRole, onSuccess?: () => void): void {
+  removeContractRole(
+    contractId: TContractId,
+    role: TContractRole,
+    onSuccess?: () => void,
+  ): void {
     this.service.removeContractRole(contractId, role).subscribe({
       next: () => onSuccess?.(),
     });

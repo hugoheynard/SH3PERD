@@ -1,9 +1,18 @@
-import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  output,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CompanyStore } from '../company.store';
 import { ContractStore } from '../contract.store';
 import { UserLookupService } from '../user-lookup.service';
-import type { TContractStatus, TUserSearchResult } from '@sh3pherd/shared-types';
+import type {
+  TContractStatus,
+  TUserSearchResult,
+} from '@sh3pherd/shared-types';
 import { IconComponent } from '../../../shared/icon/icon.component';
 
 type PanelStep = 'search' | 'new-user' | 'contract';
@@ -30,7 +39,9 @@ export class ContractCreationPanelComponent {
   // ── Step 1: search ─────────────────────────────────────────
   readonly searchEmail = signal('');
   readonly searching = signal(false);
-  readonly searchResult = signal<TUserSearchResult | null | 'not-found'>('not-found');
+  readonly searchResult = signal<TUserSearchResult | null | 'not-found'>(
+    'not-found',
+  );
   readonly selectedUser = signal<TUserSearchResult | null>(null);
 
   // ── Step 2: new user ───────────────────────────────────────
@@ -60,7 +71,10 @@ export class ContractCreationPanelComponent {
         this.searchResult.set(res.data ?? null);
         this.searching.set(false);
       },
-      error: () => { this.searchResult.set(null); this.searching.set(false); },
+      error: () => {
+        this.searchResult.set(null);
+        this.searching.set(false);
+      },
     });
   }
 
@@ -73,30 +87,42 @@ export class ContractCreationPanelComponent {
     this.step.set('new-user');
   }
 
-  onFirstNameInput(e: Event): void { this.newFirstName.set((e.target as HTMLInputElement).value); }
-  onLastNameInput(e: Event): void  { this.newLastName.set((e.target as HTMLInputElement).value); }
+  onFirstNameInput(e: Event): void {
+    this.newFirstName.set((e.target as HTMLInputElement).value);
+  }
+  onLastNameInput(e: Event): void {
+    this.newLastName.set((e.target as HTMLInputElement).value);
+  }
 
   inviteAndContinue(): void {
     this.inviting.set(true);
-    this.userLookup.inviteUser({
-      email: this.searchEmail(),
-      first_name: this.newFirstName(),
-      last_name: this.newLastName(),
-    }).subscribe({
-      next: (res) => {
-        this.selectedUser.set(res.data);
-        this.inviting.set(false);
-        this.step.set('contract');
-      },
-      error: () => {
-        this.inviting.set(false);
-      },
-    });
+    this.userLookup
+      .inviteUser({
+        email: this.searchEmail(),
+        first_name: this.newFirstName(),
+        last_name: this.newLastName(),
+      })
+      .subscribe({
+        next: (res) => {
+          this.selectedUser.set(res.data);
+          this.inviting.set(false);
+          this.step.set('contract');
+        },
+        error: () => {
+          this.inviting.set(false);
+        },
+      });
   }
 
-  onStartDateInput(e: Event): void { this.contractStartDate.set((e.target as HTMLInputElement).value); }
-  onEndDateInput(e: Event): void   { this.contractEndDate.set((e.target as HTMLInputElement).value); }
-  setStatus(s: TContractStatus): void { this.contractStatus.set(s); }
+  onStartDateInput(e: Event): void {
+    this.contractStartDate.set((e.target as HTMLInputElement).value);
+  }
+  onEndDateInput(e: Event): void {
+    this.contractEndDate.set((e.target as HTMLInputElement).value);
+  }
+  setStatus(s: TContractStatus): void {
+    this.contractStatus.set(s);
+  }
 
   submitContract(): void {
     const company = this.store.company();
@@ -112,15 +138,17 @@ export class ContractCreationPanelComponent {
         startDate: this.contractStartDate(),
         endDate: this.contractEndDate() || undefined,
       },
-      () => {
+      (ok) => {
         this.submitting.set(false);
-        this.created.emit();
+        if (ok) this.created.emit();
       },
     );
   }
 
   getUserFullName(user: TUserSearchResult): string {
-    return [user.first_name, user.last_name].filter(Boolean).join(' ') || user.email;
+    return (
+      [user.first_name, user.last_name].filter(Boolean).join(' ') || user.email
+    );
   }
 
   get hasSearchResult(): boolean {

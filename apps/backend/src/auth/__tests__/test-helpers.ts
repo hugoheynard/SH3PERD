@@ -15,6 +15,7 @@ import type {
 } from '../types/auth.domain.tokens.js';
 import type { IUserCredentialsRepository } from '../../user/infra/UserCredentialsMongoRepo.repository.js';
 import type { IUserProfileRepository } from '../../user/infra/UserProfileMongoRepo.repository.js';
+import type { IUserPreferencesRepository } from '../../user/infra/UserPreferencesMongoRepo.repository.js';
 import type { IPlatformContractRepository } from '../../platform-contract/infra/PlatformContractMongoRepo.js';
 
 // ─── ID Helpers ───────────────────────────────────────────────
@@ -114,6 +115,12 @@ export function mockUserProfileRepo(): jest.Mocked<Pick<IUserProfileRepository, 
 }
 
 export function mockPlatformContractRepo(): jest.Mocked<Pick<IPlatformContractRepository, 'save'>> {
+  return {
+    save: jest.fn().mockResolvedValue(true),
+  } as any;
+}
+
+export function mockUserPreferencesRepo(): jest.Mocked<Pick<IUserPreferencesRepository, 'save'>> {
   return {
     save: jest.fn().mockResolvedValue(true),
   } as any;

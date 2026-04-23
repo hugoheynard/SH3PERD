@@ -1,0 +1,42 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.home {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+  background: var(--content-page-bg-color);
+}
+
+.home-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.home-library {
+  flex-shrink: 0;
+  width: var(--sidePanel-w);
+  max-width: 340px;
+  min-width: 260px;
+  height: 100%;
+}
+
+@media (max-width: 900px) {
+  .home {
+    flex-direction: column;
+  }
+  .home-library {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: auto;
+    max-height: 50%;
+  }
+}

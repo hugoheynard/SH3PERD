@@ -56,6 +56,12 @@ Architecture, patterns, and how-to guides for the NestJS backend.
 | [Contracts](sh3-contracts.md)             | Contract aggregate diagram (contract + addendums)                           |
 | [Integrations](sh3-integrations.md)       | Slack OAuth, channel management, architecture, routes                       |
 
+## Home Dashboard
+
+| Doc                       | Description                                                                                        |
+| ------------------------- | -------------------------------------------------------------------------------------------------- |
+| [Widgets](sh3-widgets.md) | Gridster widget system — catalog, typed configs in shared-types, WIDGET_CONTEXT, music picker flow |
+
 ## See also
 
 - [Monorepo documentation](../../../documentation/README.md) — TODOs, feature roadmaps, user flows

@@ -1,13 +1,5 @@
-<div class="widget">
-  <div class="widget-inner">
-    <div class="widget-front">
-      <div class="day">{{ day }}</div>
-      <div class="month">{{ month }}</div>
-      <div class="drag-bar"></div>
-      <div class="flip-indicator"></div>
-    </div>
-    <div class="widget-back">
-      <i class="material-icons calendar-icon">calendar_today</i>
-    </div>
-  </div>
+<div class="date-widget">
+  <span class="weekday">{{ weekday() }}</span>
+  <span class="day">{{ day() }}</span>
+  <span class="month-year">{{ monthYear() }}</span>
 </div>
