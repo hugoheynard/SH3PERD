@@ -8,7 +8,12 @@ import {
   userId,
   versionId,
 } from '../../../domain/__tests__/test-helpers.js';
-import { mockAggregateRepo, mockAnalytics, mockQuotaService } from './handler-test-helpers.js';
+import {
+  mockAggregateRepo,
+  mockAnalytics,
+  mockQuotaService,
+  mockStorage,
+} from './handler-test-helpers.js';
 import { MicroservicePatterns, type TPitchShiftResult } from '@sh3pherd/shared-types';
 
 const pitchResult: TPitchShiftResult = {
@@ -18,6 +23,7 @@ const pitchResult: TPitchShiftResult = {
 
 function setup(opts: { sourcePitch?: number | null } = {}) {
   const aggregateRepo = mockAggregateRepo();
+  const storage = mockStorage();
   const quota = mockQuotaService();
   const analytics = mockAnalytics();
   const audioClient = { send: jest.fn().mockReturnValue(of(pitchResult)) };
@@ -38,12 +44,23 @@ function setup(opts: { sourcePitch?: number | null } = {}) {
 
   const handler = new PitchShiftVersionHandler(
     aggregateRepo,
+    storage as never,
     audioClient as never,
     quota as never,
     analytics as never,
   );
 
-  return { handler, aggregateRepo, audioClient, quota, analytics, owner, source, aggregate };
+  return {
+    handler,
+    aggregateRepo,
+    storage,
+    audioClient,
+    quota,
+    analytics,
+    owner,
+    source,
+    aggregate,
+  };
 }
 
 describe('PitchShiftVersionHandler', () => {
@@ -120,6 +137,7 @@ describe('PitchShiftVersionHandler', () => {
 
     expect(aggregateRepo.save).toHaveBeenCalledTimes(1);
     expect(quota.recordUsage).toHaveBeenCalledWith(owner, 'pitch_shift');
+    expect(quota.recordUsage).toHaveBeenCalledWith(owner, 'storage_bytes', pitchResult.sizeBytes);
     expect(analytics.track).toHaveBeenCalledWith(
       'track_pitch_shifted',
       owner,
@@ -143,6 +161,18 @@ describe('PitchShiftVersionHandler', () => {
     expect(aggregateRepo.loadByVersionId).not.toHaveBeenCalled();
     expect(audioClient.send).not.toHaveBeenCalled();
     expect(aggregateRepo.save).not.toHaveBeenCalled();
+  });
+
+  it('compensates the shifted S3 object when the aggregate save fails', async () => {
+    const { handler, aggregateRepo, storage, quota, owner } = setup();
+    aggregateRepo.save.mockRejectedValueOnce(new Error('mongo down'));
+
+    await expect(
+      handler.execute(new PitchShiftVersionCommand(owner, versionId(1), trackId(1), 2)),
+    ).rejects.toThrow('mongo down');
+
+    expect(storage.delete).toHaveBeenCalledWith(pitchResult.shiftedS3Key);
+    expect(quota.recordUsage).not.toHaveBeenCalled();
   });
 
   it('propagates audio-processor failures without mutating DB', async () => {

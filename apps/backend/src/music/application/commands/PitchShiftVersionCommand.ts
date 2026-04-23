@@ -3,7 +3,9 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
 import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
+import { TRACK_STORAGE_SERVICE } from '../../infra/storage/storage.tokens.js';
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
+import type { ITrackStorageService } from '../../infra/storage/ITrackStorageService.js';
 import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
@@ -38,6 +40,7 @@ export class PitchShiftVersionHandler implements ICommandHandler<
   constructor(
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
     private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(TRACK_STORAGE_SERVICE) private readonly storage: ITrackStorageService,
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
     private readonly quotaService: QuotaService,
     private readonly analytics: AnalyticsEventService,
@@ -115,9 +118,16 @@ export class PitchShiftVersionHandler implements ICommandHandler<
 
     newVersion.addTrack(newTrack);
     aggregate.createDerivedVersion(newVersion);
-    await this.aggregateRepo.save(aggregate);
+
+    try {
+      await this.aggregateRepo.save(aggregate);
+    } catch (e) {
+      await this.storage.delete(result.shiftedS3Key).catch(() => {});
+      throw e;
+    }
 
     await this.quotaService.recordUsage(cmd.actorId, 'pitch_shift');
+    await this.quotaService.recordUsage(cmd.actorId, 'storage_bytes', result.sizeBytes);
 
     await this.analytics.track('track_pitch_shifted', cmd.actorId, {
       version_id: cmd.versionId,
