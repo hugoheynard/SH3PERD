@@ -2,7 +2,6 @@ import type { TMusicReferenceDomainModel, TMusicReferenceId } from '@sh3pherd/sh
 
 export type IMusicReferenceRepository = {
   save(document: TMusicReferenceDomainModel): Promise<boolean>;
-  findAll(): Promise<TMusicReferenceDomainModel[]>;
   findByIds(ids: TMusicReferenceId[]): Promise<TMusicReferenceDomainModel[]>;
   findByExactTitleAndArtist(
     title: string,

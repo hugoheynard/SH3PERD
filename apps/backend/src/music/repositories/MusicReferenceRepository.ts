@@ -13,10 +13,6 @@ export class MusicReferenceMongoRepository
     super(input);
   }
 
-  async findAll(): Promise<TMusicReferenceDomainModel[]> {
-    return this.findMany({ filter: {} });
-  }
-
   async findByExactTitleAndArtist(
     title: string,
     artist: string,
