@@ -175,6 +175,18 @@ describe('PitchShiftVersionHandler', () => {
     expect(quota.recordUsage).not.toHaveBeenCalled();
   });
 
+  it('swallows a compensation-delete failure and still surfaces the save error', async () => {
+    const { handler, aggregateRepo, storage, owner } = setup();
+    aggregateRepo.save.mockRejectedValueOnce(new Error('mongo down'));
+    storage.delete.mockRejectedValueOnce(new Error('r2 unreachable'));
+
+    await expect(
+      handler.execute(new PitchShiftVersionCommand(owner, versionId(1), trackId(1), 2)),
+    ).rejects.toThrow('mongo down');
+
+    expect(storage.delete).toHaveBeenCalledTimes(1);
+  });
+
   it('propagates audio-processor failures without mutating DB', async () => {
     const { handler, audioClient, aggregateRepo, quota, owner } = setup();
     audioClient.send.mockReturnValueOnce(throwError(() => new Error('AP_DOWN')));
