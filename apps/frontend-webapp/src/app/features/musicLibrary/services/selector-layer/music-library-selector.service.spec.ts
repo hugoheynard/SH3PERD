@@ -206,6 +206,57 @@ describe('MusicLibrarySelectorService', () => {
       });
       expect(selector.activeEntries()).toHaveLength(0);
     });
+
+    it('tolerates a 1-character typo via per-token Levenshtein', () => {
+      const { selector } = setup({
+        entries: [
+          entry({
+            id: 'repEntry_e1',
+            reference: {
+              id: 'r1',
+              title: 'Elton John',
+              originalArtist: 'Elton John',
+            } as never,
+          }),
+        ],
+        tabs: [tab({ config: { ...tab().config, searchQuery: 'eltn' } })],
+      });
+      expect(selector.activeEntries()).toHaveLength(1);
+    });
+
+    it('strips diacritics before matching', () => {
+      const { selector } = setup({
+        entries: [
+          entry({
+            id: 'repEntry_e1',
+            reference: {
+              id: 'r1',
+              title: 'Céline Dion',
+              originalArtist: 'Céline Dion',
+            } as never,
+          }),
+        ],
+        tabs: [tab({ config: { ...tab().config, searchQuery: 'celine' } })],
+      });
+      expect(selector.activeEntries()).toHaveLength(1);
+    });
+
+    it('matches across NFD-decomposed text', () => {
+      const { selector } = setup({
+        entries: [
+          entry({
+            id: 'repEntry_e1',
+            reference: {
+              id: 'r1',
+              title: 'Ce\u0301line Dion',
+              originalArtist: 'Ce\u0301line Dion',
+            } as never,
+          }),
+        ],
+        tabs: [tab({ config: { ...tab().config, searchQuery: 'celine' } })],
+      });
+      expect(selector.activeEntries()).toHaveLength(1);
+    });
   });
 
   describe('activeEntries — data filter', () => {
