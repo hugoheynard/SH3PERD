@@ -6,9 +6,6 @@ import type {
   TMusicVersionDomainModel,
   TMusicVersionId,
   TMusicReferenceId,
-  TVersionTrackDomainModel,
-  TVersionTrackId,
-  TAudioAnalysisSnapshot,
   TUserId,
 } from '@sh3pherd/shared-types';
 import { technicalFailThrows500 } from '../../utils/errorManagement/tryCatch/technicalFailThrows500.js';
@@ -24,14 +21,6 @@ export type IMusicVersionRepository = {
     session?: ClientSession,
   ): Promise<TMusicVersionDomainModel | null>;
   deleteOneByVersionId(versionId: TMusicVersionId, session?: ClientSession): Promise<boolean>;
-  pushTrack(versionId: TMusicVersionId, track: TVersionTrackDomainModel): Promise<boolean>;
-  pullTrack(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean>;
-  setTrackFavorite(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean>;
-  setTrackAnalysis(
-    versionId: TMusicVersionId,
-    trackId: TVersionTrackId,
-    analysis: TAudioAnalysisSnapshot,
-  ): Promise<boolean>;
   findByOwnerId(userId: TUserId): Promise<TMusicVersionDomainModel[]>;
   findByOwnerAndReference(
     userId: TUserId,
@@ -89,73 +78,6 @@ export class MusicVersionRepository
     const filter: Filter<TMusicVersionDomainModel> = { id: versionId };
     const result = await this.collection.deleteOne(filter, { session });
     return result.deletedCount === 1;
-  }
-
-  /* ── Track subdocument operations ── */
-
-  async pushTrack(versionId: TMusicVersionId, track: TVersionTrackDomainModel): Promise<boolean> {
-    const filter: Filter<TMusicVersionDomainModel> = { id: versionId };
-    const update: UpdateFilter<TMusicVersionDomainModel> = {
-      $push: { tracks: track },
-      $set: { 'metadata.updated_at': new Date() },
-    };
-    const result = await this.collection.updateOne(filter, update);
-    return result.modifiedCount === 1;
-  }
-
-  async pullTrack(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean> {
-    const filter: Filter<TMusicVersionDomainModel> = { id: versionId };
-    const update: UpdateFilter<TMusicVersionDomainModel> = {
-      $pull: { tracks: { id: trackId } },
-      $set: { 'metadata.updated_at': new Date() },
-    };
-    const result = await this.collection.updateOne(filter, update);
-    return result.modifiedCount === 1;
-  }
-
-  /**
-   * Sets a track as favorite and unsets all others.
-   * Two-step: first unset all, then set the target.
-   */
-  async setTrackFavorite(versionId: TMusicVersionId, trackId: TVersionTrackId): Promise<boolean> {
-    const versionFilter: Filter<TMusicVersionDomainModel> = { id: versionId };
-    // Step 1: unset all favorites
-    await this.collection.updateOne(versionFilter, {
-      $set: { 'tracks.$[].favorite': false },
-    } as UpdateFilter<TMusicVersionDomainModel>);
-
-    const trackFilter: Filter<TMusicVersionDomainModel> = {
-      id: versionId,
-      'tracks.id': trackId,
-    };
-    // Step 2: set target favorite
-    const result = await this.collection.updateOne(trackFilter, {
-      $set: {
-        'tracks.$.favorite': true,
-        'metadata.updated_at': new Date(),
-      },
-    } as UpdateFilter<TMusicVersionDomainModel>);
-    return result.modifiedCount === 1;
-  }
-
-  /** Persist audio analysis results on a specific track. */
-  async setTrackAnalysis(
-    versionId: TMusicVersionId,
-    trackId: TVersionTrackId,
-    analysis: TAudioAnalysisSnapshot,
-  ): Promise<boolean> {
-    const filter: Filter<TMusicVersionDomainModel> = {
-      id: versionId,
-      'tracks.id': trackId,
-    };
-    const update: UpdateFilter<TMusicVersionDomainModel> = {
-      $set: {
-        'tracks.$.analysisResult': analysis,
-        'metadata.updated_at': new Date(),
-      },
-    };
-    const result = await this.collection.updateOne(filter, update);
-    return result.modifiedCount === 1;
   }
 
   async findByOwnerId(userId: TUserId): Promise<TMusicVersionDomainModel[]> {
