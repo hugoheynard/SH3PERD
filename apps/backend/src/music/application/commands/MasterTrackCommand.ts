@@ -3,7 +3,9 @@ import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
 import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
+import { TRACK_STORAGE_SERVICE } from '../../infra/storage/storage.tokens.js';
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
+import type { ITrackStorageService } from '../../infra/storage/ITrackStorageService.js';
 import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
@@ -38,6 +40,7 @@ export class MasterTrackHandler implements ICommandHandler<
   constructor(
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
     private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(TRACK_STORAGE_SERVICE) private readonly storage: ITrackStorageService,
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
     private readonly eventBus: EventBus,
     private readonly quotaService: QuotaService,
@@ -97,13 +100,20 @@ export class MasterTrackHandler implements ICommandHandler<
     };
 
     aggregate.addTrack(cmd.actorId, cmd.versionId, masteredTrack);
-    await this.aggregateRepo.save(aggregate);
+
+    try {
+      await this.aggregateRepo.save(aggregate);
+    } catch (e) {
+      await this.storage.delete(result.masteredS3Key).catch(() => {});
+      throw e;
+    }
 
     this.eventBus.publish(
       new TrackMasteredEvent(cmd.actorId, cmd.versionId, newTrackId, result.masteredS3Key),
     );
 
     await this.quotaService.recordUsage(cmd.actorId, 'master_standard');
+    await this.quotaService.recordUsage(cmd.actorId, 'storage_bytes', result.sizeBytes);
 
     await this.analytics.track('track_mastered', cmd.actorId, {
       version_id: cmd.versionId,

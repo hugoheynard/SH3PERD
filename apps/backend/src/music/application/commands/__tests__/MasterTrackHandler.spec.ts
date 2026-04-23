@@ -9,7 +9,12 @@ import {
   userId,
   versionId,
 } from '../../../domain/__tests__/test-helpers.js';
-import { mockAggregateRepo, mockAnalytics, mockQuotaService } from './handler-test-helpers.js';
+import {
+  mockAggregateRepo,
+  mockAnalytics,
+  mockQuotaService,
+  mockStorage,
+} from './handler-test-helpers.js';
 import {
   MicroservicePatterns,
   type TMasteringResult,
@@ -26,6 +31,7 @@ const masteringResult: TMasteringResult = {
 
 function setup() {
   const aggregateRepo = mockAggregateRepo();
+  const storage = mockStorage();
   const quota = mockQuotaService();
   const analytics = mockAnalytics();
   const audioClient = { send: jest.fn().mockReturnValue(of(masteringResult)) };
@@ -42,13 +48,24 @@ function setup() {
 
   const handler = new MasterTrackHandler(
     aggregateRepo,
+    storage as never,
     audioClient as never,
     eventBus as never,
     quota as never,
     analytics as never,
   );
 
-  return { handler, aggregateRepo, audioClient, eventBus, quota, analytics, owner, source };
+  return {
+    handler,
+    aggregateRepo,
+    storage,
+    audioClient,
+    eventBus,
+    quota,
+    analytics,
+    owner,
+    source,
+  };
 }
 
 describe('MasterTrackHandler', () => {
@@ -112,6 +129,11 @@ describe('MasterTrackHandler', () => {
     expect(event.s3Key).toBe(masteringResult.masteredS3Key);
 
     expect(quota.recordUsage).toHaveBeenCalledWith(owner, 'master_standard');
+    expect(quota.recordUsage).toHaveBeenCalledWith(
+      owner,
+      'storage_bytes',
+      masteringResult.sizeBytes,
+    );
     expect(analytics.track).toHaveBeenCalledWith(
       'track_mastered',
       owner,
@@ -147,6 +169,20 @@ describe('MasterTrackHandler', () => {
 
     expect(audioClient.send).not.toHaveBeenCalled();
     expect(aggregateRepo.save).not.toHaveBeenCalled();
+  });
+
+  it('compensates the mastered S3 object when the aggregate save fails', async () => {
+    const { handler, aggregateRepo, storage, quota, analytics, eventBus, owner } = setup();
+    aggregateRepo.save.mockRejectedValueOnce(new Error('mongo down'));
+
+    await expect(
+      handler.execute(new MasterTrackCommand(owner, versionId(1), trackId(1), target)),
+    ).rejects.toThrow('mongo down');
+
+    expect(storage.delete).toHaveBeenCalledWith(masteringResult.masteredS3Key);
+    expect(quota.recordUsage).not.toHaveBeenCalled();
+    expect(eventBus.publish).not.toHaveBeenCalled();
+    expect(analytics.track).not.toHaveBeenCalled();
   });
 
   it('propagates audio-processor failures without mutating DB or quota', async () => {
