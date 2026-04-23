@@ -14,6 +14,7 @@ import { RepertoireEntryAggregateRepository } from './repositories/RepertoireEnt
 import type { IMusicVersionRepository } from './repositories/MusicVersionRepository.js';
 import type { IMusicRepertoireRepository } from './repositories/MusicRepertoireRepository.js';
 import type { IMusicReferenceRepository } from './types/musicReferences.types.js';
+import { MusicPolicyLimitsProvider } from './domain/MusicPolicyLimitsProvider.js';
 
 // Commands
 import { CreateMusicReferenceHandler } from './application/commands/CreateMusicReferenceCommand.js';
@@ -89,14 +90,27 @@ const EventHandlers = [TrackUploadedHandler, TrackMasteredHandler];
     ...CommandHandlers,
     ...QueryHandlers,
     ...EventHandlers,
+    MusicPolicyLimitsProvider,
     {
       provide: REPERTOIRE_ENTRY_AGGREGATE_REPO,
       useFactory: (
         versionRepo: IMusicVersionRepository,
         repertoireRepo: IMusicRepertoireRepository,
         referenceRepo: IMusicReferenceRepository,
-      ) => new RepertoireEntryAggregateRepository(versionRepo, repertoireRepo, referenceRepo),
-      inject: [MUSIC_VERSION_REPO, MUSIC_REPERTOIRE_REPO, MUSIC_REFERENCE_REPO],
+        limitsProvider: MusicPolicyLimitsProvider,
+      ) =>
+        new RepertoireEntryAggregateRepository(
+          versionRepo,
+          repertoireRepo,
+          referenceRepo,
+          limitsProvider,
+        ),
+      inject: [
+        MUSIC_VERSION_REPO,
+        MUSIC_REPERTOIRE_REPO,
+        MUSIC_REFERENCE_REPO,
+        MusicPolicyLimitsProvider,
+      ],
     },
   ],
   exports: [...CommandHandlers, ...QueryHandlers],

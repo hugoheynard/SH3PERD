@@ -7,6 +7,8 @@ import { RepertoireEntryAggregate } from '../domain/RepertoireEntryAggregate.js'
 import { RepertoireEntryEntity } from '../domain/entities/RepertoireEntryEntity.js';
 import { MusicReferenceEntity } from '../domain/entities/MusicReferenceEntity.js';
 import { MusicVersionEntity } from '../domain/entities/MusicVersionEntity.js';
+import { MusicPolicy } from '../domain/MusicPolicy.js';
+import type { MusicPolicyLimitsProvider } from '../domain/MusicPolicyLimitsProvider.js';
 import { TechnicalError } from '../../utils/errorManagement/TechnicalError.js';
 import { BusinessError } from '../../utils/errorManagement/BusinessError.js';
 
@@ -43,6 +45,11 @@ export class RepertoireEntryAggregateRepository implements IRepertoireEntryAggre
     private readonly versionRepo: IMusicVersionRepository,
     private readonly repertoireRepo: IMusicRepertoireRepository,
     private readonly referenceRepo: IMusicReferenceRepository,
+    // Optional so tests + non-DI callers can stand up the repo without
+    // wiring QuotaService. When omitted the aggregate keeps the domain
+    // default limits (most restrictive), which matches the pre-wiring
+    // behaviour.
+    private readonly limitsProvider?: MusicPolicyLimitsProvider,
   ) {}
 
   async loadByVersionId(versionId: TMusicVersionId): Promise<RepertoireEntryAggregate> {
@@ -60,10 +67,11 @@ export class RepertoireEntryAggregateRepository implements IRepertoireEntryAggre
     ownerId: TUserId,
     referenceId: TMusicReferenceId,
   ): Promise<RepertoireEntryAggregate> {
-    const [entryDoc, references, versions] = await Promise.all([
+    const [entryDoc, references, versions, limits] = await Promise.all([
       this.repertoireRepo.findByOwnerAndReference(ownerId, referenceId),
       this.referenceRepo.findByIds([referenceId]),
       this.versionRepo.findByOwnerAndReference(ownerId, referenceId),
+      this.limitsProvider?.forUser(ownerId),
     ]);
 
     if (!entryDoc) {
@@ -87,7 +95,8 @@ export class RepertoireEntryAggregateRepository implements IRepertoireEntryAggre
       (v: (typeof versions)[number]) => new MusicVersionEntity(v),
     );
 
-    return new RepertoireEntryAggregate(entry, reference, versionEntities);
+    const policy = limits ? new MusicPolicy(limits) : undefined;
+    return new RepertoireEntryAggregate(entry, reference, versionEntities, policy);
   }
 
   startSession(): ClientSession {
