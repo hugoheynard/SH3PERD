@@ -33,6 +33,7 @@ import { DeleteMusicTabConfigsHandler } from './application/commands/DeleteMusic
 
 // Events
 import { TrackUploadedHandler } from './application/events/TrackUploadedHandler.js';
+import { TrackMasteredHandler } from './application/events/TrackMasteredHandler.js';
 
 // Queries
 import { SearchMusicReferencesHandler } from './application/queries/SearchMusicReferencesQuery.js';
@@ -68,7 +69,7 @@ const QueryHandlers = [
   GetCompanyCrossLibraryHandler,
 ];
 
-const EventHandlers = [TrackUploadedHandler];
+const EventHandlers = [TrackUploadedHandler, TrackMasteredHandler];
 
 @Module({
   imports: [

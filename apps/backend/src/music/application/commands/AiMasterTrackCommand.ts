@@ -1,5 +1,5 @@
 import { Inject, Logger } from '@nestjs/common';
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
 import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
@@ -7,6 +7,7 @@ import type { IRepertoireEntryAggregateRepository } from '../../repositories/Rep
 import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
+import { TrackMasteredEvent } from '../events/TrackMasteredEvent.js';
 import {
   MicroservicePatterns,
   type TUserId,
@@ -53,6 +54,7 @@ export class AiMasterTrackHandler implements ICommandHandler<
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
     private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
+    private readonly eventBus: EventBus,
     private readonly quotaService: QuotaService,
     private readonly analytics: AnalyticsEventService,
   ) {}
@@ -131,6 +133,10 @@ export class AiMasterTrackHandler implements ICommandHandler<
 
     aggregate.addTrack(cmd.actorId, cmd.versionId, masteredTrack);
     await this.aggregateRepo.save(aggregate);
+
+    this.eventBus.publish(
+      new TrackMasteredEvent(cmd.actorId, cmd.versionId, newTrackId, result.masteredS3Key),
+    );
 
     await this.quotaService.recordUsage(cmd.actorId, 'master_ai');
 
