@@ -14,7 +14,11 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 import { AvatarComponent } from '../../../shared/avatar/avatar.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import type {
+  TAddendumId,
+  TContractAddendumDomainModel,
   TContractDetailViewModel,
+  TContractDocument,
+  TContractDocumentId,
   TContractId,
   TContractRole,
   TContractStatus,
@@ -24,6 +28,10 @@ import type {
 } from '@sh3pherd/shared-types';
 
 type Section = 'position' | 'dates' | 'terms';
+type AddendumTemplate =
+  | 'change_remuneration'
+  | 'extend_period'
+  | 'extend_trial';
 
 type EditForm = {
   status: TContractStatus;
@@ -37,6 +45,17 @@ type EditForm = {
   compensation_period: TCompensationPeriod;
   work_time_type: TWorkTimeType;
   work_time_percentage: string;
+};
+
+type AddendumForm = {
+  template: AddendumTemplate;
+  effectiveDate: string;
+  reason: string;
+  comp_amount: string;
+  comp_currency: string;
+  comp_period: TCompensationPeriod;
+  endDate: string;
+  trial_days: string;
 };
 
 type SignatureStep = {
@@ -79,11 +98,32 @@ export class ContractDetailPageComponent implements OnInit {
   readonly AVAILABLE_ROLES: TContractRole[] = [
     'owner',
     'admin',
+    'rh',
     'artist',
     'viewer',
   ];
   readonly addingRole = signal(false);
   readonly selectedNewRole = signal<TContractRole>('viewer');
+
+  // Document upload state
+  readonly uploadingDoc = signal(false);
+  readonly docUploadError = signal<string | null>(null);
+
+  // Sign state
+  readonly signing = signal(false);
+  readonly signError = signal<string | null>(null);
+
+  // Addendum state
+  readonly showAddendumForm = signal(false);
+  readonly creatingAddendum = signal(false);
+  readonly addendumError = signal<string | null>(null);
+  readonly signingAddendum = signal<TAddendumId | null>(null);
+  readonly addendumForm = signal<AddendumForm>(this.defaultAddendumForm());
+  readonly ADDENDUM_TEMPLATES: AddendumTemplate[] = [
+    'change_remuneration',
+    'extend_period',
+    'extend_trial',
+  ];
 
   // Status picker (rendered inside the hero)
   readonly editingStatus = signal(false);
@@ -106,6 +146,9 @@ export class ContractDetailPageComponent implements OnInit {
     'hourly',
   ];
   readonly CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF'];
+
+  /** True when contract is active (locked for direct edits). */
+  readonly isLocked = computed(() => this.detail()?.status === 'active');
 
   /** Signature stepper computed from current contract state. */
   readonly steps = computed<SignatureStep[]>(() => {
@@ -305,6 +348,145 @@ export class ContractDetailPageComponent implements OnInit {
     return this.AVAILABLE_ROLES.filter((r) => !current.includes(r));
   }
 
+  // ── Documents ────────────────────────────────────────────
+
+  onDocumentFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    const id = this.contractId;
+    if (!id) return;
+
+    this.uploadingDoc.set(true);
+    this.docUploadError.set(null);
+
+    this.contractService.uploadDocument(id, file).subscribe({
+      next: () => {
+        this.uploadingDoc.set(false);
+        input.value = '';
+        this.loadDetail();
+      },
+      error: () => {
+        this.uploadingDoc.set(false);
+        this.docUploadError.set('Upload failed');
+      },
+    });
+  }
+
+  downloadDocument(doc: TContractDocument): void {
+    const id = this.contractId;
+    if (!id) return;
+    this.contractService
+      .getDocumentDownloadUrl(id, doc.id as TContractDocumentId)
+      .subscribe({ next: ({ url }) => window.open(url, '_blank') });
+  }
+
+  formatBytes(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  // ── Signature ────────────────────────────────────────────
+
+  sign(notify: boolean): void {
+    const id = this.contractId;
+    if (!id) return;
+    this.signing.set(true);
+    this.signError.set(null);
+    this.contractService.signContract(id, notify).subscribe({
+      next: () => {
+        this.signing.set(false);
+        this.loadDetail();
+      },
+      error: () => {
+        this.signing.set(false);
+        this.signError.set('Failed to sign contract');
+      },
+    });
+  }
+
+  // ── Addenda ──────────────────────────────────────────────
+
+  patchAddendumForm(field: keyof AddendumForm, value: string): void {
+    this.addendumForm.update((f) => ({ ...f, [field]: value }));
+  }
+
+  resetAddendumForm(): void {
+    this.showAddendumForm.set(false);
+    this.addendumForm.set(this.defaultAddendumForm());
+    this.addendumError.set(null);
+  }
+
+  submitAddendum(): void {
+    const id = this.contractId;
+    if (!id) return;
+    const f = this.addendumForm();
+    this.creatingAddendum.set(true);
+    this.addendumError.set(null);
+
+    let changes: TContractAddendumDomainModel['changes'];
+    if (f.template === 'change_remuneration') {
+      changes = {
+        template: 'change_remuneration',
+        compensation: {
+          amount: parseFloat(f.comp_amount),
+          currency: f.comp_currency,
+          period: f.comp_period,
+        },
+      };
+    } else if (f.template === 'extend_period') {
+      changes = { template: 'extend_period', endDate: new Date(f.endDate) };
+    } else {
+      changes = {
+        template: 'extend_trial',
+        trial_period_days: parseInt(f.trial_days, 10),
+      };
+    }
+
+    this.contractService
+      .createAddendum(id, {
+        changes,
+        effectiveDate: f.effectiveDate,
+        reason: f.reason.trim() || undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.creatingAddendum.set(false);
+          this.resetAddendumForm();
+          this.loadDetail();
+        },
+        error: () => {
+          this.creatingAddendum.set(false);
+          this.addendumError.set('Failed to create addendum');
+        },
+      });
+  }
+
+  signAddendum(addendum: TContractAddendumDomainModel): void {
+    const id = this.contractId;
+    if (!id) return;
+    this.signingAddendum.set(addendum.id);
+    this.contractService.signAddendum(id, addendum.id).subscribe({
+      next: () => {
+        this.signingAddendum.set(null);
+        this.loadDetail();
+      },
+      error: () => {
+        this.signingAddendum.set(null);
+      },
+    });
+  }
+
+  addendumLabel(template: AddendumTemplate): string {
+    const labels: Record<AddendumTemplate, string> = {
+      change_remuneration: 'Change compensation',
+      extend_period: 'Extend period',
+      extend_trial: 'Extend trial',
+    };
+    return labels[template];
+  }
+
   // ── Formatters ───────────────────────────────────────────
 
   goBack(): void {
@@ -349,6 +531,19 @@ export class ContractDetailPageComponent implements OnInit {
       compensation_period: 'monthly',
       work_time_type: 'full_time',
       work_time_percentage: '',
+    };
+  }
+
+  private defaultAddendumForm(): AddendumForm {
+    return {
+      template: 'change_remuneration',
+      effectiveDate: '',
+      reason: '',
+      comp_amount: '',
+      comp_currency: 'EUR',
+      comp_period: 'monthly',
+      endDate: '',
+      trial_days: '',
     };
   }
 

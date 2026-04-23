@@ -1,9 +1,19 @@
 @use "mixins" as m;
 
+:host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+}
+
 /* ── Back bar ──────────────────────────────────────────────── */
 .page-back-bar {
   padding: var(--gap-md) var(--gap-2xl);
   border-bottom: 1px solid var(--panel-border-color);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--content-page-bg-color);
 }
 .btn-back {
   display: inline-flex;
@@ -595,6 +605,205 @@ select.input {
   background: color-mix(in srgb, var(--color-alert) 4%, var(--card-color));
 }
 
+/* ── Documents ─────────────────────────────────────────────── */
+.btn-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all var(--t-fast);
+
+  &:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color-border);
+    background: var(--accent-color-dim);
+  }
+
+  &.uploading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.doc-error {
+  font-size: var(--text-sm);
+  color: var(--color-alert);
+  margin: 0 0 var(--gap-sm);
+}
+
+.doc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.doc-item {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  padding: var(--gap-sm) var(--gap-md);
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+}
+
+.doc-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.doc-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doc-name {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-size {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Lock banner ───────────────────────────────────────────── */
+.lock-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  padding: 10px var(--gap-2xl);
+  background: color-mix(in srgb, var(--color-success) 10%, transparent);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--color-success) 25%, transparent);
+  color: var(--color-success);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+/* ── Sign actions ──────────────────────────────────────────── */
+.sign-actions {
+  display: flex;
+  gap: var(--gap-sm);
+  padding-top: var(--gap-sm);
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ── Addenda ───────────────────────────────────────────────── */
+.addendum-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+  padding-bottom: var(--gap-md);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: var(--gap-md);
+}
+
+.addendum-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.addendum-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  padding: var(--gap-md);
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+}
+
+.addendum-header {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+}
+
+.addendum-badge {
+  padding: 2px 8px;
+  border-radius: var(--radius-lg);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &[data-status="draft"] {
+    background: var(--surface-raised);
+    color: var(--text-secondary);
+  }
+  &[data-status="applied"] {
+    background: color-mix(in srgb, var(--color-success) 15%, transparent);
+    color: var(--color-success);
+  }
+  &[data-status="rejected"] {
+    background: var(--color-alert-dim);
+    color: var(--color-alert-light);
+  }
+}
+
+.addendum-type {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.addendum-date {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.addendum-reason {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  font-style: italic;
+}
+
+.addendum-sigs {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  flex-wrap: wrap;
+}
+
+.sig-mini {
+  font-size: var(--text-xs);
+  padding: 2px 8px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+
+  &.signed {
+    background: color-mix(in srgb, var(--color-success) 12%, transparent);
+    color: var(--color-success);
+    border-color: color-mix(in srgb, var(--color-success) 25%, transparent);
+  }
+}
+
+/* ── Contract ID ───────────────────────────────────────────── */
 .contract-id {
   font-size: var(--text-xs);
   color: var(--text-faded);

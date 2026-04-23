@@ -4,6 +4,8 @@ import type { TContractRecord, TUpdateContractDTO } from '@sh3pherd/shared-types
 import type { Filter, UpdateFilter } from 'mongodb';
 import { CONTRACT_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IContractRepository } from '../../repositories/ContractMongoRepository.js';
+import { ContractEntity } from '../../domain/ContractEntity.js';
+import { ContractPolicy } from '../../domain/ContractPolicy.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class UpdateContractCommand {
@@ -19,6 +21,11 @@ export class UpdateContractHandler implements ICommandHandler<
 
   async execute(cmd: UpdateContractCommand): Promise<TContractRecord> {
     const { dto } = cmd;
+
+    const record = await this.contractRepo.findOne({ filter: { id: dto.contract_id } });
+    if (!record)
+      throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
+    ContractPolicy.ensureEditable(new ContractEntity(record));
 
     const $set: Record<string, unknown> = {};
     const $unset: Record<string, ''> = {};

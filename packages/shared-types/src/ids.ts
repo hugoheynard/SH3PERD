@@ -28,6 +28,10 @@ export const SCompanyId = createIdSchema<TCompanyId>("company");
 export type TContractId = `contract_${string}`;
 export const SContractId = createIdSchema<TContractId>("contract");
 
+export type TContractDocumentId = `contractDoc_${string}`;
+export const SContractDocumentId =
+  createIdSchema<TContractDocumentId>("contractDoc");
+
 export type TContractSignatureId = `contract_signature_${string}`;
 export const SContractSignatureId =
   createIdSchema<TContractSignatureId>("contract_signature");

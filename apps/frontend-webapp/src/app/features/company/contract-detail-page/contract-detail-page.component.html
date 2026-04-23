@@ -13,6 +13,12 @@
 }
 
 @if (!loading() && detail(); as c) {
+  @if (isLocked()) {
+    <div class="lock-banner">
+      <sh3-icon name="lock" [size]="14" />
+      This contract is active. All modifications require an addendum.
+    </div>
+  }
   <div class="page">
     <!-- ══════════════ MAIN COLUMN ══════════════ -->
     <div class="main-col">
@@ -161,7 +167,7 @@
       <section class="card">
         <div class="card-header">
           <h3 class="card-title">Position</h3>
-          @if (editing() !== "position") {
+          @if (editing() !== "position" && !isLocked()) {
             <button
               class="btn-icon-edit"
               (click)="startEdit('position')"
@@ -242,7 +248,7 @@
       <section class="card">
         <div class="card-header">
           <h3 class="card-title">Dates</h3>
-          @if (editing() !== "dates") {
+          @if (editing() !== "dates" && !isLocked()) {
             <button
               class="btn-icon-edit"
               (click)="startEdit('dates')"
@@ -343,7 +349,7 @@
       <section class="card">
         <div class="card-header">
           <h3 class="card-title">Terms</h3>
-          @if (editing() !== "terms") {
+          @if (editing() !== "terms" && !isLocked()) {
             <button
               class="btn-icon-edit"
               (click)="startEdit('terms')"
@@ -484,6 +490,291 @@
           }
         </div>
       </section>
+      <!-- Documents ────────────────────────────────── -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Documents</h3>
+          <label class="btn-upload" [class.uploading]="uploadingDoc()">
+            <sh3-icon name="upload" [size]="13" />
+            {{ uploadingDoc() ? "Uploading…" : "Add document" }}
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+              style="display: none"
+              [disabled]="uploadingDoc()"
+              (change)="onDocumentFileSelected($event)"
+            />
+          </label>
+        </div>
+        <div class="card-body">
+          @if (docUploadError()) {
+            <p class="doc-error">{{ docUploadError() }}</p>
+          }
+          @if (!c.documents?.length && !uploadingDoc()) {
+            <span class="info-val empty">No documents attached</span>
+          }
+          @if (c.documents?.length) {
+            <ul class="doc-list">
+              @for (doc of c.documents; track doc.id) {
+                <li class="doc-item">
+                  <sh3-icon name="add-doc" [size]="16" class="doc-icon" />
+                  <div class="doc-meta">
+                    <span class="doc-name">{{ doc.fileName }}</span>
+                    <span class="doc-size">{{
+                      formatBytes(doc.sizeBytes)
+                    }}</span>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn-icon-edit"
+                    title="Download"
+                    (click)="downloadDocument(doc)"
+                  >
+                    <sh3-icon name="download" [size]="13" />
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </section>
+      <!-- Addenda ──────────────────────────────── -->
+      @if (isLocked()) {
+        <section class="card">
+          <div class="card-header">
+            <h3 class="card-title">Addenda</h3>
+            @if (!showAddendumForm()) {
+              <button class="btn-add-role" (click)="showAddendumForm.set(true)">
+                + Propose addendum
+              </button>
+            }
+          </div>
+          <div class="card-body">
+            @if (showAddendumForm()) {
+              @let af = addendumForm();
+              <div class="addendum-form">
+                <div class="field">
+                  <label class="field-label">Type</label>
+                  <div class="pick-row">
+                    @for (t of ADDENDUM_TEMPLATES; track t) {
+                      <button
+                        type="button"
+                        class="pick-pill"
+                        [class.active]="af.template === t"
+                        (click)="patchAddendumForm('template', t)"
+                      >
+                        {{ addendumLabel(t) }}
+                      </button>
+                    }
+                  </div>
+                </div>
+
+                @if (af.template === "change_remuneration") {
+                  <div class="form-grid cols-3">
+                    <div class="field">
+                      <label class="field-label" for="afAmount">Amount</label>
+                      <input
+                        id="afAmount"
+                        class="input"
+                        type="number"
+                        min="0"
+                        placeholder="e.g. 3500"
+                        [value]="af.comp_amount"
+                        (input)="
+                          patchAddendumForm(
+                            'comp_amount',
+                            $any($event.target).value
+                          )
+                        "
+                      />
+                    </div>
+                    <div class="field">
+                      <label class="field-label" for="afCur">Currency</label>
+                      <select
+                        id="afCur"
+                        class="input"
+                        [value]="af.comp_currency"
+                        (change)="
+                          patchAddendumForm(
+                            'comp_currency',
+                            $any($event.target).value
+                          )
+                        "
+                      >
+                        @for (cur of CURRENCIES; track cur) {
+                          <option
+                            [value]="cur"
+                            [selected]="af.comp_currency === cur"
+                          >
+                            {{ cur }}
+                          </option>
+                        }
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label class="field-label">Period</label>
+                      <div class="pick-row">
+                        @for (p of PERIOD_OPTIONS; track p) {
+                          <button
+                            type="button"
+                            class="pick-pill"
+                            [class.active]="af.comp_period === p"
+                            (click)="patchAddendumForm('comp_period', p)"
+                          >
+                            {{ p }}
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                @if (af.template === "extend_period") {
+                  <div class="field">
+                    <label class="field-label" for="afEnd">New end date</label>
+                    <input
+                      id="afEnd"
+                      class="input"
+                      type="date"
+                      [value]="af.endDate"
+                      (input)="
+                        patchAddendumForm('endDate', $any($event.target).value)
+                      "
+                    />
+                  </div>
+                }
+
+                @if (af.template === "extend_trial") {
+                  <div class="field">
+                    <label class="field-label" for="afTrial"
+                      >Trial period (days)</label
+                    >
+                    <input
+                      id="afTrial"
+                      class="input"
+                      type="number"
+                      min="1"
+                      [value]="af.trial_days"
+                      (input)="
+                        patchAddendumForm(
+                          'trial_days',
+                          $any($event.target).value
+                        )
+                      "
+                    />
+                  </div>
+                }
+
+                <div class="form-grid">
+                  <div class="field">
+                    <label class="field-label" for="afDate"
+                      >Effective date</label
+                    >
+                    <input
+                      id="afDate"
+                      class="input"
+                      type="date"
+                      [value]="af.effectiveDate"
+                      (input)="
+                        patchAddendumForm(
+                          'effectiveDate',
+                          $any($event.target).value
+                        )
+                      "
+                    />
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for="afReason"
+                      >Reason <span class="optional">(optional)</span></label
+                    >
+                    <input
+                      id="afReason"
+                      class="input"
+                      type="text"
+                      placeholder="e.g. Annual review"
+                      [value]="af.reason"
+                      (input)="
+                        patchAddendumForm('reason', $any($event.target).value)
+                      "
+                    />
+                  </div>
+                </div>
+
+                @if (addendumError()) {
+                  <p class="doc-error">{{ addendumError() }}</p>
+                }
+
+                <div class="section-actions">
+                  <sh3-button
+                    variant="ghost"
+                    size="sm"
+                    [disabled]="creatingAddendum()"
+                    (clicked)="resetAddendumForm()"
+                    >Cancel</sh3-button
+                  >
+                  <sh3-button
+                    variant="solid"
+                    size="sm"
+                    [disabled]="creatingAddendum()"
+                    (clicked)="submitAddendum()"
+                  >
+                    {{ creatingAddendum() ? "Creating…" : "Create addendum" }}
+                  </sh3-button>
+                </div>
+              </div>
+            }
+
+            @if (!c.addenda?.length && !showAddendumForm()) {
+              <span class="info-val empty">No addenda yet</span>
+            }
+
+            @if (c.addenda?.length) {
+              <ul class="addendum-list">
+                @for (a of c.addenda; track a.id) {
+                  <li class="addendum-item">
+                    <div class="addendum-header">
+                      <span
+                        class="addendum-badge"
+                        [attr.data-status]="a.status"
+                        >{{ a.status }}</span
+                      >
+                      <span class="addendum-type">{{
+                        addendumLabel(a.changes.template)
+                      }}</span>
+                      <span class="addendum-date">{{
+                        a.effectiveDate | date: "mediumDate"
+                      }}</span>
+                    </div>
+                    @if (a.reason) {
+                      <p class="addendum-reason">{{ a.reason }}</p>
+                    }
+                    <div class="addendum-sigs">
+                      <span class="sig-mini" [class.signed]="a.signatures?.user"
+                        >Employee {{ a.signatures?.user ? "✓" : "…" }}</span
+                      >
+                      <span
+                        class="sig-mini"
+                        [class.signed]="a.signatures?.company"
+                        >Company {{ a.signatures?.company ? "✓" : "…" }}</span
+                      >
+                      @if (a.status === "draft") {
+                        <sh3-button
+                          variant="solid"
+                          size="sm"
+                          [disabled]="signingAddendum() === a.id"
+                          (clicked)="signAddendum(a)"
+                        >
+                          {{ signingAddendum() === a.id ? "Signing…" : "Sign" }}
+                        </sh3-button>
+                      }
+                    </div>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        </section>
+      }
     </div>
 
     <!-- ══════════════ SIDEBAR ══════════════ -->
@@ -552,6 +843,29 @@
             }
           </div>
         </div>
+        @if (c.status === "draft") {
+          @if (signError()) {
+            <p class="doc-error">{{ signError() }}</p>
+          }
+          <div class="sign-actions">
+            <sh3-button
+              variant="ghost"
+              size="sm"
+              [disabled]="signing()"
+              (clicked)="sign(false)"
+            >
+              {{ signing() ? "Signing…" : "Sign" }}
+            </sh3-button>
+            <sh3-button
+              variant="solid"
+              size="sm"
+              [disabled]="signing()"
+              (clicked)="sign(true)"
+            >
+              {{ c.signatures?.company ? "Send" : "Sign &amp; Send" }}
+            </sh3-button>
+          </div>
+        }
       </div>
 
       <!-- Contract ID -->

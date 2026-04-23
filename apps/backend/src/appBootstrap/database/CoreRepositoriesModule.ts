@@ -1,5 +1,6 @@
 import { Global, Module, type Provider, type Type } from '@nestjs/common';
 import {
+  ADDENDUM_REPO,
   CONTRACT_READ_REPO,
   CONTRACT_REPO,
   MUSIC_REFERENCE_REPO,
@@ -37,6 +38,10 @@ import {
   ContractMongoRepository,
   type IContractRepository,
 } from '../../contracts/repositories/ContractMongoRepository.js';
+import {
+  AddendumMongoRepository,
+  type IAddendumRepository,
+} from '../../contracts/repositories/AddendumMongoRepository.js';
 import type { IMusicReferenceRepository } from '../../music/types/musicReferences.types.js';
 import {
   type IMusicVersionRepository,
@@ -212,6 +217,11 @@ export type TCoreRepositories = {
     ),
     mongoRepoProvider<IContractRepository>(CONTRACT_REPO, ContractMongoRepository, 'contracts'),
     { provide: CONTRACT_READ_REPO, useClass: ContractReadRepository },
+    mongoRepoProvider<IAddendumRepository>(
+      ADDENDUM_REPO,
+      AddendumMongoRepository,
+      'contract_addenda',
+    ),
     mongoRepoProvider<IMusicReferenceRepository>(
       MUSIC_REFERENCE_REPO,
       MusicReferenceMongoRepository,
@@ -279,6 +289,7 @@ export type TCoreRepositories = {
     USER_PROFILE_REPO,
     CONTRACT_REPO,
     CONTRACT_READ_REPO,
+    ADDENDUM_REPO,
     GUEST_COMPANY_REPO,
     PLATFORM_CONTRACT_REPO,
     USAGE_COUNTER_REPO,

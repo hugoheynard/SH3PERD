@@ -1,8 +1,9 @@
 import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import type { TContractDetailViewModel, TContractId } from '@sh3pherd/shared-types';
-import { CONTRACT_READ_REPO } from '../../../appBootstrap/nestTokens.js';
+import { ADDENDUM_REPO, CONTRACT_READ_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IContractReadRepository } from '../../repositories/ContractReadRepository.js';
+import type { IAddendumRepository } from '../../repositories/AddendumMongoRepository.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class GetContractByIdQuery {
@@ -14,10 +15,17 @@ export class GetContractByIdHandler implements IQueryHandler<
   GetContractByIdQuery,
   TContractDetailViewModel
 > {
-  constructor(@Inject(CONTRACT_READ_REPO) private readonly readRepo: IContractReadRepository) {}
+  constructor(
+    @Inject(CONTRACT_READ_REPO) private readonly readRepo: IContractReadRepository,
+    @Inject(ADDENDUM_REPO) private readonly addendumRepo: IAddendumRepository,
+  ) {}
 
   async execute(query: GetContractByIdQuery): Promise<TContractDetailViewModel> {
-    const results = await this.readRepo.getContractWithUserProfile(query.contractId);
+    const [results, addenda] = await Promise.all([
+      this.readRepo.getContractWithUserProfile(query.contractId),
+      this.addendumRepo.findByContractId(query.contractId),
+    ]);
+
     if (!results.length)
       throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
 
@@ -39,6 +47,8 @@ export class GetContractByIdHandler implements IQueryHandler<
       compensation: contract.compensation,
       work_time: contract.work_time,
       signatures: contract.signatures,
+      documents: contract.documents,
+      addenda,
     };
   }
 }

@@ -1,5 +1,11 @@
-import type { TContractDomainModel, TContractId, TUserId } from '@sh3pherd/shared-types';
+import type {
+  TContractDomainModel,
+  TContractId,
+  TContractSignature,
+  TUserId,
+} from '@sh3pherd/shared-types';
 import type { TContractRole } from '@sh3pherd/shared-types';
+import { CONTRACT_COMPANY_ROLES } from '@sh3pherd/shared-types';
 import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
 import { DomainError } from '../../utils/errorManagement/DomainError.js';
 
@@ -67,5 +73,40 @@ export class ContractEntity extends Entity<TContractDomainModel> {
       user_id: this.props.user_id,
       roles: this.roles,
     };
+  }
+
+  // ── Signature / lock ─────────────────────────────────
+
+  /** Which side of the contract does this set of roles represent? */
+  resolveSignerRole(roles: TContractRole[]): 'company' | 'user' {
+    return roles.some((r) => CONTRACT_COMPANY_ROLES.includes(r)) ? 'company' : 'user';
+  }
+
+  /** Record a signature from one party. Throws if that side already signed. */
+  addSignature(sig: TContractSignature): void {
+    const side = sig.signer_role;
+    if (this.props.signatures?.[side]) {
+      throw new DomainError(`Contract already signed by ${side}`, {
+        code: 'CONTRACT_ALREADY_SIGNED',
+        context: { side, contractId: this.id },
+      });
+    }
+    this.props = {
+      ...this.props,
+      signatures: { ...this.props.signatures, [side]: sig },
+    };
+  }
+
+  isFullySigned(): boolean {
+    return this.isSignedByUser() && this.isSignedByCompany();
+  }
+
+  /** Contract is locked for direct edits once fully signed (status active). */
+  isLocked(): boolean {
+    return this.props.status === 'active' && this.isFullySigned();
+  }
+
+  promoteToActive(): void {
+    this.props = { ...this.props, status: 'active' };
   }
 }
