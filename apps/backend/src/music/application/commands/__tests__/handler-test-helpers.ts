@@ -29,6 +29,7 @@ export const mockAnalytics = (): jest.Mocked<Pick<AnalyticsEventService, 'track'
   track: jest.fn().mockResolvedValue(undefined),
 });
 
-export const mockStorage = (): jest.Mocked<Pick<ITrackStorageService, 'delete'>> => ({
+export const mockStorage = (): jest.Mocked<Pick<ITrackStorageService, 'delete' | 'upload'>> => ({
   delete: jest.fn().mockResolvedValue(undefined),
+  upload: jest.fn().mockResolvedValue(undefined),
 });
