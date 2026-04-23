@@ -50,13 +50,18 @@ export async function resetCollections(db: Db, names: string[]): Promise<void> {
 /**
  * Music-specific cleanup: removes all music domain collections.
  * Call this in `afterAll` of music E2E tests.
+ *
+ * Collection names mirror the wiring in CoreRepositoriesModule —
+ * keep them in sync with any future rename.
  */
 export async function resetMusicCollections(db: Db): Promise<void> {
   await resetCollections(db, [
     'music_references',
-    'music_repertoire_entries',
-    'music_versions',
+    'music_repertoireEntries',
+    'music_version',
     'music_tab_configs',
+    'playlists',
+    'playlist_tracks',
   ]);
 }
 
