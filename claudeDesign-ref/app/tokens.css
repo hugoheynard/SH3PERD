@@ -1,0 +1,149 @@
+:root {
+  --content-page-bg-color: #11161e;
+  --header-color: #0a0e14;
+  --panel-color: #0c1018;
+  --sidebar-color: #090d13;
+  --card-color: #1f2733;
+  --hover-color: #28323f;
+  --floating-panel-color: #1a212a;
+  --popover-bg-color: #151b23;
+  --glass-bg: rgba(9, 13, 21, 0.55);
+
+  --panel-border-color: rgba(255, 255, 255, 0.09);
+  --floating-border-color: rgba(255, 255, 255, 0.13);
+
+  --accent-color: #06a4a4;
+  --accent-color-light: #2dd4d4;
+  --accent-color-faded: rgba(6, 164, 164, 0.25);
+  --accent-color-dim: rgba(6, 164, 164, 0.14);
+  --accent-color-border: rgba(6, 164, 164, 0.35);
+
+  --color-warning: #d4a017;
+  --color-warning-light: #e8b84a;
+  --color-warning-dim: rgba(212, 160, 23, 0.14);
+  --color-warning-border: rgba(232, 184, 74, 0.3);
+  --color-alert: #c44230;
+  --color-alert-light: #e06450;
+  --color-alert-dim: rgba(196, 66, 48, 0.12);
+  --color-alert-border: rgba(224, 100, 80, 0.35);
+  --color-success: #1a9e6a;
+  --color-success-dim: rgba(26, 158, 106, 0.14);
+  --color-info: #7c5bbf;
+  --color-info-light: #b794f4;
+  --color-info-dim: rgba(159, 122, 234, 0.12);
+  --color-info-border: rgba(159, 122, 234, 0.3);
+
+  --color-rating-low: #e06450;
+  --color-rating-low-dim: rgba(224, 100, 80, 0.15);
+  --color-rating-medium: #e8b84a;
+  --color-rating-medium-dim: rgba(232, 184, 74, 0.15);
+  --color-rating-high: #68d391;
+  --color-rating-high-dim: rgba(104, 211, 145, 0.15);
+  --color-rating-max: var(--accent-color);
+  --color-rating-max-dim: var(--accent-color-dim);
+  --color-rating-max-light: var(--accent-color-light);
+
+  --surface-subtle: rgba(255, 255, 255, 0.03);
+  --surface-raised: rgba(255, 255, 255, 0.05);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-light: rgba(255, 255, 255, 0.08);
+  --divider-color: rgba(255, 255, 255, 0.06);
+
+  --text-primary: #eef1ff;
+  --text-secondary: #8892b0;
+  --text-muted: #5e6a86;
+  --text-faded: #4a5470;
+
+  --icon-color: var(--text-secondary);
+  --icon-hover-bg: rgba(255, 255, 255, 0.06);
+
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 9999px;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.5);
+  --shadow-floating:
+    0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-slot: 0 4px 12px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.28);
+
+  --t-fast: 0.1s ease;
+  --t-base: 0.18s ease;
+  --t-slow: 0.28s ease;
+
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 12px;
+  --gap-lg: 16px;
+  --gap-xl: 20px;
+  --gap-2xl: 24px;
+  --gap-3xl: 32px;
+
+  --h-header: 60px;
+  --w-appMenu: 56px;
+  --sidePanel-w: 240px;
+
+  --5min-line: rgba(255, 255, 255, 0.03);
+  --15min-line: rgba(255, 255, 255, 0.065);
+  --60min-line: rgba(255, 255, 255, 0.13);
+  --col-separator: rgba(255, 255, 255, 0.11);
+}
+
+[data-theme="light"] {
+  --content-page-bg-color: #f4f5f7;
+  --header-color: #ffffff;
+  --panel-color: #f9fafb;
+  --sidebar-color: #f0f1f3;
+  --card-color: #ffffff;
+  --hover-color: #f0f2f5;
+  --floating-panel-color: #ffffff;
+  --popover-bg-color: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.65);
+
+  --panel-border-color: rgba(0, 0, 0, 0.08);
+  --floating-border-color: rgba(0, 0, 0, 0.12);
+
+  --accent-color: #069090;
+  --accent-color-light: #06a4a4;
+  --accent-color-dim: rgba(6, 164, 164, 0.08);
+  --accent-color-border: rgba(6, 164, 164, 0.25);
+
+  --color-warning: #b8860b;
+  --color-alert: #b33a2a;
+  --color-info: #6c4ab6;
+
+  --color-rating-low: #d4493a;
+  --color-rating-medium: #d4940e;
+  --color-rating-high: #38a169;
+
+  --surface-subtle: rgba(0, 0, 0, 0.02);
+  --surface-raised: rgba(0, 0, 0, 0.04);
+  --border-subtle: rgba(0, 0, 0, 0.04);
+  --border-light: rgba(0, 0, 0, 0.08);
+  --divider-color: rgba(0, 0, 0, 0.06);
+
+  --text-primary: #1a1d23;
+  --text-secondary: #5f6b7a;
+  --text-muted: #6b7280;
+  --text-faded: #9ca3af;
+
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-floating:
+    0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-slot: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  --5min-line: rgba(0, 0, 0, 0.04);
+  --15min-line: rgba(0, 0, 0, 0.08);
+  --60min-line: rgba(0, 0, 0, 0.14);
+  --col-separator: rgba(0, 0, 0, 0.1);
+}

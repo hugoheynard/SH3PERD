@@ -1,5 +1,4 @@
 :root {
-
   /* ═══════════════════════════════════════════════════
      BACKGROUNDS
      Palette aligned with auth login — deep blue-black
@@ -10,52 +9,49 @@
   --content-page-bg-color: #11161e;
 
   /* Couche 2 — header / zones structurelles */
-  --header-color:          #0a0e14;
+  --header-color: #0a0e14;
 
   /* Couche 3 — panneaux latéraux / sidebar */
-  --panel-color:           #0c1018;
-  --sidebar-color:         #090d13;
+  --panel-color: #0c1018;
+  --sidebar-color: #090d13;
 
   /* Couche 4 — cartes / éléments élevés */
-  --card-color:            #1f2733;
-  --hover-color:           #28323f;
+  --card-color: #1f2733;
+  --hover-color: #28323f;
 
   /* Couche 5 — flottants / menus */
-  --floating-panel-color:  #1a212a;
-  --popover-bg-color:      #151b23;
+  --floating-panel-color: #1a212a;
+  --popover-bg-color: #151b23;
 
   --room-header-bg: color-mix(in srgb, var(--content-page-bg-color) 90%, white);
 
   /* Couche 6 — auth pages (deeper than app for premium contrast) */
-  --auth-bg:             #090d15;
-  --auth-brand-bg:       #0b0f1c;
-  --auth-panel-bg:       #0d1120;
-  --auth-field-bg:       #141b2e;
-  --auth-field-border:   rgba(255, 255, 255, 0.09);
-  --auth-faded-text:     #6b7896;
+  --auth-bg: #090d15;
+  --auth-brand-bg: #0b0f1c;
+  --auth-panel-bg: #0d1120;
+  --auth-field-bg: #141b2e;
+  --auth-field-border: rgba(255, 255, 255, 0.09);
+  --auth-faded-text: #6b7896;
 
   /* Glass surface for overlay panels */
   --glass-bg: rgba(9, 13, 21, 0.55);
-
 
   /* ═══════════════════════════════════════════════════
      BORDERS
   ═══════════════════════════════════════════════════ */
 
-  --panel-border-color:    rgba(255, 255, 255, 0.09);
+  --panel-border-color: rgba(255, 255, 255, 0.09);
   --floating-border-color: rgba(255, 255, 255, 0.13);
-
 
   /* ═══════════════════════════════════════════════════
      ACCENT
   ═══════════════════════════════════════════════════ */
 
-  --accent-color:        #06a4a4;
-  --accent-color-light:  #2dd4d4;
-  --accent-color-faded:  rgba(6, 164, 164, 0.25);
-  --accent-color-dim:    rgba(6, 164, 164, 0.14);
+  --accent-color: #06a4a4;
+  --accent-color-light: #2dd4d4;
+  --accent-color-faded: rgba(6, 164, 164, 0.25);
+  --accent-color-dim: rgba(6, 164, 164, 0.14);
   --accent-color-border: rgba(6, 164, 164, 0.35);
-
 
   /* ═══════════════════════════════════════════════════
      SEMANTIC COLORS
@@ -63,266 +59,262 @@
      the shepherd dog illustration — eye iris & muzzle.
   ═══════════════════════════════════════════════════ */
 
-  --color-warning:       #d4a017;
+  --color-warning: #d4a017;
   --color-warning-light: #e8b84a;
-  --color-warning-dim:   rgba(212, 160, 23, 0.14);
-  --color-warning-border:rgba(232, 184, 74, 0.30);
+  --color-warning-dim: rgba(212, 160, 23, 0.14);
+  --color-warning-border: rgba(232, 184, 74, 0.3);
 
-  --color-alert:         #c44230;
-  --color-alert-light:   #e06450;
-  --color-alert-dim:     rgba(196, 66, 48, 0.12);
-  --color-alert-border:  rgba(224, 100, 80, 0.35);
+  --color-alert: #c44230;
+  --color-alert-light: #e06450;
+  --color-alert-dim: rgba(196, 66, 48, 0.12);
+  --color-alert-border: rgba(224, 100, 80, 0.35);
 
-  --color-success:       #1a9e6a;
+  --color-success: #1a9e6a;
+  --color-success-light: #68d391;
+  --color-success-dim: rgba(26, 158, 106, 0.14);
+  --color-success-border: rgba(104, 211, 145, 0.3);
 
-  --color-info:          #7c5bbf;
-  --color-info-light:    #b794f4;
-  --color-info-dim:      rgba(159, 122, 234, 0.12);
-  --color-info-border:   rgba(159, 122, 234, 0.30);
+  --color-info: #7c5bbf;
+  --color-info-light: #b794f4;
+  --color-info-dim: rgba(159, 122, 234, 0.12);
+  --color-info-border: rgba(159, 122, 234, 0.3);
 
   /* Rating scale */
-  --color-rating-low:        #e06450;
-  --color-rating-low-dim:    rgba(224, 100, 80, 0.15);
-  --color-rating-medium:     #e8b84a;
+  --color-rating-low: #e06450;
+  --color-rating-low-dim: rgba(224, 100, 80, 0.15);
+  --color-rating-medium: #e8b84a;
   --color-rating-medium-dim: rgba(232, 184, 74, 0.15);
-  --color-rating-high:       #68d391;
-  --color-rating-high-dim:   rgba(104, 211, 145, 0.15);
-  --color-rating-max:        var(--accent-color);
-  --color-rating-max-dim:    var(--accent-color-dim);
-  --color-rating-max-light:  var(--accent-color-light);
+  --color-rating-high: #68d391;
+  --color-rating-high-dim: rgba(104, 211, 145, 0.15);
+  --color-rating-max: var(--accent-color);
+  --color-rating-max-dim: var(--accent-color-dim);
+  --color-rating-max-light: var(--accent-color-light);
 
   /* Subtle surface overlays */
-  --surface-subtle:      rgba(255, 255, 255, 0.03);
-  --surface-raised:      rgba(255, 255, 255, 0.05);
-  --border-subtle:       rgba(255, 255, 255, 0.04);
-  --border-light:        rgba(255, 255, 255, 0.08);
-  --divider-color:       rgba(255, 255, 255, 0.06);
-
+  --surface-subtle: rgba(255, 255, 255, 0.03);
+  --surface-raised: rgba(255, 255, 255, 0.05);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-light: rgba(255, 255, 255, 0.08);
+  --divider-color: rgba(255, 255, 255, 0.06);
 
   /* ═══════════════════════════════════════════════════
      TEXT — bluish tint for premium feel
   ═══════════════════════════════════════════════════ */
 
-  --text-primary:   #eef1ff;
+  --text-primary: #eef1ff;
   --text-secondary: #8892b0;
-  --text-muted:     #5e6a86;
-  --text-faded:     #4a5470;
-
+  --text-muted: #5e6a86;
+  --text-faded: #4a5470;
 
   /* ═══════════════════════════════════════════════════
      ICONS
   ═══════════════════════════════════════════════════ */
 
-  --icon-color:    var(--text-secondary);
+  --icon-color: var(--text-secondary);
   --icon-hover-bg: rgba(255, 255, 255, 0.06);
-
 
   /* ═══════════════════════════════════════════════════
      TYPOGRAPHY
   ═══════════════════════════════════════════════════ */
 
-  --text-xs: 0.6875rem;  /* 11px */
-  --text-sm: 0.75rem;    /* 12px */
-  --text-md: 0.875rem;   /* 14px */
-  --text-lg: 1rem;       /* 16px */
-  --text-xl: 1.25rem;    /* 20px */
-
+  --text-xs: 0.6875rem; /* 11px */
+  --text-sm: 0.75rem; /* 12px */
+  --text-md: 0.875rem; /* 14px */
+  --text-lg: 1rem; /* 16px */
+  --text-xl: 1.25rem; /* 20px */
 
   /* ═══════════════════════════════════════════════════
      BORDER RADIUS
   ═══════════════════════════════════════════════════ */
 
-  --radius-xs:    3px;
-  --radius-sm:    6px;
-  --radius-md:    10px;
-  --radius-lg:    9999px;   /* pill / capsule */
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 9999px; /* pill / capsule */
   --radius-round: 50%;
-
 
   /* ═══════════════════════════════════════════════════
      SHADOWS — deeper for very dark surfaces
   ═══════════════════════════════════════════════════ */
 
-  --shadow-xs:   0 1px 3px  rgba(0, 0, 0, 0.30);
-  --shadow-sm:   0 2px 8px  rgba(0, 0, 0, 0.35);
-  --shadow-md:   0 4px 14px rgba(0, 0, 0, 0.40);
-  --shadow-lg:   0 10px 28px rgba(0, 0, 0, 0.50);
-  --shadow-xl:   0 20px 48px rgba(0, 0, 0, 0.60);
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.6);
 
-  --shadow-floating:       0 12px 32px rgba(0, 0, 0, 0.50), 0 4px 12px rgba(0, 0, 0, 0.35);
-  --shadow-floating-hover: 0 18px 44px rgba(0, 0, 0, 0.60), 0 6px 16px rgba(0, 0, 0, 0.42);
+  --shadow-floating:
+    0 12px 32px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-floating-hover:
+    0 18px 44px rgba(0, 0, 0, 0.6), 0 6px 16px rgba(0, 0, 0, 0.42);
 
-  --shadow-slot:       0 4px 12px rgba(0, 0, 0, 0.40), 0 1px 4px rgba(0, 0, 0, 0.28);
-  --shadow-slot-hover: 0 10px 26px rgba(0, 0, 0, 0.52), 0 3px 8px rgba(0, 0, 0, 0.35);
+  --shadow-slot: 0 4px 12px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.28);
+  --shadow-slot-hover:
+    0 10px 26px rgba(0, 0, 0, 0.52), 0 3px 8px rgba(0, 0, 0, 0.35);
 
-  --shadow-popover: 0 30px 80px rgba(0, 0, 0, 0.70), 0 10px 24px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-
+  --shadow-popover:
+    0 30px 80px rgba(0, 0, 0, 0.7), 0 10px 24px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 
   /* ═══════════════════════════════════════════════════
      TRANSITIONS
   ═══════════════════════════════════════════════════ */
 
-  --t-fast:   0.10s ease;
-  --t-base:   0.18s ease;
-  --t-slow:   0.28s ease;
+  --t-fast: 0.1s ease;
+  --t-base: 0.18s ease;
+  --t-slow: 0.28s ease;
   --t-spring: cubic-bezier(0.4, 0, 0.2, 1);
-
 
   /* ═══════════════════════════════════════════════════
      SPACING
   ═══════════════════════════════════════════════════ */
 
-  --gap-xs:  4px;
-  --gap-sm:  8px;
-  --gap-md:  12px;
-  --gap-lg:  16px;
-  --gap-xl:  20px;
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 12px;
+  --gap-lg: 16px;
+  --gap-xl: 20px;
   --gap-2xl: 24px;
   --gap-3xl: 32px;
-
 
   /* ═══════════════════════════════════════════════════
      LAYOUT
   ═══════════════════════════════════════════════════ */
 
-  --h-header:    60px;
+  --h-header: 60px;
   --h-header-mobile: 48px;
-  --header-height: var(--h-header);   /* alias backward compat */
-  --w-appMenu:   56px;
+  --header-height: var(--h-header); /* alias backward compat */
+  --w-appMenu: 56px;
   --sidePanel-w: 300px;
-
 
   /* ═══════════════════════════════════════════════════
      Z-INDEX SCALE
   ═══════════════════════════════════════════════════ */
 
-  --z-base:     1;
-  --z-sticky:   10;
+  --z-base: 1;
+  --z-sticky: 10;
   --z-timeline: 20;
-  --z-insert:   30;
-  --z-float:    50;
-  --z-popover:  60;
-  --z-modal:    100;
-
+  --z-insert: 30;
+  --z-float: 50;
+  --z-popover: 60;
+  --z-modal: 100;
 
   /* ═══════════════════════════════════════════════════
      TIMELINE GRID LINES
   ═══════════════════════════════════════════════════ */
 
-  --5min-line:     rgba(255, 255, 255, 0.03);
-  --15min-line:    rgba(255, 255, 255, 0.065);
-  --60min-line:    rgba(255, 255, 255, 0.13);
+  --5min-line: rgba(255, 255, 255, 0.03);
+  --15min-line: rgba(255, 255, 255, 0.065);
+  --60min-line: rgba(255, 255, 255, 0.13);
   --col-separator: rgba(255, 255, 255, 0.11);
 }
-
 
 /* ═══════════════════════════════════════════════════════
    LIGHT THEME OVERRIDES
 ═══════════════════════════════════════════════════════ */
 
 [data-theme="light"] {
-
   /* ── Backgrounds ─────────────────────────────────── */
 
   --content-page-bg-color: #f4f5f7;
-  --header-color:          #ffffff;
-  --panel-color:           #f9fafb;
-  --sidebar-color:         #f0f1f3;
-  --card-color:            #ffffff;
-  --hover-color:           #f0f2f5;
-  --floating-panel-color:  #ffffff;
-  --popover-bg-color:      #ffffff;
-  --room-header-bg:        #f8f9fb;
-  --glass-bg:              rgba(255, 255, 255, 0.65);
-
+  --header-color: #ffffff;
+  --panel-color: #f9fafb;
+  --sidebar-color: #f0f1f3;
+  --card-color: #ffffff;
+  --hover-color: #f0f2f5;
+  --floating-panel-color: #ffffff;
+  --popover-bg-color: #ffffff;
+  --room-header-bg: #f8f9fb;
+  --glass-bg: rgba(255, 255, 255, 0.65);
 
   /* ── Borders ─────────────────────────────────────── */
 
-  --panel-border-color:    rgba(0, 0, 0, 0.08);
+  --panel-border-color: rgba(0, 0, 0, 0.08);
   --floating-border-color: rgba(0, 0, 0, 0.12);
-
 
   /* ── Accent — slightly darker for contrast on white ─ */
 
-  --accent-color:        #069090;
-  --accent-color-light:  #06a4a4;
-  --accent-color-dim:    rgba(6, 164, 164, 0.08);
+  --accent-color: #069090;
+  --accent-color-light: #06a4a4;
+  --accent-color-dim: rgba(6, 164, 164, 0.08);
   --accent-color-border: rgba(6, 164, 164, 0.25);
-
 
   /* ── Semantic colors ─────────────────────────────── */
 
-  --color-warning:        #b8860b;
-  --color-warning-light:  #d4940e;
-  --color-warning-dim:    rgba(184, 134, 11, 0.08);
+  --color-warning: #b8860b;
+  --color-warning-light: #d4940e;
+  --color-warning-dim: rgba(184, 134, 11, 0.08);
   --color-warning-border: rgba(184, 134, 11, 0.22);
 
-  --color-alert:          #b33a2a;
-  --color-alert-light:    #d4493a;
-  --color-alert-dim:      rgba(179, 58, 42, 0.08);
-  --color-alert-border:   rgba(179, 58, 42, 0.22);
+  --color-alert: #b33a2a;
+  --color-alert-light: #d4493a;
+  --color-alert-dim: rgba(179, 58, 42, 0.08);
+  --color-alert-border: rgba(179, 58, 42, 0.22);
 
-  --color-success:        #1a9e6a;
+  --color-success: #1a9e6a;
+  --color-success-light: #38a169;
+  --color-success-dim: rgba(26, 158, 106, 0.1);
+  --color-success-border: rgba(26, 158, 106, 0.25);
 
-  --color-info:           #6c4ab6;
-  --color-info-light:     #7c5bbf;
-  --color-info-dim:       rgba(108, 74, 182, 0.08);
-  --color-info-border:    rgba(108, 74, 182, 0.22);
+  --color-info: #6c4ab6;
+  --color-info-light: #7c5bbf;
+  --color-info-dim: rgba(108, 74, 182, 0.08);
+  --color-info-border: rgba(108, 74, 182, 0.22);
 
   /* Rating scale */
-  --color-rating-low:        #d4493a;
-  --color-rating-low-dim:    rgba(212, 73, 58, 0.10);
-  --color-rating-medium:     #d4940e;
-  --color-rating-medium-dim: rgba(212, 148, 14, 0.10);
-  --color-rating-high:       #38a169;
-  --color-rating-high-dim:   rgba(56, 161, 105, 0.10);
-  --color-rating-max:        var(--accent-color);
-  --color-rating-max-dim:    var(--accent-color-dim);
-  --color-rating-max-light:  var(--accent-color-light);
+  --color-rating-low: #d4493a;
+  --color-rating-low-dim: rgba(212, 73, 58, 0.1);
+  --color-rating-medium: #d4940e;
+  --color-rating-medium-dim: rgba(212, 148, 14, 0.1);
+  --color-rating-high: #38a169;
+  --color-rating-high-dim: rgba(56, 161, 105, 0.1);
+  --color-rating-max: var(--accent-color);
+  --color-rating-max-dim: var(--accent-color-dim);
+  --color-rating-max-light: var(--accent-color-light);
 
   /* Subtle surface overlays */
-  --surface-subtle:      rgba(0, 0, 0, 0.02);
-  --surface-raised:      rgba(0, 0, 0, 0.04);
-  --border-subtle:       rgba(0, 0, 0, 0.04);
-  --border-light:        rgba(0, 0, 0, 0.08);
-  --divider-color:       rgba(0, 0, 0, 0.06);
-
+  --surface-subtle: rgba(0, 0, 0, 0.02);
+  --surface-raised: rgba(0, 0, 0, 0.04);
+  --border-subtle: rgba(0, 0, 0, 0.04);
+  --border-light: rgba(0, 0, 0, 0.08);
+  --divider-color: rgba(0, 0, 0, 0.06);
 
   /* ── Text ────────────────────────────────────────── */
 
-  --text-primary:   #1a1d23;
+  --text-primary: #1a1d23;
   --text-secondary: #5f6b7a;
-  --text-muted:     #6b7280;
-  --text-faded:     #9ca3af;
-
+  --text-muted: #6b7280;
+  --text-faded: #9ca3af;
 
   /* ── Icons ───────────────────────────────────────── */
 
-  --icon-color:    var(--text-secondary);
+  --icon-color: var(--text-secondary);
   --icon-hover-bg: rgba(0, 0, 0, 0.05);
-
 
   /* ── Shadows — lighter for white surfaces ────────── */
 
-  --shadow-xs:   0 1px 2px  rgba(0, 0, 0, 0.06);
-  --shadow-sm:   0 1px 4px  rgba(0, 0, 0, 0.08);
-  --shadow-md:   0 4px 12px rgba(0, 0, 0, 0.10);
-  --shadow-lg:   0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-xl:   0 16px 40px rgba(0, 0, 0, 0.16);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.16);
 
-  --shadow-floating:       0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-floating-hover: 0 12px 32px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-floating:
+    0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-floating-hover:
+    0 12px 32px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08);
 
-  --shadow-slot:       0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-slot-hover: 0 6px 20px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --shadow-slot: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-slot-hover:
+    0 6px 20px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
 
-  --shadow-popover: 0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.08);
-
+  --shadow-popover:
+    0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.08);
 
   /* ── Timeline grid lines ─────────────────────────── */
 
-  --5min-line:     rgba(0, 0, 0, 0.04);
-  --15min-line:    rgba(0, 0, 0, 0.08);
-  --60min-line:    rgba(0, 0, 0, 0.14);
-  --col-separator: rgba(0, 0, 0, 0.10);
+  --5min-line: rgba(0, 0, 0, 0.04);
+  --15min-line: rgba(0, 0, 0, 0.08);
+  --60min-line: rgba(0, 0, 0, 0.14);
+  --col-separator: rgba(0, 0, 0, 0.1);
 }
