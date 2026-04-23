@@ -36,6 +36,9 @@ import { VersionType } from '../music-library-types';
 import type {
   TCreateMusicVersionPayload,
   TMusicReferenceId,
+  TMusicVersionId,
+  TRepertoireEntryId,
+  TVersionTrackId,
 } from '@sh3pherd/shared-types';
 import type {
   TMasteringModalContext,
@@ -247,7 +250,7 @@ export class MusicLibraryPageComponent implements OnInit {
 
   onVersionUpdated(payload: VersionEditPayload): void {
     const { entryId, versionId, ...patch } = payload;
-    this.versionApi.update(versionId as any, patch).subscribe({
+    this.versionApi.update(versionId as TMusicVersionId, patch).subscribe({
       next: () => {
         this.mutation.updateVersion(entryId, versionId, patch);
         this.toast.show('Version updated', 'success');
@@ -266,7 +269,7 @@ export class MusicLibraryPageComponent implements OnInit {
   /* ── Delete ── */
 
   onVersionDeleted(event: { entryId: string; versionId: string }): void {
-    this.versionApi.delete(event.versionId as any).subscribe({
+    this.versionApi.delete(event.versionId as TMusicVersionId).subscribe({
       next: () => {
         this.mutation.removeVersion(event.entryId, event.versionId);
         this.toast.show('Version deleted', 'info');
@@ -278,7 +281,7 @@ export class MusicLibraryPageComponent implements OnInit {
   }
 
   onEntryDeleted(entryId: string): void {
-    this.repertoireApi.deleteEntry(entryId as any).subscribe({
+    this.repertoireApi.deleteEntry(entryId as TRepertoireEntryId).subscribe({
       next: () => {
         this.mutation.removeEntry(entryId);
         this.toast.show('Entry removed from repertoire', 'info');
@@ -315,7 +318,10 @@ export class MusicLibraryPageComponent implements OnInit {
 
     // Otherwise fetch presigned URL from backend
     this.trackApi
-      .getDownloadUrl(event.versionId as any, event.trackId as any)
+      .getDownloadUrl(
+        event.versionId as TMusicVersionId,
+        event.trackId as TVersionTrackId,
+      )
       .subscribe({
         next: (url) => {
           const a = document.createElement('a');
@@ -341,7 +347,10 @@ export class MusicLibraryPageComponent implements OnInit {
       event.trackId,
     );
     this.trackApi
-      .setFavorite(event.versionId as any, event.trackId as any)
+      .setFavorite(
+        event.versionId as TMusicVersionId,
+        event.trackId as TVersionTrackId,
+      )
       .subscribe({
         error: () => {
           // Revert optimistic update on failure — toast already shown
@@ -355,7 +364,10 @@ export class MusicLibraryPageComponent implements OnInit {
     trackId: string;
   }): void {
     this.trackApi
-      .delete(event.versionId as any, event.trackId as any)
+      .delete(
+        event.versionId as TMusicVersionId,
+        event.trackId as TVersionTrackId,
+      )
       .subscribe({
         next: () => {
           this.mutation.removeTrack(
@@ -377,7 +389,7 @@ export class MusicLibraryPageComponent implements OnInit {
     (event.target as HTMLInputElement).value = '';
     if (!file || !this.pendingVersionId || !this.pendingEntryId) return;
     const entryId = this.pendingEntryId;
-    const versionId = this.pendingVersionId as any;
+    const versionId = this.pendingVersionId as TMusicVersionId;
     this.pendingEntryId = null;
     this.pendingVersionId = null;
 

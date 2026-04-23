@@ -12,17 +12,18 @@ import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { MasteringApiService } from './mastering-api.service';
 import { EqCurveComponent } from './eq-curve.component';
-import {
-  MASTERING_PRESETS,
-  LUFS_TARGETS,
-} from './mastering.types';
+import { MASTERING_PRESETS, LUFS_TARGETS } from './mastering.types';
 import type {
   TMasteringMode,
   TMasteringPreset,
   TMasteringModalContext,
   TMasteringResult,
 } from './mastering.types';
-import type { TMasteringTargetSpecs } from '@sh3pherd/shared-types';
+import type {
+  TMasteringTargetSpecs,
+  TMusicVersionId,
+  TVersionTrackId,
+} from '@sh3pherd/shared-types';
 import { IconComponent } from '../../../shared/icon/icon.component';
 
 /**
@@ -62,8 +63,8 @@ export class MasteringModalComponent {
   readonly targetLRA = signal(7);
 
   // Reference track selection (AI mode)
-  readonly referenceVersionId = signal<string | null>(null);
-  readonly referenceTrackId = signal<string | null>(null);
+  readonly referenceVersionId = signal<TMusicVersionId | null>(null);
+  readonly referenceTrackId = signal<TVersionTrackId | null>(null);
 
   // ── Processing state ───────────────────────────────
 
@@ -77,21 +78,29 @@ export class MasteringModalComponent {
 
   // ── Derived ────────────────────────────────────────
 
-  readonly isAiMode = computed(() => this.mode() === 'ai' || this.mode() === 'auto');
+  readonly isAiMode = computed(
+    () => this.mode() === 'ai' || this.mode() === 'auto',
+  );
   readonly hasResult = computed(() => this.result() !== null);
-  readonly eqParams = computed(() => this.result()?.predictedParams?.eq ?? null);
-  readonly compressorParams = computed(() => this.result()?.predictedParams?.compressor ?? null);
+  readonly eqParams = computed(
+    () => this.result()?.predictedParams?.eq ?? null,
+  );
+  readonly compressorParams = computed(
+    () => this.result()?.predictedParams?.compressor ?? null,
+  );
 
   readonly beforeLUFS = computed(() => this.context().currentLUFS);
-  readonly afterLUFS = computed(() =>
-    this.result()?.track.analysisResult?.integratedLUFS ?? null,
+  readonly afterLUFS = computed(
+    () => this.result()?.track.analysisResult?.integratedLUFS ?? null,
   );
 
   readonly canSubmit = computed(() => {
     if (this.processing()) return false;
     if (this.mode() === 'ai') {
       // AI reference mode needs a reference track selected
-      return this.referenceVersionId() !== null && this.referenceTrackId() !== null;
+      return (
+        this.referenceVersionId() !== null && this.referenceTrackId() !== null
+      );
     }
     return true;
   });
@@ -140,22 +149,24 @@ export class MasteringModalComponent {
       });
     } else {
       // AI or Auto mode
-      this.api.masterAi(ctx.versionId, ctx.trackId, {
-        mode: this.mode() === 'ai' ? 'reference' : 'auto',
-        referenceVersionId: this.referenceVersionId() as any,
-        referenceTrackId: this.referenceTrackId() as any,
-        preset: this.mode() === 'auto' ? this.preset() : undefined,
-        targetLUFS: target.targetLUFS,
-        targetTP: target.targetTP,
-        targetLRA: target.targetLRA,
-      }).subscribe({
-        next: (res) => {
-          this.result.set(res);
-          this.processing.set(false);
-          this.toast.show('AI mastering complete', 'success');
-        },
-        error: () => this.processing.set(false),
-      });
+      this.api
+        .masterAi(ctx.versionId, ctx.trackId, {
+          mode: this.mode() === 'ai' ? 'reference' : 'auto',
+          referenceVersionId: this.referenceVersionId() ?? undefined,
+          referenceTrackId: this.referenceTrackId() ?? undefined,
+          preset: this.mode() === 'auto' ? this.preset() : undefined,
+          targetLUFS: target.targetLUFS,
+          targetTP: target.targetTP,
+          targetLRA: target.targetLRA,
+        })
+        .subscribe({
+          next: (res) => {
+            this.result.set(res);
+            this.processing.set(false);
+            this.toast.show('AI mastering complete', 'success');
+          },
+          error: () => this.processing.set(false),
+        });
     }
   }
 
