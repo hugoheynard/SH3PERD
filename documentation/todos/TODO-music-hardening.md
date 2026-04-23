@@ -135,15 +135,18 @@
 
 ## P4 — Architectural, tenir 2 ans
 
-- [ ] **`MusicLibraryStateService` encore obèse (326 lignes, 3 responsabilités)**
-      Déjà signalé dans `TODO-music-features.md` mais listé ici aussi car
-      couplé aux P3.
-      Split : `MusicDataService` / `MusicTabPersistenceService` /
-      `MusicCrossLibraryService`, état composite dans un store thin.
+- [x] **`MusicLibraryStateService` encore obèse (326 lignes, 3 responsabilités)** — split
+      en `MusicLibraryDataService` (entries + loadLibrary + refreshEntries),
+      `MusicTabPersistenceService` (tabs + savedTabConfigs + debounced save) et
+      `MusicCrossLibraryService` (crossContext + cache par company). La classe façade
+      garde l'API publique inchangée (`library()`, `tabState`, `loadLibrary()`,
+      `refreshEntries()`, `loadCrossLibrary()`, `scheduleTabSave()`, `snapshot()`,
+      `updateState()`) pour ne pas casser les call sites.
 
-- [ ] **`TabMutationService.patchTabConfig` public**
-      Sur-protégé par les overrides mais bypassable par un futur dev.
-      Passer en `protected`.
+- [x] **`TabMutationService.patchTabConfig` public** — passé en `protected`. Les
+      sous-classes (`MusicTabMutationService`, `PlaylistsTabMutationService`) sont
+      déjà les seuls consommateurs légitimes ; le test harness expose un
+      `patchTabConfigForTest` narrow pour garder les assertions directes.
 
 - [ ] **Pas de `schema_version` sur `TMusicTabConfigsDomainModel`**
       Changer le shape demain = migration impossible à tracer.
