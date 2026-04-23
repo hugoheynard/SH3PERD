@@ -109,24 +109,26 @@
       Fix : spec e2e avec Mongo memory + mock AP TCP transport + vrai
       fichier WAV 1 s.
 
-- [ ] **`MusicPolicy` hardcode les limites en constantes locales**
-      Impossible d'override par plan (Pro aurait peut-être 4 tracks/version).
-      Fix : injecter les limites via `QuotaService` ou config DI.
+- [x] **`MusicPolicy` hardcode les limites en constantes locales** — `MusicPolicyLimits`
+      injecté au constructeur avec `DEFAULT_MUSIC_POLICY_LIMITS` fallback. Le context
+      des erreurs embarque maintenant la limite effective, pas la constante. Wiring
+      plan-aware à faire côté aggregate repo (follow-up P1).
 
-- [ ] **Dedup référence = `title.trim().toLowerCase()` simple**
-      Pas de normalisation Unicode (`NFC`), pas de strip des zero-width
-      spaces, pas de tolérance accent ("Bohemian" ≠ "Bóhemian"). 2 users
-      créent la même ref avec des glyphes différents → 2 records.
-      Fix : `.normalize('NFKD').replace(/[\u0300-\u036f]/g, '')` dans le
-      hash de dedup.
+- [x] **Dedup référence = `title.trim().toLowerCase()` simple** — extrait dans
+      `domain/normalizeRefKey.ts` : NFKD + strip des diacritiques + strip zero-width
+      (U+200B–U+200D, U+FEFF) + collapse des espaces + lowercase. Utilisé par
+      `MusicReferenceEntity` (storage) et `CreateMusicReferenceHandler` (lookup) —
+      les deux côtés du contrat dedup.
 
 - [ ] **`findByUserId` sur `IMusicRepertoireRepository` non appelée**
       Dead code ou en attente d'un consumer ? Supprimer ou documenter.
 
-- [ ] **`fuzzyMatch` du selector = subsequence simple, pas Levenshtein**
-      "elton" matche "Elton John" mais "eltn" ne matche pas. Acceptable MVP,
-      pauvre à l'international.
-      Fix : `fuse.js` avec `threshold: 0.3`.
+- [x] **`fuzzyMatch` du selector = subsequence simple, pas Levenshtein** — remplacé
+      par un matcher 3 passes dépendance-free : substring normalisé, Levenshtein
+      par token avec seuil scalable (max(1, q.length/4)), subsequence en dernier
+      recours pour les abréviations ("bhrp" → "bohemian rhapsody"). Normalisation
+      NFKD + strip diacritiques communs avec `normalizeRefKey` — les users qui
+      cherchent "Celine" trouvent "Céline".
 
 ## P4 — Architectural, tenir 2 ans
 
