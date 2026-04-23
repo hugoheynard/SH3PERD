@@ -31,7 +31,8 @@ export class CreateRepertoireEntryHandler implements ICommandHandler<
   ) {}
 
   async execute(cmd: CreateRepertoireEntryCommand): Promise<TMusicRepertoireEntryDomainModel> {
-    // Idempotent: if the user already has this reference, return the existing entry
+    // Idempotent: if the user already has this reference, return the existing entry.
+    // Check first so the quota service is not called for a no-op create.
     const existing = await this.repRepo.findByOwnerAndReference(
       cmd.actorId,
       cmd.payload.musicReference_id,
@@ -40,7 +41,7 @@ export class CreateRepertoireEntryHandler implements ICommandHandler<
       return existing;
     }
 
-    // Quota check — before creating
+    // Quota check — before creating a new entry.
     await this.quotaService.ensureAllowed(cmd.actorId, 'repertoire_entry');
 
     const entry = new RepertoireEntryEntity({
