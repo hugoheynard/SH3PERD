@@ -9,7 +9,12 @@ import {
   userId,
   versionId,
 } from '../../../domain/__tests__/test-helpers.js';
-import { mockAggregateRepo, mockAnalytics, mockQuotaService } from './handler-test-helpers.js';
+import {
+  mockAggregateRepo,
+  mockAnalytics,
+  mockQuotaService,
+  mockStorage,
+} from './handler-test-helpers.js';
 import {
   MicroservicePatterns,
   type TAiMasteringResult,
@@ -36,6 +41,7 @@ const aiResult: TAiMasteringResult = {
 
 function setup() {
   const aggregateRepo = mockAggregateRepo();
+  const storage = mockStorage();
   const quota = mockQuotaService();
   const analytics = mockAnalytics();
   const audioClient = { send: jest.fn().mockReturnValue(of(aiResult)) };
@@ -61,6 +67,7 @@ function setup() {
 
   const handler = new AiMasterTrackHandler(
     aggregateRepo,
+    storage as never,
     audioClient as never,
     eventBus as never,
     quota as never,
@@ -70,6 +77,7 @@ function setup() {
   return {
     handler,
     aggregateRepo,
+    storage,
     audioClient,
     eventBus,
     quota,
@@ -164,6 +172,7 @@ describe('AiMasterTrackHandler', () => {
     expect(eventBus.publish).toHaveBeenCalledTimes(1);
     expect(eventBus.publish.mock.calls[0][0]).toBeInstanceOf(TrackMasteredEvent);
     expect(quota.recordUsage).toHaveBeenCalledWith(owner, 'master_ai');
+    expect(quota.recordUsage).toHaveBeenCalledWith(owner, 'storage_bytes', aiResult.sizeBytes);
     expect(analytics.track).toHaveBeenCalledWith(
       'track_ai_mastered',
       owner,
@@ -176,14 +185,14 @@ describe('AiMasterTrackHandler', () => {
     );
   });
 
-  it('throws REFERENCE_TRACK_NOT_FOUND when reference trackId is missing', async () => {
+  it('throws REFERENCE_TRACK_NOT_FOUND (BusinessError) when reference trackId is missing', async () => {
     const { handler, audioClient, owner, refVersionId } = setup();
 
     await expect(
       handler.execute(
         new AiMasterTrackCommand(owner, versionId(1), trackId(1), refVersionId, trackId(999)),
       ),
-    ).rejects.toThrow('REFERENCE_TRACK_NOT_FOUND');
+    ).rejects.toMatchObject({ name: 'BusinessError', code: 'REFERENCE_TRACK_NOT_FOUND' });
 
     expect(audioClient.send).not.toHaveBeenCalled();
   });
@@ -200,6 +209,21 @@ describe('AiMasterTrackHandler', () => {
 
     expect(aggregateRepo.loadByVersionId).not.toHaveBeenCalled();
     expect(audioClient.send).not.toHaveBeenCalled();
+  });
+
+  it('compensates the mastered S3 object when the aggregate save fails', async () => {
+    const { handler, aggregateRepo, storage, quota, eventBus, owner, refVersionId } = setup();
+    aggregateRepo.save.mockRejectedValueOnce(new Error('mongo down'));
+
+    await expect(
+      handler.execute(
+        new AiMasterTrackCommand(owner, versionId(1), trackId(1), refVersionId, trackId(2)),
+      ),
+    ).rejects.toThrow('mongo down');
+
+    expect(storage.delete).toHaveBeenCalledWith(aiResult.masteredS3Key);
+    expect(quota.recordUsage).not.toHaveBeenCalled();
+    expect(eventBus.publish).not.toHaveBeenCalled();
   });
 
   it('propagates audio-processor failures without mutating DB', async () => {

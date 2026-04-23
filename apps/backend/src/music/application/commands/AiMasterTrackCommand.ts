@@ -3,8 +3,11 @@ import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
 import { REPERTOIRE_ENTRY_AGGREGATE_REPO } from '../../../appBootstrap/nestTokens.js';
+import { TRACK_STORAGE_SERVICE } from '../../infra/storage/storage.tokens.js';
 import type { IRepertoireEntryAggregateRepository } from '../../repositories/RepertoireEntryAggregateRepository.js';
+import type { ITrackStorageService } from '../../infra/storage/ITrackStorageService.js';
 import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
+import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 import { TrackMasteredEvent } from '../events/TrackMasteredEvent.js';
@@ -53,6 +56,7 @@ export class AiMasterTrackHandler implements ICommandHandler<
   constructor(
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
     private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
+    @Inject(TRACK_STORAGE_SERVICE) private readonly storage: ITrackStorageService,
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
     private readonly eventBus: EventBus,
     private readonly quotaService: QuotaService,
@@ -78,11 +82,26 @@ export class AiMasterTrackHandler implements ICommandHandler<
         : await this.aggregateRepo.loadByVersionId(cmd.referenceVersionId);
 
     const refVersion = refAggregate.findVersion(cmd.referenceVersionId);
-    if (!refVersion) throw new Error('REFERENCE_VERSION_NOT_FOUND');
+    if (!refVersion) {
+      throw new BusinessError('Reference version not found', {
+        code: 'REFERENCE_VERSION_NOT_FOUND',
+        status: 404,
+      });
+    }
 
     const refTrack = refVersion.findTrack(cmd.referenceTrackId);
-    if (!refTrack) throw new Error('REFERENCE_TRACK_NOT_FOUND');
-    if (!refTrack.s3Key) throw new Error('REFERENCE_TRACK_NOT_IN_STORAGE');
+    if (!refTrack) {
+      throw new BusinessError('Reference track not found', {
+        code: 'REFERENCE_TRACK_NOT_FOUND',
+        status: 404,
+      });
+    }
+    if (!refTrack.s3Key) {
+      throw new BusinessError('Reference track is not present in storage', {
+        code: 'REFERENCE_TRACK_NOT_IN_STORAGE',
+        status: 409,
+      });
+    }
 
     // 3. Generate output S3 key
     const newTrackId = `track_${crypto.randomUUID()}` as TVersionTrackId;
@@ -132,13 +151,20 @@ export class AiMasterTrackHandler implements ICommandHandler<
     };
 
     aggregate.addTrack(cmd.actorId, cmd.versionId, masteredTrack);
-    await this.aggregateRepo.save(aggregate);
+
+    try {
+      await this.aggregateRepo.save(aggregate);
+    } catch (e) {
+      await this.storage.delete(result.masteredS3Key).catch(() => {});
+      throw e;
+    }
 
     this.eventBus.publish(
       new TrackMasteredEvent(cmd.actorId, cmd.versionId, newTrackId, result.masteredS3Key),
     );
 
     await this.quotaService.recordUsage(cmd.actorId, 'master_ai');
+    await this.quotaService.recordUsage(cmd.actorId, 'storage_bytes', result.sizeBytes);
 
     await this.analytics.track('track_ai_mastered', cmd.actorId, {
       version_id: cmd.versionId,
