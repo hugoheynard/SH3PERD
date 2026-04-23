@@ -1,17 +1,49 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { type Observable, Subject, debounceTime, map, switchMap, tap } from 'rxjs';
-import type { MusicLibraryState, LibraryEntry, MusicTab, MusicTabConfig, MusicSearchConfig, MusicDataFilter, MusicGenre, Rating, SavedTabConfig, CrossSearchContext } from '../music-library-types';
-import type { TabStateSignal, TabSystemState } from '../../../shared/configurable-tab-bar';
+import {
+  type Observable,
+  Subject,
+  debounceTime,
+  map,
+  switchMap,
+  tap,
+} from 'rxjs';
+import type {
+  MusicLibraryState,
+  LibraryEntry,
+  MusicTab,
+  MusicTabConfig,
+  MusicSearchConfig,
+  MusicDataFilter,
+  MusicGenre,
+  Rating,
+  SavedTabConfig,
+  CrossSearchContext,
+} from '../music-library-types';
+import type {
+  TabStateSignal,
+  TabSystemState,
+} from '../../../shared/configurable-tab-bar';
 import { MusicLibraryApiService } from './music-library-api.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { ContractStore } from '../../contracts/services/contract.store';
-import type { TMusicTabConfig, TMusicSavedTabConfig, TMusicSearchConfig, TCompanyId } from '@sh3pherd/shared-types';
+import type {
+  TMusicTabConfig,
+  TMusicSavedTabConfig,
+  TMusicSearchConfig,
+  TCompanyId,
+} from '@sh3pherd/shared-types';
 
 const DEFAULT_TABS: MusicTab[] = [
   {
-    id: 'repertoire_me', title: 'My Repertoire', autoTitle: false,
+    id: 'repertoire_me',
+    title: 'My Repertoire',
+    autoTitle: false,
     config: {
-      searchConfig: { searchMode: 'repertoire', target: { mode: 'me' }, dataFilterActive: false },
+      searchConfig: {
+        searchMode: 'repertoire',
+        target: { mode: 'me' },
+        dataFilterActive: false,
+      },
       searchQuery: '',
     },
   },
@@ -19,7 +51,6 @@ const DEFAULT_TABS: MusicTab[] = [
 
 @Injectable({ providedIn: 'root' })
 export class MusicLibraryStateService {
-
   private readonly libraryApi = inject(MusicLibraryApiService);
   private readonly toast = inject(ToastService);
   private readonly contractStore = inject(ContractStore);
@@ -44,12 +75,26 @@ export class MusicLibraryStateService {
   readonly tabState: TabStateSignal<MusicTabConfig> = Object.assign(
     () => {
       const s = this.state();
-      return { tabs: s.tabs, activeTabId: s.activeTabId, activeConfigId: s.activeConfigId, savedTabConfigs: s.savedTabConfigs };
+      return {
+        tabs: s.tabs,
+        activeTabId: s.activeTabId,
+        activeConfigId: s.activeConfigId,
+        savedTabConfigs: s.savedTabConfigs,
+      };
     },
     {
-      update: (updater: (s: TabSystemState<MusicTabConfig>) => TabSystemState<MusicTabConfig>) => {
-        this.state.update(s => {
-          const slice: TabSystemState<MusicTabConfig> = { tabs: s.tabs, activeTabId: s.activeTabId, activeConfigId: s.activeConfigId, savedTabConfigs: s.savedTabConfigs };
+      update: (
+        updater: (
+          s: TabSystemState<MusicTabConfig>,
+        ) => TabSystemState<MusicTabConfig>,
+      ) => {
+        this.state.update((s) => {
+          const slice: TabSystemState<MusicTabConfig> = {
+            tabs: s.tabs,
+            activeTabId: s.activeTabId,
+            activeConfigId: s.activeConfigId,
+            savedTabConfigs: s.savedTabConfigs,
+          };
           return { ...s, ...updater(slice) };
         });
       },
@@ -57,33 +102,44 @@ export class MusicLibraryStateService {
   );
 
   constructor() {
-    this.saveSubject.pipe(
-      debounceTime(1000),
-      switchMap(() => {
-        const s = this.state();
-        const mapTab = (t: MusicTab): TMusicTabConfig => ({
-          id: t.id, title: t.title, autoTitle: t.autoTitle, color: t.color,
-          searchConfig: t.config?.searchConfig ?? { searchMode: 'repertoire', target: { mode: 'me' }, dataFilterActive: false },
-          searchQuery: t.config?.searchQuery ?? '',
-        });
-        const tabs: TMusicTabConfig[] = s.tabs.map(mapTab);
-        const savedTabConfigs: TMusicSavedTabConfig[] = (s.savedTabConfigs ?? []).map(cfg => ({
-          ...cfg,
-          tabs: cfg.tabs.map(mapTab),
-        }));
-        return this.libraryApi.saveTabConfigs({
-          tabs,
-          activeTabId: s.activeTabId,
-          activeConfigId: s.activeConfigId ?? undefined,
-          savedTabConfigs,
-        });
-      }),
-    ).subscribe({
-      next: (ok) => {
-        if (!ok) this.toast.show('Failed to save tab config', 'error');
-      },
-      error: () => this.toast.show('Failed to save tab config', 'error'),
-    });
+    this.saveSubject
+      .pipe(
+        debounceTime(1000),
+        switchMap(() => {
+          const s = this.state();
+          const mapTab = (t: MusicTab): TMusicTabConfig => ({
+            id: t.id,
+            title: t.title,
+            autoTitle: t.autoTitle,
+            color: t.color,
+            searchConfig: t.config?.searchConfig ?? {
+              searchMode: 'repertoire',
+              target: { mode: 'me' },
+              dataFilterActive: false,
+            },
+            searchQuery: t.config?.searchQuery ?? '',
+          });
+          const tabs: TMusicTabConfig[] = s.tabs.map(mapTab);
+          const savedTabConfigs: TMusicSavedTabConfig[] = (
+            s.savedTabConfigs ?? []
+          ).map((cfg) => ({
+            ...cfg,
+            tabs: cfg.tabs.map(mapTab),
+          }));
+          return this.libraryApi.saveTabConfigs({
+            tabs,
+            activeTabId: s.activeTabId,
+            activeConfigId: s.activeConfigId ?? undefined,
+            savedTabConfigs,
+          });
+        }),
+      )
+      .subscribe({
+        next: (ok) => {
+          if (!ok) this.toast.show('Failed to save tab config', 'error');
+        },
+        error: () => this.toast.show('Failed to save tab config', 'error'),
+      });
   }
 
   loadLibrary(): void {
@@ -92,10 +148,14 @@ export class MusicLibraryStateService {
 
     this.libraryApi.getMyLibrary().subscribe({
       next: (result) => {
-        this.state.update(s => ({ ...s, entries: result.entries as LibraryEntry[] }));
+        this.state.update((s) => ({
+          ...s,
+          entries: result.entries as LibraryEntry[],
+        }));
       },
       error: () => {
         this.loaded = false;
+        this.toast.show('Failed to load repertoire', 'error');
       },
     });
 
@@ -103,7 +163,9 @@ export class MusicLibraryStateService {
       next: (configs) => {
         if (!configs) return;
 
-        const mapDataFilter = (df: NonNullable<TMusicSearchConfig['dataFilter']>): MusicDataFilter => ({
+        const mapDataFilter = (
+          df: NonNullable<TMusicSearchConfig['dataFilter']>,
+        ): MusicDataFilter => ({
           genres: df.genres as MusicGenre[] | undefined,
           mastery: df.mastery as Rating[] | undefined,
           energy: df.energy as Rating[] | undefined,
@@ -113,7 +175,9 @@ export class MusicLibraryStateService {
           duration: df.duration,
         });
 
-        const mapSearchConfig = (sc: TMusicSearchConfig): MusicSearchConfig => ({
+        const mapSearchConfig = (
+          sc: TMusicSearchConfig,
+        ): MusicSearchConfig => ({
           searchMode: sc.searchMode,
           target: sc.target,
           dataFilterActive: sc.dataFilterActive,
@@ -121,18 +185,30 @@ export class MusicLibraryStateService {
         });
 
         const mapTab = (t: TMusicTabConfig): MusicTab => ({
-          id: t.id, title: t.title, autoTitle: t.autoTitle, color: t.color,
-          config: { searchConfig: mapSearchConfig(t.searchConfig), searchQuery: t.searchQuery ?? '' },
+          id: t.id,
+          title: t.title,
+          autoTitle: t.autoTitle,
+          color: t.color,
+          config: {
+            searchConfig: mapSearchConfig(t.searchConfig),
+            searchQuery: t.searchQuery ?? '',
+          },
         });
 
         const dedup = <T extends { id: string }>(items: T[]): T[] => {
           const seen = new Set<string>();
-          return items.filter(t => { if (seen.has(t.id)) return false; seen.add(t.id); return true; });
+          return items.filter((t) => {
+            if (seen.has(t.id)) return false;
+            seen.add(t.id);
+            return true;
+          });
         };
 
         const tabs = dedup(configs.tabs.map(mapTab));
 
-        const savedTabConfigs: SavedTabConfig[] = (configs.savedTabConfigs ?? []).map((cfg: TMusicSavedTabConfig) => ({
+        const savedTabConfigs: SavedTabConfig[] = (
+          configs.savedTabConfigs ?? []
+        ).map((cfg: TMusicSavedTabConfig) => ({
           id: cfg.id,
           name: cfg.name,
           activeTabId: cfg.activeTabId,
@@ -140,7 +216,7 @@ export class MusicLibraryStateService {
           tabs: dedup(cfg.tabs.map(mapTab)),
         }));
 
-        this.state.update(s => ({
+        this.state.update((s) => ({
           ...s,
           tabs,
           activeTabId: configs.activeTabId,
@@ -162,9 +238,12 @@ export class MusicLibraryStateService {
       this.contractStore.favoriteContract(),
       ...this.contractStore.contracts(),
     ].filter(Boolean);
-    const contract = allContracts.find(c => c!.id === contractId);
+    const contract = allContracts.find((c) => c!.id === contractId);
     if (!contract) {
-      this.toast.show('Contract not found — cannot load cross library', 'error');
+      this.toast.show(
+        'Contract not found — cannot load cross library',
+        'error',
+      );
       return;
     }
 
@@ -178,32 +257,35 @@ export class MusicLibraryStateService {
       next: (result) => {
         const crossContext: CrossSearchContext = {
           contractId,
-          members: result.members.map(m => ({
+          members: result.members.map((m) => ({
             userId: m.userId,
             displayName: m.displayName,
             avatarInitials: m.avatarInitials,
           })),
-          results: result.results.map(r => ({
+          results: result.results.map((r) => ({
             referenceId: r.referenceId,
             title: r.title,
             originalArtist: r.originalArtist,
             members: Object.fromEntries(
-              Object.entries(r.members).map(([uid, mv]) => [uid, {
-                hasVersion: mv.hasVersion,
-                versions: mv.versions.map(v => ({
-                  id: v.id,
-                  label: v.label,
-                  mastery: v.mastery,
-                  energy: v.energy,
-                  effort: v.effort,
-                  tracks: v.tracks,
-                })),
-              }]),
+              Object.entries(r.members).map(([uid, mv]) => [
+                uid,
+                {
+                  hasVersion: mv.hasVersion,
+                  versions: mv.versions.map((v) => ({
+                    id: v.id,
+                    label: v.label,
+                    mastery: v.mastery,
+                    energy: v.energy,
+                    effort: v.effort,
+                    tracks: v.tracks,
+                  })),
+                },
+              ]),
             ),
             compatibleCount: r.compatibleCount,
           })),
         };
-        this.state.update(s => ({ ...s, crossContext }));
+        this.state.update((s) => ({ ...s, crossContext }));
       },
       error: () => {
         this.loadedCrossCompanyId = null;
@@ -220,10 +302,13 @@ export class MusicLibraryStateService {
    */
   refreshEntries(): Observable<LibraryEntry[]> {
     return this.libraryApi.getMyLibrary().pipe(
-      tap(result => {
-        this.state.update(s => ({ ...s, entries: result.entries as LibraryEntry[] }));
+      tap((result) => {
+        this.state.update((s) => ({
+          ...s,
+          entries: result.entries as LibraryEntry[],
+        }));
       }),
-      map(result => result.entries as LibraryEntry[]),
+      map((result) => result.entries as LibraryEntry[]),
     );
   }
 
