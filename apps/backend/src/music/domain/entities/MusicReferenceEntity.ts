@@ -1,5 +1,6 @@
 import { Entity, type TEntityInput } from '../../../utils/entities/Entity.js';
 import { DomainError } from '../../../utils/errorManagement/DomainError.js';
+import { normalizeRefKey } from '../normalizeRefKey.js';
 import type { TMusicReferenceCreator, TMusicReferenceDomainModel } from '@sh3pherd/shared-types';
 
 /**
@@ -20,14 +21,17 @@ import type { TMusicReferenceCreator, TMusicReferenceDomainModel } from '@sh3phe
  *    at the controller / permission layer, never via this entity.
  *
  * Storage invariants:
- * - `title` and `artist` are trimmed + lowercased on construction to enable
- *   case-insensitive dedup via `findByExactTitleAndArtist`.
- * - `title` and `artist` must be non-empty.
+ * - `title` and `artist` are normalised through `normalizeRefKey` on
+ *   construction (NFKD + diacritic + zero-width strip + whitespace collapse
+ *   + lowercase) so `findByExactTitleAndArtist` dedups across Unicode
+ *   variants. The same normaliser is used by `CreateMusicReferenceHandler`
+ *   at the lookup boundary — both sides of the dedup contract must agree.
+ * - `title` and `artist` must be non-empty after normalisation.
  */
 export class MusicReferenceEntity extends Entity<TMusicReferenceDomainModel> {
   constructor(props: TEntityInput<TMusicReferenceDomainModel>) {
-    const title = props.title.trim().toLowerCase();
-    const artist = props.artist.trim().toLowerCase();
+    const title = normalizeRefKey(props.title);
+    const artist = normalizeRefKey(props.artist);
     if (!title) {
       throw new DomainError('Music reference title is required', {
         code: 'MUSIC_REFERENCE_TITLE_REQUIRED',

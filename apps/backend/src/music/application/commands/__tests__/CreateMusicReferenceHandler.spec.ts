@@ -54,6 +54,27 @@ describe('CreateMusicReferenceHandler', () => {
     expect(refRepo.findByExactTitleAndArtist).toHaveBeenCalledWith('hey jude', 'beatles');
   });
 
+  it('normalises Unicode variants to the same dedup key', async () => {
+    const { handler, refRepo } = setup();
+
+    await handler.execute(
+      new CreateMusicReferenceCommand(userId(), {
+        title: 'Bohémian Rhapsody',
+        artist: 'Queen',
+      }),
+    );
+    await handler.execute(
+      new CreateMusicReferenceCommand(userId(), {
+        title: 'Bohe\u0301mian Rhapsody',
+        artist: 'Queen',
+      }),
+    );
+
+    const calls = refRepo.findByExactTitleAndArtist.mock.calls;
+    expect(calls[0]).toEqual(['bohemian rhapsody', 'queen']);
+    expect(calls[1]).toEqual(['bohemian rhapsody', 'queen']);
+  });
+
   it('persists a new reference and emits music_reference_created', async () => {
     const { handler, refRepo, analytics } = setup();
 

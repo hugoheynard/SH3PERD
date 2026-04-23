@@ -8,6 +8,7 @@ import type {
   TMusicReferenceDomainModel,
 } from '@sh3pherd/shared-types';
 import { MusicReferenceEntity } from '../../domain/entities/MusicReferenceEntity.js';
+import { normalizeRefKey } from '../../domain/normalizeRefKey.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 import { TechnicalError } from '../../../utils/errorManagement/TechnicalError.js';
 
@@ -52,8 +53,10 @@ export class CreateMusicReferenceHandler implements ICommandHandler<
   ) {}
 
   async execute(cmd: CreateMusicReferenceCommand): Promise<TMusicReferenceDomainModel> {
-    const title = cmd.payload.title.trim().toLowerCase();
-    const artist = cmd.payload.artist.trim().toLowerCase();
+    // Unicode-normalised dedup key — must match what MusicReferenceEntity
+    // stores in Mongo (same normaliser on both sides).
+    const title = normalizeRefKey(cmd.payload.title);
+    const artist = normalizeRefKey(cmd.payload.artist);
 
     // Deduplicate: return existing if exact match found
     const existing = await this.refRepo.findByExactTitleAndArtist(title, artist);
