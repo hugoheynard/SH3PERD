@@ -51,6 +51,7 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 import { TabLimitPopoverComponent } from '../tab-limit-popover/tab-limit-popover.component';
 import { SaveRecallLockedPopoverComponent } from '../save-recall-locked-popover/save-recall-locked-popover.component';
 import { MusicTabQuotaChecker } from '../services/music-tab-quota-checker.service';
+import { StorageQuotaWarningService } from '../../../core/services/storage-quota-warning.service';
 
 @Component({
   selector: 'app-music-library-page',
@@ -85,6 +86,7 @@ export class MusicLibraryPageComponent implements OnInit {
   private repertoireApi = inject(MusicRepertoireApiService);
   private layout = inject(LayoutService);
   private toast = inject(ToastService);
+  private storageQuotaWarning = inject(StorageQuotaWarningService);
   private destroyRef = inject(DestroyRef);
 
   /** Mastering modal context — shared between card and table views. */
@@ -402,6 +404,10 @@ export class MusicLibraryPageComponent implements OnInit {
           'success',
         );
         this.pollForAnalysis(versionId, track.id);
+        // Post-upload the user's storage_bytes just grew. Probe /quota/me
+        // and surface a one-shot toast + notification if they crossed
+        // 80 % / 95 %. Silent on network failure.
+        this.storageQuotaWarning.check();
       },
       error: () => {
         // Toast already shown by trackApi
@@ -420,6 +426,8 @@ export class MusicLibraryPageComponent implements OnInit {
     if (result?.track) {
       // Refresh entries so the new mastered track appears
       this.stateService.refreshEntries().subscribe();
+      // Mastered track adds to storage_bytes — probe for threshold warnings.
+      this.storageQuotaWarning.check();
     }
   }
 
