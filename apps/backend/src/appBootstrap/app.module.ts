@@ -26,6 +26,7 @@ import { PlatformContractModule } from '../platform-contract/platform-contract.m
 import { QuotaModule } from '../quota/quota.module.js';
 import { AnalyticsModule } from '../analytics/analytics.module.js';
 import { MailerModule } from '../mailer/mailer.module.js';
+import { NotificationsModule } from '../notifications/notifications.module.js';
 import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionFilter.js';
 
 @Module({
@@ -65,6 +66,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
     PrintModule,
     AnalyticsModule,
     MailerModule,
+    NotificationsModule,
     // ⚠️ Prefix split
     RouterModule.register([
       { path: 'auth', module: AuthModule },

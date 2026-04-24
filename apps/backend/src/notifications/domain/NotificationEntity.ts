@@ -1,10 +1,20 @@
 import type {
+  TContractNotification,
   TNotificationDomainModel,
   TNotificationId,
   TNotificationKind,
+  TSystemNotification,
   TUserId,
 } from '@sh3pherd/shared-types';
 import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
+
+/** Distributed input type — `TEntityInput<TNotificationDomainModel>`
+ *  collapses the discriminated union to its common keys (only the base
+ *  fields), losing the `contract` branch's `action` + `contract_id`.
+ *  Writing the union explicitly preserves the narrowing. */
+export type TNotificationEntityInput =
+  | TEntityInput<TContractNotification>
+  | TEntityInput<TSystemNotification>;
 
 /**
  * A user-facing notification. Once created the content is immutable —
@@ -18,7 +28,7 @@ import { Entity, type TEntityInput } from '../../utils/entities/Entity.js';
  *   and `read === true` implies `readAt` is set.
  */
 export class NotificationEntity extends Entity<TNotificationDomainModel> {
-  constructor(props: TEntityInput<TNotificationDomainModel>) {
+  constructor(props: TNotificationEntityInput) {
     const now = Date.now();
     const title = props.title.trim();
     if (!title) {
