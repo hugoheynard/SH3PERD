@@ -166,12 +166,19 @@ export const NOTIFICATION_SOCKET_EVENTS = {
   read: "notification:read",
 } as const;
 
+/**
+ * Read event payload.
+ * - `ids.length > 0` → exactly those notifs transitioned; the client
+ *   flips them locally.
+ * - `ids.length === 0` → "mark all read" for this user; the client
+ *   flips every local notif to read without a per-id list.
+ */
 export interface TNotificationReadEvent {
   ids: TNotificationId[];
   readAt: number;
 }
 
 export const SNotificationReadEvent = z.object({
-  ids: z.array(SNotificationId).min(1),
+  ids: z.array(SNotificationId),
   readAt: z.number(),
 });

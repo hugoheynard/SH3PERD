@@ -3,6 +3,7 @@ import {
   CreateNotificationHandler,
 } from '../CreateNotificationHandler.js';
 import type { INotificationRepository } from '../../../repositories/NotificationRepository.js';
+import type { INotificationPusher } from '../../../infra/NotificationPusher.js';
 import { contractId, userId } from '../../../domain/__tests__/test-helpers.js';
 
 function makeRepo(): jest.Mocked<INotificationRepository> {
@@ -16,10 +17,19 @@ function makeRepo(): jest.Mocked<INotificationRepository> {
   };
 }
 
+function makePusher(): jest.Mocked<INotificationPusher> {
+  return {
+    pushCreated: jest.fn(),
+    pushRead: jest.fn(),
+    pushReadAll: jest.fn(),
+  };
+}
+
 describe('CreateNotificationHandler', () => {
   it('persists a contract notification with a fresh id + read=false', async () => {
     const repo = makeRepo();
-    const handler = new CreateNotificationHandler(repo);
+    const pusher = makePusher();
+    const handler = new CreateNotificationHandler(repo, pusher);
 
     const result = await handler.execute(
       new CreateNotificationCommand({
@@ -37,11 +47,13 @@ describe('CreateNotificationHandler', () => {
     if (result.kind !== 'contract') throw new Error('unreachable');
     expect(result.action).toBe('signed');
     expect(repo.saveOne).toHaveBeenCalledWith(result);
+    expect(pusher.pushCreated).toHaveBeenCalledWith(result.user_id, result);
   });
 
   it('persists a system notification without contract fields', async () => {
     const repo = makeRepo();
-    const handler = new CreateNotificationHandler(repo);
+    const pusher = makePusher();
+    const handler = new CreateNotificationHandler(repo, pusher);
 
     const result = await handler.execute(
       new CreateNotificationCommand({
@@ -55,5 +67,6 @@ describe('CreateNotificationHandler', () => {
     expect(result.kind).toBe('system');
     expect(result.body).toBe('Back at 2am.');
     expect(repo.saveOne).toHaveBeenCalledTimes(1);
+    expect(pusher.pushCreated).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,9 +1,10 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject, Injectable } from '@nestjs/common';
 import type { TCreateNotificationPayload, TNotificationDomainModel } from '@sh3pherd/shared-types';
-import { NOTIFICATION_REPO } from '../../../appBootstrap/nestTokens.js';
+import { NOTIFICATION_PUSHER, NOTIFICATION_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { INotificationRepository } from '../../repositories/NotificationRepository.js';
 import { NotificationEntity } from '../../domain/NotificationEntity.js';
+import type { INotificationPusher } from '../../infra/NotificationPusher.js';
 
 /**
  * Internal command — not routed through the REST layer. Dispatched by
@@ -24,12 +25,19 @@ export class CreateNotificationHandler implements ICommandHandler<
   constructor(
     @Inject(NOTIFICATION_REPO)
     private readonly repo: INotificationRepository,
+    @Inject(NOTIFICATION_PUSHER)
+    private readonly pusher: INotificationPusher,
   ) {}
 
   async execute(cmd: CreateNotificationCommand): Promise<TNotificationDomainModel> {
     const entity = buildEntity(cmd.payload);
-    await this.repo.saveOne(entity.toDomain);
-    return entity.toDomain;
+    const notif = entity.toDomain;
+    await this.repo.saveOne(notif);
+    // Live push happens after the save so a DB failure never produces a
+    // socket event for a notif that doesn't exist in persistence. A
+    // socket broadcast that fails silently (no one connected) is fine.
+    this.pusher.pushCreated(notif.user_id, notif);
+    return notif;
   }
 }
 

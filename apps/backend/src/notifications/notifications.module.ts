@@ -3,6 +3,9 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CreateNotificationHandler } from './application/commands/CreateNotificationHandler.js';
 import { MarkNotificationsReadHandler } from './application/commands/MarkNotificationsReadHandler.js';
 import { ListNotificationsHandler } from './application/queries/ListNotificationsHandler.js';
+import { NotificationsGateway } from './infra/NotificationsGateway.js';
+import { NOTIFICATION_PUSHER } from '../appBootstrap/nestTokens.js';
+import { TokenFunctionsModule } from '../auth/core/TokenFunctions.module.js';
 
 const CommandHandlers = [CreateNotificationHandler, MarkNotificationsReadHandler];
 const QueryHandlers = [ListNotificationsHandler];
@@ -10,14 +13,19 @@ const QueryHandlers = [ListNotificationsHandler];
 /**
  * Notifications — user-facing inbox with live push.
  *
- * Exposes CQRS handlers so other modules can dispatch
- * `CreateNotificationCommand` from their own domain event handlers
- * without importing internal classes. The REST controller + socket
- * gateway land in follow-up commits.
+ * Handlers depend on the `NOTIFICATION_PUSHER` port; the socket.io
+ * gateway provides the concrete implementation. Keeping the port + the
+ * gateway instance behind the same token lets the handlers stay
+ * transport-agnostic and testable without socket machinery.
  */
 @Module({
-  imports: [CqrsModule],
-  providers: [...CommandHandlers, ...QueryHandlers],
+  imports: [CqrsModule, TokenFunctionsModule],
+  providers: [
+    NotificationsGateway,
+    { provide: NOTIFICATION_PUSHER, useExisting: NotificationsGateway },
+    ...CommandHandlers,
+    ...QueryHandlers,
+  ],
   exports: [...CommandHandlers, ...QueryHandlers],
 })
 export class NotificationsModule {}
