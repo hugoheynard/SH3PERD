@@ -74,16 +74,23 @@
 
 ## P2 — Observabilité, sinon debug impossible
 
-- [ ] **Zéro trace distribuée backend ↔ audio-processor**
-      User dit "mon master est bloqué depuis 10 min" → aucun correlation-id
-      pour remonter le pipeline.
-      Fix : propager `correlation-id` dans le payload TCP, le logger à
-      chaque étape (enqueue / ffmpeg start / ffmpeg end / S3 upload / save).
+- [x] **Zéro trace distribuée backend ↔ audio-processor** — `correlationId: string`
+      ajouté sur `TCorrelatedPayload` (mixin) + sur les 4 payloads TCP
+      (`TAnalyzeTrackPayload`, `TMasterTrackPayload`, `TPitchShiftTrackPayload`,
+      `TAiMasterTrackPayload`). Généré par `newCorrelationId()` au handler d'entrée,
+      propagé dans `TrackUploadedEvent` + `TrackMasteredEvent`, loggé à chaque étape
+      sur les deux côtés avec `correlation_id=…` dans le contexte.
 
-- [ ] **Pas de métrique prometheus/otel sur les durées par stage**
-      On ignore si `loudnorm` prend 2 s ou 45 s en p99.
-      Fix : histogramme
-      `audio_processor_stage_duration_seconds{stage, outcome}`.
+- [x] **Pas de métrique prometheus/otel sur les durées par stage** — ajout de
+      `prom-client` sur `audio-processor` + histogramme
+      `audio_processor_stage_duration_seconds{op, stage, outcome}` avec buckets
+      50 ms → 180 s (analyse rapide, mastering / AI minute-scale). Helper
+      `measure(op, stage, fn)` wrap chaque étape (s3_download / wasm_analysis /
+      ffmpeg_loudnorm / ffmpeg_pitch / deepafx_inference / s3_upload) avec
+      l'outcome (`success` / `error`) pour que les dashboards p99 restent
+      interprétables côte-à-côte avec le taux d'erreur. Exposé via
+      `GET /metrics` sur `METRICS_PORT` (default 9101), séparé du TCP
+      microservice pour pouvoir firewall l'un sans affecter l'autre.
 
 - [x] **Pas d'alerting sur `storage_bytes` approchant du quota** — `StorageQuotaWarningService`
       côté frontend : probe `GET /quota/me` après chaque upload/master, fire toast +
@@ -92,11 +99,16 @@
       `music-library-page` au succès upload + mastering-closed. Email push reste
       en follow-up (infra notif email absente).
 
-- [ ] **Logs handlers = `Logger.log` sans corrélation ni JSON**
-      Pas de `requestId`, pas de structured logging — grep en prod =
-      cauchemar.
-      Fix : `ContextLogger` injecté qui ajoute
-      `{ request_id, user_id, handler, version_id }` à chaque log.
+- [x] **Logs handlers = `Logger.log` sans corrélation ni JSON** — `ContextLogger`
+      ajouté côté backend (`apps/backend/src/utils/logging/ContextLogger.ts`) et
+      côté audio-processor (`apps/audio-processor/src/shared/logging/ContextLogger.ts`).
+      Format `key=value` en dev, JSON quand `LOG_FORMAT=json` est set (prod / CI).
+      Binde `{correlation_id, user_id, version_id, track_id, …}` une fois par
+      handler ; chaque log call peut y ajouter des champs par-dessus
+      (`log.info('complete', { size_bytes })`). Tous les handlers music
+      (`UploadTrack`, `MasterTrack`, `AiMasterTrack`, `PitchShiftVersion`,
+      `TrackUploadedHandler`, `TrackMasteredHandler`) + le contrôleur
+      audio-processor sont migrés.
 
 ## P3 — Dette de correctness qui revient hanter
 
