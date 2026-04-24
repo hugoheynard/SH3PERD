@@ -106,6 +106,7 @@ import {
   CREDIT_PURCHASE_REPO,
   SHOW_REPO,
   SHOW_SECTION_REPO,
+  NOTIFICATION_REPO,
 } from '../nestTokens.js';
 import { INTEGRATION_CREDENTIALS_REPO } from '../../integrations/integrations.tokens.js';
 import {
@@ -124,6 +125,10 @@ import {
   type IShowSectionRepository,
   ShowSectionMongoRepository,
 } from '../../shows/repositories/ShowSectionRepository.js';
+import {
+  type INotificationRepository,
+  NotificationMongoRepository,
+} from '../../notifications/repositories/NotificationRepository.js';
 
 // --- HELPERS ---
 /**
@@ -281,6 +286,11 @@ export type TCoreRepositories = {
       AnalyticsEventMongoRepository,
       'analytics_events',
     ),
+    mongoRepoProvider<INotificationRepository>(
+      NOTIFICATION_REPO,
+      NotificationMongoRepository,
+      'notifications',
+    ),
   ],
   exports: [
     USER_PREFERENCES_REPO,
@@ -308,6 +318,7 @@ export type TCoreRepositories = {
     PASSWORD_RESET_TOKEN_REPO,
     CREDIT_PURCHASE_REPO,
     ANALYTICS_EVENT_REPO,
+    NOTIFICATION_REPO,
   ],
 })
 export class CoreRepositoriesModule {}
