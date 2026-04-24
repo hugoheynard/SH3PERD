@@ -94,6 +94,10 @@ export const SEventId = createIdSchema<TEventId>("event");
 export type TShowId = `show_${string}`;
 export const SShowId = createIdSchema<TShowId>("show");
 
+// ─── Notifications ─────────────────────────────────────────
+export type TNotificationId = `notif_${string}`;
+export const SNotificationId = createIdSchema<TNotificationId>("notif");
+
 export type TShowSectionId = `showSection_${string}`;
 export const SShowSectionId = createIdSchema<TShowSectionId>("showSection");
 

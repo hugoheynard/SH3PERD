@@ -89,3 +89,6 @@ export * from "./credit-pack.types.js";
 
 //Home Dashboard
 export * from "./home-dashboard.types.js";
+
+//Notifications
+export * from "./notifications.types.js";
