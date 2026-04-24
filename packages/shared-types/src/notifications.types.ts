@@ -155,6 +155,16 @@ export const SListNotificationsResult = z.object({
   nextBefore: z.number().int().positive().optional(),
 });
 
+// ─── Mark-read request body ───────────────────────────────
+
+export interface TMarkNotificationsReadPayload {
+  ids: TNotificationId[];
+}
+
+export const SMarkNotificationsReadPayload = z.object({
+  ids: z.array(SNotificationId).min(1),
+});
+
 // ─── Socket events ────────────────────────────────────────
 // Event names are stable strings — keep them in one place so front + back
 // reference the same constant and a rename is a compile error.

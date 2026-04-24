@@ -6,6 +6,7 @@ import { ListNotificationsHandler } from './application/queries/ListNotification
 import { NotificationsGateway } from './infra/NotificationsGateway.js';
 import { NOTIFICATION_PUSHER } from '../appBootstrap/nestTokens.js';
 import { TokenFunctionsModule } from '../auth/core/TokenFunctions.module.js';
+import { NotificationController } from './api/notification.controller.js';
 
 const CommandHandlers = [CreateNotificationHandler, MarkNotificationsReadHandler];
 const QueryHandlers = [ListNotificationsHandler];
@@ -20,6 +21,7 @@ const QueryHandlers = [ListNotificationsHandler];
  */
 @Module({
   imports: [CqrsModule, TokenFunctionsModule],
+  controllers: [NotificationController],
   providers: [
     NotificationsGateway,
     { provide: NOTIFICATION_PUSHER, useExisting: NotificationsGateway },

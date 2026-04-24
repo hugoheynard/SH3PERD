@@ -88,6 +88,7 @@ import { GlobalExceptionFilter } from '../utils/errorManagement/GlobalExceptionF
           { path: 'integrations', module: IntegrationsModule },
           { path: 'playlists', module: PlaylistModule },
           { path: 'shows', module: ShowModule },
+          { path: 'notifications', module: NotificationsModule },
           { path: '', module: QuotaModule },
           { path: '', module: AnalyticsModule },
         ],
