@@ -1,5 +1,23 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { io, type Socket } from 'socket.io-client';
+import {
+  NOTIFICATION_SOCKET_EVENTS,
+  type TContractNotificationAction,
+  type TNotificationDomainModel,
+  type TNotificationId,
+  type TNotificationReadEvent,
+} from '@sh3pherd/shared-types';
+import { environment } from '../../../environments/env.dev';
+import { AuthTokenService } from '../services/auth-token.service';
+import { NotificationsApiService } from './notifications-api.service';
 
+/**
+ * Frontend view model — the panel was designed around a severity-first
+ * shape (info / warning / success / error). Backend notifications are
+ * flattened into this via `severityFor`; locally-pushed warnings
+ * (storage quota, etc.) are created directly in the VM shape.
+ */
 export interface AppNotification {
   id: string;
   type: 'info' | 'warning' | 'success' | 'error';
@@ -9,57 +27,75 @@ export interface AppNotification {
   read: boolean;
 }
 
-const m = (minutes: number) => new Date(Date.now() - minutes * 60_000);
-const h = (hours: number) => new Date(Date.now() - hours * 3600_000);
-const d = (days: number) => new Date(Date.now() - days * 86400_000);
-
-const n = (type: AppNotification['type'], title: string, message: string, createdAt: Date, read = false): AppNotification =>
-  ({ id: crypto.randomUUID(), type, title, message, createdAt, read });
-
-const MOCK_NOTIFICATIONS: AppNotification[] = [
-  // Recent — unread
-  n('success', 'Song added to repertoire', 'Blue in Green was added successfully.', m(2)),
-  n('info', 'New version shared', 'A new arrangement of Fly Me to the Moon was shared with your group.', m(8)),
-  n('warning', 'Audio quality low', 'The track for So What has clipping issues (quality 1/4).', m(22)),
-  n('error', 'Upload failed', 'Could not upload the track for All Blues. Please try again.', m(35)),
-  n('info', 'Group invitation', 'You were invited to join the group Latin Jazz Ensemble.', m(50)),
-  n('warning', 'Storage almost full', 'You have used 90% of your audio storage quota.', h(1.5)),
-  n('success', 'Analysis complete', 'Audio analysis for Autumn Leaves finished — quality 3/4.', h(2)),
-  n('error', 'Sync error', 'Failed to sync your repertoire with the server. Retrying...', h(3)),
-  n('info', 'Rehearsal reminder', 'You have a rehearsal scheduled tomorrow at 14:00.', h(4)),
-  n('warning', 'Version conflict', 'Someone edited the same version of Night and Day. Please review.', h(5)),
-
-  // Older — read
-  n('success', 'Profile updated', 'Your display name was changed successfully.', h(8), true),
-  n('info', 'Contract updated', 'Your contract with Jazz Club was modified by the admin.', h(12), true),
-  n('success', 'Track uploaded', 'The audio file for Take Five was uploaded successfully.', d(1), true),
-  n('info', 'New member joined', 'Marie Dupont joined your group Swing Quartet.', d(1), true),
-  n('warning', 'Expiring contract', 'Your contract with Blue Note Bar expires in 7 days.', d(2), true),
-  n('success', 'Playlist created', 'Your playlist Summer Set was created with 12 songs.', d(2), true),
-  n('info', 'System maintenance', 'Scheduled maintenance on March 30 from 02:00 to 04:00.', d(3), true),
-  n('error', 'Payment failed', 'Your last invoice payment could not be processed.', d(3), true),
-  n('success', 'Backup complete', 'Your library was backed up successfully.', d(4), true),
-  n('info', 'Feature update', 'Audio analysis now supports multi-track comparison.', d(5), true),
-];
-
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private _notifications = signal<AppNotification[]>(MOCK_NOTIFICATIONS);
+  private readonly api = inject(NotificationsApiService);
+  private readonly authToken = inject(AuthTokenService);
 
-  readonly notifications = this._notifications.asReadonly();
+  private readonly _items = signal<AppNotification[]>([]);
+  /** IDs that originated from the backend — mark-read calls the API
+   *  only for those. Locally-pushed items (storage-quota warnings,
+   *  future UX-only notifs) stay purely in the browser. */
+  private readonly backendIds = new Set<string>();
 
-  readonly unreadCount = computed(() =>
-    this._notifications().filter(n => !n.read).length
+  private socket: Socket | null = null;
+
+  readonly notifications = this._items.asReadonly();
+
+  readonly unreadCount = computed(
+    () => this._items().filter((n) => !n.read).length,
   );
 
   readonly unreadByType = computed(() => {
     const counts = { info: 0, warning: 0, error: 0, success: 0 };
-    for (const n of this._notifications()) {
+    for (const n of this._items()) {
       if (!n.read) counts[n.type]++;
     }
     return counts;
   });
 
+  constructor() {
+    // Auth-driven lifecycle — (re)connects when a token appears, tears
+    // down on logout. `getToken()` isn't reactive on its own, so the
+    // effect reads it and `AuthTokenService` callers trigger change
+    // detection via the components that consume auth state.
+    effect(() => {
+      const token = this.authToken.getToken();
+      if (token) {
+        void this.initForUser(token);
+      } else {
+        this.teardown();
+      }
+    });
+  }
+
+  // ─── Public API ──────────────────────────────────────────
+
+  async initForUser(token: string): Promise<void> {
+    await this.reloadFirstPage();
+    this.connectSocket(token);
+  }
+
+  async reloadFirstPage(): Promise<void> {
+    try {
+      const result = await firstValueFrom(this.api.list());
+      const adapted = result.items.map(toAppNotification);
+      // Replace the backend-sourced slice without wiping locally-pushed
+      // items — `push()` (storage warnings, …) is purely client-side
+      // and survives a refresh.
+      this._items.update((prev) => {
+        const localOnly = prev.filter((n) => !this.backendIds.has(n.id));
+        return [...adapted, ...localOnly];
+      });
+      this.backendIds.clear();
+      for (const n of result.items) this.backendIds.add(n.id);
+    } catch (err) {
+      console.warn('[notifications] failed to fetch inbox', err);
+    }
+  }
+
+  /** Local-only notification — never sent to the backend. Used for
+   *  client-side signals like storage-quota warnings. */
   push(notification: Omit<AppNotification, 'id' | 'createdAt' | 'read'>): void {
     const newNotif: AppNotification = {
       ...notification,
@@ -67,18 +103,129 @@ export class NotificationService {
       createdAt: new Date(),
       read: false,
     };
-    this._notifications.update(list => [newNotif, ...list]);
+    this._items.update((list) => [newNotif, ...list]);
   }
 
   markRead(id: string): void {
-    this._notifications.update(list =>
-      list.map(n => n.id === id ? { ...n, read: true } : n)
-    );
+    const before = this._items();
+    const target = before.find((n) => n.id === id);
+    if (!target || target.read) return;
+    this.flipReadLocally([id]);
+
+    // Local-only notifs don't round-trip through the backend.
+    if (!this.backendIds.has(id)) return;
+
+    this.api.markRead([id as TNotificationId]).subscribe({
+      error: () => this._items.set(before),
+    });
   }
 
   markAllRead(): void {
-    this._notifications.update(list =>
-      list.map(n => n.read ? n : { ...n, read: true })
+    const before = this._items();
+    const unreadIds = before.filter((n) => !n.read).map((n) => n.id);
+    if (unreadIds.length === 0) return;
+    this.flipReadLocally(unreadIds);
+
+    // Only call the backend if at least one unread item was backend-sourced.
+    const hasBackendUnread = unreadIds.some((id) => this.backendIds.has(id));
+    if (!hasBackendUnread) return;
+
+    this.api.markAllRead().subscribe({
+      error: () => this._items.set(before),
+    });
+  }
+
+  // ─── Socket lifecycle ────────────────────────────────────
+
+  private connectSocket(token: string): void {
+    if (this.socket?.connected && tokenOf(this.socket) === token) return;
+    this.teardownSocket();
+
+    const socket = io(`${environment.apiBaseUrl}/notifications`, {
+      withCredentials: true,
+      auth: { token },
+      transports: ['websocket', 'polling'],
+    });
+
+    socket.on(
+      NOTIFICATION_SOCKET_EVENTS.created,
+      (domain: TNotificationDomainModel) => {
+        this.backendIds.add(domain.id);
+        this._items.update((list) => [toAppNotification(domain), ...list]);
+      },
+    );
+
+    socket.on(
+      NOTIFICATION_SOCKET_EVENTS.read,
+      (evt: TNotificationReadEvent) => {
+        if (evt.ids.length === 0) {
+          // Server-side mark-all — flip every backend-sourced item.
+          this._items.update((list) =>
+            list.map((n) =>
+              n.read || !this.backendIds.has(n.id) ? n : { ...n, read: true },
+            ),
+          );
+          return;
+        }
+        this.flipReadLocally(evt.ids);
+      },
+    );
+
+    this.socket = socket;
+  }
+
+  private teardown(): void {
+    this.teardownSocket();
+    this._items.update((list) =>
+      list.filter((n) => !this.backendIds.has(n.id)),
+    );
+    this.backendIds.clear();
+  }
+
+  private teardownSocket(): void {
+    if (!this.socket) return;
+    this.socket.removeAllListeners();
+    this.socket.disconnect();
+    this.socket = null;
+  }
+
+  private flipReadLocally(ids: string[]): void {
+    const idSet = new Set(ids);
+    this._items.update((list) =>
+      list.map((n) => (idSet.has(n.id) && !n.read ? { ...n, read: true } : n)),
     );
   }
 }
+
+// ─── Adapters ──────────────────────────────────────────────
+
+function tokenOf(socket: Socket): string | null {
+  const auth = socket.auth as { token?: unknown } | undefined;
+  return auth && typeof auth.token === 'string' ? auth.token : null;
+}
+
+function toAppNotification(n: TNotificationDomainModel): AppNotification {
+  return {
+    id: n.id,
+    type: severityFor(n),
+    title: n.title,
+    message: n.body,
+    createdAt: new Date(n.createdAt),
+    read: n.read,
+  };
+}
+
+function severityFor(n: TNotificationDomainModel): AppNotification['type'] {
+  if (n.kind === 'system') return 'info';
+  return CONTRACT_ACTION_SEVERITY[n.action];
+}
+
+const CONTRACT_ACTION_SEVERITY: Record<
+  TContractNotificationAction,
+  AppNotification['type']
+> = {
+  received: 'info',
+  signed: 'success',
+  declined: 'warning',
+  expired: 'error',
+};
