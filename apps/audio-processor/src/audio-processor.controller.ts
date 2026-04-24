@@ -1,4 +1,5 @@
-import { Controller, Logger } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import {
   MicroservicePatterns,
@@ -12,175 +13,261 @@ import {
   type TAiMasteringResult,
 } from '@sh3pherd/shared-types';
 import { S3Service } from './s3/s3.service';
-import { analyzeAudioFile } from './core/analyze';
+import { analyzeAudioFile, probeDurationSeconds } from './core/analyze';
 import { masterAudio } from './core/master';
 import { pitchShift } from './core/pitch-shift';
-import { aiMasterAudio } from './core/ai-master';
+import {
+  aiMasterAudio,
+  DEFAULT_WORKER_PATH,
+  type DeepAfxConfig,
+} from './core/ai-master';
+import { BusinessError } from './shared/errors';
+import {
+  createContextLogger,
+  type ContextLogger,
+} from './shared/logging/ContextLogger';
+import { measure } from './shared/metrics/metrics.registry';
 
 /**
  * Handles audio processing requests from the backend via TCP.
  *
  * Four operations:
- * - **ANALYZE_TRACK**    — download from R2, run loudness + BPM/key analysis, return snapshot.
- * - **MASTER_TRACK**     — download from R2, apply loudnorm pass-2 with measured values, upload master to R2.
- * - **PITCH_SHIFT_TRACK**— download from R2, apply pitch shift via ffmpeg, upload to R2.
- * - **AI_MASTER_TRACK**  — download input + reference from R2, run DeepAFx-ST + optional loudnorm, upload to R2.
+ * - **ANALYZE_TRACK**    — download, loudness + BPM/key analysis, return snapshot.
+ * - **MASTER_TRACK**     — download, loudnorm pass-2, upload mastered WAV.
+ * - **PITCH_SHIFT_TRACK**— download, pitch shift via ffmpeg, upload.
+ * - **AI_MASTER_TRACK**  — download input + reference, DeepAFx-ST + optional loudnorm, upload.
  */
 @Controller()
 export class AudioProcessorController {
-  private readonly logger = new Logger(AudioProcessorController.name);
+  constructor(
+    private readonly s3: S3Service,
+    private readonly config: ConfigService,
+  ) {}
 
-  constructor(private readonly s3: S3Service) {}
+  /** Build the per-operation logger from the incoming payload's correlation id. */
+  private loggerFor(
+    op: string,
+    p: {
+      correlationId: string;
+      trackId: string;
+      versionId: string;
+    },
+  ): ContextLogger {
+    return createContextLogger('AudioProcessor', {
+      correlation_id: p.correlationId,
+      op,
+      track_id: p.trackId,
+      version_id: p.versionId,
+    });
+  }
 
-  /**
-   * Analyze a track: download from R2, run loudness (ITU-R BS.1770-4) + BPM/key (Essentia).
-   * @returns Full analysis snapshot.
-   */
+  /* ── Ingest guards ─────────────────────────────────────────────── */
+
+  private async assertInputWithinLimits(
+    buffer: Buffer,
+    label: string,
+  ): Promise<void> {
+    const maxBytes = this.config.get<number>('MAX_AUDIO_FILE_BYTES')!;
+    const maxDuration = this.config.get<number>('MAX_AUDIO_DURATION_SECONDS')!;
+
+    if (buffer.byteLength > maxBytes) {
+      throw new BusinessError(
+        `${label} exceeds max size (${buffer.byteLength} > ${maxBytes} bytes)`,
+        { code: 'AUDIO_FILE_TOO_LARGE', status: 413 },
+      );
+    }
+
+    const duration = await probeDurationSeconds(buffer);
+    if (duration > maxDuration) {
+      throw new BusinessError(
+        `${label} exceeds max duration (${duration.toFixed(1)}s > ${maxDuration}s)`,
+        { code: 'AUDIO_FILE_TOO_LONG', status: 400 },
+      );
+    }
+  }
+
+  /* ── Handlers ──────────────────────────────────────────────────── */
+
   @MessagePattern(MicroservicePatterns.AudioProcessor.ANALYZE_TRACK)
   async analyzeTrack(
     @Payload() payload: TAnalyzeTrackPayload,
   ): Promise<TAudioAnalysisSnapshot> {
-    const { s3Key, trackId, versionId } = payload;
+    const { s3Key } = payload;
+    const log = this.loggerFor('analyze', payload);
 
-    this.logger.log(`Analyzing track ${trackId} [version=${versionId}]`);
+    log.info('Received analyze request');
 
-    const fileBuffer = await this.s3.downloadToBuffer(s3Key);
-    this.logger.log(`Downloaded ${fileBuffer.byteLength} bytes`);
-
-    const snapshot = await analyzeAudioFile(fileBuffer);
-
-    this.logger.log(
-      `Analysis complete — quality=${snapshot.quality}/4, LUFS=${snapshot.integratedLUFS}, ` +
-        `BPM=${snapshot.bpm ?? 'N/A'}, key=${snapshot.key ?? 'N/A'} ${snapshot.keyScale ?? ''}`,
+    const fileBuffer = await measure('analyze', 's3_download', () =>
+      this.s3.downloadToBuffer(s3Key),
     );
+    log.info('Downloaded input', { bytes: fileBuffer.byteLength });
+
+    await this.assertInputWithinLimits(fileBuffer, 'input');
+
+    const snapshot = await measure('analyze', 'wasm_analysis', () =>
+      analyzeAudioFile(fileBuffer),
+    );
+
+    log.info('Analysis complete', {
+      quality: snapshot.quality,
+      integrated_lufs: snapshot.integratedLUFS,
+      bpm: snapshot.bpm ?? null,
+      key: snapshot.key ?? null,
+      key_scale: snapshot.keyScale ?? null,
+    });
 
     return snapshot;
   }
 
-  /**
-   * Master a track: download from R2, apply loudnorm pass-2 using pre-measured values,
-   * upload the mastered WAV to R2, return the new S3 key.
-   */
   @MessagePattern(MicroservicePatterns.AudioProcessor.MASTER_TRACK)
   async masterTrack(
     @Payload() payload: TMasterTrackPayload,
   ): Promise<TMasteringResult> {
-    const { s3Key, outputS3Key, trackId, versionId, measured, target } =
-      payload;
+    const { s3Key, outputS3Key, measured, target } = payload;
+    const log = this.loggerFor('master', payload);
 
-    this.logger.log(
-      `Mastering track ${trackId} [version=${versionId}] — ` +
-        `target: ${target.targetLUFS} LUFS, ${target.targetTP} dBTP, ${target.targetLRA} LRA`,
+    log.info('Received master request', {
+      target_lufs: target.targetLUFS,
+      target_tp: target.targetTP,
+      target_lra: target.targetLRA,
+    });
+
+    const fileBuffer = await measure('master', 's3_download', () =>
+      this.s3.downloadToBuffer(s3Key),
+    );
+    log.info('Downloaded input', { bytes: fileBuffer.byteLength });
+
+    await this.assertInputWithinLimits(fileBuffer, 'input');
+
+    const { processedBuffer, report } = await measure(
+      'master',
+      'ffmpeg_loudnorm',
+      () => masterAudio(fileBuffer, measured, target),
     );
 
-    // Download source
-    const fileBuffer = await this.s3.downloadToBuffer(s3Key);
-    this.logger.log(`Downloaded ${fileBuffer.byteLength} bytes`);
-
-    // Run loudnorm pass-2
-    const { processedBuffer, report } = await masterAudio(
-      fileBuffer,
-      measured,
-      target,
+    const sizeBytes = await measure('master', 's3_upload', () =>
+      this.s3.uploadBuffer(outputS3Key, processedBuffer),
     );
 
-    // Upload mastered file to backend-defined path
-    const sizeBytes = await this.s3.uploadBuffer(outputS3Key, processedBuffer);
-
-    this.logger.log(
-      `Mastering complete — uploaded ${outputS3Key} (${sizeBytes} bytes)`,
-    );
+    log.info('Mastering complete', {
+      output_s3_key: outputS3Key,
+      size_bytes: sizeBytes,
+    });
 
     return { masteredS3Key: outputS3Key, sizeBytes, report };
   }
 
-  /**
-   * Pitch-shift a track: download from R2, apply pitch shift via ffmpeg,
-   * upload the shifted audio to R2, return the new S3 key.
-   */
   @MessagePattern(MicroservicePatterns.AudioProcessor.PITCH_SHIFT_TRACK)
   async pitchShiftTrack(
     @Payload() payload: TPitchShiftTrackPayload,
   ): Promise<TPitchShiftResult> {
-    const { s3Key, outputS3Key, trackId, versionId, semitones } = payload;
+    const { s3Key, outputS3Key, semitones } = payload;
+    const log = this.loggerFor('pitch_shift', payload);
 
-    this.logger.log(
-      `Pitch-shifting track ${trackId} [version=${versionId}] by ${semitones} semitones`,
+    log.info('Received pitch-shift request', { semitones });
+
+    const fileBuffer = await measure('pitch_shift', 's3_download', () =>
+      this.s3.downloadToBuffer(s3Key),
+    );
+    log.info('Downloaded input', { bytes: fileBuffer.byteLength });
+
+    await this.assertInputWithinLimits(fileBuffer, 'input');
+
+    const shiftedBuffer = await measure('pitch_shift', 'ffmpeg_pitch', () =>
+      pitchShift(fileBuffer, semitones),
     );
 
-    // Download source
-    const fileBuffer = await this.s3.downloadToBuffer(s3Key);
-    this.logger.log(`Downloaded ${fileBuffer.byteLength} bytes`);
-
-    // Apply pitch shift
-    const shiftedBuffer = await pitchShift(fileBuffer, semitones);
-
-    // Upload shifted file
-    const sizeBytes = await this.s3.uploadBuffer(
-      outputS3Key,
-      shiftedBuffer,
-      'audio/wav',
+    const sizeBytes = await measure('pitch_shift', 's3_upload', () =>
+      this.s3.uploadBuffer(outputS3Key, shiftedBuffer, 'audio/wav'),
     );
 
-    this.logger.log(
-      `Pitch shift complete — uploaded ${outputS3Key} (${sizeBytes} bytes)`,
-    );
+    log.info('Pitch shift complete', {
+      output_s3_key: outputS3Key,
+      size_bytes: sizeBytes,
+    });
 
     return { shiftedS3Key: outputS3Key, sizeBytes };
   }
 
-  /**
-   * AI-master a track: download input + reference from R2, run DeepAFx-ST
-   * autodiff inference (+ optional loudnorm pass-2), upload the mastered
-   * audio to R2, return the new S3 key + predicted DSP parameters.
-   */
   @MessagePattern(MicroservicePatterns.AudioProcessor.AI_MASTER_TRACK)
   async aiMasterTrack(
     @Payload() payload: TAiMasterTrackPayload,
   ): Promise<TAiMasteringResult> {
-    const {
-      s3Key,
-      referenceS3Key,
-      outputS3Key,
-      trackId,
-      versionId,
-      loudnormTarget,
-    } = payload;
+    const { s3Key, referenceS3Key, outputS3Key, loudnormTarget } = payload;
+    const log = this.loggerFor('ai_master', payload);
 
-    this.logger.log(`AI-mastering track ${trackId} [version=${versionId}]`);
+    log.info('Received AI master request');
 
-    // Download both files in parallel
-    const [fileBuffer, referenceBuffer] = await Promise.all([
-      this.s3.downloadToBuffer(s3Key),
-      this.s3.downloadToBuffer(referenceS3Key),
+    const deepafxConfig = this.resolveDeepAfxConfig();
+
+    const [fileBuffer, referenceBuffer] = await measure(
+      'ai_master',
+      's3_download',
+      () =>
+        Promise.all([
+          this.s3.downloadToBuffer(s3Key),
+          this.s3.downloadToBuffer(referenceS3Key),
+        ]),
+    );
+    log.info('Downloaded input + reference', {
+      input_bytes: fileBuffer.byteLength,
+      reference_bytes: referenceBuffer.byteLength,
+    });
+
+    await Promise.all([
+      this.assertInputWithinLimits(fileBuffer, 'input'),
+      this.assertInputWithinLimits(referenceBuffer, 'reference'),
     ]);
-    this.logger.log(
-      `Downloaded input (${fileBuffer.byteLength} bytes) + reference (${referenceBuffer.byteLength} bytes)`,
+
+    const { processedBuffer, predictedParams, loudnormReport } = await measure(
+      'ai_master',
+      'deepafx_inference',
+      () =>
+        aiMasterAudio(
+          fileBuffer,
+          referenceBuffer,
+          deepafxConfig,
+          loudnormTarget,
+        ),
     );
 
-    const checkpointPath = process.env['DEEPAFX_CHECKPOINT_PATH'] ?? '';
-
-    const { processedBuffer, predictedParams, loudnormReport } =
-      await aiMasterAudio(
-        fileBuffer,
-        referenceBuffer,
-        checkpointPath,
-        loudnormTarget,
-      );
-
-    // Upload mastered file
-    const sizeBytes = await this.s3.uploadBuffer(outputS3Key, processedBuffer);
-
-    this.logger.log(
-      `AI mastering complete — uploaded ${outputS3Key} (${sizeBytes} bytes), ` +
-        `EQ bands: ${predictedParams.eq.length}, ratio: ${predictedParams.compressor.ratio}:1`,
+    const sizeBytes = await measure('ai_master', 's3_upload', () =>
+      this.s3.uploadBuffer(outputS3Key, processedBuffer),
     );
+
+    log.info('AI mastering complete', {
+      output_s3_key: outputS3Key,
+      size_bytes: sizeBytes,
+      eq_bands: predictedParams.eq.length,
+      compressor_ratio: predictedParams.compressor.ratio,
+    });
 
     return {
       masteredS3Key: outputS3Key,
       sizeBytes,
       predictedParams,
       loudnormReport,
+    };
+  }
+
+  /**
+   * Resolve DeepAFx runtime config from ConfigService.
+   * Throws a BusinessError if the checkpoint path is missing — AI mastering
+   * is opt-in, so an unset checkpoint means the operator hasn't enabled it.
+   */
+  private resolveDeepAfxConfig(): DeepAfxConfig {
+    const checkpointPath = this.config.get<string>('DEEPAFX_CHECKPOINT_PATH');
+    if (!checkpointPath) {
+      throw new BusinessError(
+        'AI mastering is not configured (DEEPAFX_CHECKPOINT_PATH unset)',
+        { code: 'AI_MASTER_NOT_CONFIGURED', status: 503 },
+      );
+    }
+    return {
+      pythonBin: this.config.get<string>('DEEPAFX_PYTHON') ?? 'python3',
+      workerPath:
+        this.config.get<string>('DEEPAFX_WORKER_PATH') ?? DEFAULT_WORKER_PATH,
+      checkpointPath,
     };
   }
 }

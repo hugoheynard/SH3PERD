@@ -12,5 +12,7 @@ export class TrackMasteredEvent {
     public readonly versionId: TMusicVersionId,
     public readonly trackId: TVersionTrackId,
     public readonly s3Key: string,
+    /** Propagated from the master handler so the analysis step stays on the same trace. */
+    public readonly correlationId: string,
   ) {}
 }

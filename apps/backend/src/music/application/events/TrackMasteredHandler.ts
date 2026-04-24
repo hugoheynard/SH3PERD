@@ -1,4 +1,4 @@
-import { Inject, Logger } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 import { ClientProxy } from '@nestjs/microservices';
 import { catchError, firstValueFrom, of, timeout } from 'rxjs';
@@ -11,6 +11,7 @@ import {
   type TAnalyzeTrackPayload,
   type TAudioAnalysisSnapshot,
 } from '@sh3pherd/shared-types';
+import { createContextLogger } from '../../../utils/logging/ContextLogger.js';
 
 const getErrorMessage = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
@@ -23,8 +24,6 @@ const getErrorMessage = (e: unknown): string => (e instanceof Error ? e.message 
  */
 @EventsHandler(TrackMasteredEvent)
 export class TrackMasteredHandler implements IEventHandler<TrackMasteredEvent> {
-  private readonly logger = new Logger(TrackMasteredHandler.name);
-
   constructor(
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
@@ -33,13 +32,24 @@ export class TrackMasteredHandler implements IEventHandler<TrackMasteredEvent> {
   ) {}
 
   async handle(event: TrackMasteredEvent): Promise<void> {
-    const { ownerId, versionId, trackId, s3Key } = event;
+    const { ownerId, versionId, trackId, s3Key, correlationId } = event;
 
-    this.logger.log(
-      `Mastered track persisted → requesting analysis [version=${versionId}, track=${trackId}]`,
-    );
+    const log = createContextLogger('TrackMasteredHandler', {
+      correlation_id: correlationId,
+      user_id: ownerId,
+      version_id: versionId,
+      track_id: trackId,
+    });
 
-    const payload: TAnalyzeTrackPayload = { s3Key, trackId, versionId, ownerId };
+    log.info('Mastered track persisted — requesting post-master analysis');
+
+    const payload: TAnalyzeTrackPayload = {
+      correlationId,
+      s3Key,
+      trackId,
+      versionId,
+      ownerId,
+    };
 
     try {
       const snapshot = await firstValueFrom(
@@ -51,16 +61,14 @@ export class TrackMasteredHandler implements IEventHandler<TrackMasteredEvent> {
           .pipe(
             timeout(120_000),
             catchError((err) => {
-              this.logger.error(
-                `Post-mastering analysis failed for track ${trackId}: ${getErrorMessage(err)}`,
-              );
+              log.error('Post-mastering analysis failed', { reason: getErrorMessage(err) });
               return of(null as TAudioAnalysisSnapshot | null);
             }),
           ),
       );
 
       if (!snapshot) {
-        this.logger.warn(`No analysis result for mastered track ${trackId}`);
+        log.warn('No analysis result for mastered track');
         return;
       }
 
@@ -68,9 +76,7 @@ export class TrackMasteredHandler implements IEventHandler<TrackMasteredEvent> {
       aggregate.setTrackAnalysis(versionId, trackId, snapshot);
       await this.aggregateRepo.save(aggregate);
 
-      this.logger.log(
-        `Post-mastering analysis saved for track ${trackId} — quality=${snapshot.quality}/4`,
-      );
+      log.info('Post-mastering analysis saved', { quality: snapshot.quality });
 
       await this.analytics.track('track_analysed', ownerId, {
         version_id: versionId,
@@ -87,9 +93,7 @@ export class TrackMasteredHandler implements IEventHandler<TrackMasteredEvent> {
         clipping_ratio: snapshot.clippingRatio,
       });
     } catch (err: unknown) {
-      this.logger.error(
-        `Unexpected error analysing mastered track ${trackId}: ${getErrorMessage(err)}`,
-      );
+      log.error('Unexpected error analysing mastered track', { reason: getErrorMessage(err) });
     }
   }
 }

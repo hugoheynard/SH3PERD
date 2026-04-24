@@ -1,4 +1,4 @@
-import { Inject, Logger } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
@@ -10,6 +10,7 @@ import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 import { TrackMasteredEvent } from '../events/TrackMasteredEvent.js';
+import { createContextLogger, newCorrelationId } from '../../../utils/logging/ContextLogger.js';
 import {
   MicroservicePatterns,
   type TUserId,
@@ -35,8 +36,6 @@ export class MasterTrackHandler implements ICommandHandler<
   MasterTrackCommand,
   TVersionTrackDomainModel
 > {
-  private readonly logger = new Logger(MasterTrackHandler.name);
-
   constructor(
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
     private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
@@ -48,6 +47,14 @@ export class MasterTrackHandler implements ICommandHandler<
   ) {}
 
   async execute(cmd: MasterTrackCommand): Promise<TVersionTrackDomainModel> {
+    const correlationId = newCorrelationId();
+    const log = createContextLogger('MasterTrackHandler', {
+      correlation_id: correlationId,
+      user_id: cmd.actorId,
+      version_id: cmd.versionId,
+      track_id: cmd.trackId,
+    });
+
     // 0. Quota check
     await this.quotaService.ensureAllowed(cmd.actorId, 'master_standard');
 
@@ -68,6 +75,7 @@ export class MasterTrackHandler implements ICommandHandler<
     // 3. Send to audio-processor
     const { integratedLUFS, truePeakdBTP, loudnessRange } = sourceTrack.analysisResult!;
     const payload: TMasterTrackPayload = {
+      correlationId,
       s3Key: sourceTrack.s3Key!,
       outputS3Key,
       trackId: cmd.trackId,
@@ -77,7 +85,9 @@ export class MasterTrackHandler implements ICommandHandler<
       target: cmd.target,
     };
 
-    this.logger.log(`Mastering track ${cmd.trackId} → ${outputS3Key}`);
+    log.info('Dispatching mastering to audio-processor', {
+      output_s3_key: outputS3Key,
+    });
 
     const result = await firstValueFrom(
       this.audioClient
@@ -85,7 +95,7 @@ export class MasterTrackHandler implements ICommandHandler<
         .pipe(timeout(300_000)),
     );
 
-    this.logger.log(`Mastering complete — ${result.sizeBytes} bytes`);
+    log.info('Mastering complete', { size_bytes: result.sizeBytes });
 
     // 4. Add mastered track via aggregate
     const masteredTrack: TVersionTrackDomainModel = {
@@ -109,7 +119,13 @@ export class MasterTrackHandler implements ICommandHandler<
     }
 
     this.eventBus.publish(
-      new TrackMasteredEvent(cmd.actorId, cmd.versionId, newTrackId, result.masteredS3Key),
+      new TrackMasteredEvent(
+        cmd.actorId,
+        cmd.versionId,
+        newTrackId,
+        result.masteredS3Key,
+        correlationId,
+      ),
     );
 
     await this.quotaService.recordUsage(cmd.actorId, 'master_standard');

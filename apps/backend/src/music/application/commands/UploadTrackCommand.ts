@@ -14,6 +14,7 @@ import type {
 import { TrackUploadedEvent } from '../events/TrackUploadedEvent.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
+import { createContextLogger, newCorrelationId } from '../../../utils/logging/ContextLogger.js';
 
 export class UploadTrackCommand {
   constructor(
@@ -40,6 +41,14 @@ export class UploadTrackHandler implements ICommandHandler<
   ) {}
 
   async execute(cmd: UploadTrackCommand): Promise<TVersionTrackDomainModel> {
+    const correlationId = newCorrelationId();
+    const log = createContextLogger('UploadTrackHandler', {
+      correlation_id: correlationId,
+      user_id: cmd.actorId,
+      version_id: cmd.versionId,
+      file_size_bytes: cmd.file.length,
+    });
+
     // Quota checks — before any S3 upload or domain mutation
     await this.quotaService.ensureAllowed(cmd.actorId, 'track_upload');
     await this.quotaService.ensureAllowed(cmd.actorId, 'storage_bytes', cmd.file.length);
@@ -81,8 +90,13 @@ export class UploadTrackHandler implements ICommandHandler<
     await this.quotaService.recordUsage(cmd.actorId, 'track_upload');
     await this.quotaService.recordUsage(cmd.actorId, 'storage_bytes', cmd.file.length);
 
-    // Async: trigger audio analysis
-    this.eventBus.publish(new TrackUploadedEvent(cmd.actorId, cmd.versionId, trackId, s3Key));
+    log.info('Track uploaded', { track_id: trackId, s3_key: s3Key });
+
+    // Async: trigger audio analysis — carries the same correlation id so
+    // the whole upload → analyse → save flow shows up as one trace.
+    this.eventBus.publish(
+      new TrackUploadedEvent(cmd.actorId, cmd.versionId, trackId, s3Key, correlationId),
+    );
 
     await this.analytics.track('track_uploaded', cmd.actorId, {
       version_id: cmd.versionId,

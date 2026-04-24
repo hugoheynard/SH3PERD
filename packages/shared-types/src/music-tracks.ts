@@ -185,8 +185,20 @@ export const SUploadTrackPayload = z.object({
 
 // ─── Audio analysis microservice payload ────────────────
 
+/**
+ * Every cross-service payload carries a `correlationId` so a single user
+ * operation can be traced through backend handler → TCP boundary →
+ * audio-processor stages → back. The id is generated at the handler
+ * boundary (one per command execution) and logged at every step on
+ * both sides.
+ */
+export interface TCorrelatedPayload {
+  /** Trace id for a single cross-service operation. Format: `corr_<uuid>`. */
+  correlationId: string;
+}
+
 /** Sent from backend to audio-processor via TCP to request analysis. */
-export interface TAnalyzeTrackPayload {
+export interface TAnalyzeTrackPayload extends TCorrelatedPayload {
   s3Key: string;
   trackId: TVersionTrackId;
   versionId: TMusicVersionId;
@@ -210,7 +222,7 @@ export interface TMasteringTargetSpecs {
 }
 
 /** Sent from backend to audio-processor via TCP to request mastering. */
-export interface TMasterTrackPayload {
+export interface TMasterTrackPayload extends TCorrelatedPayload {
   s3Key: string;
   outputS3Key: string;
   trackId: TVersionTrackId;
@@ -233,7 +245,7 @@ export interface TMasteringResult {
 // ─── Pitch shift microservice payload ────────────────────
 
 /** Sent from backend to audio-processor via TCP to request pitch shifting. */
-export interface TPitchShiftTrackPayload {
+export interface TPitchShiftTrackPayload extends TCorrelatedPayload {
   s3Key: string;
   outputS3Key: string;
   trackId: TVersionTrackId;
@@ -287,7 +299,7 @@ export interface TAiMasterPredictedParams {
 }
 
 /** Sent from backend to audio-processor via TCP to request AI mastering. */
-export interface TAiMasterTrackPayload {
+export interface TAiMasterTrackPayload extends TCorrelatedPayload {
   s3Key: string;
   /** S3 key of the reference track to match the style of. */
   referenceS3Key: string;

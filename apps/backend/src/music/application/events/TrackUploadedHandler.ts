@@ -1,4 +1,4 @@
-import { Inject, Logger } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout, catchError, of } from 'rxjs';
@@ -11,6 +11,7 @@ import {
   type TAudioAnalysisSnapshot,
   type TAnalyzeTrackPayload,
 } from '@sh3pherd/shared-types';
+import { createContextLogger } from '../../../utils/logging/ContextLogger.js';
 
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
@@ -22,8 +23,6 @@ const getErrorMessage = (error: unknown): string =>
  */
 @EventsHandler(TrackUploadedEvent)
 export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
-  private readonly logger = new Logger(TrackUploadedHandler.name);
-
   constructor(
     @Inject('AUDIO_PROCESSOR') private readonly audioClient: ClientProxy,
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
@@ -32,13 +31,24 @@ export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
   ) {}
 
   async handle(event: TrackUploadedEvent): Promise<void> {
-    const { ownerId, versionId, trackId, s3Key } = event;
+    const { ownerId, versionId, trackId, s3Key, correlationId } = event;
 
-    this.logger.log(
-      `Track uploaded → requesting analysis [version=${versionId}, track=${trackId}]`,
-    );
+    const log = createContextLogger('TrackUploadedHandler', {
+      correlation_id: correlationId,
+      user_id: ownerId,
+      version_id: versionId,
+      track_id: trackId,
+    });
 
-    const payload: TAnalyzeTrackPayload = { s3Key, trackId, versionId, ownerId };
+    log.info('Requesting analysis from audio-processor');
+
+    const payload: TAnalyzeTrackPayload = {
+      correlationId,
+      s3Key,
+      trackId,
+      versionId,
+      ownerId,
+    };
 
     try {
       const snapshot = await firstValueFrom(
@@ -50,14 +60,14 @@ export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
           .pipe(
             timeout(120_000),
             catchError((err) => {
-              this.logger.error(`Analysis failed for track ${trackId}: ${getErrorMessage(err)}`);
+              log.error('Analysis failed', { reason: getErrorMessage(err) });
               return of(null as TAudioAnalysisSnapshot | null);
             }),
           ),
       );
 
       if (!snapshot) {
-        this.logger.warn(`No analysis result for track ${trackId}`);
+        log.warn('No analysis result returned');
         return;
       }
 
@@ -65,7 +75,7 @@ export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
       aggregate.setTrackAnalysis(versionId, trackId, snapshot);
       await this.aggregateRepo.save(aggregate);
 
-      this.logger.log(`Analysis saved for track ${trackId} — quality=${snapshot.quality}/4`);
+      log.info('Analysis saved', { quality: snapshot.quality });
 
       await this.analytics.track('track_analysed', ownerId, {
         version_id: versionId,
@@ -82,9 +92,7 @@ export class TrackUploadedHandler implements IEventHandler<TrackUploadedEvent> {
         clipping_ratio: snapshot.clippingRatio,
       });
     } catch (err: unknown) {
-      this.logger.error(
-        `Unexpected error during analysis of track ${trackId}: ${getErrorMessage(err)}`,
-      );
+      log.error('Unexpected error during analysis', { reason: getErrorMessage(err) });
     }
   }
 }

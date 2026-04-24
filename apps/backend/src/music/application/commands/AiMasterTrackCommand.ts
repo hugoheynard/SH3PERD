@@ -1,4 +1,4 @@
-import { Inject, Logger } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
@@ -11,6 +11,7 @@ import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 import { TrackMasteredEvent } from '../events/TrackMasteredEvent.js';
+import { createContextLogger, newCorrelationId } from '../../../utils/logging/ContextLogger.js';
 import {
   MicroservicePatterns,
   type TUserId,
@@ -51,8 +52,6 @@ export class AiMasterTrackHandler implements ICommandHandler<
   AiMasterTrackCommand,
   TVersionTrackDomainModel
 > {
-  private readonly logger = new Logger(AiMasterTrackHandler.name);
-
   constructor(
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
     private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
@@ -64,6 +63,15 @@ export class AiMasterTrackHandler implements ICommandHandler<
   ) {}
 
   async execute(cmd: AiMasterTrackCommand): Promise<TVersionTrackDomainModel> {
+    const correlationId = newCorrelationId();
+    const log = createContextLogger('AiMasterTrackHandler', {
+      correlation_id: correlationId,
+      user_id: cmd.actorId,
+      version_id: cmd.versionId,
+      track_id: cmd.trackId,
+      reference_track_id: cmd.referenceTrackId,
+    });
+
     // 0. Quota check
     await this.quotaService.ensureAllowed(cmd.actorId, 'master_ai');
 
@@ -114,6 +122,7 @@ export class AiMasterTrackHandler implements ICommandHandler<
 
     // 4. Build payload and dispatch to audio-processor
     const payload: TAiMasterTrackPayload = {
+      correlationId,
       s3Key: sourceTrack.s3Key!,
       referenceS3Key: refTrack.s3Key,
       outputS3Key,
@@ -123,9 +132,9 @@ export class AiMasterTrackHandler implements ICommandHandler<
       loudnormTarget: cmd.loudnormTarget,
     };
 
-    this.logger.log(
-      `AI-mastering track ${cmd.trackId} using ref ${cmd.referenceTrackId} → ${outputS3Key}`,
-    );
+    log.info('Dispatching AI mastering to audio-processor', {
+      output_s3_key: outputS3Key,
+    });
 
     const result = await firstValueFrom(
       this.audioClient
@@ -133,10 +142,11 @@ export class AiMasterTrackHandler implements ICommandHandler<
         .pipe(timeout(300_000)),
     );
 
-    this.logger.log(
-      `AI mastering complete — ${result.sizeBytes} bytes, ` +
-        `EQ bands: ${result.predictedParams.eq.length}, ratio: ${result.predictedParams.compressor.ratio}:1`,
-    );
+    log.info('AI mastering complete', {
+      size_bytes: result.sizeBytes,
+      eq_bands: result.predictedParams.eq.length,
+      compressor_ratio: result.predictedParams.compressor.ratio,
+    });
 
     // 5. Add mastered track via aggregate
     const masteredTrack: TVersionTrackDomainModel = {
@@ -160,7 +170,13 @@ export class AiMasterTrackHandler implements ICommandHandler<
     }
 
     this.eventBus.publish(
-      new TrackMasteredEvent(cmd.actorId, cmd.versionId, newTrackId, result.masteredS3Key),
+      new TrackMasteredEvent(
+        cmd.actorId,
+        cmd.versionId,
+        newTrackId,
+        result.masteredS3Key,
+        correlationId,
+      ),
     );
 
     await this.quotaService.recordUsage(cmd.actorId, 'master_ai');

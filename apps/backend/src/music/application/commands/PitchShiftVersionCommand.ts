@@ -1,4 +1,4 @@
-import { Inject, Logger } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
@@ -10,6 +10,7 @@ import { buildTrackS3Key } from '../../infra/storage/ITrackStorageService.js';
 import { QuotaService } from '../../../quota/QuotaService.js';
 import { AnalyticsEventService } from '../../../analytics/AnalyticsEventService.js';
 import { MusicVersionEntity } from '../../domain/entities/MusicVersionEntity.js';
+import { createContextLogger, newCorrelationId } from '../../../utils/logging/ContextLogger.js';
 import {
   MicroservicePatterns,
   type TUserId,
@@ -35,8 +36,6 @@ export class PitchShiftVersionHandler implements ICommandHandler<
   PitchShiftVersionCommand,
   TMusicVersionDomainModel
 > {
-  private readonly logger = new Logger(PitchShiftVersionHandler.name);
-
   constructor(
     @Inject(REPERTOIRE_ENTRY_AGGREGATE_REPO)
     private readonly aggregateRepo: IRepertoireEntryAggregateRepository,
@@ -47,6 +46,15 @@ export class PitchShiftVersionHandler implements ICommandHandler<
   ) {}
 
   async execute(cmd: PitchShiftVersionCommand): Promise<TMusicVersionDomainModel> {
+    const correlationId = newCorrelationId();
+    const log = createContextLogger('PitchShiftVersionHandler', {
+      correlation_id: correlationId,
+      user_id: cmd.actorId,
+      version_id: cmd.versionId,
+      track_id: cmd.trackId,
+      semitones: cmd.semitones,
+    });
+
     // 0. Quota check
     await this.quotaService.ensureAllowed(cmd.actorId, 'pitch_shift');
 
@@ -87,6 +95,7 @@ export class PitchShiftVersionHandler implements ICommandHandler<
 
     // 3. Send to audio-processor
     const payload: TPitchShiftTrackPayload = {
+      correlationId,
       s3Key: sourceTrack.s3Key!,
       outputS3Key,
       trackId: cmd.trackId,
@@ -95,7 +104,10 @@ export class PitchShiftVersionHandler implements ICommandHandler<
       semitones: cmd.semitones,
     };
 
-    this.logger.log(`Pitch-shifting track ${cmd.trackId} by ${pitchLabel} → ${outputS3Key}`);
+    log.info('Dispatching pitch shift to audio-processor', {
+      pitch_label: pitchLabel,
+      output_s3_key: outputS3Key,
+    });
 
     const result = await firstValueFrom(
       this.audioClient
@@ -103,7 +115,7 @@ export class PitchShiftVersionHandler implements ICommandHandler<
         .pipe(timeout(300_000)),
     );
 
-    this.logger.log(`Pitch shift complete — ${result.sizeBytes} bytes`);
+    log.info('Pitch shift complete', { size_bytes: result.sizeBytes });
 
     // 4. Add track to new version and register in aggregate
     const newTrack: TVersionTrackDomainModel = {

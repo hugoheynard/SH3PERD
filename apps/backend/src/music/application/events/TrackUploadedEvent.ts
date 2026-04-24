@@ -11,5 +11,7 @@ export class TrackUploadedEvent {
     public readonly versionId: TMusicVersionId,
     public readonly trackId: TVersionTrackId,
     public readonly s3Key: string,
+    /** Propagated to the analyze microservice call so the whole upload → analyse → save flow shares one trace id. */
+    public readonly correlationId: string,
   ) {}
 }
