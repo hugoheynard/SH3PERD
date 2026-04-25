@@ -11,6 +11,7 @@ import { ADDENDUM_REPO, CONTRACT_REPO } from '../../../appBootstrap/nestTokens.j
 import type { IContractRepository } from '../../repositories/ContractMongoRepository.js';
 import type { IAddendumRepository } from '../../repositories/AddendumMongoRepository.js';
 import { ContractEntity } from '../../domain/ContractEntity.js';
+import { ContractPolicy } from '../../domain/ContractPolicy.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
@@ -40,12 +41,7 @@ export class CreateAddendumHandler implements ICommandHandler<
       throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
 
     const entity = new ContractEntity(contract);
-    if (!entity.isLocked()) {
-      throw new BusinessError('Addenda can only be created on a fully signed (active) contract', {
-        code: 'CONTRACT_NOT_LOCKED',
-        status: 409,
-      });
-    }
+    ContractPolicy.ensureAmendable(entity);
 
     if (cmd.changes.template === 'extend_trial' && !contract.trial_period_days) {
       throw new BusinessError('Contract has no trial period to extend', {
