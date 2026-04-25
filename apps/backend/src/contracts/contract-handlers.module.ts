@@ -20,6 +20,9 @@ import { GetContractByIdHandler } from './application/queries/GetContractByIdQue
 import { GetContractDocumentDownloadUrlHandler } from './application/queries/GetContractDocumentDownloadUrlQuery.js';
 import { GetAddendaByContractHandler } from './application/queries/GetAddendaByContractQuery.js';
 
+// Events
+import { ContractSentHandler } from './application/events/ContractSentHandler.js';
+
 import { ContractStorageModule } from './infra/ContractStorageModule.js';
 
 const CommandHandlers = [
@@ -43,9 +46,11 @@ const QueryHandlers = [
   GetAddendaByContractHandler,
 ];
 
+const EventHandlers = [ContractSentHandler];
+
 @Module({
   imports: [CqrsModule, ContractStorageModule],
-  providers: [...CommandHandlers, ...QueryHandlers],
+  providers: [...CommandHandlers, ...QueryHandlers, ...EventHandlers],
   exports: [...CommandHandlers, ...QueryHandlers],
 })
 export class ContractHandlersModule {}

@@ -1,4 +1,4 @@
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import type {
   TContractId,
@@ -12,6 +12,7 @@ import type { IContractRepository } from '../../repositories/ContractMongoReposi
 import { ContractEntity } from '../../domain/ContractEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { ContractSentEvent } from '../events/ContractSentEvent.js';
 
 export class SignContractCommand {
   constructor(
@@ -26,7 +27,10 @@ export class SignContractCommand {
 
 @CommandHandler(SignContractCommand)
 export class SignContractHandler implements ICommandHandler<SignContractCommand, TContractRecord> {
-  constructor(@Inject(CONTRACT_REPO) private readonly contractRepo: IContractRepository) {}
+  constructor(
+    @Inject(CONTRACT_REPO) private readonly contractRepo: IContractRepository,
+    private readonly eventBus: EventBus,
+  ) {}
 
   async execute(cmd: SignContractCommand): Promise<TContractRecord> {
     const record = await this.contractRepo.findOne({ filter: { id: cmd.contractId } });
@@ -71,6 +75,16 @@ export class SignContractHandler implements ICommandHandler<SignContractCommand,
         code: 'CONTRACT_SIGN_FAILED',
         status: 500,
       });
+
+    // Publish events only after the persist succeeded — listeners
+    // (notifications, analytics) must never observe a state the DB
+    // does not also reflect.
+    if (signerRole === 'company') {
+      this.eventBus.publish(
+        new ContractSentEvent(updated.id, updated.company_id, updated.user_id, cmd.actorId),
+      );
+    }
+
     return updated;
   }
 }
