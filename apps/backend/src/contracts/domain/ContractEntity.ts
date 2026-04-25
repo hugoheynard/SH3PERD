@@ -102,9 +102,13 @@ export class ContractEntity extends Entity<TContractDomainModel> {
     return this.isSignedByUser() && this.isSignedByCompany();
   }
 
-  /** Contract is locked for direct edits once fully signed (status active). */
+  /**
+   * Contract is locked for direct edits the moment the company signs.
+   * After this point any change to terms, roles or documents must go
+   * through an addendum. See sh3-contracts.md for the full lock rules.
+   */
   isLocked(): boolean {
-    return this.props.status === 'active' && this.isFullySigned();
+    return this.isSignedByCompany();
   }
 
   promoteToActive(): void {
