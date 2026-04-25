@@ -42,6 +42,7 @@ import { RemoveContractRoleCommand } from '../application/commands/RemoveContrac
 import { UploadContractDocumentCommand } from '../application/commands/UploadContractDocumentCommand.js';
 import { PatchContractDocumentCommand } from '../application/commands/PatchContractDocumentCommand.js';
 import { SignContractCommand } from '../application/commands/SignContractCommand.js';
+import { SignContractDocumentCommand } from '../application/commands/SignContractDocumentCommand.js';
 import { CreateAddendumCommand } from '../application/commands/CreateAddendumCommand.js';
 import { SignAddendumCommand } from '../application/commands/SignAddendumCommand.js';
 
@@ -165,6 +166,19 @@ export class ContractController {
     @Body() body: { requiresSignature?: boolean },
   ): Promise<TContractRecord> {
     return this.commandBus.execute(new PatchContractDocumentCommand(contractId, documentId, body));
+  }
+
+  @RequirePermission(P.Company.Members.Read)
+  @Post(':contractId/documents/:documentId/sign')
+  signDocument(
+    @Param('contractId') contractId: TContractId,
+    @Param('documentId') documentId: TContractDocumentId,
+    @ActorId() actorId: TUserId,
+    @ContractRoles() roles: TContractRole[],
+  ): Promise<TContractRecord> {
+    return this.commandBus.execute(
+      new SignContractDocumentCommand(contractId, documentId, actorId, roles),
+    );
   }
 
   @RequirePermission(P.Company.Members.Read)
