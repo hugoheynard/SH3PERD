@@ -142,8 +142,11 @@ export class ContractDetailPageComponent implements OnInit {
   ];
   readonly CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF'];
 
-  /** True when contract is active (locked for direct edits). */
-  readonly isLocked = computed(() => this.detail()?.status === 'active');
+  /**
+   * True the moment the company signs. From that point on, terms,
+   * documents and roles are frozen — see sh3-contracts.md lock rules.
+   */
+  readonly isLocked = computed(() => !!this.detail()?.signatures?.company);
 
   private get contractId(): TContractId | null {
     return this.route.snapshot.paramMap.get('contractId') as TContractId | null;

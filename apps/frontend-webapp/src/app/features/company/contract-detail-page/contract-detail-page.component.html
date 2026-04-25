@@ -814,26 +814,18 @@
             }
           </div>
         </div>
-        @if (c.status === "draft") {
+        @if (!c.signatures?.company) {
           @if (signError()) {
             <p class="doc-error">{{ signError() }}</p>
           }
           <div class="sign-actions">
-            <sh3-button
-              variant="ghost"
-              size="sm"
-              [disabled]="signing()"
-              (clicked)="sign(false)"
-            >
-              {{ signing() ? "Signing…" : "Sign" }}
-            </sh3-button>
             <sh3-button
               variant="solid"
               size="sm"
               [disabled]="signing()"
               (clicked)="sign(true)"
             >
-              {{ c.signatures?.company ? "Send" : "Sign &amp; Send" }}
+              {{ signing() ? "Signing…" : "Sign &amp; Send" }}
             </sh3-button>
           </div>
         }
