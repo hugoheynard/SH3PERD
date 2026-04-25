@@ -6,6 +6,8 @@ import type {
   TCompanyRecord,
   TContractDomainModel,
   TContractRecord,
+  TContractSignature,
+  TSignatureId,
   TUserId,
 } from '@sh3pherd/shared-types';
 import { COMPANY_REPO } from '../../company.tokens.js';
@@ -78,12 +80,31 @@ export class CreateCompanyHandler implements ICommandHandler<
       status: TCompanyStatus.ACTIVE,
     });
 
+    // Owner contracts are administrative records, not negotiated
+    // agreements — the founder is on both sides of the table. We
+    // presign both signatures at creation so the contract satisfies
+    // the same invariants as a normal active contract (isFullySigned,
+    // visible via /contracts/me, immutable via the standard lock
+    // rule). No special-casing needed downstream.
+    const now = new Date();
+    const presignedSignature = (side: 'user' | 'company'): TContractSignature => ({
+      signature_id: `signature_${crypto.randomUUID()}` as TSignatureId,
+      signed_at: now,
+      signed_by: actorId,
+      signer_role: side,
+      signed_by_roles: ['owner'],
+    });
+
     const ownerContract = new ContractEntity({
       user_id: actorId,
       company_id: company.id,
       roles: ['owner'],
       status: 'active',
-      startDate: new Date(),
+      startDate: now,
+      signatures: {
+        user: presignedSignature('user'),
+        company: presignedSignature('company'),
+      },
     });
 
     // 2. Atomic transaction — both succeed or both rollback
