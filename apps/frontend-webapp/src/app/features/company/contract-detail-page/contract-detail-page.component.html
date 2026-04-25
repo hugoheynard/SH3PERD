@@ -35,7 +35,15 @@
         </div>
 
         <div class="hero-right">
-          @if (!editingStatus()) {
+          @if (isLocked()) {
+            <span
+              class="status-pill"
+              [attr.data-status]="c.status"
+              title="Locked — status changes go through addenda"
+            >
+              {{ c.status }}
+            </span>
+          } @else if (!editingStatus()) {
             <button
               type="button"
               class="status-pill"
