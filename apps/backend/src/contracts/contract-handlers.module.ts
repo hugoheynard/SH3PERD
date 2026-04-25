@@ -9,6 +9,7 @@ import { RemoveContractRoleHandler } from './application/commands/RemoveContract
 import { UploadContractDocumentHandler } from './application/commands/UploadContractDocumentCommand.js';
 import { PatchContractDocumentHandler } from './application/commands/PatchContractDocumentCommand.js';
 import { SignContractHandler } from './application/commands/SignContractCommand.js';
+import { SignContractDocumentHandler } from './application/commands/SignContractDocumentCommand.js';
 import { CreateAddendumHandler } from './application/commands/CreateAddendumCommand.js';
 import { SignAddendumHandler } from './application/commands/SignAddendumCommand.js';
 
@@ -29,6 +30,7 @@ const CommandHandlers = [
   UploadContractDocumentHandler,
   PatchContractDocumentHandler,
   SignContractHandler,
+  SignContractDocumentHandler,
   CreateAddendumHandler,
   SignAddendumHandler,
 ];

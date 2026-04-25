@@ -1,4 +1,5 @@
 import type {
+  TContractDocumentId,
   TContractDomainModel,
   TContractId,
   TContractSignature,
@@ -108,5 +109,43 @@ export class ContractEntity extends Entity<TContractDomainModel> {
 
   promoteToActive(): void {
     this.props = { ...this.props, status: 'active' };
+  }
+
+  // ── Document signature ───────────────────────────────
+
+  /**
+   * Record a signature on a specific document. Throws if the document does not
+   * exist, does not require signature, or is already signed by that side.
+   */
+  signDocument(documentId: TContractDocumentId, sig: TContractSignature): void {
+    const documents = this.props.documents ?? [];
+    const idx = documents.findIndex((d) => d.id === documentId);
+    if (idx === -1) {
+      throw new DomainError('Document not found on this contract', {
+        code: 'CONTRACT_DOCUMENT_NOT_FOUND',
+        context: { documentId, contractId: this.id },
+      });
+    }
+    const doc = documents[idx];
+    if (!doc.requiresSignature) {
+      throw new DomainError('Document does not require signature', {
+        code: 'CONTRACT_DOCUMENT_NOT_SIGNABLE',
+        context: { documentId, contractId: this.id },
+      });
+    }
+    const side = sig.signer_role;
+    if (doc.signatures?.[side]) {
+      throw new DomainError(`Document already signed by ${side}`, {
+        code: 'CONTRACT_DOCUMENT_ALREADY_SIGNED',
+        context: { side, documentId, contractId: this.id },
+      });
+    }
+    const updated = {
+      ...doc,
+      signatures: { ...doc.signatures, [side]: sig },
+    };
+    const next = [...documents];
+    next[idx] = updated;
+    this.props = { ...this.props, documents: next };
   }
 }
