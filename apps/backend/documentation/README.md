@@ -48,13 +48,13 @@ Architecture, patterns, and how-to guides for the NestJS backend.
 
 ## Company & Org
 
-| Doc                                       | Description                                                                 |
-| ----------------------------------------- | --------------------------------------------------------------------------- |
-| [Org Chart](sh3-orgchart.md)              | Org chart features, API endpoints, architecture, file locations             |
-| [Orgchart Export](sh3-orgchart-export.md) | PDF/SVG export via headless Chromium (Puppeteer)                            |
-| [Orgchart Print](sh3-orgchart-print.md)   | Print layer reusing live OrgchartTabComponent for pixel-identical rendering |
-| [Contracts](sh3-contracts.md)             | Contract aggregate diagram (contract + addendums)                           |
-| [Integrations](sh3-integrations.md)       | Slack OAuth, channel management, architecture, routes                       |
+| Doc                                       | Description                                                                     |
+| ----------------------------------------- | ------------------------------------------------------------------------------- |
+| [Org Chart](sh3-orgchart.md)              | Org chart features, API endpoints, architecture, file locations                 |
+| [Orgchart Export](sh3-orgchart-export.md) | PDF/SVG export via headless Chromium (Puppeteer)                                |
+| [Orgchart Print](sh3-orgchart-print.md)   | Print layer reusing live OrgchartTabComponent for pixel-identical rendering     |
+| [Contracts](sh3-contracts.md)             | Contract lifecycle, lock rules, sign flow, addenda, notifications, endpoint map |
+| [Integrations](sh3-integrations.md)       | Slack OAuth, channel management, architecture, routes                           |
 
 ## Home Dashboard
 
