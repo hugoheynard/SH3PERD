@@ -19,6 +19,7 @@ import type {
 } from '@sh3pherd/shared-types';
 import { ContractsService } from '../../services/contracts.service';
 import { UserContextService } from '../../../../core/services/user-context.service';
+import { ToastService } from '../../../../shared/toast/toast.service';
 import { IconComponent } from '../../../../shared/icon/icon.component';
 import { ButtonComponent } from '../../../../shared/button/button.component';
 import { SignatureStepperComponent } from '../shared/signature-stepper/signature-stepper.component';
@@ -41,6 +42,7 @@ export class ContractDetailPageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly contractsService = inject(ContractsService);
   private readonly userCtx = inject(UserContextService);
+  private readonly toast = inject(ToastService);
 
   readonly detail = signal<TContractDetailViewModel | null>(null);
   readonly addenda = signal<TContractAddendumDomainModel[]>([]);
@@ -61,6 +63,11 @@ export class ContractDetailPageComponent implements OnInit {
     return !!d && d.status === 'draft' && !this.hasUserSigned();
   });
 
+  /** True when this contract is the user's currently-active workspace. */
+  readonly isActiveWorkspace = computed(
+    () => this.userCtx.currentContractId() === this.contractId,
+  );
+
   private get contractId(): TContractId | null {
     return this.route.snapshot.paramMap.get('contractId') as TContractId | null;
   }
@@ -72,8 +79,19 @@ export class ContractDetailPageComponent implements OnInit {
       this.loading.set(false);
       return;
     }
-    this.userCtx.setWorkspace(id);
+    // Read the contract via an explicit X-Contract-Id header (see
+    // ContractsService) — viewing must not silently switch the user's
+    // persisted workspace. The user opts in via the "Activate this
+    // contract" button.
     this.loadDetail();
+  }
+
+  /** Promote this contract to the user's active workspace (persists to prefs). */
+  activateAsWorkspace(): void {
+    const id = this.contractId;
+    if (!id) return;
+    this.userCtx.setWorkspace(id);
+    this.toast.show('Contract activated as your workspace', 'success');
   }
 
   loadDetail(): void {
@@ -104,11 +122,13 @@ export class ContractDetailPageComponent implements OnInit {
     this.contractsService.signContract(id, notify).subscribe({
       next: () => {
         this.signing.set(false);
+        this.toast.show('Contract signed', 'success');
         this.loadDetail();
       },
       error: () => {
         this.signing.set(false);
         this.signError.set('Failed to sign contract');
+        this.toast.show('Failed to sign contract', 'error');
       },
     });
   }
@@ -120,10 +140,12 @@ export class ContractDetailPageComponent implements OnInit {
     this.contractsService.signDocument(id, documentId).subscribe({
       next: () => {
         this.signingDocument.set(null);
+        this.toast.show('Document signed', 'success');
         this.loadDetail();
       },
       error: () => {
         this.signingDocument.set(null);
+        this.toast.show('Failed to sign document', 'error');
       },
     });
   }
@@ -135,10 +157,12 @@ export class ContractDetailPageComponent implements OnInit {
     this.contractsService.signAddendum(id, addendum.id).subscribe({
       next: () => {
         this.signingAddendum.set(null);
+        this.toast.show('Addendum signed', 'success');
         this.loadDetail();
       },
       error: () => {
         this.signingAddendum.set(null);
+        this.toast.show('Failed to sign addendum', 'error');
       },
     });
   }

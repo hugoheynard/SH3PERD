@@ -515,6 +515,13 @@
   border-top: 1px solid var(--border-subtle);
 }
 
+.hint-text {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
 .contract-id {
   font-size: var(--text-xs);
   color: var(--text-muted);

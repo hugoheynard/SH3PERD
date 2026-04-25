@@ -320,6 +320,25 @@
         }
       </div>
 
+      <div class="side-card">
+        <span class="side-label">Workspace</span>
+        @if (isActiveWorkspace()) {
+          <p class="hint-text">This contract is your active workspace.</p>
+        } @else {
+          <p class="hint-text">
+            Activate this contract to switch the rest of the app (programs,
+            library, stats…) to its company context.
+          </p>
+          <sh3-button
+            variant="solid"
+            size="sm"
+            (clicked)="activateAsWorkspace()"
+          >
+            Activate this contract
+          </sh3-button>
+        }
+      </div>
+
       <div class="contract-id">{{ c.id }}</div>
     </aside>
   </div>

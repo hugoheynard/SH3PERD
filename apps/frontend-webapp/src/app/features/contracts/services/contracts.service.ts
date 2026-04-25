@@ -28,7 +28,7 @@ export class ContractsService extends BaseHttpService {
     contractId: TContractId,
   ): Observable<TContractDetailViewModel> {
     return this.scopedHttp
-      .withContract()
+      .withHeader('X-Contract-Id', contractId)
       .get<TContractDetailViewModel>(`${this.contractURL}/${contractId}`);
   }
 
@@ -38,7 +38,7 @@ export class ContractsService extends BaseHttpService {
     notify = false,
   ): Observable<TContractRecord> {
     return this.scopedHttp
-      .withContract()
+      .withHeader('X-Contract-Id', contractId)
       .post<TContractRecord>(`${this.contractURL}/${contractId}/sign`, {
         notify,
       });
@@ -49,7 +49,7 @@ export class ContractsService extends BaseHttpService {
     contractId: TContractId,
   ): Observable<TContractAddendumDomainModel[]> {
     return this.scopedHttp
-      .withContract()
+      .withHeader('X-Contract-Id', contractId)
       .get<
         TContractAddendumDomainModel[]
       >(`${this.contractURL}/${contractId}/addenda`);
@@ -61,7 +61,7 @@ export class ContractsService extends BaseHttpService {
     addendumId: TAddendumId,
   ): Observable<TContractAddendumDomainModel> {
     return this.scopedHttp
-      .withContract()
+      .withHeader('X-Contract-Id', contractId)
       .post<TContractAddendumDomainModel>(
         `${this.contractURL}/${contractId}/addenda/${addendumId}/sign`,
         {},
@@ -74,7 +74,7 @@ export class ContractsService extends BaseHttpService {
     documentId: TContractDocumentId,
   ): Observable<TContractRecord> {
     return this.scopedHttp
-      .withContract()
+      .withHeader('X-Contract-Id', contractId)
       .post<TContractRecord>(
         `${this.contractURL}/${contractId}/documents/${documentId}/sign`,
         {},
@@ -86,7 +86,7 @@ export class ContractsService extends BaseHttpService {
     contractId: TContractId,
     documentId: TContractDocumentId,
   ): Observable<{ url: string }> {
-    return this.scopedHttp.withContract().get<{
+    return this.scopedHttp.withHeader('X-Contract-Id', contractId).get<{
       url: string;
     }>(`${this.contractURL}/${contractId}/documents/${documentId}/download`);
   }
