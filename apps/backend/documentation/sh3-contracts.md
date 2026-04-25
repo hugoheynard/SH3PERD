@@ -36,10 +36,10 @@ signatures are recorded (`isFullySigned()`).
 | Edit terms / dates      | `Company.Members.Write`  | company | Rejected once contract is **locked** (see below)  |
 | Upload / patch document | `Company.Members.Write`  | company | Rejected once locked → addendum required          |
 | Assign / remove role    | `Company.Members.Write`  | company | Rejected once locked                              |
-| Sign contract           | `Company.Members.Read`   | both    | Side resolved server-side from actor roles        |
-| Sign document           | `Company.Members.Read`   | both    | Per-document dual-sign (when `requiresSignature`) |
-| Create addendum         | `Company.Members.Write`  | company | Only when contract is `active`                    |
-| Sign addendum           | `Company.Members.Read`   | both    |                                                   |
+| Sign contract           | `Company.Members.Sign`   | both    | Side resolved server-side from actor roles        |
+| Sign document           | `Company.Members.Sign`   | both    | Per-document dual-sign (when `requiresSignature`) |
+| Create addendum         | `Company.Members.Write`  | company | Only when contract is active + fully signed       |
+| Sign addendum           | `Company.Members.Sign`   | both    |                                                   |
 | List own contracts      | (authenticated)          | user    | `GET /contracts/me` — see visibility rule         |
 
 Side resolution: `ContractEntity.resolveSignerRole(roles)` returns
