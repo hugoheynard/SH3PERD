@@ -83,13 +83,29 @@ export class ContractEntity extends Entity<TContractDomainModel> {
     return roles.some((r) => CONTRACT_COMPANY_ROLES.includes(r)) ? 'company' : 'user';
   }
 
-  /** Record a signature from one party. Throws if that side already signed. */
+  /**
+   * Record a signature from one party.
+   *
+   * Invariants:
+   * - That side must not already have signed (`CONTRACT_ALREADY_SIGNED`).
+   * - The user side cannot sign before the company has — see the
+   *   company-first flow in sh3-contracts.md
+   *   (`CONTRACT_NOT_SENT_YET`). This guards against a recipient
+   *   bypassing the visibility rule by hitting the sign endpoint
+   *   directly with a known contract id.
+   */
   addSignature(sig: TContractSignature): void {
     const side = sig.signer_role;
     if (this.props.signatures?.[side]) {
       throw new DomainError(`Contract already signed by ${side}`, {
         code: 'CONTRACT_ALREADY_SIGNED',
         context: { side, contractId: this.id },
+      });
+    }
+    if (side === 'user' && !this.isSignedByCompany()) {
+      throw new DomainError('Contract has not been sent yet — the company must sign first', {
+        code: 'CONTRACT_NOT_SENT_YET',
+        context: { contractId: this.id },
       });
     }
     this.props = {
