@@ -24,6 +24,9 @@ import { GetAddendaByContractHandler } from './application/queries/GetAddendaByC
 import { ContractSentHandler } from './application/events/ContractSentHandler.js';
 import { ContractActivatedHandler } from './application/events/ContractActivatedHandler.js';
 
+// Shared services
+import { SignerSideResolver } from './application/SignerSideResolver.js';
+
 import { ContractStorageModule } from './infra/ContractStorageModule.js';
 
 const CommandHandlers = [
@@ -51,7 +54,7 @@ const EventHandlers = [ContractSentHandler, ContractActivatedHandler];
 
 @Module({
   imports: [CqrsModule, ContractStorageModule],
-  providers: [...CommandHandlers, ...QueryHandlers, ...EventHandlers],
+  providers: [...CommandHandlers, ...QueryHandlers, ...EventHandlers, SignerSideResolver],
   exports: [...CommandHandlers, ...QueryHandlers],
 })
 export class ContractHandlersModule {}

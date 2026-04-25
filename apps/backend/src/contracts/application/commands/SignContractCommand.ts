@@ -1,17 +1,12 @@
 import { CommandHandler, EventBus, type ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import type {
-  TContractId,
-  TContractRecord,
-  TContractRole,
-  TSignatureId,
-  TUserId,
-} from '@sh3pherd/shared-types';
+import type { TContractId, TContractRecord, TContractRole, TUserId } from '@sh3pherd/shared-types';
 import { CONTRACT_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IContractRepository } from '../../repositories/ContractMongoRepository.js';
 import { ContractEntity } from '../../domain/ContractEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
+import { SignerSideResolver } from '../SignerSideResolver.js';
 import { ContractSentEvent } from '../events/ContractSentEvent.js';
 import { ContractActivatedEvent } from '../events/ContractActivatedEvent.js';
 
@@ -30,6 +25,7 @@ export class SignContractCommand {
 export class SignContractHandler implements ICommandHandler<SignContractCommand, TContractRecord> {
   constructor(
     @Inject(CONTRACT_REPO) private readonly contractRepo: IContractRepository,
+    private readonly signerResolver: SignerSideResolver,
     private readonly eventBus: EventBus,
   ) {}
 
@@ -39,24 +35,13 @@ export class SignContractHandler implements ICommandHandler<SignContractCommand,
       throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
 
     const entity = new ContractEntity(record);
-    const signerRole = entity.resolveSignerRole(cmd.actorRoles);
-
-    let signed_by_contract_id: string | undefined;
-    if (signerRole === 'company') {
-      const signerContract = await this.contractRepo.findOne({
-        filter: { user_id: cmd.actorId, company_id: record.company_id },
-      });
-      signed_by_contract_id = signerContract?.id;
-    }
-
-    entity.addSignature({
-      signature_id: `signature_${crypto.randomUUID()}` as TSignatureId,
-      signed_at: new Date(),
-      signed_by: cmd.actorId,
-      signer_role: signerRole,
-      signed_by_roles: cmd.actorRoles,
-      signed_by_contract_id: signed_by_contract_id as TContractId | undefined,
+    const signature = await this.signerResolver.build({
+      contract: entity,
+      actorId: cmd.actorId,
+      actorRoles: cmd.actorRoles,
     });
+    const signerRole = signature.signer_role;
+    entity.addSignature(signature);
 
     if (entity.isFullySigned()) {
       entity.promoteToActive();
