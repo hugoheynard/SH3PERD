@@ -71,40 +71,11 @@
       </header>
 
       <!-- Signature progress stepper ─────────────── -->
-      <section class="card">
-        <div class="card-header">
-          <h3 class="card-title">Signature progress</h3>
-        </div>
-        <div class="card-body">
-          <div class="stepper">
-            <div
-              class="stepper-progress"
-              [style.width.%]="progressPercent()"
-            ></div>
-            @for (step of steps(); track step.key) {
-              <div
-                class="step"
-                [class.done]="step.state === 'done'"
-                [class.current]="step.state === 'current'"
-              >
-                <div class="step-dot">
-                  @if (step.state === "done") {
-                    ✓
-                  } @else {
-                    {{ $index + 1 }}
-                  }
-                </div>
-                <span class="step-label">{{ step.label }}</span>
-                @if (step.date) {
-                  <span class="step-date">{{
-                    step.date | date: "mediumDate"
-                  }}</span>
-                }
-              </div>
-            }
-          </div>
-        </div>
-      </section>
+      <sh3-signature-stepper
+        [status]="c.status"
+        [userSignature]="c.signatures?.user"
+        [companySignature]="c.signatures?.company"
+      />
 
       <!-- Roles ─────────────────────────────────── -->
       <section class="card">

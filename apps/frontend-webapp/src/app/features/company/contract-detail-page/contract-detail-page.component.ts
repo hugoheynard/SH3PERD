@@ -13,6 +13,7 @@ import { ContractStore } from '../contract.store';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { AvatarComponent } from '../../../shared/avatar/avatar.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
+import { SignatureStepperComponent } from '../../contracts/components/shared/signature-stepper/signature-stepper.component';
 import type {
   TAddendumId,
   TContractAddendumDomainModel,
@@ -58,13 +59,6 @@ type AddendumForm = {
   trial_days: string;
 };
 
-type SignatureStep = {
-  key: 'draft' | 'user' | 'company' | 'active';
-  label: string;
-  date: Date | null;
-  state: 'done' | 'current' | 'pending';
-};
-
 @Component({
   selector: 'app-contract-detail-page',
   standalone: true,
@@ -74,6 +68,7 @@ type SignatureStep = {
     IconComponent,
     AvatarComponent,
     ButtonComponent,
+    SignatureStepperComponent,
   ],
   templateUrl: './contract-detail-page.component.html',
   styleUrl: './contract-detail-page.component.scss',
@@ -149,52 +144,6 @@ export class ContractDetailPageComponent implements OnInit {
 
   /** True when contract is active (locked for direct edits). */
   readonly isLocked = computed(() => this.detail()?.status === 'active');
-
-  /** Signature stepper computed from current contract state. */
-  readonly steps = computed<SignatureStep[]>(() => {
-    const d = this.detail();
-    if (!d) return [];
-    const userSig = d.signatures?.user ?? null;
-    const companySig = d.signatures?.company ?? null;
-
-    const stepsList: SignatureStep[] = [
-      { key: 'draft', label: 'Draft', date: null, state: 'done' },
-      {
-        key: 'user',
-        label: 'Signed by employee',
-        date: userSig?.signed_at ?? null,
-        state: userSig ? 'done' : 'current',
-      },
-      {
-        key: 'company',
-        label: 'Countersigned',
-        date: companySig?.signed_at ?? null,
-        state: companySig ? 'done' : userSig ? 'current' : 'pending',
-      },
-      {
-        key: 'active',
-        label: 'Active',
-        date: null,
-        state: d.status === 'active' ? 'done' : 'pending',
-      },
-    ];
-    // Only one "current" — mark everything after the first current as pending
-    let seenCurrent = false;
-    return stepsList.map((s) => {
-      if (s.state === 'current' && seenCurrent)
-        return { ...s, state: 'pending' as const };
-      if (s.state === 'current') seenCurrent = true;
-      return s;
-    });
-  });
-
-  /** Progress bar width (%) based on how many steps are done. */
-  readonly progressPercent = computed(() => {
-    const s = this.steps();
-    if (!s.length) return 0;
-    const done = s.filter((x) => x.state === 'done').length;
-    return Math.round(((done - 1) / (s.length - 1)) * 100);
-  });
 
   private get contractId(): TContractId | null {
     return this.route.snapshot.paramMap.get('contractId') as TContractId | null;
