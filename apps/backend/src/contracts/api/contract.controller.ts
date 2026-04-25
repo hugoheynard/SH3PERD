@@ -102,7 +102,7 @@ export class ContractController {
 
   // ── Signature ────────────────────────────────────────────
 
-  @RequirePermission(P.Company.Members.Read)
+  @RequirePermission(P.Company.Members.Sign)
   @Post(':contractId/sign')
   signContract(
     @Param('contractId') contractId: TContractId,
@@ -168,7 +168,7 @@ export class ContractController {
     return this.commandBus.execute(new PatchContractDocumentCommand(contractId, documentId, body));
   }
 
-  @RequirePermission(P.Company.Members.Read)
+  @RequirePermission(P.Company.Members.Sign)
   @Post(':contractId/documents/:documentId/sign')
   signDocument(
     @Param('contractId') contractId: TContractId,
@@ -218,7 +218,7 @@ export class ContractController {
     );
   }
 
-  @RequirePermission(P.Company.Members.Read)
+  @RequirePermission(P.Company.Members.Sign)
   @Post(':contractId/addenda/:addendumId/sign')
   signAddendum(
     @Param('addendumId') addendumId: TAddendumId,

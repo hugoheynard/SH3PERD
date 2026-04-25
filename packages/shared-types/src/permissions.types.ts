@@ -77,6 +77,12 @@ export const P = {
       Read: "company:members:read",
       Write: "company:members:write",
       Invite: "company:members:invite",
+      /**
+       * Sign a contract / document / addendum from either side.
+       * Distinct from Read so passive read-only members (viewer) can
+       * see contract details without being able to act on them.
+       */
+      Sign: "company:members:sign",
     },
     OrgChart: {
       Read: "company:orgchart:read",
@@ -194,6 +200,7 @@ export const ROLE_TEMPLATES: Record<TContractRole, TPermission[]> = {
     P.Company.Members.Read,
     P.Company.Members.Write,
     P.Company.Members.Invite,
+    P.Company.Members.Sign,
     P.Company.Settings.Read,
     P.Company.OrgChart.Read,
   ],
@@ -207,6 +214,7 @@ export const ROLE_TEMPLATES: Record<TContractRole, TPermission[]> = {
     P.Event.Planning.Read,
     P.Company.OrgChart.Read,
     P.Company.Members.Read,
+    P.Company.Members.Sign,
   ],
   viewer: [
     P.Music.Playlist.Read,
