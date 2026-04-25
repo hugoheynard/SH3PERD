@@ -3,6 +3,8 @@ import { Inject } from '@nestjs/common';
 import type { TContractDocumentId, TContractId, TContractRecord } from '@sh3pherd/shared-types';
 import { CONTRACT_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IContractRepository } from '../../repositories/ContractMongoRepository.js';
+import { ContractEntity } from '../../domain/ContractEntity.js';
+import { ContractPolicy } from '../../domain/ContractPolicy.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 
@@ -22,6 +24,11 @@ export class PatchContractDocumentHandler implements ICommandHandler<
   constructor(@Inject(CONTRACT_REPO) private readonly contractRepo: IContractRepository) {}
 
   async execute(cmd: PatchContractDocumentCommand): Promise<TContractRecord> {
+    const record = await this.contractRepo.findOne({ filter: { id: cmd.contractId } });
+    if (!record)
+      throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
+    ContractPolicy.ensureEditable(new ContractEntity(record));
+
     const $set: Record<string, unknown> = { ...RecordMetadataUtils.update() };
 
     if (cmd.patch.requiresSignature !== undefined) {

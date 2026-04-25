@@ -5,6 +5,7 @@ import type { TContractRole } from '@sh3pherd/shared-types';
 import { CONTRACT_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IContractRepository } from '../../repositories/ContractMongoRepository.js';
 import { ContractEntity } from '../../domain/ContractEntity.js';
+import { ContractPolicy } from '../../domain/ContractPolicy.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 import type { Filter, UpdateFilter } from 'mongodb';
@@ -30,6 +31,7 @@ export class AssignContractRoleHandler implements ICommandHandler<
       throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
 
     const entity = new ContractEntity(record);
+    ContractPolicy.ensureEditable(entity);
     entity.assignRole(cmd.role);
 
     const diff = entity.getDiffProps();

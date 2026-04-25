@@ -9,6 +9,8 @@ import type {
 } from '@sh3pherd/shared-types';
 import { CONTRACT_REPO, CONTRACT_STORAGE_SERVICE } from '../../../appBootstrap/nestTokens.js';
 import type { IContractRepository } from '../../repositories/ContractMongoRepository.js';
+import { ContractEntity } from '../../domain/ContractEntity.js';
+import { ContractPolicy } from '../../domain/ContractPolicy.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 
 export class UploadContractDocumentCommand {
@@ -44,6 +46,7 @@ export class UploadContractDocumentHandler implements ICommandHandler<
     if (!contract) {
       throw new BusinessError('Contract not found', { code: 'CONTRACT_NOT_FOUND', status: 404 });
     }
+    ContractPolicy.ensureEditable(new ContractEntity(contract));
 
     const documentId = `contractDoc_${crypto.randomUUID()}` as TContractDocumentId;
     const s3Key = buildContractDocumentS3Key(cmd.contractId, documentId, cmd.fileName);
