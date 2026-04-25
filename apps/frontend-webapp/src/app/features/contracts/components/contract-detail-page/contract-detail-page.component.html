@@ -33,11 +33,10 @@
 
       <!-- Signature progress ───────────────────── -->
       <sh3-signature-stepper
+        perspective="user"
         [status]="c.status"
         [userSignature]="c.signatures?.user"
         [companySignature]="c.signatures?.company"
-        [userLabel]="'You signed'"
-        [companyLabel]="'Company signed'"
       />
 
       <!-- Position ─────────────────────────────── -->
