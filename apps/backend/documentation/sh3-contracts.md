@@ -185,17 +185,20 @@ Notification kind: `contract`. Discriminated union member
 `TContractNotification` (see
 [`packages/shared-types/src/notifications.types.ts`](../../../packages/shared-types/src/notifications.types.ts)).
 
-| Trigger                                        | Action     | Recipient(s)            |
-| ---------------------------------------------- | ---------- | ----------------------- |
-| Company signs (contract becomes locked & sent) | `received` | The user (recipient)    |
-| User counter-signs (contract becomes active)   | `signed`   | All company-side actors |
-| Addendum signed by both → applied              | `signed`   | The other party         |
-| Addendum rejected                              | `declined` | The other party         |
-| Contract end date reached                      | `expired`  | Both parties            |
+| Trigger                                        | Action     | Recipient          | Status                                                        |
+| ---------------------------------------------- | ---------- | ------------------ | ------------------------------------------------------------- |
+| Company signs (contract becomes locked & sent) | `received` | User (recipient)   | implemented (`ContractSentEvent`)                             |
+| User counter-signs (contract becomes active)   | `signed`   | The company signer | implemented (`ContractActivatedEvent`)                        |
+| Addendum signed by both → applied              | `signed`   | The other party    | TODO — `SignAddendumCommand` does not publish events yet      |
+| Addendum rejected                              | `declined` | The other party    | TODO — no decline command exists; the action enum value alone |
+| Contract end date reached                      | `expired`  | Both parties       | TODO — no scheduled job exists; the action enum value alone   |
 
-Events are dispatched from `SignContractCommand` /
-`SignAddendumCommand` via `EventBus.publish()` and consumed by
-`@EventsHandler` listeners in `apps/backend/src/contracts/application/events/`.
+Events are dispatched from `SignContractCommand` via `EventBus.publish()`
+and consumed by `@EventsHandler` listeners in
+`apps/backend/src/contracts/application/events/`. The TODO rows
+above are listed for design completeness — wire them when the
+addendum signature flow, the decline flow and the end-date scheduler
+land.
 
 ## Domain & code map
 
