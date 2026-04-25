@@ -114,6 +114,11 @@ export interface TContractDocument {
   uploadedAt: Date;
   uploadedBy: TUserId;
   requiresSignature?: boolean;
+  /** Dual-sign signatures collected on this document — only populated when requiresSignature is true */
+  signatures?: {
+    user?: TContractSignature;
+    company?: TContractSignature;
+  };
 }
 
 export const SContractDocument: ZodOutput<TContractDocument> = z.object({
@@ -125,6 +130,12 @@ export const SContractDocument: ZodOutput<TContractDocument> = z.object({
   uploadedAt: z.date(),
   uploadedBy: SUserId,
   requiresSignature: z.boolean().optional(),
+  signatures: z
+    .object({
+      user: SContractSignature.optional(),
+      company: SContractSignature.optional(),
+    })
+    .optional(),
 });
 
 // ─── Contract ──────────────────────────────────────────────
