@@ -110,8 +110,20 @@ export const routes: Routes = [
       },
       {
         path: 'contracts',
-        component: ContractPageComponent,
         data: { pageName: 'contracts' },
+        children: [
+          {
+            path: '',
+            component: ContractPageComponent,
+          },
+          {
+            path: ':contractId',
+            loadComponent: () =>
+              import('../features/contracts/components/contract-detail-page/contract-detail-page.component').then(
+                (m) => m.ContractDetailPageComponent,
+              ),
+          },
+        ],
       },
       {
         path: 'user-profile',

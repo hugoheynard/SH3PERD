@@ -1,0 +1,327 @@
+<div class="page-back-bar">
+  <button class="btn-back" (click)="goBack()" type="button">
+    <sh3-icon name="arrow-back" [size]="14" />
+    Contracts
+  </button>
+</div>
+
+@if (loading()) {
+  <div class="loading-state">Loading contract…</div>
+}
+@if (error() && !loading()) {
+  <div class="error-state">{{ error() }}</div>
+}
+
+@if (!loading() && detail(); as c) {
+  <div class="page">
+    <!-- ══════════════ MAIN COLUMN ══════════════ -->
+    <div class="main-col">
+      <!-- Hero ─────────────────────────────────── -->
+      <header class="hero">
+        <div class="hero-left">
+          <div class="hero-text">
+            <span class="hero-name">{{ c.job_title ?? "Contract" }}</span>
+            <span class="hero-sub">Company {{ c.company_id }}</span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <span class="status-pill" [attr.data-status]="c.status">
+            {{ c.status }}
+          </span>
+        </div>
+      </header>
+
+      <!-- Signature progress ───────────────────── -->
+      <sh3-signature-stepper
+        [status]="c.status"
+        [userSignature]="c.signatures?.user"
+        [companySignature]="c.signatures?.company"
+        [userLabel]="'You signed'"
+        [companyLabel]="'Company signed'"
+      />
+
+      <!-- Position ─────────────────────────────── -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Position</h3>
+        </div>
+        <div class="card-body">
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-key">Contract type</span>
+              <span class="info-val" [class.empty]="!c.contract_type">{{
+                c.contract_type ?? "—"
+              }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-key">Job title</span>
+              <span class="info-val" [class.empty]="!c.job_title">{{
+                c.job_title ?? "—"
+              }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-key">Roles</span>
+              <span class="info-val">
+                @for (role of c.roles; track role) {
+                  <span class="role-chip">{{ role }}</span>
+                }
+                @if (c.roles.length === 0) {
+                  <span class="empty">—</span>
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dates ────────────────────────────────── -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Dates</h3>
+        </div>
+        <div class="card-body">
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-key">Start date</span>
+              <span class="info-val">{{
+                c.startDate | date: "mediumDate"
+              }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-key">End date</span>
+              <span class="info-val" [class.empty]="!c.endDate">{{
+                c.endDate ? (c.endDate | date: "mediumDate") : "Open-ended"
+              }}</span>
+            </div>
+            @if (c.trial_period_days) {
+              <div class="info-item">
+                <span class="info-key">Trial period</span>
+                <span class="info-val">{{ c.trial_period_days }} days</span>
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Terms ───────────────────────────────── -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Terms</h3>
+        </div>
+        <div class="card-body">
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-key">Compensation</span>
+              <span class="info-val" [class.empty]="!c.compensation">{{
+                formatCompensation(c)
+              }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-key">Work time</span>
+              <span class="info-val" [class.empty]="!c.work_time">{{
+                formatWorkTime(c)
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Documents ────────────────────────────── -->
+      <section class="card">
+        <div class="card-header">
+          <h3 class="card-title">Documents</h3>
+        </div>
+        <div class="card-body">
+          @if (!c.documents?.length) {
+            <span class="info-val empty">No documents attached</span>
+          }
+          @if (c.documents?.length) {
+            <ul class="doc-list">
+              @for (doc of c.documents; track doc.id) {
+                <li class="doc-item">
+                  <sh3-icon name="add-doc" [size]="16" class="doc-icon" />
+                  <div class="doc-meta">
+                    <span class="doc-name">{{ doc.fileName }}</span>
+                    <span class="doc-size">{{
+                      formatBytes(doc.sizeBytes)
+                    }}</span>
+                  </div>
+                  @if (doc.requiresSignature) {
+                    <span
+                      class="sig-mini"
+                      [class.signed]="isDocumentFullySigned(doc)"
+                    >
+                      {{
+                        isDocumentFullySigned(doc)
+                          ? "Fully signed"
+                          : doc.signatures?.user
+                            ? "Awaiting company"
+                            : "Signature required"
+                      }}
+                    </span>
+                  }
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    title="Download"
+                    (click)="downloadDocument(doc)"
+                  >
+                    <sh3-icon name="download" [size]="13" />
+                  </button>
+                  @if (canSignDocument(doc)) {
+                    <sh3-button
+                      variant="solid"
+                      size="sm"
+                      [disabled]="signingDocument() === doc.id"
+                      (clicked)="signDocument(doc.id)"
+                    >
+                      {{ signingDocument() === doc.id ? "Signing…" : "Sign" }}
+                    </sh3-button>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </section>
+
+      <!-- Addenda ─────────────────────────────── -->
+      @if (addenda().length > 0) {
+        <section class="card">
+          <div class="card-header">
+            <h3 class="card-title">Addenda</h3>
+          </div>
+          <div class="card-body">
+            <ul class="addendum-list">
+              @for (a of addenda(); track a.id) {
+                <li class="addendum-item">
+                  <div class="addendum-header">
+                    <span
+                      class="addendum-badge"
+                      [attr.data-status]="a.status"
+                      >{{ a.status }}</span
+                    >
+                    <span class="addendum-type">{{
+                      addendumLabel(a.changes.template)
+                    }}</span>
+                    <span class="addendum-date">{{
+                      a.effectiveDate | date: "mediumDate"
+                    }}</span>
+                  </div>
+                  @if (a.reason) {
+                    <p class="addendum-reason">{{ a.reason }}</p>
+                  }
+                  <div class="addendum-sigs">
+                    <span class="sig-mini" [class.signed]="a.signatures?.user">
+                      You {{ a.signatures?.user ? "✓" : "…" }}
+                    </span>
+                    <span
+                      class="sig-mini"
+                      [class.signed]="a.signatures?.company"
+                    >
+                      Company {{ a.signatures?.company ? "✓" : "…" }}
+                    </span>
+                    @if (canSignAddendum(a)) {
+                      <sh3-button
+                        variant="solid"
+                        size="sm"
+                        [disabled]="signingAddendum() === a.id"
+                        (clicked)="signAddendum(a)"
+                      >
+                        {{ signingAddendum() === a.id ? "Signing…" : "Sign" }}
+                      </sh3-button>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          </div>
+        </section>
+      }
+    </div>
+
+    <!-- ══════════════ SIDEBAR ══════════════ -->
+    <aside class="sidebar-col">
+      <div class="side-card">
+        <span class="side-label">Summary</span>
+        <div class="summary-rows">
+          <div class="summary-row">
+            <span class="k">Start</span>
+            <span class="v">{{ c.startDate | date: "mediumDate" }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="k">End</span>
+            <span class="v">{{
+              c.endDate ? (c.endDate | date: "mediumDate") : "—"
+            }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="k">Type</span>
+            <span class="v">{{ c.contract_type ?? "—" }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="k">Status</span>
+            <span class="v">{{ c.status }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <span class="side-label">Signatures</span>
+        <div class="signature-block">
+          <div class="sig-card" [class.signed]="c.signatures?.user">
+            <div class="sig-header">
+              <span class="sig-role">You</span>
+              <span
+                class="sig-badge"
+                [class.signed]="c.signatures?.user"
+                [class.pending]="!c.signatures?.user"
+              >
+                {{ c.signatures?.user ? "Signed" : "Pending" }}
+              </span>
+            </div>
+            @if (c.signatures?.user) {
+              <span class="sig-date">{{
+                c.signatures!.user!.signed_at | date: "mediumDate"
+              }}</span>
+            }
+          </div>
+          <div class="sig-card" [class.signed]="c.signatures?.company">
+            <div class="sig-header">
+              <span class="sig-role">Company</span>
+              <span
+                class="sig-badge"
+                [class.signed]="c.signatures?.company"
+                [class.pending]="!c.signatures?.company"
+              >
+                {{ c.signatures?.company ? "Signed" : "Pending" }}
+              </span>
+            </div>
+            @if (c.signatures?.company) {
+              <span class="sig-date">{{
+                c.signatures!.company!.signed_at | date: "mediumDate"
+              }}</span>
+            }
+          </div>
+        </div>
+        @if (canSignContract()) {
+          @if (signError()) {
+            <p class="doc-error">{{ signError() }}</p>
+          }
+          <div class="sign-actions">
+            <sh3-button
+              variant="solid"
+              size="sm"
+              [disabled]="signing()"
+              (clicked)="sign(true)"
+            >
+              {{ signing() ? "Signing…" : "Sign contract" }}
+            </sh3-button>
+          </div>
+        }
+      </div>
+
+      <div class="contract-id">{{ c.id }}</div>
+    </aside>
+  </div>
+}
