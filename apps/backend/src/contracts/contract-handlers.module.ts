@@ -22,6 +22,7 @@ import { GetAddendaByContractHandler } from './application/queries/GetAddendaByC
 
 // Events
 import { ContractSentHandler } from './application/events/ContractSentHandler.js';
+import { ContractActivatedHandler } from './application/events/ContractActivatedHandler.js';
 
 import { ContractStorageModule } from './infra/ContractStorageModule.js';
 
@@ -46,7 +47,7 @@ const QueryHandlers = [
   GetAddendaByContractHandler,
 ];
 
-const EventHandlers = [ContractSentHandler];
+const EventHandlers = [ContractSentHandler, ContractActivatedHandler];
 
 @Module({
   imports: [CqrsModule, ContractStorageModule],

@@ -13,6 +13,7 @@ import { ContractEntity } from '../../domain/ContractEntity.js';
 import { RecordMetadataUtils } from '../../../utils/metaData/RecordMetadataUtils.js';
 import { BusinessError } from '../../../utils/errorManagement/BusinessError.js';
 import { ContractSentEvent } from '../events/ContractSentEvent.js';
+import { ContractActivatedEvent } from '../events/ContractActivatedEvent.js';
 
 export class SignContractCommand {
   constructor(
@@ -83,6 +84,15 @@ export class SignContractHandler implements ICommandHandler<SignContractCommand,
       this.eventBus.publish(
         new ContractSentEvent(updated.id, updated.company_id, updated.user_id, cmd.actorId),
       );
+    }
+
+    if (signerRole === 'user' && updated.status === 'active') {
+      const companySignerId = updated.signatures?.company?.signed_by;
+      if (companySignerId) {
+        this.eventBus.publish(
+          new ContractActivatedEvent(updated.id, updated.company_id, companySignerId, cmd.actorId),
+        );
+      }
     }
 
     return updated;
