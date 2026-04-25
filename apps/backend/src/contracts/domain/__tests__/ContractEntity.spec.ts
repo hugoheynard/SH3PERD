@@ -1,4 +1,3 @@
-import { ContractEntity } from '../ContractEntity.js';
 import { DomainError } from '../../../utils/errorManagement/DomainError.js';
 import { documentId, makeContract, makeDocument, makeSignature } from './test-helpers.js';
 
