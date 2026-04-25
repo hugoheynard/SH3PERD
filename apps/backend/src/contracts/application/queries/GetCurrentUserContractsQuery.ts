@@ -1,5 +1,6 @@
 import { QueryHandler, type IQueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
+import type { Filter } from 'mongodb';
 import type { TContractDomainModel, TContractRecord, TUserId } from '@sh3pherd/shared-types';
 import { CONTRACT_REPO } from '../../../appBootstrap/nestTokens.js';
 import type { IBaseCRUD } from '../../../utils/repoAdaptersHelpers/repository.genericFunctions.types.js';
@@ -11,10 +12,12 @@ export class GetCurrentUserContractsQuery {
 }
 
 /**
- * Returns all contracts belonging to the current user as domain models.
+ * Returns the contracts visible to the current user as domain models.
  *
- * Fetches raw records, reconstitutes each through ContractEntity,
- * and returns typed TContractDomainModel[].
+ * Per sh3-contracts.md, the recipient does not see a contract until
+ * the company has signed and sent it. Drafts that have never been
+ * sent stay hidden — the user only ever discovers a contract via the
+ * `received` notification fired from the company-side signature.
  */
 @QueryHandler(GetCurrentUserContractsQuery)
 export class GetCurrentUserContractsHandler implements IQueryHandler<
@@ -24,7 +27,11 @@ export class GetCurrentUserContractsHandler implements IQueryHandler<
   constructor(@Inject(CONTRACT_REPO) private readonly contractRepo: IBaseCRUD<TContractRecord>) {}
 
   async execute(query: GetCurrentUserContractsQuery): Promise<TContractDomainModel[]> {
-    const records = await this.contractRepo.findMany({ filter: { user_id: query.userId } });
+    const filter: Filter<TContractRecord> = {
+      user_id: query.userId,
+      'signatures.company': { $exists: true },
+    };
+    const records = await this.contractRepo.findMany({ filter });
 
     if (!records) {
       return [];
